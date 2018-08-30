@@ -22,3 +22,6 @@ Will need to work on this list...
 This would not be a substitute for LaTeX. But a sort of very user-friendly, intuitive
 subset that renders without compilation. It should be possible to robustly export to LaTeX for
 further refinement.
+
+To Do:
+- [ ] Template fully-functional custom element.
