@@ -97,3 +97,6 @@ No semantic meaning. Not displayed. Used for displaying processed semantic eleme
 - Anchor (label)
 - Numbering indicators
 - Id and Class
+
+
+https://css-tricks.com/document-outline-dilemma/
