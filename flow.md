@@ -40,5 +40,11 @@ Consider using `data-`. But probably just custom parser.
 
 Arguments, which might be custom arguments with `data-`, can be set as true/false with `+,-`. `<ref-sec @cust-elem +link +name +preview>` would somehow go to `<ref-sec data-target="#cust-elem" data-include_name="true" data-preview="true"></ref-sec>` which would get rendered as `<a href="#cust-elem" title="3: Custom Elements">3: Custom Elements</a>`. `<ref-fig @figname -preview>` would not have the `onmouseover` event: `<a href="#fig:figname">3</a>`.
 
+`<cite @[asdfsafdsaf, asfdasdf, asdfasdf] +link +preview -abstract>` would be rendered as `<cite data-reflist=[asdfsafdsaf, asfdasdf, asdfasdf] data-link=true data-preview=true data-abstract=false></cite>` and the `innerHTML` would be created by [`citation.js`](https://citation.js.org/).
+
+
+# Mathjax
+- Set tags
+- Capture lables/tags as ids for referencing.
 
 
