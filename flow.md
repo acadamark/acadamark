@@ -38,6 +38,7 @@ Role of using tmplateing vs html. `{{cite(asdf, asdf, asdf, asfd)}}` `see sectio
 Consider using `data-`. But probably just custom parser.
 `<ref-fig @figname>` would somehow go to `<ref-fig target="#figname" preview="true">3</ref-fig>` which would get rendered like `<a href="#fig:figname" onmouseover=showThumbnail("#fig:figname")>3</a>`
 
-Arguments, which might be custom arguments with `data-`, can be set as true/false with `+,-`. `<ref-sec @cust-elem +link +name +preview>` would somehow go to `<ref-sec data-target="#cust-elem" data-include_name="true" data-preview="true"></ref-sec>` which would get rendered as `<a href="#cust-elem" title="3: Custom Elements">3: Custom Elements</a>`
+Arguments, which might be custom arguments with `data-`, can be set as true/false with `+,-`. `<ref-sec @cust-elem +link +name +preview>` would somehow go to `<ref-sec data-target="#cust-elem" data-include_name="true" data-preview="true"></ref-sec>` which would get rendered as `<a href="#cust-elem" title="3: Custom Elements">3: Custom Elements</a>`. `<ref-fig @figname -preview>` would not have the `onmouseover` event: `<a href="#fig:figname">3</a>`.
+
 
 
