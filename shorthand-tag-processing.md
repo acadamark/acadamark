@@ -24,8 +24,8 @@ const cite_arguments:
 
 const list_arguments:
 {
-  ordered_arguments: ["ordered", "type", "start"]
-  ["+", "-"]: ["ordered", "reversed", "compact"]
+  ordered_arguments: ["ordered", "type", "start"],
+  ["+", "-"]: ["ordered", "reversed", "compact"],
   kw_args: ["type", "start", "margin", "list-style-image", "list-style-type", "list-style-position"]
 }
 
