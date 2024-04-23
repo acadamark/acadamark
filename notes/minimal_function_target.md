@@ -29,37 +29,34 @@
 </section>
 ```
 
-### Highlighted elements
+### Styped elements
 Displayed as text. Characters preserved but with special display.
 - Source code
 - Quotes/Blockquotes
 - Foreign words
+- Verse
 
-### Data
-Non-textual information. 
-- Tables entered as data. For instance
+### Pre-Processed blocks
+Encoded as data through tags, json, etc. and formatted into text, or written in a 
+_domain specific language_ (DSL) which is interpreted and displayed. 
+Is this different from mime-encoded data?
+- Math (DSL): LaTeX, mathjax
+- Music (DSL): abcjs
+- Diagrams | Networks | Flowcharts (DSL): mermaid, dot, ...
+- Markdown (DSL)
+- Markdown tables (DSL)
+- Executed source code
+- Tables entered as data (csv, for instance)
+- References/Bibliography (from CSL-JSON, etc.)
+- Notes (tags) (foot|end|side)
+- Author list (tags, json)
+- Keywords and metadata (tags, json)
+- Affiliations (tags, json)
+- Lists (tags)
+- Blockquotes (tags)
+- Formula languages | Math | Chemical | Logic (DSL)
+- Figures
 
-### Interpreted blocks
-Written in a _domain specific language_ (DSL) which is interpreted and displayed. How
-this is different from mime-encoded data I'm not sure.
-- Math (LaTeX, mathjax)
-- Music (abcjs)
-- Diagrams (mermaid, dot, ...)
-- Markdown tables
-
-### Executed code
-- Code sent to a language engine where it is run
-- Output is collected and displayed
-
-### Special text elements
-Encoded as data through tags, json, etc. But displayed
-as text.
-- Glossary
-- Definitions
-- Bibliography
-- Notes (foot|end|side)
-- Affiliations
-- Lists
 
 
 ### Nestable text eleemnts
@@ -70,16 +67,12 @@ as text.
   could contain a paragraph.
 - Blockquote
 
-
 ## Section Types
 Rendered precisely as written but displayed according to style, which tells the reader
 how to understand it. Semantic, the section has a purpose that
 determines how it should be read and understood. Starred types may be generated from data.
-- Chapter (numbered or titled)
+- General (numbered and/or titled)
 - Abstract: A brief summary of the research, methods, results, and conclusions.
-- Appendices: Supplementary material that is relevant but not integral to the main text.
-- Glossary*
-- Definitions*
 - Blockquote
 - References/Bibliography: A list of all the sources cited in the document.*
 - Endnotes: Additional information or explanations provided at the document's end.*
@@ -93,3 +86,32 @@ Sections or Environments that can be outside of the document flow. Information i
 can be used to generate them. There may be a choice of where they are displayed.
 - Footnotes/margin notes: Additional information or explanations provided at the bottom or side of the page.*
 - Sidebar
+
+## Special Syntax
+- Cross-references
+- Citations
+- Formula
+- Styling
+- Foreign
+- Basic alignment
+- Basic spacing
+
+## Variables
+- Numbering to continue lists?
+- Current section number?
+
+Edit these....
+
+# Included Objects/Elements
+Non-text-based elements
+- Graphs and charts
+- Diagrams
+- Illustrations
+- Photographs
+
+# Functional Elements, Directives
+No semantic meaning. Not displayed. Used for displaying processed semantic elements.
+- Variable definitions
+- Data (table, list, references, etc.)
+- Anchor (label)
+- Numbering indicators
