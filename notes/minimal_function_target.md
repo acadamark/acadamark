@@ -116,3 +116,9 @@ No semantic meaning. Not displayed. Used for displaying processed semantic eleme
 - Data (table, list, references, etc.)
 - Anchor (label)
 - Numbering indicators
+- 
+
+
+- List of figures
+- List of supplementary material
+- Acknowledgements
