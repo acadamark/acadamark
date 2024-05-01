@@ -1,0 +1,23 @@
+﻿Element,Source,Inline,Displayed,Semantically Styled,Verbatim,In Conceptual Flow,Post-Processed
+Section,plaintext,Y,text,N,Y,Y,N
+Paragraph,plaintext,Y,text,N,Y,Y,N
+List,tagged text,Y,text,Y,N,Y,N
+Table,tagged text or data,Y,text,N,N,M,N
+Source Code,plaintext,Y,text,Y,Y,M,N
+Executed Source Code,plaintext,Y,text,Y,N,M,N
+Author List,tagged text or data,N,text,Y,N,N,N
+Cross References,tagged text,Y,text,Y,N,Y,Y
+Citations,tagged text,Y,text,Y,N,Y,N
+Notes,tagged text,Y,text,Y,Y,N,Y
+References,data,N,text,Y,N,N,Y
+Abstract,tagged text,M,text,Y,Y,Y,N
+Appendices,tagged text,M,text,N,Y,Y,N
+Glossary,tagged text or data,M,text,Y,N,N,N
+Index,tagged text,Y,text,Y,N,M,Y
+Table of Contents,none,N,text,Y,-,N,Y
+Keyword List,tagged text or data,N,text,Y,N,N,N
+Raster graphics,embedded or linked,Y,image,-,-,M,N
+Vector graphics,plaintext,Y,image,-,N,M,N
+Video,encoded,Y,video,-,N,M,N
+Figure,tagged text,Y,mixed,Y,N,M,N
+Source Code Output,plaintext,Y,mixed,-,N,M,N
