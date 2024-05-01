@@ -29,12 +29,14 @@
 </section>
 ```
 
-### Styped elements
+### Styled elements
 Displayed as text. Characters preserved but with special display.
 - Source code
 - Quotes/Blockquotes
 - Foreign words
 - Verse
+- Definitions
+- Callouts
 
 ### Pre-Processed blocks
 Encoded as data through tags, json, etc. and formatted into text, or written in a 
@@ -57,8 +59,6 @@ Is this different from mime-encoded data?
 - Formula languages | Math | Chemical | Logic (DSL)
 - Figures
 
-
-
 ### Nestable text eleemnts
 - List
 - Paragraph
@@ -73,19 +73,20 @@ how to understand it. Semantic, the section has a purpose that
 determines how it should be read and understood. Starred types may be generated from data.
 - General (numbered and/or titled)
 - Abstract: A brief summary of the research, methods, results, and conclusions.
-- Blockquote
 - References/Bibliography: A list of all the sources cited in the document.*
 - Endnotes: Additional information or explanations provided at the document's end.*
 - Keywords: A list of relevant terms that reflect the main topics of the document.*
+- Appendices:
+- Table of Contents
+- Index
 - Affiliations*
-- Ordered list*
-- Unordered list*
 
 ## Asynchronous/Floating
 Sections or Environments that can be outside of the document flow. Information in the document
 can be used to generate them. There may be a choice of where they are displayed.
 - Footnotes/margin notes: Additional information or explanations provided at the bottom or side of the page.*
 - Sidebar
+- Inset
 
 ## Special Syntax
 - Cross-references
