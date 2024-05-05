@@ -38,7 +38,8 @@ Meanwhile, we already have a good wheel. HTML+CSS+JS comprises a typesetting sys
 Pure HTML lacks features and specifications for academic writing. Pure, valid HTML is also typing heavy and distracting to read.
 
 > We can leverage HTML+CSS+JS to build an academic publishing system that is simple to type, human readable, self-consistent, and easy to extend within its native ecosystem without re-inventing the wheel.
----Acadamark
+
+---_Acadamark_
 
 ## Solution
 Acadamark proposes a solution with two components:
@@ -206,3 +207,7 @@ Into
     </section>
 </section>
 ```
+
+## Next To-Dos
+- [ ] 
+- [ ]  
