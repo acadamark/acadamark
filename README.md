@@ -90,17 +90,32 @@ I have code that will turn the following:
 
 ```html
 <article #article> My Article
+
 <section #intro> Introduction
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has 
+been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
+a galley of type and scrambled it to make a type specimen book.
+
 <section #first-section  .numbered-section> First Section
- It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-<section #condluction  .numbered-section> Conclusion
+
 <sub-section #first-subsection> Sub Section of First
- It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+It has survived not only five centuries, but also the leap into electronic typesetting, remaining 
+essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing 
+Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including 
+versions of Lorem Ipsum.
+
 <sub-section #second-subsection> Second Sub Section of First
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.
+Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece 
+of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, 
+a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure 
+Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the 
+word in classical literature, discovered the undoubtable source.
+
 <section #second-section .numbered-section> Second Section
-Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.
+Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" 
+(The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the 
+theory of ethics, very popular during the Renaissance.
+
 <section #conclusion> Conclusion
 The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
 ```
@@ -115,12 +130,12 @@ into
     </section>
     <section id="first-section="" class="numbered-section=">
         <h1>First Section</h1>
-        <p>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
-    </section>
-    <section id="conclusion">
         <section id="first-subsection=">
             <h2>Sub Section of First</h2>
-            <p>It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            <p>It has survived not only five centuries, but also the leap into electronic typesetting, remaining 
+            essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing 
+            Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including 
+v           ersions of Lorem Ipsum.</p>
         </section>
         <section id="second-subsection=">
             <h2> Second Sub Section of First</h2>
@@ -209,5 +224,15 @@ Into
 ```
 
 ## Next To-Dos
-- [ ] 
-- [ ]  
+- [ ] Shorten readme and separate out examples.
+- [ ] Finish moving over code
+- [ ] Clean up shortcut argument processing
+- [ ] Incorporate shortcut processing with section nesting. It has to be done first.
+- [ ] Incorporate citations
+- [ ] Implement cross-references. Seems like would be easy. Just creating an `<a>`.
+- [ ] Implement csv and markdown tables
+- [ ] Think about how to work with mathjax and/or ketex.
+- [ ] Implement syntax highlighting
+- [ ] Discuss difference between DSL and data analysis etc.
+- [ ] Lists---major problem
+- [ ] Implement notes
