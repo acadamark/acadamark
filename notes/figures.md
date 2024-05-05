@@ -26,6 +26,8 @@ Look at some journal articles.
     align=right 
     +wrap 
     src=whatever
+    width=width
+    height=height
     caption="this is the caption for the figure" 
 />
 ```
