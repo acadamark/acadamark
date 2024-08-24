@@ -153,7 +153,7 @@ I will probably add creating lists of tables and figures. Those seem a bit archa
 ~~~
 createReferencesList(
   collection,  // [name of collection] : The collection from which to generate the references list.
-  as_list,  // [true | false] : Indicates whether to render the references as a list.
+  as_list,  // [true | false] : Indicates whether to render the notes as a list or paragraphs.
   include_back_link,  // [true | false] : Determines whether to include a backlink from the reference list to the citation.
   csl_style,  // [apa | american-medical-association | chicago | etc.] : Determines the citation style to be used.
   add_to_target,  // [id of target element] : The ID of the target element where the references list should be added.
@@ -166,7 +166,7 @@ createReferencesList(
 
 createNotesList(
   collection,  // [name of collection] : The collection from which to generate the notes list.
-  as_list,  // [true | false] : Indicates whether to render the notes as a list.
+  as_list,  // [true | false] : Indicates whether to render the notes as a list or paragraphs.
   include_back_link,  // [true | false] : Determines whether to include a backlink from the notes list to the note marker.
   format_as,  // [footnotes | endnotes | sidenotes] : Specifies how to format the notes.
   add_to_target,  // [id of target element] : The ID of the target element where the notes list should be added.
@@ -179,3 +179,15 @@ createNotesList(
 
 createGenericList(collection, ...)
 ~~~
+
+## Status of Progress
+Almost all of the elements of handling citations can be implemented using the [`{citation-js}`](https://citation.js.org/) and/or [`{citeproc-js}`](https://citeproc-js.readthedocs.io/en/latest/) libraries. I already have a decent start with stubbing out some of the functions and proof-of-principle examples of implementation.
+
+My current specification is pretty incomplete because it does not say how to handle a "document" or website that spans many pages. And this also begs the question of whether the rendering can or should be done dynamically or cached as part of creating static pages. I think both methods have use.
+
+In order to not have to maintain two sets of code for dynamic vs. static rendering, I hope to use dom processing rather than text replacement for both. I'm not sure how similar node dom processing libraries are to what browsers do, or if there is a way to call browser functionality in a headless manner from node or python and then write the result to disk.
+
+For simple usage, I think it the following will be ok to start out with:
+
+- Reference and notes lists are only rendered for the current page.
+- Cross-references to other pages will need to include their URLs. If the website has some kind of routing, perhaps that will be able to be used. For example, if there is a page that the router knows as "home" which translates to "https://www.example.com/index.html", then perhaps it will be enough to do something like `<ref target="home#fig:simlyface.png"></ref>`.
