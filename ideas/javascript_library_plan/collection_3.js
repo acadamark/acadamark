@@ -76,16 +76,16 @@ class Academark {
     // ... other methods ...
 }
 
-/*
-// Usage
-const academark = new Academark();
-const citationCollection = academark.createCollection('mainCitations', 'citation');
-citationCollection.addItem(new Citation(/* ... */));
-citationCollection.addItem(new Citation(/* ... */));
 
-const noteCollection = academark.createCollection('footnotes', 'note');
-noteCollection.addItem(new Note(/* ... */));
+// // Usage
+// const academark = new Academark();
+// const citationCollection = academark.createCollection('mainCitations', 'citation');
+// citationCollection.addItem(new Citation(/* ... */));
+// citationCollection.addItem(new Citation(/* ... */));
 
-console.log(academark.renderCollection('mainCitations', { style: 'chicago', numbered: true }));
-console.log(academark.renderCollection('footnotes', { format: 'endnotes' }));
-*/
+// const noteCollection = academark.createCollection('footnotes', 'note');
+// noteCollection.addItem(new Note(/* ... */));
+
+// console.log(academark.renderCollection('mainCitations', { style: 'chicago', numbered: true }));
+// console.log(academark.renderCollection('footnotes', { format: 'endnotes' }));
+
