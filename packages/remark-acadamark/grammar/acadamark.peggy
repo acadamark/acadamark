@@ -9,9 +9,9 @@
 // This grammar handles all attribute forms and both sigil and named tags.
 // Long-form DSL tags (<csv>...</csv>) are added in Slice 4.
 //
-// Attribute parsing currently delegates to the JS parseAttributes() helper
-// (in the global initializer below). Slice 3 replaces that helper with full
-// Peggy attribute rules.
+// Slice 3: all attribute parsing is handled by Peggy rules (Attributes,
+// Attribute, Id, Class, BoolTrue, BoolFalse, Keyword, BracketedList,
+// Positional). The JS parseAttributes() helper has been removed.
 
 {{
   // ─── Global initializer — runs once when the module is loaded ───────────
@@ -31,120 +31,20 @@
     }
   }
 
-  // ─── Attribute parsing (JS helper — replaced by Peggy rules in Slice 3) ──
+  function emptyAttrs() {
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [] }
+  }
 
-  function parseAttributes(node, str) {
-    if (!str) return
-    let i = 0
-    const len = str.length
-
-    while (i < len) {
-      while (i < len && isWS(str[i])) i++
-      if (i >= len) break
-      const ch = str[i]
-
-      if (ch === '#') {
-        i++
-        const start = i
-        while (i < len && isAttrNameChar(str[i])) i++
-        node.id = str.slice(start, i)
-      } else if (ch === '.') {
-        i++
-        const start = i
-        while (i < len && isAttrNameChar(str[i])) i++
-        node.classes.push(str.slice(start, i))
-      } else if (ch === '+' || ch === '-') {
-        const isTrue = ch === '+'
-        i++
-        const start = i
-        while (i < len && isAttrNameChar(str[i])) i++
-        const name = str.slice(start, i)
-        if (name) node.booleans[name] = isTrue
-      } else if (ch === '[') {
-        i++
-        const items = []
-        while (i < len && str[i] !== ']') {
-          while (i < len && isWS(str[i])) i++
-          if (str[i] === ']') break
-          items.push(readValue(str, i, len, true))
-          i += itemLen(str, i, len, true)
-          while (i < len && isWS(str[i])) i++
-          if (i < len && str[i] === ',') i++
-        }
-        if (i < len && str[i] === ']') i++
-        node.positional.push(items)
-      } else if (!isPosDelim(ch)) {
-        const nameStart = i
-        while (i < len && isAttrNameChar(str[i])) i++
-        if (i < len && str[i] === '=') {
-          const name = str.slice(nameStart, i)
-          i++
-          const value = readValue(str, i, len, false)
-          i += valLen(str, i, len)
-          if (name) node.kwargs[name] = value
-        } else {
-          while (i < len && !isPosDelim(str[i])) i++
-          const token = str.slice(nameStart, i)
-          if (token) node.positional.push(token)
-        }
-      } else {
-        i++
-      }
+  function applyAttributes(attrList) {
+    const result = emptyAttrs()
+    for (const attr of attrList) {
+      if (attr.t === 'id')    result.id = attr.v
+      if (attr.t === 'class') result.classes.push(attr.v)
+      if (attr.t === 'bool')  result.booleans[attr.k] = attr.v
+      if (attr.t === 'kwarg') result.kwargs[attr.k] = attr.v
+      if (attr.t === 'pos')   result.positional.push(attr.v)
     }
-  }
-
-  function isWS(ch)         { return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' }
-  function isAttrNameChar(ch) { return /[a-zA-Z0-9_-]/.test(ch) }
-  function isPosDelim(ch)   {
-    return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' ||
-           ch === '|' || ch === '>' || ch === '<' ||
-           ch === '[' || ch === ']' || ch === ',' || ch === '"' || ch === "'"
-  }
-
-  function readValue(str, i, len, inBracket) {
-    if (i >= len) return ''
-    const ch = str[i]
-    if (ch === '"' || ch === "'") {
-      const q = ch; i++; let r = ''
-      while (i < len && str[i] !== q) r += str[i++]
-      return r
-    }
-    let r = ''
-    while (i < len && !isValDelim(str[i], inBracket)) r += str[i++]
-    return r
-  }
-
-  function valLen(str, i, len) {
-    if (i >= len) return 0
-    const ch = str[i]
-    if (ch === '"' || ch === "'") {
-      const q = ch; let j = i + 1
-      while (j < len && str[j] !== q) j++
-      return j - i + (j < len ? 1 : 0)
-    }
-    let j = i
-    while (j < len && !isValDelim(str[j], false)) j++
-    return j - i
-  }
-
-  function itemLen(str, i, len, inBracket) {
-    if (i >= len) return 0
-    const ch = str[i]
-    if (ch === '"' || ch === "'") {
-      const q = ch; let j = i + 1
-      while (j < len && str[j] !== q) j++
-      return j - i + (j < len ? 1 : 0)
-    }
-    let j = i
-    while (j < len && !isValDelim(str[j], true)) j++
-    return j - i
-  }
-
-  function isValDelim(ch, inBracket) {
-    if (isWS(ch)) return true
-    if (ch === '<' || ch === '>' || ch === '|' || ch === '=' || ch === '"' || ch === "'") return true
-    if (inBracket && (ch === ']' || ch === ',')) return true
-    return false
+    return result
   }
 }}
 
@@ -156,53 +56,45 @@ AcadamarkConstruct
 // ─── Sigil tags ────────────────────────────────────────────────────────────
 //
 // Each sigil level is a separate rule (longest first, so ### is tried before
-// ## and ##  before #). The body scanner stops before the exact mirrored
-// closer using a negative lookahead. Attr section stops before `|` or closer.
+// ## and ## before #). Two alternatives per level:
+//   1. With `|` — Attributes rule parses attrs, then content follows
+//   2. Without `|` — entire body is opaque content, no attribute parsing
 //
-// Sigil tags with attributes: <# #id | content #>
-// Sigil tags without `|`:     <# opaque content #>  (whole body is content)
+// Attributes stops naturally before `|` or the mirrored closer because `|`
+// and `#` (start of closer) are excluded from all identifier character classes.
 
 SigilTag3
-  = "<" "###" attrs:SigilAttrs3 content:$SigilBody3 "###>" {
+  = "<" "###" attrs:Attributes "|" content:$SigilBody3 "###>" {
       const node = makeNode("###", { isOpaqueContent: true })
-      parseAttributes(node, attrs)
+      Object.assign(node, attrs)
       node.content = content
       return node
+    }
+  / "<" "###" content:$SigilBody3 "###>" {
+      return makeNode("###", { isOpaqueContent: true, content })
     }
 
 SigilTag2
-  = "<" "##" attrs:SigilAttrs2 content:$SigilBody2 "##>" {
+  = "<" "##" attrs:Attributes "|" content:$SigilBody2 "##>" {
       const node = makeNode("##", { isOpaqueContent: true })
-      parseAttributes(node, attrs)
+      Object.assign(node, attrs)
       node.content = content
       return node
+    }
+  / "<" "##" content:$SigilBody2 "##>" {
+      return makeNode("##", { isOpaqueContent: true, content })
     }
 
 SigilTag1
-  = "<" "#" attrs:SigilAttrs1 content:$SigilBody1 "#>" {
+  = "<" "#" attrs:Attributes "|" content:$SigilBody1 "#>" {
       const node = makeNode("#", { isOpaqueContent: true })
-      parseAttributes(node, attrs)
+      Object.assign(node, attrs)
       node.content = content
       return node
     }
-
-// Attr section for sigil tags: everything before `|` (if present).
-// Stops at the level-appropriate mirrored closer to avoid consuming it.
-
-SigilAttrs3
-  = attrs:$(SigilAttrsChar3*) "|" { return attrs } / "" { return null }
-SigilAttrsChar3
-  = QuotedString / !("###>" / "|") .
-
-SigilAttrs2
-  = attrs:$(SigilAttrsChar2*) "|" { return attrs } / "" { return null }
-SigilAttrsChar2
-  = QuotedString / !("##>" / "|") .
-
-SigilAttrs1
-  = attrs:$(SigilAttrsChar1*) "|" { return attrs } / "" { return null }
-SigilAttrsChar1
-  = QuotedString / !("#>" / "|") .
+  / "<" "#" content:$SigilBody1 "#>" {
+      return makeNode("#", { isOpaqueContent: true, content })
+    }
 
 // Body content for sigil tags: everything up to (but not including) the closer.
 // The negative lookahead is the exact mirrored closer so single-# content is
@@ -219,26 +111,19 @@ SigilBody1 = (!("#>") .)*
 // Rule B depth tracking is implemented via recursive ContentChar.
 
 NamedTag
-  = "<" name:TagName attrs:$AttrChar* "|" content:$ContentChar* ">" {
+  = "<" name:TagName attrs:Attributes "|" content:$ContentChar* ">" {
       const node = makeNode(name, { isOpaqueContent: true })
-      parseAttributes(node, attrs)
+      Object.assign(node, attrs)
       node.content = content
       return node
     }
-  / "<" name:TagName attrs:$AttrChar* ">" {
+  / "<" name:TagName attrs:Attributes ">" {
       const node = makeNode(name)
-      parseAttributes(node, attrs)
+      Object.assign(node, attrs)
       return node
     }
 
 TagName = $([a-zA-Z][a-zA-Z0-9_-]*)
-
-// Attr section: everything between tag name end and `|` or `>`.
-// Quoted strings are consumed wholesale so `>` or `|` inside them don't terminate.
-
-AttrChar
-  = QuotedString
-  / [^|><\n]
 
 // Content section: rule B depth tracking via ordered alternatives.
 // First alternative: a tag-like `<` (followed by alpha, `#`, or `/`) — recurse.
@@ -249,8 +134,73 @@ ContentChar
   = "<" [a-zA-Z#/] ContentChar* ">"
   / [^>\n]
 
+// ─── Attribute rules ────────────────────────────────────────────────────────
+//
+// Attributes returns an object with positional, booleans, kwargs, id, classes
+// ready for Object.assign() into the node. The empty alternative (whitespace
+// only, or no attrs at all) returns the same shape with default values.
+//
+// Attributes stops naturally at `|` or `>` because those characters are
+// excluded from all identifier and tag-name character classes.
+
+Attributes
+  = _ head:Attribute tail:(_ Attribute)* _ {
+      return applyAttributes([head, ...tail.map(([, a]) => a)])
+    }
+  / _ { return emptyAttrs() }
+
+Attribute
+  = Id
+  / Class
+  / BoolTrue
+  / BoolFalse
+  / Keyword
+  / BracketedList
+  / Positional
+
+Id        = "#" v:Identifier      { return { t: 'id', v } }
+Class     = "." v:TagName         { return { t: 'class', v } }
+BoolTrue  = "+" k:TagName         { return { t: 'bool', k, v: true } }
+BoolFalse = "-" k:TagName         { return { t: 'bool', k, v: false } }
+Keyword   = k:TagName "=" v:Value { return { t: 'kwarg', k, v } }
+
+BracketedList
+  = "[" _ items:ListItems _ "]"   { return { t: 'pos', v: items } }
+
+Positional
+  = v:Identifier                  { return { t: 'pos', v } }
+
+ListItems
+  = head:ListItem tail:(_ "," _ ListItem)* {
+      return [head, ...tail.map(([, , , item]) => item)]
+    }
+
+ListItem = QuotedStringValue / Identifier
+
+Value = QuotedStringValue / Identifier
+
 // ─── Shared terminals ──────────────────────────────────────────────────────
 
-QuotedString
-  = '"' [^"\n]* '"'
-  / "'" [^'\n]* "'"
+QuotedStringValue
+  = '"' v:$([^"\n]*) '"' { return v }
+  / "'" v:$([^'\n]*) "'" { return v }
+
+// ─── Identifier ────────────────────────────────────────────────────────────
+//
+// Two-rule split mirrors the spec EBNF exactly.
+// IdentifierStart excludes structural delimiters AND syntactic prefixes
+//   (+, -, #, ., =) so those characters cannot begin an identifier.
+// IdentifierCont excludes only structural delimiters, allowing prefix chars
+//   as literal data mid-identifier (e.g. "fig:body-cross-section", "v1.2.3").
+
+Identifier = $(IdentifierStart IdentifierCont*)
+
+IdentifierStart
+  = [^ \t\n<>|+\-#.="'\[\],]
+
+IdentifierCont
+  = [^ \t\n<>|="'\[\],]
+
+// ─── Whitespace ────────────────────────────────────────────────────────────
+
+_ = [ \t]*

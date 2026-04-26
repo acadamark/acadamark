@@ -46,21 +46,27 @@ named_tag       ::= short_form | long_form
 short_form      ::= "<" tag_name [ws+ attributes] ["|" content] ">"
 long_form       ::= "<" tag_name [ws+ attributes] ">" content "</" tag_name ">"
 
-tag_name        ::= [a-zA-Z] [a-zA-Z0-9_-]*
+tag_name         ::= [a-zA-Z] [a-zA-Z0-9_-]*
+                     (* strict: for the word immediately after `<` and keyword keys *)
+identifier       ::= identifier_start identifier_cont*
+identifier_start ::= [^ \t\n<>|+\-#.="'\[\],]
+                     (* excludes structural delimiters AND syntactic prefixes
+                        (+, -, #, ., =); these may appear mid-identifier only *)
+identifier_cont  ::= [^ \t\n<>|="'\[\],]
+                     (* excludes structural delimiters only *)
 
 attributes      ::= attribute (ws+ attribute)*
 attribute       ::= positional | bracketed_list | flag | id | class | keyword
 
-positional      ::= naked_token
+positional      ::= identifier
 bracketed_list  ::= "[" ws* list_item (ws* "," ws* list_item)* ws* "]"
-list_item       ::= naked_token | quoted_string
+list_item       ::= identifier | quoted_string
 flag            ::= ("+" | "-") tag_name
-id              ::= "#" tag_name
+id              ::= "#" identifier
 class           ::= "." tag_name
 keyword         ::= tag_name "=" value
-value           ::= naked_token | quoted_string
+value           ::= identifier | quoted_string
 
-naked_token     ::= [^ \t\n<>|+\-#.="'\[\],]+
 quoted_string   ::= '"' [^"]* '"' | "'" [^']* "'"
 
 content         ::= (text | construct)*
@@ -70,13 +76,21 @@ content         ::= (text | construct)*
 ws              ::= " " | "\t" | "\n"
 ```
 
-This grammar is intentionally informal in places — the precise behavior of `naked_token`, content scanning, and DSL recognition is described in prose below where the formal grammar would be cumbersome.
+This grammar is intentionally informal in places — the precise behavior of `identifier`, content scanning, and DSL recognition is described in prose below where the formal grammar would be cumbersome.
 
 ## Lexical rules
 
-### Tag names and sigils
+### Tag names and identifiers
 
-A *tag name* starts with an ASCII letter and may contain letters, digits, underscores, and hyphens. Tag names are case-sensitive at the parser level (the interpreter may normalize).
+The grammar uses two distinct character-class rules for names:
+
+A *tag name* (`tag_name`) is strict: starts with an ASCII letter, continues with letters, digits, underscores, or hyphens (`[a-zA-Z][a-zA-Z0-9_-]*`). Tag names appear as the word immediately after `<` and as the key in `key=value` attributes. Tag names are case-sensitive at the parser level (the interpreter may normalize).
+
+An *identifier* uses a start-and-continue split: the first character must not be a syntactic prefix (`+`, `-`, `#`, `.`, `=`) or structural delimiter; subsequent characters may include those prefix characters as literal data. This is encoded in two sub-rules (`identifier_start`, `identifier_cont`) that mirror the EBNF directly. Examples: `fig:body-cross-section` (starts with `f`; `:` and `-` are valid `identifier_cont` chars), `my-cool-id`, `v1.2.3`, `https://example.com`. Whitespace and structural delimiters (`<`, `>`, `|`, `=`, `"`, `'`, `[`, `]`, `,`) are never valid in an identifier.
+
+The distinction matters for cross-references and ids: `<ref #fig:body-cross-section>` must produce `id: "fig:body-cross-section"` with the `:` intact. Using `tag_name` for id values would reject this. The start-and-continue split also makes disambiguation self-contained: `#elephant` is unambiguously an id form (the `#` is a syntactic prefix, not an identifier character), while `section-one` is unambiguously a valid positional identifier.
+
+### Sigils
 
 A *sigil* is one or more occurrences of a registered sigil character. The current registered sigils are `#`, `$`, and `` ` ``. The set is extensible; new sigils are registered alongside their tag-name expansion.
 
@@ -97,11 +111,9 @@ Sigil tags and named tags are distinguished by their first non-`<` character: if
 
 Attributes can appear in any order. Multiple positional, multiple flags, multiple classes are all allowed. Multiple `id` attributes or multiple of the same keyword is an error (parser may report or take last value, implementation choice).
 
-### Naked tokens
+### Identifiers
 
-A naked token is a sequence of characters not in the syntactic set. The syntactic set is: whitespace, `<`, `>`, `|`, `+`, `-`, `#`, `.`, `=`, `"`, `'`, `[`, `]`, `,`.
-
-Naked tokens cover most positional and unquoted-keyword values. URLs, file names, words, numbers — all naked tokens. When a value needs to contain syntactic characters or whitespace, use quotes.
+Identifiers are the values of `#id` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `=`). Mid-identifier, these prefix characters are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, and `v1.2.3` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.
 
 ### Quoted strings
 
@@ -254,7 +266,7 @@ For each parsed construct, the parser produces a structured node with the follow
 }
 ```
 
-For sigil tags, `tagname` is the sigil expansion (e.g., `<#` produces `tagname: "section-shorthand"` or similar — exact convention TBD by the parser implementation). The `positional`, `booleans`, etc. fields all behave the same way as for named tags.
+For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` → `"##"`, `<###` → `"###"`, `<$` → `"$"`, `<$$` → `"$$"`, `` <` `` → `` "`" ``, etc. The `positional`, `booleans`, etc. fields all behave the same way as for named tags.
 
 For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `acadamarkTag` nodes, or markdown nodes, or plain text).
 
@@ -672,7 +684,7 @@ These were open questions that were settled during implementation.
 
 - **Multi-word positionals: space-separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. `<cite jones2001 smith2022>` → `positional: ["jones2001", "smith2022"]`. This is consistent with how positional arguments work in shell commands and LaTeX. It also makes the qualifying-tag pattern natural: `<table csv | ...>` has `csv` as the second positional.
 
-- **Positional tokens use permissive naked-token rules.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`). This allows file paths (`puppy.jpg`), URLs (`https://example.com`), hyphenated identifiers (`my-file.jpg`), and numbers without quoting. The `=` sign terminates only the keyword-name scan; if `=` follows immediately, it's a keyword. This means `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`.
+- **Positional tokens and id/keyword values use the permissive `identifier` rule.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`, `=`). The same character class applies to id values (after `#`) and unquoted keyword values (after `=`). This allows file paths (`puppy.jpg`), URLs (`https://example.com`), hyphenated identifiers (`my-file.jpg`), colon-prefixed ids (`fig:body-cross-section`), and numbers without quoting. The `=` sign terminates the keyword-name scan only; if `=` follows immediately after the name chars, it's a keyword, and then the value is read as an identifier. This means `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`.
 
 - **`>` in content: rule B (tag-looking openers only).** The content scanner increments depth when it encounters `<` only if the immediately following character is an ASCII letter, a registered sigil character, or `/` (for `</closing>` tags). A `<` followed by anything else — space, digit, punctuation — is treated as literal and does **not** affect depth. This means `<figure | a < b>` works correctly (the `< ` does not increment depth, so the `>` closes the figure with content `a < b`). Bare `>` without a preceding tag-like `<` still closes the construct early — `<figure | 1 > 0>` gives content `1 ` — authors must use `&gt;` for literal `>` in prose.
 
@@ -689,6 +701,8 @@ These were open questions that were settled during implementation.
 Remaining open questions flagged for resolution as implementation proceeds.
 
 - **`|` in short-form content.** After the first `|` separator, subsequent `|` characters in content are treated as literal content (the "exactly one `|` per construct" rule). No escaping needed.
+
+- **Named tag content shape: string vs. array.** The worked examples show `content` as an array of child nodes (e.g., `content: ["An elephant."]`) even for simple text. The current implementation produces a raw string (e.g., `content: " An elephant."`). These are the same data but in different containers. The question is whether `content` is always an array (with plain strings as array elements) or whether it is a raw string for opaque content and an array only for parsed content. This needs an explicit decision before recursive content parsing (Slice 3+) can be implemented, since it determines the node contract downstream interpreters depend on.
 
 - **Named tag content: recursive parsing.** In Slice 2, named-tag content is an opaque string. Recursive parsing of content into child nodes (so `<figure | text with <em | emphasis>>` produces a nested AST) is deferred to a later slice.
 

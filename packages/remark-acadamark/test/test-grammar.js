@@ -236,4 +236,69 @@ function p(src) {
   console.log('PASS grammar: <aside | content> no attributes')
 }
 
+// ─── Slice 3: identifier rules ─────────────────────────────────────────────
+
+{
+  // : is allowed mid-identifier (id values, per Example 19 in the spec)
+  const n = p('<ref #fig:body-cross-section>')
+  assert.equal(n.tagname, 'ref')
+  assert.equal(n.id, 'fig:body-cross-section')
+  console.log('PASS grammar: colon in id value #fig:body-cross-section')
+}
+
+{
+  // : and - together in an id
+  const n = p('<ref #sec:intro-background>')
+  assert.equal(n.id, 'sec:intro-background')
+  console.log('PASS grammar: colon and hyphen together in id')
+}
+
+{
+  // . allowed mid-identifier in keyword value (file path)
+  const n = p('<img src=v1.2.3.jpg>')
+  assert.equal(n.kwargs.src, 'v1.2.3.jpg')
+  console.log('PASS grammar: dots in keyword value src=v1.2.3.jpg')
+}
+
+{
+  // : and / allowed in positional (URL without pipe)
+  const n = p('<a https://example.com>')
+  assert.deepEqual(n.positional, ['https://example.com'])
+  console.log('PASS grammar: URL as positional (colon and slashes)')
+}
+
+{
+  // + cannot start an identifier — it starts a BoolTrue, so +flag is a bool attr
+  const n = p('<div +active>')
+  assert.deepEqual(n.booleans, { active: true })
+  assert.deepEqual(n.positional, [])
+  console.log('PASS grammar: + at token start is BoolTrue, not positional')
+}
+
+{
+  // - cannot start an identifier — it starts a BoolFalse
+  const n = p('<div -hidden>')
+  assert.deepEqual(n.booleans, { hidden: false })
+  assert.deepEqual(n.positional, [])
+  console.log('PASS grammar: - at token start is BoolFalse, not positional')
+}
+
+{
+  // # cannot start an identifier — it starts an Id form
+  // (bare # with no valid IdentifierStart after it should fail to parse as Id,
+  // leaving the whole construct to fail gracefully or parse as no-attr)
+  const n = p('<div #myid>')
+  assert.equal(n.id, 'myid')
+  assert.deepEqual(n.positional, [])
+  console.log('PASS grammar: # at token start is Id, not positional')
+}
+
+{
+  // . cannot start an identifier — it starts a Class form
+  const n = p('<div .container>')
+  assert.deepEqual(n.classes, ['container'])
+  assert.deepEqual(n.positional, [])
+  console.log('PASS grammar: . at token start is Class, not positional')
+}
+
 console.log('\nAll grammar unit tests passed.')

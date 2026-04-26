@@ -141,6 +141,22 @@ Goal: full citation and cross-reference support. This phase requires Layer 1 dec
 15. Document the Layer 1 specification rigorously, including its mapping to JATS.
 16. Implement `rehypeAcadamarkToJats` and demonstrate round-trip: an acadamark document → Layer 1 HTML → JATS XML → validated against the JATS schema.
 
+## Shorthand parser — slice map
+
+The shorthand parser (`packages/remark-acadamark`) is built in vertical slices. Each slice adds a self-contained capability with passing tests before the next begins. A drift check against `notes/shorthand-syntax.md` is performed at the end of each slice.
+
+| Slice | Scope | Status | Done when |
+|-------|-------|--------|-----------|
+| 0 | Archive pure-micromark package; scaffold hybrid (Peggy + micromark finder) | Done | Archive committed, fresh package builds, grammar compiles |
+| 1 | Sigil tags `<#...#>`, `<##...##>`, `<###...###>` | Done | 12 Slice 1 integration tests pass |
+| 2 | Named tags `<tagname attrs \| content>` — all attribute forms via JS helper | Done | 29 total integration tests pass |
+| 3 | Move all attribute parsing into Peggy rules; apply permissive `identifier` rule for id/value/positional | Next | All 57 existing tests pass; new tests for `:` in ids and permissive identifiers; drift check clean |
+| 3.5 | Math and code sigils: `<$...$>`, `<$$...$$>`, `` <`...`> ``, `` <```...```> `` | — | Sigil tests for `$` and `` ` `` families pass; micromark finder extended; drift check clean |
+| 4 | Long-form DSL tags `<csv>...</csv>` — opaque content, registry integration | — | `<csv>`, `<math>`, `<theorem>` etc. parse correctly |
+| 5 | Qualifying-tag pattern `<table csv>...</table>` | — | First-positional DSL dispatch works |
+| 6 | Recursive content parsing — named-tag content as array of child nodes | — | `<figure \| text with <em \| emphasis>>` produces nested AST |
+| 7 | Multi-line constructs — newlines valid inside attr sections and content | — | Example 7 (multi-line figure) parses correctly |
+
 ## Recommended starting point
 
 Don't read the unified docs cover to cover — that way lies despair. Start by writing the section-nesting rehype plugin. The input and output are already completely understood (the README's existing examples). Porting it forces you through `unist-util-visit`, the node structure, and the plugin signature, all on a problem where you already know the right answer. Once that works, tackle the micromark extension. By then the ecosystem will feel ordinary.

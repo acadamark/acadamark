@@ -246,4 +246,61 @@ console.log('\nAll Slice 1 integration tests passed.')
 }
 
 console.log('\nAll Slice 2 integration tests passed.')
-console.log('\n29/29 tests passed.')
+
+// ─── Slice 3: identifier rules ─────────────────────────────────────────────
+
+{
+  const node = parseTag('<ref #fig:body-cross-section>')
+  assert.equal(node.tagname, 'ref')
+  assert.equal(node.id, 'fig:body-cross-section')
+  console.log('PASS: colon in id value #fig:body-cross-section')
+}
+
+{
+  const node = parseTag('<ref #sec:intro-background>')
+  assert.equal(node.id, 'sec:intro-background')
+  console.log('PASS: colon and hyphen together in id')
+}
+
+{
+  const node = parseTag('<img src=v1.2.3.jpg>')
+  assert.equal(node.kwargs.src, 'v1.2.3.jpg')
+  console.log('PASS: dots in keyword value src=v1.2.3.jpg')
+}
+
+{
+  const node = parseTag('<a https://example.com>')
+  assert.deepEqual(node.positional, ['https://example.com'])
+  console.log('PASS: URL as positional (colon and slashes)')
+}
+
+{
+  const node = parseTag('<div +active>')
+  assert.deepEqual(node.booleans, { active: true })
+  assert.deepEqual(node.positional, [])
+  console.log('PASS: + at token start is BoolTrue, not positional')
+}
+
+{
+  const node = parseTag('<div -hidden>')
+  assert.deepEqual(node.booleans, { hidden: false })
+  assert.deepEqual(node.positional, [])
+  console.log('PASS: - at token start is BoolFalse, not positional')
+}
+
+{
+  const node = parseTag('<div #myid>')
+  assert.equal(node.id, 'myid')
+  assert.deepEqual(node.positional, [])
+  console.log('PASS: # at token start is Id, not positional')
+}
+
+{
+  const node = parseTag('<div .container>')
+  assert.deepEqual(node.classes, ['container'])
+  assert.deepEqual(node.positional, [])
+  console.log('PASS: . at token start is Class, not positional')
+}
+
+console.log('\nAll Slice 3 integration tests passed.')
+console.log('\n37/37 tests passed.')
