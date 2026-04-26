@@ -1,238 +1,70 @@
 # Acadamark
-A proposed system for harnessing HTML+CSS+JS for typesetting academic publications that combines the simplicity of markdown with the consistency and features of HTML and LaTeX. 
+
+An academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top — combining the simplicity of markdown with the expressiveness needed for scholarly work.
 
 ## Motto
->Not re-inventing the wheel. Re-discovering the wheel.
 
-In this case I am considering HTML to be the wheel.
+> Not re-inventing the wheel. Re-discovering the wheel.
 
-## Why?
-### The issues with markdown
-Markdown is simple and intuitive. It's beauty and power lie in the fact that it provides a simple syntax for enhancing text-based communication with semantic meaning that simultaneously:
+In this case, HTML is the wheel.
 
-- Is easy to type
-- Is easy and effective read as plain text
-- Translates perfectly into visual formatting through HTML+CSS+JS
+## The idea in one paragraph
 
-These are the reasons why markdown has been so widely adopted and accepted.
+Markdown's success comes from a simple bargain: a small set of typing conventions that map cleanly onto HTML. For academic writing, that bargain breaks down — citations, cross-references, figure numbering, theorems, and structured sections all require extensions, and every project that has tried to add them (RMarkdown, Bookdown, Quarto, Pandoc filters) has invented its own incompatible flavor. Meanwhile, HTML+CSS+JS is already a complete, universally supported typesetting system. Acadamark proposes that the right move isn't another markdown extension — it's a rigorous set of HTML conventions for academic content, plus a uniform shorthand for authoring them that's easier on the fingers than raw HTML.
 
-I'm going to speculate that markdown now comprises the most common typesetting system used for quantitative academic work. I support this by the fact that so much quantiative work is done in computational notebooks which use markdown, that so much discussion takes place in github issues, slack/teams/etc. where markdown is used, and that markdown is used for many static site generators.
+## Why HTML?
 
-RMarkdown, Bookdown and now Quarto have sought to extend markdown with capabilities itneeded for academic work. The result is that they pollute the essential beauty and intention of markdown and create ad-hoc systems with no consistency. To extend or refine these systems requires re-inventing the wheel. Thus the invention of Qarto over extending RMarkdown. The pandoc project has also helped make markdown rigorous and universal.
+HTML+CSS+JS already does most of what academic typesetting needs. It's universally rendered (every browser, every platform). It's exportable to nearly anything via existing tools (Pandoc going *outward* from HTML is mature and reliable). It composes — every JS library, every CSS framework, every web component slots in. The only things HTML lacks are (1) a standard vocabulary for academic semantics like citations and cross-references, and (2) an authoring syntax that doesn't make humans want to quit. Acadamark adds both.
 
-Unfortunately, efforts to extend markdown, including generic 3rd party pandoc filters, suffer multiple problems:
+## What acadamark is, in two layers
 
-1. There are now multiple enhanced markdown flavors each with their own parser.
-2. There is no agreement or consistency between them for how to define or implement extensions.
-3. It's not possible to combine extensions between these efforts.
-4. Extending markdown by definition implies adding idioms, diacritics, symbols and other things that pollute the visual simplicity that is what makes markdown special.
+**Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, captioned figures, citations, cross-references, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). This layer is independently valuable — you can author it directly if you want, and any tool that produces acadamark-conformant HTML benefits from the rest of the ecosystem.
 
-### Latex
-TeX/LaTeX is wonderful. It's powerful. Self-consistent. And can pretty much do anything. But it's also fragile due to being compiled. You can have zero output if you have a single problem. The syntax is somewhat arcane, has a high learning curve, is distracting to read, etc.
+**Layer 2 — Authoring shorthand.** A compact syntax that translates losslessly into Layer 1 HTML. It comes in two registers:
 
-## Philosophy
-Markdown is a beautiful thing in and of itself. Efforts to extend it into a full-fledged academic typesetting system create monsters. They also each re-invent the wheel becasue they do not build on each other (the way LaTeX and LaTeX additions build upon TeX). They are implemented in a technology of choice (R, python, lua, haskell, rust) that lies outside the typesetting domain.
+- *Markdown-like shorthand* for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.
 
-Meanwhile, we already have a good wheel. HTML+CSS+JS comprises a typesetting system that powers the majority of written information that is consumed by humans, and possibly machines as well.
+- *Tag shorthand* for anything that needs attributes, identifiers, or academic semantics. The form is `<tag #id .class attr=value | content>`, read as "tag with these attributes containing this content." Tags don't require explicit closing — like LaTeX's `\section{}`, a new peer-level tag implicitly ends the previous one.
 
-Pure HTML lacks features and specifications for academic writing. Pure, valid HTML is also typing heavy and distracting to read.
+Both registers compile to the same Layer 1 HTML.
 
-> We can leverage HTML+CSS+JS to build an academic publishing system that is simple to type, human readable, self-consistent, and easy to extend within its native ecosystem without re-inventing the wheel.
+## A taste
 
----_Acadamark_
+```
+<# Introduction #intro>
 
-## Solution
-Acadamark proposes a solution with two components:
+This claim is supported by recent work <cite smith2023, jones2024>.
 
-1. Rigorously define how to typeset academic publications in HTML
-2. Create a shorthand for HTML that includes the most used features in a language that is as close to markdown as possible in terms of being simple, intuitive, human-typable, and human-readable.
+<figure #elephant .wrap align=right src=elephant.jpg |
+  An adult African elephant, photographed in Tanzania.>
 
-### Rigorous definition
-- List the essential semantic elements of academic publications
-- Determine the best way to implement these using existing HTML tags
-- As necessary, create custom HTML tags using the native system for doing so
-- Define standard `data-` attributes to be used for academic publications.
-- Define mime types to handle text-based (not encoded) domain specific languages commonly used in academic writing. Examples include: LaTex for math, ABC for music, Mermaid for flowcharts, and CSV for tables.
-- Define how to incorporate executed source code (yes, this has crossover with the previous)
-- Possibly include global or system variables which can be referred to. An example would be being able to grab the section number of the section that contains a particular image or the number of items in a particular list. A more practical example would be the current time, date, and location.
+See <ref elephant> for context.
 
-### Shorthand
-To remove the overhead of typing opening and closing html tags Acadamark is experimenting with the following system which should be able to be mixed 100% with standard, valid HTML.
+<# Methods #methods>
 
-- A shorthand tag is an "empty" tag with the content contained inside the tag zone: `<tag content />` vs `<tag>content</tag>`. Shorthand tags somewhat resemble latex control code environments `\env{content}`.
-- A shorthand tag can have the following arguments:
-  - `#text` is equivalent to `id="text"`
-  - `.text1 .text2` is equivalent to `class="text1 text2"
-  - `attribute=value` is self-explanatory. Attributes can be implemented to replace nested tags.
-  - Anything after a pipe `|` will be treated as the content. This can include nested shorthand tags.
-  - `+text`, `-text1` set boolean arguments
-- The first argument to a shorthand tag can be "special"
-- Well defined rules will allow the interpreter to guess the purpose of arguments
+We followed the protocol described in <cite jones2024>.
+```
+
+This compiles to standard, semantic HTML that any browser can render and any converter can process.
 
 ## Status
-### Overview
-As of the time this file was last committed:
 
-- I am working on the semantic definitions. I'm keeping a record of my notes and ideas in this repository.
-- I have created experimental implementations of quite a few of the proposed features. My work is not well-documented, and I have not put together examples. I'm working on it. Most of this is in other repositories I have and needs to be brought together.
-- Processing the shorthand tags properly will require writing a sophisticated parser. This is way beyond the level of computer science expertise I have any intention of developing. I'm a data person.
-- I am setting a stopping point for myself of building a proof-of-principle system that includes a reasonable set of features and clear proposals for the rest. I hope that I can excite others enough to want to implement the hard stuff.
+Acadamark is in active design. The core conventions for sections, citations, and the shorthand syntax are specified. A working implementation is being rebuilt on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype) to replace earlier regex-based prototypes. See [`DESIGN.md`](DESIGN.md) for the design rationale and [`BUILD.md`](BUILD.md) for the implementation plan.
 
-### Defining
-I've been working hard to define the semantic elements. Permalinks to my most current notes are [Semantic Elements](https://github.com/abalter/academark/blob/b0d1e8944b9d568bc91006bf008bcce07664b760/notes/semantic_elements.md), [Minimal Set](https://github.com/abalter/academark/blob/b0d1e8944b9d568bc91006bf008bcce07664b760/notes/minimal_function_target.md), and [Shorthand Tags](https://github.com/abalter/academark/blob/b0d1e8944b9d568bc91006bf008bcce07664b760/notes/shorthand-tag-processing.md).
+## Project goals
 
-### Implemented
-#### Defining the semantic elements
-See above
+1. **Specify** a complete vocabulary of HTML conventions for academic publishing.
+2. **Author** that vocabulary efficiently via a uniform shorthand.
+3. **Build** the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.
+4. **Demonstrate** that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from acadamark source through HTML to PDF and other formats using only off-the-shelf tools downstream.
 
-#### Section nesting
-I have code that will turn the following:
+## Non-goals
 
-```html
-<article #article> My Article
+- Replacing markdown for the things markdown already does well.
+- Replacing LaTeX for math typesetting (we delegate to KaTeX/MathJax).
+- Building a parser from scratch (we delegate to the unified ecosystem).
+- Inventing yet another markdown flavor with its own bespoke extensions.
 
-<section #intro> Introduction
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has 
-been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
-a galley of type and scrambled it to make a type specimen book.
+## License
 
-<section #first-section  .numbered-section> First Section
-
-<sub-section #first-subsection> Sub Section of First
-It has survived not only five centuries, but also the leap into electronic typesetting, remaining 
-essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing 
-Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including 
-versions of Lorem Ipsum.
-
-<sub-section #second-subsection> Second Sub Section of First
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece 
-of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, 
-a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure 
-Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the 
-word in classical literature, discovered the undoubtable source.
-
-<section #second-section .numbered-section> Second Section
-Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" 
-(The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the 
-theory of ethics, very popular during the Renaissance.
-
-<section #conclusion> Conclusion
-The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-```
-
-into
-```html
-<article id="article=">
-    <h0> My Article</h0>
-    <section id="intro=">
-        <h1>Introduction</h1>
-        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-    </section>
-    <section id="first-section="" class="numbered-section=">
-        <h1>First Section</h1>
-        <section id="first-subsection=">
-            <h2>Sub Section of First</h2>
-            <p>It has survived not only five centuries, but also the leap into electronic typesetting, remaining 
-            essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing 
-            Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including 
-v           ersions of Lorem Ipsum.</p>
-        </section>
-        <section id="second-subsection=">
-            <h2> Second Sub Section of First</h2>
-            <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.<p>
-        </section>
-    </section>
-    <section id="second-section=" class="numbered-section=">
-        <h1>Second Section</h1>
-        <p>Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.</p>
-    </section>
-    <section id="conclusion">
-        <h1> Conclusion</h1>
-        <p>The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
-    </section>
-</article>
-```
-
-#### Processing of shorthand tags 
-I've implemented a pretty general system for parsing them and processing them using a registration system. I'm using a regex approach which is not sustainable---a real parser is needed. For example, I have code that would parse the following in a text file
-
-```html
-<figure #adult-elephant +number align=right +wrap src=https://puppypictures.com/puppy.jpg width=100 height=100 | this is the caption for the figure />
-```
-
-And create the object
-
-```js
-{
-    "tagname":"figure",
-    "arguments":
-    {
-        "number":true,
-        "align":"right",
-        "wrap":true,
-        "src":"https://puppypictures.com/puppy.jpg",
-        "width":"width",
-        "height":"height",
-        "content":"This is the caption for the figure."
-    },
-    "id":"adult-elephant",
-    "class":null
-} 
-```
-
-Which can be rendered as
-
-```html
-<figure id="adult-elephant" data-wrap-text=true data-align=right data-include-figure-number=true>
-  <img src="https://puppypictures.com/puppy.jpg" height=100 width=100 />
-  <caption>Figure 3: This is the caption for the figure.</caption>
-</figure>
-```
-
-#### Citations
-Using the citation-js library I can turn 
-
-```
-<section> Introduction
-This is a statement which I'm supporting with references <cite nkyad,anova_unbalanced_1993 />.
-<section> Another Section
-This is a bunch more text. It also has a citation <cite nd_neeman_pellicano" />
-<section id="bibliography"> References
-<references all>
-```
-
-Into
-```html
-<section>
-    <h1>Introduction</h1>
-    <p>This is a statement which I'm supporting with references <cite data-reflist="nkyad,anova_unbalanced_1993">(Cavna, 2013; Shaw &amp; Mitchell-Olds, 1993)</cite>.</p>
-</section>
-<section>
-    <h1>Another Section</h1>
-    <p>This is a bunch more text. It also has a citation <cite data-reflist="nd_neeman_pellicano">(Ne’eman &amp; Pellicano, 2022)</cite> .</p>
-</section>
-<section id="bibliography">
-    <h1>References</h1>
-    <section id="references-list">
-        <div class="csl-bib-body">
-            <div data-csl-entry-id="nkyad" class="csl-entry">Cavna, M. (2013, July 31). ‘NOBODY KNOWS YOU’RE A DOG’: As iconic Internet cartoon turns 20, creator Peter Steiner knows the idea is as relevant as ever. <i>The Washington Post</i>.</div>
-            <div data-csl-entry-id="nd_neeman_pellicano" class="csl-entry">Ne’eman, A., &amp; Pellicano, E. (2022). Neurodiversity as Politics. <i>Human Development</i>, <i>66</i>(2), 149–157. https://doi.org/10.1159/000524277</div>
-            <div data-csl-entry-id="anova_unbalanced_1993" class="csl-entry">Shaw, R. G., &amp; Mitchell-Olds, T. (1993). Anova for Unbalanced Data: An Overview. <i>Ecology</i>, <i>74</i>(6), 1638–1645. https://doi.org/10.2307/1939922</div>
-        </div>
-    </section>
-</section>
-```
-
-## Next To-Dos
-- [ ] Shorten readme and separate out examples.
-- [ ] Finish moving over code
-- [ ] Clean up shortcut argument processing
-- [ ] Incorporate shortcut processing with section nesting. It has to be done first.
-- [ ] Incorporate citations
-- [ ] Implement cross-references. Seems like would be easy. Just creating an `<a>`.
-- [ ] Implement csv and markdown tables
-- [ ] Think about how to work with mathjax and/or ketex.
-- [ ] Implement syntax highlighting
-- [ ] Discuss difference between DSL and data analysis etc.
-- [ ] Lists---major problem
-- [ ] Implement notes
+TBD.

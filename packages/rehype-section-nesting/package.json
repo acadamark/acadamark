@@ -1,0 +1,26 @@
+{
+  "name": "rehype-section-nesting",
+  "version": "0.1.0",
+  "description": "Rehype plugin that nests flat acadamark section elements (<section>, <sub-section>, <sub-sub-section>) based on a named depth ladder.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "demo": "node test/demo.js",
+    "test": "node test/test.js"
+  },
+  "dependencies": {
+    "rehype-format": "^5.0.1",
+    "rehype-parse": "^9.0.1",
+    "rehype-stringify": "^10.0.1",
+    "unified": "^11.0.5"
+  },
+  "keywords": [
+    "rehype",
+    "rehype-plugin",
+    "unified",
+    "acadamark",
+    "section",
+    "html"
+  ]
+}
