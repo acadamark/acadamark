@@ -4,46 +4,63 @@
 
 import { markdownLineEnding } from 'micromark-util-character'
 
-const LT = 60   // <
-const GT = 62   // >
+const LT = 60    // <
+const GT = 62    // >
+const PIPE = 124 // |
+const SLASH = 47 // /
+const SQUOTE = 39 // '
+const DQUOTE = 34 // "
 
-// Registered sigil characters. Each maps to itself for now; in future,
-// other sigils ($, `) can be added here.
+// Registered sigil characters. Each maps to itself; extend here for $, `, etc.
 const SIGIL_CHARS = new Set([
   35,  // #  → section headings
   // 36,  // $  → math (future slice)
   // 96,  // `  → code (future slice)
 ])
 
+/** @param {Code} code */
+function isAsciiAlphaCode(code) {
+  return code !== null && ((code >= 65 && code <= 90) || (code >= 97 && code <= 122))
+}
+
+/** @param {Code} code */
+function isTagNameContinueCode(code) {
+  return (
+    code !== null &&
+    (isAsciiAlphaCode(code) ||
+      (code >= 48 && code <= 57) || // 0-9
+      code === 95 || // _
+      code === 45)   // -
+  )
+}
+
 /**
- * Micromark syntax extension for acadamark sigil tags: <#...#>, <##...##>, etc.
+ * Micromark syntax extension for acadamark tags.
  *
- * Registered as a flow construct (block-level). Inline constructs (text
- * position) and named tags (<tagname ...>) are added in later slices.
+ * Flow (block-level): sigil tags (<#...#>) and named tags (<tag ...>)
+ * Text (inline): named tags only
  *
  * @returns {import('micromark-util-types').Extension}
  */
 export function acadamarkSyntax() {
   return {
     flow: {
-      [LT]: { tokenize: tokenizeSigilTag, concrete: true },
+      [LT]: [
+        { tokenize: tokenizeSigilTag, concrete: true },
+        { tokenize: tokenizeNamedTag, concrete: true },
+      ],
+    },
+    text: {
+      [LT]: { tokenize: tokenizeNamedTag },
     },
   }
 }
 
 /**
- * Tokenizer for <sigil ... sigil> constructs.
+ * Tokenizer for sigil tags: <#...#>, <##...##>, etc.
  *
- * State machine:
- *   start → afterLt → sigil (count chars) → body scanning:
- *     - At sigil char: attempt closing sequence (sigilCount chars + >)
- *       - Success: close body, emit close marker, done
- *       - Failure: re-open body, consume the sigil char, continue
- *     - EOF: fail (unterminated)
- *     - Anything else: consume into body
- *
- * Body may contain multiple acadamarkTagBody segments (one per failed-close
- * attempt). fromMarkdown concatenates them all.
+ * Body segments accumulate across failed-close attempts; fromMarkdown
+ * concatenates them all.
  *
  * @type {Tokenizer}
  */
@@ -82,24 +99,14 @@ function tokenizeSigilTag(effects, ok, nok) {
       return consumeSigil
     }
     effects.exit('acadamarkTagSigil')
-    // Begin the body. Everything up to the matching closer is body content.
     effects.enter('acadamarkTagBody')
     return body(code)
   }
 
   /** @param {Code} code */
   function body(code) {
-    if (code === null || markdownLineEnding(code)) {
-      // EOF or line ending — sigil tags are single-line in this slice.
-      // Multi-line support (for attributes spanning lines) is deferred.
-      return nok(code)
-    }
+    if (code === null || markdownLineEnding(code)) return nok(code)
     if (code === sigilChar) {
-      // Potential closing sequence. Exit the current body segment so the
-      // closing marker tokens are cleanly separated. If the attempt fails,
-      // effects.attempt rolls back the attempt's events, but the body exit
-      // (committed here, before the attempt) stays — so failedClose re-enters
-      // a fresh body segment and consumes the character.
       effects.exit('acadamarkTagBody')
       return effects.attempt(
         { tokenize: tokenizeClose, partial: true },
@@ -113,7 +120,6 @@ function tokenizeSigilTag(effects, ok, nok) {
 
   /** @param {Code} code */
   function failedClose(code) {
-    // The closing attempt failed; the char that looked like a closer is body.
     effects.enter('acadamarkTagBody')
     effects.consume(code)
     return body
@@ -124,9 +130,6 @@ function tokenizeSigilTag(effects, ok, nok) {
     effects.exit('acadamarkTag')
     return ok(code)
   }
-
-  // Partial tokenizer for the closing sigil sequence (sigilCount chars + >).
-  // Captures sigilChar and sigilCount from the outer closure.
 
   /** @type {Tokenizer} */
   function tokenizeClose(effects, ok, nok) {
@@ -160,5 +163,130 @@ function tokenizeSigilTag(effects, ok, nok) {
       }
       return nok(code)
     }
+  }
+}
+
+/**
+ * Tokenizer for named tags: <tagname attrs> or <tagname attrs | content>
+ *
+ * Single-line only in Slice 2 (line endings fail the construct; multi-line
+ * support is added in a later slice).
+ *
+ * Content scanning uses rule B: a `<` only opens a depth level when followed
+ * by an ASCII letter, a sigil character, or `/`. A `<` followed by anything
+ * else (space, digit, punctuation) is literal — its paired `>` does NOT close
+ * a depth level. This means bare `>` in content (comparison operators, arrows)
+ * still closes the construct early; use `&gt;` for literal `>` in prose.
+ *
+ * @type {Tokenizer}
+ */
+function tokenizeNamedTag(effects, ok, nok) {
+  let depth = 0
+
+  return start
+
+  /** @param {Code} code */
+  function start(code) {
+    if (code !== LT) return nok(code)
+    effects.enter('acadamarkTag')
+    effects.enter('acadamarkTagMarkerOpen')
+    effects.consume(code)
+    effects.exit('acadamarkTagMarkerOpen')
+    return afterLt
+  }
+
+  /** @param {Code} code */
+  function afterLt(code) {
+    if (isAsciiAlphaCode(code)) {
+      effects.enter('acadamarkTagName')
+      return consumeTagName(code)
+    }
+    return nok(code)
+  }
+
+  /** @param {Code} code */
+  function consumeTagName(code) {
+    if (isTagNameContinueCode(code)) {
+      effects.consume(code)
+      return consumeTagName
+    }
+    effects.exit('acadamarkTagName')
+    effects.enter('acadamarkTagAttrString')
+    return attrSection(code)
+  }
+
+  /** @param {Code} code */
+  function attrSection(code) {
+    if (code === null || markdownLineEnding(code)) return nok(code)
+    if (code === GT) {
+      effects.exit('acadamarkTagAttrString')
+      effects.enter('acadamarkTagMarkerClose')
+      effects.consume(code)
+      effects.exit('acadamarkTagMarkerClose')
+      effects.exit('acadamarkTag')
+      return ok(code)
+    }
+    if (code === PIPE) {
+      effects.exit('acadamarkTagAttrString')
+      effects.enter('acadamarkTagPipe')
+      effects.consume(code)
+      effects.exit('acadamarkTagPipe')
+      effects.enter('acadamarkTagContent')
+      return content
+    }
+    // Skip past quoted strings so `>` and `|` inside them don't terminate early
+    if (code === DQUOTE || code === SQUOTE) {
+      const quoteChar = code
+      effects.consume(code)
+      return function scanQuoted(qCode) {
+        if (qCode === null || markdownLineEnding(qCode)) return nok(qCode)
+        if (qCode === quoteChar) {
+          effects.consume(qCode)
+          return attrSection
+        }
+        effects.consume(qCode)
+        return scanQuoted
+      }
+    }
+    effects.consume(code)
+    return attrSection
+  }
+
+  /** @param {Code} code */
+  function content(code) {
+    if (code === null || markdownLineEnding(code)) return nok(code)
+    if (code === GT) {
+      if (depth === 0) {
+        effects.exit('acadamarkTagContent')
+        effects.enter('acadamarkTagMarkerClose')
+        effects.consume(code)
+        effects.exit('acadamarkTagMarkerClose')
+        effects.exit('acadamarkTag')
+        return ok(code)
+      }
+      // Closes a nested construct opened by a tag-like `<`
+      effects.consume(code)
+      depth--
+      return content
+    }
+    if (code === LT) {
+      effects.consume(code)
+      return afterContentLt
+    }
+    effects.consume(code)
+    return content
+  }
+
+  /** @param {Code} code — the character immediately after a `<` in content */
+  function afterContentLt(code) {
+    // Rule B: only increment depth for tag-looking openers
+    if (
+      isAsciiAlphaCode(code) ||
+      (code !== null && SIGIL_CHARS.has(code)) ||
+      code === SLASH
+    ) {
+      depth++
+    }
+    return content(code)
   }
 }

@@ -132,6 +132,164 @@ async function run() {
   }
 
   console.log('\nAll Slice 1 tests passed.')
+
+  // --- Slice 2: named tags ---
+
+  // Find an acadamarkTag inside a paragraph (inline / text-position tags).
+  function parseInlineTag(src) {
+    const tree = parse(src)
+    for (const child of tree.children) {
+      if (child.type === 'paragraph' && child.children) {
+        const tag = child.children.find((n) => n.type === 'acadamarkTag')
+        if (tag) return tag
+      }
+    }
+    throw new Error(`No inline acadamarkTag in: ${JSON.stringify(src)}`)
+  }
+
+  // Case 13: Named tag with single positional, no content
+  {
+    const node = parseTag('<cite jones2001>')
+    assert.equal(node.tagname, 'cite')
+    assert.deepEqual(node.positional, ['jones2001'])
+    assert.equal(node.content, null)
+    assert.equal(node.isOpaqueContent, false)
+    console.log('PASS: <cite jones2001> → named tag, single positional')
+  }
+
+  // Case 14: Named tag with content (pipe separator)
+  {
+    const node = parseTag('<a https://example.com | Click here>')
+    assert.equal(node.tagname, 'a')
+    assert.deepEqual(node.positional, ['https://example.com'])
+    assert.equal(node.content, ' Click here')
+    assert.equal(node.isOpaqueContent, true)
+    console.log('PASS: <a url | content> → positional + content')
+  }
+
+  // Case 15: Multiple space-separated positionals
+  {
+    const node = parseTag('<cite jones2001 smith2022>')
+    assert.equal(node.tagname, 'cite')
+    assert.deepEqual(node.positional, ['jones2001', 'smith2022'])
+    console.log('PASS: multiple positionals from space-separated tokens')
+  }
+
+  // Case 16: Keyword attribute (unquoted value)
+  {
+    const node = parseTag('<figure src=elephant.jpg>')
+    assert.equal(node.tagname, 'figure')
+    assert.deepEqual(node.kwargs, { src: 'elephant.jpg' })
+    console.log('PASS: keyword attribute src=elephant.jpg')
+  }
+
+  // Case 17: Hyphenated value (- allowed in values per spec)
+  {
+    const node = parseTag('<img src=my-photo.jpg>')
+    assert.equal(node.kwargs.src, 'my-photo.jpg')
+    console.log('PASS: hyphenated value src=my-photo.jpg')
+  }
+
+  // Case 18: Quoted keyword value containing comma and space
+  {
+    const node = parseTag("<figure caption='An elephant, photographed.'>")
+    assert.equal(node.kwargs.caption, 'An elephant, photographed.')
+    console.log('PASS: quoted value containing comma and space')
+  }
+
+  // Case 19: Id attribute
+  {
+    const node = parseTag('<figure #elephant | Caption text.>')
+    assert.equal(node.tagname, 'figure')
+    assert.equal(node.id, 'elephant')
+    assert.equal(node.content, ' Caption text.')
+    console.log('PASS: #id attribute on named tag')
+  }
+
+  // Case 20: Class attributes (multiple)
+  {
+    const node = parseTag('<div .container .dark | hello>')
+    assert.deepEqual(node.classes, ['container', 'dark'])
+    assert.equal(node.content, ' hello')
+    console.log('PASS: multiple .class attributes')
+  }
+
+  // Case 21: Boolean flag attributes
+  {
+    const node = parseTag('<figure +wrap -preview>')
+    assert.deepEqual(node.booleans, { wrap: true, preview: false })
+    console.log('PASS: +flag and -flag boolean attributes')
+  }
+
+  // Case 22: Bracketed list as positional
+  {
+    const node = parseTag('<cite [smith2017, jones2023]>')
+    assert.deepEqual(node.positional, [['smith2017', 'jones2023']])
+    console.log('PASS: bracketed list positional')
+  }
+
+  // Case 23: Full mixed attributes
+  {
+    const node = parseTag('<figure src=elephant.jpg #adult-elephant align=right +wrap | An elephant.>')
+    assert.equal(node.tagname, 'figure')
+    assert.equal(node.id, 'adult-elephant')
+    assert.deepEqual(node.kwargs, { src: 'elephant.jpg', align: 'right' })
+    assert.deepEqual(node.booleans, { wrap: true })
+    assert.equal(node.content, ' An elephant.')
+    console.log('PASS: full mixed attributes (id, kwargs, booleans, content)')
+  }
+
+  // Case 24: Quoted value containing `>` — must not close the tag early
+  {
+    const node = parseTag('<figure caption="a > b">')
+    assert.equal(node.kwargs.caption, 'a > b')
+    console.log('PASS: > inside quoted attribute value does not close tag')
+  }
+
+  // Case 25: Nested tag-like construct in content (depth tracking)
+  // The inner <em ...> increments depth; its > decrements; outer > closes.
+  {
+    const node = parseTag('<figure src=x | See <em | bold> text.>')
+    assert.equal(node.tagname, 'figure')
+    assert.equal(node.kwargs.src, 'x')
+    assert.equal(node.content, ' See <em | bold> text.')
+    console.log('PASS: nested tag-like content does not close outer tag early')
+  }
+
+  // Case 26: Rule B — `<` followed by non-tag char does not increment depth,
+  // so `<` followed by space in content is treated as literal.
+  {
+    const node = parseTag('<figure | a < b or c>')
+    assert.equal(node.content, ' a < b or c')
+    console.log('PASS: < followed by space is literal (rule B)')
+  }
+
+  // Case 27: Inline (text-position) named tag inside a paragraph
+  {
+    const node = parseInlineTag('Text with <cite jones2001> inline.')
+    assert.equal(node.tagname, 'cite')
+    assert.deepEqual(node.positional, ['jones2001'])
+    console.log('PASS: inline named tag inside paragraph')
+  }
+
+  // Case 28: Named tag with no attrs, just tag name and content
+  {
+    const node = parseTag('<aside | This is a note.>')
+    assert.equal(node.tagname, 'aside')
+    assert.equal(node.content, ' This is a note.')
+    assert.deepEqual(node.positional, [])
+    console.log('PASS: <aside | content> with no attributes')
+  }
+
+  // Case 29: Named tag with closing slash in content (e.g. </em> inside)
+  // </em> starts with </ which increments depth (/ is SLASH), then > decrements.
+  {
+    const node = parseTag('<div | Hello <em>bold</em> world.>')
+    assert.equal(node.content, ' Hello <em>bold</em> world.')
+    console.log('PASS: </tag> in content tracked by depth (/ treated as tag-like)')
+  }
+
+  console.log('\nAll Slice 2 tests passed.')
 }
 
 run().catch((err) => {

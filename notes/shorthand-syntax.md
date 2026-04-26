@@ -670,6 +670,12 @@ These were open questions that were settled during implementation.
 
 - **Long-form restricted to DSL-registry tags.** Long-form (`<name>...</name>`) is only valid for tags in the DSL registry. Non-registry named tags are always short-form: `<tag>` (no content) or `<tag | content>`. The parser consults the registry when it finishes the opening `>` and decides mode. This keeps the grammar LL(1) at the tag-name level.
 
+- **Multi-word positionals: space-separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. `<cite jones2001 smith2022>` → `positional: ["jones2001", "smith2022"]`. This is consistent with how positional arguments work in shell commands and LaTeX. It also makes the qualifying-tag pattern natural: `<table csv | ...>` has `csv` as the second positional.
+
+- **Positional tokens use permissive naked-token rules.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`). This allows file paths (`puppy.jpg`), URLs (`https://example.com`), hyphenated identifiers (`my-file.jpg`), and numbers without quoting. The `=` sign terminates only the keyword-name scan; if `=` follows immediately, it's a keyword. This means `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`.
+
+- **`>` in content: rule B (tag-looking openers only).** The content scanner increments depth when it encounters `<` only if the immediately following character is an ASCII letter, a registered sigil character, or `/` (for `</closing>` tags). A `<` followed by anything else — space, digit, punctuation — is treated as literal and does **not** affect depth. This means `<figure | a < b>` works correctly (the `< ` does not increment depth, so the `>` closes the figure with content `a < b`). Bare `>` without a preceding tag-like `<` still closes the construct early — `<figure | 1 > 0>` gives content `1 ` — authors must use `&gt;` for literal `>` in prose.
+
 - **Whitespace inside attribute brackets.** Allowed and ignored. Confirmed.
 
 - **Attribute order.** Free, but if conflicting attributes are present (e.g., two `#id` attributes), the parser takes the last and may report a warning.
@@ -682,11 +688,25 @@ These were open questions that were settled during implementation.
 
 Remaining open questions flagged for resolution as implementation proceeds.
 
-- **`>` inside quoted attribute values.** A quoted string like `caption="a > b"` contains `>`. The short-form content scanner must skip past quoted strings when scanning for the closing `>`. Flag when implementing Slice 2 (named tags).
-
-- **Collision with standard HTML inline tags.** If `<cite>text</cite>` appears in a document, does the acadamark tokenizer consume it? Decision deferred to when inline (text-position) constructs are implemented.
-
 - **`|` in short-form content.** After the first `|` separator, subsequent `|` characters in content are treated as literal content (the "exactly one `|` per construct" rule). No escaping needed.
+
+- **Named tag content: recursive parsing.** In Slice 2, named-tag content is an opaque string. Recursive parsing of content into child nodes (so `<figure | text with <em | emphasis>>` produces a nested AST) is deferred to a later slice.
+
+- **Multi-line named tags.** Named tags are currently single-line only (line endings fail the construct). Multi-line attr sections and content are in the spec (Example 7) but not yet implemented. Deferred to a later slice.
+
+## Coexistence with raw HTML
+
+Acadamark's text-position (inline) tokenizer runs before remark-parse's built-in HTML inline tokenizer. This means `<tagname ...>` constructs are consumed by acadamark, not treated as raw HTML.
+
+**What works:** Most common HTML inline tags happen to round-trip correctly. `<em | text>`, `<strong | text>`, `<a href="url" | link>` all parse correctly with acadamark syntax. For HTML-style `<a href="url">link</a>`, acadamark parses `<a href="url">` as an acadamark tag with no content (kwarg `href`, no `|`), and `link</a>` becomes trailing text including a raw closing tag. This is imperfect but usually harmless if authors use acadamark idioms.
+
+**What doesn't work:**
+
+- **Bare HTML boolean attributes.** `<input type="checkbox" disabled>` — acadamark parses `disabled` as a positional, not as a boolean attribute flag. Use `+disabled` for acadamark boolean flags instead.
+- **Self-closing syntax.** `<br/>`, `<img src="x" />` — the trailing `/` is treated as part of the attr string, not as a self-closing marker. Self-closing tags have no equivalent in acadamark (use `<br>` or `<img src=x>`).
+- **Closing tags as standalone constructs.** `</em>` starts with `</`. The acadamark tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it. This means closing tags are passed through as raw HTML, which can produce mismatched structure.
+
+**Guidance for authors:** Use acadamark shorthand for semantic markup. For the rare case where you need to drop into raw HTML that acadamark can't express, a verbatim-passthrough escape mechanism (e.g., `<html-passthrough>...</html-passthrough>`) is planned but not yet specified. Deferred to a later phase.
 
 ## What this enables
 

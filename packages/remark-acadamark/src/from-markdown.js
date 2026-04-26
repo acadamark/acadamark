@@ -1,9 +1,9 @@
 /**
  * mdast-util-from-markdown extension for acadamark tags.
  *
- * Converts token events into acadamarkTag mdast nodes. For sigil tags, the
- * body is accumulated as raw text, then split at the first `|` to separate
- * the attribute section from the content.
+ * Sigil tags (<#...#>) accumulate body text that is split at `|` on exit.
+ * Named tags (<tagname ...>) emit separate attrString and content tokens.
+ * Both produce the same acadamarkTag node shape.
  */
 
 /**
@@ -17,6 +17,9 @@ export function acadamarkFromMarkdown() {
     exit: {
       acadamarkTagSigil: exitAcadamarkTagSigil,
       acadamarkTagBody: exitAcadamarkTagBody,
+      acadamarkTagName: exitAcadamarkTagName,
+      acadamarkTagAttrString: exitAcadamarkTagAttrString,
+      acadamarkTagContent: exitAcadamarkTagContent,
       acadamarkTag: exitAcadamarkTag,
     },
   }
@@ -34,7 +37,7 @@ function enterAcadamarkTag(token) {
       classes: [],
       content: null,
       isOpaqueContent: false,
-      _rawBody: '',
+      _isSigil: false,
     },
     token,
   )
@@ -43,34 +46,60 @@ function enterAcadamarkTag(token) {
 function exitAcadamarkTagSigil(token) {
   const node = this.stack[this.stack.length - 1]
   node.tagname = this.sliceSerialize(token)
+  node._isSigil = true
 }
 
 function exitAcadamarkTagBody(token) {
-  // May be called multiple times (one per body segment from failed-close
-  // attempts). Accumulate all segments.
+  // May be called multiple times (one segment per failed-close attempt).
   const node = this.stack[this.stack.length - 1]
+  if (node._rawBody === undefined) node._rawBody = ''
   node._rawBody += this.sliceSerialize(token)
+}
+
+function exitAcadamarkTagName(token) {
+  const node = this.stack[this.stack.length - 1]
+  node.tagname = this.sliceSerialize(token)
+}
+
+function exitAcadamarkTagAttrString(token) {
+  const node = this.stack[this.stack.length - 1]
+  node._rawAttrs = this.sliceSerialize(token)
+}
+
+function exitAcadamarkTagContent(token) {
+  const node = this.stack[this.stack.length - 1]
+  node._rawContent = this.sliceSerialize(token)
 }
 
 function exitAcadamarkTag(token) {
   const node = this.stack[this.stack.length - 1]
-  const raw = node._rawBody
-  delete node._rawBody
 
-  // Sigil tags: if `|` is present, everything before is the attribute section
-  // and everything after is content. If absent, the whole body is content
-  // (no attribute parsing, per spec decision).
-  const pipeIdx = raw.indexOf('|')
-  if (pipeIdx !== -1) {
-    const attrStr = raw.slice(0, pipeIdx)
-    const contentStr = raw.slice(pipeIdx + 1)
-    parseAttributes(node, attrStr)
-    node.content = contentStr
+  if (node._isSigil) {
+    const raw = node._rawBody || ''
+    delete node._rawBody
+    delete node._isSigil
+    const pipeIdx = raw.indexOf('|')
+    if (pipeIdx !== -1) {
+      parseAttributes(node, raw.slice(0, pipeIdx))
+      node.content = raw.slice(pipeIdx + 1)
+    } else {
+      node.content = raw
+    }
+    node.isOpaqueContent = true
   } else {
-    node.content = raw
+    const rawAttrs = node._rawAttrs || ''
+    const rawContent = node._rawContent
+    delete node._rawAttrs
+    delete node._rawContent
+    delete node._isSigil
+    parseAttributes(node, rawAttrs)
+    if (rawContent !== undefined) {
+      node.content = rawContent
+      // Slice 2: named-tag content is an opaque string. Recursive parsing of
+      // content into child nodes is added in a later slice.
+      node.isOpaqueContent = true
+    }
   }
-
-  node.isOpaqueContent = true  // sigil tags always have opaque content
 
   this.exit(token)
 }
@@ -79,7 +108,7 @@ function exitAcadamarkTag(token) {
  * Parse an attribute string into the node's id, classes, booleans, kwargs,
  * and positional fields.
  *
- * Attribute forms (space-separated, any order):
+ * Attribute forms (whitespace-separated, any order):
  *   #name          → id
  *   .name          → class (append)
  *   +name          → booleans.name = true
@@ -89,6 +118,16 @@ function exitAcadamarkTag(token) {
  *   name           → positional (append)
  *   [a, b, c]      → positional as array (append)
  *
+ * Multiple space-separated naked tokens each become separate positionals:
+ *   `<cite jones2001 smith2022>` → positional: ["jones2001", "smith2022"]
+ *
+ * Positionals use a permissive naked-token rule: after the first character,
+ * any non-delimiter character continues the token. This allows file paths
+ * (`puppy.jpg`), URLs (`https://example.com`), and hyphenated values
+ * (`my-file.jpg`) without quoting. Keyword disambiguation: if a token starts
+ * with an ASCII letter or digit and is immediately followed by `=`, it's a
+ * keyword; otherwise it's a positional and permissive reading applies.
+ *
  * @param {object} node
  * @param {string} str
  */
@@ -97,26 +136,22 @@ function parseAttributes(node, str) {
   const len = str.length
 
   while (i < len) {
-    // Skip whitespace
     while (i < len && isWhitespace(str[i])) i++
     if (i >= len) break
 
     const ch = str[i]
 
     if (ch === '#') {
-      // id: #name
       i++
       const start = i
       while (i < len && isAttrNameChar(str[i])) i++
       node.id = str.slice(start, i)
     } else if (ch === '.') {
-      // class: .name
       i++
       const start = i
       while (i < len && isAttrNameChar(str[i])) i++
       node.classes.push(str.slice(start, i))
     } else if (ch === '+' || ch === '-') {
-      // flag: +name (true) or -name (false)
       const isTrue = ch === '+'
       i++
       const start = i
@@ -124,7 +159,6 @@ function parseAttributes(node, str) {
       const name = str.slice(start, i)
       if (name) node.booleans[name] = isTrue
     } else if (ch === '[') {
-      // bracketed list: [item1, item2, ...]
       i++ // consume '['
       const items = []
       while (i < len && str[i] !== ']') {
@@ -137,23 +171,28 @@ function parseAttributes(node, str) {
       }
       if (i < len && str[i] === ']') i++
       node.positional.push(items)
-    } else if (isAttrStartChar(ch)) {
-      // positional or keyword (name=value)
+    } else if (!isPositionalDelim(ch)) {
+      // Positional or keyword. Read with restrictive tag_name rule first to
+      // detect `name=value`. If no `=` follows, switch to permissive reading.
       const nameStart = i
       while (i < len && isAttrNameChar(str[i])) i++
-      const name = str.slice(nameStart, i)
 
       if (i < len && str[i] === '=') {
-        // keyword
-        i++
+        // Keyword: name must be a valid tag_name
+        const name = str.slice(nameStart, i)
+        i++ // consume '='
         const value = readValue(str, i, len, false)
         i += valueLength(str, i, len)
-        node.kwargs[name] = value
+        if (name) node.kwargs[name] = value
       } else {
-        node.positional.push(name)
+        // Positional — continue with permissive reading to capture the rest
+        // (e.g., the `://example.com` part of a URL, `.jpg` of a file path)
+        while (i < len && !isPositionalDelim(str[i])) i++
+        const token = str.slice(nameStart, i)
+        if (token) node.positional.push(token)
       }
     } else {
-      i++ // skip unknown characters
+      i++ // skip unknown syntactic characters
     }
   }
 }
@@ -164,45 +203,43 @@ function isWhitespace(ch) {
   return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r'
 }
 
-// Characters valid in attribute names and keyword names.
-// Matches tag_name rule: starts with letter, continues with letter/digit/_/-
-function isAttrStartChar(ch) {
-  return /[a-zA-Z0-9_]/.test(ch)
-}
-
 function isAttrNameChar(ch) {
   return /[a-zA-Z0-9_-]/.test(ch)
 }
 
 /**
+ * Characters that terminate a positional token.
+ * Permissive: allows `.`, `-`, `:`, `/`, `?`, `&`, `%`, `+`, `#` inside tokens.
+ * Only structural chars stop a positional.
+ */
+function isPositionalDelim(ch) {
+  return (
+    ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' ||
+    ch === '|' || ch === '>' || ch === '<' ||
+    ch === '[' || ch === ']' || ch === ',' ||
+    ch === '"' || ch === "'"
+  )
+}
+
+/**
  * Read a quoted or unquoted value starting at position i.
- * @param {string} str
- * @param {number} i
- * @param {number} len
- * @param {boolean} inBracket  When true, treat ']' and ',' as delimiters
- * @returns {string}
+ * @param {boolean} inBracket  When true, treat `]` and `,` as delimiters
  */
 function readValue(str, i, len, inBracket) {
   if (i >= len) return ''
   const ch = str[i]
   if (ch === '"' || ch === "'") {
-    // quoted string
     const quote = ch
     i++
     let result = ''
     while (i < len && str[i] !== quote) result += str[i++]
     return result
   }
-  // unquoted value: stop at whitespace or syntactic delimiters
-  // '-' is allowed in values (per spec decision)
   let result = ''
   while (i < len && !isValueDelim(str[i], inBracket)) result += str[i++]
   return result
 }
 
-/**
- * Compute how many characters a value occupies starting at position i.
- */
 function valueLength(str, i, len) {
   if (i >= len) return 0
   const ch = str[i]
@@ -210,16 +247,13 @@ function valueLength(str, i, len) {
     const quote = ch
     let j = i + 1
     while (j < len && str[j] !== quote) j++
-    return j - i + (j < len ? 1 : 0) // include closing quote if found
+    return j - i + (j < len ? 1 : 0)
   }
   let j = i
   while (j < len && !isValueDelim(str[j], false)) j++
   return j - i
 }
 
-/**
- * Compute how many characters a bracketed-list item occupies at position i.
- */
 function itemLength(str, i, len, inBracket) {
   if (i >= len) return 0
   const ch = str[i]
@@ -234,10 +268,14 @@ function itemLength(str, i, len, inBracket) {
   return j - i
 }
 
+/**
+ * Characters that terminate an unquoted keyword value.
+ * More permissive than positional: allows `.`, `-`, `:`, `/`, `+`, `#` etc.
+ * Only hard structural chars stop a value.
+ */
 function isValueDelim(ch, inBracket) {
   if (isWhitespace(ch)) return true
-  if (ch === '<' || ch === '>' || ch === '+' || ch === '#' || ch === '.' ||
-      ch === '=' || ch === '"' || ch === "'") return true
+  if (ch === '<' || ch === '>' || ch === '|' || ch === '=' || ch === '"' || ch === "'") return true
   if (inBracket && (ch === ']' || ch === ',')) return true
   return false
 }
