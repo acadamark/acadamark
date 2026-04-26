@@ -1,0 +1,25 @@
+{
+  "name": "remark-acadamark-pure-micromark-archive",
+  "version": "0.1.0",
+  "description": "ARCHIVED. Pure micromark implementation of the acadamark shorthand parser (Slices 1-2). Superseded by the Peggy hybrid in remark-acadamark.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "demo": "node test/demo.js",
+    "test": "node test/test.js"
+  },
+  "dependencies": {
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5"
+  },
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "unified",
+    "micromark",
+    "acadamark",
+    "markdown"
+  ]
+}

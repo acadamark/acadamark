@@ -1,11 +1,13 @@
 /**
- * Tag names whose content is opaque (verbatim text, not parsed markdown).
- * A tag in this set uses long-form `<name>...</name>` with opaque content.
- * Extendable by downstream packages.
+ * Default DSL tag registry.
  *
- * @type {Set<string>}
+ * Tags in this set use long-form content (<tagname>...</tagname>) with opaque
+ * (verbatim) content. The micromark finder consults this registry to know
+ * whether to scan for a closing `</tagname>` or treat the tag as short-form.
+ *
+ * Used in Slice 4 (long-form DSL tags). Not yet wired into the finder.
  */
-export const DSL_TAGS = new Set([
+export const DEFAULT_DSL_REGISTRY = new Set([
   'csv',
   'tsv',
   'math',

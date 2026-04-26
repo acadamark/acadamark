@@ -1,0 +1,239 @@
+/**
+ * Grammar unit tests — exercise the Peggy parser directly.
+ *
+ * These tests bypass micromark entirely. Input is the raw source string of a
+ * single acadamark construct (as the micromark finder would extract it).
+ * Output is an acadamarkTag node object.
+ *
+ * Benefits: fast, isolated, directly readable. Failures point at the grammar
+ * file, not at the micromark/remark integration stack.
+ */
+
+import { parse } from '../src/generated/parser.js'
+import assert from 'node:assert/strict'
+
+// Convenience: parse and return, throwing on error with context.
+function p(src) {
+  try {
+    return parse(src)
+  } catch (e) {
+    throw new Error(`Grammar failed on ${JSON.stringify(src)}: ${e.message}`)
+  }
+}
+
+// ─── Slice 1: Sigil tags ───────────────────────────────────────────────────
+
+{
+  const n = p('<# Introduction #>')
+  assert.equal(n.tagname, '#')
+  assert.equal(n.content, ' Introduction ')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(n.id, null)
+  assert.deepEqual(n.classes, [])
+  console.log('PASS grammar: basic <# ... #>')
+}
+
+{
+  const n = p('<## Background ##>')
+  assert.equal(n.tagname, '##')
+  assert.equal(n.content, ' Background ')
+  console.log('PASS grammar: <## ... ##>')
+}
+
+{
+  const n = p('<### Methods ###>')
+  assert.equal(n.tagname, '###')
+  assert.equal(n.content, ' Methods ')
+  console.log('PASS grammar: <### ... ###>')
+}
+
+{
+  // Sigil tag with id attribute via |
+  const n = p('<# #intro | Introduction #>')
+  assert.equal(n.tagname, '#')
+  assert.equal(n.id, 'intro')
+  assert.equal(n.content, ' Introduction ')
+  console.log('PASS grammar: sigil tag with #id via |')
+}
+
+{
+  // Sigil tag with class
+  const n = p('<# .numbered | Methods #>')
+  assert.deepEqual(n.classes, ['numbered'])
+  assert.equal(n.content, ' Methods ')
+  console.log('PASS grammar: sigil tag with .class via |')
+}
+
+{
+  // Sigil tag with multiple attributes
+  const n = p('<# #intro .numbered .special | Introduction #>')
+  assert.equal(n.id, 'intro')
+  assert.deepEqual(n.classes, ['numbered', 'special'])
+  assert.equal(n.content, ' Introduction ')
+  console.log('PASS grammar: sigil tag with multiple attributes')
+}
+
+{
+  // # inside content (not the closer) — single-# tag has `#` mid-content
+  const n = p('<# Heading with #hash inside #>')
+  assert.equal(n.tagname, '#')
+  assert.equal(n.content, ' Heading with #hash inside ')
+  console.log('PASS grammar: # inside content is not mistaken for closer')
+}
+
+{
+  // # immediately before the actual closer
+  const n = p('<# Ends with # #>')
+  assert.equal(n.content, ' Ends with # ')
+  console.log('PASS grammar: # before closer not double-counted')
+}
+
+{
+  // Single # inside a ## tag (must not close it)
+  const n = p('<## Has # one hash ##>')
+  assert.equal(n.tagname, '##')
+  assert.equal(n.content, ' Has # one hash ')
+  console.log('PASS grammar: single # in ## tag is not a closer')
+}
+
+{
+  // ## inside a ### tag
+  const n = p('<### Has ## two hashes ###>')
+  assert.equal(n.tagname, '###')
+  assert.equal(n.content, ' Has ## two hashes ')
+  console.log('PASS grammar: ## inside ### tag is not a closer')
+}
+
+{
+  // Empty attr section (bare |)
+  const n = p('<# | Just content #>')
+  assert.equal(n.id, null)
+  assert.deepEqual(n.classes, [])
+  assert.equal(n.content, ' Just content ')
+  console.log('PASS grammar: empty attribute section (bare |)')
+}
+
+{
+  // Minimal content
+  const n = p('<# X #>')
+  assert.equal(n.content, ' X ')
+  console.log('PASS grammar: minimal content sigil tag')
+}
+
+// ─── Slice 2: Named tags ───────────────────────────────────────────────────
+
+{
+  const n = p('<cite jones2001>')
+  assert.equal(n.tagname, 'cite')
+  assert.deepEqual(n.positional, ['jones2001'])
+  assert.equal(n.content, null)
+  assert.equal(n.isOpaqueContent, false)
+  console.log('PASS grammar: <cite jones2001> named tag, single positional')
+}
+
+{
+  const n = p('<a https://example.com | Click here>')
+  assert.equal(n.tagname, 'a')
+  assert.deepEqual(n.positional, ['https://example.com'])
+  assert.equal(n.content, ' Click here')
+  assert.equal(n.isOpaqueContent, true)
+  console.log('PASS grammar: <a url | content>')
+}
+
+{
+  // Multiple space-separated positionals
+  const n = p('<cite jones2001 smith2022>')
+  assert.deepEqual(n.positional, ['jones2001', 'smith2022'])
+  console.log('PASS grammar: multiple positionals')
+}
+
+{
+  const n = p('<figure src=elephant.jpg>')
+  assert.deepEqual(n.kwargs, { src: 'elephant.jpg' })
+  console.log('PASS grammar: keyword attribute src=elephant.jpg')
+}
+
+{
+  // Hyphenated value
+  const n = p('<img src=my-photo.jpg>')
+  assert.equal(n.kwargs.src, 'my-photo.jpg')
+  console.log('PASS grammar: hyphenated value src=my-photo.jpg')
+}
+
+{
+  const n = p("<figure caption='An elephant, photographed.'>")
+  assert.equal(n.kwargs.caption, 'An elephant, photographed.')
+  console.log('PASS grammar: quoted value containing comma and space')
+}
+
+{
+  const n = p('<figure #elephant | Caption text.>')
+  assert.equal(n.id, 'elephant')
+  assert.equal(n.content, ' Caption text.')
+  console.log('PASS grammar: #id attribute on named tag')
+}
+
+{
+  const n = p('<div .container .dark | hello>')
+  assert.deepEqual(n.classes, ['container', 'dark'])
+  assert.equal(n.content, ' hello')
+  console.log('PASS grammar: multiple .class attributes')
+}
+
+{
+  const n = p('<figure +wrap -preview>')
+  assert.deepEqual(n.booleans, { wrap: true, preview: false })
+  console.log('PASS grammar: +flag and -flag boolean attributes')
+}
+
+{
+  const n = p('<cite [smith2017, jones2023]>')
+  assert.deepEqual(n.positional, [['smith2017', 'jones2023']])
+  console.log('PASS grammar: bracketed list positional')
+}
+
+{
+  const n = p('<figure src=elephant.jpg #adult-elephant align=right +wrap | An elephant.>')
+  assert.equal(n.id, 'adult-elephant')
+  assert.deepEqual(n.kwargs, { src: 'elephant.jpg', align: 'right' })
+  assert.deepEqual(n.booleans, { wrap: true })
+  assert.equal(n.content, ' An elephant.')
+  console.log('PASS grammar: full mixed attributes')
+}
+
+{
+  // > inside a quoted attribute value must not close the tag
+  const n = p('<figure caption="a > b">')
+  assert.equal(n.kwargs.caption, 'a > b')
+  console.log('PASS grammar: > inside quoted attr value does not close tag')
+}
+
+{
+  // Nested tag-like content — rule B depth tracking via recursive ContentChar
+  const n = p('<figure src=x | See <em | bold> text.>')
+  assert.equal(n.content, ' See <em | bold> text.')
+  console.log('PASS grammar: nested tag-like content does not close outer tag')
+}
+
+{
+  // Rule B: < followed by space is literal (no depth increment)
+  const n = p('<figure | a < b or c>')
+  assert.equal(n.content, ' a < b or c')
+  console.log('PASS grammar: < followed by space is literal (rule B)')
+}
+
+{
+  // </em> in content: / increments depth, > decrements, outer > closes
+  const n = p('<div | Hello <em>bold</em> world.>')
+  assert.equal(n.content, ' Hello <em>bold</em> world.')
+  console.log('PASS grammar: </tag> in content tracked by depth')
+}
+
+{
+  const n = p('<aside | This is a note.>')
+  assert.equal(n.tagname, 'aside')
+  assert.equal(n.content, ' This is a note.')
+  console.log('PASS grammar: <aside | content> no attributes')
+}
+
+console.log('\nAll grammar unit tests passed.')

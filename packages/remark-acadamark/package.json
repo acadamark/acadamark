@@ -1,15 +1,18 @@
 {
   "name": "remark-acadamark",
-  "version": "0.1.0",
-  "description": "Remark plugin for the acadamark shorthand syntax: parses <tag attrs | content> constructs into uniform acadamarkTag mdast nodes.",
+  "version": "0.2.0",
+  "description": "Remark plugin for the acadamark shorthand syntax. Hybrid architecture: micromark finds construct boundaries, Peggy parses grammar semantics.",
   "type": "module",
   "main": "src/index.js",
   "exports": "./src/index.js",
   "scripts": {
-    "demo": "node test/demo.js",
-    "test": "node test/test.js"
+    "build:grammar": "node build/compile-grammar.js",
+    "pretest": "node build/compile-grammar.js",
+    "test": "node test/test-grammar.js && node test/test.js",
+    "demo": "node test/demo.js"
   },
   "dependencies": {
+    "peggy": "^4.2.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.5"

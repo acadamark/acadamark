@@ -1,12 +1,12 @@
 /**
  * Remark plugin for the acadamark shorthand syntax.
  *
- * Wires the micromark boundary finder (syntax.js) and the fromMarkdown
- * delegator (from-markdown.js) into the remark processor.
+ * Registers the micromark syntax extension and the mdast-util-from-markdown
+ * extension with the remark processor. Must be used with remark-parse (which
+ * reads these extensions from the processor's data store).
  *
  * Usage:
  *   unified().use(remarkParse).use(remarkAcadamark).parse(source)
- *   unified().use(remarkParse).use(remarkAcadamark, { dslRegistry: mySet }).parse(source)
  */
 
 import { acadamarkSyntax } from './syntax.js'
@@ -16,15 +16,14 @@ export { acadamarkSyntax, acadamarkFromMarkdown }
 
 /**
  * @this {import('unified').Processor}
- * @param {{ dslRegistry?: Set<string> }} [options]
  * @returns {undefined}
  */
-export default function remarkAcadamark(options = {}) {
+export default function remarkAcadamark() {
   const data = this.data()
 
   if (!data.micromarkExtensions) data.micromarkExtensions = []
   if (!data.fromMarkdownExtensions) data.fromMarkdownExtensions = []
 
-  data.micromarkExtensions.push(acadamarkSyntax(options))
+  data.micromarkExtensions.push(acadamarkSyntax())
   data.fromMarkdownExtensions.push(acadamarkFromMarkdown())
 }

@@ -11,9 +11,12 @@ const SLASH = 47 // /
 const SQUOTE = 39 // '
 const DQUOTE = 34 // "
 
-// Registered sigil characters. The finder uses this to distinguish sigil tags
-// from named tags. Extend here when new sigils are added (e.g., $ for math).
-const SIGIL_CHARS = new Set([35]) // #
+// Registered sigil characters. Each maps to itself; extend here for $, `, etc.
+const SIGIL_CHARS = new Set([
+  35,  // #  → section headings
+  // 36,  // $  → math (future slice)
+  // 96,  // `  → code (future slice)
+])
 
 /** @param {Code} code */
 function isAsciiAlphaCode(code) {
@@ -32,21 +35,14 @@ function isTagNameContinueCode(code) {
 }
 
 /**
- * Micromark syntax extension — boundary finder only.
+ * Micromark syntax extension for acadamark tags.
  *
- * This extension does NOT parse attributes, sigil forms, or content semantics.
- * It identifies where each acadamark construct starts and ends, then emits
- * the full raw source as a single `acadamarkTagRaw` token. The Peggy parser
- * (via from-markdown.js) handles all grammar semantics.
+ * Flow (block-level): sigil tags (<#...#>) and named tags (<tag ...>)
+ * Text (inline): named tags only
  *
- * Tokens emitted per construct:
- *   acadamarkTag        (outer container)
- *   acadamarkTagRaw     (full source span from `<` to closing `>`)
- *
- * @param {{ dslRegistry?: Set<string> }} [options]
  * @returns {import('micromark-util-types').Extension}
  */
-export function acadamarkSyntax(options = {}) {
+export function acadamarkSyntax() {
   return {
     flow: {
       [LT]: [
@@ -61,14 +57,15 @@ export function acadamarkSyntax(options = {}) {
 }
 
 /**
- * Boundary finder for sigil tags: <#...#>, <##...##>, etc.
+ * Tokenizer for sigil tags: <#...#>, <##...##>, etc.
  *
- * Scans to the mirrored closer (same sigil char × same count, then `>`).
- * Emits the entire span as `acadamarkTagRaw`. Does not parse attrs or content.
+ * Body segments accumulate across failed-close attempts; fromMarkdown
+ * concatenates them all.
  *
  * @type {Tokenizer}
  */
 function tokenizeSigilTag(effects, ok, nok) {
+  /** @type {number} */
   let sigilChar
   let sigilCount = 0
 
@@ -78,8 +75,9 @@ function tokenizeSigilTag(effects, ok, nok) {
   function start(code) {
     if (code !== LT) return nok(code)
     effects.enter('acadamarkTag')
-    effects.enter('acadamarkTagRaw')
+    effects.enter('acadamarkTagMarkerOpen')
     effects.consume(code)
+    effects.exit('acadamarkTagMarkerOpen')
     return afterLt
   }
 
@@ -87,19 +85,21 @@ function tokenizeSigilTag(effects, ok, nok) {
   function afterLt(code) {
     if (code !== null && SIGIL_CHARS.has(code)) {
       sigilChar = code
-      return countSigils(code)
+      effects.enter('acadamarkTagSigil')
+      return consumeSigil(code)
     }
     return nok(code)
   }
 
   /** @param {Code} code */
-  function countSigils(code) {
+  function consumeSigil(code) {
     if (code === sigilChar) {
       effects.consume(code)
       sigilCount++
-      return countSigils
+      return consumeSigil
     }
-    // Now scanning body until the mirrored closer
+    effects.exit('acadamarkTagSigil')
+    effects.enter('acadamarkTagBody')
     return body(code)
   }
 
@@ -107,6 +107,7 @@ function tokenizeSigilTag(effects, ok, nok) {
   function body(code) {
     if (code === null || markdownLineEnding(code)) return nok(code)
     if (code === sigilChar) {
+      effects.exit('acadamarkTagBody')
       return effects.attempt(
         { tokenize: tokenizeClose, partial: true },
         afterClose,
@@ -119,13 +120,13 @@ function tokenizeSigilTag(effects, ok, nok) {
 
   /** @param {Code} code */
   function failedClose(code) {
+    effects.enter('acadamarkTagBody')
     effects.consume(code)
     return body
   }
 
   /** @param {Code} code */
   function afterClose(code) {
-    effects.exit('acadamarkTagRaw')
     effects.exit('acadamarkTag')
     return ok(code)
   }
@@ -139,6 +140,7 @@ function tokenizeSigilTag(effects, ok, nok) {
     /** @param {Code} code */
     function startClose(code) {
       if (code !== sigilChar) return nok(code)
+      effects.enter('acadamarkTagMarkerClose')
       return consumeCloseSigil(code)
     }
 
@@ -156,6 +158,7 @@ function tokenizeSigilTag(effects, ok, nok) {
     function checkGt(code) {
       if (code === GT) {
         effects.consume(code)
+        effects.exit('acadamarkTagMarkerClose')
         return ok(code)
       }
       return nok(code)
@@ -164,17 +167,16 @@ function tokenizeSigilTag(effects, ok, nok) {
 }
 
 /**
- * Boundary finder for named tags: <tagname attrs> or <tagname attrs | content>
+ * Tokenizer for named tags: <tagname attrs> or <tagname attrs | content>
  *
- * Scans attr section (skipping quoted strings so `>` inside quotes doesn't
- * terminate early), then scans content with rule B depth tracking. Emits the
- * entire span as `acadamarkTagRaw`. Does not parse attrs or content.
+ * Single-line only in Slice 2 (line endings fail the construct; multi-line
+ * support is added in a later slice).
  *
- * Rule B: a `<` in content increments depth only if followed by an ASCII
- * letter, a sigil character, or `/`. A bare `<` (before space, digit, etc.)
- * is literal and does not affect depth.
- *
- * Single-line only in this slice. Multi-line support added later.
+ * Content scanning uses rule B: a `<` only opens a depth level when followed
+ * by an ASCII letter, a sigil character, or `/`. A `<` followed by anything
+ * else (space, digit, punctuation) is literal — its paired `>` does NOT close
+ * a depth level. This means bare `>` in content (comparison operators, arrows)
+ * still closes the construct early; use `&gt;` for literal `>` in prose.
  *
  * @type {Tokenizer}
  */
@@ -187,14 +189,18 @@ function tokenizeNamedTag(effects, ok, nok) {
   function start(code) {
     if (code !== LT) return nok(code)
     effects.enter('acadamarkTag')
-    effects.enter('acadamarkTagRaw')
+    effects.enter('acadamarkTagMarkerOpen')
     effects.consume(code)
+    effects.exit('acadamarkTagMarkerOpen')
     return afterLt
   }
 
   /** @param {Code} code */
   function afterLt(code) {
-    if (isAsciiAlphaCode(code)) return consumeTagName(code)
+    if (isAsciiAlphaCode(code)) {
+      effects.enter('acadamarkTagName')
+      return consumeTagName(code)
+    }
     return nok(code)
   }
 
@@ -204,6 +210,8 @@ function tokenizeNamedTag(effects, ok, nok) {
       effects.consume(code)
       return consumeTagName
     }
+    effects.exit('acadamarkTagName')
+    effects.enter('acadamarkTagAttrString')
     return attrSection(code)
   }
 
@@ -211,15 +219,22 @@ function tokenizeNamedTag(effects, ok, nok) {
   function attrSection(code) {
     if (code === null || markdownLineEnding(code)) return nok(code)
     if (code === GT) {
+      effects.exit('acadamarkTagAttrString')
+      effects.enter('acadamarkTagMarkerClose')
       effects.consume(code)
-      effects.exit('acadamarkTagRaw')
+      effects.exit('acadamarkTagMarkerClose')
       effects.exit('acadamarkTag')
       return ok(code)
     }
     if (code === PIPE) {
+      effects.exit('acadamarkTagAttrString')
+      effects.enter('acadamarkTagPipe')
       effects.consume(code)
+      effects.exit('acadamarkTagPipe')
+      effects.enter('acadamarkTagContent')
       return content
     }
+    // Skip past quoted strings so `>` and `|` inside them don't terminate early
     if (code === DQUOTE || code === SQUOTE) {
       const quoteChar = code
       effects.consume(code)
@@ -242,11 +257,14 @@ function tokenizeNamedTag(effects, ok, nok) {
     if (code === null || markdownLineEnding(code)) return nok(code)
     if (code === GT) {
       if (depth === 0) {
+        effects.exit('acadamarkTagContent')
+        effects.enter('acadamarkTagMarkerClose')
         effects.consume(code)
-        effects.exit('acadamarkTagRaw')
+        effects.exit('acadamarkTagMarkerClose')
         effects.exit('acadamarkTag')
         return ok(code)
       }
+      // Closes a nested construct opened by a tag-like `<`
       effects.consume(code)
       depth--
       return content
@@ -259,8 +277,9 @@ function tokenizeNamedTag(effects, ok, nok) {
     return content
   }
 
-  /** @param {Code} code — char immediately after a `<` in content */
+  /** @param {Code} code — the character immediately after a `<` in content */
   function afterContentLt(code) {
+    // Rule B: only increment depth for tag-looking openers
     if (
       isAsciiAlphaCode(code) ||
       (code !== null && SIGIL_CHARS.has(code)) ||
