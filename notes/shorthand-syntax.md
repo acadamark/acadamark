@@ -660,13 +660,15 @@ For every prime $p$, there are infinitely many primes congruent to $1 \pmod{p}$.
 }
 ```
 
-## Open questions
+## Resolved decisions
 
-These are flagged for resolution as the implementation proceeds.
+These were open questions that were settled during implementation.
 
-- **Sigil tags without `|`.** Examples 9 and 10 above use the convention that sigil tags can omit `|` and treat everything between the opener and closer as content (apart from attributes). Confirm this is the intended rule. The alternative (require `|` for content even in sigil tags) is more uniform but more verbose for the common heading/math/code case.
+- **Sigil tags without `|`: body is opaque content, no attribute parsing.** When no `|` is present, the entire body between the opening sigil and the mirrored closer is treated as opaque content — no attribute parsing occurs. Attributes on sigil tags always require `|`. Example: `<# Introduction #>` → `content: " Introduction "` (no attributes parsed). `<# #intro | Introduction #>` → `id: "intro"`, `content: " Introduction "`.
 
-- **Sigil tag attributes.** When a sigil tag has attributes (`<# #intro | Introduction #>`), how are they distinguished from content? The proposed rule is: attributes appear after the sigil and before `|` (if `|` is present) or before whitespace and content begins (if no `|`). This needs clean specification when no `|` is used.
+- **`-` allowed in keyword values (after `=`).** The naked token in keyword value position allows `-`. In positional or attribute-name position, `-` remains excluded (it disambiguates `-flag`). This permits `src=my-file.jpg` without quoting. There are effectively two naked-token rules: one for names/positionals, one for values.
+
+- **Long-form restricted to DSL-registry tags.** Long-form (`<name>...</name>`) is only valid for tags in the DSL registry. Non-registry named tags are always short-form: `<tag>` (no content) or `<tag | content>`. The parser consults the registry when it finishes the opening `>` and decides mode. This keeps the grammar LL(1) at the tag-name level.
 
 - **Whitespace inside attribute brackets.** Allowed and ignored. Confirmed.
 
@@ -675,6 +677,16 @@ These are flagged for resolution as the implementation proceeds.
 - **DSL registry persistence.** The registry is a parser configuration. New DSL tags can be registered at parse time. The default registry is listed above; users or downstream packages can extend it.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
+
+## Open questions
+
+Remaining open questions flagged for resolution as implementation proceeds.
+
+- **`>` inside quoted attribute values.** A quoted string like `caption="a > b"` contains `>`. The short-form content scanner must skip past quoted strings when scanning for the closing `>`. Flag when implementing Slice 2 (named tags).
+
+- **Collision with standard HTML inline tags.** If `<cite>text</cite>` appears in a document, does the acadamark tokenizer consume it? Decision deferred to when inline (text-position) constructs are implemented.
+
+- **`|` in short-form content.** After the first `|` separator, subsequent `|` characters in content are treated as literal content (the "exactly one `|` per construct" rule). No escaping needed.
 
 ## What this enables
 

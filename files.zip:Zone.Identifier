@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://claude.ai/chat/83e71f68-5e52-4c99-93ca-4a029fa26d7b
+HostUrl=https://claude.ai/api/organizations/9fcc30bb-17a9-4efa-82b7-9dd050001572/conversations/83e71f68-5e52-4c99-93ca-4a029fa26d7b/wiggle/download-files?paths=%2Fmnt%2Fuser-data%2Foutputs%2Fjats-updates%2F01-DESIGN.md.patch.md&paths=%2Fmnt%2Fuser-data%2Foutputs%2Fjats-updates%2F02-BUILD.md.patch.md&paths=%2Fmnt%2Fuser-data%2Foutputs%2Fjats-updates%2F03-layer1-naming.md.patch.md&paths=%2Fmnt%2Fuser-data%2Foutputs%2Fjats-updates.tar.gz

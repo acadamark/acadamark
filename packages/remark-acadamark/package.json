@@ -1,0 +1,25 @@
+{
+  "name": "remark-acadamark",
+  "version": "0.1.0",
+  "description": "Remark plugin for the acadamark shorthand syntax: parses <tag attrs | content> constructs into uniform acadamarkTag mdast nodes.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "demo": "node test/demo.js",
+    "test": "node test/test.js"
+  },
+  "dependencies": {
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5"
+  },
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "unified",
+    "micromark",
+    "acadamark",
+    "markdown"
+  ]
+}
