@@ -13,7 +13,7 @@ const DQUOTE = 34 // "
 
 // Registered sigil characters. The finder uses this to distinguish sigil tags
 // from named tags. Extend here when new sigils are added (e.g., $ for math).
-const SIGIL_CHARS = new Set([35]) // #
+const SIGIL_CHARS = new Set([35, 36, 96]) // #, $, `
 
 /** @param {Code} code */
 function isAsciiAlphaCode(code) {
@@ -55,7 +55,10 @@ export function acadamarkSyntax(options = {}) {
       ],
     },
     text: {
-      [LT]: { tokenize: tokenizeNamedTag },
+      [LT]: [
+        { tokenize: tokenizeSigilTag },
+        { tokenize: tokenizeNamedTag },
+      ],
     },
   }
 }
@@ -65,6 +68,13 @@ export function acadamarkSyntax(options = {}) {
  *
  * Scans to the mirrored closer (same sigil char × same count, then `>`).
  * Emits the entire span as `acadamarkTagRaw`. Does not parse attrs or content.
+ *
+ * When a sigil opener is recognized but the line ends before the mirrored
+ * closer, emits `acadamarkTagError` so the author gets a visible diagnostic
+ * rather than silent fall-through into remark's tokenizer (which can produce
+ * runaway fenced code blocks for backtick sigils). This is a finite-lifespan
+ * guard: once multi-line sigil tags are implemented, the EOL check relaxes and
+ * these error tokens become unreachable.
  *
  * @type {Tokenizer}
  */
@@ -105,7 +115,15 @@ function tokenizeSigilTag(effects, ok, nok) {
 
   /** @param {Code} code */
   function body(code) {
-    if (code === null || markdownLineEnding(code)) return nok(code)
+    if (code === null || markdownLineEnding(code)) {
+      // Sigil opener recognized but no closer on this line. Emit an error
+      // token so from-markdown.js can surface a diagnostic node instead of
+      // letting remark silently misinterpret the fragment.
+      // See notes/shorthand-syntax.md § "Multi-line constructs (deferred)".
+      effects.exit('acadamarkTagRaw')
+      effects.exit('acadamarkTag')
+      return ok(code)
+    }
     if (code === sigilChar) {
       return effects.attempt(
         { tokenize: tokenizeClose, partial: true },

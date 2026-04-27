@@ -12,6 +12,10 @@
 // Slice 3: all attribute parsing is handled by Peggy rules (Attributes,
 // Attribute, Id, Class, BoolTrue, BoolFalse, Keyword, BracketedList,
 // Positional). The JS parseAttributes() helper has been removed.
+//
+// Slice 3.5: dollar ($, $$) and backtick (`, ```) sigil families added.
+// ContentChar updated to include $ and ` so that nested sigil tags inside
+// named-tag content are depth-tracked correctly (rule B).
 
 {{
   // ─── Global initializer — runs once when the module is loaded ───────────
@@ -51,7 +55,10 @@
 // ─── Top-level rule ────────────────────────────────────────────────────────
 
 AcadamarkConstruct
-  = SigilTag3 / SigilTag2 / SigilTag1 / NamedTag
+  = SigilTag3 / SigilTag2 / SigilTag1
+  / SigilTagDollar2 / SigilTagDollar1
+  / SigilTagBt3 / SigilTagBt1
+  / NamedTag
 
 // ─── Sigil tags ────────────────────────────────────────────────────────────
 //
@@ -60,8 +67,9 @@ AcadamarkConstruct
 //   1. With `|` — Attributes rule parses attrs, then content follows
 //   2. Without `|` — entire body is opaque content, no attribute parsing
 //
-// Attributes stops naturally before `|` or the mirrored closer because `|`
-// and `#` (start of closer) are excluded from all identifier character classes.
+// In the no-| case, the first alternative tries and fails (Attributes may
+// consume attr-looking tokens but then finds no |), then PEG backtracks to
+// the second alternative, which captures the whole body via SigilBody*.
 
 SigilTag3
   = "<" "###" attrs:Attributes "|" content:$SigilBody3 "###>" {
@@ -104,6 +112,60 @@ SigilBody3 = (!("###>") .)*
 SigilBody2 = (!("##>") .)*
 SigilBody1 = (!("#>") .)*
 
+// ─── Dollar sigil tags ─────────────────────────────────────────────────────
+
+SigilTagDollar2
+  = "<" "$$" attrs:Attributes "|" content:$SigilBodyDollar2 "$$>" {
+      const node = makeNode("$$", { isOpaqueContent: true })
+      Object.assign(node, attrs)
+      node.content = content
+      return node
+    }
+  / "<" "$$" content:$SigilBodyDollar2 "$$>" {
+      return makeNode("$$", { isOpaqueContent: true, content })
+    }
+
+SigilTagDollar1
+  = "<" "$" attrs:Attributes "|" content:$SigilBodyDollar1 "$>" {
+      const node = makeNode("$", { isOpaqueContent: true })
+      Object.assign(node, attrs)
+      node.content = content
+      return node
+    }
+  / "<" "$" content:$SigilBodyDollar1 "$>" {
+      return makeNode("$", { isOpaqueContent: true, content })
+    }
+
+SigilBodyDollar2 = (!("$$>") .)*
+SigilBodyDollar1 = (!("$>") .)*
+
+// ─── Backtick sigil tags ────────────────────────────────────────────────────
+
+SigilTagBt3
+  = "<" "```" attrs:Attributes "|" content:$SigilBodyBt3 "```>" {
+      const node = makeNode("```", { isOpaqueContent: true })
+      Object.assign(node, attrs)
+      node.content = content
+      return node
+    }
+  / "<" "```" content:$SigilBodyBt3 "```>" {
+      return makeNode("```", { isOpaqueContent: true, content })
+    }
+
+SigilTagBt1
+  = "<" "`" attrs:Attributes "|" content:$SigilBodyBt1 "`>" {
+      const node = makeNode("`", { isOpaqueContent: true })
+      Object.assign(node, attrs)
+      node.content = content
+      return node
+    }
+  / "<" "`" content:$SigilBodyBt1 "`>" {
+      return makeNode("`", { isOpaqueContent: true, content })
+    }
+
+SigilBodyBt3 = (!("```>") .)*
+SigilBodyBt1 = (!"`>" .)*
+
 // ─── Named tags ────────────────────────────────────────────────────────────
 //
 // Short form only (long-form DSL tags added in Slice 4).
@@ -131,7 +193,7 @@ TagName = $([a-zA-Z][a-zA-Z0-9_-]*)
 // A bare `<` (not followed by tag-start chars) matches the second alt as literal.
 
 ContentChar
-  = "<" [a-zA-Z#/] ContentChar* ">"
+  = "<" [a-zA-Z#$`/] ContentChar* ">"
   / [^>\n]
 
 // ─── Attribute rules ────────────────────────────────────────────────────────
@@ -190,8 +252,11 @@ QuotedStringValue
 // Two-rule split mirrors the spec EBNF exactly.
 // IdentifierStart excludes structural delimiters AND syntactic prefixes
 //   (+, -, #, ., =) so those characters cannot begin an identifier.
-// IdentifierCont excludes only structural delimiters, allowing prefix chars
-//   as literal data mid-identifier (e.g. "fig:body-cross-section", "v1.2.3").
+// IdentifierCont excludes structural delimiters but NOT `=`, which allows
+//   URLs with query strings (e.g. "https://example.com?q=value") to appear
+//   as bare positionals or keyword values without quoting. Keyword parsing is
+//   unaffected: the Attribute rule tries Keyword (k:TagName "=" v:Value) before
+//   Positional, and TagName uses its own strict char class that stops at `=`.
 
 Identifier = $(IdentifierStart IdentifierCont*)
 
@@ -199,7 +264,7 @@ IdentifierStart
   = [^ \t\n<>|+\-#.="'\[\],]
 
 IdentifierCont
-  = [^ \t\n<>|="'\[\],]
+  = [^ \t\n<>|"'\[\],]
 
 // ─── Whitespace ────────────────────────────────────────────────────────────
 

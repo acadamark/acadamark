@@ -301,4 +301,123 @@ function p(src) {
   console.log('PASS grammar: . at token start is Class, not positional')
 }
 
+// ─── Slice 3.5: dollar and backtick sigil families ─────────────────────────
+
+{
+  const n = p('<$ x^2 $>')
+  assert.equal(n.tagname, '$')
+  assert.equal(n.content, ' x^2 ')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(n.id, null)
+  assert.deepEqual(n.classes, [])
+  console.log('PASS grammar: basic <$ ... $> no-| form')
+}
+
+{
+  const n = p('<$$ \\frac{x}{2} $$>')
+  assert.equal(n.tagname, '$$')
+  assert.equal(n.content, ' \\frac{x}{2} ')
+  console.log('PASS grammar: <$$ ... $$> display math')
+}
+
+{
+  const n = p('<$ #myeq | x^2 $>')
+  assert.equal(n.tagname, '$')
+  assert.equal(n.id, 'myeq')
+  assert.equal(n.content, ' x^2 ')
+  console.log('PASS grammar: <$ #id | content $> with attribute')
+}
+
+{
+  const n = p('<$$ | \\sum_{i=0}^{n} x_i $$>')
+  assert.equal(n.tagname, '$$')
+  assert.equal(n.content, ' \\sum_{i=0}^{n} x_i ')
+  console.log('PASS grammar: <$$ | content $$> bare pipe form')
+}
+
+{
+  const n = p('<$$ has $ one dollar $$>')
+  assert.equal(n.tagname, '$$')
+  assert.equal(n.content, ' has $ one dollar ')
+  console.log('PASS grammar: single $ inside $$ tag is not a closer')
+}
+
+{
+  const n = p('<` code `>')
+  assert.equal(n.tagname, '`')
+  assert.equal(n.content, ' code ')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(n.id, null)
+  assert.deepEqual(n.classes, [])
+  console.log('PASS grammar: basic <` ... `> no-| form')
+}
+
+{
+  const n = p('<``` block ```>')
+  assert.equal(n.tagname, '```')
+  assert.equal(n.content, ' block ')
+  console.log('PASS grammar: <``` ... ```> code block')
+}
+
+{
+  const n = p('<` #mycode | inline `>')
+  assert.equal(n.tagname, '`')
+  assert.equal(n.id, 'mycode')
+  assert.equal(n.content, ' inline ')
+  console.log('PASS grammar: <` #id | content `> with attribute')
+}
+
+{
+  const n = p('<``` has ` one backtick ```>')
+  assert.equal(n.tagname, '```')
+  assert.equal(n.content, ' has ` one backtick ')
+  console.log('PASS grammar: single ` inside ``` tag is not a closer')
+}
+
+{
+  // ContentChar fix: $ in SIGIL_CHARS must also be in the [a-zA-Z#$`/] class
+  const n = p('<figure | nested <$ x $>>')
+  assert.equal(n.tagname, 'figure')
+  assert.equal(n.content, ' nested <$ x $>')
+  console.log('PASS grammar: $ sigil in named-tag content does not close outer tag')
+}
+
+{
+  // ContentChar fix: ` in SIGIL_CHARS must also be in the [a-zA-Z#$`/] class
+  const n = p('<div | code: <` foo `> done>')
+  assert.equal(n.tagname, 'div')
+  assert.equal(n.content, ' code: <` foo `> done')
+  console.log('PASS grammar: ` sigil in named-tag content does not close outer tag')
+}
+
+console.log('\nAll Slice 3.5 grammar tests passed.')
+
+// ─── IdentifierCont `=` fix — URL query strings ────────────────────────────
+
+{
+  const n = p('<a https://example.com?q=value | link>')
+  assert.equal(n.tagname, 'a')
+  assert.deepEqual(n.positional, ['https://example.com?q=value'])
+  assert.equal(n.content, ' link')
+  console.log('PASS grammar: URL with single query param as positional')
+}
+
+{
+  const n = p('<a https://example.com?q=1&page=2 | link>')
+  assert.equal(n.tagname, 'a')
+  assert.deepEqual(n.positional, ['https://example.com?q=1&page=2'])
+  assert.equal(n.content, ' link')
+  console.log('PASS grammar: URL with multiple query params as positional')
+}
+
+{
+  // Keyword with URL containing `=` in value — keyword parsing unaffected
+  const n = p('<cite href=https://example.com?q=value>')
+  assert.equal(n.tagname, 'cite')
+  assert.equal(n.kwargs.href, 'https://example.com?q=value')
+  console.log('PASS grammar: keyword value containing `=` (URL query string)')
+}
+
+console.log('\nAll IdentifierCont `=` fix tests passed.')
+
 console.log('\nAll grammar unit tests passed.')

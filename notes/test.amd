@@ -1,0 +1,650 @@
+# Acadamark Feature Test Document
+
+This document exercises every authoring feature acadamark currently supports. It serves three purposes: as a smoke test for the parser, as a feature catalog for humans, and as a living example of what acadamark source looks like in practice.
+
+## What runs end-to-end today
+
+These features run from source through to their structured representation as of Slice 3.5:
+
+- All sigil families: `#`, `##`, `###`, `$`, `$$`, `` ` ``, ```` ``` ````.
+- Sigil tags with and without the `|` separator.
+- Named tags in short form, with and without content.
+- All attribute forms: positionals, bracketed lists, boolean flags (`+flag`, `-flag`), ids (`#id`), classes (`.class`), keyword arguments (`key=value`, `key="quoted"`).
+- Permissive identifiers: hyphens, colons, dots, slashes mid-identifier (paths, URLs, colon-prefixed ids).
+- Markdown coexisting with acadamark constructs in the same document.
+- Nested constructs inside named-tag content, as far as boundary detection goes.
+
+## What is exercised here but does not yet render fully
+
+These authoring patterns are valid acadamark source and the parser handles them, but the downstream pieces (interpreter, section-nesting bridge) are not yet built. Sections marked with the **(future pipeline)** annotation are exercising correct authoring patterns whose end-to-end rendering is a future slice.
+
+- Implicit section nesting. The parser produces correctly-shaped tags for `<section>`, `<sub-section>`, `<sub-sub-section>` without explicit closing; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the bridge between them (the interpreter) is not yet built.
+- Recursive parsing of named-tag content. Constructs nested inside named-tag content are bounded correctly by the parser, but the inner constructs are part of an opaque content string and not yet structured as child nodes. The recursive-content slice resolves this.
+
+## What is deliberately not exercised
+
+These features are not yet implemented and are not exercised here:
+
+- Multi-line named tags. The parser is single-line through Slice 3.5.
+- Long-form DSL tags such as `<csv>...</csv>`. Slice 4.
+- The qualifying-tag pattern such as `<table csv | ...>`. Slice 5.
+
+---
+
+## Part 1: Sigil tags
+
+### 1.1. Heading sigils, no attributes
+
+<# Introduction #>
+
+<## Background and motivation ##>
+
+<### A finer subdivision ###>
+
+Features: sigil tags at all three heading levels, no `|` (whole body is opaque content), no attribute parsing.
+
+### 1.2. Heading sigils with attributes
+
+<# #intro | Introduction #>
+
+<## #background .numbered | Background ##>
+
+<### #fine-grain .numbered .reviewed +draft | A finer subdivision ###>
+
+Features: `|` enables attribute parsing, ids via `#`, multiple classes, boolean flags. Without `|` the body is opaque and no attributes are parsed.
+
+### 1.3. Heading sigil with all attribute forms
+
+<# #methods .numbered .reviewed level=primary status="in review" +draft -published | Methods #>
+
+Features: id, multiple classes, unquoted keyword, quoted keyword (with embedded space), positive flag, negative flag, all in one tag.
+
+### 1.4. Inline math, no `|`
+
+The Pythagorean identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+
+A complex expression with embedded special characters: <$ \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $>.
+
+Features: inline math sigil, opaque content (no attribute parsing), backslashes and braces preserved verbatim.
+
+### 1.5. Display math, no `|`
+
+The fundamental theorem of calculus:
+
+<$$ \int_a^b f'(x)\,dx = f(b) - f(a) $$>
+
+A more complex display:
+
+<$$ \sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6} $$>
+
+Features: display math sigil, opaque content, longer expressions, summation notation.
+
+### 1.6. Math sigils with attributes
+
+<$ #pythagoras .important | a^2 + b^2 = c^2 $>
+
+<$$ #euler-identity .featured number=eq:1 | e^{i\pi} + 1 = 0 $$>
+
+Features: id, classes, and kwargs on math sigils; the `|` separates attributes from the math expression itself.
+
+### 1.7. Inline code, no `|`
+
+To declare a constant in JavaScript, write <` const x = 1 `>. The arrow function form is <` (x) => x * 2 `>.
+
+Features: inline code sigil, opaque content.
+
+### 1.8. Inline code with attributes
+
+<` #example-1 .highlighted lang=js | const greeting = "hello" `>
+
+Features: id, class, keyword on a code sigil.
+
+### 1.9. Code block sigil, no `|`
+
+<``` function fibonacci(n) { return n < 2 ? n : fibonacci(n-1) + fibonacci(n-2); } ```>
+
+Features: triple-backtick sigil, opaque content. The parser is single-line through Slice 3.5; multi-line code block content is a planned future feature.
+
+### 1.10. Code block sigil with attributes
+
+<``` #fib-example .demo lang=js +runnable | function add(a, b) { return a + b; } ```>
+
+Features: triple-backtick sigil with id, class, keyword, and flag.
+
+---
+
+## Part 2: Named tags — attribute forms
+
+This part exercises every attribute form the parser recognizes, using simple named tags that don't carry semantic meaning at this stage.
+
+### 2.1. Single positional
+
+<cite jones2024>
+
+### 2.2. Multiple positionals
+
+<cite jones2024 smith2023 perez2019>
+
+Features: positional arguments are space-separated and accumulate into the `positional` array.
+
+### 2.3. Bracketed list as a single positional
+
+<cite [jones2024, smith2023, perez2019]>
+
+Features: bracketed list is one positional whose value is the array of items. Compare with 2.2 above (multiple positionals) — same surface tokens, different parse.
+
+### 2.4. Quoted items in a bracketed list
+
+<cite ["author with spaces, comma", jones2024, "another"]>
+
+Features: list items may be quoted, allowing spaces and commas inside.
+
+### 2.5. Id
+
+<section #methods>
+
+Features: `#id` form.
+
+### 2.6. Single class
+
+<aside .footnote>
+
+### 2.7. Multiple classes
+
+<div .container .featured .dark-mode>
+
+Features: classes accumulate into the `classes` array.
+
+### 2.8. Unquoted keyword
+
+<figure align=right>
+
+### 2.9. Quoted keyword (single quotes)
+
+<figure caption='An adult African elephant'>
+
+### 2.10. Quoted keyword (double quotes)
+
+<figure caption="An adult African elephant, photographed in Tanzania">
+
+Features: either quote type works; commas and spaces are preserved inside.
+
+### 2.11. Positive flag
+
+<figure +wrap>
+
+### 2.12. Negative flag
+
+<figure -published>
+
+### 2.13. Multiple flags
+
+<cite jones2024 +link +preview -inline>
+
+### 2.14. All attribute forms in one tag
+
+<figure src=elephant.jpg #adult-elephant .photo .featured align=right caption="An adult elephant" +wrap -draft>
+
+Features: positional (`src`'s value before realizing this is a kwarg — actually `src=elephant.jpg` is a kwarg, not a positional), id, multiple classes, multiple kwargs (one quoted), positive flag, negative flag. Note: order is free, this happens to put kwargs first and flags last for readability.
+
+### 2.15. Attribute order is free
+
+<figure +wrap .photo src=elephant.jpg .featured align=right -draft #adult #adult-elephant>
+
+Features: same attributes as 2.14, in shuffled order. The id appearing twice (`#adult` then `#adult-elephant`) takes the last value per the spec — implementation may warn.
+
+---
+
+## Part 3: Named tags — content forms
+
+### 3.1. No content
+
+<cite jones2024>
+
+Features: no `|`, no closing tag, tag has no content.
+
+### 3.2. Short-form content
+
+<a https://example.com | Example>
+
+<em | important>
+
+<strong | very important>
+
+Features: `|` introduces content; the `>` after content closes the tag.
+
+### 3.3. Content containing punctuation
+
+<aside | A note with semicolons; em-dashes — and ellipses…>
+
+Features: most punctuation passes through transparently in content.
+
+### 3.4. Content containing nested constructs (boundary detection)
+
+<aside | See the equation <$ E = mc^2 $> for the famous formula.>
+
+<aside | The function <` factorial(n) `> computes a factorial.>
+
+<aside | Refer to <ref fig:elephant> for the photograph.>
+
+<figure src=elephant.jpg | An adult elephant. See also <ref fig:calf>.>
+
+Features: nested sigil tags and nested named tags inside named-tag content. The parser's rule-B depth tracking (extended in Slice 3.5 to recognize `$`, `` ` `` as well as `#`) ensures the outer `>` doesn't false-close. **(future pipeline: at Slice 3.5 the inner constructs are part of the outer tag's opaque content string; recursive-content parsing turns them into structured child nodes in a future slice.)**
+
+### 3.5. Content with `<` that does not open a construct
+
+<aside | The condition a < b implies a != b.>
+
+<aside | Compare 5 < 10 and 10 < 100.>
+
+Features: `<` followed by a non-tag-starting character (space, digit) is treated as literal content, not as a nested-construct opener. This is the rule-B refinement in the spec.
+
+### 3.6. Content with literal `>` requires escaping
+
+<aside | The condition a &gt; b implies a != b.>
+
+Features: a literal `>` in content must be written as `&gt;`, since a bare `>` would close the tag.
+
+---
+
+## Part 4: Permissive identifiers
+
+These exercise the start-and-continue identifier rules introduced in Slice 3.
+
+### 4.1. Hyphenated ids
+
+<section #methods-and-results>
+
+<figure #adult-african-elephant>
+
+### 4.2. Colon in identifiers
+
+<ref #fig:body-cross-section>
+
+<ref #eq:euler-identity>
+
+<ref #thm:fundamental-arithmetic>
+
+Features: `:` is allowed mid-identifier and in start position via the start-and-continue split. This enables the `fig:`, `eq:`, `thm:` namespacing convention.
+
+### 4.3. Dots in identifiers (versions, filenames)
+
+<package version=v1.2.3>
+
+<img src=puppy.jpg>
+
+<img src=elephant.png>
+
+Features: `.` is allowed mid-identifier, so version strings and file extensions don't need quoting.
+
+### 4.4. URLs as positional or keyword values
+
+<a https://example.com/path?query=value | Example>
+
+<a href=https://example.com/path | Example>
+
+<cite-source url=https://doi.org/10.1234/example.5678>
+
+Features: slashes, colons, dots, query strings, and `=` inside query strings are all valid mid-identifier. This allows full URLs — including those with `key=value` query parameters — to appear as bare positionals or keyword values without quoting.
+
+### 4.5. Hyphens in keyword values
+
+<img src=my-photo-large.jpg width=240 height=240>
+
+Features: `-` is allowed in keyword values (after `=`). Note: `-` remains excluded at start position, where it would be parsed as a negative flag.
+
+---
+
+## Part 5: Section-style tags and the implicit-close pattern
+
+Acadamark's most distinctive authoring affordance is implicit closing for section-style tags. A new peer-level section ends the previous one without an explicit closing tag, mirroring LaTeX's `\section{}` and `\subsection{}`. This is what makes acadamark source dramatically easier to type than raw HTML.
+
+**(future pipeline: at Slice 3.5 the parser produces individual `acadamarkTag` nodes for each `<section>`, `<sub-section>`, etc.; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the interpreter that bridges the parser output to the section-nesting plugin is a future slice. The authoring patterns in this part are correct acadamark source today — the structural nesting will be observable end-to-end once the interpreter lands.)**
+
+### 5.1. Flat sections, peer-level
+
+<section #intro | Introduction>
+
+<section #methods | Methods>
+
+<section #results | Results>
+
+<section #discussion | Discussion>
+
+Features: each section uses the short-form `<tag attrs | content>` pattern. No explicit closing required. When the section-nesting bridge is in place, these become four sibling `<section>` elements in the output HTML.
+
+### 5.2. Sections with sub-sections
+
+<section #intro | Introduction>
+
+Some introductory prose.
+
+<sub-section #motivation | Motivation>
+
+The motivation is described here.
+
+<sub-section #related-work | Related Work>
+
+A discussion of related work.
+
+<section #methods | Methods>
+
+The methods section begins, implicitly ending the related-work sub-section *and* the introduction section.
+
+Features: section depth is tracked by the named depth ladder (`section`, `sub-section`, `sub-sub-section`). A new `section` closes any open `sub-section` *and* the previous `section`. A new `sub-section` closes any open `sub-section` but stays inside the current `section`.
+
+### 5.3. Three-deep section nesting
+
+<section #intro | Introduction>
+
+Top-level prose.
+
+<sub-section #background | Background>
+
+<sub-sub-section #history | History>
+
+History prose.
+
+<sub-sub-section #context | Context>
+
+Context prose. This implicitly closes the history sub-sub-section.
+
+<sub-section #scope | Scope>
+
+Scope prose. This implicitly closes the context sub-sub-section *and* the background sub-section's nesting at depth 3.
+
+<section #methods | Methods>
+
+Methods prose. This implicitly closes everything still open at greater depth.
+
+Features: full three-level nesting, with implicit closing at all depths handled by the section-nesting plugin.
+
+### 5.4. Section title vocabulary
+
+<section #intro>
+<section-title | Introduction>
+
+Introductory prose follows.
+
+<sub-section #motivation>
+<sub-section-title | Motivation>
+
+Motivation prose.
+
+Features: container-role naming (Rule 1 in `notes/layer1-naming.md`). `<section-title>` is the title of a `<section>`; `<sub-section-title>` is the title of a `<sub-section>`. The parent's `|` is omitted when the title is provided as a separate child element rather than as content.
+
+### 5.5. Article title at the top of a document
+
+<article-title | A Theory of Everything>
+<article-subtitle | With Special Attention to Edge Cases>
+
+<section #intro | Introduction>
+
+Document body begins.
+
+Features: `<article-title>` and `<article-subtitle>` per Rule 1. These produce custom elements at Layer 1; in render mode they would lower to `<h1>` / `<p class="subtitle">` for browser default styling.
+
+---
+
+## Part 6: Citations and cross-references
+
+These exercise the syntactic forms; the resolution to bibliography entries and figure numbers happens in the citation and cross-ref plugins (Phase 2 of the build plan), not at the parser level.
+
+### 6.1. Single citation
+
+According to <cite jones2024>, the effect is well-documented.
+
+### 6.2. Multiple citations as positionals
+
+The phenomenon is widely studied <cite jones2024 smith2023 perez2019>.
+
+### 6.3. Bracketed-list citation
+
+The phenomenon is widely studied <cite [jones2024, smith2023, perez2019]>.
+
+Features: bracketed list as a single positional. Functionally equivalent to 6.2 in this case, but the bracketed form preserves "this is one citation group" semantics for the interpreter.
+
+### 6.4. Citation with formatting flags
+
+According to <cite jones2024 +link +preview>, the effect is well-documented.
+
+Features: flags on a citation control downstream interpretation (e.g., `+link` requests a hyperlink, `+preview` requests a hover preview).
+
+### 6.5. Cross-reference to a figure
+
+See <ref fig:elephant> for the photograph.
+
+### 6.6. Cross-reference with formatting flags
+
+See <ref fig:elephant +link +preview +title> for the photograph.
+
+Features: flags request the link, the preview, and the figure title in the rendered cross-reference.
+
+### 6.7. Cross-reference to an equation
+
+The result follows from <ref eq:euler-identity>, derived above.
+
+### 6.8. Cross-reference to a section
+
+We discuss this in <ref sec:methods> and revisit it in <ref sec:discussion>.
+
+---
+
+## Part 7: Figures
+
+### 7.1. Figure with positional source
+
+<figure puppy.jpg>
+
+Features: a single positional argument names the source file.
+
+### 7.2. Figure with keyword source and caption
+
+<figure src=elephant.jpg caption="An adult African elephant, photographed in Tanzania.">
+
+### 7.3. Figure with id, classes, and dimensions
+
+<figure src=elephant.jpg #adult-elephant .photo .featured width=600 height=400>
+
+### 7.4. Figure with caption containing nested constructs
+
+<figure src=elephant.jpg #elephant | An adult elephant. See also <ref fig:calf>.>
+
+Features: caption (in content position) contains a nested cross-reference. **(future pipeline: the inner `<ref>` is bounded correctly today; structured as a child node when recursive-content parsing lands.)**
+
+### 7.5. Figure with caption containing math
+
+<figure src=trajectory.png #trajectory | The trajectory follows <$ y = \frac{1}{2}gt^2 $> for free fall.>
+
+Features: nested math sigil inside caption. **(future pipeline: same as 7.4.)**
+
+### 7.6. Figure with caption containing citation
+
+<figure src=elephant.jpg #elephant | An adult African elephant <cite jones2024>.>
+
+Features: nested citation inside caption. **(future pipeline: same as 7.4.)**
+
+### 7.7. Figure with caption containing emphasis and code
+
+<figure src=architecture.png #arch | The *architecture* uses the <` unified `> ecosystem.>
+
+Features: markdown emphasis (`*architecture*`) and a nested inline-code sigil inside caption. **(future pipeline: markdown emphasis inside named-tag content gets parsed when recursive-content is wired through remark.)**
+
+---
+
+## Part 8: Lists
+
+Acadamark allows lists via either standard markdown (the bare idiom) or via the `<list>` tag (when attributes are needed).
+
+### 8.1. Bare markdown list (delegated to remark)
+
+- First item
+- Second item
+- Third item
+
+Features: standard markdown unordered list. Delegated to remark per the principle in `notes/idioms.md`.
+
+### 8.2. Bare markdown ordered list
+
+1. First step
+2. Second step
+3. Third step
+
+### 8.3. Bare nested list
+
+- Top-level item
+  - Nested item
+  - Another nested item
+- Second top-level item
+
+### 8.4. Tagged list (when attributes are needed)
+
+<list +ordered #steps .important | Calibrate the apparatus; record the baseline; apply the perturbation; record the response.>
+
+Features: id, class, flag on a list. The `+ordered` flag distinguishes from unordered. The parser is single-line through Slice 3.5; multi-line list content is a planned future feature. **(future pipeline: list content is currently an opaque string; the interpreter handles item-level parsing.)**
+
+---
+
+## Part 9: Markdown coexisting with acadamark
+
+Per the delegation principle, markdown idioms are accepted inline alongside acadamark constructs. The two registers mix freely.
+
+### 9.1. Bold, italic, and links in prose
+
+This paragraph has *emphasized* text, **strong** text, and a [link](https://example.com).
+
+The same paragraph mixed with acadamark: <em | emphasized>, <strong | strong>, and <a https://example.com | link>.
+
+Features: both registers produce equivalent Layer 1 output. Use markdown when sufficient; reach for shorthand when attributes are needed.
+
+### 9.2. Bare math alongside tagged math
+
+The famous formula $E = mc^2$ is also writeable as <$ E = mc^2 $>. The tagged form supports attributes: <$ #mass-energy .featured | E = mc^2 $>.
+
+Features: bare `$x$` is delegated to `remark-math`; tagged `<$x$>` is acadamark. Both produce equivalent semantics; only the tagged form supports attributes.
+
+### 9.3. Bare code spans alongside tagged code sigils
+
+The bare form `code` is delegated to remark. The tagged form <` code `> supports attributes: <` #example .highlighted | const x = 1 `>.
+
+### 9.4. Bare headings alongside heading sigils
+
+# This is a markdown heading
+
+<# #intro | This is an acadamark heading sigil #>
+
+Features: both produce headings at Layer 1. The tagged form supports attributes; the bare form does not. **(future pipeline: bare markdown headings produce flat `<h1>` etc., while sigil headings produce `<section-title>` inside a `<section>` once the interpreter and section-wrapping behavior are settled. See open question in `notes/layer1-naming.md`.)**
+
+---
+
+## Part 10: Edge cases worth exercising
+
+### 10.1. Sigil character inside opaque content
+
+<$ \int x \, dx $> contains no `$` until the closer.
+
+<$ a + $b $> — the inner `$` is just a single dollar; only `$>` (with the matching `>`) closes.
+
+Features: the closer is the sigil character followed by `>`, not just the sigil character. A bare `$` inside content is allowed.
+
+### 10.2. Backtick inside opaque content
+
+<` const s = "hello" `> contains no backticks until the closer.
+
+<``` const a = `template`; ```> — the inner backticks are content; only ` ``` ` followed by `>` closes.
+
+Features: same logic as 10.1, applied to backticks.
+
+### 10.3. Multi-character closer with shorter sigil inside
+
+<$$ x = $1 \cdot y$ $$> — single-`$` runs inside double-`$` content do not close.
+
+Features: the closer must match the opener exactly (same character, same count).
+
+### 10.4. No `|` means no attribute parsing
+
+<# #intro Introduction #>
+
+Features: this parses as a sigil with content `" #intro Introduction "` — the `#intro` is part of the opaque body, not parsed as an id, because there is no `|`.
+
+### 10.5. Consecutive constructs
+
+<cite jones2024><cite smith2023>
+
+<a https://a.com | A><a https://b.com | B>
+
+Features: tags can appear back-to-back with no whitespace.
+
+### 10.6. Construct at end of line with trailing whitespace
+
+<cite jones2024>   
+
+Features: trailing whitespace after `>` is ignored at the parser level.
+
+### 10.7. Tag name with digits and underscores
+
+<h1 | Heading>
+<my_custom_tag | content>
+<my-custom-tag | content>
+<tag123 | content>
+
+Features: tag name pattern is `[a-zA-Z][a-zA-Z0-9_-]*` per the spec.
+
+### 10.8. Empty content
+
+<aside | >
+
+<a https://example.com | >
+
+Features: `|` followed by only whitespace and `>` produces empty content.
+
+---
+
+## Part 11: A small worked document
+
+A sketch of what a real acadamark document looks like, putting many features together.
+
+<article-title | Numerical Estimates of Elephant Reaction Times>
+<article-subtitle | A Pilot Study>
+
+<section #intro | Introduction>
+
+Reaction-time studies in megafauna are scarce <cite jones2024 smith2023>. The present work fills this gap by measuring response latencies in *Loxodonta africana* under controlled conditions.
+
+<sub-section #motivation | Motivation>
+
+The fundamental question is whether body size correlates with reaction time, as predicted by <cite perez2019>. The model predicts a relationship of the form <$ \tau \propto m^{1/3} $>, where $\tau$ is reaction time and $m$ is body mass.
+
+<sub-section #related-work | Related Work>
+
+Prior work in this area is reviewed in <ref sec:methods>.
+
+<section #methods | Methods>
+
+We followed the protocol described in <cite jones2024 +link>, with three modifications detailed below.
+
+<figure src=apparatus.jpg #apparatus .featured | The experimental apparatus, as deployed in Tanzania <cite jones2024>.>
+
+Calibration followed the equation:
+
+<$$ #calib-eq | y = \alpha x + \beta + \epsilon $$>
+
+where $\epsilon$ is a Gaussian noise term.
+
+<section #results | Results>
+
+The results are summarized in <ref fig:apparatus>. The fitted relationship matches <ref eq:calib-eq> within experimental uncertainty.
+
+<section #discussion | Discussion>
+
+The implications are several. First, the prediction in <ref sec:motivation> is supported. Second, the data suggest follow-up work is warranted.
+
+Features in this part: article title and subtitle, four top-level sections, two sub-sections in the introduction, citations (single and multiple), cross-references (to figure, equation, and sections), inline math (bare and tagged), display math (tagged with id), figure with caption containing a nested citation, markdown emphasis inside prose. **(future pipeline: the structural nesting and the cross-reference resolution are exercised end-to-end when the interpreter and Phase 2 plugins land.)**
+
+---
+
+## End
+
+If a parser revision causes any section above to fail to parse, that is a regression. If a section parses but produces a different structure than before, that is drift and should be investigated against the spec.
+
+When the recursive-content slice lands, the sections marked **(future pipeline)** for nested-content reasons should be re-validated end-to-end. When the interpreter lands, the section-nesting and citation-resolution sections should be re-validated end-to-end.

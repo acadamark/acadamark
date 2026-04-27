@@ -1,0 +1,1484 @@
+mdast tree:
+
+{
+  type: [32m'root'[39m,
+  children: [
+    {
+      type: [32m'heading'[39m,
+      depth: [33m1[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Acadamark Feature Test Document'[39m,
+          position: {
+            start: { line: [33m1[39m, column: [33m3[39m, offset: [33m2[39m },
+            end: { line: [33m1[39m, column: [33m34[39m, offset: [33m33[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m1[39m, column: [33m1[39m, offset: [33m0[39m },
+        end: { line: [33m1[39m, column: [33m34[39m, offset: [33m33[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'This document exercises every authoring feature acadamark currently supports. It serves three purposes: as a smoke test for the parser, as a feature catalog for humans, and as a living example of what acadamark source looks like in practice.'[39m,
+          position: {
+            start: { line: [33m3[39m, column: [33m1[39m, offset: [33m35[39m },
+            end: { line: [33m3[39m, column: [33m242[39m, offset: [33m276[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m3[39m, column: [33m1[39m, offset: [33m35[39m },
+        end: { line: [33m3[39m, column: [33m242[39m, offset: [33m276[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m2[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'What runs end-to-end today'[39m,
+          position: {
+            start: { line: [33m5[39m, column: [33m4[39m, offset: [33m281[39m },
+            end: { line: [33m5[39m, column: [33m30[39m, offset: [33m307[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m5[39m, column: [33m1[39m, offset: [33m278[39m },
+        end: { line: [33m5[39m, column: [33m30[39m, offset: [33m307[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'These features run from source through to their structured representation as of Slice 3.5:'[39m,
+          position: {
+            start: { line: [33m7[39m, column: [33m1[39m, offset: [33m309[39m },
+            end: { line: [33m7[39m, column: [33m91[39m, offset: [33m399[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m7[39m, column: [33m1[39m, offset: [33m309[39m },
+        end: { line: [33m7[39m, column: [33m91[39m, offset: [33m399[39m }
+      }
+    },
+    {
+      type: [32m'list'[39m,
+      ordered: [33mfalse[39m,
+      start: [1mnull[22m,
+      spread: [33mfalse[39m,
+      children: [
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m9[39m, column: [33m1[39m, offset: [33m401[39m },
+            end: { line: [33m9[39m, column: [33m75[39m, offset: [33m475[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m10[39m, column: [33m1[39m, offset: [33m476[39m },
+            end: { line: [33m10[39m, column: [33m49[39m, offset: [33m524[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m11[39m, column: [33m1[39m, offset: [33m525[39m },
+            end: { line: [33m11[39m, column: [33m54[39m, offset: [33m578[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m12[39m, column: [33m1[39m, offset: [33m579[39m },
+            end: { line: [33m12[39m, column: [33m169[39m, offset: [33m747[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m13[39m, column: [33m1[39m, offset: [33m748[39m },
+            end: { line: [33m13[39m, column: [33m107[39m, offset: [33m854[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m14[39m, column: [33m1[39m, offset: [33m855[39m },
+            end: { line: [33m14[39m, column: [33m70[39m, offset: [33m924[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m15[39m, column: [33m1[39m, offset: [33m925[39m },
+            end: { line: [33m15[39m, column: [33m81[39m, offset: [33m1005[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m9[39m, column: [33m1[39m, offset: [33m401[39m },
+        end: { line: [33m15[39m, column: [33m81[39m, offset: [33m1005[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m2[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'What is exercised here but does not yet render fully'[39m,
+          position: {
+            start: { line: [33m17[39m, column: [33m4[39m, offset: [33m1010[39m },
+            end: { line: [33m17[39m, column: [33m56[39m, offset: [33m1062[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m17[39m, column: [33m1[39m, offset: [33m1007[39m },
+        end: { line: [33m17[39m, column: [33m56[39m, offset: [33m1062[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'These authoring patterns are valid acadamark source and the parser handles them, but the downstream pieces (interpreter, section-nesting bridge) are not yet built. Sections marked with the '[39m,
+          position: {
+            start: { line: [33m19[39m, column: [33m1[39m, offset: [33m1064[39m },
+            end: { line: [33m19[39m, column: [33m190[39m, offset: [33m1253[39m }
+          }
+        },
+        {
+          type: [32m'strong'[39m,
+          children: [
+            {
+              type: [32m'text'[39m,
+              value: [32m'(future pipeline)'[39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m19[39m, column: [33m190[39m, offset: [33m1253[39m },
+            end: { line: [33m19[39m, column: [33m211[39m, offset: [33m1274[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m' annotation are exercising correct authoring patterns whose end-to-end rendering is a future slice.'[39m,
+          position: {
+            start: { line: [33m19[39m, column: [33m211[39m, offset: [33m1274[39m },
+            end: { line: [33m19[39m, column: [33m310[39m, offset: [33m1373[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m19[39m, column: [33m1[39m, offset: [33m1064[39m },
+        end: { line: [33m19[39m, column: [33m310[39m, offset: [33m1373[39m }
+      }
+    },
+    {
+      type: [32m'list'[39m,
+      ordered: [33mfalse[39m,
+      start: [1mnull[22m,
+      spread: [33mfalse[39m,
+      children: [
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m21[39m, column: [33m1[39m, offset: [33m1375[39m },
+            end: { line: [33m21[39m, column: [33m293[39m, offset: [33m1667[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m22[39m, column: [33m1[39m, offset: [33m1668[39m },
+            end: { line: [33m22[39m, column: [33m266[39m, offset: [33m1933[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m21[39m, column: [33m1[39m, offset: [33m1375[39m },
+        end: { line: [33m22[39m, column: [33m266[39m, offset: [33m1933[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m2[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'What is deliberately not exercised'[39m,
+          position: {
+            start: { line: [33m24[39m, column: [33m4[39m, offset: [33m1938[39m },
+            end: { line: [33m24[39m, column: [33m38[39m, offset: [33m1972[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m24[39m, column: [33m1[39m, offset: [33m1935[39m },
+        end: { line: [33m24[39m, column: [33m38[39m, offset: [33m1972[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'These features are not yet implemented and are not exercised here:'[39m,
+          position: {
+            start: { line: [33m26[39m, column: [33m1[39m, offset: [33m1974[39m },
+            end: { line: [33m26[39m, column: [33m67[39m, offset: [33m2040[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m26[39m, column: [33m1[39m, offset: [33m1974[39m },
+        end: { line: [33m26[39m, column: [33m67[39m, offset: [33m2040[39m }
+      }
+    },
+    {
+      type: [32m'list'[39m,
+      ordered: [33mfalse[39m,
+      start: [1mnull[22m,
+      spread: [33mfalse[39m,
+      children: [
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m28[39m, column: [33m1[39m, offset: [33m2042[39m },
+            end: { line: [33m28[39m, column: [33m70[39m, offset: [33m2111[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m29[39m, column: [33m1[39m, offset: [33m2112[39m },
+            end: { line: [33m29[39m, column: [33m56[39m, offset: [33m2167[39m }
+          }
+        },
+        {
+          type: [32m'listItem'[39m,
+          spread: [33mfalse[39m,
+          checked: [1mnull[22m,
+          children: [
+            {
+              type: [32m'paragraph'[39m,
+              children: [36m[Array][39m,
+              position: [36m[Object][39m
+            }
+          ],
+          position: {
+            start: { line: [33m30[39m, column: [33m1[39m, offset: [33m2168[39m },
+            end: { line: [33m30[39m, column: [33m67[39m, offset: [33m2234[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m28[39m, column: [33m1[39m, offset: [33m2042[39m },
+        end: { line: [33m30[39m, column: [33m67[39m, offset: [33m2234[39m }
+      }
+    },
+    {
+      type: [32m'thematicBreak'[39m,
+      position: {
+        start: { line: [33m32[39m, column: [33m1[39m, offset: [33m2236[39m },
+        end: { line: [33m32[39m, column: [33m4[39m, offset: [33m2239[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m2[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Part 1: Sigil tags'[39m,
+          position: {
+            start: { line: [33m34[39m, column: [33m4[39m, offset: [33m2244[39m },
+            end: { line: [33m34[39m, column: [33m22[39m, offset: [33m2262[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m34[39m, column: [33m1[39m, offset: [33m2241[39m },
+        end: { line: [33m34[39m, column: [33m22[39m, offset: [33m2262[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.1. Heading sigils, no attributes'[39m,
+          position: {
+            start: { line: [33m36[39m, column: [33m5[39m, offset: [33m2268[39m },
+            end: { line: [33m36[39m, column: [33m39[39m, offset: [33m2302[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m36[39m, column: [33m1[39m, offset: [33m2264[39m },
+        end: { line: [33m36[39m, column: [33m39[39m, offset: [33m2302[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m38[39m, column: [33m1[39m, offset: [33m2304[39m },
+        end: { line: [33m38[39m, column: [33m19[39m, offset: [33m2322[39m }
+      },
+      tagname: [32m'#'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [1mnull[22m,
+      classes: [],
+      content: [32m' Introduction '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m40[39m, column: [33m1[39m, offset: [33m2324[39m },
+        end: { line: [33m40[39m, column: [33m34[39m, offset: [33m2357[39m }
+      },
+      tagname: [32m'##'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [1mnull[22m,
+      classes: [],
+      content: [32m' Background and motivation '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m42[39m, column: [33m1[39m, offset: [33m2359[39m },
+        end: { line: [33m42[39m, column: [33m30[39m, offset: [33m2388[39m }
+      },
+      tagname: [32m'###'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [1mnull[22m,
+      classes: [],
+      content: [32m' A finer subdivision '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: sigil tags at all three heading levels, no '[39m,
+          position: {
+            start: { line: [33m44[39m, column: [33m1[39m, offset: [33m2390[39m },
+            end: { line: [33m44[39m, column: [33m54[39m, offset: [33m2443[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m44[39m, column: [33m54[39m, offset: [33m2443[39m },
+            end: { line: [33m44[39m, column: [33m57[39m, offset: [33m2446[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m' (whole body is opaque content), no attribute parsing.'[39m,
+          position: {
+            start: { line: [33m44[39m, column: [33m57[39m, offset: [33m2446[39m },
+            end: { line: [33m44[39m, column: [33m111[39m, offset: [33m2500[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m44[39m, column: [33m1[39m, offset: [33m2390[39m },
+        end: { line: [33m44[39m, column: [33m111[39m, offset: [33m2500[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.2. Heading sigils with attributes'[39m,
+          position: {
+            start: { line: [33m46[39m, column: [33m5[39m, offset: [33m2506[39m },
+            end: { line: [33m46[39m, column: [33m40[39m, offset: [33m2541[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m46[39m, column: [33m1[39m, offset: [33m2502[39m },
+        end: { line: [33m46[39m, column: [33m40[39m, offset: [33m2541[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m48[39m, column: [33m1[39m, offset: [33m2543[39m },
+        end: { line: [33m48[39m, column: [33m28[39m, offset: [33m2570[39m }
+      },
+      tagname: [32m'#'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [32m'intro'[39m,
+      classes: [],
+      content: [32m' Introduction '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m50[39m, column: [33m1[39m, offset: [33m2572[39m },
+        end: { line: [33m50[39m, column: [33m43[39m, offset: [33m2614[39m }
+      },
+      tagname: [32m'##'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [32m'background'[39m,
+      classes: [ [32m'numbered'[39m ],
+      content: [32m' Background '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m52[39m, column: [33m1[39m, offset: [33m2616[39m },
+        end: { line: [33m52[39m, column: [33m71[39m, offset: [33m2686[39m }
+      },
+      tagname: [32m'###'[39m,
+      positional: [],
+      booleans: { draft: [33mtrue[39m },
+      kwargs: {},
+      id: [32m'fine-grain'[39m,
+      classes: [ [32m'numbered'[39m, [32m'reviewed'[39m ],
+      content: [32m' A finer subdivision '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: '[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m1[39m, offset: [33m2688[39m },
+            end: { line: [33m54[39m, column: [33m11[39m, offset: [33m2698[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m11[39m, offset: [33m2698[39m },
+            end: { line: [33m54[39m, column: [33m14[39m, offset: [33m2701[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m' enables attribute parsing, ids via '[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m14[39m, offset: [33m2701[39m },
+            end: { line: [33m54[39m, column: [33m50[39m, offset: [33m2737[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'#'[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m50[39m, offset: [33m2737[39m },
+            end: { line: [33m54[39m, column: [33m53[39m, offset: [33m2740[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m', multiple classes, boolean flags. Without '[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m53[39m, offset: [33m2740[39m },
+            end: { line: [33m54[39m, column: [33m96[39m, offset: [33m2783[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m96[39m, offset: [33m2783[39m },
+            end: { line: [33m54[39m, column: [33m99[39m, offset: [33m2786[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m' the body is opaque and no attributes are parsed.'[39m,
+          position: {
+            start: { line: [33m54[39m, column: [33m99[39m, offset: [33m2786[39m },
+            end: { line: [33m54[39m, column: [33m148[39m, offset: [33m2835[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m54[39m, column: [33m1[39m, offset: [33m2688[39m },
+        end: { line: [33m54[39m, column: [33m148[39m, offset: [33m2835[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.3. Heading sigil with all attribute forms'[39m,
+          position: {
+            start: { line: [33m56[39m, column: [33m5[39m, offset: [33m2841[39m },
+            end: { line: [33m56[39m, column: [33m48[39m, offset: [33m2884[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m56[39m, column: [33m1[39m, offset: [33m2837[39m },
+        end: { line: [33m56[39m, column: [33m48[39m, offset: [33m2884[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m58[39m, column: [33m1[39m, offset: [33m2886[39m },
+        end: { line: [33m58[39m, column: [33m96[39m, offset: [33m2981[39m }
+      },
+      tagname: [32m'#'[39m,
+      positional: [],
+      booleans: { draft: [33mtrue[39m, published: [33mfalse[39m },
+      kwargs: { level: [32m'primary'[39m, status: [32m'in review'[39m },
+      id: [32m'methods'[39m,
+      classes: [ [32m'numbered'[39m, [32m'reviewed'[39m ],
+      content: [32m' Methods '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: id, multiple classes, unquoted keyword, quoted keyword (with embedded space), positive flag, negative flag, all in one tag.'[39m,
+          position: {
+            start: { line: [33m60[39m, column: [33m1[39m, offset: [33m2983[39m },
+            end: { line: [33m60[39m, column: [33m134[39m, offset: [33m3116[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m60[39m, column: [33m1[39m, offset: [33m2983[39m },
+        end: { line: [33m60[39m, column: [33m134[39m, offset: [33m3116[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.4. Inline math, no '[39m,
+          position: {
+            start: { line: [33m62[39m, column: [33m5[39m, offset: [33m3122[39m },
+            end: { line: [33m62[39m, column: [33m26[39m, offset: [33m3143[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m62[39m, column: [33m26[39m, offset: [33m3143[39m },
+            end: { line: [33m62[39m, column: [33m29[39m, offset: [33m3146[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m62[39m, column: [33m1[39m, offset: [33m3118[39m },
+        end: { line: [33m62[39m, column: [33m29[39m, offset: [33m3146[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'The Pythagorean identity <$ a^2 + b^2 = c^2 $> holds for right triangles.'[39m,
+          position: {
+            start: { line: [33m64[39m, column: [33m1[39m, offset: [33m3148[39m },
+            end: { line: [33m64[39m, column: [33m74[39m, offset: [33m3221[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m64[39m, column: [33m1[39m, offset: [33m3148[39m },
+        end: { line: [33m64[39m, column: [33m74[39m, offset: [33m3221[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'A complex expression with embedded special characters: <$ \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a} $>.'[39m,
+          position: {
+            start: { line: [33m66[39m, column: [33m1[39m, offset: [33m3223[39m },
+            end: { line: [33m66[39m, column: [33m97[39m, offset: [33m3319[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m66[39m, column: [33m1[39m, offset: [33m3223[39m },
+        end: { line: [33m66[39m, column: [33m97[39m, offset: [33m3319[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: inline math sigil, opaque content (no attribute parsing), backslashes and braces preserved verbatim.'[39m,
+          position: {
+            start: { line: [33m68[39m, column: [33m1[39m, offset: [33m3321[39m },
+            end: { line: [33m68[39m, column: [33m111[39m, offset: [33m3431[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m68[39m, column: [33m1[39m, offset: [33m3321[39m },
+        end: { line: [33m68[39m, column: [33m111[39m, offset: [33m3431[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.5. Display math, no '[39m,
+          position: {
+            start: { line: [33m70[39m, column: [33m5[39m, offset: [33m3437[39m },
+            end: { line: [33m70[39m, column: [33m27[39m, offset: [33m3459[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m70[39m, column: [33m27[39m, offset: [33m3459[39m },
+            end: { line: [33m70[39m, column: [33m30[39m, offset: [33m3462[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m70[39m, column: [33m1[39m, offset: [33m3433[39m },
+        end: { line: [33m70[39m, column: [33m30[39m, offset: [33m3462[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'The fundamental theorem of calculus:'[39m,
+          position: {
+            start: { line: [33m72[39m, column: [33m1[39m, offset: [33m3464[39m },
+            end: { line: [33m72[39m, column: [33m37[39m, offset: [33m3500[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m72[39m, column: [33m1[39m, offset: [33m3464[39m },
+        end: { line: [33m72[39m, column: [33m37[39m, offset: [33m3500[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m74[39m, column: [33m1[39m, offset: [33m3502[39m },
+        end: { line: [33m74[39m, column: [33m41[39m, offset: [33m3542[39m }
+      },
+      tagname: [32m'$$'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [1mnull[22m,
+      classes: [],
+      content: [32m" \\int_a^b f'(x)\\,dx = f(b) - f(a) "[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'A more complex display:'[39m,
+          position: {
+            start: { line: [33m76[39m, column: [33m1[39m, offset: [33m3544[39m },
+            end: { line: [33m76[39m, column: [33m24[39m, offset: [33m3567[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m76[39m, column: [33m1[39m, offset: [33m3544[39m },
+        end: { line: [33m76[39m, column: [33m24[39m, offset: [33m3567[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m78[39m, column: [33m1[39m, offset: [33m3569[39m },
+        end: { line: [33m78[39m, column: [33m60[39m, offset: [33m3628[39m }
+      },
+      tagname: [32m'$$'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [1mnull[22m,
+      classes: [],
+      content: [32m' \\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6} '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: display math sigil, opaque content, longer expressions, summation notation.'[39m,
+          position: {
+            start: { line: [33m80[39m, column: [33m1[39m, offset: [33m3630[39m },
+            end: { line: [33m80[39m, column: [33m86[39m, offset: [33m3715[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m80[39m, column: [33m1[39m, offset: [33m3630[39m },
+        end: { line: [33m80[39m, column: [33m86[39m, offset: [33m3715[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.6. Math sigils with attributes'[39m,
+          position: {
+            start: { line: [33m82[39m, column: [33m5[39m, offset: [33m3721[39m },
+            end: { line: [33m82[39m, column: [33m37[39m, offset: [33m3753[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m82[39m, column: [33m1[39m, offset: [33m3717[39m },
+        end: { line: [33m82[39m, column: [33m37[39m, offset: [33m3753[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m84[39m, column: [33m1[39m, offset: [33m3755[39m },
+        end: { line: [33m84[39m, column: [33m47[39m, offset: [33m3801[39m }
+      },
+      tagname: [32m'$'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: {},
+      id: [32m'pythagoras'[39m,
+      classes: [ [32m'important'[39m ],
+      content: [32m' a^2 + b^2 = c^2 '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m86[39m, column: [33m1[39m, offset: [33m3803[39m },
+        end: { line: [33m86[39m, column: [33m65[39m, offset: [33m3867[39m }
+      },
+      tagname: [32m'$$'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: { number: [32m'eq:1'[39m },
+      id: [32m'euler-identity'[39m,
+      classes: [ [32m'featured'[39m ],
+      content: [32m' e^{i\\pi} + 1 = 0 '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: id, classes, and kwargs on math sigils; the '[39m,
+          position: {
+            start: { line: [33m88[39m, column: [33m1[39m, offset: [33m3869[39m },
+            end: { line: [33m88[39m, column: [33m55[39m, offset: [33m3923[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m88[39m, column: [33m55[39m, offset: [33m3923[39m },
+            end: { line: [33m88[39m, column: [33m58[39m, offset: [33m3926[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m' separates attributes from the math expression itself.'[39m,
+          position: {
+            start: { line: [33m88[39m, column: [33m58[39m, offset: [33m3926[39m },
+            end: { line: [33m88[39m, column: [33m112[39m, offset: [33m3980[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m88[39m, column: [33m1[39m, offset: [33m3869[39m },
+        end: { line: [33m88[39m, column: [33m112[39m, offset: [33m3980[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.7. Inline code, no '[39m,
+          position: {
+            start: { line: [33m90[39m, column: [33m5[39m, offset: [33m3986[39m },
+            end: { line: [33m90[39m, column: [33m26[39m, offset: [33m4007[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m90[39m, column: [33m26[39m, offset: [33m4007[39m },
+            end: { line: [33m90[39m, column: [33m29[39m, offset: [33m4010[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m90[39m, column: [33m1[39m, offset: [33m3982[39m },
+        end: { line: [33m90[39m, column: [33m29[39m, offset: [33m4010[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'To declare a constant in JavaScript, write <'[39m,
+          position: {
+            start: { line: [33m92[39m, column: [33m1[39m, offset: [33m4012[39m },
+            end: { line: [33m92[39m, column: [33m45[39m, offset: [33m4056[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'const x = 1'[39m,
+          position: {
+            start: { line: [33m92[39m, column: [33m45[39m, offset: [33m4056[39m },
+            end: { line: [33m92[39m, column: [33m60[39m, offset: [33m4071[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m'>. The arrow function form is <'[39m,
+          position: {
+            start: { line: [33m92[39m, column: [33m60[39m, offset: [33m4071[39m },
+            end: { line: [33m92[39m, column: [33m91[39m, offset: [33m4102[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'(x) => x * 2'[39m,
+          position: {
+            start: { line: [33m92[39m, column: [33m91[39m, offset: [33m4102[39m },
+            end: { line: [33m92[39m, column: [33m107[39m, offset: [33m4118[39m }
+          }
+        },
+        {
+          type: [32m'text'[39m,
+          value: [32m'>.'[39m,
+          position: {
+            start: { line: [33m92[39m, column: [33m107[39m, offset: [33m4118[39m },
+            end: { line: [33m92[39m, column: [33m109[39m, offset: [33m4120[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m92[39m, column: [33m1[39m, offset: [33m4012[39m },
+        end: { line: [33m92[39m, column: [33m109[39m, offset: [33m4120[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: inline code sigil, opaque content.'[39m,
+          position: {
+            start: { line: [33m94[39m, column: [33m1[39m, offset: [33m4122[39m },
+            end: { line: [33m94[39m, column: [33m45[39m, offset: [33m4166[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m94[39m, column: [33m1[39m, offset: [33m4122[39m },
+        end: { line: [33m94[39m, column: [33m45[39m, offset: [33m4166[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.8. Inline code with attributes'[39m,
+          position: {
+            start: { line: [33m96[39m, column: [33m5[39m, offset: [33m4172[39m },
+            end: { line: [33m96[39m, column: [33m37[39m, offset: [33m4204[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m96[39m, column: [33m1[39m, offset: [33m4168[39m },
+        end: { line: [33m96[39m, column: [33m37[39m, offset: [33m4204[39m }
+      }
+    },
+    {
+      type: [32m'acadamarkTag'[39m,
+      position: {
+        start: { line: [33m98[39m, column: [33m1[39m, offset: [33m4206[39m },
+        end: { line: [33m98[39m, column: [33m65[39m, offset: [33m4270[39m }
+      },
+      tagname: [32m'`'[39m,
+      positional: [],
+      booleans: {},
+      kwargs: { lang: [32m'js'[39m },
+      id: [32m'example-1'[39m,
+      classes: [ [32m'highlighted'[39m ],
+      content: [32m' const greeting = "hello" '[39m,
+      isOpaqueContent: [33mtrue[39m
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'Features: id, class, keyword on a code sigil.'[39m,
+          position: {
+            start: { line: [33m100[39m, column: [33m1[39m, offset: [33m4272[39m },
+            end: { line: [33m100[39m, column: [33m46[39m, offset: [33m4317[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m100[39m, column: [33m1[39m, offset: [33m4272[39m },
+        end: { line: [33m100[39m, column: [33m46[39m, offset: [33m4317[39m }
+      }
+    },
+    {
+      type: [32m'heading'[39m,
+      depth: [33m3[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'1.9. Code block sigil, no '[39m,
+          position: {
+            start: { line: [33m102[39m, column: [33m5[39m, offset: [33m4323[39m },
+            end: { line: [33m102[39m, column: [33m31[39m, offset: [33m4349[39m }
+          }
+        },
+        {
+          type: [32m'inlineCode'[39m,
+          value: [32m'|'[39m,
+          position: {
+            start: { line: [33m102[39m, column: [33m31[39m, offset: [33m4349[39m },
+            end: { line: [33m102[39m, column: [33m34[39m, offset: [33m4352[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m102[39m, column: [33m1[39m, offset: [33m4319[39m },
+        end: { line: [33m102[39m, column: [33m34[39m, offset: [33m4352[39m }
+      }
+    },
+    {
+      type: [32m'paragraph'[39m,
+      children: [
+        {
+          type: [32m'text'[39m,
+          value: [32m'<```\n'[39m +
+            [32m'function fibonacci(n) {\n'[39m +
+            [32m'if (n < 2) return n;\n'[39m +
+            [32m'return fibonacci(n - 1) + fibonacci(n - 2);\n'[39m +
+            [32m'}'[39m,
+          position: {
+            start: { line: [33m104[39m, column: [33m1[39m, offset: [33m4354[39m },
+            end: { line: [33m108[39m, column: [33m2[39m, offset: [33m4453[39m }
+          }
+        }
+      ],
+      position: {
+        start: { line: [33m104[39m, column: [33m1[39m, offset: [33m4354[39m },
+        end: { line: [33m108[39m, column: [33m2[39m, offset: [33m4453[39m }
+      }
+    },
+    {
+      type: [32m'code'[39m,
+      lang: [32m'>'[39m,
+      meta: [1mnull[22m,
+      value: [32m'\n'[39m +
+        [32m'Features: triple-backtick sigil, opaque multi-character content. Newlines and indentation preserved.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 1.10. Code block sigil with attributes\n'[39m +
+        [32m'\n'[39m +
+        [32m'<``` #fib-example .demo lang=js +runnable | function add(a, b) { return a + b; } ```>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: triple-backtick sigil with id, class, keyword, and flag.\n'[39m +
+        [32m'\n'[39m +
+        [32m'---\n'[39m +
+        [32m'\n'[39m +
+        [32m'## Part 2: Named tags — attribute forms\n'[39m +
+        [32m'\n'[39m +
+        [32m"This part exercises every attribute form the parser recognizes, using simple named tags that don't carry semantic meaning at this stage.\n"[39m +
+        [32m'\n'[39m +
+        [32m'### 2.1. Single positional\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite jones2024>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.2. Multiple positionals\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite jones2024 smith2023 perez2019>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: positional arguments are space-separated and accumulate into the `positional` array.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.3. Bracketed list as a single positional\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite [jones2024, smith2023, perez2019]>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: bracketed list is one positional whose value is the array of items. Compare with 2.2 above (multiple positionals) — same surface tokens, different parse.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.4. Quoted items in a bracketed list\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite ["author with spaces, comma", jones2024, "another"]>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: list items may be quoted, allowing spaces and commas inside.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.5. Id\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #methods>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: `#id` form.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.6. Single class\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside .footnote>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.7. Multiple classes\n'[39m +
+        [32m'\n'[39m +
+        [32m'<div .container .featured .dark-mode>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: classes accumulate into the `classes` array.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.8. Unquoted keyword\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure align=right>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.9. Quoted keyword (single quotes)\n'[39m +
+        [32m'\n'[39m +
+        [32m"<figure caption='An adult African elephant'>\n"[39m +
+        [32m'\n'[39m +
+        [32m'### 2.10. Quoted keyword (double quotes)\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure caption="An adult African elephant, photographed in Tanzania">\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: either quote type works; commas and spaces are preserved inside.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.11. Positive flag\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure +wrap>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.12. Negative flag\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure -published>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.13. Multiple flags\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite jones2024 +link +preview -inline>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 2.14. All attribute forms in one tag\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure src=elephant.jpg #adult-elephant .photo .featured align=right caption="An adult elephant" +wrap -draft>\n'[39m +
+        [32m'\n'[39m +
+        [32m"Features: positional (`src`'s value before realizing this is a kwarg — actually `src=elephant.jpg` is a kwarg, not a positional), id, multiple classes, multiple kwargs (one quoted), positive flag, negative flag. Note: order is free, this happens to put kwargs first and flags last for readability.\n"[39m +
+        [32m'\n'[39m +
+        [32m'### 2.15. Attribute order is free\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure +wrap .photo src=elephant.jpg .featured align=right -draft #adult #adult-elephant>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: same attributes as 2.14, in shuffled order. The id appearing twice (`#adult` then `#adult-elephant`) takes the last value per the spec — implementation may warn.\n'[39m +
+        [32m'\n'[39m +
+        [32m'---\n'[39m +
+        [32m'\n'[39m +
+        [32m'## Part 3: Named tags — content forms\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 3.1. No content\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite jones2024>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: no `|`, no closing tag, tag has no content.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 3.2. Short-form content\n'[39m +
+        [32m'\n'[39m +
+        [32m'<a https://example.com | Example>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<em | important>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<strong | very important>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: `|` introduces content; the `>` after content closes the tag.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 3.3. Content containing punctuation\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | A note with semicolons; em-dashes — and ellipses…>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: most punctuation passes through transparently in content.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 3.4. Content containing nested constructs (boundary detection)\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | See the equation <$ E = mc^2 $> for the famous formula.>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | The function <` factorial(n) `> computes a factorial.>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | Refer to <ref fig:elephant> for the photograph.>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure src=elephant.jpg | An adult elephant. See also <ref fig:calf>.>\n'[39m +
+        [32m'\n'[39m +
+        [32m"Features: nested sigil tags and nested named tags inside named-tag content. The parser's rule-B depth tracking (extended in Slice 3.5 to recognize `$`, `` ` `` as well as `#`) ensures the outer `>` doesn't false-close. **(future pipeline: at Slice 3.5 the inner constructs are part of the outer tag's opaque content string; recursive-content parsing turns them into structured child nodes in a future slice.)**\n"[39m +
+        [32m'\n'[39m +
+        [32m'### 3.5. Content with `<` that does not open a construct\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | The condition a < b implies a != b.>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | Compare 5 < 10 and 10 < 100.>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: `<` followed by a non-tag-starting character (space, digit) is treated as literal content, not as a nested-construct opener. This is the rule-B refinement in the spec.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 3.6. Content with literal `>` requires escaping\n'[39m +
+        [32m'\n'[39m +
+        [32m'<aside | The condition a &gt; b implies a != b.>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: a literal `>` in content must be written as `&gt;`, since a bare `>` would close the tag.\n'[39m +
+        [32m'\n'[39m +
+        [32m'---\n'[39m +
+        [32m'\n'[39m +
+        [32m'## Part 4: Permissive identifiers\n'[39m +
+        [32m'\n'[39m +
+        [32m'These exercise the start-and-continue identifier rules introduced in Slice 3.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 4.1. Hyphenated ids\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #methods-and-results>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<figure #adult-african-elephant>\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 4.2. Colon in identifiers\n'[39m +
+        [32m'\n'[39m +
+        [32m'<ref #fig:body-cross-section>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<ref #eq:euler-identity>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<ref #thm:fundamental-arithmetic>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: `:` is allowed mid-identifier and in start position via the start-and-continue split. This enables the `fig:`, `eq:`, `thm:` namespacing convention.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 4.3. Dots in identifiers (versions, filenames)\n'[39m +
+        [32m'\n'[39m +
+        [32m'<package version=v1.2.3>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<img src=puppy.jpg>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<img src=elephant.png>\n'[39m +
+        [32m'\n'[39m +
+        [32m"Features: `.` is allowed mid-identifier, so version strings and file extensions don't need quoting.\n"[39m +
+        [32m'\n'[39m +
+        [32m'### 4.4. URLs as positional or keyword values\n'[39m +
+        [32m'\n'[39m +
+        [32m'<a https://example.com/path?query=value | Example>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<a href=https://example.com/path | Example>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<cite-source url=https://doi.org/10.1234/example.5678>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: slashes, colons, query strings, equals signs (inside the URL after `?`), all valid mid-identifier.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 4.5. Hyphens in keyword values\n'[39m +
+        [32m'\n'[39m +
+        [32m'<img src=my-photo-large.jpg width=240 height=240>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: `-` is allowed in keyword values (after `=`). Note: `-` remains excluded at start position, where it would be parsed as a negative flag.\n'[39m +
+        [32m'\n'[39m +
+        [32m'---\n'[39m +
+        [32m'\n'[39m +
+        [32m'## Part 5: Section-style tags and the implicit-close pattern\n'[39m +
+        [32m'\n'[39m +
+        [32m"Acadamark's most distinctive authoring affordance is implicit closing for section-style tags. A new peer-level section ends the previous one without an explicit closing tag, mirroring LaTeX's `\\section{}` and `\\subsection{}`. This is what makes acadamark source dramatically easier to type than raw HTML.\n"[39m +
+        [32m'\n'[39m +
+        [32m'**(future pipeline: at Slice 3.5 the parser produces individual `acadamarkTag` nodes for each `<section>`, `<sub-section>`, etc.; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the interpreter that bridges the parser output to the section-nesting plugin is a future slice. The authoring patterns in this part are correct acadamark source today — the structural nesting will be observable end-to-end once the interpreter lands.)**\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 5.1. Flat sections, peer-level\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #intro | Introduction>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #methods | Methods>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #results | Results>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #discussion | Discussion>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: each section uses the short-form `<tag attrs | content>` pattern. No explicit closing required. When the section-nesting bridge is in place, these become four sibling `<section>` elements in the output HTML.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 5.2. Sections with sub-sections\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #intro | Introduction>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Some introductory prose.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-section #motivation | Motivation>\n'[39m +
+        [32m'\n'[39m +
+        [32m'The motivation is described here.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-section #related-work | Related Work>\n'[39m +
+        [32m'\n'[39m +
+        [32m'A discussion of related work.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #methods | Methods>\n'[39m +
+        [32m'\n'[39m +
+        [32m'The methods section begins, implicitly ending the related-work sub-section *and* the introduction section.\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: section depth is tracked by the named depth ladder (`section`, `sub-section`, `sub-sub-section`). A new `section` closes any open `sub-section` *and* the previous `section`. A new `sub-section` closes any open `sub-section` but stays inside the current `section`.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 5.3. Three-deep section nesting\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #intro | Introduction>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Top-level prose.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-section #background | Background>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-sub-section #history | History>\n'[39m +
+        [32m'\n'[39m +
+        [32m'History prose.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-sub-section #context | Context>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Context prose. This implicitly closes the history sub-sub-section.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-section #scope | Scope>\n'[39m +
+        [32m'\n'[39m +
+        [32m"Scope prose. This implicitly closes the context sub-sub-section *and* the background sub-section's nesting at depth 3.\n"[39m +
+        [32m'\n'[39m +
+        [32m'<section #methods | Methods>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Methods prose. This implicitly closes everything still open at greater depth.\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: full three-level nesting, with implicit closing at all depths handled by the section-nesting plugin.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 5.4. Section title vocabulary\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #intro>\n'[39m +
+        [32m'<section-title | Introduction>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Introductory prose follows.\n'[39m +
+        [32m'\n'[39m +
+        [32m'<sub-section #motivation>\n'[39m +
+        [32m'<sub-section-title | Motivation>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Motivation prose.\n'[39m +
+        [32m'\n'[39m +
+        [32m"Features: container-role naming (Rule 1 in `notes/layer1-naming.md`). `<section-title>` is the title of a `<section>`; `<sub-section-title>` is the title of a `<sub-section>`. The parent's `|` is omitted when the title is provided as a separate child element rather than as content.\n"[39m +
+        [32m'\n'[39m +
+        [32m'### 5.5. Article title at the top of a document\n'[39m +
+        [32m'\n'[39m +
+        [32m'<article-title | A Theory of Everything>\n'[39m +
+        [32m'<article-subtitle | With Special Attention to Edge Cases>\n'[39m +
+        [32m'\n'[39m +
+        [32m'<section #intro | Introduction>\n'[39m +
+        [32m'\n'[39m +
+        [32m'Document body begins.\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: `<article-title>` and `<article-subtitle>` per Rule 1. These produce custom elements at Layer 1; in render mode they would lower to `<h1>` / `<p class="subtitle">` for browser default styling.\n'[39m +
+        [32m'\n'[39m +
+        [32m'---\n'[39m +
+        [32m'\n'[39m +
+        [32m'## Part 6: Citations and cross-references\n'[39m +
+        [32m'\n'[39m +
+        [32m'These exercise the syntactic forms; the resolution to bibliography entries and figure numbers happens in the citation and cross-ref plugins (Phase 2 of the build plan), not at the parser level.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 6.1. Single citation\n'[39m +
+        [32m'\n'[39m +
+        [32m'According to <cite jones2024>, the effect is well-documented.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 6.2. Multiple citations as positionals\n'[39m +
+        [32m'\n'[39m +
+        [32m'The phenomenon is widely studied <cite jones2024 smith2023 perez2019>.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 6.3. Bracketed-list citation\n'[39m +
+        [32m'\n'[39m +
+        [32m'The phenomenon is widely studied <cite [jones2024, smith2023, perez2019]>.\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: bracketed list as a single positional. Functionally equivalent to 6.2 in this case, but the bracketed form preserves "this is one citation group" semantics for the interpreter.\n'[39m +
+        [32m'\n'[39m +
+        [32m'### 6.4. Citation with formatting flags\n'[39m +
+        [32m'\n'[39m +
+        [32m'According to <cite jones2024 +link +preview>, the effect is well-documented.\n'[39m +
+        [32m'\n'[39m +
+        [32m'Features: flags on a citation control downstream interpretation (e.g., `+link` requests a hyperlink, `'[39m... 9064 more characters,
+      position: {
+        start: { line: [33m109[39m, column: [33m1[39m, offset: [33m4454[39m },
+        end: { line: [33m659[39m, column: [33m1[39m, offset: [33m23524[39m }
+      }
+    }
+  ],
+  position: {
+    start: { line: [33m1[39m, column: [33m1[39m, offset: [33m0[39m },
+    end: { line: [33m659[39m, column: [33m1[39m, offset: [33m23524[39m }
+  }
+}
+
+Acadamark tags at block level:
+  <#> {"position":{"start":{"line":38,"column":1,"offset":2304},"end":{"line":38,"column":19,"offset":2322}},"tagname":"#","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" Introduction ","isOpaqueContent":true}
+  <##> {"position":{"start":{"line":40,"column":1,"offset":2324},"end":{"line":40,"column":34,"offset":2357}},"tagname":"##","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" Background and motivation ","isOpaqueContent":true}
+  <###> {"position":{"start":{"line":42,"column":1,"offset":2359},"end":{"line":42,"column":30,"offset":2388}},"tagname":"###","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" A finer subdivision ","isOpaqueContent":true}
+  <#> {"position":{"start":{"line":48,"column":1,"offset":2543},"end":{"line":48,"column":28,"offset":2570}},"tagname":"#","positional":[],"booleans":{},"kwargs":{},"id":"intro","classes":[],"content":" Introduction ","isOpaqueContent":true}
+  <##> {"position":{"start":{"line":50,"column":1,"offset":2572},"end":{"line":50,"column":43,"offset":2614}},"tagname":"##","positional":[],"booleans":{},"kwargs":{},"id":"background","classes":["numbered"],"content":" Background ","isOpaqueContent":true}
+  <###> {"position":{"start":{"line":52,"column":1,"offset":2616},"end":{"line":52,"column":71,"offset":2686}},"tagname":"###","positional":[],"booleans":{"draft":true},"kwargs":{},"id":"fine-grain","classes":["numbered","reviewed"],"content":" A finer subdivision ","isOpaqueContent":true}
+  <#> {"position":{"start":{"line":58,"column":1,"offset":2886},"end":{"line":58,"column":96,"offset":2981}},"tagname":"#","positional":[],"booleans":{"draft":true,"published":false},"kwargs":{"level":"primary","status":"in review"},"id":"methods","classes":["numbered","reviewed"],"content":" Methods ","isOpaqueContent":true}
+  <$$> {"position":{"start":{"line":74,"column":1,"offset":3502},"end":{"line":74,"column":41,"offset":3542}},"tagname":"$$","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" \\int_a^b f'(x)\\,dx = f(b) - f(a) ","isOpaqueContent":true}
+  <$$> {"position":{"start":{"line":78,"column":1,"offset":3569},"end":{"line":78,"column":60,"offset":3628}},"tagname":"$$","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" \\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6} ","isOpaqueContent":true}
+  <$> {"position":{"start":{"line":84,"column":1,"offset":3755},"end":{"line":84,"column":47,"offset":3801}},"tagname":"$","positional":[],"booleans":{},"kwargs":{},"id":"pythagoras","classes":["important"],"content":" a^2 + b^2 = c^2 ","isOpaqueContent":true}
+  <$$> {"position":{"start":{"line":86,"column":1,"offset":3803},"end":{"line":86,"column":65,"offset":3867}},"tagname":"$$","positional":[],"booleans":{},"kwargs":{"number":"eq:1"},"id":"euler-identity","classes":["featured"],"content":" e^{i\\pi} + 1 = 0 ","isOpaqueContent":true}
+  <`> {"position":{"start":{"line":98,"column":1,"offset":4206},"end":{"line":98,"column":65,"offset":4270}},"tagname":"`","positional":[],"booleans":{},"kwargs":{"lang":"js"},"id":"example-1","classes":["highlighted"],"content":" const greeting = \"hello\" ","isOpaqueContent":true}

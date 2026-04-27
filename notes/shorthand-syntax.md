@@ -40,7 +40,9 @@ These belong to downstream plugins.
 construct       ::= sigil_tag | named_tag
 
 sigil_tag       ::= "<" sigil [ws+ attributes] ["|" content] sigil ">"
-sigil           ::= "#"+ | "$"+ | "`"+ | (other registered sigils)
+sigil           ::= "#" | "##" | "###" | "$" | "$$" | "`" | "```"
+                    (* currently registered levels; extensible, but only these
+                       lengths are accepted — the `+` form is not open-ended *)
 
 named_tag       ::= short_form | long_form
 short_form      ::= "<" tag_name [ws+ attributes] ["|" content] ">"
@@ -52,8 +54,9 @@ identifier       ::= identifier_start identifier_cont*
 identifier_start ::= [^ \t\n<>|+\-#.="'\[\],]
                      (* excludes structural delimiters AND syntactic prefixes
                         (+, -, #, ., =); these may appear mid-identifier only *)
-identifier_cont  ::= [^ \t\n<>|="'\[\],]
-                     (* excludes structural delimiters only *)
+identifier_cont  ::= [^ \t\n<>|"'\[\],]
+                     (* excludes structural delimiters; `=` is allowed so that
+                        URLs with query strings work as bare identifiers *)
 
 attributes      ::= attribute (ws+ attribute)*
 attribute       ::= positional | bracketed_list | flag | id | class | keyword
@@ -86,7 +89,9 @@ The grammar uses two distinct character-class rules for names:
 
 A *tag name* (`tag_name`) is strict: starts with an ASCII letter, continues with letters, digits, underscores, or hyphens (`[a-zA-Z][a-zA-Z0-9_-]*`). Tag names appear as the word immediately after `<` and as the key in `key=value` attributes. Tag names are case-sensitive at the parser level (the interpreter may normalize).
 
-An *identifier* uses a start-and-continue split: the first character must not be a syntactic prefix (`+`, `-`, `#`, `.`, `=`) or structural delimiter; subsequent characters may include those prefix characters as literal data. This is encoded in two sub-rules (`identifier_start`, `identifier_cont`) that mirror the EBNF directly. Examples: `fig:body-cross-section` (starts with `f`; `:` and `-` are valid `identifier_cont` chars), `my-cool-id`, `v1.2.3`, `https://example.com`. Whitespace and structural delimiters (`<`, `>`, `|`, `=`, `"`, `'`, `[`, `]`, `,`) are never valid in an identifier.
+An *identifier* uses a start-and-continue split: the first character must not be a syntactic prefix (`+`, `-`, `#`, `.`, `=`) or structural delimiter; subsequent characters may include those prefix characters as literal data, including `=`. This is encoded in two sub-rules (`identifier_start`, `identifier_cont`) that mirror the EBNF directly. Examples: `fig:body-cross-section` (starts with `f`; `:` and `-` are valid `identifier_cont` chars), `my-cool-id`, `v1.2.3`, `https://example.com`, `https://example.com?q=value` (`:`, `/`, `?`, `=` all valid `identifier_cont`). Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers.
+
+The asymmetric treatment of `=` is intentional: `=` excluded from `identifier_start` keeps keyword syntax (`key=value`) unambiguous — a `=` can never begin an identifier, so the first `=` after a tag-name token always signals a keyword. `=` allowed in `identifier_cont` lets URLs with query strings (`https://example.com?q=value`) appear as bare positionals or keyword values without quoting. Keyword parsing is unaffected because the attribute rule tries `Keyword` (`tag_name "=" value`) before `Positional`, and `tag_name` uses its own strict character class that stops at `=`.
 
 The distinction matters for cross-references and ids: `<ref #fig:body-cross-section>` must produce `id: "fig:body-cross-section"` with the `:` intact. Using `tag_name` for id values would reject this. The start-and-continue split also makes disambiguation self-contained: `#elephant` is unambiguously an id form (the `#` is a syntactic prefix, not an identifier character), while `section-one` is unambiguously a valid positional identifier.
 
@@ -113,7 +118,7 @@ Attributes can appear in any order. Multiple positional, multiple flags, multipl
 
 ### Identifiers
 
-Identifiers are the values of `#id` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `=`). Mid-identifier, these prefix characters are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, and `v1.2.3` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.
+Identifiers are the values of `#id` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `=`). Mid-identifier, prefix characters including `=` are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, `v1.2.3`, and `https://example.com?q=value` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.
 
 ### Quoted strings
 
@@ -170,6 +175,10 @@ Sigil tags close with the sigil sequence repeated immediately before `>`.
 The closing sigil must match the opening sigil exactly (same character, same count). Inside the content, the sigil character may appear freely except as a contiguous run matching the opener immediately before `>`.
 
 Sigil tag content is **opaque** — no nested-tag parsing happens inside. The whole content from after `|` to before the closing sigil is a literal string. This is what makes sigil tags suitable for math (which contains `<`, `>`, `\`, etc.) and code (which contains anything).
+
+The `|` separator is optional. Without it, the tag has no attributes and the entire body is opaque content. `<$ \frac{x}{2} $>` produces `content: " \\frac{x}{2} "` with `isOpaqueContent: true`. The `|` form exists only to attach attributes: `<$ #myeq | \frac{x}{2} $>`.
+
+When a sigil tag appears nested inside the content of a named tag, the parser's depth-tracking logic (rule B) must recognize the sigil character as a tag-opening signal. `<` followed immediately by a registered sigil character increments the nesting depth during content scanning, preventing the sigil's closer from prematurely ending the outer construct. For example, in `<figure | nested <$ x $>>`, the inner `$>` does not close `figure` because `<$` was recognized as a depth-incrementing opener.
 
 ### Long form
 
@@ -269,6 +278,19 @@ For each parsed construct, the parser produces a structured node with the follow
 For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` → `"##"`, `<###` → `"###"`, `<$` → `"$"`, `<$$` → `"$$"`, `` <` `` → `` "`" ``, etc. The `positional`, `booleans`, etc. fields all behave the same way as for named tags.
 
 For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `acadamarkTag` nodes, or markdown nodes, or plain text).
+
+**Error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-line without finding the mirrored closer, it commits the truncated span as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Shape:
+
+```
+{
+  type: "acadamarkTagError",
+  source: "<```",         // the raw fragment as extracted by the micromark finder
+  error: "...",           // the Peggy parse-error message
+  position: { ... }       // standard mdast position (added automatically)
+}
+```
+
+This behavior is a finite-lifespan guard: when multi-line sigil tags are implemented, the end-of-line check in the micromark finder will be relaxed and these error tokens will become unreachable.
 
 ## Worked examples
 
@@ -410,7 +432,7 @@ The examples below are paired with their parsed structure. The structure is show
 }
 ```
 
-(Note: in this case there is no `|`. For sigil tags, the convention is to allow the content to follow the sigil directly without `|`, treating the entire body between the opener and the mirrored closer as content. This is a small special case that simplifies the common heading/math/code idiom. See open question below.)
+(Note: in this case there is no `|`. For sigil tags, the body between the opener and the mirrored closer is always treated as opaque content when no `|` is present — no attribute parsing occurs. This applies to all sigil families. See the Resolved Decisions section for the settled rule.)
 
 ### Example 10: Sigil tag with id
 
@@ -684,7 +706,7 @@ These were open questions that were settled during implementation.
 
 - **Multi-word positionals: space-separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. `<cite jones2001 smith2022>` → `positional: ["jones2001", "smith2022"]`. This is consistent with how positional arguments work in shell commands and LaTeX. It also makes the qualifying-tag pattern natural: `<table csv | ...>` has `csv` as the second positional.
 
-- **Positional tokens and id/keyword values use the permissive `identifier` rule.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`, `=`). The same character class applies to id values (after `#`) and unquoted keyword values (after `=`). This allows file paths (`puppy.jpg`), URLs (`https://example.com`), hyphenated identifiers (`my-file.jpg`), colon-prefixed ids (`fig:body-cross-section`), and numbers without quoting. The `=` sign terminates the keyword-name scan only; if `=` follows immediately after the name chars, it's a keyword, and then the value is read as an identifier. This means `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`.
+- **Positional tokens and id/keyword values use the permissive `identifier` rule.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`). The same character class applies to id values (after `#`) and unquoted keyword values (after `=`). This allows file paths (`puppy.jpg`), URLs with query strings (`https://example.com?q=value`), hyphenated identifiers (`my-file.jpg`), colon-prefixed ids (`fig:body-cross-section`), and numbers without quoting. The asymmetric `=` rule — excluded from `identifier_start`, allowed in `identifier_cont` — keeps keyword syntax (`key=value`) unambiguous while letting `=` appear freely inside identifier tokens. `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`; `https://example.com?q=value` correctly parses as a single positional identifier.
 
 - **`>` in content: rule B (tag-looking openers only).** The content scanner increments depth when it encounters `<` only if the immediately following character is an ASCII letter, a registered sigil character, or `/` (for `</closing>` tags). A `<` followed by anything else — space, digit, punctuation — is treated as literal and does **not** affect depth. This means `<figure | a < b>` works correctly (the `< ` does not increment depth, so the `>` closes the figure with content `a < b`). Bare `>` without a preceding tag-like `<` still closes the construct early — `<figure | 1 > 0>` gives content `1 ` — authors must use `&gt;` for literal `>` in prose.
 
@@ -696,21 +718,25 @@ These were open questions that were settled during implementation.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
 
+- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. Through Slice 2 content is still an opaque string because no recursive parsing has happened yet; the homogeneous shape kicks in when recursive content parsing is implemented.
+
 ## Open questions
 
 Remaining open questions flagged for resolution as implementation proceeds.
 
 - **`|` in short-form content.** After the first `|` separator, subsequent `|` characters in content are treated as literal content (the "exactly one `|` per construct" rule). No escaping needed.
 
-- **Named tag content shape: string vs. array.** The worked examples show `content` as an array of child nodes (e.g., `content: ["An elephant."]`) even for simple text. The current implementation produces a raw string (e.g., `content: " An elephant."`). These are the same data but in different containers. The question is whether `content` is always an array (with plain strings as array elements) or whether it is a raw string for opaque content and an array only for parsed content. This needs an explicit decision before recursive content parsing (Slice 3+) can be implemented, since it determines the node contract downstream interpreters depend on.
-
 - **Named tag content: recursive parsing.** In Slice 2, named-tag content is an opaque string. Recursive parsing of content into child nodes (so `<figure | text with <em | emphasis>>` produces a nested AST) is deferred to a later slice.
 
-- **Multi-line named tags.** Named tags are currently single-line only (line endings fail the construct). Multi-line attr sections and content are in the spec (Example 7) but not yet implemented. Deferred to a later slice.
+- **Multi-line constructs.** Both named tags and sigil tags are currently single-line only (through Slice 3.5). Line endings fail the construct. Multi-line named tags are described in the spec (Example 7) but not yet implemented. Multi-line sigil tags are not yet in the spec. Both are deferred to a later slice. Until then, an unclosed sigil opener emits an `acadamarkTagError` node rather than falling through silently (see "What the parser produces" above).
+
+- **Registered sigil characters in `identifier_start` position.** `$` and `` ` `` are registered sigil characters but are not currently excluded from `identifier_start` (the exclusion list covers `#` and `.` and `+`/`-` but not all registered sigils). This means `<figure $weird>` parses `$weird` as a positional. The behavior is consistent between spec and grammar; the design intent is unsettled. Revisit when identifier rules are next touched or when another sigil family is added.
+
+- **No-`|` examples for `$` and `` ` `` sigils.** Examples 11–13 show only the `|` form for dollar and backtick sigils. The no-`|` form is supported and documented in prose; worked examples for it should be added to the Examples section when it is next touched.
 
 ## Coexistence with raw HTML
 
-Acadamark's text-position (inline) tokenizer runs before remark-parse's built-in HTML inline tokenizer. This means `<tagname ...>` constructs are consumed by acadamark, not treated as raw HTML.
+Acadamark's text-position (inline) tokenizers — for both named tags and sigil tags — run before remark-parse's built-in HTML inline tokenizer. This means `<tagname ...>` and `<$...$>`, `` <`...`> ``, `<#...#>` constructs appearing inside paragraphs are consumed by acadamark, not treated as raw HTML.
 
 **What works:** Most common HTML inline tags happen to round-trip correctly. `<em | text>`, `<strong | text>`, `<a href="url" | link>` all parse correctly with acadamark syntax. For HTML-style `<a href="url">link</a>`, acadamark parses `<a href="url">` as an acadamark tag with no content (kwarg `href`, no `|`), and `link</a>` becomes trailing text including a raw closing tag. This is imperfect but usually harmless if authors use acadamark idioms.
 

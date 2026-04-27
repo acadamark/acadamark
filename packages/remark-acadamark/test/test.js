@@ -303,4 +303,214 @@ console.log('\nAll Slice 2 integration tests passed.')
 }
 
 console.log('\nAll Slice 3 integration tests passed.')
-console.log('\n37/37 tests passed.')
+
+// ─── Slice 3.5: dollar and backtick sigil families ─────────────────────────
+
+{
+  const node = parseTag('<$ x^2 $>')
+  assert.equal(node.tagname, '$')
+  assert.equal(node.content, ' x^2 ')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.id, null)
+  assert.deepEqual(node.classes, [])
+  console.log('PASS: basic <$ ... $> no-| form')
+}
+
+{
+  const node = parseTag('<$$ \\frac{x}{2} $$>')
+  assert.equal(node.tagname, '$$')
+  assert.equal(node.content, ' \\frac{x}{2} ')
+  console.log('PASS: <$$ ... $$> display math')
+}
+
+{
+  const node = parseTag('<$ #myeq | x^2 $>')
+  assert.equal(node.tagname, '$')
+  assert.equal(node.id, 'myeq')
+  assert.equal(node.content, ' x^2 ')
+  console.log('PASS: <$ #id | content $> with attribute')
+}
+
+{
+  const node = parseTag('<$$ | \\sum_{i=0}^{n} x_i $$>')
+  assert.equal(node.tagname, '$$')
+  assert.equal(node.content, ' \\sum_{i=0}^{n} x_i ')
+  console.log('PASS: <$$ | content $$> bare pipe form')
+}
+
+{
+  const node = parseTag('<$$ has $ one dollar $$>')
+  assert.equal(node.tagname, '$$')
+  assert.equal(node.content, ' has $ one dollar ')
+  console.log('PASS: single $ inside $$ tag is not a closer')
+}
+
+{
+  const node = parseTag('<` code `>')
+  assert.equal(node.tagname, '`')
+  assert.equal(node.content, ' code ')
+  assert.equal(node.isOpaqueContent, true)
+  console.log('PASS: basic <` ... `> no-| form')
+}
+
+{
+  const node = parseTag('<``` block ```>')
+  assert.equal(node.tagname, '```')
+  assert.equal(node.content, ' block ')
+  console.log('PASS: <``` ... ```> code block')
+}
+
+{
+  const node = parseTag('<` #mycode | inline `>')
+  assert.equal(node.tagname, '`')
+  assert.equal(node.id, 'mycode')
+  assert.equal(node.content, ' inline ')
+  console.log('PASS: <` #id | content `> with attribute')
+}
+
+{
+  const node = parseTag('<``` has ` one backtick ```>')
+  assert.equal(node.tagname, '```')
+  assert.equal(node.content, ' has ` one backtick ')
+  console.log('PASS: single ` inside ``` tag is not a closer')
+}
+
+{
+  const node = parseTag('<figure | nested <$ x $>>')
+  assert.equal(node.tagname, 'figure')
+  assert.equal(node.content, ' nested <$ x $>')
+  console.log('PASS: $ sigil in named-tag content does not close outer tag')
+}
+
+{
+  const node = parseTag('<div | code: <` foo `> done>')
+  assert.equal(node.tagname, 'div')
+  assert.equal(node.content, ' code: <` foo `> done')
+  console.log('PASS: ` sigil in named-tag content does not close outer tag')
+}
+
+console.log('\nAll Slice 3.5 integration tests passed.')
+
+// ─── Inline sigil tags (text-position registration) ───────────────────────
+
+{
+  const node = parseInlineTag('The formula <$ E = mc^2 $> is famous.')
+  assert.equal(node.tagname, '$')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, ' E = mc^2 ')
+  console.log('PASS: inline <$> math sigil in paragraph')
+}
+
+{
+  const node = parseInlineTag('Call <` foo() `> to start.')
+  assert.equal(node.tagname, '`')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, ' foo() ')
+  console.log('PASS: inline <`> code sigil in paragraph')
+}
+
+{
+  const node = parseInlineTag('Before <# heading #> after.')
+  assert.equal(node.tagname, '#')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, ' heading ')
+  console.log('PASS: inline <#> heading sigil in paragraph')
+}
+
+{
+  const tree = parse('Inline <$ a^2 $> and <` code `> here.')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const tags = para.children.filter((n) => n.type === 'acadamarkTag')
+  assert.equal(tags.length, 2)
+  assert.equal(tags[0].tagname, '$')
+  assert.equal(tags[0].content, ' a^2 ')
+  assert.equal(tags[1].tagname, '`')
+  assert.equal(tags[1].content, ' code ')
+  console.log('PASS: multiple inline sigil tags in same paragraph')
+}
+
+{
+  const tree = parse('The *important* formula <$ E = mc^2 $> is *famous*.')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const tag = para.children.find((n) => n.type === 'acadamarkTag')
+  assert.ok(tag, 'acadamarkTag exists in paragraph')
+  assert.equal(tag.tagname, '$')
+  assert.equal(tag.content, ' E = mc^2 ')
+  const emphNodes = para.children.filter((n) => n.type === 'emphasis')
+  assert.equal(emphNodes.length, 2)
+  console.log('PASS: inline sigil mixed with bare markdown emphasis')
+}
+
+console.log('\nAll inline sigil text-position tests passed.')
+
+// ─── Defensive error: sigil opener without same-line closer ───────────────
+
+{
+  // Multi-line backtick sigil: opener on one line, body and closer on next.
+  // The tokenizer should emit an error token rather than letting remark
+  // silently misinterpret the fragment (which could produce runaway code blocks).
+  const src = '<```\nsome code\n```>'
+  const tree = parse(src)
+  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
+  assert.ok(errNode, 'acadamarkTagError node present for unclosed sigil opener')
+  assert.ok(errNode.source.startsWith('<'), 'error source starts with <')
+  assert.ok(typeof errNode.error === 'string', 'error message is a string')
+  console.log('PASS: unclosed sigil opener produces acadamarkTagError node')
+}
+
+{
+  // Same check for the # family.
+  const src = '<#\nheading content\n#>'
+  const tree = parse(src)
+  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
+  assert.ok(errNode, 'acadamarkTagError node present for unclosed # sigil opener')
+  console.log('PASS: unclosed # sigil opener produces acadamarkTagError node')
+}
+
+console.log('\nAll defensive error tests passed.')
+
+// ─── acadamarkTagError node shape (spec tripwire) ─────────────────────────
+// This test asserts exact property names. If from-markdown.js ever changes
+// the property names it emits, this test catches the drift against the spec.
+
+{
+  const src = '<# unclosed heading\n'
+  const tree = parse(src)
+  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
+  assert.ok(errNode, 'error node present')
+  assert.equal(typeof errNode.source, 'string', 'error node has .source (string)')
+  assert.equal(typeof errNode.error, 'string', 'error node has .error (string)')
+  assert.ok(errNode.source.startsWith('<'), '.source starts with <')
+  console.log('PASS: acadamarkTagError node has correct property names (source, error)')
+}
+
+console.log('\nAll error-node shape tests passed.')
+
+// ─── IdentifierCont `=` fix — URL query strings ───────────────────────────
+
+{
+  const node = parseTag('<a https://example.com?q=value | link>')
+  assert.equal(node.tagname, 'a')
+  assert.deepEqual(node.positional, ['https://example.com?q=value'])
+  assert.equal(node.content, ' link')
+  console.log('PASS: URL with single query param as positional')
+}
+
+{
+  const node = parseTag('<a https://example.com?q=1&page=2 | link>')
+  assert.equal(node.tagname, 'a')
+  assert.deepEqual(node.positional, ['https://example.com?q=1&page=2'])
+  assert.equal(node.content, ' link')
+  console.log('PASS: URL with multiple query params as positional')
+}
+
+{
+  // Keyword value containing `=`: keyword parsing must be unaffected
+  const node = parseTag('<cite href=https://example.com?q=value>')
+  assert.equal(node.tagname, 'cite')
+  assert.equal(node.kwargs.href, 'https://example.com?q=value')
+  console.log('PASS: keyword value containing `=` (URL query string)')
+}
+
+console.log('\nAll IdentifierCont `=` fix tests passed.')
+console.log('\n60/60 tests passed.')
