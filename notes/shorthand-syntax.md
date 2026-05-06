@@ -231,7 +231,7 @@ The registry serves two related but distinct functions: it declares **long-form 
 - **Long-form eligibility.** Only tags listed in the registry are recognized in long-form. The micromark boundary finder reads the tag name and calls `nok` immediately if the name is absent. This means the registry is the parser's mechanism for deciding which tags can have multi-line block content — not just a handler-classification list.
 - **Content handler.** The `contentHandler` field on the resulting node names which handler the interpreter should dispatch to. DSL-handler entries (like `csv → "csv"`, `math → "math"`) name a specific embedded-language handler. Structural entries (like `aside → "default"`, `blockquote → "default"`) use the `"default"` handler, meaning content is re-parsed through the regular remark pipeline when recursive content parsing is implemented.
 
-Tags not in the registry have neither property: they cannot appear in long-form and carry no `contentHandler`. The `"default"` handler name is a real entry in the registry, not a fallback for unregistered tags.
+Tags not in the registry cannot appear in long-form. Short-form tags not in the registry still receive a `contentHandler` value — `getContentHandler()` returns `"default"` as the fallback for unregistered tags. Only long-form eligibility requires a registry entry.
 
 Every long-form node carries a `contentHandler` string. There is no null/absent case.
 
@@ -307,7 +307,7 @@ For each parsed construct, the parser produces a structured node with the follow
   id: "elephant",              // string or null
   classes: ["numbered"],       // array of strings
   content: <child nodes or opaque string>,
-  isOpaqueContent: false       // true for sigil tags and all long-form at Slice 4
+  isOpaqueContent: false       // false for prose-bearing tags; true for DSL/math/code
 }
 ```
 
@@ -323,8 +323,8 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
   form: "long",
   tagname: "theorem",
   contentHandler: "theorem",  // names the content handler; "default" for regular long-form
-  isOpaqueContent: true,      // true for all long-form at Slice 4
-  content: "...",             // verbatim multi-line string at Slice 4
+  isOpaqueContent: true,      // true for DSL/math/code; false for prose-bearing (default handler)
+  content: "...",             // verbatim multi-line string until recursive-content plugin runs
   positional: [],
   booleans: {},
   kwargs: {},
@@ -335,7 +335,7 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 
 `contentHandler` names which handler the interpreter should dispatch to for this node's content. `"default"` is a real registry entry — it applies to registered structural long-form tags (like `aside` and `blockquote`) whose content is prose that should be re-parsed through the regular remark pipeline when recursive content parsing is implemented. DSL-handler entries like `"math"` or `"csv"` name a specific embedded-language handler. Tags not in the registry cannot appear in long-form at all — the long-form tokenizer rejects them at the tag-name level. The field is never absent on long-form nodes.
 
-`isOpaqueContent: true` on long-form nodes is a transient state at Slice 4. When recursive content parsing lands, nodes with `contentHandler: "default"` will have `isOpaqueContent` set to false and `content` will become `Node[]`. DSL-handler nodes remain `isOpaqueContent: true` permanently.
+`isOpaqueContent` is set at parse time by `from-markdown.js`. Prose-bearing nodes (`contentHandler: "default"`) get `false`; their `content` starts as a string and becomes `Node[]` after the recursive-content plugin runs. DSL-handler nodes remain `isOpaqueContent: true` permanently.
 
 **Error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-line without finding the mirrored closer, it commits the truncated span as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Shape:
 
@@ -485,12 +485,13 @@ The examples below are paired with their parsed structure. The structure is show
 ```
 {
   tagname: "#",
-  isOpaqueContent: true,
+  isOpaqueContent: false,
+  contentHandler: "default",
   content: " Introduction "
 }
 ```
 
-(Note: in this case there is no `|`. For sigil tags, the body between the opener and the mirrored closer is always treated as opaque content when no `|` is present — no attribute parsing occurs. This applies to all sigil families. See the Resolved Decisions section for the settled rule.)
+(Note: hash sigils are prose-bearing — `contentHandler: "default"`, `isOpaqueContent: false`. Their content is recursively parsed. Math and code sigils are opaque — `contentHandler: "math"` / `"code"`, `isOpaqueContent: true`. The body between opener and mirrored closer is the raw content string; no `|` separator is used for sigil tags. See the Resolved Decisions section for the settled rule.)
 
 ### Example 10: Sigil tag with id
 
@@ -502,7 +503,8 @@ The examples below are paired with their parsed structure. The structure is show
 {
   tagname: "#",
   id: "intro",
-  isOpaqueContent: true,
+  isOpaqueContent: false,
+  contentHandler: "default",
   content: " Introduction "
 }
 ```

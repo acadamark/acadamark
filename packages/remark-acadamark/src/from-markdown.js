@@ -64,11 +64,18 @@ function enterAcadamarkTag(token) {
 function exitAcadamarkTagRaw(token) {
   // Accumulate this line's raw text. Parsing is deferred to exitAcadamarkTag
   // so that multi-line constructs (multiple chunks) are joined first.
-  // Guard: a zero-length token at EOF has a null chunk — sliceSerialize crashes.
-  // This occurs when a lineEnding is consumed immediately before EOF, producing
-  // an empty trailing acadamarkTagRaw. Skip it; the join('\n') in exitAcadamarkTag
-  // already inserts the newline between chunks.
-  if (token.start.offset >= token.end.offset) return
+  //
+  // Zero-length token handling: when two consecutive line endings occur (a blank
+  // line inside content), the acadamarkTagRaw chunk between them is zero-length.
+  // Calling sliceSerialize on it would crash at EOF (null chunk in stream). We
+  // push "" directly without calling sliceSerialize — safe for both blank-line
+  // tokens (mid-document) and EOF tokens. The join('\n') in exitAcadamarkTag then
+  // correctly produces double "\n\n" for blank lines, preserving paragraph breaks.
+  if (token.start.offset === token.end.offset) {
+    const node = this.stack[this.stack.length - 1]
+    node._rawChunks.push('')
+    return
+  }
   const node = this.stack[this.stack.length - 1]
   node._rawChunks.push(this.sliceSerialize(token))
 }
@@ -81,6 +88,18 @@ function exitAcadamarkTag(token) {
   try {
     const parsed = peggyParse(source)
     Object.assign(node, parsed)
+    // Set contentHandler for all short-form tags (named and sigil). The grammar
+    // doesn't call getContentHandler; we do it here, mirroring the long-form path.
+    if (node.tagname) {
+      node.contentHandler = getContentHandler(node.tagname)
+      // isOpaqueContent: false for default-handler tags (prose, will be recursively
+      // parsed). True for DSL/math/code tags (intentionally opaque). This is set
+      // at parse time — the flag reflects the node's relationship to its content,
+      // not the processing stage.
+      if (node.contentHandler === 'default' && node.content !== null) {
+        node.isOpaqueContent = false
+      }
+    }
   } catch (err) {
     // Malformed construct: the micromark finder accepted the boundaries but
     // the grammar rejected the interior. Preserve source for diagnostics.
@@ -129,6 +148,10 @@ function exitAcadamarkLongFormOpen(token) {
     node.id = parsed.id
     node.classes = parsed.classes
     node.contentHandler = getContentHandler(parsed.tagname)
+    // isOpaqueContent: false for default-handler long-form tags (aside,
+    // blockquote, note, table — prose content, will be recursively parsed).
+    // True for DSL tags (csv, math, etc. — intentionally opaque source).
+    node.isOpaqueContent = node.contentHandler !== 'default'
   } catch (err) {
     node.type = 'acadamarkTagError'
     node.source = openSource

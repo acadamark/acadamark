@@ -43,7 +43,7 @@ function parseInlineTag(src) {
   assert.equal(node.type, 'acadamarkTag')
   assert.equal(node.tagname, '#')
   assert.equal(node.content, ' Introduction ')
-  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.isOpaqueContent, false)
   assert.equal(node.id, null)
   assert.deepEqual(node.classes, [])
   console.log('PASS: basic <# ... #> produces acadamarkTag')
@@ -144,7 +144,7 @@ console.log('\nAll Slice 1 integration tests passed.')
   assert.equal(node.tagname, 'a')
   assert.deepEqual(node.positional, ['https://example.com'])
   assert.equal(node.content, ' Click here')
-  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.isOpaqueContent, false)
   console.log('PASS: <a url | content> → positional + content')
 }
 
@@ -412,7 +412,7 @@ console.log('\nAll Slice 3.5 integration tests passed.')
 {
   const node = parseInlineTag('Before <# heading #> after.')
   assert.equal(node.tagname, '#')
-  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.isOpaqueContent, false)
   assert.equal(node.content, ' heading ')
   console.log('PASS: inline <#> heading sigil in paragraph')
 }

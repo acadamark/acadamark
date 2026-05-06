@@ -56,7 +56,7 @@ These are deferred until the relevant component is built. The expected answers a
 
 - **`<$...$>` rendering path.** When `acadamarkTagInterpret` handles a `$` sigil, does it produce an `inlineMath` mdast node (letting `rehype-katex` render it downstream), or does it call KaTeX directly and emit rendered HTML inline? The delegation principle in this document points toward the first option. To be confirmed when the interpreter is built.
 
-- **`remark-math` inside recursive parsing.** When the recursive-content plugin re-feeds named-tag content through remark, is `remark-math` part of that inner pipeline? If yes, bare `$x$` inside `<aside | text $x$ here>` is treated as inline math. If no, it is literal text. The expected answer is yes, consistent with the delegation principle. To be confirmed when the recursive-content plugin is built.
+- **`remark-math` inside recursive parsing.** The recursive-content plugin accepts the inner pipeline as a `{ processor }` option; the caller decides which plugins to include. Whether `remark-math` is part of that inner pipeline determines whether bare `$x$` inside `<aside | text $x$ here>` is treated as inline math or literal text. The delegation principle points toward including it. `remark-math` is not currently a workspace dependency; this question remains open until it is added.
 
 ## Related notes
 

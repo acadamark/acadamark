@@ -2,7 +2,7 @@
 
 A living document describing where acadamark is as a project: what's built, what's in flight, what's pending, and the design decisions that got us here. Read this alongside `README.md`, `DESIGN.md`, and `BUILD.md` to come up to speed quickly.
 
-Last updated: May 2026 (Multi-line constructs slice, fully closed).
+Last updated: May 2026 (Recursive content parsing slice, fully closed).
 
 ## Premise (briefest possible recap)
 
@@ -118,7 +118,7 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
 
 - **`packages/rehype-section-nesting/`** — working plugin, 10 tests passing. Nests flat `<section>` / `<sub-section>` / `<sub-sub-section>` based on the named depth ladder. Idempotent.
 
-- **`packages/remark-acadamark/`** — current Peggy hybrid parser, 97 integration tests + grammar unit tests passing through Slice 4 + escape rules + multi-line constructs:
+- **`packages/remark-acadamark/`** — current Peggy hybrid parser, 110 integration tests + grammar unit tests passing through Slice 4 + escape rules + multi-line constructs + recursive content parsing:
   - Sigil tags `<# ... #>` with attributes (Slice 1)
   - Named tags `<tag attrs | content>` and `<tag attrs>` (Slice 2)
   - All attribute forms parsed via Peggy rules: `#id`, `.class`, `+flag`, `-flag`, `key=value`, `[bracketed,list]`, positionals; permissive `identifier` rule with start/cont split (Slice 3)
@@ -152,6 +152,22 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
 ## Active work and immediate next steps
 
 ### Just completed
+
+**Recursive content parsing** (closed May 2026, 110/110 integration tests):
+
+The `remarkRecursiveContent` remark plugin (`src/recursive-content.js`) walks the mdast tree and re-parses string content for any `acadamarkTag` node whose `contentHandler` is `"default"`. After this transform, those nodes' `content` field is `Node[]` (structured mdast children) rather than a raw string. Nodes with DSL or opaque handlers are left untouched.
+
+Key implementation decisions:
+1. *`{ processor }` option pattern* — the inner pipeline (the unified processor used for re-parsing) is passed in as an explicit option rather than hard-coded. This keeps the plugin agnostic about which outer plugins are in use and makes it independently testable.
+2. *`isOpaqueContent` set at parse time* — `from-markdown.js` now sets `isOpaqueContent: false` for all default-handler tags at parse time, not after recursive parsing. `true` means intentionally opaque (DSL/math/code); `false` means prose-bearing.
+3. *`contentHandler` on all short-form tags* — `exitAcadamarkTag` in `from-markdown.js` now calls `getContentHandler(node.tagname)` for all short-form tags, mirroring the existing long-form path. Previously short-form tags had no `contentHandler`.
+4. *DSL registry expanded for sigils* — `dsl-registry.js` now includes hash sigils (`#/##/###` → `"default"`), math sigils (`$` → `"math"`, `$$` → `"math-display"`), and code sigils (`` ` `` → `"code"`, ` ``` ` → `"code-block"`). This gives all sigil tags a `contentHandler` and correct `isOpaqueContent` from parse time.
+5. *Content-as-array case* — escape rules can produce `(string | acadamarkParseError)[]` as content. The plugin uses `flatMap` to parse each string segment through the inner pipeline and preserves error nodes in-place. Prose between errors renders correctly; errors don't cascade.
+6. *Max recursion depth = 10* — if nesting depth reaches 10, the deepest node is converted to `acadamarkParseError` with `subtype: "max-recursion-depth"`. In practice this never triggers; it guards against malformed input.
+7. *Blank-line fix in `exitAcadamarkTagRaw`* — zero-length `acadamarkTagRaw` tokens (produced by blank lines inside content) were previously skipped, collapsing `\n\n` into `\n` and preventing multi-paragraph content. Fixed by pushing `''` for zero-length tokens so the `join('\n')` in `exitAcadamarkTag` correctly produces `\n\n`.
+8. *`extractFromRoot` heuristic* — single-paragraph root unwraps to inline children; multi-child root returns block-level children. Matches the expected content shape for `<aside | text>` (inline) vs. `<aside | para1\n\npara2>` (block).
+
+13 new tests in `test/test-recursive.js` (RC-1 through RC-13): markdown emphasis, nested acadamark tags, opaque math sigil, tagged math inside named-tag content, null-content cite, multi-paragraph aside, hash sigil recursion, long-form default handler, long-form DSL opaque, escape-error array, max recursion depth, finite nesting, and `isOpaqueContent`/`contentHandler` spot-checks.
 
 **Multi-line constructs** (closed May 2026, 97/97 integration tests + all grammar unit tests):
 
@@ -234,7 +250,7 @@ This is non-trivial to design well. A `notes/tag-schemas.md` should precede the 
 
 Flagged here so they don't get re-litigated implicitly later.
 
-- **Multi-line construct error recovery**: unterminated multi-line constructs (no closer before EOF) currently consume to EOF and produce a single `acadamarkTagError` node. The desirable behavior — localized error at the opener line, rest of document renders normally — requires resolving the multi-paragraph content model first. Deferred to the recursive-content slice or a dedicated error-recovery slice. Any recovery heuristic (e.g., blank-line termination) interacts with content-model decisions not yet made. See `notes/multiline-spec.md` § "Unterminated constructs."
+- **Blank-line termination for unterminated multi-line constructs** (deferred, May 2026): blank lines are a natural paragraph boundary in markdown, which makes them attractive as an error-recovery boundary for unterminated constructs. However, blank-line termination conflicts with multi-paragraph short-form content (`<aside | first para\n\nsecond para>` — the blank line would terminate the aside before the `>` closer). Resolving this cleanly requires either: (a) lookahead to check whether a closer follows the blank line before deciding to terminate — which is O(n) in worst case and was rejected in the multi-line design session; (b) declaring that short-form constructs cannot contain blank lines (forcing multi-paragraph content to long-form `<aside>...</aside>`) — a clean rule but a significant authoring constraint not yet in the spec; or (c) a different recovery signal (not blank lines). The current consume-to-EOF behavior for unterminated constructs still satisfies the always-renders principle (see `notes/principles.md`) — the error is visible, output is produced, the author can find the problem. Localized recovery is a refinement, not a hard requirement. Deferred to a dedicated future design session. See `notes/multiline-spec.md` § "Unterminated constructs."
 - **Render-mode mapping for `<article-title>` + `<section-title>`**: when both are present, do section titles become `<h2>` (because article title takes `<h1>`)? Or stay `<h1>` and rely on document structure? Decide when building the render-mode plugin.
 - **Markdown-input section wrapping**: plain markdown produces a flat sequence of `<h1>`, `<p>`, `<h2>`. Should heading-delimited regions get wrapped in `<section>` elements (à la `rehype-section`)? Or declare that markdown-only input doesn't get section treatment? Decide when building the full pipeline.
 - **Theorem-family elements**: `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` — to be specified, following the container-role rule and consulting JATS.
@@ -242,9 +258,9 @@ Flagged here so they don't get re-litigated implicitly later.
 - **JATS mapping divergences**: as the Layer 1 vocabulary grows, some elements will deliberately diverge from JATS (HTML vs. XML conventions, simpler nesting). Each divergence should be documented in the spec for that element. A consolidated "acadamark ↔ JATS mapping table" should appear once the Layer 1 vocabulary is mature.
 - **Raw-HTML escape mechanism**: acadamark's text-position tokenizer consumes `<tagname ...>` constructs, which means HTML's bare boolean attributes (`<input disabled>`) and self-closing slashes (`<br/>`) don't work. A passthrough mechanism (e.g., `<html-passthrough>...</html-passthrough>`) is planned but not specified. Deferred phase.
 - 
-### Open design work to slot in before recursive parsing
+### Open design work to slot in before Slice 5
 
-Content shape decided: homogeneous `Node[]` with text as a node type, matching mdast/hast. See "Resolved decisions" in `notes/shorthand-syntax.md`. No outstanding pre-recursive-parsing design work.
+No outstanding pre-Slice-5 design work identified. Content shape is settled (homogeneous `Node[]`, see "Resolved decisions" in `notes/shorthand-syntax.md`). Recursive parsing is implemented.
 
 ## Repository cleanup (completed April 2026)
 

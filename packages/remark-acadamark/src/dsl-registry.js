@@ -16,6 +16,22 @@
  * See notes/shorthand-syntax.md § "DSL tag registry".
  */
 export const DSL_REGISTRY = new Map([
+  // ── Sigil tags (prose-bearing, recursively parsed) ───────────────────────
+  // Hash sigils carry heading prose. "default" handler means content is
+  // recursively parsed through the inner remark pipeline.
+  ['#',   'default'],
+  ['##',  'default'],
+  ['###', 'default'],
+
+  // ── Sigil tags (opaque, embedded language) ───────────────────────────────
+  // Math and code sigils carry source for an embedded language. Non-"default"
+  // handlers mean isOpaqueContent stays true; the interpreter dispatches to
+  // the named handler (KaTeX, syntax highlighter, etc.).
+  ['$',   'math'],
+  ['$$',  'math-display'],
+  ['`',   'code'],
+  ['```', 'code-block'],
+
   // ── DSL content handlers ────────────────────────────────────────────────
   // Tag name maps to a named content handler. The interpreter dispatches to
   // that handler for content processing (CSV parsing, math rendering, etc.).
