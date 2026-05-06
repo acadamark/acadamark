@@ -2,7 +2,7 @@
 
 A living document describing where acadamark is as a project: what's built, what's in flight, what's pending, and the design decisions that got us here. Read this alongside `README.md`, `DESIGN.md`, and `BUILD.md` to come up to speed quickly.
 
-Last updated: May 2026 (Recursive content parsing slice, fully closed).
+Last updated: May 2026 (layer1-vocabulary package set up).
 
 ## Premise (briefest possible recap)
 
@@ -24,7 +24,7 @@ For the full design rationale, read `DESIGN.md`. For the implementation plan, re
 | Layer | What it is | Status |
 |-------|-----------|--------|
 | Layer 1 — Semantic HTML | A vocabulary of elements (`<section>`, `<sub-section>`, `<article-title>`, `<section-title>`, `<figure>`, etc.) and `data-*` attributes | Partly specified (`notes/layer1-naming.md`); full vocabulary not yet enumerated |
-| Layer 2 — Shorthand syntax | A uniform tag form with attributes and content; sigil tags for headings/math/code; long-form for DSL content | Specified (`notes/shorthand-syntax.md`); parser implemented through Slice 3 |
+| Layer 2 — Shorthand syntax | A uniform tag form with attributes and content; sigil tags for headings/math/code; long-form for DSL content | Specified (`notes/shorthand-syntax.md`); parser implemented through Slice 4 + recursive content |
 | Compilation targets | Semantic mode (preserves Layer 1 elements, archival) and render mode (lowers to `<h1>`/`<h2>` for browser default styling, lossy) | Specified at the level of "this is how it should work"; render-mode plugin not implemented |
 | JATS export | Maps Layer 1 to JATS XML for journal submission | Specified as a Phase 3 deliverable; not implemented |
 
@@ -138,6 +138,7 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
 - **`DESIGN.md`** — design rationale (premise, layered model, JATS section, scope decisions)
 - **`BUILD.md`** — implementation plan (pipeline diagram, novel plugins, dependencies, phase order)
 - **`notes/layer1-naming.md`** — four rules (container-role, defer to HTML, named depth, consult JATS first), two compilation targets, open decisions
+- **`packages/layer1-vocabulary/SPEC.md`** — Layer 1 vocabulary specification (~35 elements; settled decisions with rationale; theorem-family reserved but not yet specified)
 - **`notes/shorthand-syntax.md`** — formal spec with EBNF, 25 worked examples, resolved decisions, open questions
 - **`grammar/acadamark.peggy`** — the Peggy grammar file; owns all attribute parsing end-to-end as of Slice 3 (JS helper removed)
 
@@ -152,6 +153,10 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
 ## Active work and immediate next steps
 
 ### Just completed
+
+**`packages/layer1-vocabulary/` set up** (May 2026):
+
+The vocabulary specification is now a proper monorepo package. `notes/layer1-vocabulary-revised.md` has been moved to `packages/layer1-vocabulary/SPEC.md`. The package has `package.json` (private, version 0.1.0), `README.md` describing current state and planned next steps, placeholder `docs/` and `src/` directories, and is auto-discovered by npm workspaces via the existing `packages/*` glob. `notes/layer1-minimal-vocabulary-draft.md` (the superseded predecessor draft) moved to `archive/`. No implementation yet — this is a spec-only deliverable for now.
 
 **Recursive content parsing** (closed May 2026, 110/110 integration tests):
 
@@ -222,7 +227,7 @@ Remaining minor drift (not corrected, low priority): spec's description of the `
 
 ### After the parser slices
 
-Next step is setting up `packages/layer1-vocabulary/` as the first step into the vocabulary phase. This will be the subject of the next design session.
+The `packages/layer1-vocabulary/` package is set up (May 2026). The vocabulary specification is at `packages/layer1-vocabulary/SPEC.md`. Next step for the vocabulary phase: attribute spec pass (each element gets its allowed attributes specified, with JATS as primary reference). This is a chat-side design pass before any implementation.
 
 After Slice 5, the parser is feature-complete for the current spec and the parser implementation phase is done.
 

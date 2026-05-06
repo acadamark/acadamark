@@ -1,6 +1,6 @@
-# Layer 1 Minimal Vocabulary — Revised Draft
+# Layer 1 Vocabulary Specification
 
-This is the revised draft of acadamark's Layer 1 semantic HTML vocabulary, incorporating decisions made in design discussion. It is the spec that goes in `packages/layer1-vocabulary/` and serves as the target for acadamark's interpreter, JATS export, and (optionally) hand-authoring.
+The acadamark Layer 1 semantic HTML vocabulary. This is the target for acadamark's interpreter, JATS export, and (optionally) hand-authoring.
 
 The four governing rules from `notes/layer1-naming.md` apply throughout: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult JATS first.
 
@@ -262,14 +262,9 @@ For future readers and contributors, the load-bearing decisions:
 - It can be authored directly (any tool producing conformant HTML works) or through acadamark's shorthand (the primary authoring path).
 - It is the deliverable that makes acadamark's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
 
-## Where this lives
-
-This document goes in `packages/layer1-vocabulary/` as the spec. Per-element reference pages live in `packages/layer1-vocabulary/docs/elements/`. Custom-element implementations (registration only) live in `packages/layer1-vocabulary/src/`.
-
 ## Next steps
 
-1. Set up the `packages/layer1-vocabulary/` package structure in the monorepo.
-2. Specify per-element attribute lists, with JATS as primary reference. This is the second draft.
-3. Implement custom-element registration. Minimal JS.
-4. Update `BUILD.md` to reflect the vocabulary as a deliverable and to add the third resolver plugin (notes, alongside citations and cross-refs).
-5. Resume acadamark parser slices (4 and 5) with this vocabulary as the interpreter target.
+1. Specify per-element attribute lists, with JATS as primary reference. This is the second draft.
+2. Implement custom-element registration. Minimal JS.
+3. Update `BUILD.md` to reflect the vocabulary as a deliverable and to add the third resolver plugin (notes, alongside citations and cross-refs).
+4. Resume acadamark parser slices (Slice 5 and beyond) with this vocabulary as the interpreter target.
