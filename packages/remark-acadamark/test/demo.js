@@ -25,17 +25,22 @@ const source = process.argv[2]
   : `
 # Regular markdown heading
 
-<# Introduction #intro>
+<# #intro | Introduction #>
 
 Some text with an <cite jones2001 smith2022> inline citation and
 a <a https://example.com | link>.
 
-<figure src=elephant.jpg #elephant align=right +wrap |
-  An adult African elephant photographed in Tanzania.>
+<figure src=elephant.jpg #elephant align=right +wrap | An adult African elephant photographed in Tanzania.>
 
-<## Methods ##methods>
+<## #methods | Methods ##>
 
 We used the protocol from <cite jones2024>.
+
+<csv>
+col1,col2,col3
+1,2,3
+4,5,6
+</csv>
 `.trim()
 
 const tree = unified().use(remarkParse).use(remarkAcadamark).parse(source)

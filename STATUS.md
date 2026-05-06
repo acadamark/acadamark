@@ -2,7 +2,7 @@
 
 A living document describing where acadamark is as a project: what's built, what's in flight, what's pending, and the design decisions that got us here. Read this alongside `README.md`, `DESIGN.md`, and `BUILD.md` to come up to speed quickly.
 
-Last updated: April 2026 (Slice 3.5 of the shorthand parser, fully closed).
+Last updated: May 2026 (Multi-line constructs slice, fully closed).
 
 ## Premise (briefest possible recap)
 
@@ -118,7 +118,7 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
 
 - **`packages/rehype-section-nesting/`** — working plugin, 10 tests passing. Nests flat `<section>` / `<sub-section>` / `<sub-sub-section>` based on the named depth ladder. Idempotent.
 
-- **`packages/remark-acadamark/`** — current Peggy hybrid parser, 60 integration tests + 51 grammar unit tests passing through Slice 3.5:
+- **`packages/remark-acadamark/`** — current Peggy hybrid parser, 97 integration tests + grammar unit tests passing through Slice 4 + escape rules + multi-line constructs:
   - Sigil tags `<# ... #>` with attributes (Slice 1)
   - Named tags `<tag attrs | content>` and `<tag attrs>` (Slice 2)
   - All attribute forms parsed via Peggy rules: `#id`, `.class`, `+flag`, `-flag`, `key=value`, `[bracketed,list]`, positionals; permissive `identifier` rule with start/cont split (Slice 3)
@@ -126,6 +126,9 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
   - Both flow (block) and text (inline) positions for all sigil families
   - Asymmetric `=` rule in `IdentifierCont`: URLs with query strings (`https://example.com?q=value`) work as bare positionals or keyword values
   - Defensive `acadamarkTagError` node for unclosed single-line sigil openers
+  - Long-form DSL tags `<csv>...</csv>` with multi-line opaque content, DSL registry integration, missing-close error detection (Slice 4)
+  - **Escape rules** (May 2026): `\<`, `\|`, `\\` consumed by acadamark → literal char; `\X` for other ASCII punctuation passed through for remark; unknown `\X` → `acadamarkParseError` node; `\,` in bracketed list items → literal comma; opaque regions (math, backtick, DSL) unaffected
+  - **Multi-line constructs** (May 2026): line endings allowed between attributes, in named-tag content, and in all sigil bodies (flow position only). Long-form opener also supports multi-line attributes. Quoted attribute values remain single-line (tokenizer enforces this via `nok`, not via grammar error node).
 
 - **`packages/remark-acadamark-pure-micromark-archive/`** — preserved pure-micromark predecessor (Slices 1–2). Not part of the active build, but kept in `/packages/` because it's still part of the current project's architectural history.
 
@@ -150,18 +153,55 @@ The identifier rule is split into `IdentifierStart` and `IdentifierCont`. Start 
 
 ### Just completed
 
-**Slice 3.5 of the shorthand parser** (closed April 2026, 60/60 integration tests): dollar and backtick sigil families added (`$`, `$$`, `` ` ``, `` ``` ``). Three items landed during closeout:
+**Multi-line constructs** (closed May 2026, 97/97 integration tests + all grammar unit tests):
+
+Line endings are now allowed in all construct regions where the spec permits them. The implementation uses the Option B chunk pattern: the flow tokenizers (`tokenizeSigilTagFlow`, `tokenizeNamedTagFlow`, `makeLongFormTokenizer`) exit the current `acadamarkTagRaw` chunk before each line ending, emit a `lineEnding` sibling token, and re-enter `acadamarkTagRaw` for the next line. `from-markdown.js` accumulates multiple chunks and joins them with `\n` before calling the Peggy grammar. Single-line constructs produce a single chunk and are handled identically to before.
+
+Key implementation decisions:
+1. *Flow/text split*: `tokenizeSigilTagFlow` and `tokenizeNamedTagFlow` allow multi-line; `tokenizeSigilTagText` and `tokenizeNamedTagText` return `nok` on line endings (inline tags cannot span paragraph boundaries).
+2. *Long-form opener multi-line*: `scanOpenAttrs` in `makeLongFormTokenizer` emits `lineEnding` tokens nested inside the `acadamarkLongFormOpen` token. `from-markdown.js` tracks `_inOpener: true` to prevent those lineEndings from being appended to `node.content`.
+3. *Quoted attribute values remain single-line*: `scanQuoted` returns `nok` on any line ending regardless of `multiLine` mode. This means a quoted value with an embedded newline causes the tokenizer to reject the entire construct — the input falls through to remark's HTML handler with no `acadamarkTagError` produced. Documented in `notes/multiline-spec.md`.
+4. *Opaque body grammar fix*: `[\s\S]` in Peggy compiles to `/^[sS]/` (literal `s` or `S`), NOT "any character." All four opaque-body rules changed to `("\n" / "\r" / .)`.
+5. *EOF guard in `exitAcadamarkTagRaw`*: when a line ending is consumed immediately before EOF, the tokenizer enters a new `acadamarkTagRaw` that is immediately exited. `from-markdown.js` guards with `token.start.offset >= token.end.offset` to avoid crashing `sliceSerialize` on the null EOF chunk — same pattern as the existing guard in `exitAcadamarkLongFormContent`.
+
+Drift items corrected in `notes/multiline-spec.md`:
+- Implementation note said "opaque-body rules use `[\s\S]`" — corrected to `("\n" / "\r" / .)` with explanation of the Peggy compilation hazard.
+- Line 151 said "A literal newline inside quotes causes the rule to fail and produces an error node" — corrected: the **tokenizer** rejects via `nok`, no error node is produced.
+- "Disallowed: literal line ending in unquoted value" section headed as "parse error" — corrected: this is not an error, it parses unexpectedly (line ending terminates the unquoted value; subsequent text is parsed as additional attributes). Section renamed to "Unexpected."
+
+**Escape rules** (closed May 2026, 86/86 integration tests + all grammar unit tests):
+
+`\<`, `\|`, `\\` in named-tag content and hash sigil bodies → acadamark consumes, emits literal char. `\X` for other ASCII punctuation → passed through for remark (stored verbatim until recursive parsing). Unknown `\X` → `acadamarkParseError` node interleaved in content array. `\,` in bracketed list items → literal comma (allows single item with embedded comma). Math, backtick, and DSL content regions remain fully opaque — no escape processing.
+
+Content model change: named-tag content and hash sigil body content are now `(string | acadamarkParseError)[]` that `processContentItems()` collapses to a plain string when no errors exist (backward-compatible). `isOpaqueContent` flag retained on all prose-region content; its meaning is unchanged ("not yet recursively parsed through remark").
+
+Spec `notes/escape-rules-spec.md` written and updated. Two drift items corrected in the spec during closeout:
+- Wrong claim that `\"` inside a double-quoted attribute value stores verbatim — the grammar `[^"\n]*` closes prematurely; corrected to say this is NOT supported and parse fails.
+- One surviving "TEXT content" terminology instance — corrected to "prose".
+
+Remaining minor drift (not corrected, low priority): spec's description of the `\<aside\>` failure mode ("closes at the `\>`") is imprecise — the finder doesn't close at `\>` but at the depth-0 `>` after `\<aside` brings depth back to 0; however the conclusion (construct doesn't work as intended) is correct.
+
+**Slice 4 of the shorthand parser** (closed April 2026, 74/74 integration tests): long-form DSL tags implemented. Key items:
+
+1. *Multi-line flow tokenizer* — `tokenizeLongFormTag` in `syntax.js` uses the fenced-code pattern: explicit `lineEnding` void-tokens at each line boundary satisfy micromark's `subtokenize` algorithm requirement of (N-1) breaks for N `chunkFlow` chunks.
+2. *Registry-gated long-form eligibility* — `tokenizeLongFormTag` reads the tag name and immediately calls `nok` if the name is absent from the DSL registry. This prevents block-level named tags from being greedily consumed as long-form openers. The registry is the parser's mechanism for deciding which tags can have multi-line block content.
+3. *DSL registry expanded* — `dsl-registry.js` now contains two categories: DSL-handler tags (`csv`, `math`, `theorem`, etc.) and structural long-form tags with `"default"` handler (`aside`, `blockquote`, `note`, `table`). `figure` was intentionally excluded because it has common short-form block-level uses.
+4. *Attribute parsing on opener* — the opening `<tagname attrs>` is a valid short-form named tag parsed by the Peggy grammar; all attribute forms work on long-form openers.
+5. *Missing-close detection* — if `</tagname>` never appears before EOF, `from-markdown.js` converts the node to `acadamarkTagError`. No fallback to short-form for registered tags.
+6. *`|` fallback* — if the opener line contains `|`, `tokenizeLongFormTag` calls `nok`, causing the flow hook to fall through to `tokenizeNamedTag` (short-form).
+7. *Bug fix (post-Slice-4 drift review)* — a latent bug was found during spec drift review: before the registry check, `tokenizeLongFormTag` would greedily consume any block-level named tag followed by a newline (e.g., `<cite jones2024>` followed by paragraph content). The tests passed because `parseTag()` wraps inputs without trailing newlines, masking the failure mode. `notes/test.amd` broke immediately once tested with real document context. The registry-gated fix resolves this.
+
+*Test harness note:* `parseTag()` in `test/test.js` wraps single-tag inputs without trailing newlines, which means block-level behavior with following content was not covered by the pre-Slice-4 test suite. Future tests for block-level named tags should include trailing newlines and subsequent paragraph content to cover the real failure mode.
+
+**Slice 3.5 of the shorthand parser** (closed April 2026, 60/60 integration tests): dollar and backtick sigil families added (`$`, `$$`, `` ` ``, `` ``` ``). Key items:
 
 1. *Test document fixed* — `notes/test.amd` rewrote multi-line sigil examples (sections 1.9, 8.4) as single-line; test document now exercises all 11 parts cleanly with 136 recognized tags.
 2. *Inline sigil registration* — all sigil families now recognized in text (inline) position as well as flow (block). Previously only named tags were inline.
 3. *Asymmetric `=` identifier fix* — `IdentifierCont` now allows `=`, making URLs with query strings (`https://example.com?q=value`) work as bare positionals or keyword values. `=` remains excluded from `IdentifierStart`, keeping keyword disambiguation unaffected.
 4. *Defensive error for unclosed sigil openers* — a sigil opener with no same-line closer emits `acadamarkTagError` instead of falling through to remark (which caused runaway fenced-code-block parsing for backtick sigils). Spec documents the node shape and notes this is a finite-lifespan guard.
 
-**Known deferral: multi-line constructs.** Both named and sigil tags are single-line only. The defensive error makes this safe to defer. Spec updated to reflect both constructs are deferred to the same future slice.
-
 ### Pending
 
-- **Slice 4** — long-form DSL tags (`<csv>...</csv>`, `<theorem>...</theorem>`), with registry integration.
 - **Slice 5** — qualifying-tag pattern (`<table csv>...</table>`).
 
 ### After the parser slices
@@ -194,7 +234,7 @@ This is non-trivial to design well. A `notes/tag-schemas.md` should precede the 
 
 Flagged here so they don't get re-litigated implicitly later.
 
-- **Multi-line constructs**: both named and sigil tags are single-line only through Slice 3.5. Spec has multi-line attribute examples (Example 7) that are not yet implemented. Deferred to a future slice alongside multi-line sigil design.
+- **Multi-line construct error recovery**: unterminated multi-line constructs (no closer before EOF) currently consume to EOF and produce a single `acadamarkTagError` node. The desirable behavior — localized error at the opener line, rest of document renders normally — requires resolving the multi-paragraph content model first. Deferred to the recursive-content slice or a dedicated error-recovery slice. Any recovery heuristic (e.g., blank-line termination) interacts with content-model decisions not yet made. See `notes/multiline-spec.md` § "Unterminated constructs."
 - **Render-mode mapping for `<article-title>` + `<section-title>`**: when both are present, do section titles become `<h2>` (because article title takes `<h1>`)? Or stay `<h1>` and rely on document structure? Decide when building the render-mode plugin.
 - **Markdown-input section wrapping**: plain markdown produces a flat sequence of `<h1>`, `<p>`, `<h2>`. Should heading-delimited regions get wrapped in `<section>` elements (à la `rehype-section`)? Or declare that markdown-only input doesn't get section treatment? Decide when building the full pipeline.
 - **Theorem-family elements**: `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` — to be specified, following the container-role rule and consulting JATS.

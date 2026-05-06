@@ -16,6 +16,21 @@
 // Slice 3.5: dollar ($, $$) and backtick (`, ```) sigil families added.
 // ContentChar updated to include $ and ` so that nested sigil tags inside
 // named-tag content are depth-tracked correctly (rule B).
+//
+// Multi-line: ContentItem and ContentChar allow \n (prose content spans lines).
+// SigilBody* rules use ("\n" / "\r" / .) to match newlines in opaque content.
+// Note: [\s\S] in Peggy compiles to /^[sS]/ (literal s/S only), not any-char.
+// EscapedListItemChar allows \n between list items. _ whitespace rule includes \n.
+//
+// Escape rules: ContentItem replaces $ContentChar* for named-tag content;
+// HashSigilBodyItem1/2/3 replace $SigilBody1/2/3 for hash sigil bodies.
+// Dollar and backtick sigil bodies remain opaque (no escape processing).
+// Escape rules per notes/escape-rules-spec.md:
+//   - \< \| \\ → literal char (acadamark-significant in content positions)
+//   - \X for other ASCII punct → pass-through (remark handles downstream)
+//   - \X otherwise → acadamarkParseError node
+//   - \> inside named-tag content → trailing-backslash error (> terminates the
+//     construct before escape processing; use &gt; for literal >)
 
 {{
   // ─── Global initializer — runs once when the module is loaded ───────────
@@ -23,6 +38,7 @@
   function makeNode(tagname, extra) {
     return {
       type: 'acadamarkTag',
+      form: 'short',
       tagname,
       positional: [],
       booleans: {},
@@ -50,6 +66,27 @@
     }
     return result
   }
+
+  // Collapse an array of content items (strings | acadamarkParseError objects)
+  // into the canonical content value:
+  //   - No errors → join all strings into one string (backward-compatible)
+  //   - Has errors → array with consecutive strings merged, errors in position
+  function processContentItems(items) {
+    const hasErrors = items.some(item => typeof item !== 'string')
+    if (!hasErrors) return items.join('')
+    const result = []
+    let text = ''
+    for (const item of items) {
+      if (typeof item === 'string') {
+        text += item
+      } else {
+        if (text) { result.push(text); text = '' }
+        result.push(item)
+      }
+    }
+    if (text) result.push(text)
+    return result
+  }
 }}
 
 // ─── Top-level rule ────────────────────────────────────────────────────────
@@ -65,54 +102,96 @@ AcadamarkConstruct
 // Each sigil level is a separate rule (longest first, so ### is tried before
 // ## and ## before #). Two alternatives per level:
 //   1. With `|` — Attributes rule parses attrs, then content follows
-//   2. Without `|` — entire body is opaque content, no attribute parsing
+//   2. Without `|` — entire body is prose content, no attribute parsing
 //
-// In the no-| case, the first alternative tries and fails (Attributes may
-// consume attr-looking tokens but then finds no |), then PEG backtracks to
-// the second alternative, which captures the whole body via SigilBody*.
+// Hash sigil bodies are prose (escape rules apply): HashSigilBodyItem1/2/3.
+// Dollar and backtick sigil bodies are opaque (no escape processing).
 
 SigilTag3
-  = "<" "###" attrs:Attributes "|" content:$SigilBody3 "###>" {
+  = "<" "###" attrs:Attributes "|" content:HashSigilBodyItem3* "###>" {
       const node = makeNode("###", { isOpaqueContent: true })
       Object.assign(node, attrs)
-      node.content = content
+      node.content = processContentItems(content)
       return node
     }
-  / "<" "###" content:$SigilBody3 "###>" {
-      return makeNode("###", { isOpaqueContent: true, content })
+  / "<" "###" content:HashSigilBodyItem3* "###>" {
+      return makeNode("###", { isOpaqueContent: true, content: processContentItems(content) })
     }
 
 SigilTag2
-  = "<" "##" attrs:Attributes "|" content:$SigilBody2 "##>" {
+  = "<" "##" attrs:Attributes "|" content:HashSigilBodyItem2* "##>" {
       const node = makeNode("##", { isOpaqueContent: true })
       Object.assign(node, attrs)
-      node.content = content
+      node.content = processContentItems(content)
       return node
     }
-  / "<" "##" content:$SigilBody2 "##>" {
-      return makeNode("##", { isOpaqueContent: true, content })
+  / "<" "##" content:HashSigilBodyItem2* "##>" {
+      return makeNode("##", { isOpaqueContent: true, content: processContentItems(content) })
     }
 
 SigilTag1
-  = "<" "#" attrs:Attributes "|" content:$SigilBody1 "#>" {
+  = "<" "#" attrs:Attributes "|" content:HashSigilBodyItem1* "#>" {
       const node = makeNode("#", { isOpaqueContent: true })
       Object.assign(node, attrs)
-      node.content = content
+      node.content = processContentItems(content)
       return node
     }
-  / "<" "#" content:$SigilBody1 "#>" {
-      return makeNode("#", { isOpaqueContent: true, content })
+  / "<" "#" content:HashSigilBodyItem1* "#>" {
+      return makeNode("#", { isOpaqueContent: true, content: processContentItems(content) })
     }
 
-// Body content for sigil tags: everything up to (but not including) the closer.
-// The negative lookahead is the exact mirrored closer so single-# content is
-// allowed inside a ##-tag, and ## content is allowed inside a ###-tag.
+// ─── Hash sigil body items: prose with escape processing ──────────────────
+//
+// These replace the old $SigilBody1/2/3 verbatim rules.
+//
+// Structure: outer !("X>") fires before any character consumption, stopping
+// the * loop at the mirrored closer. HashSigilBodyChar* rules apply escape
+// processing. The pass-through rule uses !("X>") after \\ to prevent consuming
+// the sigil character when it immediately precedes the closer (e.g., \#> in a
+// <# ... #> tag would otherwise consume # as pass-through, breaking the closer).
+//
+// Acadamark-significant escapes: \< \| \\
+// Pass-through: \X for other ASCII punctuation (CommonMark range), except when
+//   X starts the mirrored closer (e.g., \#> in SigilBodyChar1)
+// Error: \X for non-ASCII-punctuation characters
+// Trailing \: error (\ before the closer, consumed alone)
+//
+// ASCII punctuation (incl. >) = [!-/:-@\[\\\]^_`{-~]
+// (> = 62 is in the :-@ range = 58-64 and is allowed in sigil bodies since
+//  > alone does not close a hash sigil tag — only #>, ##>, ###> does)
 
-SigilBody3 = (!("###>") .)*
-SigilBody2 = (!("##>") .)*
-SigilBody1 = (!("#>") .)*
+HashSigilBodyItem1
+  = !("#>") item:HashSigilBodyChar1  { return item }
+
+HashSigilBodyChar1
+  = "\\" c:[<|\\]                           { return c }
+  / "\\" !("#>") c:[!-/:-@\[\\\]^_`{-~]    { return "\\" + c }
+  / "\\" !("#>") c:[^\n]                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
+  / "\\"                                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
+  / [^\\]                                   { return text() }
+
+HashSigilBodyItem2
+  = !("##>") item:HashSigilBodyChar2  { return item }
+
+HashSigilBodyChar2
+  = "\\" c:[<|\\]                            { return c }
+  / "\\" !("##>") c:[!-/:-@\[\\\]^_`{-~]    { return "\\" + c }
+  / "\\" !("##>") c:[^\n]                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
+  / "\\"                                     { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
+  / [^\\]                                    { return text() }
+
+HashSigilBodyItem3
+  = !("###>") item:HashSigilBodyChar3  { return item }
+
+HashSigilBodyChar3
+  = "\\" c:[<|\\]                             { return c }
+  / "\\" !("###>") c:[!-/:-@\[\\\]^_`{-~]    { return "\\" + c }
+  / "\\" !("###>") c:[^\n]                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
+  / "\\"                                      { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
+  / [^\\]                                     { return text() }
 
 // ─── Dollar sigil tags ─────────────────────────────────────────────────────
+// Opaque content — no escape processing.
 
 SigilTagDollar2
   = "<" "$$" attrs:Attributes "|" content:$SigilBodyDollar2 "$$>" {
@@ -136,10 +215,12 @@ SigilTagDollar1
       return makeNode("$", { isOpaqueContent: true, content })
     }
 
-SigilBodyDollar2 = (!("$$>") .)*
-SigilBodyDollar1 = (!("$>") .)*
+// . matches any char except newlines; "\n"/"\r" covers line endings.
+SigilBodyDollar2 = (!("$$>") ("\n" / "\r" / .))*
+SigilBodyDollar1 = (!("$>") ("\n" / "\r" / .))*
 
 // ─── Backtick sigil tags ────────────────────────────────────────────────────
+// Opaque content — no escape processing.
 
 SigilTagBt3
   = "<" "```" attrs:Attributes "|" content:$SigilBodyBt3 "```>" {
@@ -163,20 +244,21 @@ SigilTagBt1
       return makeNode("`", { isOpaqueContent: true, content })
     }
 
-SigilBodyBt3 = (!("```>") .)*
-SigilBodyBt1 = (!"`>" .)*
+SigilBodyBt3 = (!("```>") ("\n" / "\r" / .))*
+SigilBodyBt1 = (!"`>" ("\n" / "\r" / .))*
 
 // ─── Named tags ────────────────────────────────────────────────────────────
 //
 // Short form only (long-form DSL tags added in Slice 4).
 // Two variants: with content (after `|`) and without.
-// Rule B depth tracking is implemented via recursive ContentChar.
+// Rule B depth tracking is implemented via recursive ContentChar (for the
+// nested-construct alternative in ContentItem).
 
 NamedTag
-  = "<" name:TagName attrs:Attributes "|" content:$ContentChar* ">" {
+  = "<" name:TagName attrs:Attributes "|" content:ContentItem* ">" {
       const node = makeNode(name, { isOpaqueContent: true })
       Object.assign(node, attrs)
-      node.content = content
+      node.content = processContentItems(content)
       return node
     }
   / "<" name:TagName attrs:Attributes ">" {
@@ -187,14 +269,40 @@ NamedTag
 
 TagName = $([a-zA-Z][a-zA-Z0-9_-]*)
 
-// Content section: rule B depth tracking via ordered alternatives.
-// First alternative: a tag-like `<` (followed by alpha, `#`, or `/`) — recurse.
-// Second alternative: any character except `>` and newline — consume as literal.
-// A bare `<` (not followed by tag-start chars) matches the second alt as literal.
+// ─── Content items: prose with escape processing ───────────────────────────
+//
+// ContentItem replaces $ContentChar* for named-tag content.
+//
+// Acadamark-significant escapes (consumed, emit literal char): \< \| \\
+// Pass-through (emit \X for remark to process): \X for ASCII punct except >
+//   > is excluded because the finder closes named-tag content at any > at
+//   depth 0; > can never be safely escaped inside named-tag content.
+//   Use &gt; for a literal > inside named-tag content.
+// Error: \X for non-ASCII-punctuation, or trailing \ before >
+//
+// ASCII punct excluding > = [!-/:-=?@\[\\\]^_`{-~]
+//   !-/  = 33-47  (includes < = 60... wait, < is 60 which is NOT in 33-47)
+//   Actually: !-/ = 33-47, :-= = 58-61, ?@ = 63-64, [\] = 91-93, ^_` = 94-96, {-~ = 123-126
+//   This excludes > (62) which falls between = (61) and ? (63).
+//
+// Nested construct alternative: raw text of <tagname...> for depth tracking.
+// Regular char: any char except >, \, newline.
+
+ContentItem
+  = "\\" c:[<|\\]                      { return c }
+  / "\\" c:[!-/:-=?@\[\\\]^_`{-~]    { return "\\" + c }
+  / "\\" c:[^\n>]                      { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
+  / "\\"                               { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
+  / $("<" [a-zA-Z#$`/] ContentChar* ">")
+  / $[^>\\]
+
+// ContentChar: depth tracking for nested constructs (unchanged from Slice 3.5).
+// Used only by ContentItem's nested-construct alternative; not escape-aware
+// since nested content is opaque at this stage.
 
 ContentChar
   = "<" [a-zA-Z#$`/] ContentChar* ">"
-  / [^>\n]
+  / [^>]
 
 // ─── Attribute rules ────────────────────────────────────────────────────────
 //
@@ -237,7 +345,23 @@ ListItems
       return [head, ...tail.map(([, , , item]) => item)]
     }
 
-ListItem = QuotedStringValue / Identifier
+// ListItem uses EscapedListItem instead of bare Identifier so that \, inside
+// a bracketed list produces a literal comma rather than acting as a separator.
+// Example: [smith2024\, jones2024] → one item "smith2024, jones2024".
+// EscapedListItem is more permissive than Identifier (allows spaces mid-value
+// after an escaped comma) but is confined to the bracketed-list context.
+
+ListItem = QuotedStringValue / EscapedListItem
+
+// EscapedListItem: any chars except unescaped , ] [ and newline.
+// \, → literal comma (prevents acting as list separator).
+// All other chars (including spaces) are taken literally.
+
+EscapedListItem = chars:EscapedListItemChar+  { return chars.join('') }
+
+EscapedListItemChar
+  = "\\" c:[,]  { return c }
+  / [^,\[\]]    { return text() }
 
 Value = QuotedStringValue / Identifier
 
@@ -268,4 +392,4 @@ IdentifierCont
 
 // ─── Whitespace ────────────────────────────────────────────────────────────
 
-_ = [ \t]*
+_ = [ \t\n\r]*

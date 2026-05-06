@@ -46,7 +46,9 @@ sigil           ::= "#" | "##" | "###" | "$" | "$$" | "`" | "```"
 
 named_tag       ::= short_form | long_form
 short_form      ::= "<" tag_name [ws+ attributes] ["|" content] ">"
-long_form       ::= "<" tag_name [ws+ attributes] ">" content "</" tag_name ">"
+long_form       ::= "<" tag_name [ws+ attributes] ">" line_ending content "</" tag_name ">"
+                    (* opener must end at a line boundary; content may span
+                       multiple lines; line endings inside content are preserved *)
 
 tag_name         ::= [a-zA-Z] [a-zA-Z0-9_-]*
                      (* strict: for the word immediately after `<` and keyword keys *)
@@ -122,7 +124,13 @@ Identifiers are the values of `#id` attributes, `key=value` keyword values (when
 
 ### Quoted strings
 
-Either single (`'`) or double (`"`) quotes. The quote character cannot appear inside its own kind. There is no escape sequence at the parser level; if you need a literal quote inside a quoted value, switch to the other quote type.
+Either single (`'`) or double (`"`) quotes. The quote character cannot appear inside its own kind. Acadamark stores attribute values verbatim — no escape processing at the parser level. Escape sequences inside quoted values (e.g., `\"`) are preserved literally in the stored string; they are processed by remark when recursive content parsing is implemented. Until then, switch quote types to include the other delimiter:
+
+```
+<figure caption='An adult "elephant"'>
+```
+
+Note: this is a temporary state. When recursive content parsing lands, `\"` inside a double-quoted value will be processed normally.
 
 ### Whitespace
 
@@ -180,14 +188,30 @@ The `|` separator is optional. Without it, the tag has no attributes and the ent
 
 When a sigil tag appears nested inside the content of a named tag, the parser's depth-tracking logic (rule B) must recognize the sigil character as a tag-opening signal. `<` followed immediately by a registered sigil character increments the nesting depth during content scanning, preventing the sigil's closer from prematurely ending the outer construct. For example, in `<figure | nested <$ x $>>`, the inner `$>` does not close `figure` because `<$` was recognized as a depth-incrementing opener.
 
-### Long form
+### Long-form tags
 
-The construct ends at the matching `</tagname>`. The tag name in the closer must match the opener exactly. Long-form content can be:
+Long-form tags use HTML-shaped syntax for multi-line content:
 
-- **Parsed** for normal tags. The content may contain nested constructs, markdown, prose. The parser recurses.
-- **Opaque** for DSL tags (registered as verbatim). Content is a literal string from after the opening `>` to before `</tagname>`.
+```
+<tagname attrs>
+content line 1
+content line 2
+</tagname>
+```
 
-The DSL registry tells the parser which named tags have opaque content. A tag not in the registry has its content parsed.
+The opening tag follows the same attribute syntax as short-form named tags (positionals, ids, classes, kwargs, flags all permitted). The closing tag is `</tagname>` with the tag name matching the opener exactly; no whitespace is permitted inside the angle brackets of the closer. Content between the opening and closing tags is preserved verbatim, including newlines, indentation, and any characters that look like acadamark constructs. At Slice 4, all long-form content is an opaque string regardless of `contentHandler`. When recursive content parsing is implemented (a future slice), nodes with `contentHandler: "default"` will have their content re-fed through remark; DSL-handler nodes remain permanently opaque.
+
+**Long-form tags are recognized in flow (block) position only.** They are not recognized inside paragraphs.
+
+**Disambiguation with short-form empty tags.** An opening tag `<tagname attrs>` at the end of a line is syntactically identical to a long-form opener. The finder resolves the ambiguity using the DSL registry, not lookahead: it reads the tag name, checks the registry, and proceeds as long-form only if the name is registered. If the name is not registered, the long-form tokenizer immediately calls `nok` so the flow hook falls through to `tokenizeNamedTag` (short-form). This means `<section #intro>` at block level is always short-form (section is not in the registry), while `<csv>` at block level is always long-form (csv is registered).
+
+For registered tags, the finder consumes content until it encounters a matching `</tagname>`. If end-of-document is reached without a closer, the node is emitted as `acadamarkTagError` — there is no fallback to short-form. This is deliberate: true lookahead (scanning forward before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` with no `</csv>` is almost certainly an authoring mistake.
+
+Authors who want a short-form empty tag for a registered name (unusual) should use the `|` form: `<csv | >` is unambiguously short-form because the `|` character causes the long-form tokenizer to call `nok` before reaching `afterOpenGt`. Short-form named tags with attributes but no `|` and no content (`<aside .note>`) are also short-form when the tag is not registered; if the tag is registered, they become long-form openers and require a matching closer.
+
+**Nested same-name tags.** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outermost `<tagname>`. Depth is not tracked inside long-form content at Slice 4 since content is opaque. For example, `<aside>outer<aside>inner</aside>more</aside>` produces one `<aside>` with content `outer<aside>inner`; the trailing `more</aside>` is not consumed and falls through to remark. When recursive content parsing lands, nodes with `contentHandler: "default"` will re-parse their content, at which point nested same-name tags are handled correctly by the inner pipeline.
+
+**Defensive error.** If the finder encounters a long-form opener but reaches end-of-document without finding a matching `</tagname>`, it emits `acadamarkTagError` rather than producing a partial node. The node shape is the same as the sigil-opener error case (see "What the parser produces").
 
 ## Sigil-tag and DSL-tag verbatim content
 
@@ -202,23 +226,34 @@ This is what allows acadamark to embed CSV, TSV, LaTeX, code, mermaid, and other
 
 ## DSL tag registry
 
-The registry is a list of tag names whose content is opaque. The parser consults the registry when entering a tag's content.
+The registry serves two related but distinct functions: it declares **long-form eligibility** and assigns a **content handler**. Both are properties of being in the registry.
 
-Initial registry (subject to extension):
+- **Long-form eligibility.** Only tags listed in the registry are recognized in long-form. The micromark boundary finder reads the tag name and calls `nok` immediately if the name is absent. This means the registry is the parser's mechanism for deciding which tags can have multi-line block content — not just a handler-classification list.
+- **Content handler.** The `contentHandler` field on the resulting node names which handler the interpreter should dispatch to. DSL-handler entries (like `csv → "csv"`, `math → "math"`) name a specific embedded-language handler. Structural entries (like `aside → "default"`, `blockquote → "default"`) use the `"default"` handler, meaning content is re-parsed through the regular remark pipeline when recursive content parsing is implemented.
 
-| Tag name    | Content type                |
-|-------------|-----------------------------|
-| `csv`       | Comma-separated values      |
-| `tsv`       | Tab-separated values        |
-| `math`      | Math (default: TeX)         |
-| `code`      | Source code                 |
-| `mermaid`   | Mermaid diagram source      |
-| `abc`       | ABC music notation          |
-| `theorem`   | Theorem (LaTeX-like)        |
-| `matrix`    | Matrix                      |
-| `cases`     | Piecewise function          |
-| `align`     | Aligned equations           |
-| `eqnarray`  | Equation array              |
+Tags not in the registry have neither property: they cannot appear in long-form and carry no `contentHandler`. The `"default"` handler name is a real entry in the registry, not a fallback for unregistered tags.
+
+Every long-form node carries a `contentHandler` string. There is no null/absent case.
+
+Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabulary/` when that package is set up):
+
+| Tag name    | `contentHandler` value | Content type                |
+|-------------|------------------------|-----------------------------|
+| `csv`       | `"csv"`                | Comma-separated values      |
+| `tsv`       | `"tsv"`                | Tab-separated values        |
+| `math`      | `"math"`               | Math (default: TeX/KaTeX)   |
+| `code`      | `"code"`               | Source code                 |
+| `mermaid`   | `"mermaid"`            | Mermaid diagram source      |
+| `abc`       | `"abc"`                | ABC music notation          |
+| `theorem`   | `"theorem"`            | Theorem (LaTeX-like)        |
+| `matrix`    | `"matrix"`             | Matrix                      |
+| `cases`     | `"cases"`              | Piecewise function          |
+| `align`     | `"align"`              | Aligned equations           |
+| `eqnarray`  | `"eqnarray"`           | Equation array              |
+
+The map currently uses identity keys (tag name = handler name). A future `<equation>` tag could map to `"math"` without changing the handler implementation.
+
+**Implementation note.** The registry is a `Map<string, string>` exported from `src/dsl-registry.js`. The tokenizer uses `.has()` to gate long-form eligibility; `getContentHandler()` returns the mapped handler name, or `"default"` for unregistered tags (the fallback is never reached in practice since unregistered tags are rejected at the tokenizer level). When `packages/layer1-vocabulary/` is set up (Slice 5+), the map migrates there as a declared property of each long-form element spec; the parser imports it. Comments in `src/dsl-registry.js` note the intended migration.
 
 The qualifying-tag pattern (`<category language | content>`) means a generic category tag can declare its content's language as the first positional. `<table csv | ...>` and `<table tsv | ...>` are valid, even though `table` itself is not necessarily a DSL tag.
 
@@ -264,6 +299,7 @@ For each parsed construct, the parser produces a structured node with the follow
 ```
 {
   type: "acadamarkTag",
+  form: "short",               // "short" | "long" — distinguishes short-form from long-form
   tagname: "figure",
   positional: ["csv"],         // array of strings or arrays
   booleans: { wrap: true },    // map of name → true/false
@@ -271,13 +307,35 @@ For each parsed construct, the parser produces a structured node with the follow
   id: "elephant",              // string or null
   classes: ["numbered"],       // array of strings
   content: <child nodes or opaque string>,
-  isOpaqueContent: false       // true for sigil and DSL tags
+  isOpaqueContent: false       // true for sigil tags and all long-form at Slice 4
 }
 ```
 
-For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` → `"##"`, `<###` → `"###"`, `<$` → `"$"`, `<$$` → `"$$"`, `` <` `` → `` "`" ``, etc. The `positional`, `booleans`, etc. fields all behave the same way as for named tags.
+For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` → `"##"`, `<###` → `"###"`, `<$` → `"$"`, `<$$` → `"$$"`, `` <` `` → `` "`" ``, etc. The `positional`, `booleans`, etc. fields all behave the same way as for named tags. Sigil tags have `form: "short"`.
 
 For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `acadamarkTag` nodes, or markdown nodes, or plain text).
+
+**Long-form nodes** have `form: "long"` and one additional field:
+
+```
+{
+  type: "acadamarkTag",
+  form: "long",
+  tagname: "theorem",
+  contentHandler: "theorem",  // names the content handler; "default" for regular long-form
+  isOpaqueContent: true,      // true for all long-form at Slice 4
+  content: "...",             // verbatim multi-line string at Slice 4
+  positional: [],
+  booleans: {},
+  kwargs: {},
+  id: null,
+  classes: [],
+}
+```
+
+`contentHandler` names which handler the interpreter should dispatch to for this node's content. `"default"` is a real registry entry — it applies to registered structural long-form tags (like `aside` and `blockquote`) whose content is prose that should be re-parsed through the regular remark pipeline when recursive content parsing is implemented. DSL-handler entries like `"math"` or `"csv"` name a specific embedded-language handler. Tags not in the registry cannot appear in long-form at all — the long-form tokenizer rejects them at the tag-name level. The field is never absent on long-form nodes.
+
+`isOpaqueContent: true` on long-form nodes is a transient state at Slice 4. When recursive content parsing lands, nodes with `contentHandler: "default"` will have `isOpaqueContent` set to false and `content` will become `Node[]`. DSL-handler nodes remain `isOpaqueContent: true` permanently.
 
 **Error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-line without finding the mirrored closer, it commits the truncated span as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Shape:
 
@@ -702,7 +760,7 @@ These were open questions that were settled during implementation.
 
 - **`-` allowed in keyword values (after `=`).** The naked token in keyword value position allows `-`. In positional or attribute-name position, `-` remains excluded (it disambiguates `-flag`). This permits `src=my-file.jpg` without quoting. There are effectively two naked-token rules: one for names/positionals, one for values.
 
-- **Long-form restricted to DSL-registry tags.** Long-form (`<name>...</name>`) is only valid for tags in the DSL registry. Non-registry named tags are always short-form: `<tag>` (no content) or `<tag | content>`. The parser consults the registry when it finishes the opening `>` and decides mode. This keeps the grammar LL(1) at the tag-name level.
+- **Long-form restricted to DSL-registry tags.** Long-form (`<name>...</name>`) is only valid for tags listed in the DSL registry. Non-registry named tags are always short-form: `<tag>` (no content) or `<tag | content>`. The parser checks the registry immediately after reading the tag name — if the name is not in the registry the long-form tokenizer calls `nok` and the flow hook falls through to the short-form named-tag tokenizer. This check is LL(1) at the tag-name level and has no rollback cost. Registered tags with `contentHandler: "default"` are long-form eligible; the "default" handler is a real registry entry, not a fallback for unregistered tags.
 
 - **Multi-word positionals: space-separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. `<cite jones2001 smith2022>` → `positional: ["jones2001", "smith2022"]`. This is consistent with how positional arguments work in shell commands and LaTeX. It also makes the qualifying-tag pattern natural: `<table csv | ...>` has `csv` as the second positional.
 
@@ -728,7 +786,7 @@ Remaining open questions flagged for resolution as implementation proceeds.
 
 - **Named tag content: recursive parsing.** In Slice 2, named-tag content is an opaque string. Recursive parsing of content into child nodes (so `<figure | text with <em | emphasis>>` produces a nested AST) is deferred to a later slice.
 
-- **Multi-line constructs.** Both named tags and sigil tags are currently single-line only (through Slice 3.5). Line endings fail the construct. Multi-line named tags are described in the spec (Example 7) but not yet implemented. Multi-line sigil tags are not yet in the spec. Both are deferred to a later slice. Until then, an unclosed sigil opener emits an `acadamarkTagError` node rather than falling through silently (see "What the parser produces" above).
+- **Multi-line constructs.** Both named tags and sigil tags are currently single-line only (through Slice 4). Line endings fail the construct. Multi-line named tags are described in the spec (Example 7) but not yet implemented. Multi-line sigil tags are not yet in the spec. Both are deferred to a later slice. Until then, an unclosed sigil opener emits an `acadamarkTagError` node rather than falling through silently (see "What the parser produces" above).
 
 - **Registered sigil characters in `identifier_start` position.** `$` and `` ` `` are registered sigil characters but are not currently excluded from `identifier_start` (the exclusion list covers `#` and `.` and `+`/`-` but not all registered sigils). This means `<figure $weird>` parses `$weird` as a positional. The behavior is consistent between spec and grammar; the design intent is unsettled. Revisit when identifier rules are next touched or when another sigil family is added.
 

@@ -443,31 +443,32 @@ console.log('\nAll Slice 3.5 integration tests passed.')
 
 console.log('\nAll inline sigil text-position tests passed.')
 
-// ─── Defensive error: sigil opener without same-line closer ───────────────
+// ─── Multi-line sigil constructs (flow position) ──────────────────────────
+// These were formerly expected to error; multi-line is now supported in flow.
 
 {
-  // Multi-line backtick sigil: opener on one line, body and closer on next.
-  // The tokenizer should emit an error token rather than letting remark
-  // silently misinterpret the fragment (which could produce runaway code blocks).
+  // Multi-line backtick sigil: opener, body, and closer on separate lines.
   const src = '<```\nsome code\n```>'
   const tree = parse(src)
-  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
-  assert.ok(errNode, 'acadamarkTagError node present for unclosed sigil opener')
-  assert.ok(errNode.source.startsWith('<'), 'error source starts with <')
-  assert.ok(typeof errNode.error === 'string', 'error message is a string')
-  console.log('PASS: unclosed sigil opener produces acadamarkTagError node')
+  const node = tree.children.find((n) => n.type === 'acadamarkTag')
+  assert.ok(node, 'multi-line backtick sigil parses to acadamarkTag')
+  assert.equal(node.tagname, '```')
+  assert.equal(node.content, '\nsome code\n')
+  console.log('PASS: multi-line backtick sigil parses correctly (flow)')
 }
 
 {
-  // Same check for the # family.
+  // Multi-line hash sigil: opener, body, and closer on separate lines.
   const src = '<#\nheading content\n#>'
   const tree = parse(src)
-  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
-  assert.ok(errNode, 'acadamarkTagError node present for unclosed # sigil opener')
-  console.log('PASS: unclosed # sigil opener produces acadamarkTagError node')
+  const node = tree.children.find((n) => n.type === 'acadamarkTag')
+  assert.ok(node, 'multi-line hash sigil parses to acadamarkTag')
+  assert.equal(node.tagname, '#')
+  assert.equal(node.content, '\nheading content\n')
+  console.log('PASS: multi-line hash sigil parses correctly (flow)')
 }
 
-console.log('\nAll defensive error tests passed.')
+console.log('\nAll multi-line flow sigil tests passed.')
 
 // ─── acadamarkTagError node shape (spec tripwire) ─────────────────────────
 // This test asserts exact property names. If from-markdown.js ever changes
@@ -513,4 +514,404 @@ console.log('\nAll error-node shape tests passed.')
 }
 
 console.log('\nAll IdentifierCont `=` fix tests passed.')
-console.log('\n60/60 tests passed.')
+
+// ─── Slice 4: Long-form tags ───────────────────────────────────────────────
+
+function parseLongFormTag(src) {
+  const tree = parse(src)
+  const node = tree.children.find((n) => n.type === 'acadamarkTag' || n.type === 'acadamarkTagError')
+  if (!node) throw new Error(`No acadamarkTag/Error in: ${JSON.stringify(src)}`)
+  return node
+}
+
+{
+  // DSL-registered tag, no attributes
+  const node = parseLongFormTag('<csv>\na,b,c\n1,2,3\n</csv>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'csv')
+  assert.equal(node.contentHandler, 'csv')
+  assert.equal(node.content, '\na,b,c\n1,2,3\n')
+  assert.equal(node.isOpaqueContent, true)
+  assert.deepEqual(node.positional, [])
+  assert.deepEqual(node.booleans, {})
+  assert.deepEqual(node.kwargs, {})
+  assert.equal(node.id, null)
+  assert.deepEqual(node.classes, [])
+  console.log('PASS: DSL long-form tag (csv) with no attributes')
+}
+
+{
+  // DSL tag with attributes
+  const node = parseLongFormTag('<math #eq1 .display>\nx = 1\n</math>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'math')
+  assert.equal(node.contentHandler, 'math')
+  assert.equal(node.id, 'eq1')
+  assert.deepEqual(node.classes, ['display'])
+  assert.equal(node.content, '\nx = 1\n')
+  console.log('PASS: DSL long-form tag (math) with id and class attributes')
+}
+
+{
+  // Non-DSL long-form tag gets contentHandler "default"
+  const node = parseLongFormTag('<theorem>\nAll primes greater than 2 are odd.\n</theorem>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'theorem')
+  assert.equal(node.contentHandler, 'theorem')
+  assert.equal(node.content, '\nAll primes greater than 2 are odd.\n')
+  console.log('PASS: DSL long-form tag (theorem) gets its handler name')
+}
+
+{
+  // Registered structural tag with default handler (aside → "default")
+  const node = parseLongFormTag('<aside>\nSome aside text.\n</aside>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'aside')
+  assert.equal(node.contentHandler, 'default')
+  assert.equal(node.content, '\nSome aside text.\n')
+  console.log('PASS: registered structural long-form tag gets contentHandler "default" (aside)')
+}
+
+{
+  // Unregistered tag at block level falls through to short-form, with
+  // following content preserved as a separate paragraph.
+  // This is the regression test for the bug where tokenizeLongFormTag
+  // greedily consumed the entire document for any block-level named tag
+  // followed by a newline, before the registry check was added.
+  const src = '<quux>\n\nSome following content.'
+  const tree = parse(src)
+  const tagNode = tree.children.find((n) => n.type === 'acadamarkTag')
+  assert.ok(tagNode, 'unregistered tag parsed as short-form acadamarkTag')
+  assert.equal(tagNode.tagname, 'quux')
+  assert.equal(tagNode.form, 'short')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  assert.ok(para, 'following paragraph preserved, not eaten by long-form tokenizer')
+  assert.equal(tree.children.filter((n) => n.type === 'acadamarkTagError').length, 0, 'no error nodes')
+  console.log('PASS: unregistered tag at block level falls through to short-form, following content preserved')
+}
+
+{
+  // Multi-line content
+  const node = parseLongFormTag('<csv>\nfirst line\nsecond line\nthird line\n</csv>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.content, '\nfirst line\nsecond line\nthird line\n')
+  console.log('PASS: long-form tag with multi-line content')
+}
+
+{
+  // Content containing `<` not followed by alpha/sigil/slash (rule B: literal `<`)
+  const node = parseLongFormTag('<csv>\nx < y\n</csv>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.content, '\nx < y\n')
+  console.log('PASS: literal `<` (rule B) inside long-form content preserved')
+}
+
+{
+  // Content containing `<word>` — looks like a tag but finder re-enters content
+  const node = parseLongFormTag('<csv>\n<em>bold</em>\n</csv>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.content, '\n<em>bold</em>\n')
+  console.log('PASS: tag-like content inside long-form is preserved verbatim')
+}
+
+{
+  // Missing close tag — should produce acadamarkTagError
+  const node = parseLongFormTag('<csv>\nno closer here\n')
+  assert.equal(node.type, 'acadamarkTagError')
+  assert.ok(node.error, 'error field set')
+  console.log('PASS: missing close tag produces acadamarkTagError')
+}
+
+{
+  // Long-form followed by short-form in the same document
+  const src = '<csv>\na,b\n</csv>\n<cite jones2001>'
+  const tree = parse(src)
+  const tags = tree.children.filter((n) => n.type === 'acadamarkTag')
+  assert.equal(tags.length, 2)
+  assert.equal(tags[0].form, 'long')
+  assert.equal(tags[0].tagname, 'csv')
+  assert.equal(tags[1].form, 'short')
+  assert.equal(tags[1].tagname, 'cite')
+  console.log('PASS: long-form and short-form tags adjacent in same document')
+}
+
+{
+  // Keyword attribute on long-form opener
+  const node = parseLongFormTag('<csv delimiter=",">\na,b,c\n</csv>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.tagname, 'csv')
+  assert.equal(node.kwargs.delimiter, ',')
+  assert.equal(node.content, '\na,b,c\n')
+  console.log('PASS: long-form tag with keyword attribute on opener')
+}
+
+{
+  // `|` in opening tag causes long-form finder to reject and fall through to
+  // short-form named-tag finder, parsing as a short-form tag.
+  const node = parseLongFormTag('<csv header=true | inline content>')
+  assert.equal(node.form, 'short')
+  assert.equal(node.tagname, 'csv')
+  assert.equal(node.content, ' inline content')
+  console.log('PASS: `|` in opener rejects long-form, falls through to short-form')
+}
+
+{
+  // Long-form tag with attributes: boolean flags
+  const node = parseLongFormTag('<mermaid +dark>\ngraph TD\n  A --> B\n</mermaid>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.tagname, 'mermaid')
+  assert.equal(node.booleans.dark, true)
+  assert.equal(node.content, '\ngraph TD\n  A --> B\n')
+  console.log('PASS: long-form tag with boolean attribute on opener')
+}
+
+console.log('\nAll Slice 4 long-form tag tests passed.')
+console.log('\n74/74 tests passed.')
+
+// ─── Escape rules ─────────────────────────────────────────────────────────
+// Tests 1-11 of the escape-rules spec (test 8 rewritten per design decision
+// that quoted attribute values are stored verbatim by acadamark).
+
+// Test 1: \| in named-tag content → literal |
+{
+  const node = parseTag('<aside | The pipe \\| is the separator.>')
+  assert.equal(typeof node.content, 'string')
+  assert.equal(node.content, ' The pipe | is the separator.')
+  console.log('PASS escape: \\| in named-tag content → literal |')
+}
+
+// Test 2: \< in named-tag content → literal <
+{
+  const node = parseTag('<aside | a \\< b>')
+  assert.equal(typeof node.content, 'string')
+  assert.equal(node.content, ' a < b')
+  console.log('PASS escape: \\< in named-tag content → literal <')
+}
+
+// Test 3: \\ in named-tag content → literal \
+{
+  const node = parseTag('<aside | escape is \\\\.>')
+  assert.equal(typeof node.content, 'string')
+  assert.equal(node.content, ' escape is \\.')
+  console.log('PASS escape: \\\\ in named-tag content → literal \\')
+}
+
+// Test 4: \* in named-tag content → pass-through \* (markdown, not acadamark)
+{
+  const node = parseTag('<aside | She wrote \\*literally\\*.>')
+  assert.equal(typeof node.content, 'string')
+  assert.equal(node.content, ' She wrote \\*literally\\*.')
+  console.log('PASS escape: \\* in named-tag content → pass-through \\*')
+}
+
+// Test 5: \q in named-tag content → acadamarkParseError node
+{
+  const node = parseTag('<aside | path \\q end.>')
+  assert.ok(Array.isArray(node.content), 'content is mixed array')
+  const err = node.content.find(item => typeof item !== 'string')
+  assert.ok(err, 'error node present')
+  assert.equal(err.type, 'acadamarkParseError')
+  assert.equal(err.subtype, 'unknown-escape-sequence')
+  assert.equal(err.source, '\\q')
+  console.log('PASS escape: \\q in named-tag content → acadamarkParseError node')
+}
+
+// Test 6: trailing \ in named-tag content → acadamarkParseError node
+{
+  const node = parseTag('<aside | text \\>')
+  assert.ok(Array.isArray(node.content), 'content is mixed array')
+  const err = node.content.find(item => typeof item !== 'string')
+  assert.ok(err, 'error node present')
+  assert.equal(err.type, 'acadamarkParseError')
+  assert.equal(err.source, '\\')
+  console.log('PASS escape: trailing \\ in named-tag content → acadamarkParseError node')
+}
+
+// Test 7: \, in bracketed list → single list item containing comma
+{
+  const node = parseTag('<cite [smith2024\\, jones2024]>')
+  assert.deepEqual(node.positional, [['smith2024, jones2024']])
+  console.log('PASS escape: [key1\\, key2] in bracketed list → single item with comma')
+}
+
+// Test 8 (rewritten): backslash in quoted attribute value stored verbatim by acadamark.
+// \" inside same-quote type closes the grammar's value prematurely (no escape processing).
+// The spec says: switch quote types to embed a quote. Here we confirm backslash is stored as-is.
+{
+  const node = parseTag('<figure caption="path\\value">')
+  assert.equal(node.kwargs.caption, 'path\\value')
+  console.log('PASS escape: backslash in double-quoted attribute stored verbatim')
+}
+
+// Test 9: \frac in math sigil → preserved verbatim (opaque content)
+{
+  const node = parseTag('<$ \\frac{x}{y} $>')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, ' \\frac{x}{y} ')
+  console.log('PASS escape: \\frac in math sigil preserved verbatim (opaque)')
+}
+
+// Test 10: \n in backtick sigil → preserved verbatim (opaque content)
+{
+  const node = parseTag('<` C:\\new\\folder `>')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, ' C:\\new\\folder ')
+  console.log('PASS escape: backslash sequences in backtick sigil preserved verbatim (opaque)')
+}
+
+// Test 11: \< in hash sigil body → literal < (prose content)
+{
+  const node = parseTag('<# a \\< b #>')
+  assert.equal(typeof node.content, 'string')
+  assert.equal(node.content, ' a < b ')
+  console.log('PASS escape: \\< in hash sigil body → literal <')
+}
+
+// Test 12: \q in hash sigil body → acadamarkParseError node
+{
+  const node = parseTag('<# intro \\q heading #>')
+  assert.ok(Array.isArray(node.content), 'hash sigil content is mixed array on unknown escape')
+  const err = node.content.find(item => typeof item !== 'string')
+  assert.ok(err, 'error node present')
+  assert.equal(err.type, 'acadamarkParseError')
+  assert.equal(err.source, '\\q')
+  console.log('PASS escape: \\q in hash sigil body → acadamarkParseError node')
+}
+
+console.log('\nAll escape-rules integration tests passed.')
+console.log('\n86/86 tests passed.')
+
+// ─── Multi-line constructs ────────────────────────────────────────────────
+// Integration tests for line-ending support across all construct regions.
+// All tests use flow position (block-level parsing) where multi-line is allowed.
+// For text-position (inline), multi-line is intentionally disallowed.
+
+// Test ML-1: Attributes spanning multiple lines (named tag, flow)
+{
+  const node = parseTag('<figure\n  #fig1\n  .landscape\n  caption="Elephant">')
+  assert.equal(node.tagname, 'figure')
+  assert.equal(node.id, 'fig1')
+  assert.deepEqual(node.classes, ['landscape'])
+  assert.equal(node.kwargs.caption, 'Elephant')
+  console.log('PASS multi-line: attributes spanning multiple lines (named tag)')
+}
+
+// Test ML-2: Named-tag content spanning multiple lines
+{
+  const node = parseTag('<aside | line one\nline two\nline three>')
+  assert.equal(node.tagname, 'aside')
+  assert.ok(node.content.includes('line one'), 'first line in content')
+  assert.ok(node.content.includes('line two'), 'second line in content')
+  assert.ok(node.content.includes('line three'), 'third line in content')
+  console.log('PASS multi-line: named-tag content spanning multiple lines')
+}
+
+// Test ML-3: Multi-line hash sigil heading
+{
+  const node = parseTag('<#\nA Long Heading\n#>')
+  assert.equal(node.tagname, '#')
+  assert.equal(node.content, '\nA Long Heading\n')
+  console.log('PASS multi-line: hash sigil body spanning multiple lines')
+}
+
+// Test ML-4: Multi-line dollar sigil (math, opaque)
+{
+  const node = parseTag('<$\n\\frac{a}{b} + \\frac{c}{d}\n$>')
+  assert.equal(node.tagname, '$')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, '\n\\frac{a}{b} + \\frac{c}{d}\n')
+  console.log('PASS multi-line: dollar sigil (math) body spanning multiple lines')
+}
+
+// Test ML-5: Multi-line triple-backtick sigil (code, opaque)
+{
+  const node = parseTag('<```\nfunction hello() {\n  return 42\n}\n```>')
+  assert.equal(node.tagname, '```')
+  assert.equal(node.isOpaqueContent, true)
+  assert.ok(node.content.includes('function hello()'), 'code content preserved')
+  assert.ok(node.content.includes('return 42'), 'inner code line preserved')
+  console.log('PASS multi-line: triple-backtick sigil body spanning multiple lines')
+}
+
+// Test ML-6: Multi-line bracketed list in attribute section
+{
+  const node = parseTag('<cite\n  [smith2024,\n  jones2024]>')
+  assert.equal(node.tagname, 'cite')
+  const list = node.positional.find(Array.isArray)
+  assert.ok(list, 'bracketed list found in positionals')
+  assert.equal(list.length, 2)
+  assert.equal(list[0].trim(), 'smith2024')
+  assert.equal(list[1].trim(), 'jones2024')
+  console.log('PASS multi-line: bracketed list with newlines between items')
+}
+
+// Test ML-7: Quoted attribute value with embedded newline → not recognized as acadamark.
+// In `attrSection`, `scanQuoted` returns nok() on any line ending regardless of
+// multiLine mode. The construct is rejected by the tokenizer and falls through
+// to remark's HTML handler — no acadamarkTag or acadamarkTagError is produced.
+// (This is a design choice: quoted values are always single-line, matching HTML.)
+{
+  const tree = parse('<figure caption="line one\nline two">')
+  const acadamarkNodes = tree.children.filter(
+    (n) => n.type === 'acadamarkTag' || n.type === 'acadamarkTagError',
+  )
+  assert.equal(acadamarkNodes.length, 0, 'no acadamark nodes — construct not recognized')
+  console.log('PASS multi-line: quoted attribute value with embedded newline → not recognized as acadamark (falls through to HTML)')
+}
+
+// Test ML-8: Unterminated multi-line construct (EOF before closer) → acadamarkTagError
+// The tokenizer emits tokens up to EOF; the grammar then fails to find the closer.
+{
+  const tree = parse('<$ x + y\n')
+  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
+  assert.ok(errNode, 'acadamarkTagError for unterminated multi-line dollar sigil')
+  console.log('PASS multi-line: unterminated multi-line construct (EOF) → acadamarkTagError')
+}
+
+// Test ML-9: Escape sequences work correctly inside multi-line content
+// A named-tag content region spanning multiple lines still applies escape processing.
+{
+  const node = parseTag('<aside | line one \\| not-a-separator\nline two>')
+  assert.equal(node.tagname, 'aside')
+  const contentStr = Array.isArray(node.content)
+    ? node.content.map((x) => (typeof x === 'string' ? x : '')).join('')
+    : node.content
+  assert.ok(contentStr.includes('|'), 'escaped pipe rendered as literal |')
+  assert.ok(contentStr.includes('line two'), 'second line present')
+  console.log('PASS multi-line: escape sequences work in multi-line content')
+}
+
+// Test ML-10: Mixed single-line and multi-line tags in same document
+{
+  const src = '<cite jones2001>\n\n<figure\n  #fig1\n  caption="Elephant"\n>\n\n<aside | short>'
+  const tree = parse(src)
+  const tags = tree.children.filter((n) => n.type === 'acadamarkTag')
+  assert.ok(tags.length >= 3, `expected ≥ 3 acadamarkTag nodes, got ${tags.length}`)
+  const cite = tags.find((n) => n.tagname === 'cite')
+  assert.ok(cite, 'cite tag found')
+  const fig = tags.find((n) => n.tagname === 'figure')
+  assert.ok(fig, 'figure tag found')
+  assert.equal(fig.id, 'fig1')
+  const aside = tags.find((n) => n.tagname === 'aside')
+  assert.ok(aside, 'aside tag found')
+  console.log('PASS multi-line: mixed single-line and multi-line tags in same document')
+}
+
+// Test ML-11: Multi-line long-form opener (attributes spanning lines on opener)
+{
+  const node = parseLongFormTag('<csv\n  delimiter=","\n  +header>\na,b,c\n</csv>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'csv')
+  assert.equal(node.kwargs.delimiter, ',')
+  assert.equal(node.booleans.header, true)
+  assert.equal(node.content, '\na,b,c\n')
+  console.log('PASS multi-line: long-form opener with attributes spanning multiple lines')
+}
+
+console.log('\nAll multi-line integration tests passed.')
+console.log('\n97/97 tests passed.')

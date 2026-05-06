@@ -420,4 +420,239 @@ console.log('\nAll Slice 3.5 grammar tests passed.')
 
 console.log('\nAll IdentifierCont `=` fix tests passed.')
 
+// ─── Escape rules: named-tag content ──────────────────────────────────────
+
+{
+  // Content starts with the space after |; \< → literal <
+  const n = p('<aside | a \\< b>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a < b')
+  console.log('PASS grammar: \\< in named-tag content → literal <')
+}
+
+{
+  const n = p('<aside | a \\| b>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a | b')
+  console.log('PASS grammar: \\| in named-tag content → literal |')
+}
+
+{
+  const n = p('<aside | a \\\\ b>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a \\ b')
+  console.log('PASS grammar: \\\\ in named-tag content → literal \\')
+}
+
+{
+  // Markdown pass-through: \* is not an acadamark escape — passed unchanged
+  const n = p('<aside | a \\* b>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a \\* b')
+  console.log('PASS grammar: \\* in named-tag content → pass-through \\*')
+}
+
+{
+  // Unknown escape \q → acadamarkParseError node in content array
+  const n = p('<aside | text \\q more>')
+  assert.ok(Array.isArray(n.content), 'content should be array when errors present')
+  assert.equal(n.content.length, 3)
+  assert.equal(n.content[0], ' text ')
+  assert.equal(n.content[1].type, 'acadamarkParseError')
+  assert.equal(n.content[1].subtype, 'unknown-escape-sequence')
+  assert.equal(n.content[1].source, '\\q')
+  assert.equal(n.content[2], ' more')
+  console.log('PASS grammar: \\q in named-tag content → acadamarkParseError node')
+}
+
+{
+  // Trailing \ before > → error node (\ is "trailing backslash" error)
+  const n = p('<aside | text\\>')
+  assert.ok(Array.isArray(n.content))
+  const err = n.content.find(item => typeof item !== 'string')
+  assert.ok(err, 'should contain an error node')
+  assert.equal(err.type, 'acadamarkParseError')
+  assert.equal(err.source, '\\')
+  console.log('PASS grammar: trailing \\ in named-tag content → acadamarkParseError node')
+}
+
+{
+  // Multiple escapes: \< and \\ and \q
+  const n = p('<aside | a \\< b \\\\ c \\q d>')
+  assert.ok(Array.isArray(n.content))
+  const errIdx = n.content.findIndex(item => typeof item !== 'string')
+  assert.ok(errIdx >= 0)
+  assert.equal(n.content[errIdx].source, '\\q')
+  const textBefore = n.content.slice(0, errIdx).join('')
+  assert.equal(textBefore, ' a < b \\ c ')
+  console.log('PASS grammar: multiple escapes including unknown in named-tag content')
+}
+
+console.log('\nAll escape-rules named-tag grammar tests passed.')
+
+// ─── Escape rules: hash sigil bodies ──────────────────────────────────────
+
+{
+  const n = p('<# a \\< b #>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a < b ')
+  console.log('PASS grammar: \\< in hash sigil body → literal <')
+}
+
+{
+  // \| in content is an escaped pipe; use explicit separator so \| lands in content, not attrs
+  const n = p('<# | a \\| b #>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a | b ')
+  console.log('PASS grammar: \\| in hash sigil body content → literal |')
+}
+
+{
+  // Markdown pass-through in hash sigil body
+  const n = p('<# \\* bold \\* #>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' \\* bold \\* ')
+  console.log('PASS grammar: \\* in hash sigil body → pass-through \\*')
+}
+
+{
+  // Unknown escape in hash sigil body → error node
+  const n = p('<# intro \\q heading #>')
+  assert.ok(Array.isArray(n.content))
+  const err = n.content.find(item => typeof item !== 'string')
+  assert.ok(err)
+  assert.equal(err.type, 'acadamarkParseError')
+  assert.equal(err.source, '\\q')
+  console.log('PASS grammar: \\q in hash sigil body → acadamarkParseError node')
+}
+
+{
+  // \\ in hash sigil body → literal \
+  const n = p('<# a \\\\ b #>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' a \\ b ')
+  console.log('PASS grammar: \\\\ in hash sigil body → literal \\')
+}
+
+console.log('\nAll escape-rules hash-sigil grammar tests passed.')
+
+// ─── Escape rules: bracketed list ─────────────────────────────────────────
+
+{
+  // \, in bracketed list → single item containing a comma
+  const n = p('<cite [smith2024\\, jones2024]>')
+  assert.deepEqual(n.positional, [['smith2024, jones2024']])
+  console.log('PASS grammar: [key1\\, key2] → single list item with comma')
+}
+
+{
+  // Normal bracketed list still works
+  const n = p('<cite [smith2024, jones2024]>')
+  assert.deepEqual(n.positional, [['smith2024', 'jones2024']])
+  console.log('PASS grammar: [key1, key2] → two-item list (unescaped comma)')
+}
+
+console.log('\nAll escape-rules bracketed-list grammar tests passed.')
+
+// ─── Escape rules: opaque regions unaffected ─────────────────────────────
+
+{
+  // Math sigil: \frac is NOT processed as an escape (opaque content)
+  const n = p('<$ \\frac{x}{y} $>')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' \\frac{x}{y} ')
+  console.log('PASS grammar: \\frac in math sigil preserved verbatim (opaque)')
+}
+
+{
+  // Backtick sigil: \n is NOT processed (opaque content)
+  const n = p('<` const x = "\\n"; `>')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(typeof n.content, 'string')
+  assert.ok(n.content.includes('\\n'), 'content should contain literal \\n')
+  console.log('PASS grammar: \\n in backtick sigil preserved verbatim (opaque)')
+}
+
+{
+  // Quoted attribute value: backslash NOT processed (verbatim storage)
+  const n = p('<figure caption="value with backslash \\\\">')
+  assert.equal(n.kwargs.caption, 'value with backslash \\\\')
+  console.log('PASS grammar: backslash in quoted attribute value stored verbatim')
+}
+
+console.log('\nAll escape-rules opaque-region grammar tests passed.')
+
+// ─── Multi-line: grammar unit tests ─────────────────────────────────────────
+// The grammar receives joined source strings (chunks joined with '\n').
+// These tests verify that the Peggy grammar accepts newlines in all regions
+// where the spec allows them.
+
+{
+  // Newline between attributes (short-form named tag)
+  // `_` = [ \t\n\r]* accepts newlines as whitespace between attributes.
+  const n = p('<figure\n  #fig1\n  .landscape>')
+  assert.equal(n.tagname, 'figure')
+  assert.equal(n.id, 'fig1')
+  assert.deepEqual(n.classes, ['landscape'])
+  console.log('PASS grammar: newline between attributes (short-form)')
+}
+
+{
+  // Newline between kwargs (short-form named tag)
+  const n = p('<figure\n  caption="Elephant"\n  credit="Jane">')
+  assert.equal(n.kwargs.caption, 'Elephant')
+  assert.equal(n.kwargs.credit, 'Jane')
+  console.log('PASS grammar: newline between kwargs (short-form)')
+}
+
+{
+  // Newline inside named-tag content (content spans multiple lines)
+  const n = p('<aside | line one\nline two\nline three>')
+  assert.equal(typeof n.content, 'string')
+  assert.ok(n.content.includes('line one'))
+  assert.ok(n.content.includes('line two'))
+  assert.ok(n.content.includes('line three'))
+  console.log('PASS grammar: newlines in named-tag content region')
+}
+
+{
+  // Multi-line hash sigil: body spans multiple lines
+  const n = p('<#\nheading text\n#>')
+  assert.equal(n.tagname, '#')
+  assert.equal(n.content, '\nheading text\n')
+  console.log('PASS grammar: multi-line hash sigil body')
+}
+
+{
+  // Multi-line dollar sigil (math, opaque): newlines preserved verbatim
+  const n = p('<$\n\\frac{x}{y}\n$>')
+  assert.equal(n.tagname, '$')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(n.content, '\n\\frac{x}{y}\n')
+  console.log('PASS grammar: multi-line dollar sigil (opaque body, newlines preserved)')
+}
+
+{
+  // Multi-line triple-backtick sigil (opaque): newlines preserved verbatim
+  const n = p('<```\nsome code\nmore code\n```>')
+  assert.equal(n.tagname, '```')
+  assert.equal(n.isOpaqueContent, true)
+  assert.equal(n.content, '\nsome code\nmore code\n')
+  console.log('PASS grammar: multi-line triple-backtick sigil (opaque body)')
+}
+
+{
+  // Quoted attribute value with embedded newline → grammar rejects it.
+  // QuotedStringValue = [^"\n]* — newline is explicitly excluded.
+  assert.throws(
+    () => parse('<figure caption="line one\nline two">'),
+    /Expected/,
+    'grammar rejects newline inside quoted attribute value',
+  )
+  console.log('PASS grammar: newline inside quoted attribute value → parse error')
+}
+
+console.log('\nAll multi-line grammar tests passed.')
+
 console.log('\nAll grammar unit tests passed.')

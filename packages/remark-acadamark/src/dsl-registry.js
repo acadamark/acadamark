@@ -1,22 +1,68 @@
 /**
- * Default DSL tag registry.
+ * DSL content-handler registry.
  *
- * Tags in this set use long-form content (<tagname>...</tagname>) with opaque
- * (verbatim) content. The micromark finder consults this registry to know
- * whether to scan for a closing `</tagname>` or treat the tag as short-form.
+ * Maps long-form tag names to the content handler the interpreter should
+ * dispatch to. Tags not in this map get the handler "default", which means
+ * "re-parse through the regular remark pipeline" (deferred to the
+ * recursive-content slice; at Slice 4, content is preserved as a string).
  *
- * Used in Slice 4 (long-form DSL tags). Not yet wired into the finder.
+ * Handler names currently use identity (tag name === handler name). The map
+ * shape allows future divergence — e.g., an <equation> tag mapping to
+ * "math" without touching the math handler itself.
+ *
+ * Interim hard-coded list (Slice 4). Migrates to packages/layer1-vocabulary/
+ * when that package is set up: each long-form element spec will declare its
+ * contentHandler there, and the parser will import the map from that package.
+ * See notes/shorthand-syntax.md § "DSL tag registry".
  */
-export const DEFAULT_DSL_REGISTRY = new Set([
-  'csv',
-  'tsv',
-  'math',
-  'code',
-  'mermaid',
-  'abc',
-  'theorem',
-  'matrix',
-  'cases',
-  'align',
-  'eqnarray',
+export const DSL_REGISTRY = new Map([
+  // ── DSL content handlers ────────────────────────────────────────────────
+  // Tag name maps to a named content handler. The interpreter dispatches to
+  // that handler for content processing (CSV parsing, math rendering, etc.).
+  ['csv',      'csv'],
+  ['tsv',      'tsv'],
+  ['math',     'math'],
+  ['code',     'code'],
+  ['mermaid',  'mermaid'],
+  ['abc',      'abc'],
+  ['theorem',  'theorem'],
+  ['matrix',   'matrix'],
+  ['cases',    'cases'],
+  ['align',    'align'],
+  ['eqnarray', 'eqnarray'],
+
+  // ── Structural long-form tags (default handler) ─────────────────────────
+  // These tags use long-form syntax for multi-line prose content. The
+  // "default" handler means content is re-parsed through remark when
+  // recursive content parsing lands (deferred; currently preserved as string).
+  //
+  // Tags NOT listed here are short-form only. Adding a tag here makes it
+  // long-form eligible — any block-level occurrence without a matching
+  // </tagname> will produce acadamarkTagError rather than a short-form node.
+  //
+  // NOTE: `figure` intentionally omitted — it has common short-form block-
+  // level uses (e.g. <figure src=x.jpg>) that would produce errors as long-form
+  // openers. Add figure here once the design for long-form figure is settled.
+  //
+  // NOTE: theorem-family elements (proof, lemma, corollary, definition,
+  // example) omitted pending Layer 1 vocabulary specification (see STATUS.md
+  // "Open design questions"). Add them once their element specs are written.
+  //
+  // This interim list migrates to packages/layer1-vocabulary/ when that
+  // package is set up. See notes/shorthand-syntax.md § "DSL tag registry".
+  ['aside',      'default'],
+  ['blockquote', 'default'],
+  ['note',       'default'],
+  ['table',      'default'],
 ])
+
+/**
+ * Look up the content handler for a long-form tag name.
+ * Returns the registered handler name, or "default" for unregistered tags.
+ *
+ * @param {string} tagName
+ * @returns {string}
+ */
+export function getContentHandler(tagName) {
+  return DSL_REGISTRY.get(tagName) ?? 'default'
+}
