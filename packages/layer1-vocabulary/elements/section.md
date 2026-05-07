@@ -1,0 +1,258 @@
+---
+semantic_role: section
+html_output:
+  element: section
+  is_html_native: true
+  default_attributes: {}
+acadamark_attributes:
+  id:
+    maps_to: id
+  classes:
+    maps_to: class
+  kwargs:
+    sec-type:
+      maps_to: data-sec-type
+      values: [intro, methods, results, discussion, conclusion, supplementary, materials, references, other]
+      notes: |
+        Optional classification of the section's role. Maps to JATS sec-type
+        attribute. Values match common JATS conventions for IMRaD-style papers.
+    numbering-style:
+      maps_to: data-numbering-style
+      values: [arabic, roman, alpha, none]
+      notes: 'Override the inherited numbering style for this section.'
+content:
+  type: structured
+  shape:
+    - element: section-title
+      required: false
+      contains: [text, inline-elements]
+    - element: section-subtitle
+      required: false
+      contains: [text, inline-elements]
+    - element: body
+      required: false
+      contains: [p, sub-section, figure, aside, blockquote, table, list-elements]
+content_handler: default
+title_after_pipe: true
+jats_counterpart:
+  element: sec
+  attributes:
+    sec-type: from sec-type
+  notes: |
+    JATS uses recursive <sec> for all section depths. Acadamark uses named
+    depth (<section>, <sub-section>, <sub-sub-section>) for explicit
+    semantic clarity. The JATS exporter maps acadamark's depth ladder to
+    nested <sec> elements.
+shorthand_expansions:
+  - shorthand: 'first line after pipe'
+    expands_to: section-title
+    notes: |
+      Authors write <section | The Title>; the first line after the pipe
+      becomes <section-title>.
+  - shorthand: section-title
+    expands_to: section-title
+    notes: 'Available as an escape hatch for explicit title elements.'
+  - shorthand: section-subtitle
+    expands_to: section-subtitle
+    notes: |
+      Subtitles are written explicitly. There is no shorthand-after-pipe
+      for subtitles because the pipe slot is consumed by the title.
+shorthand_examples:
+  - source: |
+      <section | Introduction>
+      The paper begins here.
+    layer1_html: |
+      <section>
+        <section-title>Introduction</section-title>
+        <p>The paper begins here.</p>
+      </section>
+  - source: |
+      <section #methods sec-type=methods | Methods>
+      <section-subtitle | A description of our experimental approach>
+      The methods used in this study were as follows.
+    layer1_html: |
+      <section id="methods" data-sec-type="methods">
+        <section-title>Methods</section-title>
+        <section-subtitle>A description of our experimental approach</section-subtitle>
+        <p>The methods used in this study were as follows.</p>
+      </section>
+  - source: |
+      <section | Results>
+      Results paragraph.
+
+      <sub-section | Quantitative analysis>
+      Sub-section content.
+
+      <sub-section | Qualitative observations>
+      Sub-section content.
+    layer1_html: |
+      <section>
+        <section-title>Results</section-title>
+        <p>Results paragraph.</p>
+        <sub-section>
+          <sub-section-title>Quantitative analysis</sub-section-title>
+          <p>Sub-section content.</p>
+        </sub-section>
+        <sub-section>
+          <sub-section-title>Qualitative observations</sub-section-title>
+          <p>Sub-section content.</p>
+        </sub-section>
+      </section>
+interpreter_strategy: schema
+related_plugins:
+  - name: acadamarkSectionNesting
+    runs_after: acadamarkTagInterpret
+    purpose: |
+      Handles implicit closing of sections at peer-level boundaries. A new
+      <section> at the same depth implicitly closes the previous one. Operates
+      on the rehype tree after the interpreter produces section elements.
+---
+
+# `<section>`
+
+A section is a top-level division within an article body or a book-part body. Sections divide content into named regions — Introduction, Methods, Results, Discussion in an IMRaD paper; Origins, Modern Era, Decline in a historical chapter; whatever divisions the author chooses.
+
+## Semantic intent
+
+`<section>` is the canonical division within a document body. Use it for any major thematic break in the content. Compare:
+
+- `<section>` — depth 1, top-level division within an article body or book-part body. This element.
+- `<sub-section>` — depth 2, nested within a section.
+- `<sub-sub-section>` — depth 3, nested within a sub-section.
+
+The named-depth ladder is explicit. A reader sees `<section>` and knows it's a top-level division; sees `<sub-section>` and knows it's nested. No need to walk up the tree to determine depth.
+
+## Title-after-pipe shorthand
+
+The shorthand form puts the section title in the pipe content:
+
+```
+<section | Introduction>
+The introduction begins here.
+```
+
+The first line after the pipe becomes `<section-title>`. Subsequent paragraphs become body content.
+
+The explicit `<section-title>` and `<section-subtitle>` elements are available when needed.
+
+## Implicit closing
+
+Sections close implicitly when a peer-level section opens. This is the largest authoring affordance acadamark provides over raw HTML.
+
+```
+<section | Introduction>
+First paragraph of introduction.
+
+<section | Methods>
+Methods paragraph.
+```
+
+The Methods section's opening implicitly closes the Introduction section. The author doesn't write `</section>`. The `acadamarkSectionNesting` plugin handles this on the rehype tree, recognizing peer-level boundaries.
+
+This works only at the same depth. A `<sub-section>` inside a `<section>` doesn't close the section because they're at different depths; the section continues until the next peer `<section>` or the end of its container.
+
+## Structure within a section
+
+A section contains:
+
+- An optional `<section-title>` (the heading; supplied by the title-after-pipe shorthand).
+- An optional `<section-subtitle>` (a secondary title; written explicitly).
+- Body content: paragraphs, sub-sections, figures, asides, blockquotes, tables, lists.
+
+The title and subtitle, if present, are the first children of the section. Body content follows.
+
+## Attributes
+
+`sec-type` indicates the section's role in the document. Used in scholarly publishing to classify sections by their function (intro, methods, results, etc.). Maps to JATS's `sec-type` attribute.
+
+`numbering-style` overrides the inherited numbering style for this section and its descendants. Useful for sections that should number differently from the document default — for example, an appendix section using letters instead of numbers.
+
+## JATS mapping
+
+| acadamark Layer 1 | JATS |
+|-------------------|------|
+| `<section>` | `<sec>` |
+| `<section-title>` | `<title>` (inside `<sec>`) |
+| `<section-subtitle>` | `<subtitle>` (inside `<sec>`) |
+| `sec-type` attribute | `sec-type` attribute |
+
+JATS uses recursive `<sec>` for all section depths. Acadamark's named-depth ladder maps to nested `<sec>` elements at export time. A `<section>` containing a `<sub-section>` becomes a `<sec>` containing a `<sec>` (or `<sec sec-type="...">` if the type is specified).
+
+## Authoring patterns
+
+**Section with simple title and content.**
+
+```
+<section | Introduction>
+The introduction begins here.
+```
+
+**Section with classification.**
+
+```
+<section sec-type=methods | Methods>
+The methods used in this study.
+```
+
+The `sec-type` kwarg classifies the section for JATS export and for downstream tooling.
+
+**Section with subtitle.**
+
+```
+<section | Materials>
+<section-subtitle | Detailed listing of equipment used>
+Body content.
+```
+
+The subtitle is written explicitly because the pipe slot is consumed by the title.
+
+**Section with sub-sections.**
+
+```
+<section | Results>
+Brief introductory paragraph.
+
+<sub-section | Quantitative results>
+Sub-section content.
+
+<sub-section | Qualitative observations>
+Sub-section content.
+```
+
+The `<section>` continues until a peer `<section>` opens or the parent container ends.
+
+**Implicitly closed sections.**
+
+```
+<section | Introduction>
+Introduction content.
+
+<section | Methods>
+Methods content. The introduction is implicitly closed.
+
+<section | Results>
+Results content. The methods section is implicitly closed.
+```
+
+No `</section>` tags needed. Each new section closes the previous one.
+
+## Render-mode lowering
+
+In semantic mode, `<section>`, `<section-title>`, and `<section-subtitle>` remain as Layer 1 elements.
+
+In render mode:
+
+| Layer 1 element | Render-mode lowering |
+|----------------|----------------------|
+| `<section>` | `<section>` (unchanged; HTML5 native) |
+| `<section-title>` | `<h1>` (when at depth 1; depth determined by document structure) |
+| `<section-subtitle>` | `<p class="subtitle">` |
+
+When sections nest within articles, the heading levels shift. An article with `<article-title>` as `<h1>` makes `<section-title>` lower to `<h2>`. The render-mode plugin determines the level based on the document's structure.
+
+## See also
+
+- [`<sub-section>`](sub-section.md) — depth 2.
+- [`<sub-sub-section>`](sub-sub-section.md) — depth 3.
+- [`<article>`](article.md) — typical container for sections.
+- [`<book-part>`](book-part.md) — also contains sections.

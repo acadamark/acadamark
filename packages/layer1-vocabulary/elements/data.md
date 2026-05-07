@@ -1,0 +1,235 @@
+---
+semantic_role: data
+html_output:
+  element: data
+  is_html_native: false
+  default_attributes: {}
+  notes: |
+    Acadamark's <data> is a custom element. It does not produce inline
+    output; it holds resources that other parts of the document reference.
+    The element is parsed and processed for its contents but does not
+    render visibly in the document body.
+acadamark_attributes:
+  id:
+    maps_to: id
+  classes:
+    maps_to: class
+content:
+  type: structured
+  shape:
+    - element: library
+      required: false
+      multiple: true
+      notes: 'Inline bibliography blocks in BibTeX, CSL-JSON, or other formats.'
+    - element: bib-entry
+      required: false
+      multiple: true
+      notes: 'Structured bibliography entries authored in acadamark form.'
+    - element: embedded-image
+      required: false
+      multiple: true
+      notes: 'Future: hardcoded image data (base64) referenced by figures.'
+    - element: dataset
+      required: false
+      multiple: true
+      notes: 'Future: tabular data referenced by tables or figures.'
+content_handler: default
+title_after_pipe: false
+jats_counterpart:
+  element: 'no direct equivalent'
+  notes: |
+    JATS doesn't have a single resource-block element. Acadamark's <data>
+    is decomposed at JATS export: <library> entries are merged into
+    <ref-list>; <bib-entry> entries become <ref> elements; embedded image
+    data becomes <graphic> with embedded data; etc. The <data> wrapper
+    itself does not appear in JATS output.
+shorthand_examples:
+  - source: |
+      <data>
+        <library format=bibtex>
+          @article{goodall2024,
+            author = {Goodall, Jane},
+            title = {The Effect of Elephants on Climate},
+            journal = {Nature},
+            year = {2024}
+          }
+        </library>
+      </data>
+    layer1_html: |
+      <data>
+        <library format="bibtex">
+          @article{goodall2024,
+            author = {Goodall, Jane},
+            title = {The Effect of Elephants on Climate},
+            journal = {Nature},
+            year = {2024}
+          }
+        </library>
+      </data>
+    notes: |
+      A library block in BibTeX format. The library plugin parses this,
+      registers entries in the citation system. The <data> block itself
+      produces no rendered output.
+  - source: |
+      <data>
+        <bib-entry id=goodall2024>
+          <author | Jane Goodall>
+          <year | 2024>
+          <title | The Effect of Elephants on Climate>
+          <journal | Nature>
+        </bib-entry>
+      </data>
+    layer1_html: |
+      <data>
+        <bib-entry id="goodall2024">
+          <author>Jane Goodall</author>
+          <year>2024</year>
+          <title>The Effect of Elephants on Climate</title>
+          <journal>Nature</journal>
+        </bib-entry>
+      </data>
+    notes: |
+      Inline structured bibliography entry. Acadamark-native form.
+interpreter_strategy: schema
+related_plugins:
+  - name: acadamarkLibraryParsing
+    purpose: |
+      Finds <library> elements throughout the document, parses content
+      using the format-specific parser (bibtex, csl-json, etc.), registers
+      entries with the citation system.
+  - name: acadamarkResourceCollection
+    purpose: |
+      Collects <data> blocks regardless of source position. Resources
+      are made available to citation, figure, and other systems that
+      reference them.
+---
+
+# `<data>`
+
+A container for document resources — content that the document references but does not display inline. Bibliography blocks, embedded image data, lookup tables, and other supporting material that supports the narrative without appearing in the reading flow.
+
+## Semantic intent
+
+`<data>` holds **referenced resources, not displayed content**. The element is processed at build time; its contents are made available to the citation system, figure system, and other parts of the pipeline that look up resources by id or key. The `<data>` element itself produces no rendered output.
+
+This is parallel to how `<note>` produces an inline marker (a number) and the note content gets collected by the placement plugin. With `<data>`, there's no inline marker either — the element is purely a backing store for resources that other elements reference.
+
+The placement convention is back-of-document, because reading shouldn't be interrupted by configuration-style content. But the structural plugin places `<data>` correctly regardless of source position. Authors who put `<data>` at the front are not penalized; the convention is for reading ergonomics, not requirement.
+
+## What goes in `<data>`
+
+Resources that are **referenced by other elements** but don't render inline:
+
+- **Inline bibliography blocks**: `<library format=bibtex>...</library>` to paste BibTeX content from a reference manager.
+- **Structured bibliography entries**: `<bib-entry>` for acadamark-native bibliography records.
+- **Hardcoded image data** (future): base64-encoded image data that figures reference by id.
+- **Datasets** (future): tabular data that tables or figures reference.
+- **Other resource types** (future): anything that fits the "reference, not display" pattern.
+
+What does **not** go in `<data>`:
+
+| Content | Goes in |
+|---------|---------|
+| Title, author, abstract | `<meta>` |
+| Output format, citation style | `<config>` |
+| Stylesheets, themes | `<config>` |
+| Body content (sections, figures, paragraphs) | document body |
+
+The split between `<meta>`, `<data>`, and `<config>` keeps responsibilities clear: descriptive metadata, referenced resources, and operational configuration are three distinct concerns.
+
+## How resources are referenced
+
+Resources in `<data>` are referenced from elsewhere by id or key:
+
+- A `<library>` block registers bibliography entries under their bibtex keys (e.g., `goodall2024`). Citations elsewhere (`<cite goodall2024>`) resolve against these entries.
+- A `<bib-entry id=goodall2024>` registers a structured entry under the explicit id. Same resolution.
+- An `<embedded-image id=elephant1>` (future) registers image data. Figures reference it (`<figure src="ref:elephant1">`).
+
+The pattern is consistent: resources have ids; references look up resources by id; the build system handles resolution.
+
+## Multiple `<data>` blocks
+
+A document can have multiple `<data>` blocks. The library-parsing and resource-collection plugins find all of them regardless of position, parse and register entries, and merge them into a unified resource registry.
+
+This means authors can:
+
+- Keep separate `<data>` blocks for different purposes (one for bibliography, one for image data).
+- Add resources progressively as the document grows.
+- Mix inline `<bib-entry>` with imported `<library>` content.
+
+Multiple sources combine into one resource registry. The bibliography rendering shows all *cited* entries (whether from `<library>`, `<bib-entry>`, or external file references), regardless of which `<data>` block they came from.
+
+## Placement convention
+
+Front-of-document and back-of-document both work. The convention is:
+
+- **Front placement** is appropriate when the resources are short and authors want them near the metadata they support.
+- **Back placement** is appropriate (and recommended) for longer resource blocks that would otherwise interrupt reading.
+
+The structural plugin places `<data>` blocks in `<article-back>` (or `<book-back>`) by default. Authors who want explicit front placement can put `<data>` in `<article-front>`.
+
+## Authoring patterns
+
+**Inline bibliography from BibTeX.**
+
+```
+<article | My Paper>
+<meta>
+  <author | The Author>
+</meta>
+
+<section | Introduction>
+This paper builds on <cite goodall2024>.
+
+<data>
+  <library format=bibtex>
+    @article{goodall2024,
+      author = {Goodall, Jane},
+      title = {The Effect of Elephants on Climate},
+      journal = {Nature},
+      year = {2024}
+    }
+  </library>
+</data>
+```
+
+**Mixed: external file plus inline addition.**
+
+```
+<config>
+  <bibliography source="refs.bib">
+</config>
+
+<data>
+  <library format=bibtex>
+    @article{recent2024,
+      author = {Author, Recent},
+      title = {New Finding Not Yet in refs.bib},
+      year = {2024}
+    }
+  </library>
+</data>
+```
+
+The external `refs.bib` provides the main bibliography; the inline `<library>` adds an entry not yet in the file.
+
+**Structured inline entry.**
+
+```
+<data>
+  <bib-entry id=goodall2024>
+    <author | Jane Goodall>
+    <year | 2024>
+    <title | The Effect of Elephants on Climate>
+    <journal | Nature>
+  </bib-entry>
+</data>
+```
+
+## See also
+
+- [`<meta>`](meta.md) — for descriptive document metadata.
+- [`<config>`](config.md) — for build and render configuration.
+- [`<library>`](library.md) — for opaque bibliography blocks.
+- [`<bib-entry>`](bib-entry.md) — for structured bibliography entries.
+- [`<bibliography>`](bibliography.md) — the bibliography rendering element.
