@@ -43,6 +43,8 @@ For tags whose transformation cannot be expressed as a simple schema (because th
 
 This pattern matches how rehype-sanitize, rehype-format, and other unified-ecosystem plugins handle transformation: declarative for the common case, imperative escape hatch when needed.
 
+Content shape validation (whether a tag's children are permitted in its content model) uses the `inline`, `block`, and `section` tokens defined in `notes/shape-tokens.md`. The schema's `contains` field references these tokens; the interpreter expands them at validation time against the central token-membership lists.
+
 ## Schemas live in the Layer 1 vocabulary
 
 Schema definitions are part of each Layer 1 tag's vocabulary entry, not in a separate file. The vocabulary already specifies what each tag means semantically; the schema specifies how that semantic meaning becomes HTML.
@@ -113,7 +115,22 @@ If users later need overrides (custom citation styles, alternative figure layout
 
 The interpreter is built in slices, each producing visible end-to-end output for a growing set of features.
 
-**Slice I — Interpreter scaffolding plus structural tags.** The interpreter framework: schema-driven dispatch with escape hatches, async transform, error handling. Plus a small set of structural tags: article, section, sub-section, sub-sub-section, aside, blockquote, figure (with figcaption), p, em, strong, code (inline), pre+code (block), ul/ol/li, a, img, hr.
+**Slice I — Interpreter scaffolding plus structural tags.** The interpreter framework: schema-driven dispatch with escape hatches, async transform, error handling. Plus 16 in-scope structural tags:
+
+- article
+- section, sub-section, sub-sub-section
+- p
+- aside, blockquote
+- hr
+- figure (with figcaption)
+- ul, ol, li
+- em, strong
+- code (inline)
+- meta
+
+The auto-generated child elements that the structural plugins produce — `<article-front>`, `<article-body>`, `<article-back>`, `<section-title>`, `<sub-section-title>`, `<sub-sub-section-title>`, `<book-part-meta>` — are in scope by virtue of being created by the slice's plugins; they are not authored directly in this slice.
+
+Excluded from this slice (deferred to subsequent slices): `<a>`, `<img>`, `<pre>`+`<code>` (display code block), `<cite>`, `<ref>`, `<note>`, math sigils, and other inline elements not listed above.
 
 After this slice, simple structural acadamark documents render to real HTML.
 
@@ -149,8 +166,8 @@ The interpreter does not depend on the specific engines themselves. Adapters are
 ## Implementation status
 
 - The interpreter does not yet exist. It is the next major piece of work after the parser.
-- The Layer 1 vocabulary package needs to be set up before interpreter implementation begins.
-- The first attribute-spec pass (defining schemas for structural tags) must precede the first interpreter slice.
+- Prerequisites are complete: the Layer 1 vocabulary package is set up at `packages/layer1-vocabulary/`, and the attribute-spec pass is done — 63 per-element entries under `elements/` provide structured frontmatter with attribute lists, content shapes, JATS mappings, and render-mode lowering.
+- The next major piece of work is the **first interpreter slice**, scoped to the 16 in-scope structural elements (article, section, sub-section, sub-sub-section, p, aside, blockquote, hr, figure, ul, ol, li, em, strong, code, meta) plus the structural plugins that produce `<article-front>` / `<article-body>` / `<article-back>`, section titles, and section nesting. See the "Slicing strategy" section above for the full slice scope.
 
 ## Why this matters
 

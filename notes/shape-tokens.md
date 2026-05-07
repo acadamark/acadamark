@@ -120,7 +120,7 @@ The classification is about where the element appears in source and what categor
 
 ### Custom Layer 1 elements (article-front, section-title, etc.)
 
-Some Layer 1 elements appear only as outputs of the structural plugin — they're not authored directly. Examples: `<article-front>`, `<section-title>`, `<book-part-meta>`. These don't need `inline`/`block`/`section` classification because they appear in fixed positions within their parent containers, not as siblings in flexible content models.
+Some Layer 1 elements appear only as outputs of the structural plugin — they're not authored directly. Examples: `<article-front>`, `<section-title>`, `<book-part-meta>`, `<book-part-title>`, `<book-part-subtitle>`. These don't need `inline`/`block`/`section` classification because they appear in fixed positions within their parent containers, not as siblings in flexible content models.
 
 If an author *does* write one of these directly (using the explicit-form escape hatch), the structural plugin treats it the same as the auto-generated version.
 
@@ -168,4 +168,5 @@ Both of these are arguably already implicit categories. They're not added to the
 
 - `packages/layer1-vocabulary/SPEC.md` — high-level vocabulary specification.
 - `packages/layer1-vocabulary/elements/` — individual vocabulary entries.
-- `notes/interpreter-design.md` — interpreter architecture, where shape validation happens.
+- `notes/interpreter-design.md` — interpreter architecture; describes how these tokens are used during schema-driven dispatch and content-shape validation.
+- `notes/plugin-pipeline.md` — structural plugin pipeline that produces the AST shape these tokens describe.

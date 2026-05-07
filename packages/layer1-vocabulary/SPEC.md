@@ -12,23 +12,25 @@ The vocabulary targets four document types:
 
 - **Article** — research papers, essays, blog posts, magazine articles, letters.
 - **Book** — long-form documents with chapters and parts.
-- **Chapter** — when nested in a book; structurally an article.
-- **Book-part** — major divisions within a book (Part I, Part II).
+- **Book-part** — major divisions within a book (Part I, Part II, chapters, appendices). Chapters are book-parts with `book-part-type="chapter"`; the authoring shorthand `<chapter>` expands to that form.
 
 Poems, plays, scripts, and scores are out of scope. They have specialized vocabulary that doesn't share enough with prose documents to be worth forcing into the same model.
 
-## Element list (~35 elements)
+## Element list (63 entries currently in `elements/`)
+
+The vocabulary now has 63 per-element entries under `packages/layer1-vocabulary/elements/`. The tables below group them by role; each entry's file is the authoritative spec for its element. Elements listed here without an entry are marked deferred or reserved.
 
 ### Container elements
 
-Four distinct top-level containers, each with optional front/body/back. Following BITS (the JATS sibling for books) precedent, distinct elements are used for distinct structural roles rather than collapsing them under attribute disambiguation.
+Three distinct top-level containers, each with optional front/body/back. Following BITS (the JATS sibling for books) precedent, distinct elements are used for distinct structural roles rather than collapsing them under attribute disambiguation.
 
 | Element | JATS counterpart | Purpose |
 |---------|------------------|---------|
 | `<article>` | `<article>` | A self-contained document or a sectional response. |
 | `<book>` | BITS `<book>` | A book-length work composed of parts and chapters. |
-| `<book-part>` | BITS `<book-part book-part-type="part">` | Major division within a book (Part I, Part II). |
-| `<chapter>` | BITS `<book-part book-part-type="chapter">` | A chapter; structurally an article nested in a book. |
+| `<book-part>` | BITS `<book-part>` (with `book-part-type` kwarg) | Major division within a book (Part I, Part II, chapter, appendix, preface, etc.). |
+
+The authoring shorthand `<chapter>` expands at the parser layer to `<book-part book-part-type="chapter">`; it is not a separate Layer 1 element. Other shorthand expansions follow the same pattern (`<part>`, `<appendix>`, `<preface>`, etc.).
 
 Each container has its own three-part structure:
 
@@ -41,7 +43,7 @@ Each container has its own three-part structure:
 | `<book-body>` | BITS `<book-body>` | Book main content (contains parts, chapters). |
 | `<book-back>` | BITS `<book-back>` | Book apparatus. |
 
-Chapters use `<book-part-meta>` for descriptive metadata (just like other book-parts) and contain body content directly — they do not have their own `<chapter-front>`/`<chapter-body>`/`<chapter-back>` wrappers. Per-element details are in `elements/book-part.md` and `elements/book-part-meta.md`.
+Chapters use `<book-part-meta>` for descriptive metadata (just like other book-parts) and contain body content directly — they do not have their own front/body/back structural wrappers. Per-element details are in `elements/book-part.md` and `elements/book-part-meta.md`.
 
 A `document-type` attribute on each container provides finer classification:
 
@@ -64,15 +66,13 @@ A `document-type` attribute on each container provides finer classification:
 |---------|------------------|---------|
 | `<article-title>` | `<article-title>` | Document title. |
 | `<article-subtitle>` | `<subtitle>` | Document subtitle. |
-| `<chapter-title>` | BITS `<book-part-meta>/<title>` | Chapter title. |
-| `<chapter-subtitle>` | BITS `<book-part-meta>/<subtitle>` | Chapter subtitle. |
 | `<book-title>` | BITS `<book-title-group>/<book-title>` | Book title. |
 | `<book-subtitle>` | BITS `<book-title-group>/<subtitle>` | Book subtitle. |
 | `<book-part-title>` | BITS `<book-part-meta>/<title>` | Book-part title. |
 | `<author>` | `<contrib>` (with `<string-name>` content) | Author. Content is a single name string. |
 | `<abstract>` | `<abstract>` | Abstract. |
-| `<keywords>` | `<kwd-group>` | Keywords list. |
-| `<publication-date>` | `<pub-date>` | Date of publication. |
+| `<keywords>` | `<kwd-group>` | Keywords list. *(Deferred — to be specified when the relevant slice arrives.)* |
+| `<publication-date>` | `<pub-date>` | Date of publication. *(Deferred — to be specified when the relevant slice arrives.)* |
 
 `<author>` is intentionally simple. Content is a single string name (matching LaTeX's `\author{}` model). Structured author metadata (given names, surname, ORCID, affiliation) is deferred to a future extension if needed. JATS export wraps the string in `<contrib><string-name>...</string-name></contrib>`.
 
@@ -91,44 +91,35 @@ The depth ladder lives *inside* any container's body. Sections in a chapter use 
 
 A `sec-type` attribute on `<section>` carries semantic classification, following JATS conventions for IMRaD-style papers and beyond. Field-level details (the canonical value list, defaults, mapping behavior) live in the per-element entries: see `elements/section.md`, `elements/sub-section.md`, and `elements/sub-sub-section.md`. Book-specific section types follow the same pattern with their own values.
 
-### Floats — captioned, numbered, self-contained content
+### Captioned content — figures and tables
 
-A `<float>` is a self-contained content unit that has a number, has a caption, can be cross-referenced, and may appear out of textual flow. The term is borrowed from LaTeX, where it has the same semantic meaning. Tables, figures, code listings, equations, and diagrams are all floats.
-
-Note on the name: `<float>` collides slightly with CSS's `float: left` property, which is unfortunate. The CSS meaning has faded since Grid and Flexbox replaced float-based layout. In academic publishing contexts (LaTeX users, JATS users), "float" already has the correct semantic meaning. The collision is contextual and not literal — the element name and the CSS property are in different namespaces. The name is provisional and may change if a better term surfaces during implementation; alternatives considered include `<exhibit>` and `<panel>`, both with their own tradeoffs.
+Captioned, numbered, self-contained content uses HTML-native `<figure>` with `<figcaption>` for captions. Tables, images, code listings, equations, and diagrams that need a caption are all wrapped in `<figure>`. Per Rule 2, no Layer 1 custom element is introduced — both `<figure>` and `<figcaption>` are standard HTML.
 
 | Element | JATS counterpart | Purpose |
 |---------|------------------|---------|
-| `<float>` | `<fig>`, `<table-wrap>`, `<disp-formula>`, etc. (per content type) | Universal captioned-content wrapper. |
-| `<caption>` | `<caption>` | Caption for a float. |
+| `<figure>` | `<fig>`, `<table-wrap>`, `<disp-formula>`, etc. (per content type) | Captioned-content wrapper. |
+| `<figcaption>` | JATS `caption` | Caption inside a `<figure>`. |
 
 Usage:
 
 ```
-<float #fig:elephant>
-  <img src=elephant.jpg>
-  <caption | An adult African elephant.>
-</float>
+<figure #fig:elephant src=elephant.jpg |
+  An adult African elephant.>
 
-<float #tab:revenue>
+<figure #tab:revenue |
   <table>...</table>
-  <caption | Annual revenue, by region.>
-</float>
+  Annual revenue, by region.>
 
-<float #lst:fibonacci>
+<figure #lst:fibonacci |
   <pre><code>...</code></pre>
-  <caption | The fibonacci function.>
-</float>
-
-<float #eq:euler>
-  <math>...</math>
-  <caption | Euler's identity.>
-</float>
+  The fibonacci function.>
 ```
 
-Numbering is per-domain. Figures are numbered separately from tables, which are numbered separately from listings, equations, etc. The numbering plugin determines the domain by inspecting the float's content (`img` → figure, `table` → table, `pre code` → listing, `math` → equation).
+See `elements/figure.md` for the per-element details (canonical kwarg list, content shape, JATS mapping, handler behavior).
 
-JATS export converts each `<float>` to its appropriate JATS element based on content: `<fig>` for image content, `<table-wrap>` for tables, `<disp-formula>` for equations, etc. The mapping is content-type-driven, not element-name-driven.
+Numbering is per-domain. Figures are numbered separately from tables, which are numbered separately from listings, equations, etc. The numbering plugin determines the domain by inspecting the figure's content (`img` → figure, `table` → table, `pre code` → listing, `math` → equation).
+
+JATS export converts each `<figure>` to its appropriate JATS element based on content: `<fig>` for image content, `<table-wrap>` for tables, `<disp-formula>` for equations, etc. The mapping is content-type-driven, not element-name-driven.
 
 ### Block-level content (lives in body or section)
 
@@ -139,9 +130,9 @@ Almost all standard HTML.
 | `<p>` | `<p>` | Paragraph. |
 | `<table>` | `<table>` | Table (with full HTML `<thead>`, `<tbody>`, etc.). |
 | `<ul>`, `<ol>`, `<li>` | `<list>` | Lists. |
-| `<dl>`, `<dt>`, `<dd>` | `<def-list>` | Definition lists. |
+| `<dl>`, `<dt>`, `<dd>` | `<def-list>` | Definition lists. *(Deferred — to be specified when the relevant slice arrives.)* |
 | `<blockquote>` | `<disp-quote>` | Long quotation. |
-| `<pre><code>` | `<code>` | Display code. |
+| `<pre><code>` | `<code>` | Display code. *(Deferred — `<pre>` does not yet have a per-element entry; to be specified with the code-block slice.)* |
 | `<aside>` | `<boxed-text>` | Sidebar / pull-out box. |
 | `<hr>` | `<hr>` | Horizontal rule. |
 
@@ -158,8 +149,8 @@ Citations, cross-references, and notes are first-class elements with their own s
 | `<cite>` | `<xref ref-type="bibr">` | Citation reference (to a bibliography entry). |
 | `<ref>` | `<xref ref-type="fig|sec|eq|...">` | Cross-reference (to a numbered element). |
 | `<note>` | `<fn>` | Footnote/endnote/sidenote (inline marker). |
-| `<abbr>` | `<abbrev>` | Abbreviation. |
-| `<term>` | `<named-content>` | A term being introduced. |
+| `<abbr>` | `<abbrev>` | Abbreviation. *(Deferred — to be specified when the relevant slice arrives.)* |
+| `<term>` | `<named-content>` | A term being introduced. *(Deferred — to be specified when the relevant slice arrives.)* |
 
 `<cite>` and `<ref>` are kept as separate elements (rather than unified under JATS-style `<xref ref-type>`) because they have distinct authoring intent and behavior. JATS export converts both to `<xref>` with the appropriate `ref-type`.
 
@@ -170,8 +161,8 @@ Citations, cross-references, and notes are first-class elements with their own s
 | `<bibliography>` | `<ref-list>` | Bibliography. |
 | `<bib-entry>` | `<ref>` | Single bibliography entry. |
 | `<note-list>` | `<fn-group>` | Footnote/endnote block. |
-| `<glossary>` | `<glossary>` | Glossary. |
-| `<glossary-entry>` | `<glossary>/<def-item>` | Single glossary entry. |
+| `<glossary>` | `<glossary>` | Glossary. *(Deferred — to be specified when the relevant slice arrives.)* |
+| `<glossary-entry>` | `<glossary>/<def-item>` | Single glossary entry. *(Deferred — to be specified when the relevant slice arrives.)* |
 
 `<bib-entry>` is the bibliography entry name, despite the verbosity, to avoid collision with the cross-reference `<ref>` element (which JATS unfortunately uses for both bibliography entries and cross-references).
 
@@ -209,29 +200,29 @@ Per `notes/idioms.md`, math and code are delegated to existing parsers and rende
 - Inline code becomes mdast `inlineCode`, rendered natively.
 - Code blocks become mdast `code`, rendered by `rehype-shiki` or similar.
 
-These don't need new Layer 1 elements. Display math can be wrapped in `<float>` for numbering and captioning.
+These don't need new Layer 1 elements. Display math can be wrapped in `<figure>` for numbering and captioning.
 
 ## What's deliberately not in the minimal set
 
 - **Document types beyond the four targeted.** Poetry, drama, music, scripts each have their own vocabulary that would distort the minimal set.
 - **Rich author modeling.** ORCID, affiliations as nested objects, role attribution, contribution statements. Future extension if needed.
 - **Funding sources, peer review metadata, related-article links, copyright statements, version history.** All real JATS elements; deferred until needed.
-- **Embedded DSL elements.** Mermaid, ABC notation, etc. Handled by long-form DSL tags at the parser layer; their Layer 1 representation is `<float>` containing appropriate child content.
+- **Embedded DSL elements.** Mermaid, ABC notation, etc. Handled by long-form DSL tags at the parser layer; their Layer 1 representation is `<figure>` containing appropriate child content.
 - **Per-note positioning.** Note position is document-global. Per-note overrides are a future extension.
 
 ## Decisions baked in (with brief rationale)
 
 For future readers and contributors, the load-bearing decisions:
 
-1. **Distinct container elements (Option Y).** `<article>`, `<book>`, `<book-part>`, `<chapter>` are separate elements rather than a single recursive `<article>` with `document-type` distinctions. This matches BITS, makes JATS export simpler, and gives authors a more discoverable vocabulary. The cost is a slightly larger element list; the cost is bounded.
+1. **Distinct container elements (Option Y).** `<article>`, `<book>`, and `<book-part>` are separate elements rather than a single recursive `<article>` with `document-type` distinctions. This matches BITS, makes JATS export simpler, and gives authors a more discoverable vocabulary. The cost is a slightly larger element list; the cost is bounded. Chapters, parts, appendices, etc. are `<book-part>` instances disambiguated by the `book-part-type` kwarg, not separate Layer 1 elements; the parser exposes them as authoring shorthands (`<chapter>`, `<part>`, `<appendix>`).
 
 2. **Citations and cross-refs as separate first-class elements.** `<cite>` and `<ref>` are distinct rather than unified under `<xref ref-type>`. They have distinct authoring intent and behavior. JATS export reunifies them.
 
 3. **Notes as first-class with global positioning.** `<note>` and `<note-list>` are first-class elements. The foot/end/side distinction is a presentation concern handled by a document-level `note-position` attribute. Per-note overrides are deferred.
 
-4. **`<float>` as the universal captioned-content element.** Tables, figures, listings, and equations all wrap in `<float>`. Numbering is per-domain based on content type. Name is provisional; may change if a better term surfaces.
+4. **HTML-native `<figure>` and `<figcaption>` for captioned content.** Tables, figures, listings, and equations that need a caption all wrap in HTML's standard `<figure>` element, with the caption supplied via `<figcaption>`. This applies Rule 2 (defer to HTML where HTML suffices) — no Layer 1 custom element is introduced for captioned content. Numbering is per-domain based on content type. See `elements/figure.md` for per-element details.
 
-5. **Captions as a sibling element inside `<float>`.** `<caption>` is a child of `<float>`, not an attribute on the captioned content. This allows rich content (cross-refs, citations, math) inside captions.
+5. **Captions as a sibling element inside `<figure>`.** `<figcaption>` is a child of `<figure>`, not an attribute on the captioned content. This allows rich content (cross-refs, citations, math) inside captions.
 
 6. **Simple `<author>`.** Content is a single name string. Rich author metadata is a future extension.
 
@@ -246,9 +237,12 @@ For future readers and contributors, the load-bearing decisions:
 - It can be authored directly (any tool producing conformant HTML works) or through acadamark's shorthand (the primary authoring path).
 - It is the deliverable that makes acadamark's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
 
-## Next steps
+## Current state and next steps
 
-1. Specify per-element attribute lists, with JATS as primary reference. This is the second draft.
-2. Implement custom-element registration. Minimal JS.
-3. Update `BUILD.md` to reflect the vocabulary as a deliverable and to add the third resolver plugin (notes, alongside citations and cross-refs).
-4. Resume acadamark parser slices (Slice 5 and beyond) with this vocabulary as the interpreter target.
+**Current state.** The vocabulary phase is complete. 63 per-element entries exist under `elements/`, each with attribute lists, content shapes, JATS mappings, and render-mode lowering specified. The shorthand parser is feature-complete through Slice 4 plus recursive content parsing. The next major piece of work is the first interpreter slice.
+
+**Next.**
+
+1. **First interpreter slice.** Build `acadamarkTagInterpret` for the in-scope structural elements (article, sections, p, aside, blockquote, hr, figure, ul, ol, li, em, strong, code, meta) plus the structural plugins that produce `<article-front>`/`<article-body>`/`<article-back>`, section-titles, and section nesting. See `notes/interpreter-design.md` and `notes/plugin-pipeline.md`.
+2. **Custom-element registration.** Minimal JS registration in `src/`. These elements are semantic markers; the implementations are mostly one-liners.
+3. **Subsequent interpreter slices.** Math (KaTeX adapter), citations and cross-references (resolver plugins), DSL engines (CSV, mermaid), theorem-family elements, JATS export.

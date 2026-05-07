@@ -1,19 +1,20 @@
 /**
  * DSL content-handler registry.
  *
- * Maps long-form tag names to the content handler the interpreter should
- * dispatch to. Tags not in this map get the handler "default", which means
- * "re-parse through the regular remark pipeline" (deferred to the
- * recursive-content slice; at Slice 4, content is preserved as a string).
+ * Maps long-form tag names to the content handler the interpreter dispatches
+ * to. Tags not in this map get the handler "default", which causes the
+ * recursive-content plugin to re-parse the content through the regular
+ * remark pipeline.
  *
  * Handler names currently use identity (tag name === handler name). The map
  * shape allows future divergence — e.g., an <equation> tag mapping to
  * "math" without touching the math handler itself.
  *
- * Interim hard-coded list (Slice 4). Migrates to packages/layer1-vocabulary/
- * when that package is set up: each long-form element spec will declare its
- * contentHandler there, and the parser will import the map from that package.
- * See notes/shorthand-syntax.md § "DSL tag registry".
+ * This registry lives parser-side. A future migration to
+ * packages/layer1-vocabulary/ is planned: each long-form element's vocabulary
+ * entry would declare its contentHandler there, and the parser would import
+ * the map from that package. See notes/shorthand-syntax.md § "DSL tag
+ * registry".
  */
 export const DSL_REGISTRY = new Map([
   // ── Sigil tags (prose-bearing, recursively parsed) ───────────────────────
@@ -49,8 +50,8 @@ export const DSL_REGISTRY = new Map([
 
   // ── Structural long-form tags (default handler) ─────────────────────────
   // These tags use long-form syntax for multi-line prose content. The
-  // "default" handler means content is re-parsed through remark when
-  // recursive content parsing lands (deferred; currently preserved as string).
+  // "default" handler means content is re-parsed through remark by the
+  // recursive-content plugin.
   //
   // Tags NOT listed here are short-form only. Adding a tag here makes it
   // long-form eligible — any block-level occurrence without a matching
@@ -61,11 +62,12 @@ export const DSL_REGISTRY = new Map([
   // openers. Add figure here once the design for long-form figure is settled.
   //
   // NOTE: theorem-family elements (proof, lemma, corollary, definition,
-  // example) omitted pending Layer 1 vocabulary specification (see STATUS.md
-  // "Open design questions"). Add them once their element specs are written.
+  // example) omitted pending Layer 1 vocabulary specification for them
+  // (see SPEC.md "Theorem-family"). Add them once their element specs are
+  // written.
   //
-  // This interim list migrates to packages/layer1-vocabulary/ when that
-  // package is set up. See notes/shorthand-syntax.md § "DSL tag registry".
+  // Future migration to packages/layer1-vocabulary/ is planned. See
+  // notes/shorthand-syntax.md § "DSL tag registry".
   ['aside',      'default'],
   ['blockquote', 'default'],
   ['note',       'default'],

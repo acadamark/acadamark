@@ -23,7 +23,7 @@ For the full design rationale, read `DESIGN.md`. For the implementation plan, re
 
 | Layer | What it is | Status |
 |-------|-----------|--------|
-| Layer 1 — Semantic HTML | A vocabulary of elements (`<section>`, `<sub-section>`, `<article-title>`, `<section-title>`, `<figure>`, etc.) and `data-*` attributes | Partly specified (`notes/layer1-naming.md`); full vocabulary not yet enumerated |
+| Layer 1 — Semantic HTML | A vocabulary of elements (`<section>`, `<sub-section>`, `<article-title>`, `<section-title>`, `<figure>`, etc.) and `data-*` attributes | Specified (`packages/layer1-vocabulary/SPEC.md`, plus 63 per-element entries under `packages/layer1-vocabulary/elements/`). Each entry has structured frontmatter with attribute lists, content shapes, JATS mappings, and render-mode lowering. Supporting docs: `notes/plugin-pipeline.md`, `notes/shape-tokens.md`, `notes/layer1-naming.md`. |
 | Layer 2 — Shorthand syntax | A uniform tag form with attributes and content; sigil tags for headings/math/code; long-form for DSL content | Specified (`notes/shorthand-syntax.md`); parser implemented through Slice 4 + recursive content |
 | Compilation targets | Semantic mode (preserves Layer 1 elements, archival) and render mode (lowers to `<h1>`/`<h2>` for browser default styling, lossy) | Specified at the level of "this is how it should work"; render-mode plugin not implemented |
 | JATS export | Maps Layer 1 to JATS XML for journal submission | Specified as a Phase 3 deliverable; not implemented |

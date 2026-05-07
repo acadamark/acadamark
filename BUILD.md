@@ -2,6 +2,14 @@
 
 This document describes how acadamark is implemented. It assumes you've read `DESIGN.md`.
 
+## Where the project is now (May 2026)
+
+The shorthand parser is feature-complete through Slice 4 plus recursive content parsing, escape rules, and multi-line constructs. The Layer 1 vocabulary phase is complete: `packages/layer1-vocabulary/` contains 63 per-element entries with attribute lists, content shapes, JATS mappings, and render-mode lowering specified. See `packages/layer1-vocabulary/SPEC.md` for the high-level overview and the per-element files under `packages/layer1-vocabulary/elements/` for field-level details.
+
+The next focus is the **first interpreter slice**: build `acadamarkTagInterpret` for a small set of in-scope structural elements (article, section, sub-section, sub-sub-section, p, aside, blockquote, hr, figure, ul, ol, li, em, strong, code, meta) plus the structural plugins that produce `<article-front>`/`<article-body>`/`<article-back>`, section-titles, and section nesting. After this slice, simple structural acadamark documents render to real HTML end-to-end. The architecture and slice scope are described in `notes/interpreter-design.md` and `notes/plugin-pipeline.md`.
+
+The pre-vocabulary "what's next" list elsewhere in this document (Phase 1 step 5, Phase 2, Phase 3) is preserved as historical context for the implementation plan; the active next step is the first interpreter slice.
+
 ## Architectural choice: unified/remark/rehype
 
 Acadamark is built as a set of plugins on the [unified](https://unifiedjs.com/) ecosystem. This decision was made after considering three options:

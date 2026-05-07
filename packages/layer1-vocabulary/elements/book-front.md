@@ -12,7 +12,7 @@ acadamark_attributes:
 content:
   type: structured
   shape:
-    contains: [meta, book-title, book-subtitle, author, editor, book-part]
+    contains: [meta, book-title, book-subtitle, author, editor, book-part, data, config]
 content_handler: default
 interpreter_strategy: schema
 ---

@@ -51,6 +51,10 @@ This compiles to standard, semantic HTML that any browser can render and any con
 
 Acadamark is in active design. The core conventions for sections, citations, and the shorthand syntax are specified. A working implementation is being rebuilt on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype) to replace earlier regex-based prototypes. See [`DESIGN.md`](DESIGN.md) for the design rationale and [`BUILD.md`](BUILD.md) for the implementation plan.
 
+## Reading order
+
+The project has accumulated enough documentation that knowing where to start matters. See [`notes/reading-order.md`](notes/reading-order.md) for a guided path through the spec and implementation docs, broken out by what you're trying to understand (the parser, the vocabulary, the interpreter, deferred features).
+
 ## Project goals
 
 1. **Specify** a complete vocabulary of HTML conventions for academic publishing.
