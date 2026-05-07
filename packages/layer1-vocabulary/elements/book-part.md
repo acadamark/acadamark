@@ -33,18 +33,13 @@ content:
       required: false
       contains: [section, sub-section, p, figure, aside, blockquote, table, book-part]
 content_handler: default
-title_after_pipe: true
+title_extraction: true
 jats_counterpart:
   element: book-part
   attributes:
     book-part-type: from book-part-type
   notes: 'Direct mapping to JATS <book-part>. Recursive structure preserved exactly.'
 shorthand_expansions:
-  - shorthand: 'first line after pipe'
-    expands_to: book-part-title
-    notes: |
-      Authors write <chapter | The Title>; the first line after the pipe
-      becomes <book-part-title> inside <book-part-meta>.
   - shorthand: chapter
     expands_to: 'book-part book-part-type="chapter"'
     notes: 'The most common book-part type.'
@@ -66,9 +61,6 @@ shorthand_expansions:
     expands_to: 'book-part book-part-type="conclusion"'
   - shorthand: glossary
     expands_to: 'book-part book-part-type="glossary"'
-  - shorthand: book-part-title
-    expands_to: book-part-title
-    notes: 'Available as an escape hatch for explicit title elements.'
 shorthand_examples:
   - source: |
       <chapter | Origins>
@@ -142,9 +134,7 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkBookStructuring
     runs_before: acadamarkTagInterpret
-    purpose: |
-      Places book-parts into the appropriate region (book-front, book-body,
-      book-back) based on their book-part-type.
+    purpose: 'Places book-parts into the appropriate region by book-part-type. See notes/plugin-pipeline.md for the full pipeline.'
 deferred_features:
   - name: book-part-import
     description: |
@@ -172,7 +162,7 @@ The shorthand form puts the book-part's title in the pipe content:
 The chapter content begins here.
 ```
 
-The first line after the pipe becomes `<book-part-title>` inside an automatically-generated `<book-part-meta>` wrapper.
+The pipe content becomes the children of `<book-part-title>` — verbatim, after recursive parsing.
 
 The explicit `<book-part-title>` element is available when needed (multi-line titles, complex inline content, or when constructing the meta wrapper explicitly).
 

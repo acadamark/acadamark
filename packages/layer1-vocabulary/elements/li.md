@@ -20,7 +20,6 @@ content:
   type: prose
   becomes: children
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: list-item
   notes: |
@@ -76,7 +75,7 @@ A list item. The element representing a single entry within `<ul>` or `<ol>`.
 
 ## Semantic intent
 
-`<li>` is the content unit of a list. List items contain prose — text, inline elements, optionally paragraphs and sub-elements. The element is HTML-native and matches HTML5's semantic intent.
+`<li>` is the content unit of a list. List items contain prose — inline content (text, emphasis, links, etc.) and optionally block content (paragraphs, nested lists). The element is HTML-native and matches HTML5's semantic intent.
 
 Most list items are written via markdown's list syntax, which produces `<li>` elements automatically. The explicit `<li>` form is reached for when an item needs attributes (id, classes, value).
 

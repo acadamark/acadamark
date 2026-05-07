@@ -27,7 +27,6 @@ content:
   type: prose
   becomes: children
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'disp-quote or epigraph'
   notes: |

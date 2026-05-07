@@ -22,9 +22,8 @@ content:
     - element: li
       required: false
       multiple: true
-      contains: [text, inline-elements, p, sub-elements]
+      contains: [inline, block]
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: list
   attributes:
@@ -120,7 +119,7 @@ Use this when individual items need attributes (id, classes, etc.). The pipe con
 
 ## Content
 
-A `<ul>` contains a sequence of `<li>` elements. List items contain prose content (text, inline elements, optionally paragraphs and sub-elements).
+A `<ul>` contains a sequence of `<li>` elements. List items contain prose — inline content and optionally block content (paragraphs, nested lists).
 
 Multi-paragraph list items are possible:
 

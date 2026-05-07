@@ -44,7 +44,6 @@ content:
     Optional override for the rendered cross-reference text. Most refs
     have no content; the resolver generates the text automatically.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'xref ref-type="..."'
   notes: |
@@ -86,10 +85,8 @@ handler_responsibilities:
 related_plugins:
   - name: acadamarkCrossReferenceResolution
     runs_after: 'acadamarkArticleStructuring, numbering plugins'
-    purpose: |
-      Walks the document, finds <ref> elements, resolves them against
-      the numbered-elements registry built by the numbering plugins.
-      Generates link text. Tracks references for downstream tooling.
+    purpose: 'Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<ref>`

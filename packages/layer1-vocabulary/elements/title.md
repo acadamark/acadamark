@@ -23,7 +23,6 @@ content:
     The title text. Inline elements work normally: <em>, <strong>,
     <i> for foreign words, <math> for mathematical content in titles.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'article-title or book-title (inside title-group inside article-meta or book-meta)'
   notes: |

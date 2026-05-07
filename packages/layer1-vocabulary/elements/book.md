@@ -27,15 +27,12 @@ content:
   shape:
     - element: book-front
       required: false
-      contains: [meta, book-title, book-subtitle, author, editor, dedication, foreword, preface, table-of-contents]
     - element: book-body
       required: false
-      contains: [book-part]
     - element: book-back
       required: false
-      contains: [bibliography, appendix, glossary, index, colophon, note-list]
 content_handler: default
-title_after_pipe: true
+title_extraction: true
 jats_counterpart:
   element: book
   attributes:
@@ -44,13 +41,6 @@ jats_counterpart:
     JATS <book> wraps <book-front>, <book-body>, and <book-back>. Acadamark's
     structural elements map directly. JATS uses <book-part> recursively for
     all major divisions discriminated by the book-part-type attribute.
-shorthand_expansions:
-  - shorthand: 'first line after pipe'
-    expands_to: book-title
-    notes: 'Authors write <book | The Title>; pipe content becomes <book-title> in <book-front>.'
-  - shorthand: book-title
-    expands_to: book-title
-    notes: 'Available as an escape hatch for multi-line titles.'
 shorthand_examples:
   - source: |
       <book | A Natural History of Elephants>
@@ -153,10 +143,7 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkBookStructuring
     runs_before: acadamarkTagInterpret
-    purpose: |
-      Groups children of <book> into <book-front>, <book-body>, <book-back>
-      when wrappers are missing. Extracts title from pipe content. Places
-      book-parts into the appropriate region based on book-part-type.
+    purpose: 'Implicit-book wrapping, region grouping, title extraction, book-part placement. See notes/plugin-pipeline.md for the full pipeline.'
 deferred_features:
   - name: book-part-import
     description: |
@@ -188,7 +175,7 @@ The shorthand form puts the book title in the pipe content:
 <book | A Natural History of Elephants>
 ```
 
-The first line after the pipe becomes `<book-title>` in `<book-front>`. Subsequent content (metadata, chapters, parts) follows naturally.
+The pipe content becomes the children of `<book-title>` — verbatim, after recursive parsing. Subsequent content (metadata, chapters, parts) follows naturally.
 
 The explicit `<book-title>` element is available when needed.
 

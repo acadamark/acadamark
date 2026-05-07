@@ -33,9 +33,8 @@ content:
     - element: li
       required: false
       multiple: true
-      contains: [text, inline-elements, p, sub-elements]
+      contains: [inline, block]
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: list
   attributes:
@@ -80,7 +79,7 @@ shorthand_examples:
       3. Third option
       </ol>
     layer1_html: |
-      <ol style="list-style-type: upper-alpha" data-list-type="alpha-upper">
+      <ol data-list-type="alpha-upper">
         <li>First option</li>
         <li>Second option</li>
         <li>Third option</li>
@@ -213,7 +212,7 @@ Some interrupting prose.
 
 ## Render-mode lowering
 
-`<ol>` is HTML-native. The `type` kwarg's value is converted to either an inline `style` attribute (for the CSS list-style-type) or the `data-list-type` attribute, depending on browser support and styling preferences. The conversion is handled by the interpreter.
+`<ol>` is HTML-native. The `type` kwarg's value is emitted as `data-list-type` (consistent with `<ul>`). Downstream CSS targets `ol[data-list-type="..."]` for the visual list-style-type. The interpreter does not emit inline `style` attributes for this; styling is the responsibility of CSS at the rendering layer.
 
 ## See also
 

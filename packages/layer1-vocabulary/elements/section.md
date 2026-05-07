@@ -25,15 +25,15 @@ content:
   shape:
     - element: section-title
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: section-subtitle
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: body
       required: false
-      contains: [p, sub-section, figure, aside, blockquote, table, list-elements]
+      contains: [block, section]
 content_handler: default
-title_after_pipe: true
+title_extraction: true
 jats_counterpart:
   element: sec
   attributes:
@@ -43,20 +43,6 @@ jats_counterpart:
     depth (<section>, <sub-section>, <sub-sub-section>) for explicit
     semantic clarity. The JATS exporter maps acadamark's depth ladder to
     nested <sec> elements.
-shorthand_expansions:
-  - shorthand: 'first line after pipe'
-    expands_to: section-title
-    notes: |
-      Authors write <section | The Title>; the first line after the pipe
-      becomes <section-title>.
-  - shorthand: section-title
-    expands_to: section-title
-    notes: 'Available as an escape hatch for explicit title elements.'
-  - shorthand: section-subtitle
-    expands_to: section-subtitle
-    notes: |
-      Subtitles are written explicitly. There is no shorthand-after-pipe
-      for subtitles because the pipe slot is consumed by the title.
 shorthand_examples:
   - source: |
       <section | Introduction>
@@ -101,11 +87,9 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkSectionNesting
-    runs_after: acadamarkTagInterpret
-    purpose: |
-      Handles implicit closing of sections at peer-level boundaries. A new
-      <section> at the same depth implicitly closes the previous one. Operates
-      on the rehype tree after the interpreter produces section elements.
+    runs_before: acadamarkTagInterpret
+    purpose: 'Phase 2 — implicit closing of peer sections. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<section>`
@@ -131,9 +115,9 @@ The shorthand form puts the section title in the pipe content:
 The introduction begins here.
 ```
 
-The first line after the pipe becomes `<section-title>`. Subsequent paragraphs become body content.
+The pipe content becomes the children of `<section-title>` — verbatim, after recursive parsing. There is no first-line splitting. Body content (paragraphs, sub-sections, figures) follows the closing `>` and is assigned to the section by the implicit-closing structural plugin.
 
-The explicit `<section-title>` and `<section-subtitle>` elements are available when needed.
+The explicit `<section-title>` and `<section-subtitle>` elements are available as alternate authoring forms.
 
 ## Implicit closing
 
@@ -155,7 +139,7 @@ This works only at the same depth. A `<sub-section>` inside a `<section>` doesn'
 
 A section contains:
 
-- An optional `<section-title>` (the heading; supplied by the title-after-pipe shorthand).
+- An optional `<section-title>` (supplied by title extraction from the pipe, or written explicitly).
 - An optional `<section-subtitle>` (a secondary title; written explicitly).
 - Body content: paragraphs, sub-sections, figures, asides, blockquotes, tables, lists.
 

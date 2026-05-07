@@ -27,7 +27,6 @@ content:
     Same content model as <author>. Simple form (pipe content as name)
     or structured form (explicit child elements).
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'contrib contrib-type="editor"'
 shorthand_examples:

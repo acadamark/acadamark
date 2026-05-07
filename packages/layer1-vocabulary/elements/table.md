@@ -21,7 +21,7 @@ content:
   shape:
     - element: caption
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: thead
       required: false
       contains: [tr]
@@ -38,7 +38,6 @@ content:
         When tbody/thead/tfoot wrappers are absent, tr elements appear
         directly as children of table.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: table-wrap
   attributes:

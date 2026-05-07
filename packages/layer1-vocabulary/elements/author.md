@@ -36,7 +36,6 @@ content:
     - Simple: pipe-content as "Given Family" name string.
     - Structured: explicit child elements (<given-names>, <surname>, etc.).
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'contrib contrib-type="author"'
   notes: |

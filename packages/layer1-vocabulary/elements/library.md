@@ -30,7 +30,6 @@ content:
     the content directly from a reference manager (Zotero, JabRef, etc.)
     or a text editor.
 content_handler: library
-title_after_pipe: false
 jats_counterpart:
   element: 'no direct equivalent (entries lift into ref-list)'
   notes: |
@@ -111,11 +110,8 @@ handler_responsibilities:
 related_plugins:
   - name: acadamarkLibraryParsing
     runs_before: acadamarkCitationResolution
-    purpose: |
-      Finds <library> elements throughout the document, parses content
-      using format-specific parsers, registers entries with the citation
-      system. Must run before citation resolution so entries are
-      available when <cite> elements are processed.
+    purpose: 'Phase 1 discovery — dispatches to format-specific parsers (BibTeX, CSL-JSON, etc.) and registers entries. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<library>`

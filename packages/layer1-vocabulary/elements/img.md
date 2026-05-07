@@ -33,7 +33,6 @@ content:
     The img element is void; it has no content. The alt text is set
     via the alt kwarg, not via content.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: graphic
   attributes:

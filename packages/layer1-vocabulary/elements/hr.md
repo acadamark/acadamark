@@ -22,7 +22,6 @@ content:
   notes: |
     The hr element is void; it cannot contain content.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: hr
   notes: |

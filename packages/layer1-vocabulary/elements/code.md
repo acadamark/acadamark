@@ -21,8 +21,7 @@ content:
   notes: |
     Code content is preserved verbatim. No markdown idioms or acadamark
     constructs are interpreted inside <code> elements.
-content_handler: default
-title_after_pipe: false
+content_handler: code
 jats_counterpart:
   element: monospace
   notes: |
@@ -85,7 +84,7 @@ Used when language identification (for syntax highlighting) or other attributes 
 
 ## Content
 
-Code content is opaque — preserved verbatim, with no markdown or acadamark interpretation. This means:
+Code content is opaque — preserved verbatim by the parser (contentHandler: "code"), with no markdown or acadamark interpretation. This means:
 
 - Special characters (`<`, `>`, `*`, etc.) appear literally.
 - No nested constructs are recognized.

@@ -36,7 +36,6 @@ content:
   type: prose
   becomes: children
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: fn
   notes: |
@@ -69,21 +68,11 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkNoteNumbering
     runs_after: acadamarkTagInterpret
-    purpose: |
-      Assigns sequential numbers to notes based on document order.
-      Writes the assigned number to the data-note-number attribute.
-      Generates the visible reference marker (e.g., a superscript number)
-      that appears in the prose at the note's location.
+    purpose: 'Assigns sequential note numbers and generates reference markers. See notes/plugin-pipeline.md for the full pipeline.'
   - name: acadamarkNotePlacement
     runs_after: acadamarkNoteNumbering
-    purpose: |
-      Reads the document-level note-position setting and moves notes
-      to their rendered position. Notes with position=inline stay in
-      place; notes with position=end collect into a <note-list> at
-      the document back-matter location; notes with position=foot
-      (paged output) collect at the page foot via CSS or rendering
-      pipeline; notes with position=chapter-end collect into a
-      <note-list> at the end of the containing chapter.
+    purpose: 'Moves notes to their rendered position per the document-level note-position setting. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<note>`

@@ -27,15 +27,12 @@ content:
   shape:
     - element: article-front
       required: false
-      contains: [meta, article-title, article-subtitle, author, abstract]
     - element: article-body
       required: false
-      contains: [section, sub-section, p, figure, aside, blockquote, table, list-elements]
     - element: article-back
       required: false
-      contains: [bibliography, appendix, note-list]
 content_handler: default
-title_after_pipe: true
+title_extraction: true
 jats_counterpart:
   element: article
   attributes:
@@ -44,17 +41,6 @@ jats_counterpart:
     JATS <article> wraps <front>, <body>, and <back>. Acadamark uses
     <article-front>, <article-body>, <article-back> as parallel custom
     elements. The mapping is direct.
-shorthand_expansions:
-  - shorthand: 'first line after pipe'
-    expands_to: article-title
-    notes: |
-      Authors write <article | The Title>; the first line after the pipe
-      becomes <article-title> in <article-front>.
-  - shorthand: article-title
-    expands_to: article-title
-    notes: |
-      Available as an escape hatch for multi-line titles or titles with
-      complex inline structure.
 shorthand_examples:
   - source: |
       <article | The Effect of Elephants on Climate>
@@ -114,10 +100,8 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkArticleStructuring
     runs_before: acadamarkTagInterpret
-    purpose: |
-      Wraps top-level content in implicit <article> when no explicit
-      container exists. Extracts title from the pipe content. Groups
-      children into <article-front>, <article-body>, <article-back>.
+    purpose: 'Implicit-article wrapping, region grouping, title extraction. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<article>`
@@ -142,9 +126,9 @@ The shorthand form puts the article title in the pipe content:
 <article | The Title of the Article>
 ```
 
-The first line after the pipe becomes `<article-title>` in `<article-front>`. Subsequent content (sections, body) follows naturally.
+The pipe content becomes the children of `<article-title>` in `<article-front>` — verbatim, after recursive parsing. There is no paragraph-extraction logic; whatever the author writes between `|` and `>` becomes the title content. Body content (sections, paragraphs, figures) follows the closing `>` and is assigned by the structural plugin.
 
-Authors don't typically write `<article-title>` explicitly. The pipe-after-tagname convention handles the common case. The explicit element is available as an escape hatch when needed (multi-line titles, titles with complex inline content).
+Authors don't typically write `<article-title>` explicitly. The pipe-after-tagname convention handles the common case. The explicit element is still available as an alternate authoring form when desired.
 
 ## Required structure
 
@@ -164,7 +148,7 @@ Acadamark provides defaults for documents without explicit structure:
 
 **No explicit `<article-front>`, `<article-body>`, `<article-back>`.** When these wrappers are missing, the `acadamarkArticleStructuring` plugin groups children:
 
-- Title (from pipe content or explicit `<article-title>`) goes into `<article-front>`.
+- Title (from pipe content via title extraction, or explicit `<article-title>`) goes into `<article-front>`.
 - Any `<meta>` block goes into `<article-front>`.
 - Front-matter elements (`<author>`, `<abstract>`, etc.) go into `<article-front>`.
 - Body content (sections, paragraphs, figures) goes into `<article-body>`.

@@ -43,7 +43,6 @@ content:
         Bibliography source reference (e.g., <bibliography source="refs.bib">).
         Configuration about where the bibliography file lives.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'no direct equivalent'
   notes: |
@@ -82,11 +81,8 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkConfigDiscovery
     runs_before: acadamarkTagInterpret
-    purpose: |
-      Discovers <config> elements throughout the document, extracts
-      configuration values, makes them available to subsequent plugins
-      and to the rendering pipeline. Runs before any rendering or
-      transformation work that depends on configuration.
+    purpose: 'Phase 1 discovery — extracts <config> values into the configuration registry. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<config>`

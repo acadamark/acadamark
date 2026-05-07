@@ -21,15 +21,14 @@ content:
   type: prose
   becomes: children
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
-  element: 'notes or boxed-text'
+  element: boxed-text
   notes: |
-    JATS uses different elements depending on type:
-    - <notes> for footnote-style asides (typically document-level)
-    - <boxed-text> for visually-distinct callouts
-    The exporter dispatches based on the type kwarg; default (no type)
-    maps to <boxed-text content-type="aside">.
+    All <aside> variants map to JATS <boxed-text>. The exporter sets
+    content-type based on the type kwarg (e.g., type=note becomes
+    <boxed-text content-type="note">). Default (no type) maps to
+    <boxed-text content-type="aside">. JATS <notes> is reserved for
+    document-level collected footnotes — see <note-list>, not <aside>.
 shorthand_examples:
   - source: '<aside | A side note about the elephant.>'
     layer1_html: '<aside>A side note about the elephant.</aside>'
@@ -61,7 +60,7 @@ Use `<aside>` for any content the reader can skip without losing the main argume
 The optional `type` kwarg classifies the aside, which:
 
 - Affects styling (callouts get visual emphasis; sidebars get layout treatment).
-- Determines JATS export (footnote-style asides become `<notes>`; callouts become `<boxed-text>`).
+- Determines JATS export — all variants map to `<boxed-text>` with `content-type` reflecting the type kwarg (e.g., `<boxed-text content-type="note">`, `<boxed-text content-type="callout">`).
 - Allows tooling to filter or enumerate (find all warnings; list all sidebars).
 
 ## Content
@@ -74,7 +73,7 @@ Asides can be inline (single-line) or block-level (multi-line, multi-paragraph).
 
 `type` indicates the aside's role:
 
-- `note` — footnote-style commentary. Renders compactly; in JATS becomes `<notes>`.
+- `note` — footnote-style commentary. Renders compactly; maps to `<boxed-text content-type="note">` in JATS.
 - `sidebar` — layout sidebar; commentary running parallel to main text.
 - `callout` — visually-distinct emphasized content.
 - `warning` — alert about a potential problem.
@@ -91,7 +90,7 @@ The mapping depends on the type:
 | acadamark | JATS |
 |-----------|------|
 | `<aside>` (no type) | `<boxed-text content-type="aside">` |
-| `<aside type=note>` | `<notes>` |
+| `<aside type=note>` | `<boxed-text content-type="note">` |
 | `<aside type=sidebar>` | `<boxed-text content-type="sidebar">` |
 | `<aside type=callout>` | `<boxed-text content-type="callout">` |
 | `<aside type=warning>` | `<boxed-text content-type="warning">` |

@@ -32,7 +32,6 @@ content:
     - With time: 2024-03-15T14:30:00Z.
     - Free-form: "March 15, 2024" or "Spring 2024".
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'pub-date or date (in history)'
   notes: |

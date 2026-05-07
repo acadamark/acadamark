@@ -20,10 +20,10 @@ content:
   shape:
     - element: title
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: subtitle
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: author
       required: false
       multiple: true
@@ -38,7 +38,6 @@ content:
     - element: keywords
       required: false
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'article-meta or book-meta'
   notes: |
@@ -73,12 +72,10 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkArticleStructuring
-    purpose: |
-      Promotes <meta> children to Layer 1 elements in <article-front>:
-      <title> → <article-title>, <subtitle> → <article-subtitle>, etc.
+    purpose: 'Promotes <meta> children to Layer 1 elements in <article-front>. See notes/plugin-pipeline.md for the full pipeline.'
   - name: acadamarkBookStructuring
-    purpose: |
-      Same as above but for books.
+    purpose: 'Same as above for books. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<meta>`

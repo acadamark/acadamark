@@ -19,8 +19,10 @@ acadamark_attributes:
     alt:
       handled_by: handler
       notes: |
-        Alt text for the generated <img> when src is present. Required
-        for accessibility when src is set; ignored otherwise.
+        Alt text for the generated <img> when src is present. Recommended
+        for accessibility but not required: when alt is not specified, the
+        handler falls back to the figcaption text. Ignored when src is
+        absent.
     align:
       maps_to: data-align
       values: [left, right, center, full-width]
@@ -48,7 +50,6 @@ content:
     alongside whatever the author placed inside the figure (a table,
     a code block, an equation, etc.).
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: fig
   attributes:
@@ -147,7 +148,7 @@ The `<figure>` transformation cannot be expressed as pure schema:
 - The `src` kwarg generates an `<img>` child element, not just an attribute on the output.
 - The pipe content becomes a `<figcaption>` child, not children of the `<figure>` directly.
 - Multi-content figures (image plus caption, table plus caption, code plus caption) require the handler to distinguish the captioned content from the caption text.
-- The `alt` kwarg, when not specified, defaults to the figcaption text — this fallback logic lives in the handler.
+- The `alt` kwarg, when not specified, falls back to the figcaption text — this fallback logic lives in the handler.
 
 The handler at `handlers/figure.js` constructs the appropriate child structure based on which attributes are present and what content the figure contains.
 
@@ -223,7 +224,7 @@ Numbered equations are figures with `type=equation`. The math content is wrapped
 
 `src` — image URL. When present, the handler generates an `<img>` child element. When absent, the figure's content is whatever the author placed inside (tables, code, equations).
 
-`alt` — alt text for the generated image. When not specified and `src` is present, the alt text defaults to the figcaption text. Required for accessibility but the fallback prevents authoring friction.
+`alt` — alt text for the generated image. Recommended for accessibility. When not specified and `src` is present, the handler falls back to the figcaption text.
 
 `align` — `left`, `right`, `center`, or `full-width`. Layout positioning for the figure.
 

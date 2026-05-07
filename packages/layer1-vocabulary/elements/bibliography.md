@@ -53,7 +53,6 @@ content:
         as children. Authors don't typically write these directly — the
         bibliography assembly plugin populates the element.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: ref-list
   notes: |
@@ -139,12 +138,9 @@ generated_by:
       or book-back unless explicitly written by the author.
 related_plugins:
   - name: acadamarkBibliographyAssembly
-    runs_after: 'acadamarkCitationResolution'
-    purpose: |
-      Reads the citation registry, identifies entries that were cited,
-      sorts them according to the bibliography style and sort kwarg,
-      formats each entry, places them as children of <bibliography>.
-      Generates the <bibliography> element if not explicitly authored.
+    runs_after: acadamarkCitationResolution
+    purpose: 'Assembles cited entries into <bibliography> per the configured style. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<bibliography>`

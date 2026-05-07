@@ -34,7 +34,6 @@ content:
       multiple: true
       notes: 'Future: tabular data referenced by tables or figures.'
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'no direct equivalent'
   notes: |
@@ -93,15 +92,10 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkLibraryParsing
-    purpose: |
-      Finds <library> elements throughout the document, parses content
-      using the format-specific parser (bibtex, csl-json, etc.), registers
-      entries with the citation system.
+    purpose: 'Phase 1 discovery — parses <library> blocks into the citation registry. See notes/plugin-pipeline.md for the full pipeline.'
   - name: acadamarkResourceCollection
-    purpose: |
-      Collects <data> blocks regardless of source position. Resources
-      are made available to citation, figure, and other systems that
-      reference them.
+    purpose: 'Phase 1 discovery — collects <data> blocks regardless of source position. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<data>`

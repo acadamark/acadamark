@@ -62,7 +62,6 @@ content:
     - element: url
       required: false
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'ref (containing element-citation or mixed-citation)'
   notes: |
@@ -111,11 +110,8 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkBibEntryRegistration
     runs_before: acadamarkCitationResolution
-    purpose: |
-      Finds <bib-entry> elements throughout the document, registers each
-      with the citation system under its id. Citations resolve against
-      the registry which combines entries from <bib-entry>, <library>
-      blocks, and external file references.
+    purpose: 'Registers <bib-entry> elements in the citation registry. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<bib-entry>`

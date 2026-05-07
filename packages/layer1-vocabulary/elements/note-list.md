@@ -25,7 +25,6 @@ content:
         They are placed there by the acadamarkNotePlacement plugin
         based on the document's note-position setting.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: fn-group
   notes: |

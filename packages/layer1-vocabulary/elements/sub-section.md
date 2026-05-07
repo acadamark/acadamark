@@ -22,15 +22,15 @@ content:
   shape:
     - element: sub-section-title
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: sub-section-subtitle
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: body
       required: false
-      contains: [p, sub-sub-section, figure, aside, blockquote, table, list-elements]
+      contains: [block, section]
 content_handler: default
-title_after_pipe: true
+title_extraction: true
 jats_counterpart:
   element: sec
   attributes:
@@ -38,14 +38,6 @@ jats_counterpart:
   notes: |
     JATS uses recursive <sec>; acadamark's <sub-section> becomes a nested
     <sec> at depth 2 inside its parent <sec>.
-shorthand_expansions:
-  - shorthand: 'first line after pipe'
-    expands_to: sub-section-title
-    notes: 'Authors write <sub-section | Title>; pipe content becomes <sub-section-title>.'
-  - shorthand: sub-section-title
-    expands_to: sub-section-title
-  - shorthand: sub-section-subtitle
-    expands_to: sub-section-subtitle
 shorthand_examples:
   - source: |
       <sub-section | Quantitative analysis>
@@ -84,10 +76,9 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkSectionNesting
-    runs_after: acadamarkTagInterpret
-    purpose: |
-      Handles implicit closing at peer-level boundaries. A new <sub-section>
-      at the same depth implicitly closes the previous one.
+    runs_before: acadamarkTagInterpret
+    purpose: 'Phase 2 — implicit closing of peer sub-sections. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<sub-section>`
@@ -109,7 +100,7 @@ The shorthand form puts the sub-section title in the pipe content:
 The methods used were as follows.
 ```
 
-The first line after the pipe becomes `<sub-section-title>`. Subsequent content is body.
+The pipe content becomes the children of `<sub-section-title>` — verbatim, after recursive parsing. Body content follows the closing `>` and is assigned by the structural plugin.
 
 ## Implicit closing
 
@@ -131,7 +122,7 @@ A new `<section>` (depth 1) also closes any open sub-sections, because the paren
 
 A sub-section contains:
 
-- An optional `<sub-section-title>` (from the pipe shorthand or written explicitly).
+- An optional `<sub-section-title>` (supplied by title extraction from the pipe, or written explicitly).
 - An optional `<sub-section-subtitle>` (written explicitly).
 - Body content: paragraphs, sub-sub-sections, figures, asides, blockquotes, tables, lists.
 

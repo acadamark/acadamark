@@ -61,7 +61,6 @@ content:
     (the resolver generates the rendered text from the bibliography entry
     and the citation style).
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: 'xref ref-type="bibr"'
   attributes:
@@ -113,11 +112,8 @@ handler_responsibilities:
 related_plugins:
   - name: acadamarkCitationResolution
     runs_after: 'acadamarkLibraryParsing, acadamarkArticleStructuring'
-    purpose: |
-      Walks the document, finds <cite> elements, resolves them against
-      the citation registry, generates rendered citation markers.
-      Tracks which entries get cited so the bibliography can include
-      only cited entries.
+    purpose: 'Resolves <cite> elements against the citation registry; generates rendered markers. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<cite>`

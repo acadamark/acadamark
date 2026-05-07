@@ -35,7 +35,6 @@ content:
   notes: |
     Link text. The visible label for the link.
 content_handler: default
-title_after_pipe: false
 jats_counterpart:
   element: ext-link
   attributes:

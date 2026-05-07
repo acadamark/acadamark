@@ -21,19 +21,19 @@ content:
   shape:
     - element: sub-sub-section-title
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: sub-sub-section-subtitle
       required: false
-      contains: [text, inline-elements]
+      contains: [inline]
     - element: body
       required: false
-      contains: [p, figure, aside, blockquote, table, list-elements]
+      contains: [block]
       notes: |
         Sub-sub-sections do not contain further nested section levels. Depth
         bottoms out at three. Documents requiring deeper nesting should
         reorganize their structure or extend the depth ladder explicitly.
 content_handler: default
-title_after_pipe: true
+title_extraction: true
 jats_counterpart:
   element: sec
   attributes:
@@ -41,13 +41,6 @@ jats_counterpart:
   notes: |
     JATS uses recursive <sec>; acadamark's <sub-sub-section> becomes a nested
     <sec> at depth 3 inside its parent.
-shorthand_expansions:
-  - shorthand: 'first line after pipe'
-    expands_to: sub-sub-section-title
-  - shorthand: sub-sub-section-title
-    expands_to: sub-sub-section-title
-  - shorthand: sub-sub-section-subtitle
-    expands_to: sub-sub-section-subtitle
 shorthand_examples:
   - source: |
       <sub-sub-section | Regression analysis>
@@ -83,10 +76,9 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkSectionNesting
-    runs_after: acadamarkTagInterpret
-    purpose: |
-      Handles implicit closing at peer-level boundaries. A new <sub-sub-section>
-      at the same depth implicitly closes the previous one.
+    runs_before: acadamarkTagInterpret
+    purpose: 'Phase 2 — implicit closing of peer sub-sub-sections. See notes/plugin-pipeline.md for the full pipeline.'
+
 ---
 
 # `<sub-sub-section>`
@@ -122,7 +114,7 @@ Sub-sub-sections close implicitly when a peer-level sub-sub-section opens, or wh
 
 A sub-sub-section contains:
 
-- An optional `<sub-sub-section-title>`.
+- An optional `<sub-sub-section-title>` (supplied by title extraction from the pipe, or written explicitly).
 - An optional `<sub-sub-section-subtitle>`.
 - Body content: paragraphs, figures, asides, blockquotes, tables, lists.
 

@@ -2,6 +2,8 @@
 
 The acadamark Layer 1 semantic HTML vocabulary. This is the target for acadamark's interpreter, JATS export, and (optionally) hand-authoring.
 
+This document is the high-level overview: scope, element list by category, governing rules, design decisions. **Field-level details — canonical kwarg value lists, defaults, content shapes, JATS mappings, render-mode lowering — live in the per-element entries under `elements/`.** When the two disagree, the per-element entries are authoritative.
+
 The four governing rules from `notes/layer1-naming.md` apply throughout: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult JATS first.
 
 ## Scope
@@ -38,11 +40,8 @@ Each container has its own three-part structure:
 | `<book-front>` | BITS `<book-front>` | Book metadata. |
 | `<book-body>` | BITS `<book-body>` | Book main content (contains parts, chapters). |
 | `<book-back>` | BITS `<book-back>` | Book apparatus. |
-| `<chapter-front>` | BITS `<book-part-meta>` | Chapter metadata. |
-| `<chapter-body>` | BITS `<body>` (in book-part) | Chapter content. |
-| `<chapter-back>` | BITS `<back>` (in book-part) | Chapter apparatus (often unused). |
 
-`<book-part>` typically does not have its own front/body/back; it just contains chapters. If a `<book-part>` does need metadata (a part introduction, a part epigraph), it can use the same front/body/back pattern, named `<book-part-front>` etc.
+Chapters use `<book-part-meta>` for descriptive metadata (just like other book-parts) and contain body content directly — they do not have their own `<chapter-front>`/`<chapter-body>`/`<chapter-back>` wrappers. Per-element details are in `elements/book-part.md` and `elements/book-part-meta.md`.
 
 A `document-type` attribute on each container provides finer classification:
 
@@ -59,7 +58,7 @@ A `document-type` attribute on each container provides finer classification:
 
 `document-type` values follow JATS conventions where they exist.
 
-### Document metadata (lives in `<article-front>` or `<chapter-front>`)
+### Document metadata (lives in `<article-front>` or `<book-part-meta>`)
 
 | Element | JATS counterpart | Purpose |
 |---------|------------------|---------|
@@ -90,20 +89,7 @@ A `document-type` attribute on each container provides finer classification:
 
 The depth ladder lives *inside* any container's body. Sections in a chapter use the same `<section>` / `<sub-section>` ladder as sections in a top-level article.
 
-A `sec-type` attribute on `<section>` carries semantic classification, following JATS:
-
-| Value | Purpose |
-|-------|---------|
-| (unset) | Default. |
-| `intro` | Introduction. |
-| `methods` | Methods. |
-| `results` | Results. |
-| `discussion` | Discussion. |
-| `conclusion` | Conclusion. |
-| `appendix` | Appendix (typically in `<article-back>`). |
-| `acknowledgments` | Acknowledgments. |
-
-Book-specific section types (prologue, epilogue, foreword, dedication) follow the same pattern with their own values.
+A `sec-type` attribute on `<section>` carries semantic classification, following JATS conventions for IMRaD-style papers and beyond. Field-level details (the canonical value list, defaults, mapping behavior) live in the per-element entries: see `elements/section.md`, `elements/sub-section.md`, and `elements/sub-sub-section.md`. Book-specific section types follow the same pattern with their own values.
 
 ### Floats — captioned, numbered, self-contained content
 
@@ -206,15 +192,13 @@ To be specified in a separate design pass following Rule 4.
 
 ## Document-level attributes
 
-Some attributes apply at the root container level rather than per-element:
+Some attributes apply at the root container level (`<article>`, `<book>`, `<book-part>`) rather than per-element:
 
-| Attribute | Values | Purpose |
-|-----------|--------|---------|
-| `document-type` | (per container, see above) | Finer classification within container category. |
-| `note-position` | `foot` \| `end` \| `side` | Where notes are displayed in render mode. Defaults to `foot`. |
-| `numbering-style` | (TBD) | How numbers are displayed (Arabic, Roman, etc.). |
+- **`document-type`** — finer classification within a container category.
+- **`note-position`** — where notes are displayed in render mode (`foot` / `end` / `side` / `chapter-end`).
+- **`numbering-style`** — how numbers are displayed (Arabic, Roman, alpha).
 
-These live on the root container element (`<article>`, `<book>`, `<chapter>`).
+Field-level details (canonical value lists, defaults, inheritance behavior) live in the per-element entries (`elements/article.md`, `elements/book.md`, `elements/book-part.md`).
 
 ## Math and code (delegated)
 
