@@ -10,10 +10,6 @@ acadamark_attributes:
   classes:
     maps_to: class
   kwargs:
-    document-type:
-      maps_to: data-document-type
-      values: [research-article, review-article, editorial, letter, brief-report, case-report, other]
-      default: research-article
     numbering-style:
       maps_to: data-numbering-style
       values: [arabic, roman, alpha]
@@ -35,16 +31,17 @@ content_handler: default
 title_extraction: true
 jats_counterpart:
   element: article
-  attributes:
-    article-type: from document-type
   notes: |
     JATS <article> wraps <front>, <body>, and <back>. Acadamark uses
     <article-front>, <article-body>, <article-back> as parallel custom
-    elements. The mapping is direct.
+    elements. The mapping is direct. JATS's article-type attribute (with
+    values like research-article, review-article, editorial, etc.) is
+    not currently set by acadamark — sub-classification within the
+    article category is deferred until a JATS-export slice needs it.
 shorthand_examples:
   - source: |
-      <article | The Effect of Elephants on Climate>
-      <meta>
+      <meta type=article>
+        <title | The Effect of Elephants on Climate>
         <author | Jane Goodall>
         <date | 2024-03-15>
       </meta>
@@ -55,10 +52,10 @@ shorthand_examples:
       <section | Conclusion>
       The paper concludes here.
     layer1_html: |
-      <article data-document-type="research-article">
+      <article>
         <article-front>
-          <article-title>The Effect of Elephants on Climate</article-title>
-          <meta>
+          <meta data-document-type="article">
+            <article-title>The Effect of Elephants on Climate</article-title>
             <author>Jane Goodall</author>
             <date>2024-03-15</date>
           </meta>
@@ -74,6 +71,40 @@ shorthand_examples:
           </section>
         </article-body>
       </article>
+    notes: |
+      Typical authoring path: <meta type=article> at the top with no
+      <article> wrapper. The structural plugin generates the <article>
+      container and the three region wrappers. <title> in <meta> is
+      promoted to <article-title>; <meta> itself survives inside
+      <article-front>.
+  - source: |
+      <article | The Effect of Elephants on Climate>
+      <meta>
+        <author | Jane Goodall>
+      </meta>
+
+      <section | Introduction>
+      The paper begins here.
+    layer1_html: |
+      <article>
+        <article-front>
+          <meta>
+            <article-title>The Effect of Elephants on Climate</article-title>
+            <author>Jane Goodall</author>
+          </meta>
+        </article-front>
+        <article-body>
+          <section>
+            <section-title>Introduction</section-title>
+            <p>The paper begins here.</p>
+          </section>
+        </article-body>
+      </article>
+    notes: |
+      Explicit-form escape hatch: <article | Title>. The structural plugin
+      respects the explicit wrapper. Pipe content from <article> becomes
+      <article-title>, placed as the first child of <meta> (creating
+      <meta> if absent, or appending if present).
   - source: |
       <section | Introduction>
       The introduction.
@@ -81,7 +112,7 @@ shorthand_examples:
       <section | Conclusion>
       The conclusion.
     layer1_html: |
-      <article data-document-type="research-article">
+      <article>
         <article-body>
           <section>
             <section-title>Introduction</section-title>
@@ -94,13 +125,20 @@ shorthand_examples:
         </article-body>
       </article>
     notes: |
-      No <article> declared. The structural plugin wraps the sections in
-      an implicit article with default attributes.
+      No <meta> and no <article> declared. The structural plugin assumes
+      article-shaped (the default) and wraps the sections in an implicit
+      article. <article-front> is omitted because there's no metadata.
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkArticleStructuring
     runs_before: acadamarkTagInterpret
-    purpose: 'Implicit-article wrapping, region grouping, title extraction. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: |
+      Reads <meta type=article> (or <meta> with no type, defaulting to
+      article) and generates the <article> wrapper plus
+      <article-front>/<article-body>/<article-back> regions. Promotes
+      <title>/<subtitle> in <meta> to <article-title>/<article-subtitle>.
+      Honors explicit <article> if the author wrote it. See
+      notes/plugin-pipeline.md for the full pipeline.
 
 ---
 
@@ -118,51 +156,61 @@ An article represents a single self-contained piece of writing intended to be re
 
 When in doubt, use `<article>`. It's the default for most academic and editorial writing.
 
-## Title-after-pipe shorthand
+## How `<article>` is produced
 
-The shorthand form puts the article title in the pipe content:
+`<article>` is a real Layer 1 element that appears in output, but it's typically *generated by the structural plugin* rather than authored as a wrapper. The typical authoring path is:
 
 ```
-<article | The Title of the Article>
+<meta type=article>
+  <title | The Title>
+  <author | ...>
+</meta>
+
+(section content, figures, paragraphs)
 ```
 
-The pipe content becomes the children of `<article-title>` in `<article-front>` — verbatim, after recursive parsing. There is no paragraph-extraction logic; whatever the author writes between `|` and `>` becomes the title content. Body content (sections, paragraphs, figures) follows the closing `>` and is assigned by the structural plugin.
+`acadamarkArticleStructuring` reads `<meta type=article>` (or `<meta>` with no type — the default is `article`) and generates:
 
-Authors don't typically write `<article-title>` explicitly. The pipe-after-tagname convention handles the common case. The explicit element is still available as an alternate authoring form when desired.
+- The outer `<article>` element.
+- `<article-front>` wrapping the original `<meta>`.
+- `<article-body>` wrapping the section content.
+- `<article-back>` wrapping back-matter (bibliography, note-list, etc.), if any.
+
+Authors don't typically write `<article>` directly. The meta-driven path is preferred because changing document type is a single kwarg edit.
+
+## Explicit-form escape hatch
+
+Authors can write `<article>` explicitly when they need fine control — for example to set attributes (id, classes, numbering-style) on the container:
+
+```
+<article #my-paper numbering-style=roman>
+<meta>
+  <author | Author Name>
+</meta>
+
+<section | Introduction>
+Body content.
+```
+
+The structural plugin respects the explicit wrapper. The title-after-pipe shorthand works on explicit `<article>` too: `<article | The Title>` produces an `<article-title>` placed as the first child of `<meta>` (creating `<meta>` if absent).
 
 ## Required structure
 
-An article *can* contain three structural regions, mirroring JATS:
+`<article>` contains three structural regions, mirroring JATS:
 
-- `<article-front>` — front matter: title, subtitle, metadata, authors, abstract.
+- `<article-front>` — front matter: `<meta>` (which holds the article's descriptive metadata).
 - `<article-body>` — the main content: sections, paragraphs, figures.
-- `<article-back>` — back matter: bibliography, appendices, notes.
+- `<article-back>` — back matter: bibliography, notes, data, config.
 
-None of these are required. An article with only body content is valid.
-
-## Implicit structure
-
-Acadamark provides defaults for documents without explicit structure:
-
-**No top-level container.** A document that starts with section content gets wrapped in an implicit `<article>` with default kwarg values.
-
-**No explicit `<article-front>`, `<article-body>`, `<article-back>`.** When these wrappers are missing, the `acadamarkArticleStructuring` plugin groups children:
-
-- Title (from pipe content via title extraction, or explicit `<article-title>`) goes into `<article-front>`.
-- Any `<meta>` block goes into `<article-front>`.
-- Front-matter elements (`<author>`, `<abstract>`, etc.) go into `<article-front>`.
-- Body content (sections, paragraphs, figures) goes into `<article-body>`.
-- Back-matter elements (`<bibliography>`, `<appendix>`, `<note-list>`) go into `<article-back>`.
-
-This grouping is mechanical, not interpretive.
+All three are generated by the structural plugin from the author's input. Authors can also place `<data>` or `<config>` blocks explicitly in front matter if they prefer.
 
 ## Attributes
-
-`document-type` indicates the kind of article. Values match common JATS classifications (`research-article`, `review-article`, `editorial`, `letter`, `brief-report`, `case-report`, `other`). Defaults to `research-article`. Used by the JATS exporter to set `<article article-type="...">`.
 
 `numbering-style` controls how numbered elements (figures, equations, sections) are numbered throughout the document. Document-level default; individual numbered elements can override.
 
 `note-position` controls where notes appear (`foot`, `end`, `side`). Document-level default; individual `<note>` elements can override.
+
+Sub-classification within the article category (research-article, review-article, editorial, letter, etc.) is not currently exposed as an attribute. JATS export will need this distinction eventually; the kwarg will be added back at that point.
 
 ## JATS mapping
 
@@ -174,7 +222,7 @@ This grouping is mechanical, not interpretive.
 | `<article-back>` | `<back>` |
 | `<article-title>` | `<article-title>` (inside `<title-group>` in `<article-meta>`) |
 
-The `document-type` kwarg maps to JATS's `article-type` attribute on `<article>`.
+JATS's `article-type` attribute (research-article, review-article, etc.) is not currently populated; sub-classification is deferred.
 
 The `numbering-style` and `note-position` kwargs are acadamark-specific (they describe rendering preferences, not JATS-standard metadata). They're preserved as `data-*` attributes for downstream processors but not exported to JATS.
 
@@ -190,13 +238,13 @@ The introduction.
 The conclusion.
 ```
 
-The implicit `<article>` wrapper makes this a valid document.
+No `<meta>` and no `<article>`. The structural plugin assumes article-shaped (the default) and wraps the sections in an implicit article.
 
-**Article with title and metadata.**
+**Typical article with metadata (meta-driven).**
 
 ```
-<article | The Effect of Elephants on Climate>
-<meta>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
   <author | Jane Goodall>
   <date | 2024-03-15>
 </meta>
@@ -205,12 +253,12 @@ The implicit `<article>` wrapper makes this a valid document.
 The introduction.
 ```
 
-The title comes from the pipe; the `<meta>` block goes into the implicit `<article-front>`.
+The preferred authoring path. `<meta type=article>` declares the document type; the structural plugin generates `<article>`/`<article-front>`/`<article-body>`/`<article-back>` around the content. `<title>` is promoted to `<article-title>`.
 
-**Article with explicit attributes.**
+**Article with explicit `<article>` and custom attributes.**
 
 ```
-<article #my-paper document-type=research-article numbering-style=roman | Custom Numbering Paper>
+<article #my-paper numbering-style=roman | Custom Numbering Paper>
 <meta>
   <author | Author Name>
 </meta>
@@ -220,18 +268,18 @@ The title comes from the pipe; the `<meta>` block goes into the implicit `<artic
 Body content.
 ```
 
-Use the form-with-attributes when you need a custom id, document type, or numbering style.
+Use the explicit form when you need a custom id or numbering style on the `<article>` element itself. The title-after-pipe shorthand still applies.
 
-**Fully explicit structure.**
+**Fully explicit structure (escape hatch).**
 
 ```
 <article #my-paper>
   <article-front>
-    <article-title | The Effect of Elephants on Climate>
     <meta>
+      <article-title | The Effect of Elephants on Climate>
       <author | Jane Goodall>
+      <abstract | A brief summary.>
     </meta>
-    <abstract | A brief summary.>
   </article-front>
   <article-body>
     <section | Introduction>
@@ -243,7 +291,7 @@ Use the form-with-attributes when you need a custom id, document type, or number
 </article>
 ```
 
-Use the explicit form when you need fine control over what goes in front, body, or back. The `<article-title>` element is used here as the explicit form (rather than the pipe shorthand) because attributes are set on `<article>` directly.
+Use the fully explicit form when you need precise control over what goes in front, body, or back. The structural plugin doesn't override anything an author wrote explicitly.
 
 ## Render-mode lowering
 

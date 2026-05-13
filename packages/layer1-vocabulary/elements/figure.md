@@ -111,9 +111,9 @@ shorthand_examples:
     layer1_html: |
       <figure id="algorithm" data-figure-type="code">
         <pre><code class="language-python">def factorial(n):
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)</code></pre>
+          if n <= 1:
+              return 1
+          return n * factorial(n - 1)</code></pre>
         <figcaption>A recursive implementation of the factorial function.</figcaption>
       </figure>
 interpreter_strategy: handler

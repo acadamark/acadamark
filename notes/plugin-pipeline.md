@@ -67,44 +67,52 @@ Structural plugins mutate the AST. They produce an AST that conforms to Layer 1 
 
 ### `acadamarkArticleStructuring`
 
-**Purpose.** Handle article-shaped documents:
+**Purpose.** Handle article-shaped documents driven by `<meta type=article>`:
 
-1. If the top-level content has no explicit `<article>` (or `<book>`, `<book-part>`) wrapper, add an implicit `<article>` with default kwarg values.
-2. If the article doesn't have explicit `<article-front>`, `<article-body>`, `<article-back>` wrappers, group children mechanically:
-   - `<meta>` blocks → `<article-front>`.
-   - Front-matter elements (title, subtitle, author, editor, date, abstract) when authored directly without `<meta>` wrapper → `<article-front>`.
-   - Body content (sections, paragraphs, figures, asides, blockquotes, tables, lists) → `<article-body>`.
-   - Back-matter elements (`<bibliography>`, `<appendix>`, `<note-list>`, `<data>`, `<config>`) → `<article-back>`.
-3. Promote `<title>` and `<subtitle>` from `<meta>` to `<article-title>` and `<article-subtitle>` (in `<article-front>`).
-4. Apply title-after-pipe rule: if `<article>` has pipe content, that content becomes `<article-title>`.
-5. Resolve title precedence: if both `<meta>`'s `<title>` and the container's pipe-supplied title exist, `<meta>` wins; warning emitted.
+1. Recognize the document as article-shaped if any of:
+   - A `<meta>` block is present with `type=article` (or with no type — `article` is the default).
+   - No `<meta>` and no top-level container — an article is assumed.
+   - An explicit `<article>` wrapper is present.
+2. If no explicit `<article>` exists, generate one wrapping the document's top-level content.
+3. Generate `<article-front>` and place the original `<meta>` inside it. `<meta>` is preserved — not dissolved.
+4. Promote `<title>` and `<subtitle>` inside `<meta>` to `<article-title>` and `<article-subtitle>` (the promoted elements remain inside `<meta>`).
+5. Generate `<article-body>` and place body content (sections, paragraphs, figures, asides, blockquotes, tables, lists) inside it.
+6. Generate `<article-back>` and place back-matter (`<bibliography>`, `<note-list>`, `<data>`, `<config>`, plus appendix-typed book-parts if any) inside it.
+7. Apply title-after-pipe rule: if `<article>` was written explicitly with pipe content (`<article | Title>`), promote that content to `<article-title>` as the first child of `<meta>` (creating `<meta>` if absent).
+8. Resolve title precedence: if both `<meta>`'s `<title>` and the container's pipe-supplied title exist, `<meta>` wins; warning emitted.
+
+If the author wrote `<article>`, `<article-front>`, `<article-body>`, or `<article-back>` explicitly, the plugin does not override; it operates within the explicit wrappers.
 
 **Contract.**
-- Input: AST after Phase 1 (registries populated). Possibly missing structural wrappers.
-- Output: AST with article-shaped structure: `<article>` containing `<article-front>`, `<article-body>`, `<article-back>` regions with appropriate children.
+- Input: AST after Phase 1 (registries populated). `<meta>` may be present or absent; container wrappers may be present or absent.
+- Output: AST with `<article>` containing `<article-front>` (with `<meta>` inside), `<article-body>`, and `<article-back>` (each region present only if it has content).
 
-**Dependencies.** Phase 1 complete. Independent of `acadamarkBookStructuring` (handles different document types).
+**Dependencies.** Phase 1 complete. Independent of `acadamarkBookStructuring` (handles different document types — selection is driven by `<meta>`'s `type` kwarg, mutually exclusive).
 
 ### `acadamarkBookStructuring`
 
-**Purpose.** Handle book-shaped documents. Parallel to article structuring:
+**Purpose.** Handle book-shaped documents driven by `<meta type=book>` (or by an explicit `<book>` wrapper):
 
-1. If the document has explicit `<book>` at the top level, treat as book.
-2. Group children of `<book>` into `<book-front>`, `<book-body>`, `<book-back>` based on element type.
-3. Place book-parts into the appropriate region based on `book-part-type`:
-   - `chapter`, `part`, `introduction`, `conclusion` → `<book-body>`.
-   - `preface`, `foreword`, `dedication` → `<book-front>`.
-   - `appendix`, `glossary`, `colophon` → `<book-back>`.
-   - `other` → `<book-body>` (default).
-4. Promote `<title>` and `<subtitle>` from `<meta>` to `<book-title>` and `<book-subtitle>`.
-5. Apply title-after-pipe rule for `<book>` and book-parts.
-6. Expand book-part shorthands: `<chapter>`, `<part>`, `<appendix>`, `<preface>`, etc. expand to `<book-part book-part-type="...">`.
+1. Recognize the document as book-shaped if any of:
+   - A `<meta>` block is present with `type=book`.
+   - An explicit `<book>` wrapper is present.
+2. If no explicit `<book>` exists, generate one wrapping the document's content.
+3. Generate `<book-front>` and place the original `<meta>` inside it. Promote `<title>`/`<subtitle>` in `<meta>` to `<book-title>`/`<book-subtitle>` (the promoted elements remain inside `<meta>`).
+4. Expand book-part shorthands: `<chapter>`, `<part>`, `<appendix>`, `<preface>`, etc. expand to `<book-part book-part-type="...">`.
+5. For each book-part: apply title extraction (pipe content becomes `<book-part-title>` as the first child of `<meta>` inside the book-part; create `<meta>` if absent). **Book-parts do not have nested front/body/back wrappers** — `<meta>` and body content sit directly inside `<book-part>`.
+6. Generate `<book-body>` and place body-matter book-parts inside it: `book-part-type` of `chapter`, `part`, `introduction`, `conclusion`, or `other` (default).
+7. Generate `<book-back>` and place back-matter book-parts (`appendix`, `glossary`, `colophon`) plus back-matter elements (`<bibliography>`, `<note-list>`, `<data>`, `<config>`) inside it.
+8. Move front-matter book-parts (`preface`, `foreword`, `dedication`) into `<book-front>`.
+
+If the author wrote `<book>` or any of the region wrappers explicitly, the plugin does not override; it operates within the explicit wrappers.
+
+**Book-part handling specifically.** When `<meta type=book-part>` appears at the top level (rare; usually book-parts are nested inside a book), the plugin generates a top-level `<book-part>` with `<meta>` containing the promoted `<book-part-title>` followed by body content. No nested region wrappers are generated inside the `<book-part>`.
 
 **Contract.**
 - Input: AST after Phase 1.
-- Output: AST with book-shaped structure.
+- Output: AST with `<book>` containing `<book-front>` (with `<meta>` inside), `<book-body>` (containing chapter-like book-parts), and `<book-back>` (containing appendix-like book-parts plus back-matter elements). Each region present only if it has content. Each `<book-part>` directly contains `<meta>` (if any metadata) and body content with no nested region wrappers.
 
-**Dependencies.** Phase 1 complete. Independent of `acadamarkArticleStructuring`. The two plugins are mutually exclusive — a document is either article-shaped or book-shaped, never both.
+**Dependencies.** Phase 1 complete. Independent of `acadamarkArticleStructuring`. The two plugins are mutually exclusive — a document is either article-shaped or book-shaped, determined by `<meta>`'s `type` kwarg.
 
 ### `acadamarkSectionNesting`
 

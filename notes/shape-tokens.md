@@ -120,7 +120,7 @@ The classification is about where the element appears in source and what categor
 
 ### Custom Layer 1 elements (article-front, section-title, etc.)
 
-Some Layer 1 elements appear only as outputs of the structural plugin — they're not authored directly. Examples: `<article-front>`, `<section-title>`, `<book-part-meta>`, `<book-part-title>`, `<book-part-subtitle>`. These don't need `inline`/`block`/`section` classification because they appear in fixed positions within their parent containers, not as siblings in flexible content models.
+Some Layer 1 elements appear only as outputs of the structural plugin — they're not authored directly. Examples: `<article-front>`, `<section-title>`, `<book-part-title>`, `<book-part-subtitle>`. These don't need `inline`/`block`/`section` classification because they appear in fixed positions within their parent containers, not as siblings in flexible content models.
 
 If an author *does* write one of these directly (using the explicit-form escape hatch), the structural plugin treats it the same as the auto-generated version.
 

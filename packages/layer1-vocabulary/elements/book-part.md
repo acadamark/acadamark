@@ -26,12 +26,18 @@ acadamark_attributes:
 content:
   type: structured
   shape:
-    - element: book-part-meta
+    - element: meta
       required: false
       contains: [book-part-title, book-part-subtitle, author]
+      notes: |
+        Book-parts use the same <meta> container as articles and books for
+        descriptive metadata. Unlike books, book-parts do NOT have nested
+        <book-part-front>/<book-part-body>/<book-part-back> wrappers —
+        <meta> and body content sit directly inside <book-part>.
     - element: body
       required: false
       contains: [section, sub-section, p, figure, aside, blockquote, table, book-part]
+      notes: 'Body content sits as direct children of <book-part> after <meta>.'
 content_handler: default
 title_extraction: true
 jats_counterpart:
@@ -67,9 +73,9 @@ shorthand_examples:
       Content of the chapter.
     layer1_html: |
       <book-part book-part-type="chapter">
-        <book-part-meta>
+        <meta>
           <book-part-title>Origins</book-part-title>
-        </book-part-meta>
+        </meta>
         <p>Content of the chapter.</p>
       </book-part>
   - source: |
@@ -81,19 +87,19 @@ shorthand_examples:
       Content.
     layer1_html: |
       <book-part book-part-type="part">
-        <book-part-meta>
+        <meta>
           <book-part-title>Part I: Foundations</book-part-title>
-        </book-part-meta>
+        </meta>
         <book-part book-part-type="chapter">
-          <book-part-meta>
+          <meta>
             <book-part-title>First Chapter</book-part-title>
-          </book-part-meta>
+          </meta>
           <p>Content.</p>
         </book-part>
         <book-part book-part-type="chapter">
-          <book-part-meta>
+          <meta>
             <book-part-title>Second Chapter</book-part-title>
-          </book-part-meta>
+          </meta>
           <p>Content.</p>
         </book-part>
       </book-part>
@@ -108,23 +114,23 @@ shorthand_examples:
       Notation conventions used in this book.
     layer1_html: |
       <book-part book-part-type="preface">
-        <book-part-meta>
+        <meta>
           <book-part-title>A Note from the Author</book-part-title>
-        </book-part-meta>
+        </meta>
         <p>I wrote this book because...</p>
       </book-part>
 
       <book-part book-part-type="chapter">
-        <book-part-meta>
+        <meta>
           <book-part-title>Chapter One</book-part-title>
-        </book-part-meta>
+        </meta>
         <p>Body content.</p>
       </book-part>
 
       <book-part book-part-type="appendix">
-        <book-part-meta>
+        <meta>
           <book-part-title>Notation</book-part-title>
-        </book-part-meta>
+        </meta>
         <p>Notation conventions used in this book.</p>
       </book-part>
     notes: |
@@ -134,7 +140,14 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkBookStructuring
     runs_before: acadamarkTagInterpret
-    purpose: 'Places book-parts into the appropriate region by book-part-type. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: |
+      Generates <book-part> from <meta type=book-part> or from book-part
+      shorthand expansions (<chapter>, <part>, <appendix>, etc.). Inside
+      each <book-part>, <meta> and body content sit directly — no nested
+      front/body/back wrappers. Promotes <title>/<subtitle> in <meta> to
+      <book-part-title>/<book-part-subtitle>. At the book level, places
+      book-parts into the appropriate region (<book-front>, <book-body>,
+      <book-back>) based on book-part-type. See notes/plugin-pipeline.md.
 deferred_features:
   - name: book-part-import
     description: |
@@ -192,10 +205,14 @@ Authors who want a book-part placed differently can use `<book-front>`, `<book-b
 
 Each book-part contains:
 
-- An optional `<book-part-meta>` wrapper holding the book-part's title, subtitle, and author.
+- An optional `<meta>` block holding the book-part's title, subtitle, and (in edited volumes) author.
 - Content: paragraphs, sections, figures, asides, and possibly nested book-parts.
 
-The `<book-part-meta>` wrapper is added automatically by the structural plugin when title elements appear inside a book-part without an explicit meta wrapper.
+`<meta>` is the same metadata container used by `<article>` and `<book>`. Inside a book-part it holds `<book-part-title>` and `<book-part-subtitle>` (instead of `<article-title>` or `<book-title>`).
+
+Unlike books, book-parts do **not** have nested `<book-part-front>` / `<book-part-body>` / `<book-part-back>` wrappers — `<meta>` and body content sit directly inside `<book-part>`. This keeps the recursive book-part structure simple.
+
+`<meta>` is added automatically by the structural plugin when title elements appear inside a book-part without an explicit `<meta>` (for example, when the author uses `<chapter | Title>`, the plugin creates `<meta>` to hold the promoted `<book-part-title>`).
 
 ## Recursive nesting
 
@@ -228,8 +245,8 @@ Direct mapping to JATS `<book-part>`. The element name, the recursive structure,
 |-------------------|------|
 | `<book-part>` | `<book-part>` |
 | `book-part-type` attribute | `book-part-type` attribute |
-| `<book-part-meta>` | `<book-part-meta>` |
-| `<book-part-title>` | `<title>` inside `<book-part-meta>`, or `<book-part-title>` directly |
+| `<meta>` | `<meta>` |
+| `<book-part-title>` | `<title>` inside `<meta>`, or `<book-part-title>` directly |
 
 ## Authoring patterns
 
@@ -318,4 +335,5 @@ The shorthand layer preserves authoring ergonomics. Authors don't write `<book-p
 
 - [`<book>`](book.md) — the container that holds book-parts.
 - [`<book-front>`](book-front.md), [`<book-body>`](book-body.md), [`<book-back>`](book-back.md) — structural regions.
-- [`<book-part-meta>`](book-part-meta.md), [`<book-part-title>`](book-part-title.md) — metadata for a book-part.
+- [`<meta>`](meta.md) — the metadata container used inside book-parts (and articles, books).
+- [`<book-part-title>`](book-part-title.md) — title element for a book-part, promoted from `<title>` in `<meta>`.

@@ -1,0 +1,45 @@
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <subtitle | Evidence from Sub-Saharan Africa>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <abstract | This paper presents evidence that elephant populations significantly affect regional climate patterns through their role in shaping vegetation and carbon storage.>
+</meta>
+
+<section | Introduction>
+Elephant populations have been **declining** for decades. Their role in shaping
+ecosystems is *understated* in most climate models.
+
+Three mechanisms are relevant: seed dispersal, vegetation management, and
+trampling-mediated soil aeration.
+
+<section | Methods>
+We compiled census data from 12 national parks across sub-Saharan Africa.
+
+<sub-section | Data sources>
+The IUCN African Elephant Database provided population counts. Vegetation
+cover came from MODIS satellite imagery.
+
+<sub-section | Statistical approach>
+We fit a hierarchical Bayesian model with park-level random effects.
+
+<figure src=elephants.jpg | An adult African elephant in Tanzania, 2018.>
+
+<section | Results>
+We find a robust positive correlation between elephant density and woody-cover
+turnover, controlling for rainfall and human disturbance.
+
+<blockquote | The data are consistent with an ecosystem-engineering role for megaherbivores, as proposed by Owen-Smith (1988).>
+
+<section | Discussion>
+The implications for conservation policy are significant. Elephant
+reintroduction may be a cost-effective climate intervention in degraded
+savanna landscapes.
+
+<aside | Note on terminology: we use "African elephant" throughout to mean *Loxodonta africana*, excluding the forest elephant *Loxodonta cyclotis*.>
+
+Further work is needed to establish causation rather than correlation.
+
+- Census data collection
+- MODIS satellite imagery analysis
+- Bayesian statistical modeling

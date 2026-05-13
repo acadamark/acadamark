@@ -128,7 +128,7 @@ The interpreter is built in slices, each producing visible end-to-end output for
 - code (inline)
 - meta
 
-The auto-generated child elements that the structural plugins produce — `<article-front>`, `<article-body>`, `<article-back>`, `<section-title>`, `<sub-section-title>`, `<sub-sub-section-title>`, `<book-part-meta>` — are in scope by virtue of being created by the slice's plugins; they are not authored directly in this slice.
+The auto-generated child elements that the structural plugins produce — `<article-front>`, `<article-body>`, `<article-back>`, `<section-title>`, `<sub-section-title>`, `<sub-sub-section-title>` — are in scope by virtue of being created by the slice's plugins; they are not authored directly in this slice.
 
 Excluded from this slice (deferred to subsequent slices): `<a>`, `<img>`, `<pre>`+`<code>` (display code block), `<cite>`, `<ref>`, `<note>`, math sigils, and other inline elements not listed above.
 

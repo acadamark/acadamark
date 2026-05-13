@@ -1,5 +1,5 @@
 ---
-semantic_role: paragraph
+semantic_role: p
 html_output:
   element: p
   is_html_native: true

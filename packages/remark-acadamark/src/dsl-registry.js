@@ -72,6 +72,14 @@ export const DSL_REGISTRY = new Map([
   ['blockquote', 'default'],
   ['note',       'default'],
   ['table',      'default'],
+
+  // ── Metadata container ───────────────────────────────────────────────────
+  // <meta> is the document metadata container. It always has children
+  // (title, author, abstract, etc.) and therefore always uses long-form
+  // syntax: <meta type=article>...</meta>. Without this registration the
+  // parser would treat <meta> as a void short-form tag and its children
+  // would become top-level siblings rather than nested content.
+  ['meta',       'default'],
 ])
 
 /**

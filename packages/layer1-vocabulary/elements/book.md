@@ -10,10 +10,6 @@ acadamark_attributes:
   classes:
     maps_to: class
   kwargs:
-    document-type:
-      maps_to: data-document-type
-      values: [monograph, edited-volume, textbook, proceedings, reference-work, other]
-      default: monograph
     numbering-style:
       maps_to: data-numbering-style
       values: [arabic, roman, alpha]
@@ -35,16 +31,17 @@ content_handler: default
 title_extraction: true
 jats_counterpart:
   element: book
-  attributes:
-    book-type: from document-type
   notes: |
     JATS <book> wraps <book-front>, <book-body>, and <book-back>. Acadamark's
     structural elements map directly. JATS uses <book-part> recursively for
     all major divisions discriminated by the book-part-type attribute.
+    JATS's book-type attribute (with values like monograph, edited-volume,
+    textbook, etc.) is not currently set by acadamark — sub-classification
+    within the book category is deferred until a JATS-export slice needs it.
 shorthand_examples:
   - source: |
-      <book | A Natural History of Elephants>
-      <meta>
+      <meta type=book>
+        <title | A Natural History of Elephants>
         <author | Jane Goodall>
       </meta>
 
@@ -56,27 +53,27 @@ shorthand_examples:
       <section | African elephants>
       Content here.
     layer1_html: |
-      <book data-document-type="monograph">
+      <book>
         <book-front>
-          <book-title>A Natural History of Elephants</book-title>
-          <meta>
+          <meta data-document-type="book">
+            <book-title>A Natural History of Elephants</book-title>
             <author>Jane Goodall</author>
           </meta>
         </book-front>
         <book-body>
           <book-part book-part-type="chapter">
-            <book-part-meta>
+            <meta>
               <book-part-title>Origins</book-part-title>
-            </book-part-meta>
+            </meta>
             <section>
               <section-title>Early ancestors</section-title>
               <p>Content here.</p>
             </section>
           </book-part>
           <book-part book-part-type="chapter">
-            <book-part-meta>
+            <meta>
               <book-part-title>Modern populations</book-part-title>
-            </book-part-meta>
+            </meta>
             <section>
               <section-title>African elephants</section-title>
               <p>Content here.</p>
@@ -84,9 +81,14 @@ shorthand_examples:
           </book-part>
         </book-body>
       </book>
+    notes: |
+      Typical authoring path: <meta type=book> at the top with no <book>
+      wrapper. The structural plugin generates <book> + the three region
+      wrappers. Each book-part contains its own <meta> with the promoted
+      <book-part-title>; no <book-part-meta> wrapper.
   - source: |
-      <book | The Comprehensive Guide>
-      <meta>
+      <meta type=book>
+        <title | The Comprehensive Guide>
         <author | Author Name>
       </meta>
 
@@ -101,39 +103,39 @@ shorthand_examples:
       <chapter | Practical Examples>
       Content.
     layer1_html: |
-      <book data-document-type="monograph">
+      <book>
         <book-front>
-          <book-title>The Comprehensive Guide</book-title>
-          <meta>
+          <meta data-document-type="book">
+            <book-title>The Comprehensive Guide</book-title>
             <author>Author Name</author>
           </meta>
         </book-front>
         <book-body>
           <book-part book-part-type="part">
-            <book-part-meta>
+            <meta>
               <book-part-title>Part I: Foundations</book-part-title>
-            </book-part-meta>
+            </meta>
             <book-part book-part-type="chapter">
-              <book-part-meta>
+              <meta>
                 <book-part-title>First Principles</book-part-title>
-              </book-part-meta>
+              </meta>
               <p>Content.</p>
             </book-part>
             <book-part book-part-type="chapter">
-              <book-part-meta>
+              <meta>
                 <book-part-title>Background</book-part-title>
-              </book-part-meta>
+              </meta>
               <p>Content.</p>
             </book-part>
           </book-part>
           <book-part book-part-type="part">
-            <book-part-meta>
+            <meta>
               <book-part-title>Part II: Applications</book-part-title>
-            </book-part-meta>
+            </meta>
             <book-part book-part-type="chapter">
-              <book-part-meta>
+              <meta>
                 <book-part-title>Practical Examples</book-part-title>
-              </book-part-meta>
+              </meta>
               <p>Content.</p>
             </book-part>
           </book-part>
@@ -143,7 +145,13 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkBookStructuring
     runs_before: acadamarkTagInterpret
-    purpose: 'Implicit-book wrapping, region grouping, title extraction, book-part placement. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: |
+      Reads <meta type=book> and generates the <book> wrapper plus
+      <book-front>/<book-body>/<book-back> regions. Promotes
+      <title>/<subtitle> in <meta> to <book-title>/<book-subtitle>.
+      Expands book-part shorthands (<chapter>, <part>, <appendix>, etc.)
+      to <book-part book-part-type="...">. Honors explicit <book> if
+      the author wrote it. See notes/plugin-pipeline.md for the full pipeline.
 deferred_features:
   - name: book-part-import
     description: |
@@ -167,27 +175,57 @@ Use `<book>` for any multi-part work where the parts are conceptually pieces of 
 
 Use `<book>` even for short multi-part works. The structural division is the determining factor, not page count.
 
-## Title-after-pipe shorthand
+## How `<book>` is produced
 
-The shorthand form puts the book title in the pipe content:
+`<book>` is a real Layer 1 element that appears in output, but it's typically *generated by the structural plugin* rather than authored as a wrapper. The typical authoring path is:
 
 ```
-<book | A Natural History of Elephants>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | ...>
+</meta>
+
+<chapter | Origins>
+...
+
+<chapter | Modern populations>
+...
 ```
 
-The pipe content becomes the children of `<book-title>` — verbatim, after recursive parsing. Subsequent content (metadata, chapters, parts) follows naturally.
+`acadamarkBookStructuring` reads `<meta type=book>` and generates:
 
-The explicit `<book-title>` element is available when needed.
+- The outer `<book>` element.
+- `<book-front>` wrapping the original `<meta>`.
+- `<book-body>` wrapping the book-parts.
+- `<book-back>` wrapping back-matter (bibliography, note-list, etc.), if any.
 
-## Structure
+Unlike `<article>`, which has a default-on inference (no `<meta>` → still assume article-shaped), `<book>` requires `<meta type=book>` to be declared. Without it the document defaults to article-shaped.
 
-A book has three structural regions:
+## Explicit-form escape hatch
 
-- `<book-front>` — front matter: title page, copyright, dedication, foreword, preface, table of contents, metadata.
+Authors can write `<book>` explicitly when they need attributes (id, classes, numbering-style) on the container, or full control over region placement:
+
+```
+<book #my-book numbering-style=arabic | A Natural History of Elephants>
+<meta>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+```
+
+The title-after-pipe shorthand works: pipe content becomes `<book-title>` inside `<meta>`.
+
+## Required structure
+
+A book has three structural regions, mirroring JATS/BITS:
+
+- `<book-front>` — front matter: `<meta>` (which holds the book's descriptive metadata; may also hold dedication, foreword, preface, table-of-contents in future expansions).
 - `<book-body>` — the main content: book-parts.
-- `<book-back>` — back matter: bibliography, glossary, index, appendices, colophon.
+- `<book-back>` — back matter: bibliography, glossary, index, appendices, colophon, note-list.
 
-None of these are required. A book with only body content is valid.
+All three are generated by the structural plugin from the author's input.
 
 ## Book content model
 
@@ -195,27 +233,11 @@ Following JATS, all major book divisions — chapters, named parts, appendices, 
 
 The Layer 1 vocabulary is uniform; the shorthand layer provides familiar names. See `<book-part>` for the full list of shorthand variants and their type mappings.
 
-## Implicit structure
-
-Acadamark provides defaults for book-shaped documents that lack explicit structure:
-
-**Top-level book.** A document that uses `<book>` as its top-level container is treated as a book. There is no implicit `<book>` wrapping; books require explicit declaration.
-
-**Implicit book-front, book-body, book-back.** When wrappers are missing, the `acadamarkBookStructuring` plugin groups children:
-
-- Title (from pipe content or explicit `<book-title>`) goes into `<book-front>`.
-- Any `<meta>` block goes into `<book-front>`.
-- Front-matter elements (`<author>`, `<editor>`, `<dedication>`, `<foreword>`, `<preface>`, `<table-of-contents>`) go into `<book-front>`.
-- Body content (book-parts of any type) goes into `<book-body>`.
-- Back-matter elements (`<bibliography>`, `<appendix>`, `<glossary>`, `<index>`, `<colophon>`, `<note-list>`) go into `<book-back>`.
-
-This grouping is mechanical, not interpretive.
-
 ## Attributes
 
-`document-type` indicates the kind of book. Used by JATS export to set `<book book-type="...">`.
-
 `numbering-style` and `note-position` work as for `<article>`. The `note-position` value `chapter-end` is book-specific.
+
+Sub-classification within the book category (monograph, edited-volume, textbook, etc.) is not currently exposed as an attribute. JATS export will need this distinction eventually; the kwarg will be added back at that point.
 
 ## JATS mapping
 
@@ -230,11 +252,11 @@ This grouping is mechanical, not interpretive.
 
 ## Authoring patterns
 
-**Simple book.**
+**Simple book (meta-driven).**
 
 ```
-<book | The Book>
-<meta>
+<meta type=book>
+  <title | The Book>
   <author | The Author>
 </meta>
 
@@ -248,8 +270,8 @@ Content.
 **Book with named parts.**
 
 ```
-<book | The Comprehensive Volume>
-<meta>
+<meta type=book>
+  <title | The Comprehensive Volume>
   <author | The Author>
 </meta>
 
@@ -265,8 +287,8 @@ Content.
 **Edited volume with multiple authors.**
 
 ```
-<book document-type=edited-volume | Selected Topics in Field>
-<meta>
+<meta type=book>
+  <title | Selected Topics in Field>
   <editor | Editor Name>
 </meta>
 
@@ -279,11 +301,13 @@ Chapter A content.
 Chapter B content.
 ```
 
+On `<meta>` only the `type` (article/book/...) kwarg is available; the explicit `<book>` form is used when you need to set additional attributes (id, classes, numbering-style) on the container itself.
+
 **Book with appendices.**
 
 ```
-<book | The Book>
-<meta>
+<meta type=book>
+  <title | The Book>
   <author | The Author>
 </meta>
 
@@ -296,7 +320,7 @@ Content.
 Glossary content.
 ```
 
-The bibliography and appendix go into `<book-back>` automatically.
+The bibliography and appendix go into `<book-back>` automatically (the appendix because `book-part-type="appendix"` is a back-matter type).
 
 ## Multi-file authoring (deferred)
 
