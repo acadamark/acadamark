@@ -380,3 +380,27 @@ Authors have no clear guide. The author-paramount principle requires that author
 **Deferred to:** the audit itself, then a follow-up consistency slice.
 
 ---
+
+## GAP-8 (or AUD-16): Body font bundling not wired into the main pipeline
+
+`src/assets/font-loader.js` exports `getDocumentFontsCss()` which produces 
+@font-face declarations with base64-encoded Inter and Source Code Pro fonts. 
+`render-fixtures.js` (test infrastructure) wires this in via 
+`getDocumentFontsCss()` prepended to the SHELL_CSS block.
+
+`src/index.js` (the main interpreter pipeline) does NOT import or call 
+`getDocumentFontsCss()`. Documents rendered through the standard 
+`acadamarkInterpreter` plugin will not receive the bundled fonts and will 
+fall back to the system font stack — which fails on environments where 
+those system fonts aren't installed (e.g., WSL through Windows).
+
+This means: fixture rendering produces visually-correct output. External 
+consumers of the package will see degraded typography unless they happen 
+to have the system fonts available.
+
+**Fix path:** Import `getDocumentFontsCss` in `src/index.js` and inject 
+its output alongside the KaTeX CSS injection (which is already wired). 
+Small change.
+
+**Severity:** Medium — affects the actual deliverable for any non-fixture 
+use of the package.

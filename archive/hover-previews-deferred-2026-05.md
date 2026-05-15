@@ -1,3 +1,7 @@
+> **Archived 2026-Q2.** Hover previews are implemented (Tippy.js + Popper.js, per `notes/hover-preview-investigation.md`). This document is the pre-implementation design exploration. Retained for historical reference; not a current spec.
+
+---
+
 # Hover previews — deferred feature
 
 This document captures the design intent for hover-preview rendering in acadamark. The feature is deferred to a future slice; this note preserves the thinking.

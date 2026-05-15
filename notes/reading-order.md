@@ -26,10 +26,10 @@ This document describes the recommended reading path for understanding acadamark
 4. `notes/shape-tokens.md` — the `inline` / `block` / `section` content shape tokens used in vocabulary entries.
 5. Individual entries in `packages/layer1-vocabulary/elements/` — field-level details for each element.
 
-## For understanding the interpreter (when implemented)
+## For understanding the interpreter
 
-1. `notes/interpreter-design.md` — interpreter architecture: schema-driven dispatch with escape hatches, async transform, error handling, slice plan.
-2. `notes/plugin-pipeline.md` — pipeline ordering and plugin contracts (discovery, structural transformation, resolution and rendering).
+1. `notes/interpreter.md` — interpreter architecture: plugin chain, handler dispatch, schema dispatch, handler implementations, error handling, asset injection.
+2. `notes/pipeline.md` — pipeline stage ordering, plugin dependencies, configuration, data flow examples (paragraph, cross-reference, citation, note), asset bundling.
 3. `notes/shape-tokens.md` — content shape tokens used by the interpreter for validation.
 
 ## For deferred features
@@ -39,7 +39,6 @@ The `notes/` directory contains design sketches and specs for features deferred 
 - `notes/inline-tex-shortcuts-spec.md` — `_{...}` and `^{...}` shorthands for sub/sup.
 - `notes/slide-element-deferred.md` — slide-element design, deferred.
 - `notes/dsl-engines.md` — engine adapters for math, csv, mermaid, etc.
-- `notes/text-based-DSLs.md` — discussion of DSLs that use plain-text source.
 - `notes/future-interpreter-sketches/` — exploratory sketches for the interpreter.
 
 ## Project-discipline references

@@ -1,3 +1,7 @@
+> **Archived 2026-Q2.** This document uses planning-era plugin names (`acadamarkLibraryParsing`, `acadamarkCitationResolution`, etc.) that diverged from the implemented names (`acadamarkLibraryLoad`, `acadamarkCiteResolution`, etc.). See `notes/pipeline.md` for the current pipeline (to be written in audit Step 2). Retained for historical reference.
+
+---
+
 # Plugin pipeline
 
 This document describes the structural plugin pipeline that transforms an acadamark AST into rendered HTML. It captures the order in which plugins run, the contract each plugin satisfies, and the dependencies between them.

@@ -75,16 +75,11 @@ context. This is deferred to a later slice.
 
 ### KaTeX fonts are not included in inline-CSS mode
 
-**What this means:** When `hoverPreviews: 'inline'` is used, the KaTeX CSS is
-inlined but the KaTeX font files (`.woff2`) are not embedded. Math will render
-with fallback fonts if the page is served offline or the fonts are not cached.
+**Status: Fixed (2026-Q2 audit, AUD-10 + AUD-11).**
 
-**Workaround:** Use `hoverPreviews: 'link'` (CDN mode) or serve KaTeX font
-files from the same origin.
+KaTeX font URLs are now patched to base64 data URIs by `patchKatexFontUrls()` in `src/assets/font-loader.js`. Inter and Source Code Pro body fonts are bundled as subsetted woff2 files via `getDocumentFontsCss()`. Self-contained HTML renders correctly offline from `file://`.
 
-**Why it exists:** Font files are binary assets; base64-embedding them would
-inflate the HTML significantly. This is a conscious trade-off, not an
-oversight.
+The limitation below was accurate before the font-loader work and is retained for history:
 
 ---
 

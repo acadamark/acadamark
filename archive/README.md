@@ -39,6 +39,20 @@ The technical conclusions in these logs are mostly obsolete — the current impl
 
 The most consequential single document is `claude/parse_hierarchical_tags.md` (and its accompanying SVG), which traces the realization that `DOMParser`'s auto-correction makes DOM-based hierarchy repair fundamentally awkward. That insight is part of why the current implementation works on mdast/hast trees produced by a real grammar (via micromark + Peggy) rather than trying to repair browser-parsed DOM after the fact.
 
+## 2026-Q2 audit: notes documents retired to archive
+
+Four notes documents were moved here during the 2026-Q2 audit because their content described a system that no longer matches what was built.
+
+- **`interpreter-design-2026-05.md`** — Pre-implementation interpreter architecture: `acadamarkTagInterpret` as a single rehype plugin doing schema-driven dispatch. The actual interpreter is a chain of mdast plugins plus toHast handlers. Replaced by `notes/interpreter.md` (to be written in audit Step 2).
+
+- **`plugin-pipeline-2026-05.md`** — Planning-era pipeline design using plugin names (`acadamarkLibraryParsing`, `acadamarkCitationResolution`, etc.) that diverged from implementation (`acadamarkLibraryLoad`, `acadamarkCiteResolution`, etc.). Replaced by `notes/pipeline.md` (to be written in audit Step 2).
+
+- **`hover-previews-deferred-2026-05.md`** — Pre-implementation hover preview design exploration. Frames the feature as deferred; the feature is now implemented (Tippy.js + Popper.js). See `notes/hover-preview-investigation.md` for the post-implementation record.
+
+- **`text-based-DSLs-2024-05.md`** — Brief reference list of DSL language names with Wikipedia links. Not a spec or design document; no replacement warranted.
+
+---
+
 ## What's *not* in here
 
 Code that's still part of the active project lives outside `archive/`:

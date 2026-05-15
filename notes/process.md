@@ -40,7 +40,7 @@ Build verification into the slice cadence; do not leave it to the last step.
 
 `npm run verify` in `packages/acadamark-interpreter` runs:
 
-1. `node test/run.js` — the full interpreter test suite (14 suites)
+1. `node test/run.js` — the full interpreter test suite (22 suites as of 2026-Q2 audit)
 2. `node test/render-fixtures.js` — re-renders all `.acm` fixture documents
    to `.html`
 

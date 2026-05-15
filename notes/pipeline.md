@@ -1,0 +1,749 @@
+# Pipeline
+
+This document describes the acadamark processing pipeline: what stages run,
+in what order, what each stage produces, and how they depend on each other.
+For the implementation details of individual plugins and handlers, see
+`notes/interpreter.md`. For the authoring syntax at the source end of the
+pipeline, see `notes/shorthand-syntax.md`.
+
+---
+
+## 1. Overview
+
+An acadamark document goes through six stages to produce HTML output:
+
+```
+source text
+    │
+    ▼  Stage 1: Source → mdast
+    │  remarkParse + remarkAcadamark
+    │
+    ▼  Stage 2: Recursive content parsing
+    │  remarkRecursiveContent
+    │
+    ▼  Stage 3: mdast transforms (9 plugins)
+    │  config discovery → article structure → section nesting →
+    │  library load → notes → numbering → ref resolution →
+    │  cite resolution → bibliography
+    │
+    ▼  Stage 4: mdast → hast
+    │  toHast() with acadamarkTag custom handler
+    │
+    ▼  Stage 5: Asset injection
+    │  Conditional CSS/JS prepended to hast tree
+    │
+    ▼  Stage 6: Serialization
+    │  rehypeFormat() → toHtml()
+    │
+HTML string
+```
+
+The pipeline is wired by the `acadamarkInterpreter` unified plugin, which
+registers all stages (2–6) on a single unified processor. The consumer provides
+stage 1 (`remarkParse` + `remarkAcadamark`):
+
+```js
+const result = await unified()
+  .use(remarkParse)
+  .use(remarkAcadamark)
+  .use(acadamarkInterpreter, options)
+  .process(source);
+```
+
+---
+
+## 2. Stage 1: Source → mdast
+
+**Plugins:** `remarkParse`, `remarkAcadamark` (consumer-provided).
+
+**Input:** UTF-8 source text.
+
+**Output:** mdast tree where:
+- Standard Markdown constructs (paragraphs, emphasis, headings, fenced code,
+  etc.) are represented as normal mdast node types.
+- Acadamark shorthand tags (`<tag #id .class kwarg=value | content>` and sigil
+  forms) are represented as `acadamarkTag` nodes with `content` as a raw string.
+
+An `acadamarkTag` node after parsing looks like:
+
+```js
+{
+  type: 'acadamarkTag',
+  tagname: 'em',           // tag name or sigil ('$', '$$', '```', '`')
+  id: 'my-id',             // from #my-id, or null
+  classes: ['highlight'],  // from .highlight, or []
+  kwargs: { lang: 'en' },  // from lang=en
+  positional: ['Smith2020'], // positional arguments (before pipe in cite, etc.)
+  booleans: { numbered: true }, // from +numbered or -numbered
+  content: 'emphasized text',  // raw string between | and >
+  contentHandler: 'default',   // 'default' | 'math' | 'math-display' | 'dsl' | 'table'
+  isOpaqueContent: false,       // true for math, code, table data
+}
+```
+
+For sigil tags (`<$ ... $>`, `<$$ ... $$>`, `` <``` ... ``` > ```, `` <` ... `> ``),
+`isOpaqueContent` is `true` and `contentHandler` is set to the sigil-specific
+handler name. The content string is the raw body (LaTeX source, code text,
+table data).
+
+For named tags with pipe content, `contentHandler` is `'default'` and
+`isOpaqueContent` is `false`. The content is a raw string to be re-parsed.
+
+**What is NOT yet done:** Named-tag content is not yet structured mdast.
+Stage 2 does that work.
+
+---
+
+## 3. Stage 2: Recursive content parsing
+
+**Plugin:** `remarkRecursiveContent`
+**Source:** `packages/remark-acadamark/src/recursive-content.js`
+
+**Input:** mdast tree with `acadamarkTag` nodes having string `content` fields.
+
+**Output:** mdast tree with `acadamarkTag` nodes having `content: Node[]`
+(parsed mdast arrays). Opaque-content nodes are unchanged.
+
+**What it does:** For each `acadamarkTag` node with `contentHandler === 'default'`,
+the raw `content` string is fed through an inner processor (`remarkParse +
+remarkAcadamark`) and the resulting mdast is stored back onto the node. After
+this step, `node.content` is a proper array of mdast nodes (possibly containing
+nested `acadamarkTag` nodes).
+
+**Inner processor:** Created by `acadamarkInterpreter` and passed as the
+`{ processor }` option. It runs the same parser plugins as the outer processor
+but does NOT include `remarkRecursiveContent` (this plugin) or any structural
+plugins. Recursion into nested tags is handled by the plugin's own tree walk.
+
+**Paragraph unwrapping:** Pipe text that resolves to a single paragraph (the
+common case for prose content) is unwrapped to its inline children. This means
+the node's content is `[text("emphasized text")]`, not
+`[paragraph([text("emphasized text")])]`. The wrapping is re-applied during
+hast conversion if the element's content type is `block` rather than `prose`.
+
+**Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
+are converted to `acadamarkParseError` nodes with `subtype: 'max-recursion-depth'`.
+
+**Cross-reference:** `notes/recursive-content-spec.md` for the full design,
+including the mixed-content (escape-errors) path.
+
+---
+
+## 4. Stage 3: mdast transforms
+
+Nine plugins run in sequence, transforming the mdast tree. They are registered
+on the unified processor in this order and run as unified transforms during
+the `processor.run()` step.
+
+### Phase 1 — Discovery
+
+#### 4.1 acadamarkConfigDiscovery
+
+**When:** First after recursive-content parsing. The tree is still flat (not
+yet wrapped in article structure).
+
+**What it does:** Reads `<config>` blocks at root level and populates
+`file.data.acadamarkConfig` with their kwargs. No tree modification.
+
+**Output:** `file.data.acadamarkConfig = Map<string, string>`.
+
+**Dependencies:** None (reads tree as-is after recursive-content).
+
+**What must run before:** `remarkRecursiveContent` (so `<config>` node content
+is parsed — config kwargs come from the tag's own kwargs, not its content, but
+the tree must be stable).
+
+---
+
+### Phase 2 — Structural transformation
+
+#### 4.2 acadamarkArticleStructuring
+
+**What it does:** Wraps the document in the Layer 1 article structure.
+Partitions root children into front / body / back / root-siblings buckets
+and builds `<article>`, `<article-front>`, `<article-body>`, `<article-back>`.
+
+After this step:
+```
+root
+  article          (always present)
+    article-front  (optional; contains <meta>)
+    article-body   (optional; contains all body content)
+    article-back   (optional; contains <config>, <bibliography>, <note-list>)
+  data             (root sibling; outside <article>)
+```
+
+**Dependencies:** `remarkRecursiveContent` (needs parsed content to read
+`<meta>` internals). `acadamarkConfigDiscovery` has already run (no dependency
+between them — ordering is arbitrary).
+
+**Limitation:** `book` and `book-part` document types are not handled. The
+plugin emits a warning and returns without wrapping.
+
+#### 4.3 acadamarkSectionNesting
+
+**What it does:** Converts the flat body content into a nested section tree.
+Each `section` / `sub-section` / `sub-sub-section` tag becomes a parent that
+contains the content following it until the next peer or parent section.
+Section titles (pipe content) are promoted to `section-title` /
+`sub-section-title` / `sub-sub-section-title` child elements.
+
+**Dependencies:** `acadamarkArticleStructuring` (sections must be inside
+`article-body` for the walk to operate on the right content array).
+
+**Tree shape after this step (example):**
+```
+article-body
+  section
+    section-title
+      text("Introduction")
+    paragraph(...)
+    sub-section
+      sub-section-title
+        text("Background")
+      paragraph(...)
+  section
+    section-title
+      text("Methods")
+    ...
+```
+
+---
+
+### Phase 3 — Semantic processing
+
+#### 4.4 acadamarkLibraryLoad
+
+**What it does:** Finds `<data>` nodes at root level (outside `<article>`),
+walks their `<library>` children, reads citation data (BibTeX or CSL-JSON)
+from inline content or `src=` files, and stores a citation-js `Cite` instance
+in `file.data.acadamarkCitations`.
+
+**Output:**
+```js
+file.data.acadamarkCitations = {
+  cite: Cite,          // citation-js instance; all entries
+  order: [],           // filled by acadamarkCiteResolution
+  style: string,       // CSL style (from config or default)
+}
+```
+
+**Dependencies:** `acadamarkArticleStructuring` (needs `<data>` at root level).
+`acadamarkConfigDiscovery` (reads `citation-style` from config).
+
+**No-op case:** If there are no `<data>` nodes, `file.data.acadamarkCitations`
+is not set. Cite resolution and bibliography will be no-ops.
+
+#### 4.5 acadamarkNotes
+
+**What it does:** Numbers all `<note>` nodes in document order, replaces each
+inline `<note>` node with a `__note-marker` internal node, and injects a
+`__note-list` into `<article-back>` containing all note content.
+
+**Output:** `<note>` nodes are replaced by `__note-marker` nodes in the tree;
+a `__note-list` node containing `__note-list-item` nodes is prepended (`unshift`)
+to `article-back.content`.
+
+**Registry:** Assigns `note` entries with sequential numbers via
+`registry.assign('note', id, { numbered: true })`.
+
+**Dependencies:** `acadamarkArticleStructuring` (needs `article-back` to exist
+or be findable), `remarkRecursiveContent` (note content must be parsed mdast).
+
+**Placement modes:** `end` (default), `foot`, `side`. Per-section footnote
+placement is deferred; see `notes/known-limitations.md`.
+
+#### 4.6 acadamarkNumbering
+
+**What it does:** Walks the tree and assigns `computedNumber` (and
+`registryType`) to `$$` (display-math), `figure`, and `table` nodes.
+
+**Output:** `node.computedNumber = N` (integer) or `null` (unnumbered),
+`node.registryType = 'equation' | 'figure' | 'table'`.
+
+**Dependencies:** `acadamarkNotes` (notes claim their numbers first, so note
+numbers are allocated before equation/figure/table numbers — convention, not
+a hard dependency since they use separate type counters).
+
+**Numbering decision priority:** `+numbered`/`-numbered` booleans → `numbered=true/false`
+kwargs → document config (`number-equations`, etc.) → default `true`.
+
+#### 4.7 acadamarkRefResolution
+
+**What it does:** Replaces every `<ref>` node with a `__ref-marker` (target
+found in label index) or `__ref-error` (target not found) internal node.
+
+**Dependency on numbering:** Must run after `acadamarkNumbering` so that all
+numbered elements have been assigned `computedNumber` values and their colon-ids
+are in the label index.
+
+**Reference text:** Computed from the id prefix and the entry number. Known
+prefixes (`eqn`, `fig`, `note`, `tab`, `sec`, etc.) produce labeled text
+("equation 3", "figure 1"). Unknown prefixes produce just the number. Unnumbered
+targets produce the label-tail. Config key `ref-prefix-{prefix}` overrides.
+
+**Known limitation:** Only colon-ids are referenceable. Non-colon ids produce
+`__ref-error`.
+
+#### 4.8 acadamarkCiteResolution
+
+**What it does:** Replaces every `<cite>` node with `__cite-marker` and/or
+`__cite-error` internal nodes. Builds `citations.order` (first-cited key order).
+
+**Dependency:** `acadamarkLibraryLoad` (needs `file.data.acadamarkCitations`).
+If citations were not loaded, this plugin is a no-op.
+
+**Citation keys:** Extracted from `node.positional` (canonical: `<cite Smith2020>`),
+`node.content` as string (pipe form), or parsed content text (defensive path).
+
+**Mixed case:** When some keys are found and some missing, the replacement is
+`[__cite-marker, __cite-error]` — both nodes appear inline in the output.
+
+#### 4.9 acadamarkBibliography
+
+**What it does:** Renders the full bibliography via citation-js and injects
+a `__bibliography` node into `<article-back>`. If the author placed an explicit
+`<bibliography>` tag, it is replaced in-place. Otherwise, the bibliography is
+appended (pushed) to article-back.
+
+**Dependency:** `acadamarkCiteResolution` (needs `citations.order` to be
+populated with the first-cited key list).
+
+**Empty case:** If `citations.order.length === 0`, any author-placed
+`<bibliography>` tag is removed. Nothing else is done.
+
+**id injection:** Each `.csl-entry` div in the bibliography HTML gets
+`id="ref-{KEY}"` injected, enabling hover-preview JavaScript to locate
+entries by key.
+
+---
+
+## 5. Stage 4: mdast → hast
+
+**Function:** `toHast(tree, { handlers: { acadamarkTag: tagHandler }, allowDangerousHtml: true })`
+from `mdast-util-to-hast`.
+
+**Not remark-rehype:** The interpreter uses `mdast-util-to-hast` directly.
+`remark-rehype` is not installed. The compile step is registered as
+`this.compiler` (the standard unified stringify API), not as a rehype plugin.
+
+**What `toHast` does:**
+
+- Standard mdast node types (paragraph, emphasis, heading, etc.) are converted
+  by built-in mdast-util-to-hast rules.
+- `acadamarkTag` nodes call the custom handler registered in `handlers.acadamarkTag`.
+
+**The custom handler** dispatches through:
+
+1. INTERNAL_REGISTRY (plugin-created nodes like `__note-marker`)
+2. Vocabulary lookup (via sigil translation + `vocabulary.get(key)`)
+3. HANDLER_REGISTRY (for `interpreter_strategy: handler` entries)
+4. Schema dispatch (for `interpreter_strategy: schema` entries)
+
+For schema elements, hast properties are built from vocabulary attribute
+mappings; children are converted from the node's content array.
+
+For handler elements (math, figure, table, code), dedicated handler functions
+build the hast tree directly.
+
+`allowDangerousHtml: true` is required for:
+- KaTeX HTML output (emitted as raw hast nodes)
+- Citation HTML from citation-js (may contain markup like `<i>`)
+- Table raw HTML escape-hatch mode
+- Bibliography HTML
+
+**See also:** `notes/interpreter.md`, section 5 (Handler dispatch) and
+section 6 (Schema dispatch) for full dispatch details.
+
+---
+
+## 6. Stage 5: Asset injection
+
+**When:** After `toHast()` produces the hast tree, before formatting/serialization.
+
+**What:** Conditional CSS and JavaScript nodes prepended to `hast.children`.
+
+**KaTeX CSS:** Prepended if the hast tree contains `inline-math` or
+`display-math` elements. In `'inline'` mode: a `<style>` block with the full
+KaTeX CSS (font URLs replaced with base64 data URIs). In `'link'` mode: a
+`<link>` to the CDN. In `'skip'` mode: nothing.
+
+**Hover preview assets:** Prepended if the hast tree contains any of:
+- `<sup>` elements with `data-note-id` (note markers)
+- `<a>` elements with `class="ref"` (resolved cross-references)
+- `<cite>` elements with `class="cite"` (resolved citations)
+
+In `'inline'` mode: one `<style>` (Tippy.js CSS + hover-preview.css) and one
+`<script>` (Popper.js + Tippy.js + hover-preview.js init script). In `'link'`
+mode: CDN `<link>` and `<script src>` elements plus local files inline.
+
+**Lazy loading:** All asset content is read from disk on first use and cached
+in module-level variables. The assets are not read at all when not needed
+(no math → no KaTeX CSS read; no notes/refs/cites → no hover assets read).
+
+---
+
+## 7. Stage 6: Serialization
+
+**Functions:** `rehypeFormat()(hast)` then `toHtml(hast, { allowDangerousHtml: true })`.
+
+**`rehypeFormat`:** Adds indentation and newlines to block-level elements.
+Leaves inline content, `<style>` bodies, and `<script>` bodies unchanged.
+Result is human-readable HTML.
+
+**`toHtml`:** Serializes the hast tree to a string. `allowDangerousHtml: true`
+is required to emit raw-node values verbatim (KaTeX output, citation HTML).
+
+**Output:** A UTF-8 HTML string. Not a full HTML document (no `<html>`,
+`<head>`, `<body>` wrappers). The output is a fragment intended to be embedded
+in a host page, or used as a standalone body content block.
+
+---
+
+## 8. Plugin ordering and dependencies
+
+The table below summarizes which plugins produce what, and what each one needs
+to have run before it.
+
+| Plugin | Must run after | Produces |
+|--------|---------------|---------|
+| `remarkRecursiveContent` | `remarkAcadamark` (string content set) | `node.content` as `Node[]` |
+| `acadamarkConfigDiscovery` | `remarkRecursiveContent` | `file.data.acadamarkConfig` |
+| `acadamarkArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
+| `acadamarkSectionNesting` | `acadamarkArticleStructuring` | nested section tree |
+| `acadamarkLibraryLoad` | `acadamarkArticleStructuring`, `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
+| `acadamarkNotes` | `remarkRecursiveContent`, `acadamarkSectionNesting` | `__note-marker`, `__note-list`, registry note entries |
+| `acadamarkNumbering` | `acadamarkNotes` | `node.computedNumber`, `node.registryType`, label index entries |
+| `acadamarkRefResolution` | `acadamarkNumbering` | `__ref-marker`, `__ref-error` |
+| `acadamarkCiteResolution` | `acadamarkLibraryLoad` | `__cite-marker`, `__cite-error`, `citations.order` |
+| `acadamarkBibliography` | `acadamarkCiteResolution` | `__bibliography` |
+| compiler (toHast) | all mdast transforms | hast tree |
+| asset injection | compiler | CSS/JS nodes prepended to hast |
+| serialization | asset injection | HTML string |
+
+**Critical ordering constraints:**
+
+- `remarkRecursiveContent` must precede all structural plugins. Structural
+  plugins read node content (e.g., `<meta>` internals, note content) as parsed
+  mdast arrays; they cannot work with raw strings.
+- `acadamarkNumbering` must precede `acadamarkRefResolution`. Cross-references
+  look up by label; labels are only in the registry after numbering has assigned
+  them.
+- `acadamarkCiteResolution` must precede `acadamarkBibliography`. The bibliography
+  assembles from `citations.order`, which is populated during cite resolution.
+- `acadamarkLibraryLoad` must precede `acadamarkCiteResolution`. Cite resolution
+  needs the citation-js instance.
+- `acadamarkArticleStructuring` must precede `acadamarkLibraryLoad`. Library load
+  finds `<data>` by walking `tree.children` — the `<data>` nodes must be there.
+
+---
+
+## 9. Configuration
+
+### 9.1 Plugin options
+
+`acadamarkInterpreter(options)` accepts:
+
+| option | type | default | description |
+|--------|------|---------|-------------|
+| `katexCss` | `'inline' \| 'link' \| 'skip'` | `'inline'` | KaTeX CSS delivery mode |
+| `hoverPreviewMode` | `'inline' \| 'link' \| 'skip'` | `'inline'` | Hover preview asset delivery |
+| `assetsDir` | `string \| null` | `null` | Base directory for `src=` file paths |
+
+`assetsDir` is required when using `<library src="...">` or `<table src="...">`.
+Without it, those elements produce warnings and skip the external file.
+
+### 9.2 Document-level config
+
+Authors can override pipeline behavior with `<config>` tags in the document.
+These are processed by `acadamarkConfigDiscovery` and stored in
+`file.data.acadamarkConfig`.
+
+| key | type | consumed by | effect |
+|-----|------|-------------|--------|
+| `citation-style` | CSL style name | `acadamarkLibraryLoad` | Citation format (default: `chicago-author-date`) |
+| `number-equations` | `'false'` | `acadamarkNumbering` | Suppress equation numbering |
+| `number-figures` | `'false'` | `acadamarkNumbering` | Suppress figure numbering |
+| `number-tables` | `'false'` | `acadamarkNumbering` | Suppress table numbering |
+| `ref-prefix-eqn` | string | `acadamarkRefResolution` | Override "equation" word in ref labels |
+| `ref-prefix-fig` | string | `acadamarkRefResolution` | Override "figure" word in ref labels |
+| *(other `ref-prefix-*` keys)* | string | `acadamarkRefResolution` | Override any prefix word |
+
+Boolean-like config values are strings. The string `'false'` suppresses
+numbering; any other value (including absent) enables it.
+
+---
+
+## 10. Data flow examples
+
+### 10.1 A plain paragraph
+
+**Source:**
+```
+Some prose text.
+```
+
+**Stage 1 (remarkParse):**
+```js
+{ type: 'paragraph', children: [{ type: 'text', value: 'Some prose text.' }] }
+```
+
+**Stages 2–3:** No `acadamarkTag` nodes involved; no transformation.
+
+**Stage 4 (toHast):** Built-in mdast-util-to-hast rule:
+```js
+{ type: 'element', tagName: 'p', properties: {}, children: [{ type: 'text', value: 'Some prose text.' }] }
+```
+
+**Output:**
+```html
+<p>Some prose text.</p>
+```
+
+---
+
+### 10.2 An emphasized span
+
+**Source:**
+```
+<em | emphasized>
+```
+
+**Stage 1:** `acadamarkTag { tagname: 'em', content: 'emphasized', contentHandler: 'default' }`
+
+**Stage 2 (remarkRecursiveContent):**
+```
+inner parse "emphasized" → paragraph([text("emphasized")])
+→ extractFromRoot: single paragraph → return paragraph.children
+→ node.content = [text("emphasized")]
+```
+
+**Stage 4 (toHast, schema dispatch for `em`):**
+```
+vocab.html_output.element = 'em'
+vocab.content.type = 'prose'
+convertContent: content is [text("emphasized")] (already inline, no para unwrap needed)
+→ { type: 'element', tagName: 'em', properties: {}, children: [text("emphasized")] }
+```
+
+**Output:** `<em>emphasized</em>`
+
+---
+
+### 10.3 A numbered equation with a cross-reference
+
+**Source:**
+```
+<$$ #eqn:newton | F = ma $$>
+
+See <ref #eqn:newton>.
+```
+
+**Stage 1:**
+- `acadamarkTag { tagname: '$$', id: 'eqn:newton', content: ' F = ma ', isOpaqueContent: true }`
+- `acadamarkTag { tagname: 'ref', id: 'eqn:newton' }`
+
+**Stage 2:** `$$` is opaque; skipped. `ref` has no default content to parse.
+
+**Stage 3 — acadamarkNumbering:**
+- `$$` node: `registryType = 'equation'`, `registry.assign('equation', 'eqn:newton', { numbered: true })` → `entry.number = 1`
+- `node.computedNumber = 1`. id `'eqn:newton'` (contains `:`) → added to label index.
+
+**Stage 3 — acadamarkRefResolution:**
+- `registry.findByLabel('eqn:newton')` → found, `entry.number = 1`
+- `computeRefText('eqn:newton', entry, config)` → prefix `eqn` → `DEFAULT_PREFIXES['eqn'] = 'equation'` → text `"equation 1"`
+- `<ref>` replaced with `__ref-marker { targetId: 'eqn:newton', text: 'equation 1' }`
+
+**Stage 4 — toHast:**
+- `$$` → `mathHandler`: KaTeX renders `F = ma` in display mode; wraps in `<display-math>` with `<span class="equation-number">(1)</span>`.
+- `__ref-marker` → `refMarkerHandler`: `<a href="#eqn:newton" class="ref">equation 1</a>`
+
+**Output (simplified):**
+```html
+<display-math id="eqn:newton">
+  ...katex output...
+  <span class="equation-number">(1)</span>
+</display-math>
+<p>See <a href="#eqn:newton" class="ref">equation 1</a>.</p>
+```
+
+---
+
+### 10.4 A citation
+
+**Source (assuming `<data><library>` at root with Smith2020 entry):**
+```
+See <cite Smith2020>.
+```
+
+**Stage 1:** `acadamarkTag { tagname: 'cite', positional: ['Smith2020'] }`
+
+**Stage 3 — acadamarkLibraryLoad:**
+- `file.data.acadamarkCitations = { cite: Cite([Smith2020]), order: [], style: 'chicago-author-date' }`
+
+**Stage 3 — acadamarkCiteResolution:**
+- `extractCiteKeys(node)` → `['Smith2020']` from `node.positional`
+- `cite.data.find(e => e.id === 'Smith2020')` → found
+- `order.push('Smith2020')` → `citations.order = ['Smith2020']`
+- `cite.format('citation', { entry: ['Smith2020'], template: 'chicago-author-date', format: 'html', lang: 'en-US' })` → `'(Smith, 2020)'`
+- `<cite>` replaced with `__cite-marker { keys: 'Smith2020', html: '(Smith, 2020)' }`
+
+**Stage 3 — acadamarkBibliography:**
+- `citations.order.length === 1` → bibliography is rendered
+- bibliography HTML formatted, `id="ref-Smith2020"` injected
+- `__bibliography` node injected into article-back
+
+**Stage 4 — toHast:**
+- `__cite-marker` → `citeMarkerHandler`: `<cite class="cite" data-keys="Smith2020">(Smith, 2020)</cite>` (raw HTML child)
+- `__bibliography` → `bibliographyHandler`: `<bibliography>...</bibliography>`
+
+**Stage 5 — asset injection:**
+- `hasCiteLinks(hast)` returns true (found a `<cite>` with class `cite`)
+- hover preview assets injected
+
+---
+
+### 10.5 A note
+
+**Source:**
+```
+Here is some text.<note | This is an endnote.> More text.
+```
+
+**Stage 1:** `acadamarkTag { tagname: 'note', content: 'This is an endnote.' }`
+
+**Stage 2 (remarkRecursiveContent):**
+- `'This is an endnote.'` → parsed → `[text("This is an endnote.")]` (single inline node)
+- `node.content = [text("This is an endnote.")]`
+
+**Stage 3 — acadamarkNotes:**
+- `registry.assign('note', null, { numbered: true })` → `entry = { id: 'note-1', number: 1 }`
+- `refId = 'noteref-1'`
+- `<note>` replaced with `__note-marker { noteId: 'note-1', number: 1, refId: 'noteref-1' }`
+- collected: `{ entry, refId: 'noteref-1', content: [text("This is an endnote.")] }`
+- `__note-list` with one `__note-list-item` prepended to article-back
+
+**Stage 4 — toHast:**
+- `__note-marker` → `noteMarkerHandler`:
+  `<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup>`
+- `__note-list` → `noteListHandler`: `<note-list class="endnotes"><ol>...</ol></note-list>`
+- `__note-list-item` → `noteListItemHandler`:
+  `<li id="note-1"><sup>1</sup> This is an endnote. <a href="#noteref-1" class="note-backref" ...>↩</a></li>`
+
+**Stage 5 — asset injection:**
+- `hasNoteMarkers(hast)` returns true → hover preview assets injected.
+
+---
+
+## 11. The `file.data` namespace
+
+The unified `VFile` is the shared data bus between plugins. `file.data` fields
+set during a pipeline run:
+
+| field | type | set by | read by |
+|-------|------|--------|---------|
+| `file.data.acadamarkConfig` | `Map<string, string>` | `acadamarkConfigDiscovery` | `acadamarkLibraryLoad`, `acadamarkNumbering`, `acadamarkRefResolution` |
+| `file.data.acadamarkRegistry` | registry object | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkRefResolution` |
+| `file.data.acadamarkCitations` | `{ cite, order, style }` | `acadamarkLibraryLoad` | `acadamarkCiteResolution`, `acadamarkBibliography` |
+
+All three are initialized as needed:
+- `acadamarkConfig` is set to a new `Map` even if the document has no `<config>`
+  blocks (the map is just empty).
+- `acadamarkRegistry` is created on first `ensureRegistry(file)` call;
+  `acadamarkNotes` is typically first.
+- `acadamarkCitations` is only set when at least one `<data>/<library>` block
+  is found and successfully parsed.
+
+---
+
+## 12. Asset bundling
+
+The interpreter produces self-contained HTML by default (`'inline'` modes).
+
+### 12.1 KaTeX
+
+- CSS is read from the installed `katex` npm package.
+- Font `url()` references in the CSS are replaced with base64 data URIs via
+  `patchKatexFontUrls()`. This makes the CSS work from `file://` URLs and
+  offline environments.
+- The CDN URL is pinned to the installed KaTeX version and exported as
+  `KATEX_CDN_URL`.
+
+### 12.2 Hover previews (Tippy.js + Popper.js)
+
+- UMD bundles are read from the installed npm packages.
+- Source map comments (`//# sourceMappingURL=...`) are stripped to avoid
+  console warnings about missing `.map` files.
+- Custom `hover-preview.css` and `hover-preview.js` in
+  `packages/acadamark-interpreter/src/assets/` handle acadamark-specific
+  tooltip behavior.
+
+### 12.3 Body fonts (not yet integrated into pipeline)
+
+`patchKatexFontUrls()` is in `src/assets/font-loader.js`. The same file also
+exports `getDocumentFontsCss()`, which provides Inter and Source Code Pro as
+base64-encoded `@font-face` declarations. This is not yet wired into the
+pipeline (it was extracted as a module but is not called from `index.js`).
+
+### 12.4 Lazy loading
+
+All asset reads are deferred until first use. Module-level cache variables
+hold `null` until the first document that needs the asset is processed. This
+means:
+- Processes that produce no math never read `katex.min.css`.
+- Processes that produce no notes/refs/cites never read the Tippy/Popper bundles.
+
+For long-running servers processing many documents, the first document in each
+asset category pays the disk read cost; subsequent documents use the cached
+content.
+
+---
+
+## 13. Internal node types
+
+Several internal node types (`__*` tagnames) are created by structural plugins
+and rendered by INTERNAL_REGISTRY handlers. They are not vocabulary elements
+and cannot be authored directly.
+
+| created by | tagname | rendered as |
+|-----------|---------|-------------|
+| `acadamarkNotes` | `__note-marker` | `<sup>` with link |
+| `acadamarkNotes` | `__note-list` | `<note-list><ol>` |
+| `acadamarkNotes` | `__note-list-item` | `<li>` |
+| `acadamarkRefResolution` | `__ref-marker` | `<a class="ref">` |
+| `acadamarkRefResolution` | `__ref-error` | `<a class="ref-error">` |
+| `acadamarkCiteResolution` | `__cite-marker` | `<cite class="cite">` |
+| `acadamarkCiteResolution` | `__cite-error` | `<cite class="cite-error">` |
+| `acadamarkBibliography` | `__bibliography` | `<bibliography>` |
+
+The `data` and `library` tagnames (author-written) are also in INTERNAL_REGISTRY
+and render as `null` (suppressed): their content has been consumed by
+`acadamarkLibraryLoad`.
+
+---
+
+## 14. Future: client-side rendering
+
+The current pipeline is build-time only. All processing runs in Node.js before
+the HTML is delivered.
+
+A future client-side rendering path would re-run the pipeline in the browser.
+This would require bundling all plugins, the Peggy grammar, the micromark
+extension, and the vocabulary into a browser-loadable bundle. No design has
+been done for this yet.
+
+The plugin-based unified architecture does not inherently prevent client-side
+use; the constraint is the vocabulary loader (`readdirSync` + `readFileSync`)
+and the `citation-js` dependency, both of which are currently Node-only.
+
+---
+
+## 15. Cross-references
+
+- `notes/interpreter.md` — handler dispatch, schema dispatch, handler
+  implementations, error handling.
+- `notes/recursive-content-spec.md` — recursive content parsing design.
+- `notes/shorthand-syntax.md` — the authoring syntax at the pipeline input.
+- `notes/layer1-naming.md` — vocabulary element naming rules.
+- `notes/known-limitations.md` — current constraints and deferred features.
+- `BUILD.md` — slice plan and roadmap for future pipeline stages.

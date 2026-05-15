@@ -1,3 +1,7 @@
+> **Archived 2026-Q2.** This document was a brief list of DSL names with reference links — not a spec or design. If DSL engine integration is documented later, it will appear as a proper spec elsewhere. Retained here for completeness.
+
+---
+
 # Text-Based Domain Specific Languages (DSLs)
 - Mathematics
     - Latex (mathjax, ketex)
