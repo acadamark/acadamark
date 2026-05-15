@@ -124,6 +124,14 @@ If the author wrote `<book>` or any of the region wrappers explicitly, the plugi
 
 **Dependencies.** Runs after `acadamarkArticleStructuring` and `acadamarkBookStructuring` (which may have rearranged sections during their grouping passes).
 
+### A note on AST traversal
+
+acadamarkTag nodes use the `.content` property rather than the standard `.children` property used by most mdast nodes. This means `unist-util-visit` (which traverses `.children`) cannot be used directly for walking through the contents of an acadamarkTag node.
+
+Plugins that need to walk into acadamarkTag content must implement a custom recursive walker. The section-nesting plugin demonstrates this pattern: `walkAndNest` traverses both `.children` (for standard mdast nodes) and `.content` (for acadamarkTag nodes).
+
+If the node shape ever changes (e.g., migration to standard `.children`), all custom walkers must be updated. This is a known divergence from standard unified ecosystem conventions and is documented here so future plugin authors don't lose track of it.
+
 ### Title extraction
 
 **Purpose.** For elements with `title_extraction: true`, the recursively-parsed pipe content becomes the children of the appropriate title element. The title element is added as the first child of the container.

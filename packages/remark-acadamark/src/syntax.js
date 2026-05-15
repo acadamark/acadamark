@@ -126,15 +126,12 @@ function makeSigilTagTokenizer({ multiLine }) {
         return ok(code)
       }
       if (markdownLineEnding(code)) {
-        if (!multiLine) {
-          // Text position: single-line only. Emit whatever was consumed as a
-          // (malformed) token; from-markdown.js sees the grammar fail.
-          // This is a finite-lifespan guard per notes/shorthand-syntax.md.
-          effects.exit('acadamarkTagRaw')
-          effects.exit('acadamarkTag')
-          return ok(code)
-        }
-        // Flow position: emit lineEnding sibling and continue on next line.
+        // Both positions: emit lineEnding sibling and continue.
+        // Required by micromark for flow constructs; also the correct pattern
+        // for text constructs (same as codeText). Direct consumption of newline
+        // codes hangs the text tokenizer. from-markdown.js reconstructs the
+        // source from the outer acadamarkTag token span via sliceSerialize,
+        // so per-line chunk serialization is not relied upon.
         effects.exit('acadamarkTagRaw')
         effects.enter('lineEnding')
         effects.consume(code)
@@ -159,8 +156,15 @@ function makeSigilTagTokenizer({ multiLine }) {
       return body
     }
 
-    /** @param {Code} code */
+    /** @param {Code} code — char immediately after the closing `>` */
     function afterClose(code) {
+      // Issue 2 fix: flow-position tokenizer must reject when non-EOL content
+      // follows on the same line. If we accept here, the tag becomes a block
+      // node and the trailing text becomes a separate paragraph. Rejecting lets
+      // the paragraph form and the text-position tokenizer handle the tag inline.
+      if (multiLine && code !== null && !markdownLineEnding(code)) {
+        return nok(code)
+      }
       effects.exit('acadamarkTagRaw')
       effects.exit('acadamarkTag')
       return ok(code)
@@ -207,7 +211,7 @@ function makeSigilTagTokenizer({ multiLine }) {
 const tokenizeSigilTagFlow = makeSigilTagTokenizer({ multiLine: true })
 
 /**
- * Text-position sigil-tag tokenizer: single-line with error on EOL.
+ * Text-position sigil-tag tokenizer: crosses soft line breaks in a paragraph.
  * @type {Tokenizer}
  */
 const tokenizeSigilTagText = makeSigilTagTokenizer({ multiLine: false })
@@ -256,8 +260,8 @@ function makeNamedTagTokenizer({ multiLine }) {
     function attrSection(code) {
       if (code === null) return nok(code)
       if (markdownLineEnding(code)) {
-        if (!multiLine) return nok(code)
-        // Flow: emit lineEnding sibling and continue attr scanning on next line.
+        // Both positions: emit lineEnding sibling and continue.
+        // See makeSigilTagTokenizer body() comment for rationale.
         effects.exit('acadamarkTagRaw')
         effects.enter('lineEnding')
         effects.consume(code)
@@ -267,9 +271,7 @@ function makeNamedTagTokenizer({ multiLine }) {
       }
       if (code === GT) {
         effects.consume(code)
-        effects.exit('acadamarkTagRaw')
-        effects.exit('acadamarkTag')
-        return ok(code)
+        return afterGt
       }
       if (code === PIPE) {
         effects.consume(code)
@@ -301,8 +303,8 @@ function makeNamedTagTokenizer({ multiLine }) {
         return ok(code)
       }
       if (markdownLineEnding(code)) {
-        if (!multiLine) return nok(code)
-        // Flow: emit lineEnding sibling and continue content scan on next line.
+        // Both positions: emit lineEnding sibling and continue.
+        // See makeSigilTagTokenizer body() comment for rationale.
         effects.exit('acadamarkTagRaw')
         effects.enter('lineEnding')
         effects.consume(code)
@@ -313,9 +315,7 @@ function makeNamedTagTokenizer({ multiLine }) {
       if (code === GT) {
         if (depth === 0) {
           effects.consume(code)
-          effects.exit('acadamarkTagRaw')
-          effects.exit('acadamarkTag')
-          return ok(code)
+          return afterGt
         }
         effects.consume(code)
         depth--
@@ -339,6 +339,19 @@ function makeNamedTagTokenizer({ multiLine }) {
         depth++
       }
       return content(code)
+    }
+
+    /** @param {Code} code — char immediately after the closing `>` */
+    function afterGt(code) {
+      // Issue 2 fix: flow-position tokenizer rejects when non-EOL content
+      // follows on the same line, so the paragraph forms and the text-position
+      // tokenizer handles the tag inline.
+      if (multiLine && code !== null && !markdownLineEnding(code)) {
+        return nok(code)
+      }
+      effects.exit('acadamarkTagRaw')
+      effects.exit('acadamarkTag')
+      return ok(code)
     }
   }
 }

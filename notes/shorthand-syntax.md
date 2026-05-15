@@ -250,6 +250,16 @@ Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabula
 | `cases`     | `"cases"`              | Piecewise function          |
 | `align`     | `"align"`              | Aligned equations           |
 | `eqnarray`  | `"eqnarray"`           | Equation array              |
+| `aside`     | `"default"`           | Aside (prose, recursively parsed) |
+| `blockquote`| `"default"`           | Blockquote                  |
+| `note`      | `"default"`           | Note/footnote               |
+| `table`     | `"table"`             | Table (dedicated handler)   |
+| `ul`        | `"default"`           | Unordered list              |
+| `ol`        | `"default"`           | Ordered list                |
+| `li`        | `"default"`           | List item                   |
+| `meta`      | `"default"`           | Document metadata container |
+| `data`      | `"default"`           | Citation data container (prose, recursively parsed) |
+| `library`   | `"library"`           | BibTeX/CSL-JSON source (opaque; citation-js parses) |
 
 The map currently uses identity keys (tag name = handler name). A future `<equation>` tag could map to `"math"` without changing the handler implementation.
 
@@ -764,7 +774,7 @@ These were open questions that were settled during implementation.
 
 - **Long-form restricted to DSL-registry tags.** Long-form (`<name>...</name>`) is only valid for tags listed in the DSL registry. Non-registry named tags are always short-form: `<tag>` (no content) or `<tag | content>`. The parser checks the registry immediately after reading the tag name — if the name is not in the registry the long-form tokenizer calls `nok` and the flow hook falls through to the short-form named-tag tokenizer. This check is LL(1) at the tag-name level and has no rollback cost. Registered tags with `contentHandler: "default"` are long-form eligible; the "default" handler is a real registry entry, not a fallback for unregistered tags.
 
-- **Multi-word positionals: space-separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. `<cite jones2001 smith2022>` → `positional: ["jones2001", "smith2022"]`. This is consistent with how positional arguments work in shell commands and LaTeX. It also makes the qualifying-tag pattern natural: `<table csv | ...>` has `csv` as the second positional.
+- **Multi-word positionals: comma or space separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. Both spaces and commas (with optional surrounding whitespace) are valid separators. `<cite jones2001 smith2022>`, `<cite jones2001,smith2022>`, and `<cite jones2001, smith2022>` all produce `positional: ["jones2001", "smith2022"]`. Commas are never part of identifier values; they act purely as separators. The comma separator applies universally between all attribute types, not just positionals — `<fig #id, caption="...">` also works.
 
 - **Positional tokens and id/keyword values use the permissive `identifier` rule.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`). The same character class applies to id values (after `#`) and unquoted keyword values (after `=`). This allows file paths (`puppy.jpg`), URLs with query strings (`https://example.com?q=value`), hyphenated identifiers (`my-file.jpg`), colon-prefixed ids (`fig:body-cross-section`), and numbers without quoting. The asymmetric `=` rule — excluded from `identifier_start`, allowed in `identifier_cont` — keeps keyword syntax (`key=value`) unambiguous while letting `=` appear freely inside identifier tokens. `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`; `https://example.com?q=value` correctly parses as a single positional identifier.
 
@@ -803,7 +813,7 @@ Acadamark's text-position (inline) tokenizers — for both named tags and sigil 
 **What doesn't work:**
 
 - **Bare HTML boolean attributes.** `<input type="checkbox" disabled>` — acadamark parses `disabled` as a positional, not as a boolean attribute flag. Use `+disabled` for acadamark boolean flags instead.
-- **Self-closing syntax.** `<br/>`, `<img src="x" />` — the trailing `/` is treated as part of the attr string, not as a self-closing marker. Self-closing tags have no equivalent in acadamark (use `<br>` or `<img src=x>`).
+- **Self-closing syntax.** `<br />`, `<img src="x" />` — the trailing `/>` is recognized as a self-closing marker. The parser emits a `selfClosing: true` flag on the AST node. The content field is `null`; no pipe content is allowed in self-closing form. Self-closing is valid for any named tag. Example: `<library src="refs.bib" />` → `{ tagname: 'library', selfClosing: true, kwargs: { src: 'refs.bib' } }`. The slash must be the last character before `>` with no pipe. Technically, `<br/>` (no space before `/`) is also valid. The lookahead that recognizes self-closing is precise: a bare `/` positional is still accepted when it is not in the `/ >` position — e.g., `<tag /path>` parses `positional: ['/path']` without `selfClosing: true`.
 - **Closing tags as standalone constructs.** `</em>` starts with `</`. The acadamark tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it. This means closing tags are passed through as raw HTML, which can produce mismatched structure.
 
 **Guidance for authors:** Use acadamark shorthand for semantic markup. For the rare case where you need to drop into raw HTML that acadamark can't express, a verbatim-passthrough escape mechanism (e.g., `<html-passthrough>...</html-passthrough>`) is planned but not yet specified. Deferred to a later phase.

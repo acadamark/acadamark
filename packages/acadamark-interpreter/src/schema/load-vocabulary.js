@@ -56,13 +56,17 @@ export function loadVocabulary({ dir } = {}) {
       // to elements/ without breaking loading).
       continue;
     }
-    // Key by html_output.element — this is what the parser carries as `tagname`
-    // on acadamarkTag nodes (the literal characters the author typed between
-    // `<` and the first space/`|`/attribute). For the slice-1 vocabulary,
-    // every entry's semantic_role matches html_output.element except `p.md`
-    // (semantic_role: paragraph, html_output.element: p). Keying by
-    // html_output.element makes the dispatcher's lookup unambiguous; the
-    // semantic_role divergence is recorded as a drift finding.
+    // Key by html_output.element. For named tags this is the literal tag name
+    // the author typed (e.g., "p", "section", "figure"). For sigil tags the
+    // parser emits the sigil character ("$", "$$", "```", "`") as tagname,
+    // but the vocabulary uses descriptive keys ("inline-math", "display-math",
+    // "code-block", "inline-code"). The dispatcher uses resolveVocabKey() from
+    // remark-acadamark/sigil-mapping to translate parser tagnames to vocabulary
+    // keys before lookup.
+    //
+    // Note: for the initial vocabulary every entry's semantic_role matches
+    // html_output.element except p.md (semantic_role: paragraph, element: p).
+    // Keying by html_output.element makes the dispatcher's lookup unambiguous.
     const key = spec.html_output?.element;
     if (!key) continue;
     if (map.has(key)) {

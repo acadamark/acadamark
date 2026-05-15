@@ -20,18 +20,22 @@
 // Region classification for slice 1:
 //   front  → <meta> (if present)
 //   body   → everything that is not <meta> and not back-matter, and not a
-//             bare <article> short-form tag
-//   back   → <data>, <config>, <bibliography>, <note-list> (often empty)
+//             bare <article> short-form tag, and not a <data> root sibling
+//   back   → <config>, <bibliography>, <note-list> (often empty)
+//   root siblings → <data> (citation data blocks; live at root, not inside article)
 //
-// The three regions are always generated (even if empty) for structural
-// completeness.
+// The three regions are emitted only when they have content. Empty regions
+// are suppressed entirely. This matches the plugin-pipeline.md contract.
 
 import { makeTag, isAcadamarkTag, findTag } from '../lib/ast-helpers.js';
 import { warnSkippedDocType, warnTitlePrecedence } from '../lib/errors.js';
 
 // Tags that belong in <article-back>.
-const BACK_MATTER_TAGS = new Set(['data', 'config', 'bibliography', 'note-list']);
+const BACK_MATTER_TAGS = new Set(['config', 'bibliography', 'note-list']);
 
+// <data> is NOT in BACK_MATTER_TAGS. It lives at root level as a sibling of
+// <article>, because it is a data-only block (citation registry) processed by
+// the library-load plugin — not document content rendered inside <article>.
 function isBackMatter(node) {
   return isAcadamarkTag(node) && BACK_MATTER_TAGS.has(node.tagname);
 }
@@ -128,33 +132,37 @@ export function acadamarkArticleStructuring() {
       effectiveMeta = explicitArticleTag._generatedMeta;
     }
 
-    // Partition children into front, body, back.
+    // Partition children into front, body, back, and root siblings.
     const frontContent = effectiveMeta ? [effectiveMeta] : [];
     const bodyContent = [];
     const backContent = [];
+    const dataSiblings = []; // <data> nodes: stay at root, outside <article>
 
     for (const node of children) {
       if (node === metaNode) continue; // goes to front
       if (node === explicitArticleTag) continue; // structural tag, not body
-      if (isBackMatter(node)) {
+      if (isAcadamarkTag(node, 'data')) {
+        dataSiblings.push(node); // extracted to root level
+      } else if (isBackMatter(node)) {
         backContent.push(node);
       } else {
         bodyContent.push(node);
       }
     }
 
-    // Build the three region nodes. All three are always generated (even if
-    // empty) for structural completeness. This matches the example in the
-    // slice 1 spec. The pipeline-spec says "only if it has content" — that
-    // refinement is deferred; it is noted as a drift finding in the report.
-    const front = makeTag('article-front', frontContent);
-    const body  = makeTag('article-body',  bodyContent);
-    const back  = makeTag('article-back',  backContent);
+    // Build region nodes. Only emit a region when it has content — empty
+    // regions add no semantic value and produce visual noise in the output.
+    const regions = [];
+    if (frontContent.length > 0) regions.push(makeTag('article-front', frontContent));
+    if (bodyContent.length  > 0) regions.push(makeTag('article-body',  bodyContent));
+    if (backContent.length  > 0) regions.push(makeTag('article-back',  backContent));
 
     // Build the <article> wrapper.
-    const article = makeTag('article', [front, body, back]);
+    const article = makeTag('article', regions);
 
-    // Replace the root's children.
-    tree.children = [article];
+    // Replace the root's children: article first, then <data> siblings.
+    // <data> nodes live at root level (outside <article>) so the library-load
+    // plugin can find them by walking tree.children directly.
+    tree.children = [article, ...dataSiblings];
   };
 }

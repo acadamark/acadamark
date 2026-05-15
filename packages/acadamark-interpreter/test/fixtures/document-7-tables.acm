@@ -1,0 +1,68 @@
+<meta type=article>
+  <title | Table test fixture>
+  <author | Ariel Balter>
+</meta>
+
+<section | Inline CSV>
+
+A numbered table with caption from inline CSV:
+
+<table #tab:csv csv caption="Greek letters and values" | key,value,notes
+alpha,1,First entry
+beta,2,Second entry
+gamma,3,"Quoted, third"
+>
+
+<section | TSV>
+
+A TSV table without headers:
+
+<table #tab:tsv tsv -headers | col1	col2	col3
+A	B	C
+D	E	F
+>
+
+<section | JSON>
+
+A JSON table from an array of objects:
+
+<table #tab:json json caption="Coordinates" | [{"x": 1, "y": 2}, {"x": 3, "y": 4}]>
+
+<section | YAML>
+
+A YAML table from a sequence of mappings:
+
+<table #tab:yaml yaml caption="YAML data" | - name: Alice
+  score: 95
+- name: Bob
+  score: 87
+>
+
+<section | Markdown pipe table>
+
+<table #tab:md md caption="Pipe table" | | Symbol | Meaning |
+|--------|---------|
+| F      | Force   |
+| m      | Mass    |
+| a      | Acceleration |
+>
+
+<section | Cross-references>
+
+See <ref #tab:csv> for the CSV table,
+<ref #tab:json> for JSON,
+and <ref #tab:md> for the markdown pipe table.
+
+<section | File source>
+
+A table loaded from an external CSV file:
+
+<table #tab:src csv src=sample-data.csv caption="From file" | >
+
+<section | Unnumbered table>
+
+<table #tab:unnumbered csv -numbered caption="Unnumbered" | a,b
+1,2
+>
+
+An unnumbered table does not appear in the numbered sequence. See <ref #tab:unnumbered>.

@@ -1,0 +1,15 @@
+<meta type=article>
+  <title | Math minimal>
+  <author | Test Author>
+</meta>
+
+<section | Inline math>
+The Pythagorean theorem states that <$ a^2 + b^2 = c^2 $> for any right triangle.
+
+<section | Display math>
+The quadratic formula is:
+
+<$$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$>
+
+<section | Error handling>
+A deliberately broken expression: <$ \invalid{syntax $> should render as an error marker, not crash the document.

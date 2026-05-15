@@ -67,7 +67,7 @@ Some mappings are conventionally direct:
 Some mappings are tag-specific:
 - `<cite>`'s positional argument becomes `data-cite-key`, not an HTML attribute named "positional."
 - `<figure>`'s `src` kwarg generates an `<img>` child element.
-- `<ref>`'s positional argument becomes `data-ref-target`.
+- `<ref>`'s target id is captured from the `#id` positional argument (or `target=` kwarg). A pre-pass plugin (`acadamarkRefResolution`) walks the mdast, looks up each target in the label index, and replaces the `<ref>` node with a `__ref-marker` (resolved) or `__ref-error` (unresolved) internal node before hast conversion. The final rendered element is `<a class="ref" href="#id">text</a>` or `<a class="ref-error" href="#id">??ref: id??</a>` — no `data-ref-target` attribute is emitted.
 
 The schema for each tag defines its specific mappings. Standard mappings (id, classes) can be defaults so that not every schema has to repeat them.
 

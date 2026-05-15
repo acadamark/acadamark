@@ -27,6 +27,20 @@
 import { parse as peggyParse } from './generated/parser.js'
 import { getContentHandler } from './dsl-registry.js'
 
+// Node types that the built-in onexitlineending treats as containers for
+// end-of-line characters. This list mirrors mdast-util-from-markdown's
+// canContainEols default: ['emphasis', 'fragment', 'heading', 'paragraph',
+// 'strong']. The 'fragment' type is what matters most: mdast-util-from-markdown
+// pushes a `fragment` node via buffer() when entering fenced code block content,
+// and newlines between codeFlowValue tokens must land in that fragment.
+const MDAST_CAN_CONTAIN_EOLS = new Set([
+  'emphasis',
+  'fragment',
+  'heading',
+  'paragraph',
+  'strong',
+])
+
 /**
  * @returns {import('mdast-util-from-markdown').Extension}
  */
@@ -37,7 +51,6 @@ export function acadamarkFromMarkdown() {
       acadamarkLongFormTag: enterAcadamarkLongFormTag,
     },
     exit: {
-      acadamarkTagRaw: exitAcadamarkTagRaw,
       acadamarkTag: exitAcadamarkTag,
       acadamarkLongFormOpen: exitAcadamarkLongFormOpen,
       acadamarkLongFormContent: exitAcadamarkLongFormContent,
@@ -56,35 +69,20 @@ export function acadamarkFromMarkdown() {
 
 function enterAcadamarkTag(token) {
   // Push a minimal stub; exitAcadamarkTag fills in the real fields.
-  // _rawChunks accumulates one entry per acadamarkTagRaw chunk (one per line
-  // for multi-line constructs, one total for single-line).
-  this.enter({ type: 'acadamarkTag', _rawChunks: [] }, token)
-}
-
-function exitAcadamarkTagRaw(token) {
-  // Accumulate this line's raw text. Parsing is deferred to exitAcadamarkTag
-  // so that multi-line constructs (multiple chunks) are joined first.
-  //
-  // Zero-length token handling: when two consecutive line endings occur (a blank
-  // line inside content), the acadamarkTagRaw chunk between them is zero-length.
-  // Calling sliceSerialize on it would crash at EOF (null chunk in stream). We
-  // push "" directly without calling sliceSerialize — safe for both blank-line
-  // tokens (mid-document) and EOF tokens. The join('\n') in exitAcadamarkTag then
-  // correctly produces double "\n\n" for blank lines, preserving paragraph breaks.
-  if (token.start.offset === token.end.offset) {
-    const node = this.stack[this.stack.length - 1]
-    node._rawChunks.push('')
-    return
-  }
-  const node = this.stack[this.stack.length - 1]
-  node._rawChunks.push(this.sliceSerialize(token))
+  this.enter({ type: 'acadamarkTag' }, token)
 }
 
 function exitAcadamarkTag(token) {
   const node = this.stack[this.stack.length - 1]
-  // Join chunks: single-line → one chunk, no change; multi-line → join with \n.
-  const source = node._rawChunks.join('\n')
-  delete node._rawChunks
+  // Serialize the entire span of the acadamarkTag outer token. This span runs
+  // from `<` to just after `>` and includes embedded newlines regardless of
+  // whether the tag was parsed in flow or text position. Per-line chunk
+  // serialization (the former _rawChunks approach) does not work for text-
+  // position multi-line tags because sliceSerialize on cross-line text chunks
+  // returns "" for lines after the first. The outer token span is always
+  // correct: micromark tracks start/end offsets as absolute positions in the
+  // input buffer, and sliceSerialize reads directly from that buffer.
+  const source = this.sliceSerialize(token)
   try {
     const parsed = peggyParse(source)
     Object.assign(node, parsed)
@@ -171,17 +169,42 @@ function exitAcadamarkLongFormContent(token) {
 }
 
 function exitLineEnding(token) {
-  // Append newlines that were emitted as standalone lineEnding void-tokens.
-  // Fires for both long-form content newlines and short-form multi-line
-  // construct newlines (between acadamarkTagRaw chunks). For short-form,
-  // the lineEnding appears between two acadamarkTagRaw chunks as a sibling;
-  // the node on the stack is still an acadamarkTag (not yet exited).
-  //
-  // Gate: only append to long-form tags that haven't closed yet. Short-form
-  // raw chunks handle their own newlines via the join('\n') in exitAcadamarkTag.
+  // Fires for every lineEnding exit event in the document because the acadamark
+  // from-markdown extension registers this handler via Object.assign, which
+  // REPLACES (not extends) the built-in onexitlineending in mdast-util-from-
+  // markdown. We must therefore replicate the built-in behaviour here in
+  // addition to our own acadamark-specific handling.
   const node = this.stack[this.stack.length - 1]
-  if (node && node.type === 'acadamarkTag' && node.form === 'long' && !node._hasClose && !node._inOpener) {
+
+  // Case 1: inside a long-form acadamark tag — append \n to node.content.
+  if (node?.type === 'acadamarkTag' && node.form === 'long' && !node._hasClose && !node._inOpener) {
     node.content += this.sliceSerialize(token)
+    return
+  }
+
+  // Case 2: replicate built-in onexitlineending for all other node types.
+  //
+  // The built-in handler: if canContainEols includes the context type (and we're
+  // not slurping a setext heading), call onenterdata + onexitdata to append the
+  // newline to the current text accumulation. The 'fragment' case is critical:
+  // mdast-util-from-markdown pushes a fragment via buffer() before fenced code
+  // block content, so lineEnding tokens between codeFlowValue tokens must land
+  // in that fragment — otherwise code.value loses its \n characters.
+  if (this.data.setextHeadingSlurpLineEnding) return
+  if (!node?.children || !MDAST_CAN_CONTAIN_EOLS.has(node.type)) return
+
+  const eol = this.sliceSerialize(token)
+  const siblings = node.children
+  const tail = siblings[siblings.length - 1]
+  if (tail?.type === 'text') {
+    tail.value += eol
+    tail.position.end = token.end
+  } else {
+    siblings.push({
+      type: 'text',
+      value: eol,
+      position: { start: token.start, end: token.end },
+    })
   }
 }
 

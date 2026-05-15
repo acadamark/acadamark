@@ -108,7 +108,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "This paper examines how elephant populations affect regional climate patternsthrough their role in shaping vegetation and carbon storage.",
+                      "value": "This paper examines how elephant populations affect regional climate patterns\nthrough their role in shaping vegetation and carbon storage.",
                       "position": {
                         "start": {
                           "line": 7,
@@ -173,7 +173,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "We surveyed forest density across three regions, comparing areas with andwithout significant elephant populations. Sampling occurred over ",
+                      "value": "We surveyed forest density across three regions, comparing areas with and\nwithout significant elephant populations. Sampling occurred over ",
                       "position": {
                         "start": {
                           "line": 11,
@@ -243,12 +243,6 @@
               ]
             }
           ]
-        },
-        {
-          "type": "element",
-          "tagName": "article-back",
-          "properties": {},
-          "children": []
         }
       ]
     }

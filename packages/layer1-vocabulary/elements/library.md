@@ -17,10 +17,14 @@ acadamark_attributes:
     format:
       maps_to: data-format
       values: [bibtex, csl-json, ris, endnote-xml, other]
-      required: true
+      required: false
+      default: auto
       notes: |
-        The format of the library content. The library-parsing plugin
-        dispatches to the appropriate parser based on this kwarg.
+        The format of the library content. When omitted, the library-load plugin
+        auto-detects the format via citation-js (works reliably for BibTeX and
+        CSL-JSON). Authors can set this explicitly when auto-detection might be
+        ambiguous (e.g., a CSL-JSON string that also looks valid as plain text).
+        The library-load plugin passes this as a hint to citation-js if present.
 content:
   type: opaque
   becomes: 'parsed entries (registered in citation system)'

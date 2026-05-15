@@ -18,25 +18,33 @@ acadamark_attributes:
     target:
       handled_by: handler
       notes: |
-        The id of the element being referenced. Supplied as a positional
-        argument: <ref figure-3>. The handler resolves the target and
-        generates appropriate link text.
+        The id of the element being referenced. The canonical form uses the
+        #id prefix: <ref #eqn:model>. A kwarg form is also accepted as
+        legacy: <ref target=eqn:model>.
+        IMPORTANT (current implementation): only colon-ids (ids containing
+        a colon, e.g., eqn:model, fig:scatter) are in the label index and
+        can be resolved. Non-colon ids produce an unresolved error marker.
+        This restriction may be relaxed in a future slice.
     type:
-      maps_to: data-ref-type
+      handled_by: handler
       values: [auto, figure, table, equation, section, sub-section, note, listing, theorem, other]
       default: auto
       notes: |
-        The type of element being referenced. "auto" means the resolver
-        determines the type from the target element. Explicit type can
-        override or constrain.
+        DEFERRED. The type kwarg is parsed but not used by the current
+        handler. The resolver always infers type from the registry entry.
     format:
-      maps_to: data-ref-format
+      handled_by: handler
       values: [number, name, full, label-only, default]
       default: default
       notes: |
-        How the cross-reference renders. "number" produces just the
-        number ("3"); "name" produces the type and number ("Figure 3");
-        "full" includes the title ("Figure 3: An Adult Elephant").
+        DEFERRED. The format kwarg is parsed but not used by the current
+        handler. Rendered text is always the prefix-dictionary default:
+        "equation N" for equations, "figure N" for figures, "note N" for
+        notes (prefix word from DEFAULT_PREFIXES, overridable per-document
+        via <config ref-prefix-eqn="...">).
+        Author-provided pipe content (<ref #id | custom text>) is also
+        deferred (recursive-content slice).
+        "full" would include the title ("figure 3: An Adult Elephant").
 content:
   type: prose
   becomes: children
@@ -51,37 +59,37 @@ jats_counterpart:
     (fig, table, sec, equation, fn, etc.). Acadamark's <ref> maps
     to <xref> with the appropriate ref-type derived from the target.
 shorthand_examples:
-  - source: 'See <ref figure-3> for details.'
-    layer1_html: '<p>See <ref data-target="figure-3" data-ref-type="figure">Figure 3</ref> for details.</p>'
+  - source: 'See <ref #fig:scatter> for details.'
+    html_output: '<p>See <a href="#fig:scatter" class="ref">figure 1</a> for details.</p>'
     notes: |
-      A reference to a figure. The resolver determines the target type
-      (figure-3 has type=figure) and generates "Figure 3" as the link text.
-  - source: 'As discussed in <ref methods-section format=full>.'
-    layer1_html: '<p>As discussed in <ref data-target="methods-section" data-ref-type="section" data-ref-format="full">Section 2: Methods and Materials</ref>.</p>'
+      Canonical form: #id prefix. The ref-resolution plugin replaces the
+      <ref> node with a __ref-marker before hast conversion. The handler
+      then renders an <a> element with computed text. Prefix word is
+      lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.
+  - source: 'As shown in <ref #eqn:model>.'
+    html_output: '<p>As shown in <a href="#eqn:model" class="ref">equation 1</a>.</p>'
     notes: |
-      Reference with format=full includes the section title.
-  - source: 'See <ref figure-3 format=number> on the next page.'
-    layer1_html: '<p>See <ref data-target="figure-3" data-ref-type="figure" data-ref-format="number">3</ref> on the next page.</p>'
+      Equation references use the "equation" prefix word by default.
+      Config override: <config ref-prefix-eqn="Eq."> changes this to "Eq.".
+  - source: '<ref #eqn:missing>'
+    html_output: '<a href="#eqn:missing" class="ref-error">??ref: eqn:missing??</a>'
     notes: |
-      format=number produces only the number, useful when the type
-      is clear from context ("see 3 on the next page" wouldn't normally
-      be used; "see Figure 3 (page 12)" might use number for the page
-      reference component).
-  - source: 'Equations <ref eq-1> through <ref eq-5> describe the model.'
-    layer1_html: '<p>Equations <ref data-target="eq-1" data-ref-type="equation">(1)</ref> through <ref data-target="eq-5" data-ref-type="equation">(5)</ref> describe the model.</p>'
-    notes: |
-      Equation references typically render in parentheses by convention.
-      The resolver applies type-specific formatting.
+      Unresolved target renders a visible error anchor.
 interpreter_strategy: handler
 handler_module: ./handlers/ref.js
 handler_responsibilities:
-  - Read the target id (positional argument).
-  - Resolve the target element by id.
-  - Determine the target's type (figure, table, section, equation, etc.) for type=auto.
-  - Generate the cross-reference text appropriate to the type and format.
-  - Set data-target, data-ref-type, and data-ref-format attributes.
-  - For unresolved targets, render an error marker (e.g., "[?target]").
-  - Generate appropriate link href (#target) for clickable cross-references in HTML.
+  - >-
+    ref-resolution plugin (runs before hast): resolve <ref> nodes against the
+    shared label index; replace each with __ref-marker (resolved) or
+    __ref-error (unresolved). Only colon-ids are referenceable.
+  - >-
+    __ref-marker handler: render an anchor with href="#id", class="ref",
+    and pre-computed text from node.kwargs.text. Text is produced by the
+    ref-resolution plugin using DEFAULT_PREFIXES ("equation N", "figure N",
+    etc.) or label-tail for unnumbered labeled targets.
+  - >-
+    __ref-error handler: render an anchor with href="#id", class="ref-error",
+    and text "??ref: id??".
 related_plugins:
   - name: acadamarkCrossReferenceResolution
     runs_after: 'acadamarkArticleStructuring, numbering plugins'
@@ -97,134 +105,156 @@ A cross-reference to a numbered element within the document — figure, table, e
 
 `<ref>` is the cross-reference companion to `<cite>`. Where `<cite>` points at bibliography entries (external scholarship), `<ref>` points at numbered elements within the document (internal structure).
 
-The element resolves at build time. The author writes the target's id; the resolver looks up the numbered element by id, determines its type, and generates appropriate link text ("Figure 3", "Section 2.4", "Equation (1)").
+The element resolves at build time. The author writes the target's id; the resolver looks up the numbered element by id and generates appropriate link text ("figure 3", "equation 1").
 
 This is distinct from `<a href="#id">` (a plain HTML link). `<ref>` carries semantic meaning ("this is a cross-reference"), participates in the cross-reference resolver's logic, and exports to JATS as `<xref>` (with appropriate `ref-type`). Use `<a>` for arbitrary internal links; use `<ref>` for scholarly cross-references.
 
 ## Authoring
 
-The basic form takes the target id as a positional argument:
+The canonical form uses the `#id` positional argument with a colon-id:
 
 ```
-See <ref figure-3>.
+See <ref #fig:scatter>.
 ```
 
-The id (`figure-3`) must match an element with that id and a recognized numbered type (figure, table, equation, section, note, theorem, etc.).
+The id must be a colon-id (e.g., `fig:scatter`, `eqn:newton`, `note:galton`). Only colon-ids are indexed by the registry and can be resolved. Non-colon ids produce an error marker regardless of whether an element with that id exists in the document. A kwarg form is also accepted: `<ref target=eqn:newton>`.
 
-**Reference with explicit type.**
+**Numbered labeled element.**
 
-```
-<ref figure-3 type=figure>
-```
-
-When `type=auto` (the default), the resolver determines the type from the target. Explicit type is useful in two cases: when the target's type is ambiguous, or when constraining what kinds of targets are valid (e.g., requiring a figure reference even if the id matches another element type).
-
-**Reference with format control.**
+For a labeled element that is numbered, the rendered text is the prefix word followed by the number:
 
 ```
-<ref figure-3 format=number>     →  3
-<ref figure-3 format=name>        →  Figure 3 (default for most types)
-<ref figure-3 format=full>        →  Figure 3: An Adult Elephant
-<ref figure-3 format=label-only>  →  3 (without prefix)
+<ref #eqn:newton>   →  equation 1
+<ref #fig:scatter>  →  figure 1
+<ref #note:galton>  →  note 1
 ```
 
-The format kwarg controls how the cross-reference renders. The default depends on the target type:
+The prefix word comes from the built-in prefix dictionary keyed by the id prefix (see [Cross-reference types](#cross-reference-types)). Override per-document with `<config ref-prefix-eqn="Eq.">` to render "Eq. 1" instead of "equation 1".
 
-- Figures, tables, sections: `name` ("Figure 3", "Section 2.4").
-- Equations: `name` with parentheses ("Equation (1)") in some styles, or just `(1)`.
-- Notes: typically just the number.
+**Unnumbered labeled element.**
 
-## Resolution
-
-The resolver looks up the target by id against the document's numbered-elements registry. The registry is populated by the numbering plugins during pre-rendering passes. Each numbered element (figure, table, equation, section, note) gets registered with its type and assigned number.
-
-If the target resolves, the cross-reference renders normally. If not, the cross-reference renders with a visible error marker:
+If the target is labeled but authored with `-numbered`, it has no number in the registry. The rendered text is the label-tail — the part of the id after the colon:
 
 ```
-<ref bad-target>  →  [?bad-target]
+<$$ #eqn:energy -numbered | H = T + V $$>
+
+See <ref #eqn:energy>.  →  energy
 ```
 
-The error appears in the output rather than failing silently. Same principle as unresolved citations: the document renders even when there are errors.
+**Unresolved target.**
+
+If the target id is not in the registry, the reference renders as a visible error anchor rather than failing silently:
+
+```
+<ref #eqn:missing>  →  ??ref: eqn:missing??  (rendered as <a class="ref-error">)
+```
+
+Same principle as unresolved citations: the document renders even when there are errors.
+
+**Deferred: `type` kwarg.**
+
+`<ref #fig:scatter type=figure>` is parsed; the `type` kwarg is currently ignored. The resolver always infers the display word from the id prefix. Deferred. See `known-limitations.md`.
+
+**Deferred: `format` kwarg.**
+
+`<ref #eqn:newton format=number>` is parsed; the `format` kwarg is currently ignored. Rendered text is always the prefix-dictionary default. Deferred. See `known-limitations.md`.
+
+**Deferred: pipe content.**
+
+`<ref #fig:scatter | the scatter plot>` is parsed; the pipe content is not used as link text. The resolver-generated text is always used. Deferred to the recursive-content slice.
 
 ## Content
 
-The element's content is optional. When present, it overrides the automatically-generated cross-reference text:
+The element's content is optional. When present, it is intended to override the automatically-generated cross-reference text:
 
 ```
-<ref figure-3 | the elephant figure>
+<ref #fig:scatter | the scatter plot>
 ```
 
-This is rarely needed. The resolver-generated text is usually preferred because it stays consistent with the document's numbering and updates automatically when figures get renumbered.
+This is rarely needed. The resolver-generated text is usually preferred because it stays consistent with the document's numbering and updates automatically when figures get renumbered. Note: pipe content override is currently deferred — the resolver-generated text is always used regardless of any pipe content.
 
 ## Attributes
 
-`type` indicates the kind of target. Default is `auto` (resolver determines from target element).
+`type` indicates the intended kind of target. Parsed but currently ignored — the resolver infers the display word from the id prefix. Default: `auto`. See `known-limitations.md`.
 
-`format` controls how the cross-reference renders. Default depends on the target type.
-
-The handler reads these and produces the appropriate output.
+`format` controls how the cross-reference renders. Parsed but currently ignored — rendered text is always the prefix-dictionary default. Default: `default`. See `known-limitations.md`.
 
 ## Cross-reference types
 
-Common targets for `<ref>`:
+`<ref>` resolves by id prefix, not by element type. The built-in prefix dictionary maps id prefixes to display words:
 
-| Target type | Default format | Example output |
-|-------------|----------------|----------------|
-| figure | name | "Figure 3" |
-| table | name | "Table 2" |
-| equation | name | "Equation (1)" |
-| section | name | "Section 2.4" |
-| sub-section | name | "Section 2.4.1" |
-| note | number | "1" or "¹" |
-| listing | name | "Listing 4" |
-| theorem | name | "Theorem 3" |
+| Id prefix | Display word | Example id | Example output |
+|-----------|--------------|------------|----------------|
+| `eqn` | equation | `eqn:newton` | "equation 1" |
+| `fig` | figure | `fig:scatter` | "figure 1" |
+| `note` | note | `note:galton` | "note 1" |
+| `tab` | table | `tab:results` | "table 1" |
+| `sec` | section | `sec:methods` | "section 1" |
+| `thm` | theorem | `thm:main` | "theorem 1" |
+| `lem` | lemma | `lem:key` | "lemma 1" |
+| `def` | definition | `def:term` | "definition 1" |
+| `ex` | example | `ex:first` | "example 1" |
 
-The resolver dispatches based on the target's element type. Future numbered element types are added by extending the resolver, not by changing this vocabulary.
+Override the display word per-document with `<config ref-prefix-eqn="Eq.">`, which produces "Eq. 1" instead of "equation 1".
+
+If the id prefix is not in the dictionary (e.g., `custom:thing`), the rendered text is just the number: "3".
+
+Future element types are supported by using a recognized id prefix or registering a config override. No vocabulary change is required.
 
 ## JATS mapping
 
-JATS uses `<xref>` with `ref-type` indicating the target type:
+JATS export is deferred to Phase 3. The expected mapping is:
 
 | acadamark | JATS |
 |-----------|------|
-| `<ref figure-3>` | `<xref ref-type="fig" rid="figure-3">Figure 3</xref>` |
-| `<ref table-2>` | `<xref ref-type="table" rid="table-2">Table 2</xref>` |
-| `<ref eq-1>` | `<xref ref-type="disp-formula" rid="eq-1">(1)</xref>` |
-| `<ref methods-section>` | `<xref ref-type="sec" rid="methods-section">Section 2</xref>` |
-| `<ref note-1>` | `<xref ref-type="fn" rid="note-1">1</xref>` |
+| `<ref #fig:scatter>` | `<xref ref-type="fig" rid="fig:scatter">figure 1</xref>` |
+| `<ref #tab:results>` | `<xref ref-type="table" rid="tab:results">table 1</xref>` |
+| `<ref #eqn:newton>` | `<xref ref-type="disp-formula" rid="eqn:newton">equation 1</xref>` |
+| `<ref #sec:methods>` | `<xref ref-type="sec" rid="sec:methods">section 1</xref>` |
+| `<ref #note:galton>` | `<xref ref-type="fn" rid="note:galton">note 1</xref>` |
 
-The `ref-type` is determined at export time based on the target element's type.
+The `ref-type` is derived from the id prefix via a prefix-to-JATS-ref-type map (defined at export time, not in the interpreter).
 
 ## Render-mode lowering
 
-In render mode, `<ref>` lowers to `<a href="#target">` for clickable cross-references. The link text is the resolver-generated text (or content override). The data attributes preserve the type and format information for stylesheet targeting.
+In render mode, `<ref>` lowers to `<a href="#id" class="ref">text</a>` for clickable cross-references. The link text is the resolver-generated text. Unresolved refs lower to `<a href="#id" class="ref-error">??ref: id??</a>`.
 
 ## Authoring patterns
+
+**Reference to an equation.**
+
+```
+As shown in <ref #eqn:newton>, force equals mass times acceleration.
+```
+
+Use `<config ref-prefix-eqn="Eq.">` at the document top to render "Eq. 1" instead of "equation 1".
 
 **Reference to a figure.**
 
 ```
-The data are summarized in <ref figure-3>.
+The data are summarized in <ref #fig:scatter>.
 ```
 
-**Reference to a section.**
+**Reference to a note.**
+
+Notes must be authored with a colon-id to be referenceable:
 
 ```
-The methodology is detailed in <ref methods-section>.
+<note #note:galton placement=foot | ...>
+See <ref #note:galton> for background.
 ```
 
-**Reference with full format.**
+**Customizing the prefix display word.**
 
 ```
-We discuss this in <ref discussion-section format=full>.
+<config ref-prefix-eqn="Eq.">
+See <ref #eqn:newton> for the definition.   →  "Eq. 1"
 ```
-
-The full format includes the section title in the link text.
 
 **Multiple references.**
 
 ```
-Figures <ref figure-1>, <ref figure-2>, and <ref figure-3> show the trends.
+Figures <ref #fig:scatter>, <ref #fig:histogram>, and <ref #fig:residuals> show the trends.
 ```
 
 Each reference resolves independently. The author handles the joining text.

@@ -86,12 +86,26 @@ export function figureHandler(state, node, vocab) {
 
   // Figcaption from pipe content. Present for both image figures and non-image
   // figures (the pipe content is always the caption in slice 1).
+  // For numbered figures, prepend "Figure N." label before the caption text.
   if (captionHastNodes.length > 0) {
+    const finalCaption =
+      node.computedNumber != null
+        ? [
+            {
+              type: 'element',
+              tagName: 'span',
+              properties: { className: ['figure-label'] },
+              children: [{ type: 'text', value: `Figure ${node.computedNumber}.` }],
+            },
+            { type: 'text', value: ' ' },
+            ...captionHastNodes,
+          ]
+        : captionHastNodes;
     children.push({
       type: 'element',
       tagName: 'figcaption',
       properties: {},
-      children: captionHastNodes,
+      children: finalCaption,
     });
   }
 

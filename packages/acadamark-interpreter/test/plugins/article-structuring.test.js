@@ -11,7 +11,7 @@ function metaTag(type, children = []) {
 }
 
 export function run() {
-  // --- no meta, no sections → implicit article with empty front ---
+  // --- no meta, no sections → implicit article with only body (empty regions suppressed) ---
   {
     const p = para('Some text.');
     const tree = { type: 'root', children: [p] };
@@ -20,12 +20,12 @@ export function run() {
     assert.equal(tree.children.length, 1);
     const article = tree.children[0];
     assert.equal(article.tagname, 'article', 'root should be article');
-    const [front, body, back] = article.content;
-    assert.equal(front.tagname, 'article-front');
-    assert.equal(front.content.length, 0, 'no meta → empty front');
+    // No meta → article-front is empty and suppressed.
+    // No back-matter → article-back is empty and suppressed.
+    assert.equal(article.content.length, 1, 'only body region emitted');
+    const [body] = article.content;
     assert.equal(body.tagname, 'article-body');
     assert.equal(body.content[0], p);
-    assert.equal(back.tagname, 'article-back');
     console.log('PASS: article-structuring wraps doc with no meta');
   }
 
@@ -84,6 +84,26 @@ export function run() {
     console.log('PASS: article-structuring routes back-matter correctly');
   }
 
+  // --- <data> goes to root-level sibling, not article-back ---
+  {
+    const meta = metaTag('article');
+    const s = makeTag('section', [para('Body')]);
+    const data = makeTag('data', [makeTag('library')]);
+    const tree = { type: 'root', children: [meta, s, data] };
+    acadamarkArticleStructuring()(tree);
+
+    // tree.children = [article, data]
+    assert.equal(tree.children.length, 2, '<data> is a root sibling: two root children');
+    const article = tree.children[0];
+    const dataSibling = tree.children[1];
+    assert.equal(article.tagname, 'article');
+    assert.equal(dataSibling, data, '<data> preserved as root sibling');
+    // data is NOT inside article-back
+    const back = article.content.find(n => n.tagname === 'article-back');
+    assert.equal(back, undefined, 'no article-back (data not routed there)');
+    console.log('PASS: article-structuring extracts <data> as root sibling');
+  }
+
   // --- book type is skipped ---
   {
     const meta = metaTag('book');
@@ -104,7 +124,9 @@ export function run() {
 
     const article = tree.children[0];
     assert.equal(article.tagname, 'article');
-    const body = article.content[1];
+    // No meta → article-front suppressed. Body is the only/first region.
+    const body = article.content[0];
+    assert.equal(body.tagname, 'article-body');
     assert.equal(body.content[0], s);
     assert.equal(body.content[1], p2);
     console.log('PASS: article-structuring with no meta → default article treatment');

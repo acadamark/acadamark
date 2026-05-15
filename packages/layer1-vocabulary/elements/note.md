@@ -13,71 +13,57 @@ acadamark_attributes:
   classes:
     maps_to: class
   kwargs:
+    placement:
+      maps_to: data-note-placement
+      values: [end, foot, side]
+      default: end
+      notes: |
+        Determines where the note content is collected. "end" collects at
+        article-back; "foot" collects at article-back (distinguished from "end"
+        by CSS class on the note-list); "side" renders the content
+        inline-adjacent to the marker. Document-wide default is "end".
+    position:
+      maps_to: data-note-position
+      values: [foot, end, side, chapter-end, inline]
+      notes: |
+        Legacy alias for "placement". Retained for backwards compatibility.
+        "placement" is preferred for new documents.
     type:
       maps_to: data-note-type
       values: [substantive, technical, editorial, translator, other]
       default: substantive
       notes: |
         Optional classification. Most notes are substantive (authorial commentary).
-        Other types appear in specific contexts (translator notes in translated works,
-        editorial notes in scholarly editions).
-    number:
-      maps_to: data-note-number
-      notes: |
-        Override for the auto-assigned note number. Rarely used; default is
-        sequential numbering based on document order.
-    position:
-      maps_to: data-note-position
-      values: [foot, end, side, chapter-end, inline]
-      notes: |
-        Override the document-level note-position for this specific note.
-        Inline keeps the note in-place rather than collecting it elsewhere.
 content:
   type: prose
   becomes: children
 content_handler: default
+interpreter_strategy: schema
 jats_counterpart:
   element: fn
   notes: |
     JATS uses <fn> for substantive footnotes regardless of position.
     The placement (foot of page, end of document, end of chapter) is
-    a rendering decision, not a structural one. Acadamark follows this:
-    <note> is the structural element; placement is determined by the
-    document-level note-position setting and the placement plugin.
+    a rendering decision, not a structural one.
 shorthand_examples:
   - source: 'Some text<note | A substantive note about the text.>.'
     layer1_html: 'Some text<note id="note-1">A substantive note about the text.</note>.'
-    notes: |
-      Notes are inline in the source, placed at the location where they
-      logically belong to the surrounding prose. The id is auto-generated
-      from the note's position in the document.
-  - source: |
-      The argument has empirical support<note |
-      Multiple studies confirm this — see Smith 2019, Jones 2020, and Chen 2021
-      for representative analyses.>.
-    layer1_html: |
-      <p>The argument has empirical support<note id="note-1">Multiple studies confirm this — see Smith 2019, Jones 2020, and Chen 2021 for representative analyses.</note>.</p>
-    notes: |
-      Multi-line note content. The note's pipe content is parsed as prose
-      with normal markdown idioms.
-  - source: 'A controversial claim<note position=inline | Note kept in place rather than collected.>.'
-    layer1_html: 'A controversial claim<note id="note-1" data-note-position="inline">Note kept in place rather than collected.</note>.'
-    notes: |
-      The position kwarg overrides document-level placement for this note.
-interpreter_strategy: schema
+  - source: 'A claim<note placement=foot | A footnote.>.'
+    layer1_html: '<p>A claim<note id="note-1" data-note-placement="foot">A footnote.</note>.</p>'
+  - source: 'A definition<note placement=side | Inline-adjacent note.>.'
+    layer1_html: '<p>A definition<note id="note-1" data-note-placement="side">Inline-adjacent note.</note>.</p>'
 related_plugins:
-  - name: acadamarkNoteNumbering
-    runs_after: acadamarkTagInterpret
-    purpose: 'Assigns sequential note numbers and generates reference markers. See notes/plugin-pipeline.md for the full pipeline.'
-  - name: acadamarkNotePlacement
-    runs_after: acadamarkNoteNumbering
-    purpose: 'Moves notes to their rendered position per the document-level note-position setting. See notes/plugin-pipeline.md for the full pipeline.'
-
+  - name: acadamarkNotes
+    runs_after: acadamarkSectionNesting
+    purpose: |
+      Assigns sequential numbers, replaces <note> nodes with markers,
+      collects content into <note-list> at the appropriate location.
 ---
 
 # `<note>`
 
 A note is a substantive remark, qualification, or commentary that extends the main argument without belonging in the main flow. Substantive footnotes, endnotes, side notes, marginalia.
+
 
 ## Semantic intent
 

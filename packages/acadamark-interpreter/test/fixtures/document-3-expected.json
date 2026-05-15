@@ -485,6 +485,25 @@
                       "properties": {},
                       "children": [
                         {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
                           "type": "text",
                           "value": "A code listing as a figure with no src.",
                           "position": {
@@ -761,12 +780,6 @@
               ]
             }
           ]
-        },
-        {
-          "type": "element",
-          "tagName": "article-back",
-          "properties": {},
-          "children": []
         }
       ]
     }

@@ -1,0 +1,168 @@
+<config title="Participatory Methods in Autism Research" subtitle="Quantitative Approaches to Community-Centred Study Design" author="A. Balter" date="2025">
+</config>
+
+<data>
+<library src="references.bib">
+</library>
+</data>
+
+## Introduction
+
+The past decade has seen a significant reorientation in autism research toward participatory methods that centre the 
+experiences and priorities of autistic people themselves. <cite Pellicano2014> found a striking mismatch between the 
+research agenda set by non-autistic investigators and the topics judged most pressing by autistic adults and their 
+families, with quality-of-life outcomes receiving far less attention than biomedical aetiology.
+
+This shift toward participatory design has implications not only for research priorities but for the quantitative 
+tools used to evaluate outcomes. Measures developed without autistic input may fail to capture constructs that matter 
+to autistic participants.<note | Participatory action research (PAR) differs from token consultation: in PAR, community 
+members are co-investigators with decision-making authority at every stage of the study, not merely advisory reviewers 
+of a pre-determined protocol.> Standard effect-size metrics assume outcome measures are valid, and validity depends 
+on face-relevance to the population studied.
+
+The purpose of this note is to describe a simple framework for weighting research priorities, illustrate it with 
+community data from the literature, and show how commonly used indices behave under different weighting schemes.
+
+## Background
+
+### Prevalence and Sampling
+
+Accurate prevalence estimates are a prerequisite for power calculations in community-based studies. The systematic 
+review by <cite Loomes2017> revised the male-to-female ratio in autism diagnoses substantially downward from the 
+long-cited 4:1 figure, with implications for studies that stratify by gender. If the true ratio is closer to 3:1 or 
+even 2:1 among certain age groups, studies designed around 4:1 assumptions will be systematically underpowered for 
+female participants.<note | The Loomes et al. meta-analysis covered 54 studies with a combined sample of over 13 
+million individuals. Funnel-plot asymmetry suggested some publication bias toward higher ratios, so even the revised 
+estimate may be conservative.>
+
+Stigma and underdiagnosis interact in ways that complicate sampling. <cite GillespieLynch2017> demonstrated that 
+brief educational interventions can shift attitudes among college students, suggesting that sample frames drawn from 
+university populations may be especially sensitive to the timing of data collection relative to awareness-raising 
+activities on campus.
+
+### Burnout as an Outcome Variable
+
+Autistic burnout — characterised by pervasive exhaustion, cognitive difficulties, and reduced tolerance for sensory 
+and social demands — has emerged as a high-priority outcome in community-identified research agendas. 
+<cite Mantzalas2022> proposed a conceptual model with risk and protective factors organised around three domains: 
+individual, social-environmental, and systemic. The model is summarised schematically in <ref #tab:burnout>.
+
+<table #tab:burnout csv caption="Risk and protective factors for autistic burnout, adapted from <cite Mantzalas2022>" |
+Domain,Risk factors,Protective factors
+Individual,Masking / camouflaging; sensory sensitivity,Self-acceptance; identity clarity
+Social-environmental,Unsupportive relationships; workplace demands,Affirming community; flexible accommodations
+Systemic,Inaccessible services; diagnostic delays,Timely support access; anti-stigma policies
+>
+
+The three-domain structure maps naturally onto a weighted priority index, developed in the next section.
+
+## A Weighted Priority Index
+
+Let <$ R $> denote a set of research topics, each evaluated on two dimensions: *community importance* <$ c_i $> 
+(rated by autistic participants on a 1--5 scale) and *evidence gap* <$ g_i $> (the inverse of the number of recent 
+high-quality studies, normalised to [0,1]). A combined priority score for topic <$ i $> is:
+
+<$$ #eqn:priority | P_i = \alpha \, c_i + (1 - \alpha) \, g_i $$>
+
+where <$ \alpha \in [0, 1] $> controls the relative weight given to community preference versus evidence gaps. 
+Setting <$ \alpha = 1 $> recovers pure community voting; <$ \alpha = 0 $> recovers a pure evidence-gap ranking.
+
+The normalised priority weight across all topics is:
+
+<$$ w_i = \frac{P_i}{\sum_j P_j} $$>
+
+These weights can then be used to allocate a fixed research budget across topics, or to construct a composite 
+outcome index that reflects community priorities.
+
+<blockquote>A priority index is only as good as the community consultation that generates the importance ratings. Convenience 
+samples of autistic adults with high verbal ability and stable living situations will not reflect the priorities of 
+autistic people with high support needs, those in residential care, or children and adolescents.</blockquote>
+
+### Sensitivity to the Mixing Parameter
+
+The sensitivity of topic rankings to <$ \alpha $> can be assessed by computing the Spearman rank correlation between 
+the ranking at <$ \alpha = 0 $> and at <$ \alpha = 1 $>. A high correlation indicates that community preferences and 
+evidence gaps are aligned; a low correlation reveals genuine tension between the two criteria.
+
+In practice, one can sweep <$ \alpha $> in steps of 0.1 and report the <$ \alpha $> value at which the top-ranked topic 
+changes. A useful summary statistic is the *stability threshold* <$ \alpha^* $>:
+
+<$$ \alpha^* = \min \{ \alpha : \operatorname{rank}_\alpha(i^*) = 1 \} $$>
+
+where <$ i^* $> is the community-preferred topic at <$ \alpha = 1 $>.
+
+### Implementation in Python
+
+The index can be computed straightforwardly with NumPy:
+
+<``` python #code:index | 
+import numpy as np
+
+def priority_weights(c, g, alpha):
+    """
+    Compute normalised priority weights.
+
+    Parameters
+    ----------
+    c     : array-like, community importance ratings (1–5 scale)
+    g     : array-like, evidence gap scores (0–1)
+    alpha : float, mixing parameter in [0, 1]
+
+    Returns
+    -------
+    w : np.ndarray, normalised weights summing to 1
+    """
+    c = np.asarray(c, dtype=float)
+    g = np.asarray(g, dtype=float)
+    c_norm = (c - 1) / 4          # scale to [0, 1]
+    P = alpha * c_norm + (1 - alpha) * g
+    return P / P.sum() ```>
+
+Note the normalisation of <$ c $> to [0, 1] before mixing; without this step, the two terms are on incommensurable 
+scales and <$ \alpha $> does not interpolate smoothly between the two criteria.
+
+## Illustrative Application
+
+<cite CaldwellHarris2023> emphasises that insider accounts systematically reveal cognitive and social patterns that 
+behavioural observation misses. This insight suggests that for studies measuring cognitive outcomes, community importance 
+ratings (<$ c_i $>) should carry more weight than evidence gaps, implying <$ \alpha > 0.5 $>. For studies targeting 
+underserved populations, evidence gaps (<$ g_i $>) may deserve more weight, implying <$ \alpha < 0.5 $>.
+
+As an illustration, consider the five topic areas identified by <cite Pellicano2014, Mantzalas2022>: quality of life, 
+burnout, diagnosis, education, and employment. Hypothetical importance and evidence-gap scores are given in 
+<ref #tab:scores>.
+
+<table #tab:scores csv caption="Hypothetical priority scores for five research topic areas" | 
+Topic,Community importance (c),Evidence gap (g),Priority at α=0.7,Priority at α=0.3
+Quality of life,5,0.8,0.86,0.59
+Burnout,4,0.9,0.75,0.57
+Diagnosis,3,0.5,0.63,0.40
+Education,3,0.6,0.63,0.43
+Employment,4,0.7,0.78,0.52>
+
+At <$ \alpha = 0.7 $>, quality of life ranks first and diagnosis ranks last; at <$ \alpha = 0.3 $>, burnout ranks 
+first (due to its large evidence gap) and diagnosis still ranks last. The priority ordering is thus reasonably 
+stable across weighting schemes for this hypothetical dataset, consistent with the community's expressed preferences 
+across multiple surveys.
+
+## Discussion
+
+The framework described here is intentionally minimal — two input dimensions and one mixing parameter. Real applications 
+would require multi-stakeholder consultation, reliability testing of the importance ratings, and careful 
+operationalisation of the evidence-gap score. The latter in particular raises difficult methodological questions: which 
+databases, which date windows, and how to handle grey literature and community-produced research.
+
+The quantitative framing should not obscure the normative commitments it encodes. Choosing <$ \alpha $> is itself a value 
+judgment about how much weight to give community voice relative to investigator-defined notions of evidentiary need. 
+Transparency about this choice — and community participation in making it — is as important as the arithmetic.
+
+The code block above provides a starting point; it is deliberately simple to make the logic inspectable. Production 
+implementations would add validation, uncertainty quantification, and sensitivity reporting.
+
+<figure #fig:priority src="assets/priority-schematic.svg" | Schematic of the priority-weighting framework. Topics are 
+plotted in importance–gap space; the diagonal line shows equal weighting (α = 0.5). Topics above the line are favoured 
+by community preference; topics below are favoured by evidence-gap criteria.>
+
+<ref #fig:priority> illustrates how the framework places topics in a two-dimensional space and how the mixing parameter 
+determines which topics rise to the top of the agenda.
+

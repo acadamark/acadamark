@@ -71,7 +71,19 @@ export const DSL_REGISTRY = new Map([
   ['aside',      'default'],
   ['blockquote', 'default'],
   ['note',       'default'],
-  ['table',      'default'],
+  // 'table' uses a dedicated non-default handler so the recursive-content
+  // plugin does not re-parse data strings (CSV, JSON, etc.) as markdown.
+  ['table',      'table'],
+
+  // ── List elements ────────────────────────────────────────────────────────
+  // <ul>, <ol>, and <li> are in-scope vocabulary elements. Adding them here
+  // makes long-form syntax (<ul>\n<li | item>\n</ul>) parse correctly, so
+  // authored long-form lists behave the same as authored long-form sections
+  // and asides. The markdown idiom `- item` continues to work as the
+  // idiomatic shorthand via idioms.md's delegation principle.
+  ['ul',         'default'],
+  ['ol',         'default'],
+  ['li',         'default'],
 
   // ── Metadata container ───────────────────────────────────────────────────
   // <meta> is the document metadata container. It always has children
@@ -80,6 +92,19 @@ export const DSL_REGISTRY = new Map([
   // parser would treat <meta> as a void short-form tag and its children
   // would become top-level siblings rather than nested content.
   ['meta',       'default'],
+
+  // ── Citation support (slice 6) ───────────────────────────────────────────
+  // <data> is a structural container whose content is recursively parsed
+  // as markdown/acadamark (default handler). Used to wrap citation data
+  // blocks that may contain nested long-form tags like <library>.
+  //
+  // <library> holds raw BibTeX/CSL-JSON source (opaque handler). Content is
+  // NOT recursively parsed as markdown — citation-js will parse it directly
+  // in the citation-resolution plugin. Because the handler name ('library')
+  // is not 'default', isOpaqueContent is automatically set to true in
+  // from-markdown.js (line: node.isOpaqueContent = node.contentHandler !== 'default').
+  ['data',       'default'],
+  ['library',    'library'],
 ])
 
 /**

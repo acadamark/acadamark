@@ -23,7 +23,7 @@ cover came from MODIS satellite imagery.
 <sub-section | Statistical approach>
 We fit a hierarchical Bayesian model with park-level random effects.
 
-<figure src=elephants.jpg | An adult African elephant in Tanzania, 2018.>
+<figure src="assets/elephant.jpg" | An adult African elephant in Tanzania, 2018.>
 
 <section | Results>
 We find a robust positive correlation between elephant density and woody-cover

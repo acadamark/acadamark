@@ -40,6 +40,16 @@ acadamark_attributes:
       notes: |
         Optional classification of the figure's content. Maps to JATS
         fig content-type or to wrapping element choices.
+  booleans:
+    numbered:
+      handled_by: handler
+      default: true
+      notes: |
+        Whether this figure participates in the document-wide figure
+        sequence. Use +numbered (default) to number, -numbered to suppress.
+        Can also be written as numbered=true / numbered=false.
+        The config key number-figures=false suppresses all figures unless
+        overridden per-element with +numbered.
 content:
   type: prose
   becomes: figcaption

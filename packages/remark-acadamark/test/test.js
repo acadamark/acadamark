@@ -915,3 +915,189 @@ console.log('\n86/86 tests passed.')
 
 console.log('\nAll multi-line integration tests passed.')
 console.log('\n97/97 tests passed.')
+
+// ─── Parser Maturity: comma-separated positionals ─────────────────────────
+
+console.log('\n--- Parser Maturity: comma-separated positionals ---')
+
+// PM-1: Comma-only separator (<cite a,b>)
+{
+  const node = parseTag('<cite Smith2020,Jones2019>')
+  assert.equal(node.tagname, 'cite')
+  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-1: comma-only separator produces two positionals')
+}
+
+// PM-2: Comma-space separator (<cite a, b>)
+{
+  const node = parseTag('<cite Smith2020, Jones2019>')
+  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-2: comma-space separator produces two positionals')
+}
+
+// PM-3: Space-comma-space separator (<cite a , b>)
+{
+  const node = parseTag('<cite Smith2020 , Jones2019>')
+  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-3: space-comma-space separator produces two positionals')
+}
+
+// PM-4: Three positionals with mixed separators (<tag a,b c>)
+{
+  const node = parseTag('<tag a,b c>')
+  assert.deepEqual(node.positional, ['a', 'b', 'c'])
+  console.log('PASS PM-4: three positionals with mixed comma and space separators')
+}
+
+// PM-5: Comma separator between positionals and kwargs is independent
+// The comma fix only affects the separator between attribute tokens;
+// keyword syntax (k=v) still requires = for the assignment.
+{
+  const node = parseTag('<figure #fig1, caption="The caption">')
+  assert.equal(node.id, 'fig1')
+  assert.equal(node.kwargs.caption, 'The caption')
+  console.log('PASS PM-5: comma between id attribute and kwarg parses correctly')
+}
+
+// ─── Parser Maturity: DSL_REGISTRY entries (data + library) ──────────────
+
+console.log('\n--- Parser Maturity: DSL_REGISTRY entries ---')
+
+// PM-6: <data> long-form — default content handler, not opaque
+{
+  const node = parseLongFormTag('<data>\nsome content here\n</data>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'data')
+  assert.equal(node.contentHandler, 'default')
+  assert.equal(node.isOpaqueContent, false)
+  assert.equal(node.content, '\nsome content here\n')
+  console.log('PASS PM-6: <data> long-form has contentHandler=default, isOpaqueContent=false')
+}
+
+// PM-7: <library> long-form — opaque content handler, content verbatim
+{
+  const node = parseLongFormTag('<library>\n@article{Smith2020, title={A Paper}}\n</library>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'long')
+  assert.equal(node.tagname, 'library')
+  assert.equal(node.contentHandler, 'library')
+  assert.equal(node.isOpaqueContent, true)
+  assert.equal(node.content, '\n@article{Smith2020, title={A Paper}}\n')
+  console.log('PASS PM-7: <library> long-form has contentHandler=library, isOpaqueContent=true, content verbatim')
+}
+
+// PM-8: <library> pipe form (short-form, opaque)
+{
+  const node = parseTag('<library | @article{Smith2020}>')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.tagname, 'library')
+  assert.equal(node.contentHandler, 'library')
+  assert.equal(node.isOpaqueContent, true)
+  assert.ok(node.content.includes('@article{Smith2020}'))
+  console.log('PASS PM-8: <library | bibtex> pipe form has contentHandler=library, isOpaqueContent=true')
+}
+
+// PM-9: <data> with nested long-form <library> — data content is verbatim string
+// (recursive parsing is interpreter-level; at parse time, content is the raw string)
+{
+  const node = parseLongFormTag('<data>\n<library>\n@article{Smith2020}\n</library>\n</data>')
+  assert.equal(node.tagname, 'data')
+  assert.equal(node.form, 'long')
+  assert.equal(node.contentHandler, 'default')
+  assert.ok(node.content.includes('<library>'), 'nested library tag preserved in data content string')
+  assert.ok(node.content.includes('@article{Smith2020}'))
+  console.log('PASS PM-9: <data> content string preserves nested <library> for interpreter re-parsing')
+}
+
+// ─── Parser Maturity: self-closing form ──────────────────────────────────
+
+console.log('\n--- Parser Maturity: self-closing form ---')
+
+// PM-10: Basic <tag /> with no attributes
+{
+  const node = parseTag('<tag />')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.tagname, 'tag')
+  assert.equal(node.selfClosing, true)
+  assert.deepEqual(node.positional, [])
+  assert.equal(node.content, null)
+  console.log('PASS PM-10: <tag /> is selfClosing=true, no positional slash')
+}
+
+// PM-11: Self-closing with kwarg
+{
+  const node = parseTag('<library src="refs.bib" />')
+  assert.equal(node.tagname, 'library')
+  assert.equal(node.selfClosing, true)
+  assert.equal(node.kwargs.src, 'refs.bib')
+  assert.deepEqual(node.positional, [])
+  console.log('PASS PM-11: <library src="refs.bib" /> is selfClosing=true with kwarg')
+}
+
+// PM-12: Self-closing with id and class
+{
+  const node = parseTag('<br #sep .divider />')
+  assert.equal(node.tagname, 'br')
+  assert.equal(node.selfClosing, true)
+  assert.equal(node.id, 'sep')
+  assert.deepEqual(node.classes, ['divider'])
+  console.log('PASS PM-12: <br #sep .divider /> is selfClosing=true with id and class')
+}
+
+// PM-13: Self-closing with positional
+{
+  const node = parseTag('<cite Smith2020 />')
+  assert.equal(node.tagname, 'cite')
+  assert.equal(node.selfClosing, true)
+  assert.deepEqual(node.positional, ['Smith2020'])
+  console.log('PASS PM-13: <cite Smith2020 /> is selfClosing=true with positional')
+}
+
+// PM-14: Self-closing combined with comma-separated positionals
+{
+  const node = parseTag('<cite Smith2020, Jones2019 />')
+  assert.equal(node.tagname, 'cite')
+  assert.equal(node.selfClosing, true)
+  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-14: <cite Smith2020, Jones2019 /> combines comma positionals and self-closing')
+}
+
+// PM-15: Non-self-closing tag has selfClosing: false
+{
+  const node = parseTag('<cite Smith2020>')
+  assert.equal(node.selfClosing, false)
+  console.log('PASS PM-15: non-self-closing tag has selfClosing=false')
+}
+
+// PM-16: Pipe-form tag has selfClosing: false
+{
+  const node = parseTag('<aside | some prose>')
+  assert.equal(node.selfClosing, false)
+  console.log('PASS PM-16: pipe-form tag has selfClosing=false')
+}
+
+// PM-17: Slash positional /path is still valid (lookahead is precise)
+// The self-closing lookahead !("/" [ \t]* ">") only fires when "/" is
+// immediately followed by optional whitespace and ">". "/path" does not
+// trigger it, so <tag /path> still produces positional=['/path'].
+{
+  const node = parseTag('<tag /path>')
+  assert.equal(node.tagname, 'tag')
+  assert.equal(node.selfClosing, false)
+  assert.deepEqual(node.positional, ['/path'])
+  console.log('PASS PM-17: /path positional (lookahead precise: "/path" ≠ self-closing position)')
+}
+
+// PM-18: Self-closing with src kwarg — no trailing slash in kwarg value
+{
+  const node = parseTag('<img src="photo.jpg" />')
+  assert.equal(node.tagname, 'img')
+  assert.equal(node.selfClosing, true)
+  assert.equal(node.kwargs.src, 'photo.jpg')
+  assert.deepEqual(node.positional, [])
+  console.log('PASS PM-18: <img src="photo.jpg" /> self-closing with quoted kwarg')
+}
+
+console.log('\nAll parser maturity tests passed.')
+console.log('\n115/115 tests passed.')

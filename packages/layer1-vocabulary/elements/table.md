@@ -4,40 +4,57 @@ html_output:
   element: table
   is_html_native: true
   default_attributes: {}
+interpreter_strategy: handler
+handler_module: ./handlers/table.js
 acadamark_attributes:
   id:
     maps_to: id
   classes:
     maps_to: class
+  positional:
+    - name: format
+      values: [csv, tsv, json, yaml, md]
+      notes: |
+        Format of inline pipe content. When absent, content is treated as
+        raw HTML pass-through (escape-hatch form). Required for all
+        data-driven forms.
+  booleans:
+    headers:
+      default: true
+      notes: |
+        Whether the first row of the data is a header row. Default true.
+        Use -headers to suppress thead generation; rows render as tbody only.
+    numbered:
+      default: true
+      notes: |
+        Whether this table is counted in the numbered table sequence and
+        receives a "Table N." label prefix in its caption.
   kwargs:
+    caption:
+      notes: |
+        Short-form caption as a kwarg string. Renders as <caption> inside
+        the table element. When numbered, a "Table N." label span is
+        prepended. Long-form caption (<caption | ...> nested tag) is deferred.
+    src:
+      notes: |
+        Path to an external data file. Relative to the document's assets
+        directory (configurable via the assetsDir interpreter option).
+        The content handler reads the file at interpretation time.
     type:
       maps_to: data-table-type
       values: [data, layout, comparison, schedule, results, other]
       notes: |
-        Optional classification of the table's role. Affects styling
-        and may affect JATS export.
+        Optional semantic classification. Affects styling and JATS export.
 content:
-  type: structured
-  shape:
-    - element: caption
-      required: false
-      contains: [inline]
-    - element: thead
-      required: false
-      contains: [tr]
-    - element: tbody
-      required: false
-      contains: [tr]
-    - element: tfoot
-      required: false
-      contains: [tr]
-    - element: tr
-      required: false
-      multiple: true
-      notes: |
-        When tbody/thead/tfoot wrappers are absent, tr elements appear
-        directly as children of table.
-content_handler: default
+  type: opaque-or-structured
+  notes: |
+    When a format positional is present (csv, tsv, json, yaml, md), pipe
+    content is an opaque data string parsed by the corresponding parser.
+    When no format is present, content is treated as raw HTML (escape-hatch).
+    The long-form structural path (<table>...<tr>...</table>) is handled by
+    the same handler with recursive cell content; this path is partially
+    implemented and may produce basic results.
+content_handler: table
 jats_counterpart:
   element: table-wrap
   attributes:
@@ -101,7 +118,6 @@ shorthand_examples:
     notes: |
       Explicit table with cells, used when fine control over structure
       or attributes is needed.
-interpreter_strategy: schema
 ---
 
 # `<table>`

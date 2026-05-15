@@ -4,7 +4,10 @@
   "description": "Remark plugin for the acadamark shorthand syntax. Hybrid architecture: micromark finds construct boundaries, Peggy parses grammar semantics.",
   "type": "module",
   "main": "src/index.js",
-  "exports": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./sigil-mapping": "./src/sigil-mapping.js"
+  },
   "scripts": {
     "build:grammar": "node build/compile-grammar.js",
     "pretest": "node build/compile-grammar.js",

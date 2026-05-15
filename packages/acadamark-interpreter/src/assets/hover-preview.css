@@ -1,0 +1,60 @@
+/* Sidenote fallback: collected-to-end items authored as placement=side.
+ * Future margin-positioning themes can detect this class and reposition.
+ */
+.sidenote-fallback {
+  font-style: italic;
+}
+
+/* Note list: suppress default <ol> numbering since <sup>N</sup> provides it. */
+note-list ol {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+note-list li {
+  margin-bottom: 0.5em;
+}
+
+/* Figure tooltips: constrain image and caption within the tooltip box. */
+.tippy-box figure {
+  margin: 0;
+}
+
+.tippy-box figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tippy-box figure figcaption {
+  font-size: 0.9em;
+  margin-top: 0.5em;
+  color: #555;
+}
+
+/* Table tooltips: compact styling with border grid; overflow-x for wide tables. */
+.tippy-content {
+  overflow-x: auto;
+}
+
+.tippy-box table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.tippy-box table th,
+.tippy-box table td {
+  border: 1px solid #ccc;
+  padding: 0.3em 0.6em;
+  text-align: left;
+}
+
+.tippy-box table caption {
+  font-size: 0.9em;
+  margin-bottom: 0.4em;
+  text-align: left;
+  color: #444;
+}

@@ -7,8 +7,22 @@ import { run as runLoadVocabulary } from './schema/load-vocabulary.test.js';
 import { run as runConfigDiscovery } from './plugins/config-discovery.test.js';
 import { run as runArticleStructuring } from './plugins/article-structuring.test.js';
 import { run as runSectionNesting } from './plugins/section-nesting.test.js';
+import { run as runNumbering } from './plugins/numbering.test.js';
+import { run as runRefResolution } from './plugins/ref-resolution.test.js';
 import { run as runFigureHandler } from './handlers/figure.test.js';
+import { run as runMathHandler } from './handlers/math.test.js';
+import { run as runRefHandler } from './handlers/ref.test.js';
+import { run as runCodeBlockHandler } from './handlers/code-block.test.js';
+import { run as runInlineCodeHandler } from './handlers/inline-code.test.js';
+import { run as runTableHandler } from './handlers/table.test.js';
+import { run as runKatexCss } from './katex-css.test.js';
 import { run as runInterpretPlugin } from './interpret-plugin.test.js';
+import { run as runRegistry } from './lib/registry.test.js';
+import { run as runNotes } from './plugins/notes.test.js';
+import { run as runLibraryLoad } from './plugins/library-load.test.js';
+import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
+import { run as runBibliography } from './plugins/bibliography.test.js';
+import { run as runCiteHandler } from './handlers/cite.test.js';
 import { run as runIntegration } from './integration.test.js';
 
 const suites = [
@@ -17,8 +31,22 @@ const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
   ['plugins/article-structuring',  runArticleStructuring],
   ['plugins/section-nesting',      runSectionNesting],
+  ['plugins/numbering',            runNumbering],
+  ['plugins/ref-resolution',       runRefResolution],
   ['handlers/figure',              runFigureHandler],
+  ['handlers/math',                runMathHandler],
+  ['handlers/ref',                 runRefHandler],
+  ['handlers/code-block',          runCodeBlockHandler],
+  ['handlers/inline-code',         runInlineCodeHandler],
+  ['handlers/table',               runTableHandler],
+  ['katex-css',                    runKatexCss],
   ['interpret-plugin',             runInterpretPlugin],
+  ['lib/registry',                 runRegistry],
+  ['plugins/notes',                runNotes],
+  ['plugins/library-load',         runLibraryLoad],
+  ['plugins/cite-resolution',      runCiteResolution],
+  ['plugins/bibliography',         runBibliography],
+  ['handlers/cite',                runCiteHandler],
   ['integration',                  runIntegration],
 ];
 

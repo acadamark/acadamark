@@ -1,0 +1,78 @@
+<meta type=article>
+  <title | Cross-reference test fixture>
+  <author | Ariel Balter>
+</meta>
+
+<config ref-prefix-eqn="Eq.">
+
+<section | Equations with various numbering states>
+
+A numbered labeled equation:
+
+<$$ #eqn:newton | F = ma $$>
+
+A numbered unlabeled equation:
+
+<$$ | E = mc^2 $$>
+
+An unnumbered labeled equation (uses -numbered boolean kwarg):
+
+<$$ #eqn:energy -numbered | H = T + V $$>
+
+An unnumbered labeled equation (uses numbered=false kwarg form):
+
+<$$ #eqn:alt-form numbered=false | x + y = z $$>
+
+An unnumbered unlabeled equation:
+
+<$$ -numbered | a = b $$>
+
+
+<section | References to equations>
+
+Reference to numbered labeled with config prefix override (renders "Eq. 1"): see <ref #eqn:newton>.
+
+Reference to numbered labeled without override would use default prefix. The second equation has no label and cannot be referenced. The third is unnumbered labeled (renders label-tail "energy"): see <ref #eqn:energy>.
+
+Reference to a second unnumbered labeled (renders "alt-form"): see <ref #eqn:alt-form>.
+
+Reference to missing label (produces error): <ref #eqn:nonexistent>.
+
+
+<section | Figures>
+
+A figure with a colon-id and caption:
+
+<figure #fig:elephant src="assets/elephant.jpg" | An African elephant photographed in Tanzania.>
+
+A figure without a label (gets auto-number, not referenceable):
+
+<figure src="assets/scatter-regression.svg" | A scatter plot (stand-in for a second numbered figure).>
+
+A figure with -numbered (no visible label, not in numbered sequence):
+
+<figure #fig:lion -numbered src="assets/elephant.jpg" | Another elephant (stand-in for an unnumbered labeled figure).>
+
+Reference to numbered figure (renders "figure 1"): see <ref #fig:elephant>.
+
+
+<section | Notes>
+
+A labeled endnote<note #note:galton placement=foot | Galton coined the term "regression" in 1886 while studying the heights of parents and their adult children.> demonstrating a colon-id note.
+
+An unlabeled note<note | This note has no id and cannot be cross-referenced.> demonstrating auto-id behavior.
+
+Reference to labeled note (renders "note 1"): see <ref #note:galton>.
+
+
+<section | Edge cases>
+
+A numbered equation with an unregistered prefix (id prefix "custom" is not in the prefix dictionary):
+
+<$$ #custom:thing | x = y $$>
+
+Reference to an id with a colon but an unregistered prefix (renders just the number, no word): <ref #custom:thing>.
+
+Reference to an id without a colon — not in the label index (produces error): <ref #not-a-label>.
+
+Reference with no id at all (produces error): <ref>.

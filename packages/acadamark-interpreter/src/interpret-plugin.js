@@ -21,6 +21,35 @@
 import { loadVocabulary } from './schema/load-vocabulary.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';
+import { mathHandler } from './handlers/math.js';
+import { codeBlockHandler } from './handlers/code-block.js';
+import { inlineCodeHandler } from './handlers/inline-code.js';
+import { tableHandler } from './handlers/table.js';
+import {
+  noteMarkerHandler,
+  noteListHandler,
+  noteListItemHandler,
+} from './handlers/notes.js';
+import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
+import { citeMarkerHandler, citeErrorHandler, bibliographyHandler } from './handlers/cite.js';
+import { resolveVocabKey } from 'remark-acadamark/sigil-mapping';
+
+// Internal node types created by the notes plugin — they have no vocabulary
+// entries, so they are dispatched here before the vocabulary lookup.
+const INTERNAL_REGISTRY = new Map([
+  // Data-layer nodes: render no visible output in HTML.
+  // <data> and <library> are processed by library-load.js at build time.
+  ['data',             () => null],
+  ['library',          () => null],
+  ['__note-marker',    noteMarkerHandler],
+  ['__note-list',      noteListHandler],
+  ['__note-list-item', noteListItemHandler],
+  ['__ref-marker',     refMarkerHandler],
+  ['__ref-error',      refErrorHandler],
+  ['__cite-marker',    citeMarkerHandler],
+  ['__cite-error',     citeErrorHandler],
+  ['__bibliography',   bibliographyHandler],
+]);
 
 // Load vocabulary once at module import time. The Map is shared across all
 // pipeline invocations in the same process; that's safe because loadVocabulary
@@ -31,40 +60,58 @@ const vocabulary = loadVocabulary();
 // actual handler functions. Slice 1 has only one handler-strategy element.
 const HANDLER_REGISTRY = new Map([
   ['./handlers/figure.js', figureHandler],
+  ['./handlers/math.js', mathHandler],
+  ['./handlers/code-block.js', codeBlockHandler],
+  ['./handlers/inline-code.js', inlineCodeHandler],
+  ['./handlers/table.js', tableHandler],
 ]);
 
 /**
- * Custom handler registered with toHast for the 'acadamarkTag' node type.
+ * Factory that produces a custom handler for the 'acadamarkTag' node type.
+ * Returns a function suitable for passing to toHast's `handlers` option.
  *
- * @param {object} state - mdast-util-to-hast state object
- * @param {object} node  - the acadamarkTag mdast node
- * @returns {object|null} hast element
+ * @param {object} [opts] - interpreter options (e.g. { assetsDir })
+ * @returns {(state: object, node: object) => object|null}
  */
-export function acadamarkTagHandler(state, node) {
-  const vocab = vocabulary.get(node.tagname);
+export function createAcadamarkTagHandler(opts = {}) {
+  return function acadamarkTagHandler(state, node) {
+    // Pre-dispatch: internal nodes created by structural plugins (no vocab entry).
+    const internalFn = INTERNAL_REGISTRY.get(node.tagname);
+    if (internalFn) return internalFn(state, node);
 
-  if (!vocab) {
-    warnUnknownTag(node.tagname);
-    return makeUnknownElement(state, node);
-  }
+    // resolveVocabKey translates parser-emitted sigil names ("$", "$$") to their
+    // vocabulary keys ("inline-math", "display-math"). Named tags are unchanged.
+    const vocab = vocabulary.get(resolveVocabKey(node.tagname));
 
-  if (vocab.interpreter_strategy === 'handler') {
-    const handlerFn = HANDLER_REGISTRY.get(vocab.handler_module);
-    if (handlerFn) {
-      try {
-        return handlerFn(state, node, vocab);
-      } catch (err) {
-        warnHandlerError(node.tagname, err);
-        // Fall through to schema dispatch as best-effort recovery.
-      }
-    } else {
-      warnUnknownTag(`handler for ${node.tagname} (module ${vocab.handler_module})`);
-      // Fall through to schema dispatch.
+    if (!vocab) {
+      warnUnknownTag(node.tagname);
+      return makeUnknownElement(state, node);
     }
-  }
 
-  return schemaDispatch(state, node, vocab);
+    if (vocab.interpreter_strategy === 'handler') {
+      const handlerFn = HANDLER_REGISTRY.get(vocab.handler_module);
+      if (handlerFn) {
+        try {
+          return handlerFn(state, node, vocab, opts);
+        } catch (err) {
+          warnHandlerError(node.tagname, err);
+          // Fall through to schema dispatch as best-effort recovery.
+        }
+      } else {
+        warnUnknownTag(`handler for ${node.tagname} (module ${vocab.handler_module})`);
+        // Fall through to schema dispatch.
+      }
+    }
+
+    return schemaDispatch(state, node, vocab);
+  };
 }
+
+/**
+ * Default acadamarkTagHandler for consumers that don't need to pass options.
+ * Equivalent to createAcadamarkTagHandler().
+ */
+export const acadamarkTagHandler = createAcadamarkTagHandler();
 
 // ─── Schema dispatch ─────────────────────────────────────────────────────────
 
@@ -91,7 +138,14 @@ function schemaDispatch(state, node, vocab) {
  * was re-parsed. Multi-paragraph content is kept as-is.
  */
 function convertContent(state, node, vocab) {
+  // Opaque-content nodes (e.g. <library>, <csv>) have string content that is
+  // handled by a dedicated plugin, not by the hast converter. Return empty.
+  if (node.isOpaqueContent) return [];
+
   const content = node.content ?? [];
+  // Guard: content must be an array. String content means the node was not
+  // re-parsed by remarkRecursiveContent (e.g. raw DSL content). Treat as empty.
+  if (!Array.isArray(content)) return [];
   let nodes;
 
   if (
@@ -138,11 +192,17 @@ function buildProperties(node, vocab) {
 // ─── Unknown-tag fallback ─────────────────────────────────────────────────────
 
 function makeUnknownElement(state, node) {
-  const children = (node.content ?? []).flatMap(child => {
-    const h = state.one(child, node);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
+  let children;
+  if (typeof node.content === 'string') {
+    // Opaque content — wrap as a text node. Empty string → no children.
+    children = node.content.length > 0 ? [{ type: 'text', value: node.content }] : [];
+  } else {
+    children = (node.content ?? []).flatMap(child => {
+      const h = state.one(child, node);
+      if (h == null) return [];
+      return Array.isArray(h) ? h : [h];
+    });
+  }
   return {
     type: 'element',
     tagName: 'span',

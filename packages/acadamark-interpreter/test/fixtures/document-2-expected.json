@@ -228,7 +228,7 @@
                     },
                     {
                       "type": "text",
-                      "value": " for decades. Their role in shapingecosystems is ",
+                      "value": " for decades. Their role in shaping\necosystems is ",
                       "position": {
                         "start": {
                           "line": 10,
@@ -314,7 +314,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "Three mechanisms are relevant: seed dispersal, vegetation management, andtrampling-mediated soil aeration.",
+                      "value": "Three mechanisms are relevant: seed dispersal, vegetation management, and\ntrampling-mediated soil aeration.",
                       "position": {
                         "start": {
                           "line": 13,
@@ -442,7 +442,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "The IUCN African Elephant Database provided population counts. Vegetationcover came from MODIS satellite imagery.",
+                          "value": "The IUCN African Elephant Database provided population counts. Vegetation\ncover came from MODIS satellite imagery.",
                           "position": {
                             "start": {
                               "line": 20,
@@ -544,7 +544,7 @@
                           "type": "element",
                           "tagName": "img",
                           "properties": {
-                            "src": "elephants.jpg",
+                            "src": "assets/elephant.jpg",
                             "alt": "An adult African elephant in Tanzania, 2018."
                           },
                           "children": []
@@ -554,6 +554,25 @@
                           "tagName": "figcaption",
                           "properties": {},
                           "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 1."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
                             {
                               "type": "text",
                               "value": "An adult African elephant in Tanzania, 2018.",
@@ -613,17 +632,17 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "We find a robust positive correlation between elephant density and woody-coverturnover, controlling for rainfall and human disturbance.",
+                      "value": "We find a robust positive correlation between elephant density and woody-cover\nturnover, controlling for rainfall and human disturbance.",
                       "position": {
                         "start": {
                           "line": 29,
                           "column": 1,
-                          "offset": 1069
+                          "offset": 1077
                         },
                         "end": {
                           "line": 30,
                           "column": 58,
-                          "offset": 1205
+                          "offset": 1213
                         }
                       }
                     }
@@ -632,12 +651,12 @@
                     "start": {
                       "line": 29,
                       "column": 1,
-                      "offset": 1069
+                      "offset": 1077
                     },
                     "end": {
                       "line": 30,
                       "column": 58,
-                      "offset": 1205
+                      "offset": 1213
                     }
                   }
                 },
@@ -701,17 +720,17 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "The implications for conservation policy are significant. Elephantreintroduction may be a cost-effective climate intervention in degradedsavanna landscapes.",
+                      "value": "The implications for conservation policy are significant. Elephant\nreintroduction may be a cost-effective climate intervention in degraded\nsavanna landscapes.",
                       "position": {
                         "start": {
                           "line": 35,
                           "column": 1,
-                          "offset": 1359
+                          "offset": 1367
                         },
                         "end": {
                           "line": 37,
                           "column": 20,
-                          "offset": 1517
+                          "offset": 1525
                         }
                       }
                     }
@@ -720,12 +739,12 @@
                     "start": {
                       "line": 35,
                       "column": 1,
-                      "offset": 1359
+                      "offset": 1367
                     },
                     "end": {
                       "line": 37,
                       "column": 20,
-                      "offset": 1517
+                      "offset": 1525
                     }
                   }
                 },
@@ -866,12 +885,12 @@
                         "start": {
                           "line": 41,
                           "column": 1,
-                          "offset": 1670
+                          "offset": 1678
                         },
                         "end": {
                           "line": 41,
                           "column": 71,
-                          "offset": 1740
+                          "offset": 1748
                         }
                       }
                     }
@@ -880,12 +899,12 @@
                     "start": {
                       "line": 41,
                       "column": 1,
-                      "offset": 1670
+                      "offset": 1678
                     },
                     "end": {
                       "line": 41,
                       "column": 71,
-                      "offset": 1740
+                      "offset": 1748
                     }
                   }
                 },
@@ -910,12 +929,12 @@
                             "start": {
                               "line": 43,
                               "column": 3,
-                              "offset": 1744
+                              "offset": 1752
                             },
                             "end": {
                               "line": 43,
                               "column": 25,
-                              "offset": 1766
+                              "offset": 1774
                             }
                           }
                         }
@@ -924,12 +943,12 @@
                         "start": {
                           "line": 43,
                           "column": 1,
-                          "offset": 1742
+                          "offset": 1750
                         },
                         "end": {
                           "line": 43,
                           "column": 25,
-                          "offset": 1766
+                          "offset": 1774
                         }
                       }
                     },
@@ -949,12 +968,12 @@
                             "start": {
                               "line": 44,
                               "column": 3,
-                              "offset": 1769
+                              "offset": 1777
                             },
                             "end": {
                               "line": 44,
                               "column": 35,
-                              "offset": 1801
+                              "offset": 1809
                             }
                           }
                         }
@@ -963,12 +982,12 @@
                         "start": {
                           "line": 44,
                           "column": 1,
-                          "offset": 1767
+                          "offset": 1775
                         },
                         "end": {
                           "line": 44,
                           "column": 35,
-                          "offset": 1801
+                          "offset": 1809
                         }
                       }
                     },
@@ -988,12 +1007,12 @@
                             "start": {
                               "line": 45,
                               "column": 3,
-                              "offset": 1804
+                              "offset": 1812
                             },
                             "end": {
                               "line": 45,
                               "column": 32,
-                              "offset": 1833
+                              "offset": 1841
                             }
                           }
                         }
@@ -1002,12 +1021,12 @@
                         "start": {
                           "line": 45,
                           "column": 1,
-                          "offset": 1802
+                          "offset": 1810
                         },
                         "end": {
                           "line": 45,
                           "column": 32,
-                          "offset": 1833
+                          "offset": 1841
                         }
                       }
                     },
@@ -1020,24 +1039,18 @@
                     "start": {
                       "line": 43,
                       "column": 1,
-                      "offset": 1742
+                      "offset": 1750
                     },
                     "end": {
                       "line": 45,
                       "column": 32,
-                      "offset": 1833
+                      "offset": 1841
                     }
                   }
                 }
               ]
             }
           ]
-        },
-        {
-          "type": "element",
-          "tagName": "article-back",
-          "properties": {},
-          "children": []
         }
       ]
     }
@@ -1051,7 +1064,7 @@
     "end": {
       "line": 46,
       "column": 1,
-      "offset": 1834
+      "offset": 1842
     }
   }
 }

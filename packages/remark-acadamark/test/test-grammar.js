@@ -329,6 +329,24 @@ function p(src) {
 }
 
 {
+  const n = p('<$ .highlighted | x^2 $>')
+  assert.equal(n.tagname, '$')
+  assert.deepEqual(n.classes, ['highlighted'])
+  assert.equal(n.id, null)
+  assert.equal(n.content, ' x^2 ')
+  console.log('PASS grammar: <$ .class | content $> class-only attribute')
+}
+
+{
+  const n = p('<$$ #eqn:newton .important | F = ma $$>')
+  assert.equal(n.tagname, '$$')
+  assert.equal(n.id, 'eqn:newton')
+  assert.deepEqual(n.classes, ['important'])
+  assert.equal(n.content, ' F = ma ')
+  console.log('PASS grammar: <$$ #id .class | content $$> id and class together')
+}
+
+{
   const n = p('<$$ | \\sum_{i=0}^{n} x_i $$>')
   assert.equal(n.tagname, '$$')
   assert.equal(n.content, ' \\sum_{i=0}^{n} x_i ')

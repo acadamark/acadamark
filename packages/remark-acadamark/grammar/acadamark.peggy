@@ -47,6 +47,7 @@
       classes: [],
       content: null,
       isOpaqueContent: false,
+      selfClosing: false,
       ...extra,
     }
   }
@@ -95,7 +96,7 @@ AcadamarkConstruct
   = SigilTag3 / SigilTag2 / SigilTag1
   / SigilTagDollar2 / SigilTagDollar1
   / SigilTagBt3 / SigilTagBt1
-  / NamedTag
+  / SelfClosingNamedTag / NamedTag
 
 // ─── Sigil tags ────────────────────────────────────────────────────────────
 //
@@ -254,6 +255,13 @@ SigilBodyBt1 = (!"`>" ("\n" / "\r" / .))*
 // Rule B depth tracking is implemented via recursive ContentChar (for the
 // nested-construct alternative in ContentItem).
 
+SelfClosingNamedTag
+  = "<" name:TagName attrs:Attributes "/" ">" {
+      const node = makeNode(name, { selfClosing: true })
+      Object.assign(node, attrs)
+      return node
+    }
+
 NamedTag
   = "<" name:TagName attrs:Attributes "|" content:ContentItem* ">" {
       const node = makeNode(name, { isOpaqueContent: true })
@@ -314,8 +322,8 @@ ContentChar
 // excluded from all identifier and tag-name character classes.
 
 Attributes
-  = _ head:Attribute tail:(_ Attribute)* _ {
-      return applyAttributes([head, ...tail.map(([, a]) => a)])
+  = _ head:Attribute tail:(_ ","? _ Attribute)* _ {
+      return applyAttributes([head, ...tail.map(([, , , a]) => a)])
     }
   / _ { return emptyAttrs() }
 
@@ -338,7 +346,7 @@ BracketedList
   = "[" _ items:ListItems _ "]"   { return { t: 'pos', v: items } }
 
 Positional
-  = v:Identifier                  { return { t: 'pos', v } }
+  = !("/" [ \t]* ">") v:Identifier { return { t: 'pos', v } }
 
 ListItems
   = head:ListItem tail:(_ "," _ ListItem)* {

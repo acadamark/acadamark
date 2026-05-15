@@ -1,0 +1,696 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "raw",
+              "value": "</config>",
+              "position": {
+                "start": {
+                  "line": 2,
+                  "column": 1,
+                  "offset": 160
+                },
+                "end": {
+                  "line": 2,
+                  "column": 10,
+                  "offset": 169
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "h2",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Introduction",
+                  "position": {
+                    "start": {
+                      "line": 9,
+                      "column": 4,
+                      "offset": 232
+                    },
+                    "end": {
+                      "line": 9,
+                      "column": 16,
+                      "offset": 244
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 9,
+                  "column": 1,
+                  "offset": 229
+                },
+                "end": {
+                  "line": 9,
+                  "column": 16,
+                  "offset": 244
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "The landscape of autism research has shifted considerably over the past decade, driven in part by advocacy from autistic people themselves. ",
+                  "position": {
+                    "start": {
+                      "line": 11,
+                      "column": 1,
+                      "offset": 246
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 141,
+                      "offset": 386
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite"
+                    ],
+                    "dataKeys": "Pellicano2014"
+                  },
+                  "children": [
+                    {
+                      "type": "raw",
+                      "value": "(Pellicano et al., 2014)"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " documented a striking divergence between researcher priorities and the lived concerns of autistic adults and their families — a finding that prompted a broader conversation about whose questions research should answer.",
+                  "position": {
+                    "start": {
+                      "line": 11,
+                      "column": 161,
+                      "offset": 406
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 380,
+                      "offset": 625
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 11,
+                  "column": 1,
+                  "offset": 246
+                },
+                "end": {
+                  "line": 11,
+                  "column": 380,
+                  "offset": 625
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Prevalence estimates have also been revised upward and the male-to-female ratio has been scrutinized more carefully. The review by ",
+                  "position": {
+                    "start": {
+                      "line": 13,
+                      "column": 1,
+                      "offset": 627
+                    },
+                    "end": {
+                      "line": 13,
+                      "column": 132,
+                      "offset": 758
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite"
+                    ],
+                    "dataKeys": "Loomes2017"
+                  },
+                  "children": [
+                    {
+                      "type": "raw",
+                      "value": "(Loomes et al., 2017)"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " found that earlier estimates of a 4:1 ratio significantly overstated the male skew, with implications for how diagnostic criteria are applied to women and girls.",
+                  "position": {
+                    "start": {
+                      "line": 13,
+                      "column": 149,
+                      "offset": 775
+                    },
+                    "end": {
+                      "line": 13,
+                      "column": 311,
+                      "offset": 937
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 13,
+                  "column": 1,
+                  "offset": 627
+                },
+                "end": {
+                  "line": 13,
+                  "column": 311,
+                  "offset": 937
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "h2",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Burnout and Well-Being",
+                  "position": {
+                    "start": {
+                      "line": 15,
+                      "column": 4,
+                      "offset": 942
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 26,
+                      "offset": 964
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 15,
+                  "column": 1,
+                  "offset": 939
+                },
+                "end": {
+                  "line": 15,
+                  "column": 26,
+                  "offset": 964
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Autistic burnout — a state of chronic exhaustion and reduced functioning resulting from sustained masking and sensory overload — has received growing attention in the research literature. ",
+                  "position": {
+                    "start": {
+                      "line": 17,
+                      "column": 1,
+                      "offset": 966
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 189,
+                      "offset": 1154
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite"
+                    ],
+                    "dataKeys": "Mantzalas2022"
+                  },
+                  "children": [
+                    {
+                      "type": "raw",
+                      "value": "(Mantzalas et al., 2022)"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " proposed a conceptual model of the risk and protective factors that contribute to burnout, drawing on both empirical work and community testimony.",
+                  "position": {
+                    "start": {
+                      "line": 17,
+                      "column": 209,
+                      "offset": 1174
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 356,
+                      "offset": 1321
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 17,
+                  "column": 1,
+                  "offset": 966
+                },
+                "end": {
+                  "line": 17,
+                  "column": 356,
+                  "offset": 1321
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Understanding the autistic experience requires moving beyond deficit-focused frameworks. ",
+                  "position": {
+                    "start": {
+                      "line": 19,
+                      "column": 1,
+                      "offset": 1323
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 90,
+                      "offset": 1412
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite"
+                    ],
+                    "dataKeys": "CaldwellHarris2023"
+                  },
+                  "children": [
+                    {
+                      "type": "raw",
+                      "value": "(Caldwell-Harris, 2023)"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " argues for an approach grounded in insider accounts, noting that autistic self-report reveals cognitive and social patterns that purely behavioral observation misses.",
+                  "position": {
+                    "start": {
+                      "line": 19,
+                      "column": 115,
+                      "offset": 1437
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 282,
+                      "offset": 1604
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 19,
+                  "column": 1,
+                  "offset": 1323
+                },
+                "end": {
+                  "line": 19,
+                  "column": 282,
+                  "offset": 1604
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "h2",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Education and Stigma Reduction",
+                  "position": {
+                    "start": {
+                      "line": 21,
+                      "column": 4,
+                      "offset": 1609
+                    },
+                    "end": {
+                      "line": 21,
+                      "column": 34,
+                      "offset": 1639
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 21,
+                  "column": 1,
+                  "offset": 1606
+                },
+                "end": {
+                  "line": 21,
+                  "column": 34,
+                  "offset": 1639
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Reducing stigma in higher education settings has been identified as a key priority. ",
+                  "position": {
+                    "start": {
+                      "line": 23,
+                      "column": 1,
+                      "offset": 1641
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 85,
+                      "offset": 1725
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite"
+                    ],
+                    "dataKeys": "GillespieLynch2017"
+                  },
+                  "children": [
+                    {
+                      "type": "raw",
+                      "value": "(Gillespie-Lynch et al., 2017)"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " evaluated an online training program for college students and found meaningful improvements in both knowledge and attitudes toward autistic peers.",
+                  "position": {
+                    "start": {
+                      "line": 23,
+                      "column": 110,
+                      "offset": 1750
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 257,
+                      "offset": 1897
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 23,
+                  "column": 1,
+                  "offset": 1641
+                },
+                "end": {
+                  "line": 23,
+                  "column": 257,
+                  "offset": 1897
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Multi-pronged approaches combining awareness training with structural accommodation have shown the most promise. ",
+                  "position": {
+                    "start": {
+                      "line": 25,
+                      "column": 1,
+                      "offset": 1899
+                    },
+                    "end": {
+                      "line": 25,
+                      "column": 114,
+                      "offset": 2012
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite"
+                    ],
+                    "dataKeys": "Mantzalas2022,Pellicano2014"
+                  },
+                  "children": [
+                    {
+                      "type": "raw",
+                      "value": "(Mantzalas et al., 2022; Pellicano et al., 2014)"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " both point to the importance of community involvement in designing interventions rather than imposing them from outside.",
+                  "position": {
+                    "start": {
+                      "line": 25,
+                      "column": 149,
+                      "offset": 2047
+                    },
+                    "end": {
+                      "line": 25,
+                      "column": 270,
+                      "offset": 2168
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 25,
+                  "column": 1,
+                  "offset": 1899
+                },
+                "end": {
+                  "line": 25,
+                  "column": 270,
+                  "offset": 2168
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "h2",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "A Missing Reference",
+                  "position": {
+                    "start": {
+                      "line": 27,
+                      "column": 4,
+                      "offset": 2173
+                    },
+                    "end": {
+                      "line": 27,
+                      "column": 23,
+                      "offset": 2192
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 27,
+                  "column": 1,
+                  "offset": 2170
+                },
+                "end": {
+                  "line": 27,
+                  "column": 23,
+                  "offset": 2192
+                }
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "p",
+              "properties": {},
+              "children": [
+                {
+                  "type": "text",
+                  "value": "For contrast, this citation should produce a visible error: ",
+                  "position": {
+                    "start": {
+                      "line": 29,
+                      "column": 1,
+                      "offset": 2194
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 61,
+                      "offset": 2254
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "cite",
+                  "properties": {
+                    "className": [
+                      "cite-error"
+                    ],
+                    "dataKeys": "NOTAKEY"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "??cite: NOTAKEY??"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": ".",
+                  "position": {
+                    "start": {
+                      "line": 29,
+                      "column": 75,
+                      "offset": 2268
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 76,
+                      "offset": 2269
+                    }
+                  }
+                }
+              ],
+              "position": {
+                "start": {
+                  "line": 29,
+                  "column": 1,
+                  "offset": 2194
+                },
+                "end": {
+                  "line": 29,
+                  "column": 76,
+                  "offset": 2269
+                }
+              }
+            },
+            {
+              "type": "raw",
+              "value": "</bibliography>",
+              "position": {
+                "start": {
+                  "line": 32,
+                  "column": 1,
+                  "offset": 2286
+                },
+                "end": {
+                  "line": 32,
+                  "column": 16,
+                  "offset": 2301
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            },
+            {
+              "type": "element",
+              "tagName": "bibliography",
+              "properties": {},
+              "children": [
+                {
+                  "type": "raw",
+                  "value": "<h2>References</h2><div class=\"csl-bib-body\">\n  <div id=\"ref-CaldwellHarris2023\" data-csl-entry-id=\"CaldwellHarris2023\" class=\"csl-entry\">Caldwell-Harris, C. L. (2023). Understanding the Autistic Experience. <i>Current Opinion in Psychology</i>, <i>52</i>, 101624. https://doi.org/10.1016/j.copsyc.2023.101624</div>\n  <div id=\"ref-GillespieLynch2017\" data-csl-entry-id=\"GillespieLynch2017\" class=\"csl-entry\">Gillespie-Lynch, K., Brooks, P. J., Someki, F., Obeid, R., Shane-Simpson, C., Kapp, S. K., Daou, N., &#38; Smith, D. S. (2017). Changing College Students’ Conceptions of Autism: An Online Training to Increase Knowledge and Decrease Stigma. In <i>Autism in Adulthood</i> (Vol. 1, pp. 56–66). Mary Ann Liebert.</div>\n  <div id=\"ref-Loomes2017\" data-csl-entry-id=\"Loomes2017\" class=\"csl-entry\">Loomes, R., Hull, L., &#38; Mandy, W. P. L. (2017). What is the Male-to-Female Ratio in Autism Spectrum Disorder? A Systematic Review and Meta-Analysis. <i>Journal of the American Academy of Child &#38; Adolescent Psychiatry</i>, <i>56</i>(6), 466–474. https://doi.org/10.1016/j.jaac.2017.03.013</div>\n  <div id=\"ref-Mantzalas2022\" data-csl-entry-id=\"Mantzalas2022\" class=\"csl-entry\">Mantzalas, J., Richdale, A. L., &#38; Dissanayake, C. (2022). A Conceptual Model of Risk and Protective Factors for Autistic Burnout. <i>Autism in Adulthood</i>, <i>4</i>(1), 1–12. https://doi.org/10.1089/aut.2021.0053</div>\n  <div id=\"ref-Pellicano2014\" data-csl-entry-id=\"Pellicano2014\" class=\"csl-entry\">Pellicano, E., Dinsmore, A., &#38; Charman, T. (2014). What Should Autism Research Focus Upon? Community Views and Priorities from the United Kingdom. <i>Autism</i>, <i>18</i>(7), 756–770. https://doi.org/10.1177/1362361314529627</div>\n</div>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 33,
+      "column": 1,
+      "offset": 2302
+    }
+  }
+}

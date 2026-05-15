@@ -1,0 +1,67 @@
+---
+semantic_role: inline-math
+html_output:
+  element: inline-math
+  is_html_native: false
+  default_attributes: {}
+acadamark_attributes:
+  id:
+    maps_to: id
+  classes:
+    maps_to: class
+content:
+  type: opaque
+  notes: |
+    The pipe content is LaTeX math source. It is passed directly to KaTeX
+    as a string; it is not parsed as prose. The author is responsible for
+    valid LaTeX math syntax.
+content_handler: math
+interpreter_strategy: handler
+handler_module: ./handlers/math.js
+jats_counterpart:
+  element: inline-formula
+  notes: |
+    JATS <inline-formula> wraps MathML or TeX alternatives. The JATS
+    exporter generates <tex-math> with the raw LaTeX source, plus
+    optionally a <mml:math> rendered form.
+---
+
+# `<inline-math>`
+
+Inline mathematical notation appearing in the flow of text. The content
+is LaTeX math source rendered by KaTeX.
+
+## Authoring syntax
+
+```
+<$ x^2 + y^2 = z^2 $>
+```
+
+The `$` sigil is the short form. No long form exists for inline math — the
+content is always a single expression on one line.
+
+## Rendered output
+
+The element wraps KaTeX's HTML output in a `<inline-math>` container:
+
+```html
+<inline-math><span class="katex">...</span></inline-math>
+```
+
+KaTeX's HTML uses `aria-hidden` and a separate `aria-label` or MathML
+for accessibility. The `<inline-math>` wrapper enables semantic identification
+and CSS targeting without depending on KaTeX's internal class names.
+
+## Error handling
+
+When KaTeX encounters malformed LaTeX, it renders a visible error marker
+(red text) rather than throwing. The `<inline-math>` wrapper still appears;
+the KaTeX error span appears inside it. Documents always render to something.
+
+## Notes
+
+- Inline math renders with `displayMode: false` (KaTeX default).
+- Display-mode math (centered, on its own line) uses `<display-math>`.
+- The `$` sigil may not carry attributes. Id and classes are not supported
+  for inline math in slice 2; add them via a future `<inline-math>` named tag
+  if needed.
