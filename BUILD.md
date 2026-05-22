@@ -1,5 +1,9 @@
 # Building Acadamark
 
+> **Planning-era document.** This document was written before the interpreter was implemented. The pipeline diagram and plugin descriptions below reflect the planned architecture, not the current implementation. Plugin names (`acadamarkTagInterpret`, `acadamarkCitations`, `acadamarkCrossRefs`, `rehypeKatex`, `rehypeShiki`) and the rehype-plugin architecture described here were superseded. For the current pipeline architecture and actual plugin names, see:
+> - `notes/pipeline.md` — the current authoritative pipeline description
+> - `notes/interpreter.md` — the current authoritative interpreter architecture
+
 This document describes how acadamark is implemented. It assumes you've read `DESIGN.md`.
 
 ## Where the project is now (May 2026)

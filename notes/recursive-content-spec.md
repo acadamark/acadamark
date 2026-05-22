@@ -86,6 +86,8 @@ This may evolve. There may come a time when a finer distinction is useful — "i
 
 ## Error recovery: blank-line termination
 
+**Status: Deferred.** This section describes planned behavior, not current behavior. Blank-line termination error recovery is not yet implemented.
+
 Recursive parsing introduces a content model where paragraphs and blank lines have semantic meaning. This is the architecturally correct moment to introduce localized error recovery for unterminated constructs.
 
 A blank line — a line that contains only whitespace, between two non-blank lines — terminates any open multi-line construct that has not yet found its closer. The unterminated construct emits `acadamarkTagError` at its opener position; parsing resumes from after the blank line.

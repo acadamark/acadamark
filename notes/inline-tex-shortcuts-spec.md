@@ -1,5 +1,7 @@
 # Inline TeX-style shortcuts (deferred)
 
+**Status: Not implemented.** This spec describes a planned feature. The current path for inline super/subscript is the math sigil (`<$ x^2 $>`) or explicit `<sup>` and `<sub>` tags. See the [Status section](#status) at the bottom for details.
+
 This note captures the design for inline `^{...}` and `_{...}` shortcuts that produce HTML's `<sup>` and `<sub>` elements in prose. The feature is specified here for future implementation. It is not yet built.
 
 ## Motivation

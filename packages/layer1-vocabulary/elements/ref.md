@@ -91,9 +91,9 @@ handler_responsibilities:
     __ref-error handler: render an anchor with href="#id", class="ref-error",
     and text "??ref: id??".
 related_plugins:
-  - name: acadamarkCrossReferenceResolution
+  - name: acadamarkRefResolution
     runs_after: 'acadamarkArticleStructuring, numbering plugins'
-    purpose: 'Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: 'Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/pipeline.md for the full pipeline.'
 
 ---
 

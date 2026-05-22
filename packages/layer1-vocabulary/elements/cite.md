@@ -110,9 +110,9 @@ handler_responsibilities:
   - Handle prefix and suffix text.
   - For unresolved keys, render an error marker (e.g., "[?key]") that's visible in output.
 related_plugins:
-  - name: acadamarkCitationResolution
-    runs_after: 'acadamarkLibraryParsing, acadamarkArticleStructuring'
-    purpose: 'Resolves <cite> elements against the citation registry; generates rendered markers. See notes/plugin-pipeline.md for the full pipeline.'
+  - name: acadamarkCiteResolution
+    runs_after: 'acadamarkLibraryLoad, acadamarkArticleStructuring'
+    purpose: 'Resolves <cite> elements against the citation registry; generates rendered markers. See notes/pipeline.md for the full pipeline.'
 
 ---
 
