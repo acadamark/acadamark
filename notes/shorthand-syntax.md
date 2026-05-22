@@ -24,7 +24,7 @@ These belong to downstream plugins.
 
 ## Design principles
 
-**The parser knows nothing about meaning.** It recognizes the syntax of tags and produces uniform structured nodes. Whether `<cite jones2001>` means "lookup citation" or "format a reference" is the interpreter's call, not the parser's. Adding a new tag never requires modifying the parser.
+**The parser knows nothing about meaning.** It recognizes the syntax of tags and produces uniform structured nodes. Whether `<cite @jones2001>` means "lookup citation" or "format a reference" is the interpreter's call, not the parser's. Adding a new tag never requires modifying the parser.
 
 **Every `<` matches a `>`.** The matching `>` ends the construct. Block-level vs. inline tags differ only in whether their content spans multiple lines — there is one closing rule.
 
@@ -53,21 +53,25 @@ long_form       ::= "<" tag_name [ws+ attributes] ">" line_ending content "</" t
 tag_name         ::= [a-zA-Z] [a-zA-Z0-9_-]*
                      (* strict: for the word immediately after `<` and keyword keys *)
 identifier       ::= identifier_start identifier_cont*
-identifier_start ::= [^ \t\n<>|+\-#.="'\[\],]
+identifier_start ::= [^ \t\n<>|+\-#.@="'\[\],]
                      (* excludes structural delimiters AND syntactic prefixes
-                        (+, -, #, ., =); these may appear mid-identifier only *)
+                        (+, -, #, ., @, =); these may appear mid-identifier only *)
 identifier_cont  ::= [^ \t\n<>|"'\[\],]
                      (* excludes structural delimiters; `=` is allowed so that
                         URLs with query strings work as bare identifiers *)
 
 attributes      ::= attribute (ws+ attribute)*
-attribute       ::= positional | bracketed_list | flag | id | class | keyword
+attribute       ::= positional | bracketed_list | flag | id | class | keyword | atref
 
 positional      ::= identifier
 bracketed_list  ::= "[" ws* list_item (ws* "," ws* list_item)* ws* "]"
 list_item       ::= identifier | quoted_string
 flag            ::= ("+" | "-") tag_name
 id              ::= "#" identifier
+atref           ::= "@" identifier
+                    (* F1: @ in attribute position is a reference; grammar strips @,
+                       stores the key in node.atRefs. Multiple atref attrs are
+                       accumulated: <cite @a @b> → atRefs: ['a', 'b'] *)
 class           ::= "." tag_name
 keyword         ::= tag_name "=" value
 value           ::= identifier | quoted_string
@@ -91,11 +95,11 @@ The grammar uses two distinct character-class rules for names:
 
 A *tag name* (`tag_name`) is strict: starts with an ASCII letter, continues with letters, digits, underscores, or hyphens (`[a-zA-Z][a-zA-Z0-9_-]*`). Tag names appear as the word immediately after `<` and as the key in `key=value` attributes. Tag names are case-sensitive at the parser level (the interpreter may normalize).
 
-An *identifier* uses a start-and-continue split: the first character must not be a syntactic prefix (`+`, `-`, `#`, `.`, `=`) or structural delimiter; subsequent characters may include those prefix characters as literal data, including `=`. This is encoded in two sub-rules (`identifier_start`, `identifier_cont`) that mirror the EBNF directly. Examples: `fig:body-cross-section` (starts with `f`; `:` and `-` are valid `identifier_cont` chars), `my-cool-id`, `v1.2.3`, `https://example.com`, `https://example.com?q=value` (`:`, `/`, `?`, `=` all valid `identifier_cont`). Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers.
+An *identifier* uses a start-and-continue split: the first character must not be a syntactic prefix (`+`, `-`, `#`, `.`, `@`, `=`) or structural delimiter; subsequent characters may include those prefix characters as literal data, including `=`. This is encoded in two sub-rules (`identifier_start`, `identifier_cont`) that mirror the EBNF directly. Examples: `fig:body-cross-section` (starts with `f`; `:` and `-` are valid `identifier_cont` chars), `my-cool-id`, `v1.2.3`, `https://example.com`, `https://example.com?q=value` (`:`, `/`, `?`, `=` all valid `identifier_cont`). Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers.
 
 The asymmetric treatment of `=` is intentional: `=` excluded from `identifier_start` keeps keyword syntax (`key=value`) unambiguous — a `=` can never begin an identifier, so the first `=` after a tag-name token always signals a keyword. `=` allowed in `identifier_cont` lets URLs with query strings (`https://example.com?q=value`) appear as bare positionals or keyword values without quoting. Keyword parsing is unaffected because the attribute rule tries `Keyword` (`tag_name "=" value`) before `Positional`, and `tag_name` uses its own strict character class that stops at `=`.
 
-The distinction matters for cross-references and ids: `<ref #fig:body-cross-section>` must produce `id: "fig:body-cross-section"` with the `:` intact. Using `tag_name` for id values would reject this. The start-and-continue split also makes disambiguation self-contained: `#elephant` is unambiguously an id form (the `#` is a syntactic prefix, not an identifier character), while `section-one` is unambiguously a valid positional identifier.
+The distinction matters for cross-references and ids: `<ref @fig:body-cross-section>` must produce `atRefs: ["fig:body-cross-section"]` with the `:` intact. Using `tag_name` for ref-key values would reject this. The start-and-continue split also makes disambiguation self-contained: `#elephant` is unambiguously an id form, `@fig:priority` is unambiguously an atref form (the `#` and `@` are syntactic prefixes, not identifier characters), while `section-one` is unambiguously a valid positional identifier.
 
 ### Sigils
 
@@ -105,22 +109,23 @@ Sigil tags and named tags are distinguished by their first non-`<` character: if
 
 ### Attribute forms
 
-| Form              | Example                  | Parsed as                                       |
-|-------------------|--------------------------|-------------------------------------------------|
-| Positional        | `jones2001`              | Append to `positional` array                    |
-| Bracketed list    | `[smith2017, jones2023]` | Append to `positional` array as a single list   |
-| Boolean flag (true)  | `+wrap`               | `booleans.wrap = true`                          |
-| Boolean flag (false) | `-preview`            | `booleans.preview = false`                      |
-| Id                | `#elephant`              | `id = "elephant"`                               |
-| Class             | `.numbered`              | Append `"numbered"` to `classes` array          |
-| Keyword (unquoted)| `align=right`            | `kwargs.align = "right"`                        |
-| Keyword (quoted)  | `caption="An elephant"`  | `kwargs.caption = "An elephant"`                |
+| Form              | Example                       | Parsed as                                                  |
+|-------------------|-------------------------------|------------------------------------------------------------|
+| Positional        | `jones2001`                   | Append to `positional` array                               |
+| Bracketed list    | `[@smith2017, @jones2023]`    | Append to `positional` array as a single list (@ preserved)|
+| Boolean flag (true)  | `+wrap`                    | `booleans.wrap = true`                                     |
+| Boolean flag (false) | `-preview`                 | `booleans.preview = false`                                 |
+| Id                | `#elephant`                   | `id = "elephant"`                                          |
+| AtRef             | `@fig:priority`               | Append `"fig:priority"` to `atRefs` array (@ stripped)     |
+| Class             | `.numbered`                   | Append `"numbered"` to `classes` array                     |
+| Keyword (unquoted)| `align=right`                 | `kwargs.align = "right"`                                   |
+| Keyword (quoted)  | `caption="An elephant"`       | `kwargs.caption = "An elephant"`                           |
 
 Attributes can appear in any order. Multiple positional, multiple flags, multiple classes are all allowed. Multiple `id` attributes or multiple of the same keyword is an error (parser may report or take last value, implementation choice).
 
 ### Identifiers
 
-Identifiers are the values of `#id` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `=`). Mid-identifier, prefix characters including `=` are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, `v1.2.3`, and `https://example.com?q=value` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.
+Identifiers are the values of `#id` attributes, `@ref` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `@`, `=`). Mid-identifier, prefix characters including `=` are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, `v1.2.3`, and `https://example.com?q=value` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.
 
 ### Quoted strings
 
@@ -149,7 +154,7 @@ Whitespace separates attributes from each other. Between attributes, any amount 
 
 `|` separates the attribute section from the content section. Exactly zero or one `|` per construct.
 
-- No `|` and no closing tag: the tag has no content. Example: `<cite jones2001>`.
+- No `|` and no closing tag: the tag has no content. Example: `<cite @jones2001>`.
 - `|` followed by content, then `>`: short-form content. Example: `<a https://example.com | Click here>`.
 - No `|` but a closing tag (`</tagname>`): long-form content. Example: `<csv>1,2,3\n4,5,6</csv>`.
 
@@ -381,28 +386,35 @@ The examples below are paired with their parsed structure. The structure is show
 ### Example 2: Tag with no content
 
 ```
-<cite jones2001>
+<cite @jones2001>
 ```
 
 ```
 {
   tagname: "cite",
-  positional: ["jones2001"]
+  atRefs: ["jones2001"],
+  positional: []
 }
 ```
 
-### Example 3: Bracketed list as positional
+### Example 3: Bracketed list as atref keys
 
 ```
-<cite [smith2017, jones2023]>
+<cite [@smith2017, @jones2023]>
 ```
 
 ```
 {
   tagname: "cite",
-  positional: [["smith2017", "jones2023"]]
+  atRefs: [],
+  positional: [["@smith2017", "@jones2023"]]
 }
 ```
+
+Note: `@` is preserved in bracketed-list items — the grammar parses `[@smith2017, @jones2023]`
+as a bracketed list (each item is a string including the `@`). It is stripped from
+free-standing atref attributes only (`<cite @smith2017>` → `atRefs: ["smith2017"]`).
+The cite resolver handles both forms.
 
 ### Example 4: Mixed attributes
 
@@ -635,27 +647,29 @@ For every prime $p$, there are infinitely many primes congruent to $1 \pmod{p}$.
 ### Example 18: Cite with flags
 
 ```
-<cite [perez1975, Noori1992] +link +preview>
+<cite [@perez1975, @Noori1992] +link +preview>
 ```
 
 ```
 {
   tagname: "cite",
-  positional: [["perez1975", "Noori1992"]],
+  atRefs: [],
+  positional: [["@perez1975", "@Noori1992"]],
   booleans: { link: true, preview: true }
 }
 ```
 
-### Example 19: Reference with flags and id
+### Example 19: Reference with flags
 
 ```
-<ref #fig:body-cross-section +link +preview +title>
+<ref @fig:body-cross-section +link +preview +title>
 ```
 
 ```
 {
   tagname: "ref",
-  id: "fig:body-cross-section",
+  id: null,
+  atRefs: ["fig:body-cross-section"],
   booleans: { link: true, preview: true, title: true }
 }
 ```

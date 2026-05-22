@@ -8,25 +8,25 @@
 
 ## Introduction
 
-The landscape of autism research has shifted considerably over the past decade, driven in part by advocacy from autistic people themselves. <cite Pellicano2014> documented a striking divergence between researcher priorities and the lived concerns of autistic adults and their families — a finding that prompted a broader conversation about whose questions research should answer.
+The landscape of autism research has shifted considerably over the past decade, driven in part by advocacy from autistic people themselves. <cite @Pellicano2014> documented a striking divergence between researcher priorities and the lived concerns of autistic adults and their families — a finding that prompted a broader conversation about whose questions research should answer.
 
-Prevalence estimates have also been revised upward and the male-to-female ratio has been scrutinized more carefully. The review by <cite Loomes2017> found that earlier estimates of a 4:1 ratio significantly overstated the male skew, with implications for how diagnostic criteria are applied to women and girls.
+Prevalence estimates have also been revised upward and the male-to-female ratio has been scrutinized more carefully. The review by <cite @Loomes2017> found that earlier estimates of a 4:1 ratio significantly overstated the male skew, with implications for how diagnostic criteria are applied to women and girls.
 
 ## Burnout and Well-Being
 
-Autistic burnout — a state of chronic exhaustion and reduced functioning resulting from sustained masking and sensory overload — has received growing attention in the research literature. <cite Mantzalas2022> proposed a conceptual model of the risk and protective factors that contribute to burnout, drawing on both empirical work and community testimony.
+Autistic burnout — a state of chronic exhaustion and reduced functioning resulting from sustained masking and sensory overload — has received growing attention in the research literature. <cite @Mantzalas2022> proposed a conceptual model of the risk and protective factors that contribute to burnout, drawing on both empirical work and community testimony.
 
-Understanding the autistic experience requires moving beyond deficit-focused frameworks. <cite CaldwellHarris2023> argues for an approach grounded in insider accounts, noting that autistic self-report reveals cognitive and social patterns that purely behavioral observation misses.
+Understanding the autistic experience requires moving beyond deficit-focused frameworks. <cite @CaldwellHarris2023> argues for an approach grounded in insider accounts, noting that autistic self-report reveals cognitive and social patterns that purely behavioral observation misses.
 
 ## Education and Stigma Reduction
 
-Reducing stigma in higher education settings has been identified as a key priority. <cite GillespieLynch2017> evaluated an online training program for college students and found meaningful improvements in both knowledge and attitudes toward autistic peers.
+Reducing stigma in higher education settings has been identified as a key priority. <cite @GillespieLynch2017> evaluated an online training program for college students and found meaningful improvements in both knowledge and attitudes toward autistic peers.
 
-Multi-pronged approaches combining awareness training with structural accommodation have shown the most promise. <cite Mantzalas2022, Pellicano2014> both point to the importance of community involvement in designing interventions rather than imposing them from outside.
+Multi-pronged approaches combining awareness training with structural accommodation have shown the most promise. <cite @Mantzalas2022, @Pellicano2014> both point to the importance of community involvement in designing interventions rather than imposing them from outside.
 
 ## A Missing Reference
 
-For contrast, this citation should produce a visible error: <cite NOTAKEY>.
+For contrast, this citation should produce a visible error: <cite @NOTAKEY>.
 
 <bibliography>
 </bibliography>

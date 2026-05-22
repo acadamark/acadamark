@@ -123,12 +123,13 @@ function p(src) {
 // ─── Slice 2: Named tags ───────────────────────────────────────────────────
 
 {
-  const n = p('<cite jones2001>')
+  const n = p('<cite @jones2001>')
   assert.equal(n.tagname, 'cite')
-  assert.deepEqual(n.positional, ['jones2001'])
+  assert.deepEqual(n.atRefs, ['jones2001'])
+  assert.deepEqual(n.positional, [])
   assert.equal(n.content, null)
   assert.equal(n.isOpaqueContent, false)
-  console.log('PASS grammar: <cite jones2001> named tag, single positional')
+  console.log('PASS grammar: <cite @jones2001> named tag, single atRef')
 }
 
 {
@@ -141,10 +142,11 @@ function p(src) {
 }
 
 {
-  // Multiple space-separated positionals
-  const n = p('<cite jones2001 smith2022>')
-  assert.deepEqual(n.positional, ['jones2001', 'smith2022'])
-  console.log('PASS grammar: multiple positionals')
+  // Multiple space-separated @-prefixed atRefs
+  const n = p('<cite @jones2001 @smith2022>')
+  assert.deepEqual(n.atRefs, ['jones2001', 'smith2022'])
+  assert.deepEqual(n.positional, [])
+  console.log('PASS grammar: multiple atRefs')
 }
 
 {
@@ -187,9 +189,10 @@ function p(src) {
 }
 
 {
-  const n = p('<cite [smith2017, jones2023]>')
-  assert.deepEqual(n.positional, [['smith2017', 'jones2023']])
-  console.log('PASS grammar: bracketed list positional')
+  const n = p('<cite [@smith2017, @jones2023]>')
+  assert.deepEqual(n.positional, [['@smith2017', '@jones2023']])
+  assert.deepEqual(n.atRefs, [])
+  console.log('PASS grammar: bracketed list with @ keys')
 }
 
 {
@@ -239,18 +242,19 @@ function p(src) {
 // ─── Slice 3: identifier rules ─────────────────────────────────────────────
 
 {
-  // : is allowed mid-identifier (id values, per Example 19 in the spec)
-  const n = p('<ref #fig:body-cross-section>')
+  // : is allowed mid-identifier (atRef values, per spec)
+  const n = p('<ref @fig:body-cross-section>')
   assert.equal(n.tagname, 'ref')
-  assert.equal(n.id, 'fig:body-cross-section')
-  console.log('PASS grammar: colon in id value #fig:body-cross-section')
+  assert.deepEqual(n.atRefs, ['fig:body-cross-section'])
+  assert.equal(n.id, null)
+  console.log('PASS grammar: colon in atRef value @fig:body-cross-section')
 }
 
 {
-  // : and - together in an id
-  const n = p('<ref #sec:intro-background>')
-  assert.equal(n.id, 'sec:intro-background')
-  console.log('PASS grammar: colon and hyphen together in id')
+  // : and - together in an atRef
+  const n = p('<ref @sec:intro-background>')
+  assert.deepEqual(n.atRefs, ['sec:intro-background'])
+  console.log('PASS grammar: colon and hyphen together in atRef')
 }
 
 {
@@ -558,16 +562,16 @@ console.log('\nAll escape-rules hash-sigil grammar tests passed.')
 
 {
   // \, in bracketed list → single item containing a comma
-  const n = p('<cite [smith2024\\, jones2024]>')
-  assert.deepEqual(n.positional, [['smith2024, jones2024']])
-  console.log('PASS grammar: [key1\\, key2] → single list item with comma')
+  const n = p('<cite [@smith2024\\, @jones2024]>')
+  assert.deepEqual(n.positional, [['@smith2024, @jones2024']])
+  console.log('PASS grammar: [@key1\\, @key2] → single list item with comma')
 }
 
 {
-  // Normal bracketed list still works
-  const n = p('<cite [smith2024, jones2024]>')
-  assert.deepEqual(n.positional, [['smith2024', 'jones2024']])
-  console.log('PASS grammar: [key1, key2] → two-item list (unescaped comma)')
+  // Normal bracketed list with @ keys still works
+  const n = p('<cite [@smith2024, @jones2024]>')
+  assert.deepEqual(n.positional, [['@smith2024', '@jones2024']])
+  console.log('PASS grammar: [@key1, @key2] → two-item list (unescaped comma)')
 }
 
 console.log('\nAll escape-rules bracketed-list grammar tests passed.')

@@ -374,7 +374,7 @@ cross-reference lookup. Stores `{ node, entry }` pairs for numbered elements in
 **Section registration (AUD-09 fix):** `section`, `sub-section`, and
 `sub-sub-section` nodes are registered with `numbered: false`. This makes them
 findable by label via `registry.findByLabel()` for cross-references (e.g.,
-`<ref #sec:intro>`), without assigning sequential numbers.
+`<ref @sec:intro>`), without assigning sequential numbers.
 
 **Decision priority (most specific wins):**
 
@@ -447,8 +447,8 @@ elements have `computedNumber` set and their colon-ids are in the label index.
 
 **Target id extraction:**
 
-- `node.id` (canonical: `<ref #eqn:newton>`)
-- `node.kwargs.target` (legacy: `<ref target=eqn:newton>`)
+- `node.atRefs[0]` (canonical: `<ref @eqn:newton>`)
+- `node.kwargs.target` (legacy fallback: `<ref target=eqn:newton>`)
 - Neither → `__ref-error` with `targetId: '(none)'` and a `file.message()` warning.
 
 **Resolution:** Calls `registry.findByLabel(targetId)`. Only colon-ids (ids
@@ -488,12 +488,12 @@ and/or `__cite-error` (missing keys) internal nodes.
 **When it runs:** After `buildCitationIndex` (step 5). If `file.data.acadamarkCitations`
 is not set (no library was loaded), the plugin is a no-op.
 
-**Key extraction (tries three sources in order):**
+**Key extraction (tries four sources in order):**
 
-1. `node.positional` — canonical: `<cite Smith2020, Jones2019>` — keys are
-   the positional arguments.
-2. `node.content` as a string — pipe form: `<cite | Smith2020,Jones2019>`.
-3. `node.content` as a parsed array — text extracted recursively. In practice
+1. `node.atRefs` — canonical: `<cite @Smith2020>` (single key) or `<cite @Smith2020 @Jones2019>` (multiple space-separated atrefs). `@` is stripped by the grammar; `atRefs` contains bare keys.
+2. `node.positional` — bracketed form: `<cite [@Smith2020, @Jones2019]>`. Each item is a string with `@` preserved; the resolver strips `@` from each item.
+3. `node.content` as a string — pipe form: `<cite | Smith2020,Jones2019>`.
+4. `node.content` as a parsed array — text extracted recursively. In practice
    this path cannot currently occur because `<cite>` is not in the DSL
    registry; implemented defensively.
 

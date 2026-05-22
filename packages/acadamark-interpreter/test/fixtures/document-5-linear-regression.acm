@@ -29,7 +29,7 @@ y = beta_0 + beta_1 * x + epsilon
 
 <section | Least Squares Estimation>
 The ordinary least squares criterion minimizes residuals relative to the model
-defined in <ref #eqn:model>. It chooses the parameter values that minimize
+defined in <ref @eqn:model>. It chooses the parameter values that minimize
 the sum of squared residuals:
 
 <$$ \text{minimize} \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 x_i)^2 $$>
@@ -78,7 +78,7 @@ score = r2_score(y_true, y_pred)
 
 <figure #fig:scatter src="assets/scatter-regression.svg" | A scatter plot of predictor <$ x $> versus outcome <$ y $>, with the OLS regression line overlaid.>
 
-See <ref #fig:scatter> for a visual illustration. The slope of the regression
-line is the estimate from <ref #eqn:model>, and goodness of fit is reported as
-<ref #eqn:r2>. A reference to an undefined target would look like <ref #eqn:missing> in
+See <ref @fig:scatter> for a visual illustration. The slope of the regression
+line is the estimate from <ref @eqn:model>, and goodness of fit is reported as
+<ref @eqn:r2>. A reference to an undefined target would look like <ref @eqn:missing> in
 the rendered output.

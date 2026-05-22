@@ -9,7 +9,7 @@
 ## Introduction
 
 The past decade has seen a significant reorientation in autism research toward participatory methods that centre the 
-experiences and priorities of autistic people themselves. <cite Pellicano2014> found a striking mismatch between the 
+experiences and priorities of autistic people themselves. <cite @Pellicano2014> found a striking mismatch between the 
 research agenda set by non-autistic investigators and the topics judged most pressing by autistic adults and their 
 families, with quality-of-life outcomes receiving far less attention than biomedical aetiology.
 
@@ -28,14 +28,14 @@ community data from the literature, and show how commonly used indices behave un
 ### Prevalence and Sampling
 
 Accurate prevalence estimates are a prerequisite for power calculations in community-based studies. The systematic 
-review by <cite Loomes2017> revised the male-to-female ratio in autism diagnoses substantially downward from the 
+review by <cite @Loomes2017> revised the male-to-female ratio in autism diagnoses substantially downward from the 
 long-cited 4:1 figure, with implications for studies that stratify by gender. If the true ratio is closer to 3:1 or 
 even 2:1 among certain age groups, studies designed around 4:1 assumptions will be systematically underpowered for 
 female participants.<note | The Loomes et al. meta-analysis covered 54 studies with a combined sample of over 13 
 million individuals. Funnel-plot asymmetry suggested some publication bias toward higher ratios, so even the revised 
 estimate may be conservative.>
 
-Stigma and underdiagnosis interact in ways that complicate sampling. <cite GillespieLynch2017> demonstrated that 
+Stigma and underdiagnosis interact in ways that complicate sampling. <cite @GillespieLynch2017> demonstrated that 
 brief educational interventions can shift attitudes among college students, suggesting that sample frames drawn from 
 university populations may be especially sensitive to the timing of data collection relative to awareness-raising 
 activities on campus.
@@ -44,10 +44,10 @@ activities on campus.
 
 Autistic burnout — characterised by pervasive exhaustion, cognitive difficulties, and reduced tolerance for sensory 
 and social demands — has emerged as a high-priority outcome in community-identified research agendas. 
-<cite Mantzalas2022> proposed a conceptual model with risk and protective factors organised around three domains: 
-individual, social-environmental, and systemic. The model is summarised schematically in <ref #tab:burnout>.
+<cite @Mantzalas2022> proposed a conceptual model with risk and protective factors organised around three domains: 
+individual, social-environmental, and systemic. The model is summarised schematically in <ref @tab:burnout>.
 
-<table #tab:burnout csv caption="Risk and protective factors for autistic burnout, adapted from <cite Mantzalas2022>" |
+<table #tab:burnout csv caption="Risk and protective factors for autistic burnout, adapted from <cite @Mantzalas2022>" |
 Domain,Risk factors,Protective factors
 Individual,Masking / camouflaging; sensory sensitivity,Self-acceptance; identity clarity
 Social-environmental,Unsupportive relationships; workplace demands,Affirming community; flexible accommodations
@@ -123,14 +123,14 @@ scales and <$ \alpha $> does not interpolate smoothly between the two criteria.
 
 ## Illustrative Application
 
-<cite CaldwellHarris2023> emphasises that insider accounts systematically reveal cognitive and social patterns that 
+<cite @CaldwellHarris2023> emphasises that insider accounts systematically reveal cognitive and social patterns that 
 behavioural observation misses. This insight suggests that for studies measuring cognitive outcomes, community importance 
 ratings (<$ c_i $>) should carry more weight than evidence gaps, implying <$ \alpha > 0.5 $>. For studies targeting 
 underserved populations, evidence gaps (<$ g_i $>) may deserve more weight, implying <$ \alpha < 0.5 $>.
 
-As an illustration, consider the five topic areas identified by <cite Pellicano2014, Mantzalas2022>: quality of life, 
+As an illustration, consider the five topic areas identified by <cite @Pellicano2014, @Mantzalas2022>: quality of life, 
 burnout, diagnosis, education, and employment. Hypothetical importance and evidence-gap scores are given in 
-<ref #tab:scores>.
+<ref @tab:scores>.
 
 <table #tab:scores csv caption="Hypothetical priority scores for five research topic areas" | 
 Topic,Community importance (c),Evidence gap (g),Priority at α=0.7,Priority at α=0.3
@@ -163,6 +163,6 @@ implementations would add validation, uncertainty quantification, and sensitivit
 plotted in importance–gap space; the diagonal line shows equal weighting (α = 0.5). Topics above the line are favoured 
 by community preference; topics below are favoured by evidence-gap criteria.>
 
-<ref #fig:priority> illustrates how the framework places topics in a two-dimensional space and how the mixing parameter 
+<ref @fig:priority> illustrates how the framework places topics in a two-dimensional space and how the mixing parameter 
 determines which topics rise to the top of the agenda.
 

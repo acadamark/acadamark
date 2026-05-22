@@ -98,7 +98,7 @@ function parseTag(src) {
 // ─── Test RC-5: No-content tag not touched ──────────────────────────────────
 // <cite> has no | separator — content is null. Plugin skips it.
 {
-  const node = parseTag('<cite jones2001>')
+  const node = parseTag('<cite @jones2001>')
   assert.equal(node.content, null, 'cite content stays null')
   assert.equal(node.isOpaqueContent, false, 'cite has no content, flag false')
   console.log('PASS RC-5: no-content tag (cite) left untouched')

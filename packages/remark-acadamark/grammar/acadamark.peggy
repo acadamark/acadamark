@@ -45,6 +45,7 @@
       kwargs: {},
       id: null,
       classes: [],
+      atRefs: [],
       content: null,
       isOpaqueContent: false,
       selfClosing: false,
@@ -53,7 +54,7 @@
   }
 
   function emptyAttrs() {
-    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [] }
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [] }
   }
 
   function applyAttributes(attrList) {
@@ -64,6 +65,7 @@
       if (attr.t === 'bool')  result.booleans[attr.k] = attr.v
       if (attr.t === 'kwarg') result.kwargs[attr.k] = attr.v
       if (attr.t === 'pos')   result.positional.push(attr.v)
+      if (attr.t === 'atref') result.atRefs.push(attr.v)
     }
     return result
   }
@@ -334,9 +336,11 @@ Attribute
   / BoolFalse
   / Keyword
   / BracketedList
+  / AtRef
   / Positional
 
 Id        = "#" v:Identifier      { return { t: 'id', v } }
+AtRef     = "@" v:Identifier      { return { t: 'atref', v } }
 Class     = "." v:TagName         { return { t: 'class', v } }
 BoolTrue  = "+" k:TagName         { return { t: 'bool', k, v: true } }
 BoolFalse = "-" k:TagName         { return { t: 'bool', k, v: false } }

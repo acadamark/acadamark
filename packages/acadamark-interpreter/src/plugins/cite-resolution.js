@@ -47,19 +47,38 @@ function extractTextFromContent(nodes) {
  * Extract citation keys from a <cite> node.
  *
  * Tries three sources in order:
- *   1. node.positional — canonical: <cite Smith2020, Jones2019>
- *   2. node.content string — pipe form: <cite | Smith2020,Jones2019>
- *   3. node.content array — recursively-parsed: <cite>Smith2020,Jones2019</cite>
- *      (cite is not in DSL_REGISTRY, so this path currently can't occur, but
- *      is implemented defensively for future compatibility)
+ *   1. node.atRefs — F1 canonical: <cite @Smith2020, @Jones2019>
+ *      Grammar strips the @ prefix; returns plain key strings.
+ *   2. node.positional — bracketed-list form: <cite [@smith2017, @jones2023]>
+ *      BracketedList produces a nested array: node.positional = [['@s','@j']].
+ *      Flatten and strip leading @ from each item.
+ *   3. node.content string — pipe form: <cite | Smith2020,Jones2019>
+ *   4. node.content array — recursively-parsed (defensive; currently unreachable)
+ *
+ * This rewrite also supersedes latent bug B-1: the old positional path called
+ * .trim() on nested array items, crashing on bracketed-list input. That broken
+ * path is replaced by the flatten+strip logic in path 2.
  */
 function extractCiteKeys(node) {
-  if (Array.isArray(node.positional) && node.positional.length > 0) {
-    return node.positional.map(k => k.trim()).filter(Boolean);
+  // Path 1: @-prefixed keys via AtRef grammar rule (grammar strips @).
+  if (Array.isArray(node.atRefs) && node.atRefs.length > 0) {
+    return node.atRefs;
   }
+  // Path 2: bracketed-list form — node.positional = [['@smith2017', '@jones2023']]
+  // Flatten the nested array and strip leading @ from each item.
+  if (Array.isArray(node.positional) && node.positional.length > 0) {
+    const flat = [];
+    for (const k of node.positional) {
+      if (Array.isArray(k)) flat.push(...k);
+      else flat.push(k);
+    }
+    return flat.map(k => (typeof k === 'string' && k.startsWith('@')) ? k.slice(1) : k).filter(Boolean);
+  }
+  // Path 3: pipe-form content string.
   if (typeof node.content === 'string') {
     return node.content.split(',').map(k => k.trim()).filter(Boolean);
   }
+  // Path 4: recursively-parsed content array (defensive; cite not in DSL_REGISTRY).
   if (Array.isArray(node.content) && node.content.length > 0) {
     const text = extractTextFromContent(node.content);
     return text.split(',').map(k => k.trim()).filter(Boolean);

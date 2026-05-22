@@ -5,11 +5,12 @@ import { makeTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function makeRef(id = null, targetKwarg = null) {
+function makeRef(atRef = null, targetKwarg = null) {
   return {
     type: 'acadamarkTag',
     tagname: 'ref',
-    id,
+    id: null,
+    atRefs: atRef ? [atRef] : [],
     classes: [],
     kwargs: targetKwarg ? { target: targetKwarg } : {},
     booleans: {},
@@ -184,7 +185,7 @@ export function run() {
     console.log('PASS: ref-resolution: non-colon id not in label index → __ref-error');
   }
 
-  // --- node.id takes priority over node.kwargs.target ---
+  // --- node.atRefs[0] takes priority over node.kwargs.target ---
   {
     const file = { data: {} };
     const registry = ensureRegistry(file);
@@ -192,7 +193,7 @@ export function run() {
     registry.assign('equation', 'eqn:secondary', { numbered: true, data: {} });
     registry.numberRegistry();
 
-    // Both id and target kwarg set — id wins
+    // Both atRefs and target kwarg set — atRefs wins
     const ref = {
       ...makeRef('eqn:primary'),
       kwargs: { target: 'eqn:secondary' },
@@ -202,8 +203,8 @@ export function run() {
 
     const paraNode = getBodyChildren(tree)[0];
     const marker = paraNode.children[0];
-    assert.equal(marker.kwargs.targetId, 'eqn:primary', 'node.id takes priority');
-    console.log('PASS: ref-resolution: node.id takes priority over kwargs.target');
+    assert.equal(marker.kwargs.targetId, 'eqn:primary', 'node.atRefs[0] takes priority');
+    console.log('PASS: ref-resolution: node.atRefs[0] takes priority over kwargs.target');
   }
 
   // --- unregistered prefix renders just the number ---

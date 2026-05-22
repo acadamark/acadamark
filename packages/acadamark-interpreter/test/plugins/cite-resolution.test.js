@@ -27,11 +27,12 @@ function makeFile(citeInstance = null, style = 'chicago-author-date') {
   return file;
 }
 
-function makeCiteNode({ positional = [], content = null } = {}) {
+function makeCiteNode({ atRefs = [], positional = [], content = null } = {}) {
   return {
     type: 'acadamarkTag',
     tagname: 'cite',
     id: null,
+    atRefs,
     classes: [],
     kwargs: {},
     content,
@@ -84,7 +85,7 @@ export function run() {
   {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite);
-    const citeNode = makeCiteNode({ positional: ['Smith2020'] });
+    const citeNode = makeCiteNode({ atRefs: ['Smith2020'] });
     const tree = makeArticleTree([citeNode]);
     acadamarkCiteResolution()(tree, file);
 
@@ -101,8 +102,8 @@ export function run() {
   {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite);
-    // Parser produces ['Jones2019', 'Smith2020'] from <cite Jones2019,Smith2020>.
-    const citeNode = makeCiteNode({ positional: ['Jones2019', 'Smith2020'] });
+    // Parser produces atRefs: ['Jones2019', 'Smith2020'] from <cite @Jones2019, @Smith2020>.
+    const citeNode = makeCiteNode({ atRefs: ['Jones2019', 'Smith2020'] });
     const tree = makeArticleTree([citeNode]);
     acadamarkCiteResolution()(tree, file);
 
@@ -114,7 +115,7 @@ export function run() {
     // citation-js formats both (alphabetical with chicago-author-date).
     assert.ok(children[0].kwargs.html.includes('Jones'), 'Jones in formatted output');
     assert.ok(children[0].kwargs.html.includes('Smith'), 'Smith in formatted output');
-    console.log('PASS: cite-resolution: multi-key positionals');
+    console.log('PASS: cite-resolution: multi-key atRefs');
   }
 
   // --- Pipe-form content: string in node.content ---
@@ -137,7 +138,7 @@ export function run() {
   {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite);
-    const citeNode = makeCiteNode({ positional: ['MISSING1', 'MISSING2'] });
+    const citeNode = makeCiteNode({ atRefs: ['MISSING1', 'MISSING2'] });
     const tree = makeArticleTree([citeNode]);
     acadamarkCiteResolution()(tree, file);
 
@@ -154,7 +155,7 @@ export function run() {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite);
     // Smith2020 is found; GHOST is not.
-    const citeNode = makeCiteNode({ positional: ['Smith2020', 'GHOST'] });
+    const citeNode = makeCiteNode({ atRefs: ['Smith2020', 'GHOST'] });
     const tree = makeArticleTree([citeNode]);
     acadamarkCiteResolution()(tree, file);
 
@@ -171,8 +172,8 @@ export function run() {
   {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite);
-    const citeA = makeCiteNode({ positional: ['Jones2019'] });
-    const citeB = makeCiteNode({ positional: ['Smith2020'] });
+    const citeA = makeCiteNode({ atRefs: ['Jones2019'] });
+    const citeB = makeCiteNode({ atRefs: ['Smith2020'] });
     const tree = makeArticleTree([citeA, citeB]);
     acadamarkCiteResolution()(tree, file);
 
@@ -186,8 +187,8 @@ export function run() {
   {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite);
-    const cite1 = makeCiteNode({ positional: ['Smith2020'] });
-    const cite2 = makeCiteNode({ positional: ['Smith2020'] });
+    const cite1 = makeCiteNode({ atRefs: ['Smith2020'] });
+    const cite2 = makeCiteNode({ atRefs: ['Smith2020'] });
     const tree = makeArticleTree([cite1, cite2]);
     acadamarkCiteResolution()(tree, file);
 
@@ -200,7 +201,7 @@ export function run() {
   // --- No citations loaded: no-op ---
   {
     const file = makeFile(null); // no acadamarkCitations
-    const citeNode = makeCiteNode({ positional: ['Smith2020'] });
+    const citeNode = makeCiteNode({ atRefs: ['Smith2020'] });
     const tree = makeArticleTree([citeNode]);
     acadamarkCiteResolution()(tree, file);
 
@@ -208,5 +209,27 @@ export function run() {
     // Plugin is a no-op; original cite node is preserved.
     assert.equal(children[0].tagname, 'cite', 'original cite preserved when no citations loaded');
     console.log('PASS: cite-resolution: no-op when no citations loaded');
+  }
+
+  // --- Bracketed-list path: <cite [@smith2017, @jones2023]> ---
+  // Proves latent bug B-1 is fixed: old code called .trim() on a nested array,
+  // crashing. The F1 rewrite flattens and strips @ from each item.
+  {
+    const cite = new Cite(TEST_BIBTEX);
+    const file = makeFile(cite);
+    // Grammar produces node.positional = [['@Smith2020', '@Jones2019']] for
+    // <cite [@Smith2020, @Jones2019]>. Resolver must flatten and strip @.
+    const citeNode = makeCiteNode({ positional: [['@Smith2020', '@Jones2019']] });
+    const tree = makeArticleTree([citeNode]);
+    acadamarkCiteResolution()(tree, file);
+
+    const children = getParagraphChildren(tree);
+    assert.equal(children.length, 1, 'bracketed-list: one replacement node');
+    assert.equal(children[0].tagname, '__cite-marker', 'bracketed-list → __cite-marker');
+    assert.ok(children[0].kwargs.keys.includes('Smith2020'), 'Smith2020 key extracted (@ stripped)');
+    assert.ok(children[0].kwargs.keys.includes('Jones2019'), 'Jones2019 key extracted (@ stripped)');
+    assert.ok(children[0].kwargs.html.includes('Smith'), 'bracketed-list: Smith in formatted output');
+    assert.ok(children[0].kwargs.html.includes('Jones'), 'bracketed-list: Jones in formatted output');
+    console.log('PASS: cite-resolution: bracketed-list [@key, @key] path (B-1 fix verified)');
   }
 }

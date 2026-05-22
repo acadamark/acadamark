@@ -49,9 +49,9 @@ A YAML table from a sequence of mappings:
 
 <section | Cross-references>
 
-See <ref #tab:csv> for the CSV table,
-<ref #tab:json> for JSON,
-and <ref #tab:md> for the markdown pipe table.
+See <ref @tab:csv> for the CSV table,
+<ref @tab:json> for JSON,
+and <ref @tab:md> for the markdown pipe table.
 
 <section | File source>
 
@@ -65,4 +65,4 @@ A table loaded from an external CSV file:
 1,2
 >
 
-An unnumbered table does not appear in the numbered sequence. See <ref #tab:unnumbered>.
+An unnumbered table does not appear in the numbered sequence. See <ref @tab:unnumbered>.

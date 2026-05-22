@@ -131,12 +131,13 @@ console.log('\nAll Slice 1 integration tests passed.')
 // ─── Slice 2: Named tags ───────────────────────────────────────────────────
 
 {
-  const node = parseTag('<cite jones2001>')
+  const node = parseTag('<cite @jones2001>')
   assert.equal(node.tagname, 'cite')
-  assert.deepEqual(node.positional, ['jones2001'])
+  assert.deepEqual(node.atRefs, ['jones2001'])
+  assert.deepEqual(node.positional, [])
   assert.equal(node.content, null)
   assert.equal(node.isOpaqueContent, false)
-  console.log('PASS: <cite jones2001> → named tag, single positional')
+  console.log('PASS: <cite @jones2001> → named tag, single atRef')
 }
 
 {
@@ -149,9 +150,10 @@ console.log('\nAll Slice 1 integration tests passed.')
 }
 
 {
-  const node = parseTag('<cite jones2001 smith2022>')
-  assert.deepEqual(node.positional, ['jones2001', 'smith2022'])
-  console.log('PASS: multiple positionals from space-separated tokens')
+  const node = parseTag('<cite @jones2001 @smith2022>')
+  assert.deepEqual(node.atRefs, ['jones2001', 'smith2022'])
+  assert.deepEqual(node.positional, [])
+  console.log('PASS: multiple atRefs from space-separated @-tokens')
 }
 
 {
@@ -193,9 +195,10 @@ console.log('\nAll Slice 1 integration tests passed.')
 }
 
 {
-  const node = parseTag('<cite [smith2017, jones2023]>')
-  assert.deepEqual(node.positional, [['smith2017', 'jones2023']])
-  console.log('PASS: bracketed list positional')
+  const node = parseTag('<cite [@smith2017, @jones2023]>')
+  assert.deepEqual(node.positional, [['@smith2017', '@jones2023']])
+  assert.deepEqual(node.atRefs, [])
+  console.log('PASS: bracketed list with @ keys')
 }
 
 {
@@ -226,9 +229,9 @@ console.log('\nAll Slice 1 integration tests passed.')
 }
 
 {
-  const node = parseInlineTag('Text with <cite jones2001> inline.')
+  const node = parseInlineTag('Text with <cite @jones2001> inline.')
   assert.equal(node.tagname, 'cite')
-  assert.deepEqual(node.positional, ['jones2001'])
+  assert.deepEqual(node.atRefs, ['jones2001'])
   console.log('PASS: inline named tag inside paragraph')
 }
 
@@ -250,16 +253,17 @@ console.log('\nAll Slice 2 integration tests passed.')
 // ─── Slice 3: identifier rules ─────────────────────────────────────────────
 
 {
-  const node = parseTag('<ref #fig:body-cross-section>')
+  const node = parseTag('<ref @fig:body-cross-section>')
   assert.equal(node.tagname, 'ref')
-  assert.equal(node.id, 'fig:body-cross-section')
-  console.log('PASS: colon in id value #fig:body-cross-section')
+  assert.deepEqual(node.atRefs, ['fig:body-cross-section'])
+  assert.equal(node.id, null)
+  console.log('PASS: colon in atRef value @fig:body-cross-section')
 }
 
 {
-  const node = parseTag('<ref #sec:intro-background>')
-  assert.equal(node.id, 'sec:intro-background')
-  console.log('PASS: colon and hyphen together in id')
+  const node = parseTag('<ref @sec:intro-background>')
+  assert.deepEqual(node.atRefs, ['sec:intro-background'])
+  console.log('PASS: colon and hyphen together in atRef')
 }
 
 {
@@ -628,7 +632,7 @@ function parseLongFormTag(src) {
 
 {
   // Long-form followed by short-form in the same document
-  const src = '<csv>\na,b\n</csv>\n<cite jones2001>'
+  const src = '<csv>\na,b\n</csv>\n<cite @jones2001>'
   const tree = parse(src)
   const tags = tree.children.filter((n) => n.type === 'acadamarkTag')
   assert.equal(tags.length, 2)
@@ -733,9 +737,9 @@ console.log('\n74/74 tests passed.')
 
 // Test 7: \, in bracketed list → single list item containing comma
 {
-  const node = parseTag('<cite [smith2024\\, jones2024]>')
-  assert.deepEqual(node.positional, [['smith2024, jones2024']])
-  console.log('PASS escape: [key1\\, key2] in bracketed list → single item with comma')
+  const node = parseTag('<cite [@smith2024\\, @jones2024]>')
+  assert.deepEqual(node.positional, [['@smith2024, @jones2024']])
+  console.log('PASS escape: [@key1\\, @key2] in bracketed list → single item with comma')
 }
 
 // Test 8 (rewritten): backslash in quoted attribute value stored verbatim by acadamark.
@@ -839,14 +843,14 @@ console.log('\n86/86 tests passed.')
 
 // Test ML-6: Multi-line bracketed list in attribute section
 {
-  const node = parseTag('<cite\n  [smith2024,\n  jones2024]>')
+  const node = parseTag('<cite\n  [@smith2024,\n  @jones2024]>')
   assert.equal(node.tagname, 'cite')
   const list = node.positional.find(Array.isArray)
   assert.ok(list, 'bracketed list found in positionals')
   assert.equal(list.length, 2)
-  assert.equal(list[0].trim(), 'smith2024')
-  assert.equal(list[1].trim(), 'jones2024')
-  console.log('PASS multi-line: bracketed list with newlines between items')
+  assert.ok(list[0].includes('smith2024'), 'first item contains smith2024')
+  assert.ok(list[1].includes('jones2024'), 'second item contains jones2024')
+  console.log('PASS multi-line: bracketed list with @ keys and newlines between items')
 }
 
 // Test ML-7: Quoted attribute value with embedded newline → not recognized as acadamark.
@@ -887,7 +891,7 @@ console.log('\n86/86 tests passed.')
 
 // Test ML-10: Mixed single-line and multi-line tags in same document
 {
-  const src = '<cite jones2001>\n\n<figure\n  #fig1\n  caption="Elephant"\n>\n\n<aside | short>'
+  const src = '<cite @jones2001>\n\n<figure\n  #fig1\n  caption="Elephant"\n>\n\n<aside | short>'
   const tree = parse(src)
   const tags = tree.children.filter((n) => n.type === 'acadamarkTag')
   assert.ok(tags.length >= 3, `expected ≥ 3 acadamarkTag nodes, got ${tags.length}`)
@@ -920,33 +924,34 @@ console.log('\n97/97 tests passed.')
 
 console.log('\n--- Parser Maturity: comma-separated positionals ---')
 
-// PM-1: Comma-only separator (<cite a,b>)
+// PM-1: Comma-only separator (<cite @a,@b>)
 {
-  const node = parseTag('<cite Smith2020,Jones2019>')
+  const node = parseTag('<cite @Smith2020,@Jones2019>')
   assert.equal(node.tagname, 'cite')
-  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
-  console.log('PASS PM-1: comma-only separator produces two positionals')
+  assert.deepEqual(node.atRefs, ['Smith2020', 'Jones2019'])
+  assert.deepEqual(node.positional, [])
+  console.log('PASS PM-1: comma-only separator produces two atRefs')
 }
 
-// PM-2: Comma-space separator (<cite a, b>)
+// PM-2: Comma-space separator (<cite @a, @b>)
 {
-  const node = parseTag('<cite Smith2020, Jones2019>')
-  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
-  console.log('PASS PM-2: comma-space separator produces two positionals')
+  const node = parseTag('<cite @Smith2020, @Jones2019>')
+  assert.deepEqual(node.atRefs, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-2: comma-space separator produces two atRefs')
 }
 
-// PM-3: Space-comma-space separator (<cite a , b>)
+// PM-3: Space-comma-space separator (<cite @a , @b>)
 {
-  const node = parseTag('<cite Smith2020 , Jones2019>')
-  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
-  console.log('PASS PM-3: space-comma-space separator produces two positionals')
+  const node = parseTag('<cite @Smith2020 , @Jones2019>')
+  assert.deepEqual(node.atRefs, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-3: space-comma-space separator produces two atRefs')
 }
 
-// PM-4: Three positionals with mixed separators (<tag a,b c>)
+// PM-4: Three atRefs with mixed separators (<tag @a,@b @c>)
 {
-  const node = parseTag('<tag a,b c>')
-  assert.deepEqual(node.positional, ['a', 'b', 'c'])
-  console.log('PASS PM-4: three positionals with mixed comma and space separators')
+  const node = parseTag('<tag @a,@b @c>')
+  assert.deepEqual(node.atRefs, ['a', 'b', 'c'])
+  console.log('PASS PM-4: three atRefs with mixed comma and space separators')
 }
 
 // PM-5: Comma separator between positionals and kwargs is independent
@@ -1045,27 +1050,27 @@ console.log('\n--- Parser Maturity: self-closing form ---')
   console.log('PASS PM-12: <br #sep .divider /> is selfClosing=true with id and class')
 }
 
-// PM-13: Self-closing with positional
+// PM-13: Self-closing with atRef
 {
-  const node = parseTag('<cite Smith2020 />')
+  const node = parseTag('<cite @Smith2020 />')
   assert.equal(node.tagname, 'cite')
   assert.equal(node.selfClosing, true)
-  assert.deepEqual(node.positional, ['Smith2020'])
-  console.log('PASS PM-13: <cite Smith2020 /> is selfClosing=true with positional')
+  assert.deepEqual(node.atRefs, ['Smith2020'])
+  console.log('PASS PM-13: <cite @Smith2020 /> is selfClosing=true with atRef')
 }
 
-// PM-14: Self-closing combined with comma-separated positionals
+// PM-14: Self-closing combined with comma-separated atRefs
 {
-  const node = parseTag('<cite Smith2020, Jones2019 />')
+  const node = parseTag('<cite @Smith2020, @Jones2019 />')
   assert.equal(node.tagname, 'cite')
   assert.equal(node.selfClosing, true)
-  assert.deepEqual(node.positional, ['Smith2020', 'Jones2019'])
-  console.log('PASS PM-14: <cite Smith2020, Jones2019 /> combines comma positionals and self-closing')
+  assert.deepEqual(node.atRefs, ['Smith2020', 'Jones2019'])
+  console.log('PASS PM-14: <cite @Smith2020, @Jones2019 /> combines comma atRefs and self-closing')
 }
 
 // PM-15: Non-self-closing tag has selfClosing: false
 {
-  const node = parseTag('<cite Smith2020>')
+  const node = parseTag('<cite @Smith2020>')
   assert.equal(node.selfClosing, false)
   console.log('PASS PM-15: non-self-closing tag has selfClosing=false')
 }
@@ -1100,4 +1105,40 @@ console.log('\n--- Parser Maturity: self-closing form ---')
 }
 
 console.log('\nAll parser maturity tests passed.')
-console.log('\n115/115 tests passed.')
+
+// ─── F1 ordering pin: AtRef before Positional ─────────────────────────────
+// This test pins the AtRef-before-Positional ordering in the Attribute rule.
+// If a future grammar edit accidentally reorders the alternatives, @key would
+// be consumed by Positional first (since @ is a valid IdentifierStart) and
+// this test would immediately catch the regression.
+
+console.log('\n--- F1 ordering pin ---')
+
+// @-prefixed attr must produce atRefs, not positional
+{
+  const node = parseTag('<ref @fig:priority>')
+  assert.equal(node.tagname, 'ref')
+  assert.deepEqual(node.atRefs, ['fig:priority'], '@fig:priority must land in atRefs')
+  assert.deepEqual(node.positional, [], 'positional must be empty when @ is used')
+  assert.equal(node.id, null, 'id must be null')
+  console.log('PASS F1-ORDER: <ref @fig:priority> → atRefs=[\'fig:priority\'], positional=[]')
+}
+
+// Multi-key @-prefixed attrs
+{
+  const node = parseTag('<cite @smith2023, @jones2019>')
+  assert.deepEqual(node.atRefs, ['smith2023', 'jones2019'])
+  assert.deepEqual(node.positional, [])
+  console.log("PASS F1-ORDER: multi-key @-prefixed cite → atRefs=['smith2023','jones2019']")
+}
+
+// # still assigns id (unchanged from pre-F1)
+{
+  const node = parseTag('<figure #fig:elephant>')
+  assert.equal(node.id, 'fig:elephant', '# still assigns id')
+  assert.deepEqual(node.atRefs, [], 'atRefs empty when # is used')
+  console.log('PASS F1-ORDER: # still assigns id, atRefs=[]')
+}
+
+console.log('\nAll F1 ordering pin tests passed.')
+console.log('\n118/118 tests passed.')

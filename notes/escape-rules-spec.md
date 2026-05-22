@@ -82,10 +82,18 @@ The user does not need to know which layer owns which character. They escape; th
 **Bracketed list items** support one grammar-level escape: `\,` produces a literal `,` that does not act as a list item separator. This allows a single list item to contain a comma:
 
 ```
-<cite [smith2024\, jones2024]>
+<cite [@smith2024\, jones2024]>
 ```
 
-Produces one citation key `smith2024, jones2024` (a single item with a comma in the middle).
+Produces one citation key `@smith2024, jones2024` (a single item with a comma in the middle). With `@` stripped by the cite resolver, the effective key is `smith2024, jones2024`.
+
+**The `@` prefix in attribute positions** is a grammar-level sigil (F1: `@key` is an AtRef attribute). To write a literal `@` in an attribute value (e.g., a Twitter handle), use a quoted value:
+
+```
+<a href=https://twitter.com/user caption="@user">
+```
+
+A bare `@user` in attribute position is always parsed as an AtRef, not a positional argument.
 
 All other characters in attribute values are stored as-is. The interpreter and downstream processors see the stored strings.
 

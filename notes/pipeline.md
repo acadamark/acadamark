@@ -319,8 +319,7 @@ targets produce the label-tail. Config key `ref-prefix-{prefix}` overrides.
 **Dependency:** `buildCitationIndex` (step 4.4; needs `file.data.acadamarkCitations`).
 If citations were not loaded, this plugin is a no-op.
 
-**Citation keys:** Extracted from `node.positional` (canonical: `<cite Smith2020>`),
-`node.content` as string (pipe form), or parsed content text (defensive path).
+**Citation keys:** Extracted from `node.atRefs` (canonical: `<cite @Smith2020>` or `<cite @Smith2020 @Jones2019>`), `node.positional` (bracketed form: `<cite [@Smith2020, @Jones2019]>`, `@` stripped per item), `node.content` as string (pipe form), or parsed content text (defensive path).
 
 **Mixed case:** When some keys are found and some missing, the replacement is
 `[__cite-marker, __cite-error]` — both nodes appear inline in the output.
@@ -590,12 +589,12 @@ convertContent: content is [text("emphasized")] (already inline, no para unwrap 
 ```
 <$$ #eqn:newton | F = ma $$>
 
-See <ref #eqn:newton>.
+See <ref @eqn:newton>.
 ```
 
 **Stage 1:**
 - `acadamarkTag { tagname: '$$', id: 'eqn:newton', content: ' F = ma ', isOpaqueContent: true }`
-- `acadamarkTag { tagname: 'ref', id: 'eqn:newton' }`
+- `acadamarkTag { tagname: 'ref', atRefs: ['eqn:newton'], id: null }`
 
 **Stage 2:** `$$` is opaque; skipped. `ref` has no default content to parse.
 
@@ -627,16 +626,16 @@ See <ref #eqn:newton>.
 
 **Source (assuming `<data><library>` at root with Smith2020 entry):**
 ```
-See <cite Smith2020>.
+See <cite @Smith2020>.
 ```
 
-**Stage 1:** `acadamarkTag { tagname: 'cite', positional: ['Smith2020'] }`
+**Stage 1:** `acadamarkTag { tagname: 'cite', atRefs: ['Smith2020'], positional: [] }`
 
 **Stage 3 — buildCitationIndex:**
 - `file.data.acadamarkCitations = { cite: Cite([Smith2020]), order: [], style: 'chicago-author-date' }`
 
 **Stage 3 — acadamarkCiteResolution:**
-- `extractCiteKeys(node)` → `['Smith2020']` from `node.positional`
+- `extractCiteKeys(node)` → `['Smith2020']` from `node.atRefs`
 - `cite.data.find(e => e.id === 'Smith2020')` → found
 - `order.push('Smith2020')` → `citations.order = ['Smith2020']`
 - `cite.format('citation', { entry: ['Smith2020'], template: 'chicago-author-date', format: 'html', lang: 'en-US' })` → `'(Smith, 2020)'`

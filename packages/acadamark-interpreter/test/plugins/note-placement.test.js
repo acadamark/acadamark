@@ -53,7 +53,8 @@ function makeRef(targetId) {
   return {
     type: 'acadamarkTag',
     tagname: 'ref',
-    id: targetId,
+    id: null,
+    atRefs: targetId ? [targetId] : [],
     classes: [],
     kwargs: {},
     content: [],

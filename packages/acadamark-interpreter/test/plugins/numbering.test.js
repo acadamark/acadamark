@@ -253,11 +253,11 @@ export function run() {
     console.log('PASS: numbering: sections registered in document order');
   }
 
-  // --- <ref #sec:intro> resolves after section registration (AUD-09 end-to-end) ---
+  // --- <ref @sec:intro> resolves after section registration (AUD-09 end-to-end) ---
   {
     const ref = {
       type: 'acadamarkTag', tagname: 'ref',
-      id: 'sec:intro', classes: [], kwargs: {}, booleans: {},
+      id: null, atRefs: ['sec:intro'], classes: [], kwargs: {}, booleans: {},
       content: null, contentHandler: 'default', isOpaqueContent: false,
       positional: [],
     };
@@ -282,7 +282,7 @@ export function run() {
     // Unnumbered section: display text is the label-tail ("intro").
     assert.equal(resolved.kwargs.text, 'intro',
       'unnumbered section ref uses label-tail as text');
-    console.log('PASS: numbering/ref-resolution: <ref #sec:intro> resolves (AUD-09)');
+    console.log('PASS: numbering/ref-resolution: <ref @sec:intro> resolves (AUD-09)');
   }
 
   // ─── R2: isOpaqueContent guard ────────────────────────────────────────────

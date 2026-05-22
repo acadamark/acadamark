@@ -30,13 +30,13 @@ An unnumbered unlabeled equation:
 
 <section | References to equations>
 
-Reference to numbered labeled with config prefix override (renders "Eq. 1"): see <ref #eqn:newton>.
+Reference to numbered labeled with config prefix override (renders "Eq. 1"): see <ref @eqn:newton>.
 
-Reference to numbered labeled without override would use default prefix. The second equation has no label and cannot be referenced. The third is unnumbered labeled (renders label-tail "energy"): see <ref #eqn:energy>.
+Reference to numbered labeled without override would use default prefix. The second equation has no label and cannot be referenced. The third is unnumbered labeled (renders label-tail "energy"): see <ref @eqn:energy>.
 
-Reference to a second unnumbered labeled (renders "alt-form"): see <ref #eqn:alt-form>.
+Reference to a second unnumbered labeled (renders "alt-form"): see <ref @eqn:alt-form>.
 
-Reference to missing label (produces error): <ref #eqn:nonexistent>.
+Reference to missing label (produces error): <ref @eqn:nonexistent>.
 
 
 <section | Figures>
@@ -53,7 +53,7 @@ A figure with -numbered (no visible label, not in numbered sequence):
 
 <figure #fig:lion -numbered src="assets/elephant.jpg" | Another elephant (stand-in for an unnumbered labeled figure).>
 
-Reference to numbered figure (renders "figure 1"): see <ref #fig:elephant>.
+Reference to numbered figure (renders "figure 1"): see <ref @fig:elephant>.
 
 
 <section | Notes>
@@ -62,7 +62,7 @@ A labeled endnote<note #note:galton placement=foot | Galton coined the term "reg
 
 An unlabeled note<note | This note has no id and cannot be cross-referenced.> demonstrating auto-id behavior.
 
-Reference to labeled note (renders "note 1"): see <ref #note:galton>.
+Reference to labeled note (renders "note 1"): see <ref @note:galton>.
 
 
 <section | Edge cases>
@@ -71,8 +71,8 @@ A numbered equation with an unregistered prefix (id prefix "custom" is not in th
 
 <$$ #custom:thing | x = y $$>
 
-Reference to an id with a colon but an unregistered prefix (renders just the number, no word): <ref #custom:thing>.
+Reference to an id with a colon but an unregistered prefix (renders just the number, no word): <ref @custom:thing>.
 
-Reference to an id without a colon — not in the label index (produces error): <ref #not-a-label>.
+Reference to an id without a colon — not in the label index (produces error): <ref @not-a-label>.
 
 Reference with no id at all (produces error): <ref>.

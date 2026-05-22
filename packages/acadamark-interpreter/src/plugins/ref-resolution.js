@@ -1,11 +1,11 @@
-// Ref-resolution plugin — replace <ref #id> nodes with __ref-marker or
+// Ref-resolution plugin — replace <ref @id> nodes with __ref-marker or
 // __ref-error internal nodes before the hast conversion step.
 //
 // Runs last in the structural pipeline (after numbering), so all numbered
 // entries are already registered when this plugin walks the tree.
 //
 // For each <ref> node encountered:
-//   - The target id is taken from node.id (canonical: <ref #eqn:newton>)
+//   - The target id is taken from node.atRefs[0] (canonical: <ref @eqn:newton>)
 //     or node.kwargs.target (legacy: <ref target=eqn:newton>).
 //   - If no target id: produces __ref-error and emits a file warning.
 //   - If target not found in label index: produces __ref-error + warning.
@@ -115,7 +115,7 @@ export function acadamarkRefResolution() {
     const config = file?.data?.acadamarkConfig;
 
     function processRef(node) {
-      const targetId = node.id ?? node.kwargs?.target ?? null;
+      const targetId = node.atRefs?.[0] ?? node.kwargs?.target ?? null;
 
       if (!targetId) {
         file?.message?.('Reference has no id', node);
