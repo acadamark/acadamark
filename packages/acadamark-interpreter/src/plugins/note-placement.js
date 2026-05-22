@@ -9,7 +9,7 @@
 //
 // Three steps:
 //   1. Build a lookup Map<noteNode, entry> from acadamarkNotesPending.
-//   2. Walk the tree with walkAndSplice; for each <note> node found in the map,
+//   2. Walk the tree with walkReplace; for each <note> node found in the map,
 //      build a __note-marker (number now known) and splice it in place.
 //   3. Build __note-list-item nodes from pending in order (document order),
 //      using the live node.content (which contains resolved refs/cites). Build
@@ -20,47 +20,9 @@
 // are structurally identical to what fillNotes produced previously. The handlers
 // in handlers/notes.js are unchanged.
 
-import { isAcadamarkTag, findTag } from '../lib/ast-helpers.js';
+import { findTag } from '../lib/ast-helpers.js';
+import { walkReplace } from '../lib/walk-replace.js';
 import { notePlacement } from './notes.js';
-
-// ─── Placement walk ───────────────────────────────────────────────────────────
-
-/**
- * Walk a node array, find registered <note> nodes (via noteMap), and splice
- * each one in place with the marker returned by createMarker(node, entry).
- *
- * Recurses into:
- *   - Non-opaque acadamarkTag .content arrays (!node.isOpaqueContent)
- *   - mdast .children arrays (paragraphs, blockquotes, list items, etc.)
- *
- * Mutates `nodes` in place. Returns nothing.
- *
- * @param {Array} nodes
- * @param {Map<object, object>} noteMap — Map from note node → registry entry
- * @param {Function} createMarker      — (noteNode, entry) → acadamarkTag marker
- */
-function walkAndSplice(nodes, noteMap, createMarker) {
-  let i = 0;
-  while (i < nodes.length) {
-    const node = nodes[i];
-    if (isAcadamarkTag(node, 'note') && noteMap.has(node)) {
-      const entry = noteMap.get(node);
-      const marker = createMarker(node, entry);
-      nodes.splice(i, 1, marker);
-      i += 1; // marker is exactly 1 node; advance past it
-    } else {
-      // Recurse into non-opaque acadamarkTag content.
-      if (isAcadamarkTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {
-        walkAndSplice(node.content, noteMap, createMarker);
-      }
-      // Recurse into mdast children.
-      if (node.children && Array.isArray(node.children)) {
-        walkAndSplice(node.children, noteMap, createMarker);
-      }
-      i++;
-    }
-  }
-}
 
 // ─── Article-back helper ──────────────────────────────────────────────────────
 
@@ -122,11 +84,16 @@ export function acadamarkNotePlacement() {
 
     // Walk the tree, replacing each pending <note> node with its __note-marker.
     // entry.number is now set; noteref-N IDs are computed here.
-    walkAndSplice(tree.children, noteMap, (noteNode, entry) => {
+    // noteMap captures the registered note→entry pairs; the defensive check
+    // (entry guard) handles the pathological case of an unregistered note node
+    // (which should not occur after acadamarkNotes has run).
+    walkReplace(tree.children, 'note', (noteNode) => {
+      const entry = noteMap.get(noteNode);
+      if (!entry) return [noteNode]; // defensive: unregistered note stays in place
       const { id: noteId } = entry;
       const number = entry.number;
       const refId = `noteref-${number}`;
-      return {
+      return [{
         type: 'acadamarkTag',
         tagname: '__note-marker',
         id: null,
@@ -137,7 +104,7 @@ export function acadamarkNotePlacement() {
         isOpaqueContent: false,
         positional: [],
         booleans: {},
-      };
+      }];
     });
 
     // Build __note-list-item nodes from pending in document order.

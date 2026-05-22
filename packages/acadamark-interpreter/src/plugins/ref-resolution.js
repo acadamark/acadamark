@@ -25,8 +25,8 @@
 // When the entry.number is null (target registered but unnumbered), the
 // label-tail of the id is used as link text: #eqn:energy → "energy".
 
-import { isAcadamarkTag } from '../lib/ast-helpers.js';
 import { ensureRegistry } from '../lib/registry.js';
+import { walkReplace } from '../lib/walk-replace.js';
 
 /**
  * Built-in prefix → display-word dictionary.
@@ -69,36 +69,6 @@ function computeRefText(id, entry, config) {
     null;
 
   return prefixWord ? `${prefixWord} ${entry.number}` : `${entry.number}`;
-}
-
-/**
- * Walk a node array in-place, replacing <ref> acadamarkTag nodes.
- *
- * Recurses into:
- *   - acadamarkTag .content arrays
- *   - mdast .children arrays
- *
- * @param {Array} nodes
- * @param {Function} processRef - called for each <ref> node, returns Array
- */
-function walkAndReplace(nodes, processRef) {
-  let i = 0;
-  while (i < nodes.length) {
-    const node = nodes[i];
-    if (isAcadamarkTag(node, 'ref')) {
-      const replacements = processRef(node);
-      nodes.splice(i, 1, ...replacements);
-      i += replacements.length;
-    } else {
-      if (isAcadamarkTag(node) && Array.isArray(node.content)) {
-        walkAndReplace(node.content, processRef);
-      }
-      if (node.children && Array.isArray(node.children)) {
-        walkAndReplace(node.children, processRef);
-      }
-      i++;
-    }
-  }
 }
 
 function makeRefMarker(targetId, entry, config) {
@@ -161,7 +131,7 @@ export function acadamarkRefResolution() {
       return [makeRefMarker(targetId, entry, config)];
     }
 
-    walkAndReplace(tree.children, processRef);
+    walkReplace(tree.children, 'ref', processRef);
   };
 }
 

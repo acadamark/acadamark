@@ -21,7 +21,7 @@
 // __cite-marker.keys = all keys (found+missing when mixed; found-only when all found).
 // __cite-error.keys  = only the missing keys (or all if all missing).
 
-import { isAcadamarkTag } from '../lib/ast-helpers.js';
+import { walkReplace } from '../lib/walk-replace.js';
 
 // ─── Key extraction ───────────────────────────────────────────────────────────
 
@@ -104,40 +104,6 @@ function makeCiteError(keys) {
   };
 }
 
-// ─── Tree walk ────────────────────────────────────────────────────────────────
-
-/**
- * Walk a node array in-place, replacing <cite> acadamarkTag nodes.
- *
- * Recurses into:
- *   - acadamarkTag .content arrays (skip opaque content)
- *   - mdast .children arrays (paragraphs, blockquotes, etc.)
- *
- * @param {Array} nodes
- * @param {Function} processCite - returns Array of replacement nodes
- */
-function walkAndReplace(nodes, processCite) {
-  let i = 0;
-  while (i < nodes.length) {
-    const node = nodes[i];
-    if (isAcadamarkTag(node, 'cite')) {
-      const replacements = processCite(node);
-      nodes.splice(i, 1, ...replacements);
-      i += replacements.length;
-    } else {
-      // Recurse into non-opaque acadamarkTag content.
-      if (isAcadamarkTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {
-        walkAndReplace(node.content, processCite);
-      }
-      // Recurse into mdast children.
-      if (node.children && Array.isArray(node.children)) {
-        walkAndReplace(node.children, processCite);
-      }
-      i++;
-    }
-  }
-}
-
 // ─── Plugin ───────────────────────────────────────────────────────────────────
 
 /**
@@ -211,6 +177,6 @@ export function acadamarkCiteResolution() {
       return replacements;
     }
 
-    walkAndReplace(tree.children, processCite);
+    walkReplace(tree.children, 'cite', processCite);
   };
 }
