@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { acadamarkNumbering, fillNumbering } from '../../src/plugins/numbering.js';
+import { acadamarkRefResolution } from '../../src/plugins/ref-resolution.js';
 import { ensureRegistry } from '../../src/lib/registry.js';
 import { makeTag } from '../../src/lib/ast-helpers.js';
 
@@ -206,5 +207,112 @@ export function run() {
 
     assert.equal(inlineMath.computedNumber, undefined, 'inline math not touched');
     console.log('PASS: numbering: inline math is not numbered');
+  }
+
+  // ─── R2: section registration (AUD-09) ────────────────────────────────────
+
+  // --- section with colon-id is registered in label index ---
+  {
+    const section = makeTag('section', [], { id: 'sec:intro' });
+    const tree = makeArticleTree(section);
+    const file = { data: {} };
+    acadamarkNumbering()(tree, file);
+    const registry = ensureRegistry(file);
+    registry.numberRegistry();
+
+    const entry = registry.findByLabel('sec:intro');
+    assert.ok(entry, 'sec:intro found in label index');
+    assert.equal(entry.type, 'section');
+    assert.equal(entry.numbered, false, 'section is not numbered');
+    assert.equal(entry.number, null, 'number is null for unnumbered entries');
+    console.log('PASS: numbering: section with colon-id registered in label index');
+  }
+
+  // --- section registration document order ---
+  {
+    // Outer section, sub-section nested inside, second outer section.
+    const sub = makeTag('sub-section', [], { id: 'sec:methods-sub' });
+    const sec1 = makeTag('section', [sub], { id: 'sec:methods' });
+    const sec2 = makeTag('section', [], { id: 'sec:results' });
+    const tree = makeArticleTree(sec1, sec2);
+    const file = { data: {} };
+    acadamarkNumbering()(tree, file);
+    const registry = ensureRegistry(file);
+    registry.numberRegistry();
+
+    // All three sections must be registered.
+    assert.ok(registry.findByLabel('sec:methods'), 'sec:methods registered');
+    assert.ok(registry.findByLabel('sec:methods-sub'), 'sec:methods-sub registered');
+    assert.ok(registry.findByLabel('sec:results'), 'sec:results registered');
+
+    // Insertion order (= document order): methods, methods-sub, results.
+    const entries = registry.entries('section');
+    assert.equal(entries[0].id, 'sec:methods');
+    assert.equal(entries[1].id, 'sec:methods-sub');
+    assert.equal(entries[2].id, 'sec:results');
+    console.log('PASS: numbering: sections registered in document order');
+  }
+
+  // --- <ref #sec:intro> resolves after section registration (AUD-09 end-to-end) ---
+  {
+    const ref = {
+      type: 'acadamarkTag', tagname: 'ref',
+      id: 'sec:intro', classes: [], kwargs: {}, booleans: {},
+      content: null, contentHandler: 'default', isOpaqueContent: false,
+      positional: [],
+    };
+    const section = makeTag('section', [], { id: 'sec:intro' });
+    const body = makeTag('article-body', [section, { type: 'paragraph', children: [ref] }]);
+    const front = makeTag('article-front', []);
+    const article = makeTag('article', [front, body]);
+    const tree = { type: 'root', children: [article] };
+    const file = { data: {} };
+
+    // Run numbering (registers section) + apply numbers + ref-resolution.
+    acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    acadamarkRefResolution()(tree, file);
+
+    // The ref node must be replaced with __ref-marker, not __ref-error.
+    const paraChildren = tree.children[0].content[1].content[1].children;
+    const resolved = paraChildren[0];
+    assert.equal(resolved.tagname, '__ref-marker',
+      `expected __ref-marker, got ${resolved.tagname}`);
+    assert.equal(resolved.kwargs.targetId, 'sec:intro');
+    // Unnumbered section: display text is the label-tail ("intro").
+    assert.equal(resolved.kwargs.text, 'intro',
+      'unnumbered section ref uses label-tail as text');
+    console.log('PASS: numbering/ref-resolution: <ref #sec:intro> resolves (AUD-09)');
+  }
+
+  // ─── R2: isOpaqueContent guard ────────────────────────────────────────────
+
+  // --- numbered element inside opaque-content node is NOT registered ---
+  {
+    // Wrap a figure inside a node that has isOpaqueContent: true.
+    // The shared discover() walk skips .content on opaque nodes, so the
+    // figure must not appear in the registry.
+    const innerFigure = makeFigure('fig:trapped');
+    const opaqueWrapper = {
+      type: 'acadamarkTag', tagname: 'custom-opaque',
+      id: null, classes: [], kwargs: {}, booleans: {},
+      content: [innerFigure],
+      contentHandler: 'custom',
+      isOpaqueContent: true,
+      positional: [],
+    };
+    const tree = makeArticleTree(opaqueWrapper);
+    const file = { data: {} };
+    acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
+
+    // The figure inside the opaque node must NOT be registered.
+    const registry = ensureRegistry(file);
+    assert.equal(registry.entries('figure').length, 0,
+      'figure inside opaque content is not registered');
+    assert.equal(innerFigure.computedNumber, undefined,
+      'figure inside opaque content has no computedNumber');
+    console.log('PASS: numbering: figure inside opaque content is not registered (isOpaqueContent guard)');
   }
 }

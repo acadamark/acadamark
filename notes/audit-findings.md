@@ -207,7 +207,22 @@ ref-resolution can find them. Code blocks are a separate question — `code:` is
 not in DEFAULT_PREFIXES — but adding it and registering labelled code blocks
 would follow the same pattern.
 
-**Deferred to:** future ref-enhancement slice.
+**Partial fix in R2 (2026-05-22):** Section registration is now done by the
+discovery walk in `numbering.js`. The `section`/`sub-section`/`sub-sub-section`
+visitors call `registry.assign('section', node.id || null, { numbered: false })`,
+so colon-label ids land in the registry's label index and `<ref #sec:intro>`
+resolves. `ref-resolution.js` is unchanged — it already queries the label index,
+so it finds sections automatically.
+
+**Code-block registration: deferred.** Code blocks have a representation
+question — a code block is only an `acadamarkTag` (reachable by `.content`
+descent) when written in the shorthand-wrapped form `<code #code:snippet | ...>`.
+Plain fenced code blocks are mdast `code` nodes with no shorthand wrapper and
+no `id` field accessible to the discovery walk. Registering code blocks requires
+either (a) deciding that only shorthand-wrapped code blocks are referenceable
+and adding a `code` visitor in a later slice, or (b) a design pass on whether
+plain fenced `code` nodes should also support colon-ids. Neither is done in R2;
+this is left for a future investigation.
 
 ---
 

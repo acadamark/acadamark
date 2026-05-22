@@ -1,32 +1,39 @@
-// Numbering plugin — register display-math, figure, and table nodes; fill numbers.
+// Numbering plugin — register display-math, figure, table, and section nodes;
+// fill display numbers.
 //
-// Runs after acadamarkNotes (notes claim their positions first). Walks the full
-// mdast tree and, for each display-math ($$), figure, or table acadamarkTag,
-// decides whether it should be numbered and registers the entry in the shared
-// document registry.
+// Runs after acadamarkNotes (notes claim their positions first). Uses the shared
+// discover() walk to visit the full mdast tree in document order and register:
 //
-// After this plugin runs, computedNumber is NOT yet set on nodes. It is set
-// by fillNumbering(), which is called from the acadamarkApplyNumbers stage
-// after registry.numberRegistry() has assigned all display numbers.
+//   Numbered elements ($$, figure, table):
+//     - Calls registry.assign(type, id, { numbered }) to record the entry
+//     - Sets node.registryType = 'equation' | 'figure' | 'table' (used by handlers)
+//     - Pushes { node, entry } into file.data.acadamarkNumberingPending
+//     - After registry.numberRegistry() runs, fillNumbering() sets computedNumber
 //
-// The numbering decision follows this priority order:
+//   Section elements (section, sub-section, sub-sub-section) — AUD-09 fix:
+//     - Calls registry.assign('section', id, { numbered: false })
+//     - Sections with a colon-label id (e.g. sec:intro) land in the registry's
+//       label index, so <ref #sec:intro> resolves via ref-resolution.js
+//     - numbered: false — sections become findable by label, not sequentially
+//       numbered through the registry
+//
+// The numbering decision for numbered elements follows this priority order:
 //   1. +numbered / -numbered boolean kwarg on the tag itself
 //   2. numbered=true / numbered=false string kwarg on the tag
 //   3. Document-level config: number-equations / number-figures / number-tables
 //   4. Default: numbered (true)
 //
-// This plugin:
-//   - Calls registry.assign(type, id, { numbered }) to register the entry
-//     (colon-ids go into the label index for cross-ref lookup)
-//   - Sets node.registryType = 'equation' | 'figure' | 'table'  (used by handlers)
-//   - Pushes { node, entry } into file.data.acadamarkNumberingPending
+// The shared discover() walk checks !node.isOpaqueContent before recursing into
+// .content arrays, so numbered elements inside opaque-content nodes (e.g. a
+// figure textually embedded in a math body) are correctly not registered.
+// In practice this case does not arise in valid documents.
 //
 // fillNumbering(file) (exported):
 //   - Reads acadamarkNumberingPending and sets node.computedNumber from entry.number
 
-import { isAcadamarkTag } from '../lib/ast-helpers.js';
 import { ensureRegistry } from '../lib/registry.js';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
+import { discover } from '../lib/discover.js';
 
 // Maps the parser-emitted tagname to the registry type used for display labels.
 const NUMBERED_TAGNAMES = new Map([
@@ -42,55 +49,12 @@ const CONFIG_KEY = {
   table: 'number-tables',
 };
 
-/**
- * Recursively walk an array of nodes, finding display-math, figure, and table
- * nodes and registering them in the document registry. Pushes { node, entry }
- * into `pending` for each numbered candidate. Does NOT set computedNumber —
- * that is done by fillNumbering() after registry.numberRegistry() runs.
- *
- * Sets node.registryType on each matched node (used by compile-time handlers).
- *
- * Recurses into:
- *   - acadamarkTag .content arrays
- *   - mdast .children arrays
- *
- * @param {Array} nodes
- * @param {object} registry - shared document registry
- * @param {Map|null} config - document-level config (file.data.acadamarkConfig)
- * @param {Array} pending - accumulates { node, entry } pairs
- */
-function walkAndCollect(nodes, registry, config, pending) {
-  if (!Array.isArray(nodes)) return;
-  for (const node of nodes) {
-    if (isAcadamarkTag(node)) {
-      const registryType = NUMBERED_TAGNAMES.get(node.tagname);
-      if (registryType) {
-        const configKey = CONFIG_KEY[registryType];
-        const numbered = readBoolKwarg(node, 'numbered', config, configKey, true);
-        const entry = registry.assign(
-          registryType,
-          node.id || null,
-          { numbered, data: {} },
-        );
-        node.registryType = registryType;  // used by compile-time handlers
-        // computedNumber is set later by fillNumbering(), after numberRegistry() runs.
-        pending.push({ node, entry });
-      }
-      // Recurse into acadamarkTag content.
-      if (Array.isArray(node.content)) {
-        walkAndCollect(node.content, registry, config, pending);
-      }
-    }
-    // Recurse into mdast children (paragraphs, lists, blockquotes, etc.)
-    if (node.children && Array.isArray(node.children)) {
-      walkAndCollect(node.children, registry, config, pending);
-    }
-  }
-}
+// Section tagnames registered for cross-reference lookup (AUD-09).
+const SECTION_TAGNAMES = ['section', 'sub-section', 'sub-sub-section'];
 
 /**
- * Unified plugin. Registers display-math, figure, and table nodes in the
- * document registry and stores pending { node, entry } pairs in
+ * Unified plugin. Registers display-math, figure, table, and section nodes in
+ * the document registry and stores pending { node, entry } pairs in
  * file.data.acadamarkNumberingPending. Does NOT assign computedNumber —
  * call fillNumbering(file) after registry.numberRegistry() runs.
  *
@@ -101,7 +65,36 @@ export function acadamarkNumbering() {
     const registry = ensureRegistry(file);
     const config = file?.data?.acadamarkConfig ?? null;
     const pending = [];
-    walkAndCollect(tree.children, registry, config, pending);
+
+    const visitors = new Map();
+
+    // Visitors for numbered element types ($$, figure, table).
+    for (const [tagname, registryType] of NUMBERED_TAGNAMES) {
+      visitors.set(tagname, (node) => {
+        const configKey = CONFIG_KEY[registryType];
+        const numbered = readBoolKwarg(node, 'numbered', config, configKey, true);
+        const entry = registry.assign(
+          registryType,
+          node.id || null,
+          { numbered, data: {} },
+        );
+        node.registryType = registryType;  // used by compile-time handlers
+        // computedNumber is set later by fillNumbering(), after numberRegistry() runs.
+        pending.push({ node, entry });
+      });
+    }
+
+    // Visitors for section types. Sections are registered with numbered: false —
+    // they become findable by label for <ref #sec:...> but are not sequentially
+    // numbered through the registry (AUD-09 fix, sections only).
+    for (const tagname of SECTION_TAGNAMES) {
+      visitors.set(tagname, (node) => {
+        registry.assign('section', node.id || null, { numbered: false, data: {} });
+      });
+    }
+
+    discover(tree, visitors);
+
     if (file?.data) {
       file.data.acadamarkNumberingPending = pending;
     }
