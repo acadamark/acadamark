@@ -135,7 +135,7 @@ The interpreter's test suite includes 9 fixture `.acm` documents that cover a ra
 
 `packages/layer1-vocabulary/elements/` contains 66 per-element `.md` files. Coverage includes: article structure (`article`, `meta`, `config`, `article-front`, `article-body`, `article-back`, `article-title`, `article-subtitle`), sections (`section`, `sub-section`, `sub-sub-section`), inline semantics (`em`, `strong`, `code`, `sub`, `sup`, `abbr`), figures and media (`figure`, `caption`), tables (`table`), math (`display-math`, `inline-math`), citations and references (`cite`, `ref`, `bibliography`), notes (`note`, `note-list`, `note-list-item`, `note-marker`), and more.
 
-Not yet specified or implemented as first-class elements: theorem-family (`theorem`, `proof`, `lemma`, `definition`), block quotation (`quote`), and several less-common elements. These appear in the survey at `notes/authoring-features-survey.md`.
+Not yet specified or implemented as first-class elements: theorem-family (`theorem`, `proof`, `lemma`, `definition`), and several less-common elements. These appear in the survey at `notes/authoring-features-survey.md`.
 
 ## What doesn't yet exist
 
@@ -162,14 +162,6 @@ The current pipeline is build-time only. DD-5 (see `notes/design-directions.md`)
 ### GFM table support (`remark-gfm`)
 
 `remark-gfm` is not installed. Plain pipe-table syntax (` | h1 | h2 | `) is not recognized. The `<table md | ...>` form provides equivalent capability via the interpreter's Markdown-table parser. See AUD-06 in `notes/audit-findings.md`.
-
-### Block quotation element
-
-No vocabulary entry or handler for `<quote>` / `<blockquote>`. Raw `<blockquote>` renders via HTML passthrough and theme CSS. See AUD-12.
-
-### Body font bundling in the public API
-
-`src/assets/font-loader.js` exports `getDocumentFontsCss()` (Inter + Source Code Pro, base64), which is used by the test fixture renderer. The main interpreter pipeline (`src/index.js`) does not call it — external consumers receive the system font stack. See AUD-16 / GAP-8 in `notes/audit-findings.md`.
 
 ### Cross-references to sections and code blocks
 
