@@ -232,5 +232,26 @@ function parseTag(src) {
   console.log('PASS RC-13: isOpaqueContent and contentHandler set correctly at parse time')
 }
 
+// ─── Test RC-14: PG-13 verification — markdown pass-through escape in content ─
+// \* inside named-tag content is stored verbatim as \* by the parser (pass-
+// through escape — not acadamark-significant, so not consumed at the grammar
+// level). When remarkRecursiveContent re-feeds the content through remark,
+// CommonMark processes \* as an escape and emits a literal *.
+//
+// Per escape-rules-spec.md: \*asterisk\* → literal *asterisk*, not emphasis,
+// not the raw string \*asterisk\*.
+{
+  const node = parseTag('<aside | text with \\*asterisk\\*>')
+  assert.ok(Array.isArray(node.content), 'content is Node[]')
+  // \* should not produce emphasis — it is an escape, not a delimiter pair.
+  const hasEmphasis = node.content.some((n) => n.type === 'emphasis')
+  assert.equal(hasEmphasis, false, 'no emphasis node — \\* is a CommonMark escape, not markup')
+  // The text node should contain literal asterisks, not backslash-asterisk.
+  const textValue = node.content.filter((n) => n.type === 'text').map((n) => n.value).join('')
+  assert.ok(textValue.includes('*asterisk*'), `text contains literal asterisks (got ${JSON.stringify(textValue)})`)
+  assert.equal(textValue.includes('\\*'), false, `text does not contain literal \\* (got ${JSON.stringify(textValue)})`)
+  console.log('PASS RC-14: PG-13 — \\* pass-through escape in named-tag content produces literal * via remark')
+}
+
 console.log('\nAll recursive-content tests passed.')
-console.log('\n13/13 recursive-content tests passed.')
+console.log('\n14/14 recursive-content tests passed.')
