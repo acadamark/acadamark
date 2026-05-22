@@ -41,24 +41,28 @@ export function run() {
     assert.ok(html.includes('<link'), 'link mode: <link> in output');
     assert.ok(html.includes('rel="stylesheet"'), 'link mode: rel=stylesheet');
     assert.ok(html.includes('katex'), 'link mode: KaTeX CDN URL in href');
-    assert.ok(!html.includes('<style>'), 'link mode: no <style> block');
+    // Document fonts CSS is always injected via <style>; no KaTeX CSS inline.
+    assert.ok(html.includes('@font-face'), 'link mode: document fonts CSS present in <style>');
+    assert.ok(!html.includes('.katex'), 'link mode: no KaTeX CSS inline (served via <link>)');
     console.log('PASS: katex-css: link mode → <link rel="stylesheet"> to KaTeX CDN');
   }
 
-  // --- skip mode: math doc → no CSS ---
+  // --- skip mode: math doc → no KaTeX CSS; document fonts still present ---
   {
     const html = processHtml(MATH_SOURCE, { katexCss: 'skip' });
-    assert.ok(!html.includes('<style>'), 'skip mode: no <style>');
+    assert.ok(html.includes('@font-face'), 'skip mode: document fonts CSS still injected');
+    assert.ok(!html.includes('.katex'), 'skip mode: no KaTeX CSS (skipped)');
     assert.ok(!html.includes('<link'), 'skip mode: no <link>');
-    console.log('PASS: katex-css: skip mode → no CSS emitted');
+    console.log('PASS: katex-css: skip mode → no KaTeX CSS emitted; document fonts present');
   }
 
-  // --- no math: no CSS even in inline mode ---
+  // --- no math: document fonts always injected, no KaTeX CSS ---
   {
     const html = processHtml(NO_MATH_SOURCE);
-    assert.ok(!html.includes('<style>'), 'no math: no <style>');
+    assert.ok(html.includes('@font-face'), 'no math: document fonts CSS injected');
+    assert.ok(!html.includes('.katex'), 'no math: no KaTeX CSS');
     assert.ok(!html.includes('<link'), 'no math: no <link>');
-    console.log('PASS: katex-css: document without math → no CSS injected');
+    console.log('PASS: katex-css: document without math → document fonts injected, no KaTeX CSS');
   }
 
   // --- CSS is prepended before <article> ---

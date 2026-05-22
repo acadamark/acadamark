@@ -408,3 +408,10 @@ Small change.
 
 **Severity:** Medium — affects the actual deliverable for any non-fixture 
 use of the package.
+
+**Status: Fixed (2026-05-21).** `getDocumentFontsCss()` is now imported in
+`src/index.js` and injected unconditionally as a `<style>` element, prepended
+before the article content. `render-fixtures.js` shell no longer injects it
+separately. Document fonts are injected exactly once, by the interpreter. Test
+assertions in `integration.test.js` and `katex-css.test.js` updated to reflect
+that a `<style>` block is always present.

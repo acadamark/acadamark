@@ -75,9 +75,9 @@ context. This is deferred to a later slice.
 
 ### KaTeX fonts are not included in inline-CSS mode
 
-**Status: Fixed (2026-Q2 audit, AUD-10 + AUD-11).**
+**Status: Fixed (2026-Q2 audit, AUD-10 + AUD-11 + AUD-16).**
 
-KaTeX font URLs are now patched to base64 data URIs by `patchKatexFontUrls()` in `src/assets/font-loader.js`. Inter and Source Code Pro body fonts are bundled as subsetted woff2 files via `getDocumentFontsCss()`. Self-contained HTML renders correctly offline from `file://`.
+KaTeX font URLs are now patched to base64 data URIs by `patchKatexFontUrls()` in `src/assets/font-loader.js`. Inter and Source Code Pro body fonts are bundled as subsetted woff2 files via `getDocumentFontsCss()`. Both are wired into `src/index.js`: KaTeX CSS is injected conditionally (when math is present), document fonts are injected unconditionally (every document has body text). Self-contained HTML renders correctly offline from `file://`.
 
 The limitation below was accurate before the font-loader work and is retained for history:
 

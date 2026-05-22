@@ -69,7 +69,7 @@ import { acadamarkRefResolution } from './plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from './plugins/cite-resolution.js';
 import { acadamarkBibliography } from './plugins/bibliography.js';
 import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plugin.js';
-import { patchKatexFontUrls } from './assets/font-loader.js';
+import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 
 export { acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
@@ -354,6 +354,10 @@ export function acadamarkInterpreter(options = {}) {
       handlers: { acadamarkTag: tagHandler },
       allowDangerousHtml: true,
     });
+
+    // Inject document fonts (Inter, Source Code Pro) unconditionally: every
+    // document has body text and needs these fonts for self-contained output.
+    hast.children.unshift(makeStyleElement(getDocumentFontsCss()));
 
     // Inject KaTeX CSS if the document uses math and the mode is not 'skip'.
     // Detection is done by walking the hast tree for inline-math / display-math

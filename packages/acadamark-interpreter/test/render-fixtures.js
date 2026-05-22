@@ -26,8 +26,6 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkAcadamark from 'remark-acadamark';
 import { acadamarkInterpreter } from '../src/index.js';
-import { getDocumentFontsCss } from '../src/assets/font-loader.js';
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 
@@ -36,13 +34,11 @@ const FIXTURES_DIR = join(__dirname, 'fixtures');
  * Read from src/assets/default.css so there is a single source of truth.
  *
  * NOTE: This CSS is shell-only. It is not emitted by the interpreter.
+ * Document fonts (Inter, Source Code Pro) are now injected by the interpreter
+ * itself (index.js), not by this shell. Removing them here avoids double injection.
  */
 const DEFAULT_CSS_PATH = resolve(__dirname, '..', 'src', 'assets', 'default.css');
 const SHELL_CSS = readFileSync(DEFAULT_CSS_PATH, 'utf8');
-
-// Document fonts (Inter, Source Code Pro) — base64 woff2 @font-face rules.
-// Generated at render time from src/assets/fonts/*.woff2.
-const FONTS_CSS = getDocumentFontsCss();
 
 /**
  * Wrap an interpreter fragment in a full HTML document shell.
@@ -59,7 +55,6 @@ function wrapInHtmlShell(fragment, title) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 <style>
-${FONTS_CSS}
 ${SHELL_CSS}
 </style>
 </head>
