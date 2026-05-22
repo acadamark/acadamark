@@ -468,3 +468,19 @@ any drift.
 **Severity:** Medium — the untested surface area covers the full complexity
 of the pipeline in combination. Individual stages have unit tests, but combined
 behavior (notes + cite + math + numbering + cross-ref in one document) is dark.
+
+## AUD-17: integration.test.js hand-mirrors the index.js pipeline
+
+`test/integration.test.js` contains a manually-maintained copy of the
+plugin pipeline assembled in `src/index.js`. The two are not linked —
+any change to the pipeline in `index.js` must be duplicated by hand in
+the test, and nothing enforces this. Surfaced during R3a: the test
+independently imported `fillNotes` and broke when `index.js` was
+updated. If the mirror drifts, the integration test silently exercises
+a different pipeline than ships.
+
+Fix path: have the integration test import and use the real pipeline
+assembly from `index.js` rather than rebuilding it. Deferred — not in
+R3a scope.
+
+Severity: Medium — a maintenance hazard, not a current bug.
