@@ -28,7 +28,7 @@ The two layers are independently valuable:
 
 ## Layer 1: Semantic HTML conventions
 
-The Layer 1 specification (in progress, see `notes/`) defines:
+The Layer 1 specification (see `notes/`) defines:
 
 - **Structural elements.** Standard HTML5 (`article`, `section`, `figure`, `aside`, `nav`) wherever it suffices. Custom elements (`<sub-section>`, `<theorem>`, `<proof>`, etc.) where HTML5 is insufficient, using the native custom-elements mechanism.
 
@@ -40,7 +40,7 @@ The Layer 1 specification (in progress, see `notes/`) defines:
 
 - **Numbering and cross-reference semantics.** Numbered elements declare their numbering domain; references resolve against those domains in a post-parse pass.
 
-The specification is the deliverable for Layer 1. Implementation is deferred — anyone can produce conformant HTML by any means.
+The specification is the deliverable for Layer 1. Anyone can produce conformant HTML by any means.
 
 ## JATS as reference and export target
 
@@ -94,10 +94,10 @@ Block-level tags don't require explicit closing. A new peer-level tag implicitly
 For example:
 
 ```
-<# Introduction #intro>
+<# #intro | Introduction>
 Some text.
 
-<# Methods #methods>
+<# #methods | Methods>
 More text.
 ```
 
@@ -125,7 +125,7 @@ The two registers mix freely. Use markdown for prose, drop into tag shorthand wh
 
 Standard markdown paragraph with *emphasis* and a [link](url).
 
-<figure #elephant align=right src=elephant.jpg | An adult elephant.>
+<figure #fig:elephant align=right src=elephant.jpg | An adult elephant.>
 
 More markdown prose, with a citation <cite smith2023>.
 ```
@@ -151,6 +151,20 @@ Three differences:
 **`@` for references collides with social-media usage.** Not a real problem in academic prose. Pandoc has used `@key` for citations for years without confusion.
 
 **Custom elements require JS for full rendering.** True, but acceptable: the project's premise is that HTML+CSS+JS is the rendering substrate. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration.
+
+## Design directions (discovered through implementation)
+
+The sections above describe acadamark's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work; some are not yet fully implemented. The working notes in `notes/audit-findings.md` track the specific issues each direction bears on, and `archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
+
+**Content gets parsed; arguments don't.** A value's syntactic form — keyword argument, positional, pipe-content, child element — is incidental. What matters is its semantic role. *Arguments* are configuration: `citation-style="apa"`, `placement="end"`, `src="refs.bib"`. They are opaque strings or enumerations and pass through the pipeline uninterpreted. *Content* is authored prose-and-structure that may contain nested tags, citations, math, or emphasis, and must be parsed recursively. The trap is content-shaped values that happen to be written as keyword arguments — a `caption="..."` containing a `<cite>` is content wearing an argument's clothing, and must be parsed as such. The direction: vocabulary entries declare each keyword argument's role, and the interpreter treats `role: content` arguments the same as child nodes.
+
+**Caption-bearing elements support two equivalent forms.** Elements like figures, tables, and code blocks carry both metadata (id, format hint) and content-like material (caption, alt text). Authors should be able to choose a compact form, where the caption is a keyword argument, or an explicit form, where the caption is a child element — and both produce identical output. The compact form suits brief captions; the explicit form suits captions with rich content or elements with several content sections. This generalizes the previous direction: the explicit form is simply the case where content-shaped material is given its own element rather than an argument slot.
+
+**`<meta>` is for metadata; `<config>` is for options.** Two document-level constructs with a boundary that must stay sharp. `<meta>` holds metadata that appears in or shapes the rendered document — title, author, date, affiliations, abstract — and is JATS-like in spirit. `<config>` holds processing options that never render — citation style, numbering preferences, theme settings. Each should validate the attributes it accepts rather than silently absorbing the other's. Blurring them produces silent failure: a title placed in `<config>` simply vanishes.
+
+**All tag forms work for every tag where they make sense.** The shorthand grammar admits several tag forms — short, pipe-content, multi-line pipe-content, long-form nesting, self-closing. The principle is that for any given tag, every form that is *semantically* meaningful should *actually* work, and produce equivalent output. Where a form is silently broken for some tags but not others, authors have no way to know the rule, and the uniformity that justifies the shorthand erodes. The direction: vocabulary entries declare which forms each tag supports, tests cover each declared form, and parser-level conflicts that block a declared form are treated as bugs.
+
+**Standalone HTML is the build target; client-side rendering is the future target.** The pipeline today produces self-contained HTML — every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. That does not change. But a further target is full client-side rendering: an `.acm` source file loaded directly in a browser, parsed and rendered without a build step, in the spirit of JupyterLite. Reaching it means the parser, the plugin pipeline, and the handlers must all run in the browser, not only in Node. This is not current work, but it shapes current decisions — plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so the eventual port is a migration rather than a rewrite.
 
 ## What's deliberately out of scope
 

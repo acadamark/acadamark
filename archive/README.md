@@ -30,6 +30,7 @@ Brainstorms, syntax sketches, and partial implementations from before the unifie
 - **`flow.md`** — early sketch of a processing pipeline and shorthand-tag conventions. Influenced the current `notes/shorthand-syntax.md` but is not authoritative.
 - **`javascript_library_plan/`** — class-hierarchy designs for an `Academark` class with `Collection`, `Options`, and per-feature processors. This OOP design has been entirely superseded by the current plugin architecture, where each concern is a separate unified plugin rather than a method on a god-class.
 - **`html-markup.md`, `footnotes.md`, `schema-for-academic-publications.md`, `from_ai.md`** — small reference notes and feature checklists.
+- **`design-directions-2026-05.md`** — architectural directions that emerged during the exploratory phase and still guide the current design. These are still relevant, but the implementation implications are mostly obsolete because the architecture changed so much. The principles and rationale remain useful.
 
 ### `ai-conversation-logs/`
 

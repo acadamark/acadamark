@@ -24,32 +24,34 @@ HTML+CSS+JS already does most of what academic typesetting needs. It's universal
 
 - *Markdown-like shorthand* for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.
 
-- *Tag shorthand* for anything that needs attributes, identifiers, or academic semantics. The form is `<tag #id .class attr=value | content>`, read as "tag with these attributes containing this content." Tags don't require explicit closing — like LaTeX's `\section{}`, a new peer-level tag implicitly ends the previous one.
+- *Tag shorthand* for anything that needs attributes, identifiers, or academic semantics. The form is `<tag #id .class attr=value | content>` — attributes first, then a pipe, then content — read as "tag with these attributes containing this content." Tags don't require explicit closing — like LaTeX's `\section{}`, a new peer-level tag implicitly ends the previous one.
 
 Both registers compile to the same Layer 1 HTML.
 
 ## A taste
 
 ```
-<# Introduction #intro>
+## Introduction
 
 This claim is supported by recent work <cite smith2023, jones2024>.
 
-<figure #elephant .wrap align=right src=elephant.jpg |
+<figure #fig:elephant .wrap align=right src=elephant.jpg |
   An adult African elephant, photographed in Tanzania.>
 
-See <ref elephant> for context.
+See <ref #fig:elephant> for context.
 
-<# Methods #methods>
+## Methods
 
 We followed the protocol described in <cite jones2024>.
 ```
 
-This compiles to standard, semantic HTML that any browser can render and any converter can process.
+Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, and a cross-reference to that figure. Referenceable elements take a typed colon-id (`#fig:elephant`), so a reference names both the kind of target and the target itself. The whole example compiles to standard, semantic HTML that any browser can render and any converter can process.
 
 ## Status
 
-Acadamark is in active design. The core conventions for sections, citations, and the shorthand syntax are specified. A working implementation is being rebuilt on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype) to replace earlier regex-based prototypes. See [`DESIGN.md`](DESIGN.md) for the design rationale and [`BUILD.md`](BUILD.md) for the implementation plan.
+Acadamark is implemented. The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML.
+
+The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for a current snapshot of what works and what doesn't, [`DESIGN.md`](DESIGN.md) for the design rationale, [`BUILD.md`](BUILD.md) for the implementation plan, and [`notes/interpreter.md`](notes/interpreter.md) and [`notes/pipeline.md`](notes/pipeline.md) for the architecture.
 
 ## Reading order
 
@@ -57,10 +59,14 @@ The project has accumulated enough documentation that knowing where to start mat
 
 ## Project goals
 
-1. **Specify** a complete vocabulary of HTML conventions for academic publishing.
-2. **Author** that vocabulary efficiently via a uniform shorthand.
+Acadamark's purpose, in four parts:
+
+1. **Specify** a complete vocabulary of HTML conventions for academic publishing (Layer 1).
+2. **Author** that vocabulary efficiently via a uniform shorthand (Layer 2).
 3. **Build** the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.
 4. **Demonstrate** that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from acadamark source through HTML to PDF and other formats using only off-the-shelf tools downstream.
+
+Goals 1 through 3 are substantially achieved; goal 4 is demonstrated for HTML output, with JATS export and other downstream targets still ahead. See [`STATUS.md`](STATUS.md) for detail.
 
 ## Non-goals
 

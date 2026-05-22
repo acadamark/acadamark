@@ -1,3 +1,7 @@
+> **Archived 2026-Q2.** The five design directions in this file are integrated into `DESIGN.md` (section "Design directions discovered through implementation") in condensed prose form. This file retains the fuller implementation-detail version — including the YAML sketches and the DD-N numbering that `notes/audit-findings.md` cross-references ("see DD-1/DD-2"). Retained for reference; not a current spec.
+
+---
+
 # Design directions
 
 This file captures architectural directions for acadamark — design decisions and targets that aren't bugs but guide future work. Distinct from `audit-findings.md` (which captures specific issues to address) and from spec documents (which describe the current state).
