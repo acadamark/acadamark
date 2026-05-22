@@ -94,7 +94,7 @@ From `notes/audit-findings.md` as of session end. AUD-02 and AUD-03 are now also
 ### Asset / build pipeline
 - [x] **AUD-10** — KaTeX font URLs fail when CSS inlined. Fixed in slice 7 follow-up.
 - [x] **AUD-11** — Body font fallback to serif on WSL/Linux. Fixed in slice 7 follow-up.
-- [ ] **AUD-16 / GAP-8** — `getDocumentFontsCss()` not wired into `src/index.js`; external consumers get system font fallback.
+- [x] **AUD-16 / GAP-8** — `getDocumentFontsCss()` not wired into `src/index.js`; external consumers get system font fallback. Fixed 2026-05-21.
 
 ### Documentation drift (handled by audit cleanup)
 - [x] **AUD-02** — `notes/interpreter-design.md` drift. Handled by Step 1 (archived) + Step 2 (replaced by interpreter.md).
@@ -103,7 +103,7 @@ From `notes/audit-findings.md` as of session end. AUD-02 and AUD-03 are now also
 ### Suggested priority for fix slices
 
 **Low-effort high-value group (~3-4 hours total):**
-- AUD-16 (wire `getDocumentFontsCss()` — 15 minutes).
+- ~~AUD-16~~ (wire `getDocumentFontsCss()` — done).
 - AUD-01 (equation number CSS fix — 30 minutes).
 - AUD-12 (add `<quote>` vocabulary entry + handler — 1-2 hours).
 - AUD-13 (config kwarg validation — 30-60 minutes).

@@ -33,6 +33,15 @@ This centers both the KaTeX block and the number span on a single line.
 
 **Deferred to:** themes / CSS polish slice.
 
+**Status: Fixed (slice 7 CSS work, confirmed 2026-05-21).** `default.css` was
+updated during slice 7 to use `display: flex; align-items: center` on
+`display-math`, with `.katex-display { flex: 1 }` (fills available width,
+equation centered within) and `.equation-number { flex: 0 0 auto; text-align:
+right }` (sits flush right). Visual verification confirmed via browser screenshot:
+numbered equations centered, equation number at far right margin; unnumbered
+equations centered across full width. No code change was needed for this finding
+— it was already fixed in slice 7 but never closed.
+
 ---
 
 ## AUD-02: Pipeline diagram drift in `notes/interpreter-design.md`

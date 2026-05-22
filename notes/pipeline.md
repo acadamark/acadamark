@@ -678,12 +678,13 @@ The interpreter produces self-contained HTML by default (`'inline'` modes).
   `packages/acadamark-interpreter/src/assets/` handle acadamark-specific
   tooltip behavior.
 
-### 12.3 Body fonts (not yet integrated into pipeline)
+### 12.3 Body fonts
 
 `patchKatexFontUrls()` is in `src/assets/font-loader.js`. The same file also
 exports `getDocumentFontsCss()`, which provides Inter and Source Code Pro as
-base64-encoded `@font-face` declarations. This is not yet wired into the
-pipeline (it was extracted as a module but is not called from `index.js`).
+base64-encoded `@font-face` declarations. This is called from `index.js` and
+the resulting `<style>` element is prepended to the document body unconditionally
+— every rendered document embeds the font data for self-contained output.
 
 ### 12.4 Lazy loading
 
