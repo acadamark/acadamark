@@ -27,12 +27,13 @@ import remarkRecursiveContent from '../../remark-acadamark/src/recursive-content
 import { acadamarkConfigDiscovery } from '../src/plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.js';
 import { acadamarkSectionNesting } from '../src/plugins/section-nesting.js';
-import { acadamarkNotes } from '../src/plugins/notes.js';
+import { acadamarkNotes, fillNotes } from '../src/plugins/notes.js';
 import { acadamarkLibraryLoad } from '../src/plugins/library-load.js';
-import { acadamarkNumbering } from '../src/plugins/numbering.js';
+import { acadamarkNumbering, fillNumbering } from '../src/plugins/numbering.js';
 import { acadamarkRefResolution } from '../src/plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from '../src/plugins/cite-resolution.js';
 import { acadamarkBibliography } from '../src/plugins/bibliography.js';
+import { ensureRegistry } from '../src/lib/registry.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -65,6 +66,11 @@ function runPipeline(source, opts = {}) {
   acadamarkLibraryLoad({ assetsDir: opts.assetsDir ?? null })(mdast, file);
   acadamarkNotes()(mdast, file);
   acadamarkNumbering()(mdast, file);
+  // Apply numbers: mirror the acadamarkApplyNumbers stage from the full pipeline.
+  const registry = ensureRegistry(file);
+  registry.numberRegistry();
+  fillNotes(mdast, file);
+  fillNumbering(file);
   acadamarkRefResolution()(mdast, file);
   acadamarkCiteResolution()(mdast, file);
   acadamarkBibliography()(mdast, file);
@@ -117,8 +123,9 @@ export function run() {
     assert.ok(html.includes('Introduction'), 'doc1: section title text');
     assert.ok(html.includes('<em>'), 'doc1: inline <em> present');
     assert.ok(html.includes('three years'), 'doc1: em content');
-    // No math → no KaTeX CSS injected.
-    assert.ok(!html.includes('<style>'), 'doc1: no CSS injected (no math)');
+    // Document fonts always injected; no KaTeX CSS when there's no math.
+    assert.ok(html.includes('@font-face'), 'doc1: document fonts CSS injected');
+    assert.ok(!html.includes('.katex'), 'doc1: no KaTeX CSS injected (no math)');
 
     snapshotHast('document-1', hast);
     console.log('PASS: integration doc1 (minimal article)');
@@ -143,7 +150,9 @@ export function run() {
     assert.ok(html.includes('<figcaption>'), 'doc2: figcaption present');
     assert.ok(html.includes('<aside>'), 'doc2: aside present');
     assert.ok(html.includes('<blockquote>'), 'doc2: blockquote present');
-    assert.ok(!html.includes('<style>'), 'doc2: no CSS injected (no math)');
+    // Document fonts always injected; no KaTeX CSS when there's no math.
+    assert.ok(html.includes('@font-face'), 'doc2: document fonts CSS injected');
+    assert.ok(!html.includes('.katex'), 'doc2: no KaTeX CSS injected (no math)');
 
     snapshotHast('document-2', hast);
     console.log('PASS: integration doc2 (realistic short paper)');
@@ -163,7 +172,9 @@ export function run() {
     assert.ok(html.includes('<figure'), 'doc3: figure present');
     assert.ok(html.includes('<aside'), 'doc3: aside present');
     assert.ok(html.includes('<hr'), 'doc3: hr present');
-    assert.ok(!html.includes('<style>'), 'doc3: no CSS injected (no math)');
+    // Document fonts always injected; no KaTeX CSS when there's no math.
+    assert.ok(html.includes('@font-face'), 'doc3: document fonts CSS injected');
+    assert.ok(!html.includes('.katex'), 'doc3: no KaTeX CSS injected (no math)');
 
     snapshotHast('document-3', hast);
     console.log('PASS: integration doc3 (edge cases)');

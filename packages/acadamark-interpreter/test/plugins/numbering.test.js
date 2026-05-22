@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { acadamarkNumbering } from '../../src/plugins/numbering.js';
+import { acadamarkNumbering, fillNumbering } from '../../src/plugins/numbering.js';
+import { ensureRegistry } from '../../src/lib/registry.js';
 import { makeTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -51,6 +52,8 @@ export function run() {
     const tree = makeArticleTree(eq);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq.computedNumber, 1, 'first equation is 1');
     assert.equal(eq.registryType, 'equation');
@@ -65,6 +68,8 @@ export function run() {
     const tree = makeArticleTree(eq1, eq2, eq3);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq1.computedNumber, 1);
     assert.equal(eq2.computedNumber, 2);
@@ -80,6 +85,8 @@ export function run() {
     const tree = makeArticleTree(eq1, eq2, eq3);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq1.computedNumber, 1);
     assert.equal(eq2.computedNumber, null, 'unnumbered eq has null computedNumber');
@@ -94,6 +101,8 @@ export function run() {
     const tree = makeArticleTree(eq1, eq2);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq1.computedNumber, 1);
     assert.equal(eq2.computedNumber, null);
@@ -108,6 +117,8 @@ export function run() {
     const config = new Map([['number-equations', 'false']]);
     const file = { data: { acadamarkConfig: config } };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq1.computedNumber, null);
     assert.equal(eq2.computedNumber, null);
@@ -121,6 +132,8 @@ export function run() {
     const config = new Map([['number-equations', 'false']]);
     const file = { data: { acadamarkConfig: config } };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq1.computedNumber, 1, '+numbered overrides config=false');
     console.log('PASS: numbering: +numbered on tag overrides config suppression');
@@ -135,6 +148,8 @@ export function run() {
     const tree = makeArticleTree(eq1, fig1, eq2, fig2);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq1.computedNumber, 1);
     assert.equal(eq2.computedNumber, 2);
@@ -149,8 +164,10 @@ export function run() {
     const tree = makeArticleTree(eq);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
-
     const registry = file.data.acadamarkRegistry;
+    registry.numberRegistry();
+    fillNumbering(file);
+
     assert.ok(registry, 'registry attached to file.data');
     const entry = registry.findByLabel('eqn:newton');
     assert.ok(entry, 'eqn:newton found in label index');
@@ -166,6 +183,8 @@ export function run() {
     const tree = makeArticleTree(section);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(eq.computedNumber, 1, 'equation inside section is numbered');
     console.log('PASS: numbering: equations inside sections are numbered');
@@ -182,6 +201,8 @@ export function run() {
     const tree = makeArticleTree(inlineMath);
     const file = { data: {} };
     acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNumbering(file);
 
     assert.equal(inlineMath.computedNumber, undefined, 'inline math not touched');
     console.log('PASS: numbering: inline math is not numbered');

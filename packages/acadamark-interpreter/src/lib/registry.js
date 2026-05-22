@@ -11,7 +11,8 @@
 // Entry shape: { type, id, number, numbered, data }
 //   type     — the registry type string (e.g. "equation")
 //   id       — the entry's id (author-provided or auto-generated)
-//   number   — sequential number among numbered entries of this type, or null
+//   number   — undefined before numberRegistry() runs; sequential number after;
+//              null for entries with numbered:false (deliberately unnumbered)
 //   numbered — whether this entry participates in the visible sequence
 //   data     — caller-supplied payload
 //
@@ -31,14 +32,14 @@
  * @returns {object} registry with assign, lookup, entries, findByLabel, reset
  */
 export function createRegistry() {
-  // type → { counter: number, sequence: number, entries: Map<id, entry> }
+  // type → { sequence: number, entries: Map<id, entry> }
   const types = new Map();
   // Cross-type label index: ids containing ":" → entry
   const labelIndex = new Map();
 
   function ensure(type) {
     if (!types.has(type)) {
-      types.set(type, { counter: 0, sequence: 0, entries: new Map() });
+      types.set(type, { sequence: 0, entries: new Map() });
     }
     return types.get(type);
   }
@@ -58,14 +59,13 @@ export function createRegistry() {
      * @param {string} type - e.g., "note", "equation", "figure"
      * @param {string|null|undefined} providedId - author-specified id, or null
      * @param {{ numbered?: boolean, data?: object }} [opts]
-     * @returns {{ type: string, id: string, number: number|null, numbered: boolean, data: object }}
+     * @returns {{ type: string, id: string, number: undefined, numbered: boolean, data: object }}
      */
     assign(type, providedId, { numbered = true, data = {} } = {}) {
       const t = ensure(type);
       t.sequence += 1;
-      const number = numbered ? ++t.counter : null;
       const id = providedId || `${type}-${t.sequence}`;
-      const entry = { type, id, number, numbered, data };
+      const entry = { type, id, number: undefined, numbered, data };
       t.entries.set(id, entry);
       if (id.includes(':')) {
         labelIndex.set(id, entry);
@@ -109,6 +109,27 @@ export function createRegistry() {
       const t = types.get(type);
       if (!t) return [];
       return Array.from(t.entries.values());
+    },
+
+    /**
+     * Assign sequential display numbers to all registered entries.
+     *
+     * Iterates every registered type in insertion order. For each type,
+     * walks entries in insertion order (= document order) and assigns the
+     * next positive integer to entries with `numbered: true`; sets
+     * `number: null` for entries with `numbered: false`. Mutates entries
+     * in place.
+     *
+     * Call exactly once, after all assign() calls are complete and before
+     * any consumer reads entry.number.
+     */
+    numberRegistry() {
+      for (const t of types.values()) {
+        let counter = 0;
+        for (const entry of t.entries.values()) {
+          entry.number = entry.numbered ? ++counter : null;
+        }
+      }
     },
 
     /**

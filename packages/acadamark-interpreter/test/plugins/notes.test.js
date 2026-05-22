@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { acadamarkNotes } from '../../src/plugins/notes.js';
+import { acadamarkNotes, fillNotes } from '../../src/plugins/notes.js';
+import { ensureRegistry } from '../../src/lib/registry.js';
 import { makeTag, isAcadamarkTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -68,7 +69,10 @@ export function run() {
   {
     const note = makeNote('An important observation.');
     const tree = makeArticleTree(para('Text before.'), note, para('Text after.'));
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     // note was replaced by marker
@@ -87,7 +91,10 @@ export function run() {
   {
     const note = makeNote('An important observation.');
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const back = getBack(tree);
     const lists = findAllTags(back.content, '__note-list');
@@ -108,7 +115,10 @@ export function run() {
     const n2 = makeNote('Note two.');
     const n3 = makeNote('Note three.');
     const tree = makeArticleTree(para('A'), n1, para('B'), n2, para('C'), n3);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     const markers = findAllTags(body.content, '__note-marker');
@@ -127,7 +137,10 @@ export function run() {
   {
     const note = makeNote('A footnote.', { placement: 'foot' });
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const back = getBack(tree);
     const lists = findAllTags(back.content, '__note-list');
@@ -140,7 +153,10 @@ export function run() {
   {
     const note = makeNote('A sidenote.', { placement: 'side' });
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     const markers = findAllTags(body.content, '__note-marker');
@@ -163,7 +179,10 @@ export function run() {
     const n2 = makeNote('Side.', { placement: 'side' });
     const n3 = makeNote('Foot.', { placement: 'foot' });
     const tree = makeArticleTree(para('A'), n1, para('B'), n2, para('C'), n3);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     const markers = findAllTags(body.content, '__note-marker');
@@ -185,7 +204,10 @@ export function run() {
   {
     const note = makeNote('A note.', { id: 'note:important' });
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     const marker = findAllTags(body.content, '__note-marker')[0];
@@ -201,7 +223,10 @@ export function run() {
   {
     const note = makeNote('Auto id.');
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     const marker = findAllTags(body.content, '__note-marker')[0];
@@ -213,7 +238,10 @@ export function run() {
   {
     const note = makeNote('Bidirectional.');
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const body = getBody(tree);
     const marker = findAllTags(body.content, '__note-marker')[0];
@@ -232,7 +260,10 @@ export function run() {
   {
     const note = makeNote('Legacy.', { position: 'side' });
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     // position=side → sidenote, collects to back with sidenote flag
     const back = getBack(tree);
@@ -247,7 +278,10 @@ export function run() {
     const note = makeNote('Nested note.');
     const section = makeTag('section', [para('Section body.'), note]);
     const tree = makeArticleTree(section);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     // Note should be replaced inside the section
     const allNotes = findAllTags(tree.children, 'note');
@@ -273,7 +307,10 @@ export function run() {
       booleans: {},
     };
     const tree = makeArticleTree(para('Text.'), note);
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const back = getBack(tree);
     const item = findAllTags(back.content, '__note-list-item')[0];
@@ -292,7 +329,10 @@ export function run() {
     const body = makeTag('article-body', [para('Text.'), note]);
     const article = makeTag('article', [front, body, back]);
     const tree = { type: 'root', children: [article] };
-    acadamarkNotes()(tree);
+    const file = { data: {} };
+    acadamarkNotes()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    fillNotes(tree, file);
 
     const backContent = tree.children[0].content[2].content;
     assert.equal(backContent[0].tagname, '__note-list', '__note-list is first in back');

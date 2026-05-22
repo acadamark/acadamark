@@ -2,12 +2,23 @@ import assert from 'node:assert/strict';
 import { createRegistry, ensureRegistry } from '../../src/lib/registry.js';
 
 export function run() {
+  // --- assign is record-only; numberRegistry fills numbers ---
+  {
+    const r = createRegistry();
+    const e = r.assign('note', null);
+    assert.equal(e.number, undefined, 'number is undefined before numberRegistry()');
+    r.numberRegistry();
+    assert.equal(e.number, 1, 'numberRegistry fills in number');
+    console.log('PASS: registry: assign is record-only; numberRegistry fills numbers');
+  }
+
   // --- assign generates sequential numbers per type ---
   {
     const r = createRegistry();
     const e1 = r.assign('note', null);
     const e2 = r.assign('note', null);
     const e3 = r.assign('note', null);
+    r.numberRegistry();
     assert.equal(e1.number, 1);
     assert.equal(e2.number, 2);
     assert.equal(e3.number, 3);
@@ -21,6 +32,7 @@ export function run() {
     const f1 = r.assign('figure', null);
     const n2 = r.assign('note', null);
     const f2 = r.assign('figure', null);
+    r.numberRegistry();
     assert.equal(n1.number, 1);
     assert.equal(n2.number, 2);
     assert.equal(f1.number, 1);
@@ -43,6 +55,7 @@ export function run() {
     const r = createRegistry();
     const e = r.assign('note', 'note:important', { data: { placement: 'end' } });
     assert.equal(e.id, 'note:important');
+    r.numberRegistry();
     assert.equal(e.number, 1);
     console.log('PASS: registry: author-provided ids are preserved');
   }
@@ -52,6 +65,7 @@ export function run() {
     const r = createRegistry();
     r.assign('note', null, { data: { placement: 'end' } });
     r.assign('note', 'note:custom', { data: { placement: 'foot' } });
+    r.numberRegistry();
     const found = r.lookup('note', 'note:custom');
     assert.ok(found !== null, 'lookup found the entry');
     assert.equal(found.id, 'note:custom');
@@ -82,6 +96,7 @@ export function run() {
     r.assign('note', null, { data: { placement: 'end' } });
     r.assign('note', 'note:custom', { data: { placement: 'side' } });
     r.assign('note', null, { data: { placement: 'foot' } });
+    r.numberRegistry();
     const list = r.entries('note');
     assert.equal(list.length, 3);
     assert.equal(list[0].id, 'note-1');
@@ -109,6 +124,7 @@ export function run() {
     assert.deepEqual(r.entries('note'), []);
     assert.deepEqual(r.entries('figure'), []);
     const e = r.assign('note', null);
+    r.numberRegistry();
     assert.equal(e.number, 1, 'counter restarted after reset');
     console.log('PASS: registry: reset clears all state and restarts counters');
   }
@@ -132,12 +148,13 @@ export function run() {
     console.log('PASS: registry: entry shape includes type and numbered fields');
   }
 
-  // --- numbered=false: number is null, counter does not advance ---
+  // --- numbered=false: number is null after numberRegistry, counter does not advance ---
   {
     const r = createRegistry();
     const e1 = r.assign('equation', 'eqn:numbered');
     const e2 = r.assign('equation', 'eqn:unlabeled', { numbered: false });
     const e3 = r.assign('equation', 'eqn:next');
+    r.numberRegistry();
     assert.equal(e1.number, 1, 'first numbered equation is 1');
     assert.equal(e2.number, null, 'unnumbered equation has null number');
     assert.equal(e2.numbered, false, 'unnumbered entry has numbered:false');
@@ -151,6 +168,7 @@ export function run() {
     r.assign('equation', 'eqn:newton');
     r.assign('figure', 'fig:scatter');
     r.assign('note', null);  // auto-id note-1 (no colon, not indexed)
+    r.numberRegistry();
 
     const eqn = r.findByLabel('eqn:newton');
     assert.ok(eqn !== null, 'eqn:newton found in label index');

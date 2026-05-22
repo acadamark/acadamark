@@ -44,6 +44,7 @@ export function run() {
     const file = { data: {} };
     const registry = ensureRegistry(file);
     registry.assign('equation', 'eqn:newton', { numbered: true, data: {} });
+    registry.numberRegistry();
 
     const ref = makeRef('eqn:newton');
     const tree = makeArticleTree(para(ref));
@@ -64,6 +65,7 @@ export function run() {
     const file = { data: {} };
     const registry = ensureRegistry(file);
     registry.assign('equation', 'eqn:energy', { numbered: false, data: {} });
+    registry.numberRegistry();
 
     const ref = makeRef('eqn:energy');
     const tree = makeArticleTree(para(ref));
@@ -83,6 +85,7 @@ export function run() {
     registry.assign('equation', 'eqn:newton', { numbered: true, data: {} });
     // Simulate config override: ref-prefix-eqn="Eq."
     file.data.acadamarkConfig = new Map([['ref-prefix-eqn', 'Eq.']]);
+    registry.numberRegistry();
 
     const ref = makeRef('eqn:newton');
     const tree = makeArticleTree(para(ref));
@@ -128,6 +131,7 @@ export function run() {
     const file = { data: {} };
     const registry = ensureRegistry(file);
     registry.assign('equation', 'eqn:newton', { numbered: true, data: {} });
+    registry.numberRegistry();
 
     const ref = makeRef(null, 'eqn:newton');  // id=null, target kwarg set
     const tree = makeArticleTree(para(ref));
@@ -146,6 +150,7 @@ export function run() {
     const file = { data: {} };
     const registry = ensureRegistry(file);
     registry.assign('figure', 'fig:scatter', { numbered: true, data: {} });
+    registry.numberRegistry();
 
     const ref = makeRef('fig:scatter');
     const section = makeTag('section', [para(ref)]);
@@ -167,6 +172,7 @@ export function run() {
     // auto-generated id has no colon — NOT in label index
     const registry = ensureRegistry(file);
     registry.assign('equation', null, { numbered: true, data: {} });
+    registry.numberRegistry();
 
     const ref = makeRef('equation-1');
     const tree = makeArticleTree(para(ref));
@@ -184,6 +190,7 @@ export function run() {
     const registry = ensureRegistry(file);
     registry.assign('equation', 'eqn:primary', { numbered: true, data: {} });
     registry.assign('equation', 'eqn:secondary', { numbered: true, data: {} });
+    registry.numberRegistry();
 
     // Both id and target kwarg set — id wins
     const ref = {
@@ -204,6 +211,7 @@ export function run() {
     const file = { data: {} };
     const registry = ensureRegistry(file);
     registry.assign('custom', 'custom:thing', { numbered: true, data: {} });
+    registry.numberRegistry();
 
     const ref = makeRef('custom:thing');
     const tree = makeArticleTree(para(ref));

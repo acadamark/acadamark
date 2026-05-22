@@ -1,27 +1,28 @@
-// Numbering plugin — assign sequential numbers to display-math and figure nodes.
+// Numbering plugin — register display-math, figure, and table nodes; fill numbers.
 //
-// Runs after acadamarkNotes (notes claim their numbers first). Walks the full
-// mdast tree and, for each display-math ($$) or figure acadamarkTag, decides
-// whether it should be numbered and, if so, assigns a counter-incremented
-// number from the shared document registry.
+// Runs after acadamarkNotes (notes claim their positions first). Walks the full
+// mdast tree and, for each display-math ($$), figure, or table acadamarkTag,
+// decides whether it should be numbered and registers the entry in the shared
+// document registry.
 //
-// The decision follows this priority order:
+// After this plugin runs, computedNumber is NOT yet set on nodes. It is set
+// by fillNumbering(), which is called from the acadamarkApplyNumbers stage
+// after registry.numberRegistry() has assigned all display numbers.
+//
+// The numbering decision follows this priority order:
 //   1. +numbered / -numbered boolean kwarg on the tag itself
 //   2. numbered=true / numbered=false string kwarg on the tag
-//   3. Document-level config: number-equations / number-figures
+//   3. Document-level config: number-equations / number-figures / number-tables
 //   4. Default: numbered (true)
 //
-// When numbered, the plugin:
-//   - Calls registry.assign(type, id, { numbered: true }) to register the entry
+// This plugin:
+//   - Calls registry.assign(type, id, { numbered }) to register the entry
 //     (colon-ids go into the label index for cross-ref lookup)
-//   - Sets node.computedNumber = entry.number  (integer)
-//   - Sets node.registryType = 'equation' | 'figure'
+//   - Sets node.registryType = 'equation' | 'figure' | 'table'  (used by handlers)
+//   - Pushes { node, entry } into file.data.acadamarkNumberingPending
 //
-// When not numbered:
-//   - Calls registry.assign(type, id, { numbered: false }) so the entry is
-//     still in the type map (for lookup) but does not claim a display number
-//   - Sets node.computedNumber = null
-//   - Sets node.registryType = type
+// fillNumbering(file) (exported):
+//   - Reads acadamarkNumberingPending and sets node.computedNumber from entry.number
 
 import { isAcadamarkTag } from '../lib/ast-helpers.js';
 import { ensureRegistry } from '../lib/registry.js';
@@ -42,8 +43,12 @@ const CONFIG_KEY = {
 };
 
 /**
- * Recursively walk an array of nodes, finding display-math and figure nodes
- * and assigning them computedNumber and registryType fields.
+ * Recursively walk an array of nodes, finding display-math, figure, and table
+ * nodes and registering them in the document registry. Pushes { node, entry }
+ * into `pending` for each numbered candidate. Does NOT set computedNumber —
+ * that is done by fillNumbering() after registry.numberRegistry() runs.
+ *
+ * Sets node.registryType on each matched node (used by compile-time handlers).
  *
  * Recurses into:
  *   - acadamarkTag .content arrays
@@ -52,8 +57,9 @@ const CONFIG_KEY = {
  * @param {Array} nodes
  * @param {object} registry - shared document registry
  * @param {Map|null} config - document-level config (file.data.acadamarkConfig)
+ * @param {Array} pending - accumulates { node, entry } pairs
  */
-function walkAndNumber(nodes, registry, config) {
+function walkAndCollect(nodes, registry, config, pending) {
   if (!Array.isArray(nodes)) return;
   for (const node of nodes) {
     if (isAcadamarkTag(node)) {
@@ -66,23 +72,27 @@ function walkAndNumber(nodes, registry, config) {
           node.id || null,
           { numbered, data: {} },
         );
-        node.computedNumber = entry.number;   // number or null
-        node.registryType = registryType;
+        node.registryType = registryType;  // used by compile-time handlers
+        // computedNumber is set later by fillNumbering(), after numberRegistry() runs.
+        pending.push({ node, entry });
       }
       // Recurse into acadamarkTag content.
       if (Array.isArray(node.content)) {
-        walkAndNumber(node.content, registry, config);
+        walkAndCollect(node.content, registry, config, pending);
       }
     }
     // Recurse into mdast children (paragraphs, lists, blockquotes, etc.)
     if (node.children && Array.isArray(node.children)) {
-      walkAndNumber(node.children, registry, config);
+      walkAndCollect(node.children, registry, config, pending);
     }
   }
 }
 
 /**
- * Unified plugin. Assigns computedNumber to display-math and figure nodes.
+ * Unified plugin. Registers display-math, figure, and table nodes in the
+ * document registry and stores pending { node, entry } pairs in
+ * file.data.acadamarkNumberingPending. Does NOT assign computedNumber —
+ * call fillNumbering(file) after registry.numberRegistry() runs.
  *
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
@@ -90,6 +100,25 @@ export function acadamarkNumbering() {
   return (tree, file) => {
     const registry = ensureRegistry(file);
     const config = file?.data?.acadamarkConfig ?? null;
-    walkAndNumber(tree.children, registry, config);
+    const pending = [];
+    walkAndCollect(tree.children, registry, config, pending);
+    if (file?.data) {
+      file.data.acadamarkNumberingPending = pending;
+    }
   };
+}
+
+/**
+ * Fill computedNumber on each pending node from the registry entry.
+ *
+ * Must be called after registry.numberRegistry() has run. Reads
+ * file.data.acadamarkNumberingPending and sets node.computedNumber = entry.number
+ * (a positive integer for numbered entries, null for unnumbered).
+ *
+ * @param {import('vfile').VFile} file
+ */
+export function fillNumbering(file) {
+  for (const { node, entry } of file?.data?.acadamarkNumberingPending ?? []) {
+    node.computedNumber = entry.number;
+  }
 }

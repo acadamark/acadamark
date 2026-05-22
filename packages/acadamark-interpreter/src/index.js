@@ -5,9 +5,10 @@
 //   2. acadamarkConfigDiscovery — Phase 1: discovery (no tree mutation)
 //   3. acadamarkArticleStructuring — Phase 2: wraps doc in article structure
 //   4. acadamarkSectionNesting — Phase 2: nests section/sub-section/... nodes
-//   5. acadamarkNotes — Phase 3: numbers notes, replaces inline nodes, collects
-//      content into note-list
-//   6. A custom compiler that converts the final mdast → hast → HTML string
+//   5. acadamarkNotes — register note elements, splice markers (record-only)
+//   6. acadamarkNumbering — register equations/figures/tables (record-only)
+//   7. acadamarkApplyNumbers — single numbering stage; fills markers and nodes
+//   8. A custom compiler that converts the final mdast → hast → HTML string
 //      via mdast-util-to-hast (with the acadamarkTag custom handler) and
 //      hast-util-to-html.
 //
@@ -62,14 +63,15 @@ import rehypeFormat from 'rehype-format';
 import { acadamarkConfigDiscovery } from './plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
-import { acadamarkNotes } from './plugins/notes.js';
+import { acadamarkNotes, fillNotes } from './plugins/notes.js';
 import { acadamarkLibraryLoad } from './plugins/library-load.js';
-import { acadamarkNumbering } from './plugins/numbering.js';
+import { acadamarkNumbering, fillNumbering } from './plugins/numbering.js';
 import { acadamarkRefResolution } from './plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from './plugins/cite-resolution.js';
 import { acadamarkBibliography } from './plugins/bibliography.js';
 import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plugin.js';
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
+import { ensureRegistry } from './lib/registry.js';
 
 export { acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
@@ -329,19 +331,33 @@ export function acadamarkInterpreter(options = {}) {
   //    store citation-js instance in file.data.acadamarkCitations.
   this.use(acadamarkLibraryLoad, { assetsDir });
 
-  // 6. Notes: assign numbers, replace inline nodes, collect note-list.
+  // 6. Notes: register note elements (record-only); splice __note-marker nodes
+  //    into the tree; store pending data for the apply-numbers stage.
   this.use(acadamarkNotes);
 
-  // 7. Numbering: assign computedNumber to display-math and figure nodes.
+  // 7. Numbering: register equation, figure, and table elements (record-only);
+  //    store pending { node, entry } pairs for the apply-numbers stage.
   this.use(acadamarkNumbering);
 
-  // 8. Ref resolution: replace <ref> nodes with __ref-marker or __ref-error.
+  // 8. Apply numbers: single numbering stage. Calls numberRegistry() to assign
+  //    all display numbers at once, then runs per-node fill steps.
+  //    Runs after all registration (steps 6-7) and before ref/cite resolution (9-10).
+  this.use(function acadamarkApplyNumbers() {
+    return (tree, file) => {
+      const registry = ensureRegistry(file);
+      registry.numberRegistry();
+      fillNotes(tree, file);
+      fillNumbering(file);
+    };
+  });
+
+  // 9. Ref resolution: replace <ref> nodes with __ref-marker or __ref-error.
   this.use(acadamarkRefResolution);
 
-  // 9. Cite resolution: replace <cite> nodes with __cite-marker or __cite-error.
+  // 10. Cite resolution: replace <cite> nodes with __cite-marker or __cite-error.
   this.use(acadamarkCiteResolution);
 
-  // 10. Bibliography: render the bibliography and inject into article-back.
+  // 11. Bibliography: render the bibliography and inject into article-back.
   this.use(acadamarkBibliography);
 
   // 11. Register a compiler: mdast → hast → HTML.
