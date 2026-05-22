@@ -199,8 +199,10 @@ function parseTag(src) {
 
 // ─── Test RC-12: Finite recursion bottoms out cleanly ───────────────────────
 // Three nested asides — well under the limit, should parse completely.
+// The inner dots (e.g. <aside | inner>.) are content inside the outer aside;
+// only the outermost construct must end at a line boundary for flow-position.
 {
-  const src = '<aside | outer <aside | middle <aside | inner>.>.>.'
+  const src = '<aside | outer <aside | middle <aside | inner>.>.>'
   const tree = parse(src)
   const outer = tree.children[0]
   assert.ok(Array.isArray(outer.content), 'outer content parsed')
