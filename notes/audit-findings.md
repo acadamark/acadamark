@@ -424,3 +424,32 @@ before the article content. `render-fixtures.js` shell no longer injects it
 separately. Document fonts are injected exactly once, by the interpreter. Test
 assertions in `integration.test.js` and `katex-css.test.js` updated to reflect
 that a `<style>` block is always present.
+---
+
+## GAP-9: document-9 has no integration test or snapshot
+
+`test/fixtures/document-9-demo.acm` and `test/fixtures/document-9-demo.html`
+exist and are re-rendered by `render-fixtures.js` alongside documents 1–8.
+Unlike documents 1–8, document-9 has no corresponding `document-9-expected.json`
+snapshot and is not covered by any test case in `test/integration.test.js`.
+
+This matters because document-9 is the most complex fixture: it exercises
+`<note>` (multiple footnotes with forward-reference numbering), `<cite>`
+(bibliography entries loaded from an external `.bib` library), inline math,
+display math with equation numbers, and `<cross-ref>`. These are exactly the
+stages added or restructured in the R1 slice (notes, numbering, ref-resolution).
+
+Without a snapshot test, regressions in any of these combined-pipeline paths
+can go undetected. Documents 1–8 test these features in isolation or in
+simpler combinations; the integration test for document-9 would be the only
+test that exercises all of them together in a realistic academic document.
+
+**Fix path:** Run `render-fixtures.js`, capture `document-9-demo.html` output,
+generate `document-9-expected.json` from the current interpreter output, and add
+a test case in `integration.test.js` mirroring the existing doc6/doc7/doc8
+pattern. Snapshot can be generated once and committed; future runs will detect
+any drift.
+
+**Severity:** Medium — the untested surface area covers the full complexity
+of the pipeline in combination. Individual stages have unit tests, but combined
+behavior (notes + cite + math + numbering + cross-ref in one document) is dark.
