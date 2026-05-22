@@ -28,97 +28,112 @@ import Cite from 'citation-js';
 import { isAcadamarkTag } from '../lib/ast-helpers.js';
 
 /**
- * Unified plugin. Reads <library> content from <data> root siblings, parses
- * it with citation-js, and stores the result in file.data.acadamarkCitations.
+ * Build the citation index from <library> content in <data> root siblings.
+ * Writes file.data.acadamarkCitations. Does not modify the tree.
+ *
+ * Called as an explicit index-build step in index.js — not registered via
+ * this.use(). Requires acadamarkArticleStructuring (<data> at root level) and
+ * acadamarkConfigDiscovery (citation-style from config) to have run first.
+ *
+ * @param {{ children: Array }} tree
+ * @param {import('vfile').VFile} file
+ * @param {object} [options]
+ * @param {string|null} [options.assetsDir] Directory for resolving src= paths.
+ */
+export function buildCitationIndex(tree, file, options = {}) {
+  const { assetsDir = null } = options;
+
+  // <data> nodes are at root level after article-structuring.
+  const dataNodes = (tree.children ?? []).filter(n => isAcadamarkTag(n, 'data'));
+  if (dataNodes.length === 0) return;
+
+  // Collect all library content strings.
+  // For BibTeX: concatenation produces a valid merged BibTeX file.
+  // For CSL-JSON: we parse each entry separately (handled below via per-node Cite).
+  const citeInstances = [];
+
+  for (const dataNode of dataNodes) {
+    if (!Array.isArray(dataNode.content)) continue;
+
+    for (const libraryNode of dataNode.content) {
+      if (!isAcadamarkTag(libraryNode, 'library')) continue;
+
+      let content = null;
+
+      if (libraryNode.kwargs?.src) {
+        // External file via src= kwarg.
+        const src = libraryNode.kwargs.src;
+        try {
+          const filePath = resolve(assetsDir ?? '.', src);
+          content = readFileSync(filePath, 'utf8');
+        } catch (err) {
+          file?.message?.(
+            `library-load: failed to read "${src}": ${err.message}`,
+            libraryNode,
+          );
+          continue;
+        }
+      } else if (typeof libraryNode.content === 'string') {
+        const trimmed = libraryNode.content.trim();
+        if (trimmed.length > 0) {
+          content = trimmed;
+        }
+      }
+
+      if (!content) {
+        // Neither src= nor non-whitespace inline content. Warn and skip.
+        file?.message?.(
+          'library-load: <library> has no src= kwarg and no inline content',
+          libraryNode,
+        );
+        continue;
+      }
+
+      try {
+        citeInstances.push(new Cite(content));
+      } catch (err) {
+        file?.message?.(
+          `library-load: failed to parse library content: ${err.message}`,
+          libraryNode,
+        );
+      }
+    }
+  }
+
+  if (citeInstances.length === 0) return;
+
+  // Merge all Cite instances into one.
+  // Each Cite instance has a .data array of CSL-JSON entries.
+  // Create a single merged instance from the combined CSL-JSON.
+  const allEntries = citeInstances.flatMap(c => c.data);
+  let mergedCite;
+  try {
+    mergedCite = new Cite(allEntries);
+  } catch (err) {
+    file?.message?.(`library-load: failed to merge citation entries: ${err.message}`);
+    return;
+  }
+
+  // Get citation style from config (default: chicago-author-date).
+  const style =
+    file?.data?.acadamarkConfig?.get('citation-style') ?? 'chicago-author-date';
+
+  file.data = file.data ?? {};
+  file.data.acadamarkCitations = {
+    cite: mergedCite,
+    order: [],   // filled by cite-resolution in citation-document order
+    style,
+  };
+}
+
+/**
+ * Unified plugin wrapper around buildCitationIndex.
+ * Kept for external callers and the existing test suite.
  *
  * @param {object} [options]
  * @param {string|null} [options.assetsDir] Directory for resolving src= paths.
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
 export function acadamarkLibraryLoad(options = {}) {
-  const { assetsDir = null } = options;
-
-  return (tree, file) => {
-    // <data> nodes are at root level after article-structuring.
-    const dataNodes = (tree.children ?? []).filter(n => isAcadamarkTag(n, 'data'));
-    if (dataNodes.length === 0) return;
-
-    // Collect all library content strings.
-    // For BibTeX: concatenation produces a valid merged BibTeX file.
-    // For CSL-JSON: we parse each entry separately (handled below via per-node Cite).
-    const citeInstances = [];
-
-    for (const dataNode of dataNodes) {
-      if (!Array.isArray(dataNode.content)) continue;
-
-      for (const libraryNode of dataNode.content) {
-        if (!isAcadamarkTag(libraryNode, 'library')) continue;
-
-        let content = null;
-
-        if (libraryNode.kwargs?.src) {
-          // External file via src= kwarg.
-          const src = libraryNode.kwargs.src;
-          try {
-            const filePath = resolve(assetsDir ?? '.', src);
-            content = readFileSync(filePath, 'utf8');
-          } catch (err) {
-            file?.message?.(
-              `library-load: failed to read "${src}": ${err.message}`,
-              libraryNode,
-            );
-            continue;
-          }
-        } else if (typeof libraryNode.content === 'string') {
-          const trimmed = libraryNode.content.trim();
-          if (trimmed.length > 0) {
-            content = trimmed;
-          }
-        }
-
-        if (!content) {
-          // Neither src= nor non-whitespace inline content. Warn and skip.
-          file?.message?.(
-            'library-load: <library> has no src= kwarg and no inline content',
-            libraryNode,
-          );
-          continue;
-        }
-
-        try {
-          citeInstances.push(new Cite(content));
-        } catch (err) {
-          file?.message?.(
-            `library-load: failed to parse library content: ${err.message}`,
-            libraryNode,
-          );
-        }
-      }
-    }
-
-    if (citeInstances.length === 0) return;
-
-    // Merge all Cite instances into one.
-    // Each Cite instance has a .data array of CSL-JSON entries.
-    // Create a single merged instance from the combined CSL-JSON.
-    const allEntries = citeInstances.flatMap(c => c.data);
-    let mergedCite;
-    try {
-      mergedCite = new Cite(allEntries);
-    } catch (err) {
-      file?.message?.(`library-load: failed to merge citation entries: ${err.message}`);
-      return;
-    }
-
-    // Get citation style from config (default: chicago-author-date).
-    const style =
-      file?.data?.acadamarkConfig?.get('citation-style') ?? 'chicago-author-date';
-
-    file.data = file.data ?? {};
-    file.data.acadamarkCitations = {
-      cite: mergedCite,
-      order: [],   // filled by cite-resolution in citation-document order
-      style,
-    };
-  };
+  return (tree, file) => buildCitationIndex(tree, file, options);
 }

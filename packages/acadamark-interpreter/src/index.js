@@ -65,7 +65,7 @@ import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
 import { acadamarkNotes } from './plugins/notes.js';
 import { acadamarkNotePlacement } from './plugins/note-placement.js';
-import { acadamarkLibraryLoad } from './plugins/library-load.js';
+import { buildCitationIndex, acadamarkLibraryLoad } from './plugins/library-load.js';
 import { acadamarkNumbering, fillNumbering } from './plugins/numbering.js';
 import { acadamarkRefResolution } from './plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from './plugins/cite-resolution.js';
@@ -74,7 +74,7 @@ import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plug
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from './lib/registry.js';
 
-export { acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
+export { acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.
@@ -328,9 +328,13 @@ export function acadamarkInterpreter(options = {}) {
   this.use(acadamarkArticleStructuring);
   this.use(acadamarkSectionNesting);
 
-  // 5. Library load: parse <library> content from <data> root siblings,
-  //    store citation-js instance in file.data.acadamarkCitations.
-  this.use(acadamarkLibraryLoad, { assetsDir });
+  // 5. Citation index (index-build, not a tree transformation): parse <library>
+  //    content from <data> root siblings, build file.data.acadamarkCitations.
+  //    Requires acadamarkArticleStructuring (<data> at root) and
+  //    acadamarkConfigDiscovery (citation-style) to have run first.
+  this.use(function acadamarkCitationIndex() {
+    return (tree, file) => buildCitationIndex(tree, file, { assetsDir });
+  });
 
   // 6. Notes: register note elements (record-only); splice __note-marker nodes
   //    into the tree; store pending data for the apply-numbers stage.

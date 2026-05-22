@@ -484,3 +484,26 @@ assembly from `index.js` rather than rebuilding it. Deferred — not in
 R3a scope.
 
 Severity: Medium — a maintenance hazard, not a current bug.
+
+---
+
+## AUD-18: `<data>` nodes remain in tree after `buildCitationIndex`
+
+**Found during:** R4 Phase 0 investigation (2026-05).
+
+**Description:**
+`buildCitationIndex` (formerly the closure in `acadamarkLibraryLoad`) reads
+`<data>` and `<library>` nodes at `tree.children` level but does not remove or
+modify them. After the citation-index step runs, `<data>` nodes remain in
+`tree.children` through cite-resolution, note-placement, bibliography, and
+compilation. The compile step's `toHast` dispatch handles them, or silently
+ignores them if `'data'` has no vocabulary entry producing visible output.
+
+This is current behavior, not introduced by R4. The rendered output is
+unaffected — no visible `<data>` content appears in any fixture. Whether
+`<data>` should be explicitly removed after its content is consumed (as a
+cleanup step) has not been decided.
+
+**Deferred to:** Future cleanup slice or a follow-on indexInputs consolidation.
+
+**Status: Open.**

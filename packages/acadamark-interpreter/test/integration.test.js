@@ -29,7 +29,7 @@ import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.
 import { acadamarkSectionNesting } from '../src/plugins/section-nesting.js';
 import { acadamarkNotes } from '../src/plugins/notes.js';
 import { acadamarkNotePlacement } from '../src/plugins/note-placement.js';
-import { acadamarkLibraryLoad } from '../src/plugins/library-load.js';
+import { buildCitationIndex } from '../src/plugins/library-load.js';
 import { acadamarkNumbering, fillNumbering } from '../src/plugins/numbering.js';
 import { acadamarkRefResolution } from '../src/plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from '../src/plugins/cite-resolution.js';
@@ -64,7 +64,7 @@ function runPipeline(source, opts = {}) {
   acadamarkConfigDiscovery()(mdast, file);
   acadamarkArticleStructuring()(mdast);
   acadamarkSectionNesting()(mdast);
-  acadamarkLibraryLoad({ assetsDir: opts.assetsDir ?? null })(mdast, file);
+  buildCitationIndex(mdast, file, { assetsDir: opts.assetsDir ?? null });
   acadamarkNotes()(mdast, file);
   acadamarkNumbering()(mdast, file);
   // Apply numbers: mirror the acadamarkApplyNumbers stage from the full pipeline.
