@@ -95,50 +95,35 @@ emits the literal character. Not a backlog item.
 These come first because they are *upstream* of other work — a syntax change or
 a model change that later work is authored against.
 
-### F1 — The `@`/`#` sigil-semantics slice  *(folds in DF-7)*  **[IMPLEMENTED]**
+### ~~F1 — The `@`/`#` sigil-semantics slice~~ *(folds in DF-7)*  **[IMPLEMENTED]**
 
-**Status:** Complete. Committed as a single slice. Clean break (no alias).
-`#` assigns ids; `@` refers to them. All fixtures migrated. See commit message
-for full change inventory.
+**Status:** Complete (commit `c86da33`). `#` always assigns an id; `@` always
+refers to one. `<ref>` and `<cite>` now share `@key` syntax.
 
-**Decision (made):** `#` ALWAYS assigns an id; `@` ALWAYS refers to one.
-Universal rule, no exceptions.
+**Outcomes (the two Phase 0 questions, resolved):**
+- *`#`-as-reference:* clean break — `#` is no longer read by any resolver as a
+  reference marker. Every fixture migrated (~33 occurrences across 5 `.acm`
+  files).
+- *Multi-key `<cite>`:* the bracketed-list form is `<cite [@a, @b]>` — each key
+  individually marked. `@` is preserved in the positional strings and stripped
+  by the resolver.
 
-**Scope:**
-- `@`-prefixed identifiers recognized in `<ref>` and `<cite>` attribute
-  positions.
-- `<cite>` migrates from positional keys (`<cite smith2023>`) to `@`-keys
-  (`<cite @smith2023>`). This unifies `<ref>` and `<cite>` key syntax — they
-  become the same gesture. Touches `cite-resolution.js` key extraction, not
-  only `ref-resolution.js`.
-- `#`-as-reference-marker (`<ref #fig:…>`) is removed or kept as a deprecated
-  alias — **Phase 0 decision** (the proposal leans clean-break "while the
-  system is small").
-- Every fixture and real document migrates `<ref #…>` → `<ref @…>` and
-  `<cite key>` → `<cite @key>`.
+**What landed:** new `AtRef` grammar rule (`"@" Identifier`), ordered before
+`Positional`; `atRefs` threaded through `emptyAttrs`/`applyAttributes`/
+`makeNode`; `@` added to `identifier_start` exclusions. `ref-resolution.js` and
+`cite-resolution.js` updated (the `extractCiteKeys` rewrite also fixed a latent
+crash on the previously-unused bracketed form). Both suites green.
 
-**Why foundational:** it is a syntax change. Everything authored after it uses
-the `@`-form, and it touches the parser grammar. Doing it early means fewer
-documents to migrate later.
+**One Phase 0 correction worth recording:** Phase 0 predicted the HAST snapshots
+would pass without regeneration. They did not — snapshots store source-position
+metadata (column/offset), which shifts by one per `@` added to a source file.
+`document-8-expected.json` was regenerated for that reason. The *rendered HTML
+content was unchanged* — verified. The correct correctness model for a
+syntax-migration slice is "HTML-content-stable," not "snapshot-byte-stable."
 
-**Why it is bounded (not the whole `@` proposal):** `@` becomes significant only
-in *tag attribute positions*, NOT in prose. The unbraced-inline form
-(`…shows (@fig:priority)…` with no tag) is explicitly **deferred** — that one is
-a grammar-wide prose change with `\@` escaping. F1 is the two-thirds of the
-proposal that carries no prose-grammar cost.
-
-**Phase 0 questions for this slice (two):**
-1. `#`-as-reference: clean break, or deprecated alias for a transition period?
-2. Multi-key `<cite>`: the bracketed-list form — does `<cite [smith, jones]>`
-   become `<cite [@smith, @jones]>` (each key marked) or `<cite @[smith, jones]>`
-   (list marked once)? The proposal predates list-form thinking; decide here.
-
-**Correctness note:** this is a syntax-migration slice. The fixture diff is
-**not** empty — fixtures change. It needs output/visual verification, unlike the
-R1–R4 output-neutral slices.
-
-**Supersedes inventory item:** DF-7. Note DF-7 in `specified-not-implemented.md`
-as "adopted as F1 (attribute-position only); unbraced-inline form deferred."
+**Still deferred:** the unbraced-inline `@` form (`@key` in prose with no tag) —
+a grammar-wide prose change with `\@` escaping. See "Explicitly deferred" below.
+DF-7 in `specified-not-implemented.md` is marked adopted-as-F1.
 
 ### F2 — Doc-staleness sweep  *(DS-1, DS-2, DS-3, DS-4, DS-5)*  **[IMPLEMENTED]**
 
