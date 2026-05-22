@@ -247,6 +247,19 @@ consumers that don't use the font loader. See `notes/font-investigation.md`.
 
 **Found during:** Slice 7 follow-up, Document 9 review.
 
+**Status: Fixed (2026-05-21)**
+
+Design decision: `<blockquote>` is the canonical Layer 1 element per naming rule 2 ("defer to HTML where HTML is sufficient"; `blockquote` is explicitly listed in the "stays HTML" group). `<quote>` is registered as a shorthand alias. This is consistent with the existing `blockquote.md` vocabulary entry (which already declared `shorthand_expansions: [{shorthand: quote, expands_to: blockquote}]`) and with the naming rules.
+
+Changes applied:
+- `src/schema/load-vocabulary.js`: After the main vocabulary load loop, a second pass registers simple-name shorthand aliases from `shorthand_expansions` entries. Complex expansions (where `expands_to` contains a space, indicating additional attribute clauses) are skipped — those require attribute-injection at dispatch time and are deferred.
+- `test/schema/load-vocabulary.test.js`: `v.size` updated 66 → 67; `'quote'` added to spot-check list; identity assertion `v.get('quote') === v.get('blockquote')` added.
+- `test/interpret-plugin.test.js`: Two new tests: `<blockquote>` prose-unwrapping; `<quote>` shorthand producing `<blockquote>`.
+
+The CSS for blockquote (left border, italic, padding) was already in place from slice 7 work. Both `<blockquote | ...>` and `<quote | ...>` now dispatch to the same vocabulary entry and produce identical output.
+
+Note on concern 2 (HTML passthrough ambiguity): This is the scope of AUD-15. `<blockquote>` is now unambiguously a first-class vocabulary element — not passthrough.
+
 **Description:**
 No vocabulary entry exists for block quotations. Author tried `<quote>` (assumed it existed); did not work. Settled on `<blockquote>` which renders acceptably — but likely via raw HTML passthrough plus theme CSS (which styles `blockquote` directly), not via a first-class acadamark element with handler and plugin support.
 
@@ -255,15 +268,6 @@ No vocabulary entry exists for block quotations. Author tried `<quote>` (assumed
 1. Block quotations are common in academic writing and should be a first-class vocabulary item with vocabulary entry, handler, tests, and documentation.
 
 2. The ambiguity between "first-class acadamark element" and "raw HTML passthrough that renders because the browser knows the element and CSS happens to style it" is broader than just this case. Other HTML-like tags (e.g. `<em>`, `<strong>`, `<table>` raw form, `<div>`, `<span>`) may work via passthrough without proper acadamark support. Authors have no way to know which is which.
-
-**Fix path:**
-- Add `quote` (or `blockquote`) to vocabulary with handler, registered in DSL_REGISTRY for long-form nesting (`<quote>...content...</quote>`) and possibly pipe-content form (`<quote | brief text>`).
-- Decide canonical name: acadamark elsewhere prefers short semantic names (`note` not `footnote`, `cite` not `citation`). Recommend `quote` as canonical with `blockquote` accepted as alias.
-- Cross-reference with AUD-15 (HTML passthrough inventory).
-
-**Severity:** Medium — workaround exists; real vocabulary gap.
-
-**Deferred to:** post-audit vocabulary completeness slice.
 
 ---
 

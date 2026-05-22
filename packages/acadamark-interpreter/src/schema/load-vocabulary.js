@@ -75,6 +75,33 @@ export function loadVocabulary({ dir } = {}) {
     }
     map.set(key, { ...spec, _sourceFile: file });
   }
+
+  // Register simple-name shorthand aliases from shorthand_expansions.
+  // For entries with shorthand_expansions where expands_to is a plain vocabulary
+  // key (no additional attribute clauses), register the shorthand as a
+  // transparent alias pointing at the same spec. This allows authors to write
+  // <quote> and have it dispatch to the <blockquote> vocabulary entry.
+  //
+  // Complex expansions (expands_to contains a space, e.g. 'book-part book-part-
+  // type="chapter"') are not handled here — they require attribute-injection at
+  // dispatch time and are deferred to a later shorthand-resolution slice.
+  for (const [, spec] of map) {
+    if (!spec.shorthand_expansions) continue;
+    for (const expansion of spec.shorthand_expansions) {
+      const { shorthand, expands_to } = expansion;
+      if (!shorthand || !expands_to) continue;
+      // Skip complex expansions — expands_to must be a bare vocabulary key.
+      if (expands_to.includes(' ')) continue;
+      if (!map.has(expands_to)) continue;
+      if (map.has(shorthand)) {
+        // eslint-disable-next-line no-console
+        console.warn(`[acadamark-interpreter] shorthand alias "${shorthand}" conflicts with existing key`);
+        continue;
+      }
+      map.set(shorthand, map.get(expands_to));
+    }
+  }
+
   map._errors = errors;
   return map;
 }

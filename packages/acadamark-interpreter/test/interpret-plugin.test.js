@@ -144,4 +144,27 @@ export function run() {
     assert.equal(h.properties['data-document-type'], 'article');
     console.log('PASS: interpret-plugin: <meta type=article> → data-document-type');
   }
+
+  // --- <blockquote> (explicit Layer 1 name) ---
+  // Single-paragraph content is prose-unwrapped to inline text (same as <p>, <em>).
+  {
+    const node = makeAcadaTag('blockquote', [para('A quotation.')]);
+    const h = hast(node);
+    assert.equal(h.tagName, 'blockquote');
+    // Single paragraph is unwrapped (content.type: prose, content.length === 1).
+    assert.equal(h.children[0].type, 'text');
+    assert.equal(h.children[0].value, 'A quotation.');
+    console.log('PASS: interpret-plugin: <blockquote> → <blockquote> (prose-unwrapped)');
+  }
+
+  // --- <quote> shorthand alias for <blockquote> (AUD-12) ---
+  {
+    const node = makeAcadaTag('quote', [para('A short quotation.')]);
+    const h = hast(node);
+    // <quote> expands to <blockquote> via shorthand alias registered in load-vocabulary.
+    assert.equal(h.tagName, 'blockquote');
+    assert.equal(h.children[0].type, 'text');
+    assert.equal(h.children[0].value, 'A short quotation.');
+    console.log('PASS: interpret-plugin: <quote> shorthand → <blockquote> (AUD-12 alias)');
+  }
 }
