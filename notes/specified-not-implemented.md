@@ -18,7 +18,7 @@ in separate sections at the end).
 
 | Category | Count |
 |---|---|
-| Deferred features (whole capabilities, unbuilt) | 22 |
+| Deferred features (whole capabilities, unbuilt) | 21 |
 | Partial gaps (feature mostly built, one clause missing) | 12 |
 | Doc-staleness findings | 0 (all resolved, F2 2026-06) |
 | Open questions flagged in specs (not yet decided) | 2 |
@@ -122,16 +122,20 @@ exists and reserves the names.
 
 ---
 
-### DF-7: `@`-sigil reference syntax
+### ~~DF-7: `@`-sigil reference syntax~~ — ADOPTED AS F1
 
-**Spec:** `notes/at-sigil-reference-proposal.md` — "Proposed. Not implemented,
-not scheduled."  
-**Code checked:** `@` is not in `SIGIL_CHARS` in `syntax.js`; no `@` rule in
-`acadamark.peggy`.  
-**AUD status:** Untracked.
+**Adopted and implemented (F1, commit `c86da33`).** The attribute-position `@`/`#`
+semantics are fully built: `#` always assigns an id, `@` always refers to one.
+`<ref @key>` and `<cite @key>` are the canonical forms; `<cite [@a, @b]>` for
+multi-key citations. Grammar: new `AtRef` rule, threaded through `emptyAttrs`,
+`applyAttributes`, `makeNode`. All fixtures migrated (~33 occurrences). Both
+package test suites green.
 
-Would unify `<ref>` and `<cite>` under `@key` syntax, with `#` only for id
-assignment. Related to AUD-09 redesign. Explicitly unscheduled.
+The **unbraced-inline `@` form** (prose-grammar change: `@fig:priority` in running
+text without a `<ref>` wrapper) remains deferred — it is parked explicitly in
+`notes/acadamark-backlog-roadmap.md`.
+
+**Superseded inventory id:** DF-7.
 
 ---
 

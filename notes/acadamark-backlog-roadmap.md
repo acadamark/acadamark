@@ -1,6 +1,6 @@
 # acadamark — backlog roadmap
 
-**Written:** 2026-05-22. Companion to `notes/specified-not-implemented.md` (the
+**Written:** 2026-05-22. Updated 2026-05-22 to reflect completed work. Companion to `notes/specified-not-implemented.md` (the
 full inventory) and the session handoff. Suggested repo home: `notes/`.
 
 This document organizes the 35-item specified-but-not-implemented inventory into
@@ -39,26 +39,15 @@ against those docs.
 ## The dependency graph
 
 ```
-LAYER 0   PG-13 (verify — may already be fixed)
-              │
-              ▼ (if real, becomes a Layer 3 leaf; if not, drops off)
+LAYER 0   ✔ PG-13 (closed — test RC-14, commit 411c6b0)
 
-LAYER 1   ┌─────────────────────────────────────────────┐
-(found-   │  @/# SIGIL SEMANTICS                          │
- ational) │  # always-assigns · @ always-refers           │
-          │  unifies <ref> and <cite> key syntax          │
-          │  (folds in DF-7 + PG-12-adjacent)             │
-          └───────────────────┬───────────────────────────┘
-                              │ everything authored after
-                              │ uses @-form; parser grammar
-                              │ changes; fixtures migrate
-                              ▼
-          ┌─────────────────────────────────────────────┐
-          │  DOC-STALENESS SWEEP  (DS-1…DS-5)             │
-          │  not blocked by anything — do early so the   │
-          │  docs the next slices are read against are   │
-          │  true                                         │
-          └───────────────────────────────────────────────┘
+LAYER 1   ✔ @/# SIGIL SEMANTICS (F1, commit c86da33)
+(found-     # always-assigns · @ always-refers
+ ational)   unifies <ref> and <cite> key syntax
+
+          ✔ DOC-STALENESS SWEEP (F2, commit f00c877)
+            interpreter.md, pipeline.md, BUILD.md, interpreter-design.md,
+            hover-previews-deferred.md all brought current
 
 LAYER 2   OQ-1 ───────────────▶ DF-22, DF-20   (math/gfm idioms)
 (gated)   OQ-2 ───────────────▶ DF-19          (render-mode lowering)
@@ -77,6 +66,7 @@ LAYER 3   independent leaves — no dependencies, any order:
           DF-13/14/15 (deferred vocab elements — grouped)
           DF-21 (self-closing), DF-17 (qualifying-tag generalization)
           DF-5 (multi-column)
+          pipeline.md note-numbering underexplanation (doc-clarity, see Layer 3)
 
 ARCH      DF-18 (JATS export), DF-4 (multi-file), DF-12 (book types)
 (its own  — each a multi-slice project; DF-19 also lands here once
@@ -90,14 +80,13 @@ DEFERRED  the unbraced-inline @ form (prose-grammar change) — explicitly
 
 ## Layer 0 — verify first
 
-### PG-13 — markdown pass-through escapes inside named-tag content
+### ~~PG-13 — markdown pass-through escapes inside named-tag content~~ **[CLOSED]**
 
-GHC's own note: this *may already be resolved* by `remarkRecursiveContent`. The
-stored `\*`-style escapes are meant to be processed when content is re-fed
-through remark — which now happens. **Action:** one dedicated test. If it passes,
-PG-13 is closed (not a backlog item at all). If it fails, PG-13 is a Layer 3
-leaf. Do this before anything else — it is minutes of work and it removes a
-phantom item.
+**Closed (commit `411c6b0`).** Verified resolved by test RC-14 in
+`test-recursive.js`. `\*` inside `<figure | text with \*asterisk\*>` correctly
+produces literal `*asterisk*` after `remarkRecursiveContent` re-feeds the content
+through remark. CommonMark escape processing runs on the stored `\X` string and
+emits the literal character. Not a backlog item.
 
 ---
 
@@ -151,18 +140,9 @@ R1–R4 output-neutral slices.
 **Supersedes inventory item:** DF-7. Note DF-7 in `specified-not-implemented.md`
 as "adopted as F1 (attribute-position only); unbraced-inline form deferred."
 
-### F2 — Doc-staleness sweep  *(DS-1, DS-2, DS-3, DS-4, DS-5)*
+### F2 — Doc-staleness sweep  *(DS-1, DS-2, DS-3, DS-4, DS-5)*  **[IMPLEMENTED]**
 
-Not a feature; one cleanup slice. Update `notes/interpreter.md` and
-`notes/pipeline.md` to the post-R4 12-step pipeline (they describe the
-pre-refactor 9-plugin chain — DS-1, DS-2). Update the `BUILD.md` slice table to
-reflect that slices 3–7 are implemented (DS-3). DS-4 (`interpreter-design.md`
-diagram) and DS-5 (`hover-previews-deferred.md`) are AUD-tracked (AUD-02, AUD-03)
-— reconcile them in the same pass.
-
-**Why early, though nothing depends on it mechanically:** stale architecture
-docs mislead whoever reads them to orient — including future slice work. Fixing
-them early makes every later slice more reliable. Low effort, high leverage.
+**Status:** Complete (commit `f00c877`). DS-1…DS-5 all resolved.
 
 ---
 
@@ -256,6 +236,13 @@ spec, then a schema entry. Group them; do as a batch.
 **Multi-column display — DF-5.** Deferred-feature doc exists; render-mode
 concern. Independent leaf, but low-priority unless a publication target needs it.
 
+**pipeline.md note-numbering explanation — doc-clarity leaf.** In `pipeline.md`
+§10.5 (the note data-flow worked example), the explanation of how a note gets
+its number is incomplete: it implies `fillNumbering` assigns note numbers, but
+`fillNumbering` is a no-op for notes — notes are numbered by `numberRegistry()`
+at the start of the apply-numbers step. The example is technically correct but
+misleads on the mechanism. A one-paragraph clarification, no code change.
+
 ---
 
 ## Architecture tier — large, each its own arc
@@ -288,16 +275,19 @@ actively wanted. Not on the active roadmap.
 
 Dependency-respecting; within a layer, order is free:
 
-1. **PG-13 verify** — minutes; removes a phantom item.
-2. **F2 doc-staleness sweep** — early, so later slices read true docs.
-3. **F1 `@`/`#` sigil semantics** — the foundational syntax change; fold in
-   **G4** (cross-ref registration) since F1's Phase 0 is already in that code.
-4. **G1 inline TeX** (DF-1+PG-12) — the bounded "real feature."
+**Done:** ~~1. PG-13 verify~~ ✔ · ~~2. F2 doc-staleness sweep~~ ✔ · ~~3. F1 `@`/`#` sigil semantics~~ ✔
+
+**Next:**
+
+4. **G1 inline TeX** (DF-1+PG-12) — the bounded “real feature.” Spec is
+   decision-complete; parser-only gap; `<sup>`/`<sub>` vocab already exists.
 5. **Decisions: OQ-1 and OQ-2** — short design notes that unblock G2 and G3.
+   Either order; neither blocks the other.
 6. **Layer 3 leaves** — any time, by appetite; the `<ref>`-attributes slice
-   (PG-3/4/5) and PG-10 are the easy satisfying ones.
+   (PG-3/4/5) and PG-10 are the easy satisfying ones. Fold in **G4**
+   (cross-ref registration, AUD-09/PG-6/PG-7) alongside any cross-ref work.
 7. **Architecture tier** — when you know which output/format direction matters
    most.
 
-The only hard rules in that list are: PG-13 before treating it as real; OQ-1
-before G3; OQ-2 before DF-19. Everything else is preference.
+The only hard rules: OQ-1 before G3; OQ-2 before DF-19. Everything else is
+preference.
