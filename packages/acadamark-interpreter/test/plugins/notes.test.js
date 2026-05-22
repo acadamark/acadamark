@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { acadamarkNotes, fillNotes } from '../../src/plugins/notes.js';
+import { acadamarkNotes } from '../../src/plugins/notes.js';
+import { acadamarkNotePlacement } from '../../src/plugins/note-placement.js';
 import { ensureRegistry } from '../../src/lib/registry.js';
 import { makeTag, isAcadamarkTag } from '../../src/lib/ast-helpers.js';
 
@@ -72,7 +73,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     // note was replaced by marker
@@ -94,7 +95,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const back = getBack(tree);
     const lists = findAllTags(back.content, '__note-list');
@@ -118,7 +119,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     const markers = findAllTags(body.content, '__note-marker');
@@ -140,7 +141,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const back = getBack(tree);
     const lists = findAllTags(back.content, '__note-list');
@@ -156,7 +157,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     const markers = findAllTags(body.content, '__note-marker');
@@ -182,7 +183,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     const markers = findAllTags(body.content, '__note-marker');
@@ -207,7 +208,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     const marker = findAllTags(body.content, '__note-marker')[0];
@@ -226,7 +227,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     const marker = findAllTags(body.content, '__note-marker')[0];
@@ -241,7 +242,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const body = getBody(tree);
     const marker = findAllTags(body.content, '__note-marker')[0];
@@ -263,7 +264,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     // position=side → sidenote, collects to back with sidenote flag
     const back = getBack(tree);
@@ -281,7 +282,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     // Note should be replaced inside the section
     const allNotes = findAllTags(tree.children, 'note');
@@ -310,7 +311,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const back = getBack(tree);
     const item = findAllTags(back.content, '__note-list-item')[0];
@@ -332,7 +333,7 @@ export function run() {
     const file = { data: {} };
     acadamarkNotes()(tree, file);
     ensureRegistry(file).numberRegistry();
-    fillNotes(tree, file);
+    acadamarkNotePlacement()(tree, file);
 
     const backContent = tree.children[0].content[2].content;
     assert.equal(backContent[0].tagname, '__note-list', '__note-list is first in back');

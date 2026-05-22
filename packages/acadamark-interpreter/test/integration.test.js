@@ -27,7 +27,8 @@ import remarkRecursiveContent from '../../remark-acadamark/src/recursive-content
 import { acadamarkConfigDiscovery } from '../src/plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.js';
 import { acadamarkSectionNesting } from '../src/plugins/section-nesting.js';
-import { acadamarkNotes, fillNotes } from '../src/plugins/notes.js';
+import { acadamarkNotes } from '../src/plugins/notes.js';
+import { acadamarkNotePlacement } from '../src/plugins/note-placement.js';
 import { acadamarkLibraryLoad } from '../src/plugins/library-load.js';
 import { acadamarkNumbering, fillNumbering } from '../src/plugins/numbering.js';
 import { acadamarkRefResolution } from '../src/plugins/ref-resolution.js';
@@ -69,10 +70,10 @@ function runPipeline(source, opts = {}) {
   // Apply numbers: mirror the acadamarkApplyNumbers stage from the full pipeline.
   const registry = ensureRegistry(file);
   registry.numberRegistry();
-  fillNotes(mdast, file);
   fillNumbering(file);
   acadamarkRefResolution()(mdast, file);
   acadamarkCiteResolution()(mdast, file);
+  acadamarkNotePlacement()(mdast, file);
   acadamarkBibliography()(mdast, file);
 
   const tagHandler = createAcadamarkTagHandler(opts);

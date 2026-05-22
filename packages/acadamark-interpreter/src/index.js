@@ -63,7 +63,8 @@ import rehypeFormat from 'rehype-format';
 import { acadamarkConfigDiscovery } from './plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
-import { acadamarkNotes, fillNotes } from './plugins/notes.js';
+import { acadamarkNotes } from './plugins/notes.js';
+import { acadamarkNotePlacement } from './plugins/note-placement.js';
 import { acadamarkLibraryLoad } from './plugins/library-load.js';
 import { acadamarkNumbering, fillNumbering } from './plugins/numbering.js';
 import { acadamarkRefResolution } from './plugins/ref-resolution.js';
@@ -346,18 +347,26 @@ export function acadamarkInterpreter(options = {}) {
     return (tree, file) => {
       const registry = ensureRegistry(file);
       registry.numberRegistry();
-      fillNotes(tree, file);
       fillNumbering(file);
     };
   });
 
   // 9. Ref resolution: replace <ref> nodes with __ref-marker or __ref-error.
+  //    <note> nodes are still in the tree, so refs inside notes resolve naturally.
   this.use(acadamarkRefResolution);
 
   // 10. Cite resolution: replace <cite> nodes with __cite-marker or __cite-error.
+  //    <note> nodes are still in the tree, so cites inside notes resolve in
+  //    document order (the intended correctness improvement from R3a).
   this.use(acadamarkCiteResolution);
 
-  // 11. Bibliography: render the bibliography and inject into article-back.
+  // 11. Note placement: splice __note-marker nodes in place of <note> nodes;
+  //    build __note-list-item nodes from the now-resolved note content; inject
+  //    the __note-list into article-back. Runs after cite-resolution so note
+  //    content is fully resolved before being moved to article-back.
+  this.use(acadamarkNotePlacement);
+
+  // 12. Bibliography: render the bibliography and inject into article-back.
   this.use(acadamarkBibliography);
 
   // 11. Register a compiler: mdast → hast → HTML.

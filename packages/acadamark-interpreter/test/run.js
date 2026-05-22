@@ -19,6 +19,7 @@ import { run as runKatexCss } from './katex-css.test.js';
 import { run as runInterpretPlugin } from './interpret-plugin.test.js';
 import { run as runRegistry } from './lib/registry.test.js';
 import { run as runNotes } from './plugins/notes.test.js';
+import { run as runNotePlacement } from './plugins/note-placement.test.js';
 import { run as runLibraryLoad } from './plugins/library-load.test.js';
 import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
 import { run as runBibliography } from './plugins/bibliography.test.js';
@@ -43,6 +44,7 @@ const suites = [
   ['interpret-plugin',             runInterpretPlugin],
   ['lib/registry',                 runRegistry],
   ['plugins/notes',                runNotes],
+  ['plugins/note-placement',        runNotePlacement],
   ['plugins/library-load',         runLibraryLoad],
   ['plugins/cite-resolution',      runCiteResolution],
   ['plugins/bibliography',         runBibliography],
