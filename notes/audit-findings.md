@@ -60,9 +60,14 @@ configDiscovery → articleStructuring → sectionNesting → notes → numberin
 
 **Deferred to:** documentation audit slice.
 
----
+**Status: Resolved (F2 doc-staleness sweep, 2026-06).** `notes/interpreter-design.md` was
+archived as `archive/interpreter-design-2026-05.md` during Q2 2026 with an archive
+notice that correctly identifies the actual implementation (mdast-level transforms
+before `toHast`, not a rehype plugin). `notes/interpreter.md` (written in the same
+audit) is the live architecture reference. No separate diagram correction was needed.
+AUD-02 closed.
 
-## AUD-03: `notes/hover-previews-deferred.md` no longer accurate
+--- `notes/hover-previews-deferred.md` no longer accurate
 
 **Found during:** Hover-preview slice.
 
@@ -73,9 +78,13 @@ configDiscovery → articleStructuring → sectionNesting → notes → numberin
 
 **Deferred to:** documentation audit slice.
 
----
+**Status: Resolved (F2 doc-staleness sweep, 2026-06).** `notes/hover-previews-deferred.md`
+was archived as `archive/hover-previews-deferred-2026-05.md` during Q2 2026 with an
+archive notice correctly stating the feature is implemented. Hover preview architecture
+is documented in `notes/interpreter.md` section 10.2 and `notes/pipeline.md` section 6.
+No live doc correction was required. AUD-03 closed.
 
-## AUD-04: No-pipe/no-content short form not supported for table (or any tag)
+--- No-pipe/no-content short form not supported for table (or any tag)
 
 **Found during:** Slice 5 tables.
 

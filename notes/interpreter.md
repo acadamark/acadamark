@@ -39,7 +39,7 @@ const result = await unified()
 console.log(String(result)); // HTML string
 ```
 
-Internally, `acadamarkInterpreter` registers nine mdast-transform plugins and
+Internally, `acadamarkInterpreter` registers twelve mdast-transform plugins and
 a custom compiler on the unified processor. The compiler converts the final
 mdast tree to hast using `mdast-util-to-hast` directly (not via `remark-rehype`,
 which is not installed), then formats and serializes the hast to an HTML string.
@@ -76,13 +76,15 @@ The plugin registration order in `acadamarkInterpreter` is:
 2.  acadamarkConfigDiscovery    (Phase 1 — discovery)
 3.  acadamarkArticleStructuring (Phase 2 — structural)
 4.  acadamarkSectionNesting     (Phase 2 — structural)
-5.  acadamarkLibraryLoad        (Phase 3 — citations)
-6.  acadamarkNotes              (Phase 3 — notes)
-7.  acadamarkNumbering          (Phase 3 — numbering)
-8.  acadamarkRefResolution      (Phase 3 — cross-refs)
-9.  acadamarkCiteResolution     (Phase 3 — citations)
-10. acadamarkBibliography       (Phase 3 — citations)
-11. compiler: toHast → rehypeFormat → toHtml
+5.  buildCitationIndex          (Phase 3 — citation index-build; called via anonymous plugin)
+6.  acadamarkNotes              (Phase 3 — notes; register-only)
+7.  acadamarkNumbering          (Phase 3 — numbering; register-only)
+8.  acadamarkApplyNumbers       (Phase 3 — apply display numbers; anonymous plugin)
+9.  acadamarkRefResolution      (Phase 3 — cross-refs)
+10. acadamarkCiteResolution     (Phase 3 — citations)
+11. acadamarkNotePlacement      (Phase 3 — note placement; runs after cite-resolution)
+12. acadamarkBibliography       (Phase 3 — citations)
+    compiler: toHast → rehypeFormat → toHtml
 ```
 
 Note that `remarkRecursiveContent` (step 1) runs before `acadamarkConfigDiscovery`
@@ -162,7 +164,7 @@ where the hast handler renders them as null/hidden).
 
 | Key | Consumed by | Effect |
 |-----|-------------|--------|
-| `citation-style` | `acadamarkLibraryLoad` | CSL style for citation formatting (default: `chicago-author-date`) |
+| `citation-style` | `buildCitationIndex` | CSL style for citation formatting (default: `chicago-author-date`) |
 | `number-equations` | `acadamarkNumbering` | Suppress equation numbering document-wide |
 | `number-figures` | `acadamarkNumbering` | Suppress figure numbering document-wide |
 | `number-tables` | `acadamarkNumbering` | Suppress table numbering document-wide |
@@ -203,9 +205,9 @@ is emitted; the pipe-supplied title is discarded.
 | root siblings | `<data>` | (no wrapping; stay at root) |
 | body | everything else | `<article-body>` |
 
-`<data>` nodes hold citation data (parsed by `acadamarkLibraryLoad`). They
+`<data>` nodes hold citation data (read by `buildCitationIndex`). They
 are not document content; they live at root level outside `<article>` so that
-`acadamarkLibraryLoad` can find them by walking `tree.children` directly.
+`buildCitationIndex` can find them by walking `tree.children` directly.
 
 Empty regions are suppressed. A document with no `<meta>` will have no
 `<article-front>`; a document with no back-matter tags will have no
@@ -269,12 +271,16 @@ these nodes use `.content`.
 
 ---
 
-### 3.5 acadamarkLibraryLoad
+### 3.5 buildCitationIndex
 
 **Source:** `packages/acadamark-interpreter/src/plugins/library-load.js`
 
 **Purpose:** Parse BibTeX or CSL-JSON citation data from `<data>/<library>`
 nodes, and store a citation-js `Cite` instance in `file.data.acadamarkCitations`.
+In `acadamarkInterpreter`, `buildCitationIndex` is called directly via an anonymous
+plugin wrapper (`acadamarkCitationIndex`) at step 5 — not through
+`this.use(acadamarkLibraryLoad)`. The exported `acadamarkLibraryLoad` plugin wrapper
+is kept for external callers and the test suite.
 
 **Input structure:** `<data>` nodes at root level. Each `<data>` may contain
 one or more `<library>` nodes.
@@ -312,12 +318,16 @@ plugins check for its presence before proceeding.
 
 **Source:** `packages/acadamark-interpreter/src/plugins/notes.js`
 
-**Purpose:** Walk the tree, number notes, replace each inline `<note>` node
-with a `__note-marker` internal node, and collect the note content into a
-`__note-list` at the end of `<article-back>`.
+**Purpose:** Register note elements (record-only). Walks the tree with `discover()`,
+calls `registry.assign('note', id, { numbered: true })` for each `<note>` node
+found, and stores `{ node, entry }` pairs in `file.data.acadamarkNotesPending`.
+`<note>` nodes **stay in the tree** at their authored positions through steps 9–10
+so that any refs/cites inside note bodies are resolved before placement. Actual
+marker splicing and note-list injection are done by `acadamarkNotePlacement` (step 11).
 
 **Placement modes:** Each note has a `placement` kwarg (also accepts `position`
-as a legacy alias). Valid values:
+as a legacy alias). The placement value is read here and stored in
+`entry.data.placement` for use by `acadamarkNotePlacement`. Valid values:
 
 | Value | Class on `<note-list>` | `<li>` class |
 |-------|------------------------|--------------|
@@ -326,43 +336,20 @@ as a legacy alias). Valid values:
 | `side` | `notes` | `sidenote-fallback` |
 
 All placement modes collect notes into a single `__note-list` in
-`<article-back>`. Per-section footnote collection (where `foot` notes appear
-at the bottom of the section they are in rather than in article-back) is not
-implemented; see `notes/known-limitations.md`.
+`<article-back>`. Per-section footnote collection is not implemented; see
+`notes/known-limitations.md`.
 
 When a document uses more than one placement mode, the class falls back to
-`notes` (neutral).
-
-**What replaces an inline `<note>`:** A `__note-marker` internal node:
-
-```js
-{
-  type: 'acadamarkTag',
-  tagname: '__note-marker',
-  kwargs: {
-    noteId: 'note-1',    // assigned id
-    number: 1,           // sequential display number
-    refId: 'noteref-1',  // id of the superscript marker element
-  },
-  content: [],
-}
-```
-
-**Note list items:** Collected into `__note-list-item` nodes with kwargs:
-
-```js
-{ number, refId, sidenote: true|false }
-```
-
-The `content` of each `__note-list-item` is the original `<note>` content
-(the mdast array from `remarkRecursiveContent`).
+`notes` (neutral). This fallback is applied by `acadamarkNotePlacement`.
 
 **Registry:** Uses `registry.assign('note', node.id || null, { numbered: true })`
-to assign sequential numbers. The registry is shared across plugins via
-`file.data.acadamarkRegistry`.
+to claim a numbered slot. Sequential numbers are assigned when
+`registry.numberRegistry()` runs in `acadamarkApplyNumbers` (step 8). The
+registry is shared across plugins via `file.data.acadamarkRegistry`.
 
-**Tree walk:** Walks both `acadamarkTag.content` arrays and mdast `.children`
-arrays recursively (paragraphs, blockquotes, list items, etc.).
+**Tree walk:** Uses `discover()` from `lib/discover.js` — a read-only pre-order
+DFS that recurses into `acadamarkTag.content` arrays (skipping opaque-content
+nodes) and mdast `.children` arrays.
 
 ---
 
@@ -370,8 +357,11 @@ arrays recursively (paragraphs, blockquotes, list items, etc.).
 
 **Source:** `packages/acadamark-interpreter/src/plugins/numbering.js`
 
-**Purpose:** Assign `computedNumber` to `$$` (display-math), `figure`, and
-`table` nodes.
+**Purpose:** Register `$$` (display-math), `figure`, and `table` nodes with the
+registry, and register `section`, `sub-section`, and `sub-sub-section` nodes for
+cross-reference lookup. Stores `{ node, entry }` pairs for numbered elements in
+`file.data.acadamarkNumberingPending`. Display numbers are assigned by
+`acadamarkApplyNumbers` (step 8) after `numberRegistry()` runs.
 
 **Numbered types and registry keys:**
 
@@ -380,6 +370,11 @@ arrays recursively (paragraphs, blockquotes, list items, etc.).
 | `$$` | `equation` | `number-equations` |
 | `figure` | `figure` | `number-figures` |
 | `table` | `table` | `number-tables` |
+
+**Section registration (AUD-09 fix):** `section`, `sub-section`, and
+`sub-sub-section` nodes are registered with `numbered: false`. This makes them
+findable by label via `registry.findByLabel()` for cross-references (e.g.,
+`<ref #sec:intro>`), without assigning sequential numbers.
 
 **Decision priority (most specific wins):**
 
@@ -392,10 +387,11 @@ arrays recursively (paragraphs, blockquotes, list items, etc.).
 
 This logic is implemented by `readBoolKwarg()` in `lib/bool-kwarg.js`.
 
-**Side effects per node:**
+**Side effects per numbered element node:**
 
-- `node.computedNumber = entry.number` (integer, or `null` if unnumbered)
-- `node.registryType = 'equation' | 'figure' | 'table'`
+- `node.registryType = 'equation' | 'figure' | 'table'` (set immediately)
+- `file.data.acadamarkNumberingPending.push({ node, entry })` (deferred;
+  `node.computedNumber` is set by `acadamarkApplyNumbers` in step 8)
 
 Unnumbered nodes are still registered (so they appear in the type map for
 potential lookup), but receive `number: null` and `numbered: false`.
@@ -403,17 +399,51 @@ potential lookup), but receive `number: null` and `numbered: false`.
 Entries whose id contains `:` are indexed in the cross-type label index for
 cross-reference lookup.
 
+**Tree walk:** Uses `discover()` from `lib/discover.js` (same shared walker as
+`acadamarkNotes`).
+
 ---
 
-### 3.8 acadamarkRefResolution
+### 3.8 acadamarkApplyNumbers
+
+**Source:** `packages/acadamark-interpreter/src/index.js` (anonymous plugin defined inline).
+
+**Purpose:** Assign display numbers to all registered numbered elements and write
+them back onto the nodes.
+
+**What it calls:**
+
+1. `registry.numberRegistry()` — assigns sequential display numbers to all
+   registered entries (equations, figures, tables, notes) in a single ordered pass.
+   After this call, `entry.number` is a positive integer for numbered entries,
+   `null` for unnumbered.
+2. `fillNumbering(file)` (from `plugins/numbering.js`) — reads
+   `file.data.acadamarkNumberingPending` and sets `node.computedNumber = entry.number`
+   on each node.
+
+**Why two calls:** Steps 6–7 (`acadamarkNotes`, `acadamarkNumbering`) each claim
+registry slots during their walks. `numberRegistry()` must run once after all
+registration is complete so that numbers are assigned in a single ordered pass.
+`fillNumbering` then writes the assigned numbers back to nodes.
+
+**Must run after:** Steps 6 (`acadamarkNotes`) and 7 (`acadamarkNumbering`) — all
+registration must be complete before numbering is computed.
+
+**Must run before:** `acadamarkRefResolution` (step 9) — ref resolution reads
+`entry.number` when computing reference display text; nodes must have `computedNumber`
+set before ref text is built.
+
+---
+
+### 3.9 acadamarkRefResolution
 
 **Source:** `packages/acadamark-interpreter/src/plugins/ref-resolution.js`
 
 **Purpose:** Replace each `<ref>` node with either a `__ref-marker` (resolved)
 or `__ref-error` (unresolved) internal node.
 
-**When it runs:** After `acadamarkNumbering`. At this point all numbered elements
-have been registered and colon-ids are in the label index.
+**When it runs:** After `acadamarkApplyNumbers` (step 8). At this point all numbered
+elements have `computedNumber` set and their colon-ids are in the label index.
 
 **Target id extraction:**
 
@@ -448,14 +478,14 @@ is not used). See `notes/known-limitations.md`.
 
 ---
 
-### 3.9 acadamarkCiteResolution
+### 3.10 acadamarkCiteResolution
 
 **Source:** `packages/acadamark-interpreter/src/plugins/cite-resolution.js`
 
 **Purpose:** Replace each `<cite>` node with `__cite-marker` (resolved keys)
 and/or `__cite-error` (missing keys) internal nodes.
 
-**When it runs:** After `acadamarkLibraryLoad`. If `file.data.acadamarkCitations`
+**When it runs:** After `buildCitationIndex` (step 5). If `file.data.acadamarkCitations`
 is not set (no library was loaded), the plugin is a no-op.
 
 **Key extraction (tries three sources in order):**
@@ -485,7 +515,58 @@ See `notes/known-limitations.md`.
 
 ---
 
-### 3.10 acadamarkBibliography
+### 3.11 acadamarkNotePlacement
+
+**Source:** `packages/acadamark-interpreter/src/plugins/note-placement.js`
+
+**Purpose:** Splice `__note-marker` nodes in place of `<note>` nodes, build
+`__note-list-item` nodes from the now-resolved note content, and inject a
+`__note-list` into `<article-back>`. This is the placement step that was separated
+from `acadamarkNotes` in the R3a refactor.
+
+**When it runs:** After `acadamarkCiteResolution` (step 10). At this point:
+- `<note>` nodes are still in the tree (they stayed through steps 9–10 so their
+  content arrays were resolved — refs/cites inside note bodies are now
+  `__ref-marker`/`__cite-marker` nodes).
+- `entry.number` is set for each note (from step 8).
+- `file.data.acadamarkNotesPending` holds `{ node, entry }` pairs in document order.
+
+**What replaces an inline `<note>`:** A `__note-marker` internal node:
+
+```js
+{
+  type: 'acadamarkTag',
+  tagname: '__note-marker',
+  kwargs: {
+    noteId: 'note-1',    // assigned id
+    number: 1,           // sequential display number (from entry.number)
+    refId: 'noteref-1',  // id of the superscript marker element
+  },
+  content: [],
+}
+```
+
+**Note list items:** Collected into `__note-list-item` nodes with kwargs:
+
+```js
+{ number, refId, sidenote: true|false }
+```
+
+The `content` of each `__note-list-item` is the original `<note>` content
+(the mdast array from `remarkRecursiveContent`, now containing resolved
+`__ref-marker` / `__cite-marker` nodes).
+
+**Note list injection:** A single `__note-list` is prepended (`unshift`) to
+`article-back.content`. If no `<article-back>` exists, one is created.
+When a document uses more than one placement mode, the class on `<note-list>`
+falls back to `notes` (neutral).
+
+**Tree walk:** Uses `walkReplace()` from `lib/walk-replace.js` to splice
+`__note-marker` nodes in place of the found `<note>` nodes.
+
+---
+
+### 3.12 acadamarkBibliography
 
 **Source:** `packages/acadamark-interpreter/src/plugins/bibliography.js`
 
@@ -908,9 +989,11 @@ Plugins communicate via `file.data`. Fields set during a pipeline run:
 
 | field | set by | read by |
 |-------|--------|---------|
-| `file.data.acadamarkConfig` | `acadamarkConfigDiscovery` | `acadamarkLibraryLoad`, `acadamarkNumbering`, `acadamarkRefResolution` |
-| `file.data.acadamarkRegistry` | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkRefResolution` |
-| `file.data.acadamarkCitations` | `acadamarkLibraryLoad` | `acadamarkCiteResolution`, `acadamarkBibliography` |
+| `file.data.acadamarkConfig` | `acadamarkConfigDiscovery` | `buildCitationIndex`, `acadamarkNumbering`, `acadamarkRefResolution` |
+| `file.data.acadamarkRegistry` | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkApplyNumbers`, `acadamarkRefResolution` |
+| `file.data.acadamarkCitations` | `buildCitationIndex` | `acadamarkCiteResolution`, `acadamarkBibliography` |
+| `file.data.acadamarkNotesPending` | `acadamarkNotes` | `acadamarkNotePlacement` |
+| `file.data.acadamarkNumberingPending` | `acadamarkNumbering` | `acadamarkApplyNumbers` |
 
 ---
 
@@ -1011,7 +1094,7 @@ mdast) as best-effort children.
 
 Some plugins use `file.message()` to attach diagnostics to the unified VFile:
 
-- `acadamarkLibraryLoad`: file read failures, empty library, parse errors.
+- `buildCitationIndex` (step 5): file read failures, empty library, parse errors.
 - `acadamarkRefResolution`: missing id, target not found.
 - `acadamarkCiteResolution`: empty `<cite>`, missing keys.
 
@@ -1094,8 +1177,9 @@ packages/acadamark-interpreter/
       config-discovery.js         acadamarkConfigDiscovery
       article-structuring.js      acadamarkArticleStructuring
       section-nesting.js          acadamarkSectionNesting
-      library-load.js             acadamarkLibraryLoad
-      notes.js                    acadamarkNotes
+      library-load.js             buildCitationIndex; acadamarkLibraryLoad (wrapper for external callers)
+      notes.js                    acadamarkNotes (register-only)
+      note-placement.js           acadamarkNotePlacement
       numbering.js                acadamarkNumbering
       ref-resolution.js           acadamarkRefResolution
       cite-resolution.js          acadamarkCiteResolution
@@ -1115,6 +1199,8 @@ packages/acadamark-interpreter/
       registry.js                 createRegistry(); ensureRegistry()
       ast-helpers.js              makeTag(), isAcadamarkTag(), sectionDepth(), findTag(), extractPlainText()
       bool-kwarg.js               readBoolKwarg()
+      discover.js                 discover() — shared read-only pre-order DFS walker
+      walk-replace.js             walkReplace() — shared in-place node replacement walker
       errors.js                   warnUnknownTag(), warnHandlerError(), ...
     assets/
       font-loader.js              patchKatexFontUrls(); getDocumentFontsCss()

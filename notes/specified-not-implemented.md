@@ -20,7 +20,7 @@ in separate sections at the end).
 |---|---|
 | Deferred features (whole capabilities, unbuilt) | 22 |
 | Partial gaps (feature mostly built, one clause missing) | 12 |
-| Doc-staleness findings | 5 |
+| Doc-staleness findings | 0 (all resolved, F2 2026-06) |
 | Open questions flagged in specs (not yet decided) | 2 |
 
 AUD-tracked items are noted with their AUD number. All others are untracked.
@@ -541,47 +541,49 @@ Fixing them is a doc-audit slice task, not a code change.
 
 ---
 
-### DS-1: `notes/interpreter.md` — pre-R1-R4 pipeline description
+### ~~DS-1: `notes/interpreter.md` — pre-R1-R4 pipeline description~~ — RESOLVED
 
-Describes a 9-plugin pipeline. The actual post-R4 pipeline has 12 structural
-steps plus an explicit `buildCitationIndex` call. Pipeline step 5 is still
-labelled `acadamarkLibraryLoad`; no mention of `notePlacement`, `applyNumbers`,
-`discover()`, `walkReplace()`, or the R4 refactor. **AUD-02** covers the related
-`notes/interpreter-design.md` diagram.
-
----
-
-### DS-2: `notes/pipeline.md` — pre-R1-R4 pipeline description
-
-Describes a 6-stage model with 9 plugins. Same staleness issues as DS-1.
+**Resolved (F2 doc-staleness sweep, 2026-06).** `notes/interpreter.md` updated to
+describe the current 12-step pipeline: `buildCitationIndex` at step 5, register-only
+`acadamarkNotes` and `acadamarkNumbering` (steps 6–7), new `acadamarkApplyNumbers`
+(step 8) and `acadamarkNotePlacement` (step 11). File-data table updated.
+Source file map updated with `note-placement.js`, `discover.js`, `walk-replace.js`.
 
 ---
 
-### DS-3: `BUILD.md` — shorthand parser slice table is stale
+### ~~DS-2: `notes/pipeline.md` — pre-R1-R4 pipeline description~~ — RESOLVED
 
-The slice table in `BUILD.md` shows:
-- Slice 3: "Next"
-- Slices 3.5, 4, 5, 6, 7: "—"
-
-All of these slices are implemented. The table's Status and Done-when columns
-describe the target state, not the current state. `BUILD.md` line 11 acknowledges
-"The shorthand parser is feature-complete through Slice 4 plus recursive content
-parsing, escape rules, and multi-line constructs" — but the table itself was not
-updated.
+**Resolved (F2 doc-staleness sweep, 2026-06).** `notes/pipeline.md` updated:
+overview diagram now shows 12 plugins; sections 4.4–4.10 describe the correct
+pipeline including `buildCitationIndex`, `acadamarkApplyNumbers` (4.6.5),
+`acadamarkNotePlacement` (4.9), and `acadamarkBibliography` (4.10). Dependency
+table, file.data namespace, config table, data-flow examples, and section 13
+internal-node table all updated.
 
 ---
 
-### DS-4: `notes/interpreter-design.md` (archived?) — pipeline diagram drift
+### ~~DS-3: `BUILD.md` — shorthand parser slice table is stale~~ — RESOLVED
 
-A pipeline diagram shows the interpreter as a rehype plugin. Actual implementation
-uses mdast-level transforms before `toHast`, not a rehype plugin. **AUD-02** (tracked).
+**Resolved (F2 doc-staleness sweep, 2026-06).** Slice table Status column updated
+to `Done` for slices 3, 3.5, 4, 5, 6, and 7.
 
 ---
 
-### DS-5: `notes/hover-previews-deferred.md` — feature is now implemented
+### ~~DS-4: `notes/interpreter-design.md` (archived?) — pipeline diagram drift~~ — RESOLVED
 
-The file describes hover previews as deferred future work. The feature has been
-implemented. **AUD-03** (tracked).
+**Resolved (F2 doc-staleness sweep, 2026-06).** The file was already archived as
+`archive/interpreter-design-2026-05.md` with a correct archive notice identifying
+the actual implementation. The archive notice's stale "(to be written in audit
+Step 2)" parenthetical removed. AUD-02 closed.
+
+---
+
+### ~~DS-5: `notes/hover-previews-deferred.md` — feature is now implemented~~ — RESOLVED
+
+**Resolved (F2 doc-staleness sweep, 2026-06).** The file was already archived as
+`archive/hover-previews-deferred-2026-05.md` with a correct archive notice. Hover
+preview architecture is in `notes/interpreter.md` §10.2 and `notes/pipeline.md`
+§6. AUD-03 closed.
 
 ---
 

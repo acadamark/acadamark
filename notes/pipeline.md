@@ -21,10 +21,11 @@ source text
     ▼  Stage 2: Recursive content parsing
     │  remarkRecursiveContent
     │
-    ▼  Stage 3: mdast transforms (9 plugins)
+    ▼  Stage 3: mdast transforms (12 plugins)
     │  config discovery → article structure → section nesting →
-    │  library load → notes → numbering → ref resolution →
-    │  cite resolution → bibliography
+    │  citation index → notes → numbering → apply numbers →
+    │  ref resolution → cite resolution → note placement →
+    │  bibliography
     │
     ▼  Stage 4: mdast → hast
     │  toHast() with acadamarkTag custom handler
@@ -131,7 +132,7 @@ including the mixed-content (escape-errors) path.
 
 ## 4. Stage 3: mdast transforms
 
-Nine plugins run in sequence, transforming the mdast tree. They are registered
+Twelve plugins run in sequence, transforming the mdast tree. They are registered
 on the unified processor in this order and run as unified transforms during
 the `processor.run()` step.
 
@@ -212,12 +213,15 @@ article-body
 
 ### Phase 3 — Semantic processing
 
-#### 4.4 acadamarkLibraryLoad
+#### 4.4 buildCitationIndex
 
 **What it does:** Finds `<data>` nodes at root level (outside `<article>`),
 walks their `<library>` children, reads citation data (BibTeX or CSL-JSON)
 from inline content or `src=` files, and stores a citation-js `Cite` instance
-in `file.data.acadamarkCitations`.
+in `file.data.acadamarkCitations`. Called as an explicit index-build step in
+`index.js` via an anonymous plugin wrapper (`acadamarkCitationIndex`), not as
+`this.use(acadamarkLibraryLoad)`. The exported `acadamarkLibraryLoad` plugin
+wrapper is kept for external callers.
 
 **Output:**
 ```js
@@ -236,46 +240,68 @@ is not set. Cite resolution and bibliography will be no-ops.
 
 #### 4.5 acadamarkNotes
 
-**What it does:** Numbers all `<note>` nodes in document order, replaces each
-inline `<note>` node with a `__note-marker` internal node, and injects a
-`__note-list` into `<article-back>` containing all note content.
+**What it does:** Registers note elements (record-only). Walks the tree with
+`discover()`, calls `registry.assign('note', id, { numbered: true })` for
+each `<note>` node found, and stores `{ node, entry }` pairs in
+`file.data.acadamarkNotesPending`. `<note>` nodes **stay in the tree** through
+steps 4.7–4.9 so that any refs/cites inside note bodies are resolved before
+placement. Actual marker splicing and note-list injection happen in
+`acadamarkNotePlacement` (step 4.10).
 
-**Output:** `<note>` nodes are replaced by `__note-marker` nodes in the tree;
-a `__note-list` node containing `__note-list-item` nodes is prepended (`unshift`)
-to `article-back.content`.
+**Output:** `file.data.acadamarkNotesPending` (array of `{ node, entry }` pairs);
+registry note entries with slots claimed (numbers assigned later by step 4.6.5).
 
-**Registry:** Assigns `note` entries with sequential numbers via
-`registry.assign('note', id, { numbered: true })`.
+**Registry:** `registry.assign('note', id, { numbered: true })` per note node.
+Sequential numbers are assigned in `acadamarkApplyNumbers` (step 4.6.5).
 
-**Dependencies:** `acadamarkArticleStructuring` (needs `article-back` to exist
-or be findable), `remarkRecursiveContent` (note content must be parsed mdast).
-
-**Placement modes:** `end` (default), `foot`, `side`. Per-section footnote
-placement is deferred; see `notes/known-limitations.md`.
+**Dependencies:** `remarkRecursiveContent` (note content must be parsed mdast),
+`acadamarkSectionNesting` (tree structure stable).
 
 #### 4.6 acadamarkNumbering
 
-**What it does:** Walks the tree and assigns `computedNumber` (and
-`registryType`) to `$$` (display-math), `figure`, and `table` nodes.
+**What it does:** Registers `$$` (display-math), `figure`, and `table` nodes
+with the registry (record-only), and registers `section`, `sub-section`, and
+`sub-sub-section` nodes for cross-reference lookup. Stores `{ node, entry }`
+pairs for numbered elements in `file.data.acadamarkNumberingPending`.
 
-**Output:** `node.computedNumber = N` (integer) or `null` (unnumbered),
-`node.registryType = 'equation' | 'figure' | 'table'`.
+**Output:** `file.data.acadamarkNumberingPending`; registry entries for numbered
+elements (numbers not yet assigned); `node.registryType` set on each node.
 
-**Dependencies:** `acadamarkNotes` (notes claim their numbers first, so note
-numbers are allocated before equation/figure/table numbers — convention, not
-a hard dependency since they use separate type counters).
+**Dependencies:** `acadamarkNotes` (notes claim their registry slots first, so
+note numbers are allocated before equation/figure/table numbers — convention,
+not a hard dependency since they use separate type counters).
 
 **Numbering decision priority:** `+numbered`/`-numbered` booleans → `numbered=true/false`
 kwargs → document config (`number-equations`, etc.) → default `true`.
+
+---
+
+#### 4.6.5 acadamarkApplyNumbers
+
+**What it does:** Assigns sequential display numbers to all registered numbered
+elements in a single ordered pass, then writes them back to nodes.
+
+**Calls:**
+1. `registry.numberRegistry()` — assigns `entry.number` for all registered entries.
+2. `fillNumbering(file)` — sets `node.computedNumber = entry.number` for each entry
+   in `file.data.acadamarkNumberingPending`.
+
+**Output:** `node.computedNumber` set on all registered numbered elements.
+
+**Dependencies:** `acadamarkNotes` (step 4.5) and `acadamarkNumbering` (step 4.6)
+— all registration must be complete before numbering is computed.
+
+**Must precede:** `acadamarkRefResolution` (step 4.7) — ref resolution reads
+`entry.number` when building reference display text.
 
 #### 4.7 acadamarkRefResolution
 
 **What it does:** Replaces every `<ref>` node with a `__ref-marker` (target
 found in label index) or `__ref-error` (target not found) internal node.
 
-**Dependency on numbering:** Must run after `acadamarkNumbering` so that all
-numbered elements have been assigned `computedNumber` values and their colon-ids
-are in the label index.
+**Dependency on numbering:** Must run after `acadamarkApplyNumbers` (step 4.6.5)
+so that all numbered elements have `computedNumber` set and their colon-ids are
+in the label index.
 
 **Reference text:** Computed from the id prefix and the entry number. Known
 prefixes (`eqn`, `fig`, `note`, `tab`, `sec`, etc.) produce labeled text
@@ -290,7 +316,7 @@ targets produce the label-tail. Config key `ref-prefix-{prefix}` overrides.
 **What it does:** Replaces every `<cite>` node with `__cite-marker` and/or
 `__cite-error` internal nodes. Builds `citations.order` (first-cited key order).
 
-**Dependency:** `acadamarkLibraryLoad` (needs `file.data.acadamarkCitations`).
+**Dependency:** `buildCitationIndex` (step 4.4; needs `file.data.acadamarkCitations`).
 If citations were not loaded, this plugin is a no-op.
 
 **Citation keys:** Extracted from `node.positional` (canonical: `<cite Smith2020>`),
@@ -299,7 +325,30 @@ If citations were not loaded, this plugin is a no-op.
 **Mixed case:** When some keys are found and some missing, the replacement is
 `[__cite-marker, __cite-error]` — both nodes appear inline in the output.
 
-#### 4.9 acadamarkBibliography
+---
+
+#### 4.9 acadamarkNotePlacement
+
+**What it does:** Splices `__note-marker` nodes in place of `<note>` nodes,
+builds `__note-list-item` nodes from the now-resolved note content, and injects
+a `__note-list` into `<article-back>`.
+
+**Why after cite-resolution:** `<note>` nodes were left in the tree through
+steps 4.7–4.8 so that any refs/cites inside note bodies were resolved. By
+step 4.9, note content arrays contain `__ref-marker`/`__cite-marker` nodes
+instead of raw `<ref>`/`<cite>` tags.
+
+**Output:** `<note>` nodes replaced by `__note-marker` nodes; a `__note-list`
+node containing `__note-list-item` nodes prepended to `article-back.content`.
+
+**Tree walk:** Uses `walkReplace()` from `lib/walk-replace.js`.
+
+**Dependencies:** `acadamarkCiteResolution` (step 4.8; note content must be
+resolved), `acadamarkApplyNumbers` (step 4.6.5; `entry.number` must be set).
+
+---
+
+#### 4.10 acadamarkBibliography
 
 **What it does:** Renders the full bibliography via citation-js and injects
 a `__bibliography` node into `<article-back>`. If the author placed an explicit
@@ -411,11 +460,13 @@ to have run before it.
 | `acadamarkConfigDiscovery` | `remarkRecursiveContent` | `file.data.acadamarkConfig` |
 | `acadamarkArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `acadamarkSectionNesting` | `acadamarkArticleStructuring` | nested section tree |
-| `acadamarkLibraryLoad` | `acadamarkArticleStructuring`, `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
-| `acadamarkNotes` | `remarkRecursiveContent`, `acadamarkSectionNesting` | `__note-marker`, `__note-list`, registry note entries |
-| `acadamarkNumbering` | `acadamarkNotes` | `node.computedNumber`, `node.registryType`, label index entries |
-| `acadamarkRefResolution` | `acadamarkNumbering` | `__ref-marker`, `__ref-error` |
-| `acadamarkCiteResolution` | `acadamarkLibraryLoad` | `__cite-marker`, `__cite-error`, `citations.order` |
+| `buildCitationIndex` | `acadamarkArticleStructuring`, `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
+| `acadamarkNotes` | `remarkRecursiveContent`, `acadamarkSectionNesting` | `file.data.acadamarkNotesPending`; registry note slots |
+| `acadamarkNumbering` | `acadamarkNotes` | `file.data.acadamarkNumberingPending`; `node.registryType` |
+| `acadamarkApplyNumbers` | `acadamarkNotes`, `acadamarkNumbering` | `node.computedNumber`; label index entries |
+| `acadamarkRefResolution` | `acadamarkApplyNumbers` | `__ref-marker`, `__ref-error` |
+| `acadamarkCiteResolution` | `buildCitationIndex` | `__cite-marker`, `__cite-error`, `citations.order` |
+| `acadamarkNotePlacement` | `acadamarkCiteResolution`, `acadamarkApplyNumbers` | `__note-marker`, `__note-list`, `__note-list-item` |
 | `acadamarkBibliography` | `acadamarkCiteResolution` | `__bibliography` |
 | compiler (toHast) | all mdast transforms | hast tree |
 | asset injection | compiler | CSS/JS nodes prepended to hast |
@@ -426,15 +477,18 @@ to have run before it.
 - `remarkRecursiveContent` must precede all structural plugins. Structural
   plugins read node content (e.g., `<meta>` internals, note content) as parsed
   mdast arrays; they cannot work with raw strings.
-- `acadamarkNumbering` must precede `acadamarkRefResolution`. Cross-references
-  look up by label; labels are only in the registry after numbering has assigned
-  them.
+- `acadamarkApplyNumbers` must precede `acadamarkRefResolution`. Cross-references
+  look up by label; labels are only in the registry after `numberRegistry()` has
+  assigned numbers and `fillNumbering` has written them to nodes.
 - `acadamarkCiteResolution` must precede `acadamarkBibliography`. The bibliography
   assembles from `citations.order`, which is populated during cite resolution.
-- `acadamarkLibraryLoad` must precede `acadamarkCiteResolution`. Cite resolution
+- `acadamarkCiteResolution` must precede `acadamarkNotePlacement`. Note bodies
+  may contain `<cite>` tags; those must be resolved before note content is moved
+  to article-back.
+- `buildCitationIndex` must precede `acadamarkCiteResolution`. Cite resolution
   needs the citation-js instance.
-- `acadamarkArticleStructuring` must precede `acadamarkLibraryLoad`. Library load
-  finds `<data>` by walking `tree.children` — the `<data>` nodes must be there.
+- `acadamarkArticleStructuring` must precede `buildCitationIndex`. Citation index
+  build finds `<data>` by walking `tree.children` — the `<data>` nodes must be there.
 
 ---
 
@@ -461,7 +515,7 @@ These are processed by `acadamarkConfigDiscovery` and stored in
 
 | key | type | consumed by | effect |
 |-----|------|-------------|--------|
-| `citation-style` | CSL style name | `acadamarkLibraryLoad` | Citation format (default: `chicago-author-date`) |
+| `citation-style` | CSL style name | `buildCitationIndex` | Citation format (default: `chicago-author-date`) |
 | `number-equations` | `'false'` | `acadamarkNumbering` | Suppress equation numbering |
 | `number-figures` | `'false'` | `acadamarkNumbering` | Suppress figure numbering |
 | `number-tables` | `'false'` | `acadamarkNumbering` | Suppress table numbering |
@@ -578,7 +632,7 @@ See <cite Smith2020>.
 
 **Stage 1:** `acadamarkTag { tagname: 'cite', positional: ['Smith2020'] }`
 
-**Stage 3 — acadamarkLibraryLoad:**
+**Stage 3 — buildCitationIndex:**
 - `file.data.acadamarkCitations = { cite: Cite([Smith2020]), order: [], style: 'chicago-author-date' }`
 
 **Stage 3 — acadamarkCiteResolution:**
@@ -616,12 +670,19 @@ Here is some text.<note | This is an endnote.> More text.
 - `'This is an endnote.'` → parsed → `[text("This is an endnote.")]` (single inline node)
 - `node.content = [text("This is an endnote.")]`
 
-**Stage 3 — acadamarkNotes:**
-- `registry.assign('note', null, { numbered: true })` → `entry = { id: 'note-1', number: 1 }`
-- `refId = 'noteref-1'`
-- `<note>` replaced with `__note-marker { noteId: 'note-1', number: 1, refId: 'noteref-1' }`
-- collected: `{ entry, refId: 'noteref-1', content: [text("This is an endnote.")] }`
-- `__note-list` with one `__note-list-item` prepended to article-back
+**Stage 3 — acadamarkNotes (register-only):**
+- `registry.assign('note', null, { numbered: true })` → `entry = { id: 'note-1' }` (number not yet assigned)
+- `file.data.acadamarkNotesPending = [{ node: <note>, entry }]`
+- `<note>` node **stays in the tree**
+
+**Stage 3 — acadamarkApplyNumbers:**
+- `registry.numberRegistry()` → `entry.number = 1`
+- `fillNumbering(file)` → (no-op for notes; `acadamarkNumberingPending` has equations/figures/tables)
+
+**Stage 3 — acadamarkNotePlacement:**
+- Splices `<note>` → `__note-marker { noteId: 'note-1', number: 1, refId: 'noteref-1' }`
+- Builds `__note-list-item` with `content: [text("This is an endnote.")]`
+- Prepends `__note-list` with one `__note-list-item` to article-back
 
 **Stage 4 — toHast:**
 - `__note-marker` → `noteMarkerHandler`:
@@ -641,10 +702,12 @@ The unified `VFile` is the shared data bus between plugins. `file.data` fields
 set during a pipeline run:
 
 | field | type | set by | read by |
-|-------|------|--------|---------|
-| `file.data.acadamarkConfig` | `Map<string, string>` | `acadamarkConfigDiscovery` | `acadamarkLibraryLoad`, `acadamarkNumbering`, `acadamarkRefResolution` |
-| `file.data.acadamarkRegistry` | registry object | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkRefResolution` |
-| `file.data.acadamarkCitations` | `{ cite, order, style }` | `acadamarkLibraryLoad` | `acadamarkCiteResolution`, `acadamarkBibliography` |
+|-------|------|--------|----------|
+| `file.data.acadamarkConfig` | `Map<string, string>` | `acadamarkConfigDiscovery` | `buildCitationIndex`, `acadamarkNumbering`, `acadamarkRefResolution` |
+| `file.data.acadamarkRegistry` | registry object | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkApplyNumbers`, `acadamarkRefResolution` |
+| `file.data.acadamarkCitations` | `{ cite, order, style }` | `buildCitationIndex` | `acadamarkCiteResolution`, `acadamarkBibliography` |
+| `file.data.acadamarkNotesPending` | array of `{ node, entry }` | `acadamarkNotes` | `acadamarkNotePlacement` |
+| `file.data.acadamarkNumberingPending` | array of `{ node, entry }` | `acadamarkNumbering` | `acadamarkApplyNumbers` |
 
 All three are initialized as needed:
 - `acadamarkConfig` is set to a new `Map` even if the document has no `<config>`
@@ -708,9 +771,9 @@ and cannot be authored directly.
 
 | created by | tagname | rendered as |
 |-----------|---------|-------------|
-| `acadamarkNotes` | `__note-marker` | `<sup>` with link |
-| `acadamarkNotes` | `__note-list` | `<note-list><ol>` |
-| `acadamarkNotes` | `__note-list-item` | `<li>` |
+| `acadamarkNotePlacement` | `__note-marker` | `<sup>` with link |
+| `acadamarkNotePlacement` | `__note-list` | `<note-list><ol>` |
+| `acadamarkNotePlacement` | `__note-list-item` | `<li>` |
 | `acadamarkRefResolution` | `__ref-marker` | `<a class="ref">` |
 | `acadamarkRefResolution` | `__ref-error` | `<a class="ref-error">` |
 | `acadamarkCiteResolution` | `__cite-marker` | `<cite class="cite">` |
@@ -719,7 +782,7 @@ and cannot be authored directly.
 
 The `data` and `library` tagnames (author-written) are also in INTERNAL_REGISTRY
 and render as `null` (suppressed): their content has been consumed by
-`acadamarkLibraryLoad`.
+`buildCitationIndex`.
 
 ---
 

@@ -162,12 +162,12 @@ The shorthand parser (`packages/remark-acadamark`) is built in vertical slices. 
 | 0 | Archive pure-micromark package; scaffold hybrid (Peggy + micromark finder) | Done | Archive committed, fresh package builds, grammar compiles |
 | 1 | Sigil tags `<#...#>`, `<##...##>`, `<###...###>` | Done | 12 Slice 1 integration tests pass |
 | 2 | Named tags `<tagname attrs \| content>` — all attribute forms via JS helper | Done | 29 total integration tests pass |
-| 3 | Move all attribute parsing into Peggy rules; apply permissive `identifier` rule for id/value/positional | Next | All 57 existing tests pass; new tests for `:` in ids and permissive identifiers; drift check clean |
-| 3.5 | Math and code sigils: `<$...$>`, `<$$...$$>`, `` <`...`> ``, `` <```...```> `` | — | Sigil tests for `$` and `` ` `` families pass; micromark finder extended; drift check clean |
-| 4 | Long-form DSL tags `<csv>...</csv>` — opaque content, registry integration | — | `<csv>`, `<math>`, `<theorem>` etc. parse correctly |
-| 5 | Qualifying-tag pattern `<table csv>...</table>` | — | First-positional DSL dispatch works |
-| 6 | Recursive content parsing — named-tag content as array of child nodes | — | `<figure \| text with <em \| emphasis>>` produces nested AST |
-| 7 | Multi-line constructs — newlines valid inside attr sections and content | — | Example 7 (multi-line figure) parses correctly |
+| 3 | Move all attribute parsing into Peggy rules; apply permissive `identifier` rule for id/value/positional | Done | All 57 existing tests pass; new tests for `:` in ids and permissive identifiers; drift check clean |
+| 3.5 | Math and code sigils: `<$...$>`, `<$$...$$>`, `` <`...`> ``, `` <```...```> `` | Done | Sigil tests for `$` and `` ` `` families pass; micromark finder extended; drift check clean |
+| 4 | Long-form DSL tags `<csv>...</csv>` — opaque content, registry integration | Done | `<csv>`, `<math>`, `<theorem>` etc. parse correctly |
+| 5 | Qualifying-tag pattern `<table csv>...</table>` | Done | First-positional DSL dispatch works |
+| 6 | Recursive content parsing — named-tag content as array of child nodes | Done | `<figure \| text with <em \| emphasis>>` produces nested AST |
+| 7 | Multi-line constructs — newlines valid inside attr sections and content | Done | Example 7 (multi-line figure) parses correctly |
 
 ## Recommended starting point
 

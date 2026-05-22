@@ -1,4 +1,4 @@
-> **Archived 2026-Q2.** This document describes an interpreter architecture (`acadamarkTagInterpret` as a single rehype plugin doing schema-driven dispatch) that was not implemented. The actual interpreter is a chain of mdast plugins plus toHast handlers. See `notes/interpreter.md` for the current architecture (to be written in audit Step 2). Retained here for historical reference.
+> **Archived 2026-Q2.** This document describes an interpreter architecture (`acadamarkTagInterpret` as a single rehype plugin doing schema-driven dispatch) that was not implemented. The actual interpreter is a chain of mdast plugins plus toHast handlers. See `notes/interpreter.md` for the current architecture. Retained here for historical reference.
 
 ---
 
