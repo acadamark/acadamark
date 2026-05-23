@@ -65,7 +65,7 @@ export function acadamarkFromMarkdown() {
   }
 }
 
-// ─── Short-form (sigil + named) ────────────────────────────────────────────
+// ─── Short-form (sigil + named + shortcut) ─────────────────────────────────
 
 function enterAcadamarkTag(token) {
   // Push a minimal stub; exitAcadamarkTag fills in the real fields.
@@ -83,6 +83,17 @@ function exitAcadamarkTag(token) {
   // correct: micromark tracks start/end offsets as absolute positions in the
   // input buffer, and sliceSerialize reads directly from that buffer.
   const source = this.sliceSerialize(token)
+
+  // Inline TeX shortcut: ^{...} → sup, _{...} → sub.
+  // Source starts with ^ or _ (not <). Handled directly without Peggy — no
+  // grammar step needed. buildShortcutNode matches the node shape emitted by
+  // G1a's SuperscriptShortcut / SubscriptShortcut grammar rules field-for-field.
+  if (source[0] === '^' || source[0] === '_') {
+    buildShortcutNode(node, source)
+    this.exit(token)
+    return
+  }
+
   try {
     const parsed = peggyParse(source)
     Object.assign(node, parsed)
@@ -106,6 +117,50 @@ function exitAcadamarkTag(token) {
     node.error = err.message
   }
   this.exit(token)
+}
+
+/**
+ * Build a shortcut acadamarkTag node in-place from the serialized token source.
+ *
+ * Matches the node shape emitted by G1a's SuperscriptShortcut / SubscriptShortcut
+ * grammar rules exactly — field for field — so top-level prose shortcuts and
+ * in-tag shortcuts produce identical nodes downstream.
+ *
+ * @param {object} node  - The acadamarkTag stub to modify in-place.
+ * @param {string} source - Serialized token text, e.g. "^{st}" or "_{2}".
+ */
+function buildShortcutNode(node, source) {
+  const tagname = source[0] === '^' ? 'sup' : 'sub'
+
+  if (source[source.length - 1] !== '}') {
+    // No closing } — tokenizer exited on EOF or line ending. Unterminated shortcut.
+    Object.assign(node, { type: 'acadamarkParseError', subtype: 'unterminated-shortcut', source })
+    return
+  }
+
+  const content = source.slice(2, -1) // strip trigger+{ and closing }
+
+  if (content === '') {
+    // ^{} or _{} — empty braces.
+    Object.assign(node, { type: 'acadamarkParseError', subtype: 'empty-shortcut', source })
+    return
+  }
+
+  Object.assign(node, {
+    type: 'acadamarkTag',
+    form: 'shortcut',
+    tagname,
+    contentHandler: 'default',
+    content,
+    isOpaqueContent: false,
+    positional: [],
+    booleans: {},
+    kwargs: {},
+    id: null,
+    classes: [],
+    atRefs: [],
+    selfClosing: false,
+  })
 }
 
 // ─── Long-form ─────────────────────────────────────────────────────────────

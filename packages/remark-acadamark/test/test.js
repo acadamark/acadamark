@@ -1141,4 +1141,145 @@ console.log('\n--- F1 ordering pin ---')
 }
 
 console.log('\nAll F1 ordering pin tests passed.')
-console.log('\n118/118 tests passed.')
+
+// ─── G1b: inline TeX shortcuts — top-level prose tokenizer ───────────────────
+//
+// These tests exercise the micromark tokenizer for ^{...} and _{...} in top-
+// level prose (outside any <...> tag). The tokenizer emits the same acadamarkTag
+// node shape as G1a's grammar rules, so both surfaces converge on identical
+// nodes downstream.
+
+console.log('\n--- G1b: top-level prose shortcut tokenizer ---')
+
+function parseShortcutInProse(src) {
+  const tree = parse(src)
+  for (const block of tree.children) {
+    if (block.type !== 'paragraph') continue
+    const node = block.children.find(
+      (n) => n.type === 'acadamarkTag' && (n.tagname === 'sup' || n.tagname === 'sub'),
+    )
+    if (node) return node
+  }
+  throw new Error(`No shortcut (sup/sub) node in prose: ${JSON.stringify(src)}`)
+}
+
+// G1b-1: ^{st} in top-level prose → full node shape verification
+{
+  const node = parseShortcutInProse('The 1^{st} edition.')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.tagname, 'sup')
+  assert.equal(node.form, 'shortcut')
+  assert.equal(node.contentHandler, 'default')
+  assert.equal(node.content, 'st')
+  assert.equal(node.isOpaqueContent, false)
+  assert.deepEqual(node.positional, [])
+  assert.deepEqual(node.booleans, {})
+  assert.deepEqual(node.kwargs, {})
+  assert.equal(node.id, null)
+  assert.deepEqual(node.classes, [])
+  assert.deepEqual(node.atRefs, [])
+  assert.equal(node.selfClosing, false)
+  console.log('PASS G1b-1: 1^{st} in prose → sup node, all fields verified')
+}
+
+// G1b-2: _{2} in prose → sub node
+{
+  const node = parseShortcutInProse('H_{2}O')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.tagname, 'sub')
+  assert.equal(node.form, 'shortcut')
+  assert.equal(node.contentHandler, 'default')
+  assert.equal(node.content, '2')
+  console.log('PASS G1b-2: H_{2}O in prose → sub node')
+}
+
+// G1b-3: x^{y_{1}} — nested shortcut, content captured as raw string at tokenizer level
+{
+  const supNode = parseShortcutInProse('x^{y_{1}}')
+  assert.equal(supNode.tagname, 'sup')
+  // At tokenizer level, content is the raw brace interior string.
+  // remarkRecursiveContent resolves _{1} into a sub node in a later pass.
+  assert.equal(supNode.content, 'y_{1}')
+  console.log('PASS G1b-3: x^{y_{1}} in prose → sup, content="y_{1}" (sub resolved by recursive-content)')
+}
+
+// G1b-4: bare ^ is literal text — NOT a shortcut
+{
+  const tree = parse('a^b in prose')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const shortcuts = para.children.filter((n) => n.type === 'acadamarkTag')
+  assert.equal(shortcuts.length, 0, 'no shortcut node for bare ^')
+  const text = para.children.map((n) => n.value ?? '').join('')
+  assert.ok(text.includes('^'), 'bare ^ preserved in text')
+  console.log('PASS G1b-4: bare ^ in prose is literal text, no shortcut')
+}
+
+// G1b-5: bare _ is literal text — NOT a shortcut (snake_case untouched)
+{
+  const tree = parse('snake_case in prose')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const shortcuts = para.children.filter((n) => n.type === 'acadamarkTag')
+  assert.equal(shortcuts.length, 0, 'no shortcut node for bare _')
+  console.log('PASS G1b-5: snake_case in prose is literal text, no shortcut')
+}
+
+// G1b-6: \^ in top-level prose → literal ^, no superscript
+{
+  const tree = parse('\\^{literal}')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const shortcuts = para.children.filter((n) => n.type === 'acadamarkTag')
+  assert.equal(shortcuts.length, 0, 'no shortcut node after \\^')
+  console.log('PASS G1b-6: \\^ in prose → literal ^, no superscript')
+}
+
+// G1b-7: ^ inside opaque math sigil <$ x^2 $> — not claimed by shortcut tokenizer
+{
+  const tree = parse('<$ x^2 $>')
+  const mathNode = tree.children.find((n) => n.type === 'acadamarkTag')
+  assert.ok(mathNode, 'math sigil node exists')
+  assert.equal(mathNode.tagname, '$')
+  assert.ok(mathNode.content.includes('^'), '^ preserved inside math sigil')
+  console.log('PASS G1b-7: ^ inside <$ ... $> not claimed by shortcut tokenizer')
+}
+
+// G1b-8: ^{} → acadamarkParseError (empty braces)
+{
+  const tree = parse('^{} in prose')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const err = para.children.find((n) => n.type === 'acadamarkParseError')
+  assert.ok(err, 'parse error node present')
+  assert.equal(err.subtype, 'empty-shortcut')
+  console.log('PASS G1b-8: ^{} → acadamarkParseError (empty-shortcut)')
+}
+
+// G1b-9: ^{abc (unterminated) → acadamarkParseError
+{
+  const tree = parse('^{abc')
+  const para = tree.children.find((n) => n.type === 'paragraph')
+  const err = para.children.find((n) => n.type === 'acadamarkParseError')
+  assert.ok(err, 'parse error node present for unterminated')
+  assert.equal(err.subtype, 'unterminated-shortcut')
+  console.log('PASS G1b-9: ^{abc (unterminated) → acadamarkParseError')
+}
+
+// G1b-10: _{n} sub path — full field verification (mirrors G1b-1 for sub tagname)
+{
+  const node = parseShortcutInProse('_{n} terms')
+  assert.equal(node.type, 'acadamarkTag')
+  assert.equal(node.form, 'shortcut')
+  assert.equal(node.tagname, 'sub')
+  assert.equal(node.contentHandler, 'default')
+  assert.equal(node.content, 'n')
+  assert.equal(node.isOpaqueContent, false)
+  assert.deepEqual(node.positional, [])
+  assert.deepEqual(node.booleans, {})
+  assert.deepEqual(node.kwargs, {})
+  assert.equal(node.id, null)
+  assert.deepEqual(node.classes, [])
+  assert.deepEqual(node.atRefs, [])
+  assert.equal(node.selfClosing, false)
+  console.log('PASS G1b-10: _{n} in prose → sub node, all fields verified')
+}
+
+console.log('\nAll G1b inline TeX shortcut tokenizer tests passed.')
+console.log('\n128/128 tests passed.')

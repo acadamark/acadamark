@@ -1,0 +1,20 @@
+<meta type=article>
+  <title | Inline TeX Shortcuts — End-to-End Fixture>
+  <author | Test Suite>
+</meta>
+
+<section | Ordinals in prose>
+The 1^{st} edition appeared in 1984. The 2^{nd} printing followed in 1985,
+and the 3^{rd} expanded edition arrived in 1990.
+
+<section | Chemistry in prose>
+Water is H_{2}O. Carbon dioxide is CO_{2}. Sulfuric acid is H_{2}SO_{4}.
+
+<section | Nested shortcuts in prose>
+The variable x^{y_{1}} demonstrates nested super- and subscript in flowing text.
+
+<section | Shortcuts inside named tags>
+<aside | The 1^{st} law of thermodynamics: energy H_{2}O is conserved.>
+
+<section | Mixed prose and tag usage>
+In the body, iron-56 can be written ^{56}Fe. Inside a tag: <aside | the isotope ^{56}Fe is stable>.

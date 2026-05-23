@@ -5,12 +5,17 @@
 import { markdownLineEnding } from 'micromark-util-character'
 import { DSL_REGISTRY } from './dsl-registry.js'
 
-const LT = 60    // <
-const GT = 62    // >
-const PIPE = 124 // |
-const SLASH = 47 // /
-const SQUOTE = 39 // '
-const DQUOTE = 34 // "
+const LT = 60         // <
+const GT = 62         // >
+const PIPE = 124      // |
+const SLASH = 47      // /
+const SQUOTE = 39     // '
+const DQUOTE = 34     // "
+const CARET = 94      // ^
+const UNDERSCORE = 95 // _
+const OPEN_BRACE = 123  // {
+const CLOSE_BRACE = 125 // }
+const BACKSLASH = 92    // \
 
 // Registered sigil characters. The finder uses this to distinguish sigil tags
 // from named tags. Extend here when new sigils are added (e.g., $ for math).
@@ -67,6 +72,8 @@ export function acadamarkSyntax(options = {}) {
         { tokenize: tokenizeSigilTagText },
         { tokenize: tokenizeNamedTagText },
       ],
+      [CARET]: [{ tokenize: tokenizeShortcutTag }],
+      [UNDERSCORE]: [{ tokenize: tokenizeShortcutTag }],
     },
   }
 }
@@ -367,6 +374,110 @@ const tokenizeNamedTagFlow = makeNamedTagTokenizer({ multiLine: true })
  * @type {Tokenizer}
  */
 const tokenizeNamedTagText = makeNamedTagTokenizer({ multiLine: false })
+
+// ─── Shortcut tag tokenizer ──────────────────────────────────────────────────
+
+/**
+ * Text-position tokenizer for inline TeX shortcuts: ^{...} → sup, _{...} → sub.
+ *
+ * Triggers only on ^{ or _{. Bare ^ or _ without { calls nok immediately so
+ * CommonMark literal-character processing (including _ emphasis) handles them.
+ * Tracks { } brace depth for nested shortcuts (x^{y_{1}}). Handles \{ and \}
+ * by consuming the character after \ without using it for depth tracking, so
+ * \} does not prematurely close a shortcut. Does not span lines — exits with
+ * ok on line ending or EOF so from-markdown.js can produce an
+ * acadamarkParseError for unterminated shortcuts.
+ *
+ * Reuses the acadamarkTag token type so the existing enterAcadamarkTag stub
+ * push fires. exitAcadamarkTag dispatches on source[0] === '^'/'_' to skip
+ * the Peggy parse and build the node directly.
+ *
+ * @type {Tokenizer}
+ */
+function tokenizeShortcutTag(effects, ok, nok) {
+  let braceDepth = 0
+
+  return start
+
+  /** @param {Code} code */
+  function start(code) {
+    if (code !== CARET && code !== UNDERSCORE) return nok(code)
+    effects.enter('acadamarkTag')
+    effects.consume(code)
+    return afterTrigger
+  }
+
+  /** @param {Code} code */
+  function afterTrigger(code) {
+    // Bare ^ or _ not followed by { — not a shortcut. nok reverts all effects.
+    if (code !== OPEN_BRACE) return nok(code)
+    effects.consume(code)
+    return braceContent
+  }
+
+  /** @param {Code} code */
+  function braceContent(code) {
+    if (code === null) {
+      // EOF — unterminated shortcut (no closing }). Emit what we have and let
+      // from-markdown.js produce an acadamarkParseError.
+      effects.exit('acadamarkTag')
+      return ok(code)
+    }
+    if (markdownLineEnding(code)) {
+      // Shortcuts are single-line only. Exit without consuming the line ending
+      // so the paragraph tokenizer handles it normally.
+      effects.exit('acadamarkTag')
+      return ok(code)
+    }
+    if (code === BACKSLASH) {
+      // Consume the backslash; the next character is consumed unconditionally
+      // in afterBackslash (so \} does not prematurely close the shortcut and
+      // \{ does not spuriously open one).
+      effects.consume(code)
+      return afterBackslash
+    }
+    if (code === OPEN_BRACE) {
+      braceDepth++
+      effects.consume(code)
+      return braceContent
+    }
+    if (code === CLOSE_BRACE) {
+      if (braceDepth === 0) {
+        // Closing brace found at depth 0 — this closes the shortcut.
+        effects.consume(code)
+        return afterClose
+      }
+      braceDepth--
+      effects.consume(code)
+      return braceContent
+    }
+    // All other characters (including < and > from nested <tag> constructs)
+    // are captured verbatim. The brace content is extracted as a raw string
+    // and passed to remarkRecursiveContent for later parsing — exactly as
+    // G1a's BraceContentItem grammar rule does. We do NOT parse nested <...>
+    // here; we just capture their text.
+    effects.consume(code)
+    return braceContent
+  }
+
+  /** @param {Code} code */
+  function afterBackslash(code) {
+    if (code === null || markdownLineEnding(code)) {
+      // EOF or newline after backslash — still unterminated.
+      effects.exit('acadamarkTag')
+      return ok(code)
+    }
+    // Consume the escaped character unconditionally (including { and }).
+    effects.consume(code)
+    return braceContent
+  }
+
+  /** @param {Code} code — char immediately after the closing } */
+  function afterClose(code) {
+    effects.exit('acadamarkTag')
+    return ok(code)
+  }
+}
 
 // ─── Long-form tag tokenizer ─────────────────────────────────────────────────
 

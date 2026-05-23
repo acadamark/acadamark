@@ -1,8 +1,8 @@
-# Inline TeX-style shortcuts (deferred)
+# Inline TeX-style shortcuts
 
-**Status: Not implemented.** This spec describes a planned feature. The current path for inline super/subscript is the math sigil (`<$ x^2 $>`) or explicit `<sup>` and `<sub>` tags. See the [Status section](#status) at the bottom for details.
+**Status: Implemented** (G1a: grammar surface; G1b: top-level prose tokenizer). Both phases are complete and merged. See the [Status section](#status) at the bottom for details.
 
-This note captures the design for inline `^{...}` and `_{...}` shortcuts that produce HTML's `<sup>` and `<sub>` elements in prose. The feature is specified here for future implementation. It is not yet built.
+This note captures the design for inline `^{...}` and `_{...}` shortcuts that produce HTML's `<sup>` and `<sub>` elements in prose. The feature is implemented in two phases: G1a added the grammar surface (inside named-tag content); G1b added the micromark tokenizer surface (top-level prose).
 
 ## Motivation
 
@@ -144,11 +144,11 @@ same `remarkRecursiveContent` and interpreter pipeline.
 
 ## Status
 
-Not implemented. The current path for inline super/subscript is the math sigil (`<$ x^2 $>`) or explicit `<sup>` and `<sub>` tags.
+Implemented. G1a (commit b6304a3) added `SuperscriptShortcut` / `SubscriptShortcut` rules to the Peggy grammar, covering shortcuts inside named-tag content. G1b added a micromark tokenizer (`tokenizeShortcutTag` in `syntax.js` + `buildShortcutNode` in `from-markdown.js`) covering top-level prose.
 
-The vocabulary entries for `<sup>` and `<sub>` reference this future shortcut as a planned authoring affordance.
+Both surfaces emit identical `acadamarkTag` nodes (form `shortcut`, tagname `sup` or `sub`, contentHandler `default`). Those nodes are processed by `remarkRecursiveContent` and rendered via the existing `<sup>` / `<sub>` schema dispatch in the interpreter.
 
-When this is implemented, it becomes a focused parser slice — comparable in scope to the escape rules slice. The design is bounded; the spec captures the necessary decisions.
+The vocabulary entries for `<sup>` and `<sub>` reference this shortcut as the expected authoring affordance, which is now active.
 
 ## See also
 

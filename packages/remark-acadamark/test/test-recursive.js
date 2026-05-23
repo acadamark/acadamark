@@ -305,5 +305,70 @@ function parseTag(src) {
   console.log('PASS RC-17: \\^ in named-tag content → literal ^, no superscript')
 }
 
+// ─── G1b: top-level prose surface — recursive parsing ────────────────────────
+//
+// These tests verify that shortcut nodes created by the G1b micromark tokenizer
+// (^{...} and _{...} in top-level prose) are correctly processed by
+// remarkRecursiveContent, just like G1a's in-tag shortcuts.
+
+// Helper: find a sup or sub node inside a paragraph's inline children.
+function parseInlineShortcut(src, tagname) {
+  const tree = parse(src)
+  for (const block of tree.children) {
+    if (block.type !== 'paragraph') continue
+    const node = block.children.find(
+      (n) => n.type === 'acadamarkTag' && n.tagname === tagname,
+    )
+    if (node) return node
+  }
+  throw new Error(`No ${tagname} node in prose: ${JSON.stringify(src)}`)
+}
+
+// ─── Test RC-18: ^{st} in top-level prose → recursively parsed ───────────────
+{
+  const supNode = parseInlineShortcut('The 1^{st} edition.', 'sup')
+  assert.ok(supNode, 'sup node present in prose')
+  assert.equal(supNode.contentHandler, 'default')
+  // After remarkRecursiveContent, content should be Node[], not a string.
+  assert.ok(Array.isArray(supNode.content), 'sup content is Node[] after recursive parse')
+  const textNode = supNode.content.find((n) => n.type === 'text')
+  assert.ok(textNode, 'text node inside sup')
+  assert.equal(textNode.value, 'st')
+  console.log('PASS RC-18: ^{st} in top-level prose → sup with recursively parsed content')
+}
+
+// ─── Test RC-19: x^{y_{1}} in prose — nested shortcuts recursively parsed ────
+{
+  const supNode = parseInlineShortcut('x^{y_{1}}', 'sup')
+  assert.ok(supNode, 'sup node present')
+  assert.ok(Array.isArray(supNode.content), 'sup content is Node[] after recursive parse')
+  // The sub node should be inside the sup content.
+  const subNode = supNode.content.find(
+    (n) => n.type === 'acadamarkTag' && n.tagname === 'sub',
+  )
+  assert.ok(subNode, 'nested sub node inside sup content')
+  assert.ok(Array.isArray(subNode.content), 'sub content also recursively parsed')
+  const subText = subNode.content.find((n) => n.type === 'text')
+  assert.ok(subText, 'text inside sub')
+  assert.equal(subText.value, '1')
+  console.log('PASS RC-19: x^{y_{1}} in prose → sup and sub both recursively parsed')
+}
+
+// ─── Test RC-20: nested <cite> in brace content — resolved after recursive-content
+// The tokenizer captures ^{see <cite @jones>} as a raw string
+// "see <cite @jones>". After remarkRecursiveContent re-parses it through remark,
+// the <cite @jones> is resolved into an acadamarkTag cite node inside the sup.
+{
+  const supNode = parseInlineShortcut('^{see <cite @jones>}', 'sup')
+  assert.ok(supNode, 'sup node present')
+  assert.ok(Array.isArray(supNode.content), 'sup content is Node[] after recursive parse')
+  const citeNode = supNode.content.find(
+    (n) => n.type === 'acadamarkTag' && n.tagname === 'cite',
+  )
+  assert.ok(citeNode, 'cite node inside sup content after recursive parse')
+  assert.deepEqual(citeNode.atRefs, ['jones'])
+  console.log('PASS RC-20: ^{see <cite @jones>} in prose → cite node inside sup after recursive-content')
+}
+
 console.log('\nAll recursive-content tests passed.')
-console.log('\n17/17 recursive-content tests passed.')
+console.log('\n20/20 recursive-content tests passed.')

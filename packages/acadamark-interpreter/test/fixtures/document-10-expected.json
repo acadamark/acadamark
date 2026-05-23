@@ -1,0 +1,936 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Inline TeX Shortcuts — End-to-End Fixture",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 43,
+                          "offset": 42
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Test Suite",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 12,
+                          "offset": 11
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Ordinals in prose",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 19,
+                          "offset": 18
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The 1",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 1,
+                          "offset": 137
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 6,
+                          "offset": 142
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "st",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "offset": 2
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " edition appeared in 1984. The 2",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 11,
+                          "offset": 147
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 43,
+                          "offset": 179
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "nd",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "offset": 2
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " printing followed in 1985,\nand the 3",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 48,
+                          "offset": 184
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 10,
+                          "offset": 221
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "rd",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "offset": 2
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " expanded edition arrived in 1990.",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 15,
+                          "offset": 226
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 49,
+                          "offset": 260
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 7,
+                      "column": 1,
+                      "offset": 137
+                    },
+                    "end": {
+                      "line": 8,
+                      "column": 49,
+                      "offset": 260
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Chemistry in prose",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 20,
+                          "offset": 19
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Water is H",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 1,
+                          "offset": 293
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 11,
+                          "offset": 303
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "2",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "O. Carbon dioxide is CO",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 15,
+                          "offset": 307
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 38,
+                          "offset": 330
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "2",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ". Sulfuric acid is H",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 42,
+                          "offset": 334
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 62,
+                          "offset": 354
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "2",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "SO",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 66,
+                          "offset": 358
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 68,
+                          "offset": 360
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "4",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 72,
+                          "offset": 364
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 73,
+                          "offset": 365
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 11,
+                      "column": 1,
+                      "offset": 293
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 73,
+                      "offset": 365
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Nested shortcuts in prose",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 27,
+                          "offset": 26
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The variable x",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 1,
+                          "offset": 405
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 15,
+                          "offset": 419
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "y",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "sub",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "offset": 0
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " demonstrates nested super- and subscript in flowing text.",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 23,
+                          "offset": 427
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 81,
+                          "offset": 485
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 14,
+                      "column": 1,
+                      "offset": 405
+                    },
+                    "end": {
+                      "line": 14,
+                      "column": 81,
+                      "offset": 485
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Shortcuts inside named tags",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 29,
+                          "offset": 28
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The 1",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 7,
+                          "offset": 6
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "st",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "offset": 2
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "law of thermodynamics: energy H",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 33,
+                          "offset": 32
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "2",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "O is conserved.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "offset": 0
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 16,
+                          "offset": 15
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Mixed prose and tag usage",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 27,
+                          "offset": 26
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "In the body, iron-56 can be written ",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "offset": 638
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 37,
+                          "offset": 674
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "56",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "offset": 2
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "Fe. Inside a tag: ",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 42,
+                          "offset": 679
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 60,
+                          "offset": 697
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "aside",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "the isotope",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 13,
+                              "offset": 12
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "sup",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "56",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "offset": 0
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "offset": 2
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "Fe is stable",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 13,
+                              "offset": 12
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 99,
+                          "offset": 736
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 100,
+                          "offset": 737
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "offset": 638
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 100,
+                      "offset": 737
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 21,
+      "column": 1,
+      "offset": 738
+    }
+  }
+}

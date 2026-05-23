@@ -408,4 +408,31 @@ export function run() {
     snapshotHast('document-8', hast);
     console.log('PASS: integration doc8 (citations)');
   }
+
+  // ── Document 10: Inline TeX shortcuts fixture ────────────────────────────────
+  // Exercises ^{...} → <sup> and _{...} → <sub> end-to-end in both top-level
+  // prose (G1b tokenizer surface) and inside named-tag content (G1a grammar
+  // surface). G1 is output-additive: the snapshot contains <sup> and <sub>
+  // elements that did not exist before G1. The diff is the intended new output.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-10-shortcuts.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Both surfaces produce <sup> and <sub> elements.
+    assert.ok(html.includes('<sup>'), 'doc10: <sup> element present');
+    assert.ok(html.includes('<sub>'), 'doc10: <sub> element present');
+    // Ordinals.
+    assert.ok(html.includes('<sup>st</sup>'), 'doc10: 1^{st} → <sup>st</sup>');
+    assert.ok(html.includes('<sup>nd</sup>'), 'doc10: 2^{nd} → <sup>nd</sup>');
+    // Chemistry subscripts.
+    assert.ok(html.includes('<sub>2</sub>'), 'doc10: H_{2}O → <sub>2</sub>');
+    // Superscript in tag content (G1a surface).
+    assert.ok(html.includes('<sup>56</sup>'), 'doc10: ^{56}Fe has <sup>56</sup>');
+    // No unexpected changes to structure.
+    assert.ok(html.includes('<article>'), 'doc10: article structure present');
+    assert.ok(html.includes('<section>'), 'doc10: section structure present');
+
+    snapshotHast('document-10', hast);
+    console.log('PASS: integration doc10 (inline TeX shortcuts)');
+  }
 }
