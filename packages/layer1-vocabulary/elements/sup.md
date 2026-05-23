@@ -45,7 +45,7 @@ The function f(x) = x<sup | 2>.
 The isotope <sup | 12>C is abundant.
 ```
 
-A future inline-TeX shortcut (see `notes/inline-tex-shortcuts-spec.md`) would let authors write `1^{st}`, `x^{2}`, `^{12}C` directly in prose, producing the same `<sup>` output. That shortcut is deferred.
+The inline TeX `^{...}` shortcut (G1) lets authors write `1^{st}`, `x^{2}`, `^{12}C` directly in prose, producing the same `<sup>` output. The original design record is preserved at `archive/inline-tex-shortcuts-spec-2026-05.md`.
 
 For mathematical content with rich notation, use the math sigil:
 
@@ -75,4 +75,4 @@ Direct mapping; the element name and semantics match.
 
 - [`<sub>`](sub.md) — for subscript content.
 - The math sigil `<$...$>` — for mathematical notation with rich subscript/superscript.
-- [`inline-tex-shortcuts-spec.md`](../../notes/inline-tex-shortcuts-spec.md) — deferred design for `^{...}` shorthand.
+- [`archive/inline-tex-shortcuts-spec-2026-05.md`](../../archive/inline-tex-shortcuts-spec-2026-05.md) — design record for the `^{...}` shorthand (now implemented as G1).

@@ -97,7 +97,7 @@ Two principles govern acadamark's relationship to JATS:
 
 **JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Acadamark adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and acadamark is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/layer1-naming.md` for the binding rule.)
 
-**JATS as first-class export target.** Acadamark Layer 1 HTML compiles to JATS XML via a planned plugin (`rehype-acadamark-to-jats`). This makes acadamark documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
+**JATS as first-class export target.** Acadamark Layer 1 HTML compiles to JATS XML via the `rehype-acadamark-to-jats` plugin. This makes acadamark documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
 
 JATS import is the weaker, deliberately lossy direction. A JATS document can be converted *into* Layer 1, but the conversion applies necessary simplifications — JATS's vocabulary is far larger than Layer 1's, and constructs with no Layer 1 equivalent are reduced rather than faithfully preserved. Import is a useful on-ramp from the existing scholarly corpus; it is not a round-trip guarantee. The only lossless round-trip in the system is between Layer 2 shorthand and Layer 1, because those two are the same document in two notations.
 
@@ -213,6 +213,20 @@ Three differences:
 
 3. **The implementation rides on existing infrastructure.** Acadamark builds on the unified/remark/rehype ecosystem rather than reimplementing parsing, list handling, math rendering, syntax highlighting, etc.
 
+### Why the unified ecosystem
+
+The parser-substrate decision had three candidates: continue the original regex prototype, hand-write a grammar (Peggy or Chevrotain), or build on unified/remark/rehype. Each is briefly:
+
+- **Regex.** Familiar, and existing prototype code worked for some cases. But the approach doesn't scale: edge cases break, list handling has to be rebuilt, every new feature reinvents wheels remark already has.
+- **Hand-written grammar.** Clean grammar file, full control over the syntax. But the cost is rebuilding everything around it — lists, tables, math integration, syntax highlighting — outside the JS ecosystem where rendering ultimately happens.
+- **Unified plugins.** Acadamark inherits markdown parsing, lists, tables, math, syntax highlighting, footnotes, GFM autolinks. The novel work (shorthand syntax, citations, cross-references, section nesting) maps cleanly onto the plugin model. The learning curve is the AST mental model.
+
+The unified ecosystem is what acadamark uses. The project's surface area shrinks dramatically because most of what acadamark needs already exists as plugins. The "rediscovering the wheel" motto applies directly: unified is the wheel.
+
+### The JATS export plugin
+
+`rehype-acadamark-to-jats` takes a Layer 1 hast tree and produces JATS XML. Most mappings are 1:1 element renames; a minority require restructuring. For example, acadamark's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but acadamark's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The acadamark-to-JATS mapping table is the heart of the plugin, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes acadamark a credible scholarly-publishing target rather than just "another web markdown."
+
 ## Design tensions and accepted tradeoffs
 
 **Shorthand is less readable than plain markdown.** Acknowledged. The shorthand is more readable than HTML and more readable than markdown plus the trailing-attribute extensions that academic markdown flavors require. Where plain markdown suffices, acadamark uses it. The shorthand is reached for only when needed.
@@ -223,9 +237,13 @@ Three differences:
 
 **Custom elements have no built-in semantics without help.** A custom element styled by CSS displays correctly but is, to a screen reader or an outline tool, semantically inert. Acadamark accepts this as the cost of a semantically explicit canonical form, and answers it with the display ladder: the default target adds CSS, and render mode lowers custom elements to their plain-HTML equivalents where real heading semantics are needed. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration. The accessibility gap is met by lowering, not by abandoning the semantic vocabulary.
 
+**The interpreter does not call `customElements.define()`.** Layer 1 elements (`<note-list>`, `<article-body>`, `<article-front>`, …) are emitted as raw custom HTML elements; browsers treat them as instances of `HTMLElement` with no built-in behavior. CSS targeting works; ARIA semantics and JavaScript behavior do not exist by default. This is intentional: registering custom elements is an application-layer concern, and the host application or theme is the right place to do it. The interpreter's job is to emit semantically explicit HTML; turning a `<note-list>` into a behaviorally rich element is a downstream choice that depends on the host context.
+
+**Cross-references resolve only to colon-ids.** The cross-reference registry indexes targets by colon-id (`fig:scatter`, `eqn:model`, `sec:methods`) — the `type:name` convention — not by every id in the document. A `<ref #figure-3>` against a non-colon id produces a `ref-error` even if `figure-3` is a valid id elsewhere. This is intentional and is the reason the colon convention exists: colon-ids unambiguously identify a referenceable target across types, and the labelled-target/free-id distinction lets authors use ordinary ids for non-referenceable hooks (URL anchors, CSS targets) without crowding the cross-reference namespace. The convention is the price authors pay for unambiguous cross-references.
+
 ## Design directions (discovered through implementation)
 
-The sections above describe acadamark's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work; some are not yet fully implemented. Open items that bear on these directions live in `notes/acadamark-backlog-roadmap.md`; `archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
+The sections above describe acadamark's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work. Open items that bear on these directions live in `notes/acadamark-backlog-roadmap.md`; `archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
 
 **Content gets parsed; arguments don't.** A value's syntactic form — keyword argument, positional, pipe-content, child element — is incidental. What matters is its semantic role. *Arguments* are configuration: `citation-style="apa"`, `placement="end"`, `src="refs.bib"`. They are opaque strings or enumerations and pass through the pipeline uninterpreted. *Content* is authored prose-and-structure that may contain nested tags, citations, math, or emphasis, and must be parsed recursively. The trap is content-shaped values that happen to be written as keyword arguments — a `caption="..."` containing a `<cite>` is content wearing an argument's clothing, and must be parsed as such. The direction: vocabulary entries declare each keyword argument's role, and the interpreter treats `role: content` arguments the same as child nodes.
 
@@ -249,4 +267,4 @@ The sections above describe acadamark's design as it was conceived. Building the
 - A code highlighter. Use Shiki or Prism.
 - A PDF generator. Use Pandoc, Paged.js, or Prince downstream.
 
-JATS export is *in* scope and is a planned deliverable (see "JATS as reference and export target" above). Render mode — the lossy lowering of Layer 1 to plain HTML headings — is also *in* scope: it is the third rung of the display ladder, not a discarded alternative to it, and it is a planned downstream plugin rather than current work. The project's contribution is the specification (Layer 1, the canonical semantic form), the shorthand (Layer 2), the glue plugins that connect them to the existing ecosystem, the display targets that render Layer 1 for different consumers, and the bridge to scholarly publishing via JATS.
+JATS export is *in* scope (see "JATS as reference and export target" above). Render mode — the lossy lowering of Layer 1 to plain HTML headings — is also *in* scope: it is the third rung of the display ladder, not a discarded alternative to it. The project's contribution is the specification (Layer 1, the canonical semantic form), the shorthand (Layer 2), the glue plugins that connect them to the existing ecosystem, the display targets that render Layer 1 for different consumers, and the bridge to scholarly publishing via JATS.

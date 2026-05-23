@@ -151,7 +151,7 @@ related_plugins:
       <title>/<subtitle> in <meta> to <book-title>/<book-subtitle>.
       Expands book-part shorthands (<chapter>, <part>, <appendix>, etc.)
       to <book-part book-part-type="...">. Honors explicit <book> if
-      the author wrote it. See notes/plugin-pipeline.md for the full pipeline.
+      the author wrote it. See notes/pipeline.md for the full pipeline.
 deferred_features:
   - name: book-part-import
     description: |

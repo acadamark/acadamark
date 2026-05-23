@@ -11,12 +11,11 @@ This document describes the recommended reading path for understanding acadamark
 
 ## For understanding the parser
 
-1. `BUILD.md` — pipeline diagram, novel plugins, dependencies, slice plan.
-2. `notes/shorthand-syntax.md` — formal spec of the shorthand syntax with EBNF, worked examples, resolved decisions.
-3. `notes/escape-rules-spec.md` — escape rules in named-tag content and sigil bodies.
-4. `notes/multiline-spec.md` — multi-line construct rules.
-5. `notes/recursive-content-spec.md` — design of the recursive-content plugin that re-parses string content into homogeneous `Node[]`.
-6. `packages/remark-acadamark/` — the parser implementation. The Peggy grammar is in `grammar/acadamark.peggy`; the micromark extension in `src/syntax.js`.
+1. `notes/shorthand-syntax.md` — formal spec of the shorthand syntax with EBNF, worked examples, resolved decisions.
+2. `notes/escape-rules-spec.md` — escape rules in named-tag content and sigil bodies.
+3. `notes/multiline-spec.md` — multi-line construct rules.
+4. `notes/recursive-content-spec.md` — design of the recursive-content plugin that re-parses string content into homogeneous `Node[]`.
+5. `packages/remark-acadamark/` — the parser implementation. The Peggy grammar is in `grammar/acadamark.peggy`; the micromark extension in `src/syntax.js`.
 
 ## For understanding the vocabulary
 
@@ -36,7 +35,7 @@ This document describes the recommended reading path for understanding acadamark
 
 The `notes/` directory contains design sketches and specs for features deferred to later slices:
 
-- `notes/inline-tex-shortcuts-spec.md` — `_{...}` and `^{...}` shorthands for sub/sup.
+- `archive/inline-tex-shortcuts-spec-2026-05.md` — `_{...}` and `^{...}` shorthands for sub/sup (archived; the feature shipped as G1 and the spec is preserved as the design record).
 - `notes/slide-element-deferred.md` — slide-element design, deferred.
 - `notes/dsl-engines.md` — engine adapters for math, csv, mermaid, etc.
 - `notes/future-interpreter-sketches/` — exploratory sketches for the interpreter.

@@ -88,7 +88,7 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkSectionNesting
     runs_before: acadamarkTagInterpret
-    purpose: 'Phase 2 — implicit closing of peer sections. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: 'Phase 2 — implicit closing of peer sections. See notes/pipeline.md for the full pipeline.'
 
 ---
 

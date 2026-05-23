@@ -37,4 +37,4 @@ The classification matches the `block` and `section` shape tokens (see `notes/sh
 
 - [`<article>`](./article.md) — the container that holds this region.
 - `notes/shape-tokens.md` — definition of `block` and `section` content categories.
-- `notes/plugin-pipeline.md` — Phase 2 structural transformation, where the region is generated.
+- `notes/pipeline.md` — Phase 2 structural transformation, where the region is generated.

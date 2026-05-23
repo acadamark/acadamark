@@ -8,6 +8,28 @@ pipeline, see `notes/shorthand-syntax.md`.
 
 ---
 
+## 0. Mental model
+
+Three ideas underlie the pipeline. Names that recur throughout the rest of
+this document.
+
+1. **A document is a tree, not a string.** Source text is parsed into a
+   tree; transformations rewrite the tree; the tree is serialized back to
+   text at the end. Tree transformations compose; regex on strings doesn't.
+
+2. **Two tree dialects.** *mdast* is the markdown AST. *hast* is the HTML
+   AST. Markdown parses to mdast; mdast converts to hast; hast serializes
+   to HTML. Acadamark plugins live on one or both dialects.
+
+3. **Named pieces of the ecosystem.** *remark* handles markdown ↔ mdast.
+   *rehype* handles HTML ↔ hast. *unified* chains them together.
+   *micromark* is the lower-level tokenizer used only when inventing
+   genuinely new syntax (the acadamark shorthand). The acadamark
+   interpreter does not use `remark-rehype` — it converts mdast to hast
+   directly via `mdast-util-to-hast`, registered as the unified compiler.
+
+---
+
 ## 1. Overview
 
 An acadamark document goes through six stages to produce HTML output:
@@ -101,8 +123,8 @@ table data).
 For named tags with pipe content, `contentHandler` is `'default'` and
 `isOpaqueContent` is `false`. The content is a raw string to be re-parsed.
 
-**What is NOT yet done:** Named-tag content is not yet structured mdast.
-Stage 2 does that work.
+**What Stage 1 does not do:** Named-tag content is left as a raw string in
+this stage. Stage 2 re-parses it into a structured mdast subtree.
 
 ---
 
@@ -894,5 +916,4 @@ and the `citation-js` dependency, both of which are currently Node-only.
 - `notes/recursive-content-spec.md` — recursive content parsing design.
 - `notes/shorthand-syntax.md` — the authoring syntax at the pipeline input.
 - `notes/layer1-naming.md` — vocabulary element naming rules.
-- `notes/known-limitations.md` — current constraints and deferred features.
 - `BUILD.md` — slice plan and roadmap for future pipeline stages.

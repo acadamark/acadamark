@@ -168,5 +168,5 @@ Both of these are arguably already implicit categories. They're not added to the
 
 - `packages/layer1-vocabulary/SPEC.md` — high-level vocabulary specification.
 - `packages/layer1-vocabulary/elements/` — individual vocabulary entries.
-- `notes/interpreter-design.md` — interpreter architecture; describes how these tokens are used during schema-driven dispatch and content-shape validation.
-- `notes/plugin-pipeline.md` — structural plugin pipeline that produces the AST shape these tokens describe.
+- `notes/interpreter.md` — interpreter architecture; describes how these tokens are used during schema-driven dispatch and content-shape validation.
+- `notes/pipeline.md` — structural plugin pipeline that produces the AST shape these tokens describe.

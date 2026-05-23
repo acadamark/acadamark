@@ -35,4 +35,4 @@ The structural plugin places these children inside `<book-back>`:
 - [`<book>`](./book.md) — the container that holds this region.
 - [`<book-part>`](./book-part.md) — for appendices and other back-matter parts.
 - [`<bibliography>`](./bibliography.md), [`<note-list>`](./note-list.md) — typically placed here.
-- `notes/plugin-pipeline.md` — Phase 2 structural transformation, where the region is generated.
+- `notes/pipeline.md` — Phase 2 structural transformation, where the region is generated.

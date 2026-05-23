@@ -417,8 +417,11 @@ as a legacy alias). The placement value is read here and stored in
 | `side` | `notes` | `sidenote-fallback` |
 
 All placement modes collect notes into a single `__note-list` in
-`<article-back>`. Per-section footnote collection is not implemented; see
-`notes/known-limitations.md`.
+`<article-back>`. Per-section footnote collection — placing `placement=foot`
+notes at the bottom of each section rather than aggregating them in
+`<article-back>` — is part of the design for the `foot` placement; the
+single-list aggregation is the current behavior pending the per-section
+walk.
 
 When a document uses more than one placement mode, the class falls back to
 `notes` (neutral). This fallback is applied by `acadamarkNotePlacement`.
@@ -548,8 +551,10 @@ elements have `computedNumber` set and their colon-ids are in the label index.
 - Neither → `__ref-error` with `targetId: '(none)'` and a `file.message()` warning.
 
 **Resolution:** Calls `registry.findByLabel(targetId)`. Only colon-ids (ids
-containing `:`) are in the label index. A `<ref>` targeting a non-colon id
-always produces `__ref-error`. See `notes/known-limitations.md`.
+containing `:`) are in the label index — the design intentionally uses the
+colon-id convention as the cross-reference namespace (see DESIGN.md, "Design
+tensions and accepted tradeoffs"). A `<ref>` targeting a non-colon id always
+produces `__ref-error`.
 
 **Reference text computation:**
 
@@ -572,9 +577,11 @@ registration in §3.7; closure recorded in `STATUS.md` Milestones
 
 Config key `ref-prefix-{prefix}` overrides a prefix word per-document.
 
-**Current limitations:** The `format` and `type` kwargs on `<ref>` have no
-effect. Author-supplied pipe content in `<ref>` is ignored (custom link text
-is not used). See `notes/known-limitations.md`.
+The `format` and `type` kwargs on `<ref>` are parsed but the design for
+their effect on rendered output (numeric-only vs. labeled, type-disambiguated
+prefix word, etc.) is open work in the roadmap. Likewise, author-supplied
+pipe content in `<ref>` (custom link text) is parsed but its design
+treatment as the link text override is open work.
 
 ---
 
@@ -609,9 +616,10 @@ Citation-js `format('citation', ...)` is called with `entry: foundKeys`,
 **Citation order tracking:** First-cited order is recorded in `citations.order`
 as keys are resolved. This list drives bibliography assembly.
 
-**Known limitation:** Multi-key citations are sorted by the CSL processor
-(usually alphabetically for author-date styles), not in the authored key order.
-See `notes/known-limitations.md`.
+**CSL-driven ordering.** Multi-key citations are sorted by the CSL processor
+(usually alphabetically for author-date styles), not in the authored key
+order. Preserving authored order would require post-processing
+citation-js's output and is open work in the roadmap.
 
 ---
 
@@ -693,8 +701,8 @@ attribute. This gives the hover-preview JavaScript something to look up via
 `document.getElementById('ref-KEY')`.
 
 **`__bibliography` kwargs:** `{ headingHtml: '<h2>References</h2>', bibBodyHtml }`.
-The heading is currently hardcoded. Customizing the heading label is a known
-future improvement.
+The heading defaults to `<h2>References</h2>`; the design admits a config
+kwarg (e.g. `bibliography-heading`) overriding the heading text.
 
 ---
 
@@ -1356,7 +1364,6 @@ packages/layer1-vocabulary/
 - `notes/recursive-content-spec.md` — design of the content re-parsing step.
 - `notes/shorthand-syntax.md` — the authoring syntax the interpreter consumes.
 - `notes/layer1-naming.md` — vocabulary element naming rules.
-- `notes/known-limitations.md` — known simplifications and deferred features.
 - `notes/principles.md` — error-recovery philosophy ("documents always render
   to something").
 - `BUILD.md` — slice plan and feature roadmap.

@@ -130,7 +130,7 @@ When a multi-line construct opener is recognized but no closer is found before e
 
 This is the same behavior as long-form DSL tags from Slice 4 (`<csv>` with no `</csv>` consumes to EOF). It is a known limitation.
 
-The desirable behavior — localized error at the opener's line, with the rest of the document rendering normally — requires resolving the multi-paragraph content model, which is part of the recursive-content design. It is deferred to the recursive-content slice or a dedicated error-recovery slice, whichever comes first. The deferral is deliberate: any error recovery heuristic (e.g., blank-line termination) interacts with content-model decisions that have not been made yet.
+The desirable behavior — localized error at the opener's line, with the rest of the document rendering normally — requires resolving the multi-paragraph content model, which is part of the recursive-content design. Any error-recovery heuristic (e.g. blank-line termination, see `recursive-content-spec.md`) interacts with content-model decisions, so the two designs are settled together.
 
 **Practical guidance for authors:** a missing `>` or `#>` produces an error that spans to EOF. If a document renders entirely as an error node, search for an unclosed tag near where the rendered content stops.
 

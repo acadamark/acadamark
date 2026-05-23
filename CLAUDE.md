@@ -2,6 +2,10 @@
 
 This file is read by Claude Code at the start of every session in this repository. It encodes the working conventions for the acadamark project so that they don't have to be repeated in every prompt.
 
+## Documentation system
+
+acadamark's documentation operates under the system defined in `notes/doc-ownership.md`. Read it once. Two rules govern every document: **one job per document** (a spec describes the intended design; the backlog/roadmap holds open work; STATUS shows what is true now; nothing carries two of these jobs); and **no document states a computable fact** (test count, vocabulary count, etc. — run `npm run verify`). A limitation is either an open backlog item or a DESIGN.md accepted tradeoff, never its own document. **Every implementation slice ends with the coherence check defined in `notes/doc-ownership.md`** — perform it and report its result before committing.
+
 ## Project overview
 
 Acadamark is an academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top. The project has two main layers:
@@ -14,12 +18,12 @@ The project is built as a set of plugins on the [unified](https://unifiedjs.com/
 The relevant docs are:
 - `README.md` — project premise.
 - `DESIGN.md` — design rationale.
-- `BUILD.md` — implementation plan.
 - `STATUS.md` — current state, what's done, what's next.
+- `notes/acadamark-backlog-roadmap.md` — open work; the single home for backlog and routing.
 - `notes/layer1-naming.md` — Layer 1 vocabulary rules.
 - `notes/shorthand-syntax.md` — parser specification.
 - `notes/idioms.md` — delegation principle (acadamark hands off to existing parsers wherever possible).
-- `notes/recursive-content.md` — recursive parsing of named-tag content (when this file exists).
+- `notes/recursive-content-spec.md` — recursive parsing of named-tag content.
 
 Read the files relevant to the current task at the start of a session.
 
@@ -37,15 +41,14 @@ Read the files relevant to the current task at the start of a session.
 
 **Spec-first.** When implementation reveals a question that the existing specs don't answer, update the spec before coding. Do not paper over ambiguity by guessing what was meant.
 
-**Slice cadence.** Parser work is organized into vertical slices, each with a clear scope. Each slice ends with passing tests and a drift check before the next begins. The current slice plan is in `BUILD.md`. Do not start a new slice while a previous one is incomplete.
+**Slice cadence.** Work is organized into vertical slices, each with a clear scope. The current slice plan and open backlog live in `notes/acadamark-backlog-roadmap.md`. Do not start a new slice while a previous one is incomplete. Every non-trivial slice runs in two artifacts: a **Phase 0** read-only investigation (produces a findings document ending in a "recommended scope" verdict, no code changes), then an **implementation prompt** written from the findings. Phase 0 repeatedly catches things the plan could not have known — do not skip it.
 
-**Drift checks at the end of each slice.** Re-read the relevant spec files (`shorthand-syntax.md`, `idioms.md`, `layer1-naming.md`, etc.) against the new code and tests. Report any places where the three have drifted out of agreement. Things to look for:
-- Spec language that promises behavior the grammar doesn't implement, or vice versa.
-- Examples in the spec that, if turned into tests, would fail against the current grammar.
-- Tests that exercise behavior the spec doesn't actually describe.
-- Resolved-decisions sections that contradict newer prose elsewhere.
+**Correctness models.** Know which one applies before a slice starts:
+- *Output-neutral* (most refactor work): proof is an empty fixture diff. `node test/render-fixtures.js` then `git diff test/fixtures/` must be empty. Snapshots must not change.
+- *Output-adding* (a new feature): proof is "the diff shows exactly the intended new output and nothing else." Snapshots will change for new fixtures and that is expected and reviewed.
+- *Syntax-migration* (e.g. F1): fixture source changes but rendered output does not. Proof is HTML content stable (snapshots may shift on source-position metadata; verify content, not raw bytes).
 
-The drift check produces a report; it does not silently fix what it finds. Fixing is a separate, scoped action.
+**Coherence check at the end of each slice.** The check defined in `notes/doc-ownership.md` ends every implementation slice and is reported alongside the diff. It verifies spec ⇄ code, backlog ⇄ roadmap, STATUS, and Rule 2. Drift surfaced by the check is fixed in the same slice; it is not a separate "drift check report" filed for later. (The older single-direction "drift check" — re-reading specs against new code at the end of each slice — is subsumed by the coherence check.)
 
 **Stay within scope.** If something surfaces during the work that's outside the current prompt's scope, surface it as a finding, do not fix it silently. If a finding would conflict with planned future work, flag the conflict before proceeding.
 
@@ -90,16 +93,7 @@ Always build before testing when the grammar has been modified. "48/48 pass from
 
 ## What's deferred and why
 
-Several features are deferred to specific later slices. Do not implement them ahead of their slice unless explicitly prompted:
-
-- **Multi-line named tags and multi-line sigil tags.** Single-line only through the current slice. To be addressed in a future slice with its own design pass.
-- **Recursive parsing of named-tag content.** Currently named-tag content is an opaque string. The recursive-content slice will turn this into homogeneous `Node[]` content by re-feeding strings through remark. Design is in `notes/idioms.md` and (when written) `notes/recursive-content.md`.
-- **Long-form DSL tags** (`<csv>...</csv>`, `<theorem>...</theorem>`). Slice 4.
-- **Qualifying-tag pattern** (`<table csv | ...>`). Slice 5.
-- **The interpreter** (`acadamarkTagInterpret`). The next major piece after the parser slices, requiring its own design pass.
-- **JATS export** (`rehypeAcadamarkToJats`). Phase 3, after the interpreter and Layer 1 vocabulary are settled.
-
-If a current task seems to require any of the above, surface this as a finding before working around it.
+Deferred features and open work live in `notes/acadamark-backlog-roadmap.md`. Do not implement an item ahead of its placement in the roadmap unless explicitly prompted. If a current task seems to require an open item, surface this as a finding before working around it.
 
 ## When in doubt
 

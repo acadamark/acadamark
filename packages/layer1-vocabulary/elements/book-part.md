@@ -147,7 +147,7 @@ related_plugins:
       front/body/back wrappers. Promotes <title>/<subtitle> in <meta> to
       <book-part-title>/<book-part-subtitle>. At the book level, places
       book-parts into the appropriate region (<book-front>, <book-body>,
-      <book-back>) based on book-part-type. See notes/plugin-pipeline.md.
+      <book-back>) based on book-part-type. See notes/pipeline.md.
 deferred_features:
   - name: book-part-import
     description: |

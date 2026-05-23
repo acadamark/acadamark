@@ -16,9 +16,13 @@ The vocabulary targets four document types:
 
 Poems, plays, scripts, and scores are out of scope. They have specialized vocabulary that doesn't share enough with prose documents to be worth forcing into the same model.
 
-## Element list (62 entries currently in `elements/`)
+## Element list
 
-The vocabulary has 62 per-element entries under `packages/layer1-vocabulary/elements/`. The tables below group them by role; each entry's file is the authoritative spec for its element. Elements listed here without an entry are marked deferred or reserved.
+The vocabulary is enumerated below, with per-element files under
+`packages/layer1-vocabulary/elements/` holding the authoritative spec for
+each element. The tables below group elements by role. Elements listed
+here without an entry are reserved (their per-element specs are open work
+in the roadmap).
 
 ### Container elements
 
@@ -244,12 +248,7 @@ For future readers and contributors, the load-bearing decisions:
 - It can be authored directly (any tool producing conformant HTML works) or through acadamark's shorthand (the primary authoring path).
 - It is the deliverable that makes acadamark's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
 
-## Current state and next steps
-
-**Current state.** The vocabulary phase is complete. 62 per-element entries exist under `elements/`, each with attribute lists, content shapes, JATS mappings, and render-mode lowering specified. The shorthand parser is feature-complete through Slice 4 plus recursive content parsing. The next major piece of work is the first interpreter slice.
-
-**Next.**
-
-1. **First interpreter slice.** Build `acadamarkTagInterpret` for the in-scope structural elements (article, sections, p, aside, blockquote, hr, figure, ul, ol, li, em, strong, code, meta) plus the structural plugins that produce `<article-front>`/`<article-body>`/`<article-back>`, section-titles, and section nesting. See `notes/interpreter-design.md` and `notes/plugin-pipeline.md`.
-2. **Custom-element registration.** Minimal JS registration in `src/`. These elements are semantic markers; the implementations are mostly one-liners.
-3. **Subsequent interpreter slices.** Math (KaTeX adapter), citations and cross-references (resolver plugins), DSL engines (CSV, mermaid), theorem-family elements, JATS export.
+For current project status see `STATUS.md`; for the open backlog see
+`notes/acadamark-backlog-roadmap.md`. The interpreter that consumes this
+vocabulary is documented in `notes/interpreter.md`; the pipeline that
+produces and operates on Layer 1 elements is in `notes/pipeline.md`.

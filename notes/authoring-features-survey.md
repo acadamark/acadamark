@@ -184,9 +184,9 @@ Or a separate `<short-title>` element.
 
 **Use case.** Internal links between documents/sections show preview information on hover. External links (Wikipedia, DOI, GitHub) show preview metadata.
 
-**Mechanism.** See `notes/hover-previews-deferred.md` for the broader hover-preview design. External link previews require fetching target metadata at build time and embedding it.
+**Mechanism.** Hover-preview infrastructure is documented in `notes/interpreter.md` §10.2 (now implemented for notes / refs / citations); the original deferred-design exploration is preserved at `archive/hover-previews-deferred-2026-05.md`. External link previews would require fetching target metadata at build time and embedding it.
 
-**Why deferred.** Covered in the hover-previews note.
+**Why deferred.** External link metadata fetching is the open part; the hover-preview rendering substrate exists.
 
 ### Just-in-time math
 
@@ -250,8 +250,8 @@ The deferral is about prioritization, not feasibility. As slice 1 lands and subs
 
 - `notes/multi-file-authoring-deferred.md` — multi-file projects.
 - `notes/multi-column-display-deferred.md` — multi-column rendering.
-- `notes/hover-previews-deferred.md` — hover-preview rendering for references.
-- `notes/inline-tex-shortcuts-spec.md` — inline TeX shortcuts for math.
+- `archive/hover-previews-deferred-2026-05.md` — hover-preview rendering for references (archived; the rendering substrate shipped, see `notes/interpreter.md` §10.2).
+- `archive/inline-tex-shortcuts-spec-2026-05.md` — inline TeX shortcuts for math (archived; the feature shipped as G1).
 - `notes/slide-element-deferred.md` — slide/presentation elements.
 - `packages/layer1-vocabulary/SPEC.md` — what's currently in vocabulary.
 - MyST documentation: https://mystmd.org/

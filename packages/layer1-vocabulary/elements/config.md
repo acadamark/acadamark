@@ -81,7 +81,7 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkConfigDiscovery
     runs_before: acadamarkTagInterpret
-    purpose: 'Phase 1 discovery — extracts <config> values into the configuration registry. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: 'Phase 1 discovery — extracts <config> values into the configuration registry. See notes/pipeline.md for the full pipeline.'
 
 ---
 

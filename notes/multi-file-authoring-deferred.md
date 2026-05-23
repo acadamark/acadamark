@@ -60,7 +60,7 @@ This means multi-file processing isn't just "process each file separately and co
 
 ## Plugin pipeline impact
 
-The plugin pipeline (`notes/plugin-pipeline.md`) is currently described for single-file processing. Multi-file support requires:
+The plugin pipeline (`notes/pipeline.md`) is currently described for single-file processing. Multi-file support requires:
 
 - **Phase 1 (Discovery):** Reads config, library, bib-entry from all files. Registry is project-wide.
 - **Phase 2 (Structural transformation):** Per-file structural transformation runs, but the project-level structure (book front/body/back containing chapters) is enforced at a separate level — possibly a "project structuring" plugin.
@@ -88,7 +88,7 @@ Slice 1 implements single-file processing. The interpreter's architecture should
 
 The key design principle is **the registries (configuration, citation, numbered-elements) are shared resources that can be populated by multiple files later.** Slice 1 implements them as per-pipeline state; multi-file just means the same registries are populated by multiple file passes before resolution runs.
 
-The plugin contracts in `notes/plugin-pipeline.md` are compatible with multi-file processing — they specify what registries are read/written rather than how they're scoped. This means multi-file support is an architectural extension, not a redesign.
+The plugin contracts in `notes/pipeline.md` are compatible with multi-file processing — they specify what registries are read/written rather than how they're scoped. This means multi-file support is an architectural extension, not a redesign.
 
 ## When to implement
 
@@ -102,7 +102,7 @@ Plausibly slice 3 or later. After citations resolve cleanly within a single file
 
 ## Related references
 
-- `notes/plugin-pipeline.md` — the current single-file pipeline; describes registries that would extend to multi-file.
+- `notes/pipeline.md` — the current single-file pipeline; describes registries that would extend to multi-file.
 - `packages/layer1-vocabulary/elements/book.md` — book-shaped documents that benefit most from multi-file.
 - `packages/layer1-vocabulary/elements/book-part.md` — chapters as book-parts.
 - MyST's `_toc.yml` documentation: https://mystmd.org/

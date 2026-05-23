@@ -74,17 +74,15 @@ The consequence over time: the remark dependency shrinks *gracefully*, not by a 
 
 Rendering is a third thing, separate from both the lexer and the node identity, and it is delegated cleanly. Acadamark does not render math, diagrams, or syntax-highlighted code. KaTeX renders math; Mermaid renders diagrams; Shiki or Prism highlight code. The normalization pass and the canonical node identity do not change this — they change *which node drives the renderer*, not *who renders*. A canonical `$` sigil node reaches KaTeX through acadamark's math handler; a canonical `table` node reaches acadamark's table handler. The renderer is delegated; the node that drives it is acadamark's own. One construct, one canonical node, one rendering path.
 
-## Strict mode (deferred)
+## Strict mode
 
-Strict mode is a planned configuration that disables all markdown idioms, so only acadamark tagged forms are recognized. Specifically: remark's heading, emphasis, link, list, and code-span tokenizers are bypassed; `remark-math` and `remark-gfm` are disabled; only the acadamark micromark extension and plain text are recognized.
+Strict mode is a configuration that disables all markdown idioms, so only acadamark tagged forms are recognized. Specifically: remark's heading, emphasis, link, list, and code-span tokenizers are bypassed; `remark-math` and `remark-gfm` are disabled; only the acadamark micromark extension and plain text are recognized.
 
 Under the normalization model, strict mode is simple to characterize: it is the mode in which there is nothing for the normalization pass to do, because no markdown-form nodes are ever produced. Every construct is authored in its canonical form directly. Strict mode is for documents where the author wants the canonical form throughout — typically because the document will be processed by tooling that depends on a consistent shape.
 
-Strict mode is not yet implemented. This section records the intent so the mode is not defined implicitly later.
-
 ## Related notes
 
-- `notes/recursive-content.md` — design of the recursive-content plugin that turns string content into homogeneous `Node[]` content.
+- `notes/recursive-content-spec.md` — design of the recursive-content plugin that turns string content into homogeneous `Node[]` content.
 - `notes/shorthand-syntax.md` — the shorthand syntax specification, including the resolved decision that named-tag content is homogeneous `Node[]` after recursive parsing.
 - `notes/layer1-naming.md` — Layer 1 naming conventions and the rule about deferring to HTML where HTML is sufficient (which is the static-vocabulary counterpart to this document's parser-delegation principle).
 - `DESIGN.md` — the "Markdown forms are shorthand for the canonical acadamark form" design direction, which states this principle at the design-rationale level.

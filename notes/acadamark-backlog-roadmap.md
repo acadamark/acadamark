@@ -206,80 +206,61 @@ top-level-prose surface. DF-1 and PG-12 resolved. The two-surface structure
 (Peggy grammar surface + micromark top-level-prose surface) is on record as a
 recurring shape for parser slices.
 
-### NORM — The normalization pass  **[new — architectural prerequisite for G3]**
+### NORM — The normalization pass  **[IMPLEMENTED for math and tables; ongoing for further constructs]**
 
 **What it is.** A pipeline stage that rewrites standard markdown-form mdast
 nodes — `inlineMath`, `table`, `heading`, and so on — into their canonical
 `acadamarkTag` equivalents, before any structural or semantic plugin runs.
 After the pass, every downstream plugin sees one node type per construct.
 
+**Status.** The pass is built and lives at
+`packages/acadamark-interpreter/src/plugins/normalize-markdown.js`. It
+normalizes `inlineMath`, `math`, and GFM `table` nodes today (NORM-tables
+slice, commit `ec0d071`, 2026-05-22; closure recorded in `STATUS.md`
+Milestones). The 4 SUSPECTED CLOSED items in Layer 0 confirm bare GFM
+tables, bare math, and the recursive-content integration via code check.
+
 **Why it exists.** The "Markdown forms are shorthand for the canonical
 acadamark form" design direction (`DESIGN.md`, reconciled in detail in
 `notes/idioms.md`) settled the principle: delegate the lexer to remark, but
 own the node identity. The normalization pass is the implementation of that
-principle. The principle is settled; the pass is **not yet built** — nothing
-like it exists in the pipeline today.
+principle.
 
-**Why it is its own item, and a gate.** It is a new architectural object, not
-a feature. Math (DF-22) and GFM tables (DF-20) are no longer "install a plugin
-and thread it in" — they are constructs that *ride on* the normalization pass.
-The pass must exist first. Per the project's slice rhythm, a new architectural
-piece earns its own Phase 0: where it sits in the pipeline, what it walks, how
-it rewrites nodes, what node types are in its initial scope.
-
-**Placement note.** NORM is foundational *for G3*, not foundational *for the
-project* — it does not change the authoring syntax or the core model, it
-realizes a principle the syntax already implies. It therefore sits in Layer 2
-as an explicit gate, rather than reopening the (completed) Layer 1 tier.
-
-**Scope of the principle vs. scope of the pass.** The principle is universal in
-intent — it governs every markdown/acadamark overlap. The pass is implemented
-incrementally — it grows one construct at a time. The initial NORM slice need
-not cover every overlap at once; it must establish the stage and cover the
-constructs G3 needs (math, tables). Headings, emphasis, links, lists follow as
-the pass grows. A construct not yet normalized is a not-yet-done item, never a
+**Scope of the principle vs. scope of the pass.** The principle is universal
+in intent — it governs every markdown/acadamark overlap. The pass is
+implemented incrementally — it grows one construct at a time. The current
+scope is math + GFM tables; headings, emphasis, links, lists follow as the
+pass grows. A construct not yet normalized is a not-yet-done item, never a
 decision that it was meant to stay a separate path.
 
-**Action:** Phase 0 for the normalization pass — architecture and initial
-scope. Then a NORM implementation slice. Then G3.
+**Action:** add a normalization rule whenever a further markdown/acadamark
+overlap is reached (e.g. headings if/when the `<#>` sigil semantics warrant
+it). Each new construct is a small slice; no further architectural Phase 0
+is needed since the pass itself is established.
 
-### G3 — Markdown-form math / GFM authoring  *(DF-22, DF-20)*  **[verified gate: NORM]**
+### ~~G3 — Markdown-form math / GFM authoring  *(DF-22, DF-20)*~~  **[IMPLEMENTED via NORM-tables and the math-normalization arc; verify-and-close via Layer 0]**
 
-**What it is.** Bare `$x$` / `$$x$$` and bare GFM pipe tables, working as
+**What it was.** Bare `$x$` / `$$x$$` and bare GFM pipe tables, working as
 shorthand for `<$ ... $>` / `<$$ ... $$>` and `<table>` — i.e. authored in
-markdown form, normalized to the canonical acadamark node, rendered by the one
-existing path for that construct.
+markdown form, normalized to the canonical acadamark node, rendered by the
+one existing path for that construct.
 
-**Gates.**
+**Status.** Implemented as part of the NORM-tables slice (commit
+`ec0d071`). `remark-math` and `remark-gfm` provide the lexer; the
+normalization pass rewrites their output into canonical acadamark nodes
+(`$`, `$$`, `<table md>`). Formal closure is via the 4 SUSPECTED CLOSED
+verification items in Layer 0 — once those check, the G3 framing has
+nothing left to track.
 
-1. **NORM must exist.** Under the normalization principle, G3 is not a
-   standalone plugin install. `remark-math` and `remark-gfm` provide the
-   *lexer* (they find `$x$` and pipe tables); the normalization pass then
-   rewrites their output into canonical acadamark nodes. Without NORM there is
-   no canonical-node target to normalize into. **[verified — design]**
-
-2. **The math-coverage investigation (formerly "OQ-1").** OQ-1 was previously
-   filed as "an hour of thought and a design note." That framing is **retired.**
-   The design half of OQ-1 — whether bare `$x$` should be acadamark-canonical —
-   is settled by the normalization principle (yes; it normalizes to the `$`
-   node). What remains is a *code-and-coverage* question, answered by a Phase 0,
-   not a chat decision: is `remark-math`'s tokenizer an adequate wheel for the
-   math forms acadamark wants, or must acadamark supersede the lexer for some
-   forms? The Phase 0 deliverable is a three-column table — acadamark's intended
-   math surface, `remark-math`'s tokenizer coverage, and acadamark's *existing*
-   DSL-math coverage (`<matrix>`, `<cases>`, `<align>`, `<eqnarray>`) — ending
-   in an adequacy verdict. It also confirms-or-corrects the lexer-supersession
-   claim `notes/idioms.md` currently makes about `remark-math` being
-   delimiter-only.
-
-**Sub-structure.** GFM tables (DF-20, AUD-tracked AUD-06) carry no open
-question once NORM exists — `remark-gfm` is a clean lexer for them. Math
-(DF-22) carries the math-coverage investigation. The two may still be split
-into separate slices, but both now sit behind NORM; the earlier "G3a clean /
-G3b decision" framing is superseded.
-
-**Action:** math-coverage Phase 0 (can run in parallel with the NORM Phase 0 —
-it informs G3's math half, not NORM itself). Then NORM. Then G3.
+**Remaining open question — math coverage investigation.** Whether
+`remark-math`'s tokenizer is an adequate wheel for every math surface
+acadamark wants (or whether acadamark must supersede the lexer for some
+forms) is a separate code-and-coverage Phase 0 that produces a three-column
+table — acadamark's intended math surface, `remark-math`'s tokenizer
+coverage, and acadamark's existing DSL-math coverage (`<matrix>`,
+`<cases>`, `<align>`, `<eqnarray>`). Worth scoping if the adequacy table
+is wanted, but not blocking; the current normalization works for the
+delimiter-shaped math forms in scope today.
 
 ### G2 — Render-mode lowering  *(DF-19, gated by OQ-2)*  **[OUT OF CURRENT SCOPE]**
 
@@ -297,21 +278,18 @@ its implementation tends to be re-litigated when implementation starts.
 
 DF-19 therefore lands in the Architecture tier, not the current Layer 2 arc.
 
-### G4 — Cross-reference registration  *(AUD-09, PG-6, PG-7)* — adjacent to F1, not blocked by it
+### ~~G4 — Cross-reference registration  *(AUD-09, PG-6, PG-7)*~~  **[IMPLEMENTED both halves; closure recorded in STATUS.md Milestones, 2026-05-23]**
 
-PG-6 (code-block ids unreferenceable), PG-7 (auto-generated note ids not in the
-label index), and the open half of AUD-09 are all about *what gets registered
-and is resolvable* — independent of the `@`/`#` sigil and independent of NORM.
+**Status.** Both halves closed. Section registration done in R2; code-block
+sigil registration done in G4 (decision: only shorthand-wrapped code blocks
+with colon-ids are referenceable; plain fenced `code` nodes intentionally
+non-referenceable). PG-6 implemented; PG-7 closed as by-design (auto-generated
+note ids are internal placement mechanics, not author-facing handles —
+notes that need cross-referencing use explicit colon-ids).
 
-Section registration is done (R2). The **code-block half needs its own Phase 0**:
-a plain fenced code block is a native mdast `code` node with no id field the
-discovery walk can see, so registering code blocks for cross-reference depends
-on a representation question (is only the shorthand-wrapped `<code #code:… | …>`
-form referenceable, or should plain fenced `code` nodes also carry colon-ids?).
-See AUD-09 closure in `STATUS.md` Milestones (G4 closed both halves, 2026-05-23).
-
-**Action:** the section/note-id parts (PG-6 partial, PG-7) may be buildable
-directly; the code-block part needs a Phase 0 first.
+The full reasoning for the by-design closures is in DESIGN.md's
+"Design tensions and accepted tradeoffs" section and in the G4 Phase 0
+findings (`archive/audit-2026-Q2/G4-phase0-findings.md`).
 
 ### OQ-2 — Render-mode heading-level assignment for `<article-title>` + `<section-title>` coexistence
 
@@ -605,6 +583,23 @@ example using `<csv | name,price\n...>`. This form relies on the
 implemented (AUD-05 / DF-8). The example will mislead authors. Fix:
 remove or mark the `<csv>` example as "planned" until the shortcut tag
 lands.
+
+**Smart-typography conversions — open design question.** Markdown
+extensions convert `--` to en-dash and `---` to em-dash. Whether
+acadamark's pipeline accepts such a plugin — and what the escape
+conventions for those sequences look like if it does — is open. Filed
+from the spent "what is not yet decided" section of
+`escape-rules-spec.md` (Reconciliation 2). If adopted, the escape rules
+for `--` / `---` follow whatever plugin acadamark accepts; acadamark
+does not own these escapes natively.
+
+**Underline and strikethrough shortcuts — open design question.**
+Markdown lacks clean conventions for underline and strikethrough.
+Acadamark currently uses `<u | text>` and `<s | text>` tagged forms.
+Whether to add bare-idiom shortcuts (and what they would be) is open.
+Filed from the spent "what is not yet decided" section of
+`escape-rules-spec.md` (Reconciliation 2). If shortcuts are added,
+the special-character list and escape rules grow to match.
 
 ---
 

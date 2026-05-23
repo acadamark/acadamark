@@ -35,7 +35,7 @@ Stays HTML:
 Custom elements added:
 - Title and subtitle vocabulary (`<article-title>`, `<section-title>`, etc.) — HTML has no first-class concept of these.
 - Section depth ladder (`<sub-section>`, `<sub-sub-section>`) — HTML's `<section>` is recursive, but acadamark uses named depth (see Rule 3 below).
-- Academic constructs (`<theorem>`, `<proof>`, `<lemma>`, `<corollary>`) — to be specified.
+- Academic constructs (`<theorem>`, `<proof>`, `<lemma>`, `<corollary>`) — reserved Layer-1 names whose per-element specs are open work in the roadmap.
 - Citation and cross-reference vocabulary (`<cite>` already exists in HTML but with weak semantics; acadamark uses it with `data-*` attributes; `<ref>` for cross-references is custom).
 
 ### Rule 3: Named section depth ladder
@@ -74,7 +74,7 @@ The rule is binding, not advisory. Before specifying a new Layer 1 element:
 3. Adopt JATS attribute conventions where they're sensible. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references. Acadamark may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
 4. Document any deliberate divergences in the spec for that element, with rationale.
 
-This rule means that as the Layer 1 vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Acadamark's planned JATS export plugin (see `BUILD.md`) becomes a mostly-mechanical transform rather than a deep restructuring.
+This rule means that as the Layer 1 vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Acadamark's JATS export plugin (`rehype-acadamark-to-jats`) becomes a mostly-mechanical transform rather than a deep restructuring.
 
 JATS also includes elements acadamark may not need (`<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting, etc.). Don't add them speculatively. Add elements when authors actually need them.
 
@@ -95,7 +95,7 @@ Acadamark Layer 1 is the canonical, archival representation: custom-element-rich
 </section>
 ```
 
-**Render mode** (an optional downstream plugin, not yet built) lowers title elements to standard heading tags so browsers display them with default styling:
+**Render mode** is an optional downstream plugin that lowers title elements to standard heading tags so browsers display them with default styling:
 
 ```html
 <section>
@@ -140,9 +140,7 @@ These are flagged here so they don't get re-litigated implicitly later:
 
 - **Markdown-input section wrapping.** Plain markdown input (`# Heading`) produces a flat sequence of `<h1>`, `<p>`, `<h2>` etc. with no `<section>` wrappers. If markdown documents should participate in acadamark's section-nesting, a separate plugin (or borrowing `rehype-section`) needs to wrap heading-delimited regions into `<section>` elements first. Or declare that markdown-only input doesn't get section treatment. Decide when building the full pipeline.
 
-- **Theorem-family elements.** `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` — to be specified. Likely follow the container-role rule for any internal parts (e.g., `<theorem-statement>`, `<theorem-proof>`).
-
-- **Citation and reference vocabulary.** The Layer 1 representation of citations, bibliography entries, and cross-references — to be specified before the citation plugin is built.
+- **Theorem-family elements.** `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` — names reserved; per-element specs are open work in the roadmap. Internal parts likely follow the container-role rule (e.g., `<theorem-statement>`, `<theorem-proof>`).
 
 - **JATS mapping divergences.** As the Layer 1 vocabulary grows, some elements will deliberately diverge from JATS for good reasons (HTML vs. XML conventions, simpler nesting, different attribute semantics). Each divergence should be documented in the spec for that element. A consolidated "acadamark ↔ JATS mapping table" should appear in the Layer 1 spec once it's mature, both as documentation and as the basis for the JATS export plugin.
 

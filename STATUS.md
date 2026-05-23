@@ -64,6 +64,21 @@ parser-newline bugs (formerly AUD-21/22/23), vocabulary plugin-name
 drift (formerly AUD-24), and design-direction cross-referencing
 (formerly AUD-25).
 
+## In flight / next
+
+The documentation-system reconciliation is in progress. Reconciliations 1
+and 2 are committed (open work collapsed into the single backlog/roadmap;
+specs stripped of progress tracking; `BUILD.md` and `known-limitations.md`
+migrated and archived; the new `doc-ownership.md` installed). The next
+slice is Reconciliation 3 — final cleanup of the spent planning artifacts
+(audit deliverables in `notes/audit/`, the historical refactor-plan
+documents, the audit-shape transcript, the stopping-point doc). After
+Reconciliation 3 the documentation system is fully in force and the
+project returns to ordinary backlog work from
+`notes/acadamark-backlog-roadmap.md` — likely the integration-test mirror
+fix (formerly AUD-17) or the asset-double-injection fix (formerly AUD-19)
+as small early candidates.
+
 ## Milestones
 
 Arc-level history — the eras of the project, not a per-commit log (git holds

@@ -27,4 +27,4 @@ The element is a custom Layer 1 element (not HTML-native). Its content is inline
 
 - [`<section>`](./section.md) — the container that holds this element.
 - `notes/shape-tokens.md` — definition of the `inline` content category.
-- `notes/plugin-pipeline.md` — Phase 2 structural transformation, where title extraction occurs.
+- `notes/pipeline.md` — Phase 2 structural transformation, where title extraction occurs.

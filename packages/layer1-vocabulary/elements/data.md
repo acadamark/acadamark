@@ -92,9 +92,9 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: acadamarkLibraryParsing
-    purpose: 'Phase 1 discovery — parses <library> blocks into the citation registry. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: 'Phase 1 discovery — parses <library> blocks into the citation registry. See notes/pipeline.md for the full pipeline.'
   - name: acadamarkResourceCollection
-    purpose: 'Phase 1 discovery — collects <data> blocks regardless of source position. See notes/plugin-pipeline.md for the full pipeline.'
+    purpose: 'Phase 1 discovery — collects <data> blocks regardless of source position. See notes/pipeline.md for the full pipeline.'
 
 ---
 

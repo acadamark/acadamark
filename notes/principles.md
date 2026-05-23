@@ -39,3 +39,14 @@ Corollary: if a prompt asks for X but X raises a design question, the question i
 Where a document contains both correct and erroneous constructs, the parser produces the maximum possible correct output. Errors are represented inline; they do not suppress surrounding correct content.
 
 This principle interacts with localized recovery: maximum correct output is best served by the combination of always-renders (hard) and localized recovery (refinement). The refinement is pursued where achievable.
+
+## The parser-knows-nothing-about-meaning principle
+
+The shorthand parser produces generic `acadamarkTag` nodes. A separate interpretation pass converts those nodes into specific HTML based on tag name and the Layer 1 vocabulary entry for that tag. Parsing and interpretation are kept separate because:
+
+- New tags can be added without touching the parser.
+- Tag semantics can evolve without parser changes.
+- Alternative interpretations (a different output dialect, a different downstream target) can reuse the parser unchanged.
+- Bugs in interpretation do not cascade into parsing.
+
+This principle is the structural reason new vocabulary entries are added by registering a vocabulary `.md` file under `packages/layer1-vocabulary/elements/`, not by modifying any parser file. The parser is closed for modification when adding ordinary vocabulary; the interpretation layer is open.

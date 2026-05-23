@@ -200,16 +200,6 @@ name,price
 
 Same here. Inside `<csv>`, the content is CSV source. The CSV parser handles its own quote-escaping conventions; acadamark does not interpret `\"`.
 
-## What is not yet decided
-
-These are noted for future work:
-
-- **TeX-style superscript and subscript shortcuts.** `x^{2}` and `H_{2}O` would be useful in academic prose without dropping into `<$...$>`. If adopted, `^` and `_` join the special-character list. See `notes/idioms.md`.
-
-- **Smart-typography conversions.** Markdown extensions convert `--` to en-dash and `---` to em-dash. If acadamark's pipeline includes such a plugin, escape conventions for those sequences follow whatever the plugin defines. Acadamark does not own these escapes.
-
-- **Underline and strikethrough shortcuts.** Markdown lacks clean conventions; acadamark currently uses `<u | text>` and `<s | text>` tagged forms. If bare-idiom shortcuts are added, the special-character list grows.
-
 ## Implementation note
 
 The escape rules are implemented in the grammar (Peggy) by extending the relevant content rules to recognize `\X` sequences. The grammar consumes `\X` and emits `X` for acadamark-significant `X` in content positions (`<`, `|`, `\`), passes `\X` through unchanged for other ASCII punctuation, and emits `acadamarkParseError` for unrecognized `X`.

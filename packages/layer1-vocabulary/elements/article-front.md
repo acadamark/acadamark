@@ -51,4 +51,4 @@ Authors rarely write `<article-front>` directly. The typical authoring path uses
 
 - [`<article>`](./article.md) — the container that holds this region.
 - [`<meta>`](./meta.md) — the metadata block placed inside `<article-front>`.
-- `notes/plugin-pipeline.md` — Phase 2 structural transformation, where the region is generated.
+- `notes/pipeline.md` — Phase 2 structural transformation, where the region is generated.

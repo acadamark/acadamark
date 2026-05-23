@@ -818,13 +818,24 @@ Remaining open questions flagged for resolution as implementation proceeds.
 
 - **`|` in short-form content.** After the first `|` separator, subsequent `|` characters in content are treated as literal content (the "exactly one `|` per construct" rule). No escaping needed.
 
-- **Named tag content: recursive parsing.** In Slice 2, named-tag content is an opaque string. Recursive parsing of content into child nodes (so `<figure | text with <em | emphasis>>` produces a nested AST) is deferred to a later slice.
-
-- **Multi-line constructs.** Both named tags and sigil tags are currently single-line only (through Slice 4). Line endings fail the construct. Multi-line named tags are described in the spec (Example 7) but not yet implemented. Multi-line sigil tags are not yet in the spec. Both are deferred to a later slice. Until then, an unclosed sigil opener emits an `acadamarkTagError` node rather than falling through silently (see "What the parser produces" above).
-
 - **Registered sigil characters in `identifier_start` position.** `$` and `` ` `` are registered sigil characters but are not currently excluded from `identifier_start` (the exclusion list covers `#` and `.` and `+`/`-` but not all registered sigils). This means `<figure $weird>` parses `$weird` as a positional. The behavior is consistent between spec and grammar; the design intent is unsettled. Revisit when identifier rules are next touched or when another sigil family is added.
 
 - **No-`|` examples for `$` and `` ` `` sigils.** Examples 11–13 show only the `|` form for dollar and backtick sigils. The no-`|` form is supported and documented in prose; worked examples for it should be added to the Examples section when it is next touched.
+
+## Inline TeX shortcuts: `^{...}` and `_{...}`
+
+Two short-form constructs sit alongside the tag shorthand, both for the common case of superscript and subscript in academic prose:
+
+- `^{X}` is a superscript: `1^{st}`, `x^{2}`, `^{12}C`. The parser produces a `<sup>` element containing the brace contents (recursively parsed).
+- `_{X}` is a subscript: `H_{2}O`, `x_{i}`. The parser produces a `<sub>` element containing the brace contents (recursively parsed).
+
+**Braced form only.** Bare `^` or `_` not immediately followed by `{` is **ordinary literal text** — not a parse error. `snake_case`, `a^b`, URLs containing `^` or `_`, and similar everyday cases pass through untouched. Only `^{` and `_{` trigger a shortcut. This rule is the difference between a useful shortcut and an authoring hazard.
+
+**Edge cases.** `^{}` (empty braces) and `^{abc` (unmatched opener with no closer) are parse errors — the syntax is well-defined only when the braces are matched and non-empty.
+
+**Escapes.** `\^` and `\_` produce literal `^` and `_` (suppressing the shortcut even before a `{`); `\{` and `\}` produce literal braces. The four characters are in the acadamark-consumed escape class (see `escape-rules-spec.md`).
+
+**Two surfaces.** The shortcuts work both inside named-tag content (the Peggy grammar handles them as `SuperscriptShortcut` / `SubscriptShortcut`) and in top-level prose (a dedicated micromark tokenizer recognizes them). The two-surface design is the reason the same shortcut works whether the author writes `<aside | H_{2}O>` or `H_{2}O` in a bare paragraph.
 
 ## Coexistence with raw HTML
 
@@ -838,14 +849,11 @@ Acadamark's text-position (inline) tokenizers — for both named tags and sigil 
 - **Self-closing syntax.** `<br />`, `<img src="x" />` — the trailing `/>` is recognized as a self-closing marker. The parser emits a `selfClosing: true` flag on the AST node. The content field is `null`; no pipe content is allowed in self-closing form. Self-closing is valid for any named tag. Example: `<library src="refs.bib" />` → `{ tagname: 'library', selfClosing: true, kwargs: { src: 'refs.bib' } }`. The slash must be the last character before `>` with no pipe. Technically, `<br/>` (no space before `/`) is also valid. The lookahead that recognizes self-closing is precise: a bare `/` positional is still accepted when it is not in the `/ >` position — e.g., `<tag /path>` parses `positional: ['/path']` without `selfClosing: true`.
 - **Closing tags as standalone constructs.** `</em>` starts with `</`. The acadamark tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it. This means closing tags are passed through as raw HTML, which can produce mismatched structure.
 
-**Guidance for authors:** Use acadamark shorthand for semantic markup. For the rare case where you need to drop into raw HTML that acadamark can't express, a verbatim-passthrough escape mechanism (e.g., `<html-passthrough>...</html-passthrough>`) is planned but not yet specified. Deferred to a later phase.
+**Guidance for authors:** Use acadamark shorthand for semantic markup. A
+verbatim-passthrough mechanism (`<html-passthrough>...</html-passthrough>`)
+for the rare case where authors need to drop into raw HTML that acadamark
+cannot express is open design work in the backlog.
 
 ## What this enables
 
-With this specification settled, the next steps are well-defined:
-
-1. **Implement the micromark extension** that recognizes the syntax above and produces the structured nodes described.
-2. **Implement the remark plugin** that wraps the micromark extension and emits mdast nodes.
-3. **Implement `acadamarkTagInterpret`**, a rehype plugin that consults a per-tag schema registry to turn generic `acadamarkTag` nodes into specific HTML.
-
-The parser implementation has a clear target. The interpreter has a clear input shape. New tags are added by registering schemas, never by modifying the parser.
+The parser has a clear target: a micromark extension recognizes the syntax above and produces the structured nodes described; a remark plugin wraps it and emits mdast nodes. The interpreter consumes those nodes against a per-tag vocabulary schema, turning generic `acadamarkTag` nodes into specific HTML. New tags are added by registering vocabulary entries, never by modifying the parser.
