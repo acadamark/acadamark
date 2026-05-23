@@ -1,0 +1,25 @@
+<meta type=article>
+  <title | Bare Math Normalization>
+  <author | Test Author>
+</meta>
+
+<section | Inline math in top-level prose>
+The Pythagorean theorem states that $a^2 + b^2 = c^2$ for right triangles.
+
+This is the same equation authored as a sigil tag: <$ a^2 + b^2 = c^2 $>.
+
+<section | Bare math inside named-tag content>
+
+<aside | Consider the Einstein equation $E = mc^2$ which relates energy and mass.>
+
+The same aside with authored shorthand: <aside | Consider the equation <$ E = mc^2 $>.>
+
+<section | Display math in top-level prose>
+
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+
+The same display math authored as a sigil tag:
+
+<$$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$>

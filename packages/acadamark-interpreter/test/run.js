@@ -18,12 +18,14 @@ import { run as runTableHandler } from './handlers/table.test.js';
 import { run as runKatexCss } from './katex-css.test.js';
 import { run as runInterpretPlugin } from './interpret-plugin.test.js';
 import { run as runRegistry } from './lib/registry.test.js';
+import { run as runWalkNormalize } from './lib/walk-normalize.test.js';
 import { run as runNotes } from './plugins/notes.test.js';
 import { run as runNotePlacement } from './plugins/note-placement.test.js';
 import { run as runLibraryLoad } from './plugins/library-load.test.js';
 import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
 import { run as runBibliography } from './plugins/bibliography.test.js';
 import { run as runCiteHandler } from './handlers/cite.test.js';
+import { run as runNormalizeMarkdown } from './plugins/normalize-markdown.test.js';
 import { run as runIntegration } from './integration.test.js';
 
 const suites = [
@@ -43,12 +45,14 @@ const suites = [
   ['katex-css',                    runKatexCss],
   ['interpret-plugin',             runInterpretPlugin],
   ['lib/registry',                 runRegistry],
+  ['lib/walk-normalize',           runWalkNormalize],
   ['plugins/notes',                runNotes],
   ['plugins/note-placement',        runNotePlacement],
   ['plugins/library-load',         runLibraryLoad],
   ['plugins/cite-resolution',      runCiteResolution],
   ['plugins/bibliography',         runBibliography],
   ['handlers/cite',                runCiteHandler],
+  ['plugins/normalize-markdown',   runNormalizeMarkdown],
   ['integration',                  runIntegration],
 ];
 

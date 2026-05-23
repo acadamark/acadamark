@@ -19,10 +19,11 @@ import { dirname, join } from 'node:path';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkAcadamark from 'remark-acadamark';
+import remarkMath from 'remark-math';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 
-import { acadamarkInterpreter, acadamarkTagHandler, createAcadamarkTagHandler } from '../src/index.js';
+import { acadamarkInterpreter, acadamarkNormalizeMarkdown, acadamarkTagHandler, createAcadamarkTagHandler } from '../src/index.js';
 import remarkRecursiveContent from '../../remark-acadamark/src/recursive-content.js';
 import { acadamarkConfigDiscovery } from '../src/plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.js';
@@ -44,7 +45,9 @@ const UPDATE = process.env.ACADAMARK_UPDATE_SNAPSHOTS === '1';
  * Run the full pipeline on a source string and return the hast tree and HTML.
  */
 function runPipeline(source, opts = {}) {
-  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark);
+  // AUD-17: this mirror must match the pipeline registered in index.js.
+  // G3: remarkMath added to both inner processors; normalization pass added.
+  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath);
 
   const processor = unified()
     .use(remarkParse)
@@ -56,11 +59,12 @@ function runPipeline(source, opts = {}) {
 
   // Also capture the hast by running the structural transforms separately and
   // calling toHast directly (so we can store the tree for snapshot comparison).
-  const innerProc2 = unified().use(remarkParse).use(remarkAcadamark);
-  const mdast = unified().use(remarkParse).use(remarkAcadamark).parse(source);
+  const innerProc2 = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath);
+  const mdast = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).parse(source);
   const file = { data: {} };
   // Apply transforms manually for hast capture.
   remarkRecursiveContent({ processor: innerProc2 })(mdast);
+  acadamarkNormalizeMarkdown()(mdast);
   acadamarkConfigDiscovery()(mdast, file);
   acadamarkArticleStructuring()(mdast);
   acadamarkSectionNesting()(mdast);
@@ -434,5 +438,46 @@ export function run() {
 
     snapshotHast('document-10', hast);
     console.log('PASS: integration doc10 (inline TeX shortcuts)');
+  }
+
+  // ── Document 11: Bare math normalization (G3) ─────────────────────────────
+  // Exercises bare $...$ and $$...$$ in both surfaces:
+  //   - top-level prose (outer processor + normalization pass)
+  //   - named-tag content (inner processor + normalization pass) — two-surface check
+  // The fixture also uses the authored sigil forms (<$ ... $>, <$$ ... $$>) so
+  // we can assert the outputs are identical (normalization principle).
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-11-bare-math.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc11: article structure present');
+
+    // Inline math renders to <inline-math> — both bare and authored sigil form.
+    assert.ok(html.includes('<inline-math>'), 'doc11: <inline-math> elements present');
+
+    // Display math renders to <display-math>.
+    assert.ok(html.includes('<display-math>'), 'doc11: <display-math> elements present');
+
+    // KaTeX wraps output in <span class="katex">.
+    assert.ok(html.includes('class="katex"'), 'doc11: KaTeX output present');
+
+    // hasMathElements fires → KaTeX CSS injected (bare math document).
+    assert.ok(html.includes('<style>'), 'doc11: KaTeX CSS injected (inline mode, bare math triggers hasMathElements)');
+    assert.ok(html.includes('katex'), 'doc11: CSS contains KaTeX class names');
+
+    // The aside content contains inline math (two-surface normalization check).
+    assert.ok(html.includes('<aside>'), 'doc11: <aside> rendered');
+
+    // Inline-math count: top-level section has 2 (bare + authored same expression),
+    // aside section has 2 (bare + authored). Total at least 4.
+    const inlineMathCount = (html.match(/<inline-math>/g) || []).length;
+    assert.ok(inlineMathCount >= 4, `doc11: at least 4 inline-math elements (got ${inlineMathCount})`);
+
+    // Display math count: 2 (bare + authored same expression).
+    const displayMathCount = (html.match(/<display-math>/g) || []).length;
+    assert.ok(displayMathCount >= 2, `doc11: at least 2 display-math elements (got ${displayMathCount})`);
+
+    snapshotHast('document-11', hast);
+    console.log('PASS: integration doc11 (bare math normalization — both surfaces)');
   }
 }

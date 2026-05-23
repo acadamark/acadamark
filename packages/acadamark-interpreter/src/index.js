@@ -53,6 +53,7 @@ import { dirname, join } from 'path';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkAcadamark from 'remark-acadamark';
+import remarkMath from 'remark-math';
 // Relative path import: remark-acadamark does not re-export this module via
 // its package exports field; we access it directly within the workspace.
 import remarkRecursiveContent from '../../remark-acadamark/src/recursive-content.js';
@@ -60,6 +61,7 @@ import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 import rehypeFormat from 'rehype-format';
 
+import { acadamarkNormalizeMarkdown } from './plugins/normalize-markdown.js';
 import { acadamarkConfigDiscovery } from './plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
@@ -74,7 +76,7 @@ import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plug
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from './lib/registry.js';
 
-export { acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
+export { acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.
@@ -314,14 +316,28 @@ export function acadamarkInterpreter(options = {}) {
   const hoverMode = options.hoverPreviewMode ?? 'inline';
   const assetsDir = options.assetsDir ?? null;
 
+  // G3: Register remarkMath on the outer processor so top-level bare $...$ is
+  // tokenized. Must be registered before parse time (here, in the setup phase,
+  // before .process() is called — unified resolves extensions lazily).
+  this.use(remarkMath);
+
   // Inner processor: used by remarkRecursiveContent to re-parse pipe-content
   // strings. It runs the same parser plugins as the outer processor but does
   // NOT include the structural or compile steps (those only run on the outer
   // tree, not on recursively-parsed subtrees).
-  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark);
+  // G3: remarkMath added so bare $...$ inside named-tag content is tokenized
+  // on both surfaces (outer and inner). The normalization pass then converts
+  // all resulting inlineMath/math nodes to canonical acadamarkTag nodes.
+  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath);
 
   // 1. Parse pipe-content strings into mdast children.
   this.use(remarkRecursiveContent, { processor: innerProcessor });
+
+  // 1.5. Normalize delegated-parser nodes to canonical acadamarkTag nodes.
+  //      Runs after step 1 so both outer and inner processor runs have
+  //      completed. Runs before step 2 so no structural plugin sees
+  //      un-normalized nodes. G3: math only; GFM table deferred.
+  this.use(acadamarkNormalizeMarkdown);
 
   // 2–4. Structural transformation.
   this.use(acadamarkConfigDiscovery);

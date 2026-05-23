@@ -550,3 +550,35 @@ a KaTeX `<style>` block is already present before appending another).
 **Severity:** Medium — wasted ~370 KB per math document; no rendering impact.
 
 **Status: Open.**
+
+---
+
+## AUD-20: GFM table normalization design decision — Option A chosen
+
+**Filed during:** G3 (NORM math implementation slice), 2026-05-22.
+
+**Description:**
+GFM table normalization was investigated in NORM Phase 0 (see
+`notes/audit-2026-Q2/NORM-phase0-findings.md` Q3 for the Option A/B/C
+analysis). Three options were identified for converting a `remark-gfm` `table`
+node (structured mdast with `tableRow`/`tableCell` children that may contain
+inline markup) to a canonical `acadamarkTag` table node (opaque string payload).
+
+**Decision (chat session, 2026-05-22):** Use **Option A** — the normalization
+pass serializes a `remark-gfm` `table` node to a GFM pipe-table string and
+produces a canonical `<table md | ...>` node. This keeps the normalized node
+indistinguishable from authored `<table md>` shorthand (the normalization
+principle) at the cost of being lossy for cells containing rich inline content
+(emphasis, links, inline math), which flatten to plain text. Rich-celled tables
+should be authored in the acadamark `<table>` form directly.
+
+**Implementation scope (not in G3):** GFM table normalization is deferred to its
+own slice after `remark-gfm` is installed. That slice requires:
+1. Install `remark-gfm` in `acadamark-interpreter`.
+2. Thread `remarkGfm` into both outer and inner processors (matching the
+   two-surface pattern used for `remarkMath` in G3).
+3. Write an mdast-to-pipe-table serializer for the normalization pass.
+4. Add a GFM table entry to the mapping table in `normalize-markdown.js`.
+5. Tests for the lossless (plain-text cells) and lossy (rich inline) cases.
+
+**Status: Decision filed; implementation deferred to GFM-table normalization slice.**
