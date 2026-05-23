@@ -12,7 +12,9 @@ Academic typesetting today splits roughly three ways:
 
 - **Raw HTML** can express anything but is laborious to author by hand and lacks standard conventions for academic semantics.
 
-The dominant rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. The gap is conventions for academic semantics and an ergonomic authoring syntax.
+There is also a gap on the receiving end. JATS (Journal Article Tag Suite) has become the widely accepted interchange format for scholarly articles, but JATS is an XML vocabulary with no standard display target — a JATS document is not directly readable; it needs a stylesheet or a viewer. And JATS is vast: it is built for completeness, not for authoring or for display.
+
+The dominant rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. What is missing is a layer between "rich enough to express scholarly content" and "simple enough to author and display": a manageable vocabulary of HTML conventions for academic semantics, and an ergonomic authoring syntax on top of it.
 
 ## Core insight
 
@@ -20,11 +22,13 @@ Treat HTML as the ground truth, not the export target.
 
 Most markdown-extension projects start from "markdown plus features" and the features are shaped by what the parser happened to make easy. Acadamark inverts this: first define the HTML conventions that express academic semantics, then design the shortest authoring path to that HTML.
 
-The two layers are independently valuable:
+This produces two layers, independently valuable:
 
 - **Layer 1 (semantic HTML)** is a target anyone can write to. A different authoring tool, a converter from another format, or a hand-author can all produce acadamark-conformant HTML. The downstream ecosystem (rendering, export, accessibility tooling) treats it as ordinary HTML.
 
 - **Layer 2 (shorthand)** is one possible authoring surface for Layer 1. Decoupling them means the shorthand can evolve, be replaced, or coexist with alternatives without disturbing the semantic foundation.
+
+Two terms are used throughout this document and the project. *Rich text* is text embellished with the things ordinary documents have — bold, italic, links, tables, images. *Rich documents* are text documents that additionally carry the apparatus of scholarly writing — figures, captioned and numbered, citations, notes, cross-references, theorems, embedded math and diagrams. Layer 1 is, in essence, a vocabulary for rich documents: a set of custom HTML elements that lets a browser display the things a rich document needs and JATS already names.
 
 ## Layer 1: Semantic HTML conventions
 
@@ -42,9 +46,11 @@ The Layer 1 specification (see `notes/`) defines:
 
 The specification is the deliverable for Layer 1. Anyone can produce conformant HTML by any means.
 
+Layer 1 has one further property that the rest of this document leans on heavily: it is *canonical*. It is the archival representation — custom-element-rich, semantically explicit, lossless. It is the form the JATS export reads. And it is the input to every way of displaying an acadamark document. The "Layer 1 is canonical; display is a downstream ladder" section below states this precisely and explains why it has to be so.
+
 ## JATS as reference and export target
 
-JATS (Journal Article Tag Suite) is the established XML schema for academic articles, developed by NIH/NLM and used throughout scholarly publishing. JATS has spent two decades refining a vocabulary for academic content — author lists, affiliations, abstracts, structured references, glossaries, funding statements, and much more. Acadamark does not duplicate this work.
+JATS is the established XML schema for academic articles, developed by NIH/NLM and used throughout scholarly publishing. JATS has spent two decades refining a vocabulary for academic content — author lists, affiliations, abstracts, structured references, glossaries, funding statements, and much more. Acadamark does not duplicate this work.
 
 Two principles govern acadamark's relationship to JATS:
 
@@ -54,13 +60,37 @@ Two principles govern acadamark's relationship to JATS:
 
 This is acadamark's bridge to professional publishing. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
 
+The relationship is symmetric in an instructive way. JATS is the vocabulary acadamark *consults* when growing Layer 1, and the format acadamark *exports* to. In effect, Layer 1 is a small, displayable, authorable projection of JATS: where JATS has 200-plus elements and no display target, Layer 1 has perhaps 30-some elements and renders directly in a browser. The point of acadamark's Layer 1 is to be the manageable set of custom HTML elements that lets most JATS-shaped documents be displayed and authored without the full weight of the XML schema.
+
 What acadamark does *not* do, and where it differs from JATS:
 
 - JATS is XML; acadamark is HTML. JATS documents require a stylesheet or viewer to be readable. Acadamark documents are directly browser-renderable.
 - JATS has no authoring syntax. Acadamark's shorthand is what humans actually type.
 - JATS rewards completeness; acadamark rewards getting started. Required JATS metadata can be filled with defaults or generated at export time.
 
-Acadamark stays a small subset of JATS in vocabulary terms — perhaps 30 elements where JATS has 200+ — but a subset that compiles cleanly into JATS for downstream use.
+Acadamark stays a small subset of JATS in vocabulary terms — but a subset that compiles cleanly into JATS for downstream use.
+
+## Layer 1 is canonical; display is a downstream ladder
+
+A question surfaces naturally once the two-layer model is in place: when an acadamark document is processed, is the output standard HTML+CSS that any browser renders with no help — or is it custom HTML that needs a little JavaScript to come fully to life?
+
+The question is real, but it conflates two things that should be kept apart. One is *what canonical artifact does processing produce*. The other is *how does that artifact get displayed*. Standard HTML+CSS seems to answer both at once, because it is both a representation and something a browser renders natively. But that is what makes it a trap. The two questions have different answers, and separating them dissolves the apparent fork.
+
+**The canonical artifact is Layer 1 — semantic HTML with custom elements.** This is not a fresh decision; it is the spine of everything above. Container-role naming, the named depth ladder, the JATS-as-reference rule, the entire vocabulary — all of it exists to make Layer 1 a *semantically explicit* representation. Layer 1 is the archival form, the JATS export source, and the input to every display strategy.
+
+**Display is a separate, downstream concern, and it has three targets that form a ladder** from richest to plainest:
+
+1. **Layer 1 + CSS, no JavaScript.** The default, and it reaches further than people expect. Browsers render unknown custom elements as generic boxes; CSS styles them without complaint. A `<section-title>` given block display and heading-sized type *is* a heading, visually. The structure of a rich document — sections, figures, captions, typography — needs no JavaScript at all.
+
+2. **Layer 1 + CSS + conditionally-injected JavaScript.** For the things CSS genuinely cannot do: hover previews for citations, cross-reference popovers, other interactive affordances. The interpreter already works this way — it injects the hover-preview bundle only when a document actually contains notes, refs, or citations. The JavaScript is opt-in per document, by content.
+
+3. **Render mode — a lossy lowering to plain HTML headings.** For consumers that cannot accept custom elements at all: a plain feed, an email, a context where custom-element CSS will not be loaded. Render mode lowers `<section-title>` to `<h1>`, `<sub-section-title>` to `<h2>`, and so on.
+
+The decisive fact is the asymmetry between these. Lowering only runs one way. Layer 1 can always be projected down to plain HTML+CSS. Plain HTML+CSS can never be raised back to Layer 1, because the semantic information has been discarded — once `<section-title>` has become `<h1>`, nothing in the output records that it was ever the title of a section rather than, say, the title of the article. This is why render mode is described as *lossy*, and why it cannot be the canonical form. If the lowered HTML were canonical, the JATS export would be trying to reconstruct article-title-versus-section-title from h1-versus-h1 — exactly the distinction the lowering threw away. The JATS bridge works *because* the canonical form is the semantic one.
+
+So "compiles to HTML" means compiles to Layer 1. How Layer 1 reaches a screen is a display-target choice, made per consumer, not per document. The answer to the original question is "both" — but the targets are not peers. One is the source; the others are projections of it.
+
+One honest caveat belongs here. Custom elements styled with CSS carry no built-in semantics: to a screen reader, a `<section-title>` is not a heading, it is an unknown element. This is a genuine accessibility gap, and it is the strongest reason render mode is a first-class display target rather than an afterthought — lowering to real `<h1>`/`<h2>` elements restores heading semantics for assistive technology and for tools that read document outlines. But notice the gap argues for *having* a good lowering, not for making lowered HTML canonical. The fix is to ship render mode well, not to discard the semantics at the source.
 
 ## Layer 2: Authoring shorthand
 
@@ -84,8 +114,8 @@ Conventions:
 - `.text` becomes a class (multiple permitted).
 - `attribute=value` is self-explanatory.
 - `+flag` and `-flag` set boolean attributes (`flag="true"`, `flag="false"`).
-- Everything after `|` is the element's content (which may contain nested shorthand).
-- The first positional argument may be "special" depending on the tag — e.g. `<cite smith2023, jones2024>` treats the first argument as a comma-separated citation key list.
+- `@key` is a reference: `<ref @fig:elephant>`, `<cite @smith2023>`. The `@` always means "refers to an id"; `#` always means "assigns an id."
+- Everything after `|` is the element's content, which may contain nested shorthand.
 
 ### Implicit closing
 
@@ -94,22 +124,22 @@ Block-level tags don't require explicit closing. A new peer-level tag implicitly
 For example:
 
 ```
-<# #intro | Introduction>
+<# #intro | Introduction #>
 Some text.
 
-<# #methods | Methods>
+<# #methods | Methods #>
 More text.
 ```
 
-becomes:
+becomes (in semantic mode):
 
 ```html
 <section id="intro">
-  <h1>Introduction</h1>
+  <section-title>Introduction</section-title>
   <p>Some text.</p>
 </section>
 <section id="methods">
-  <h1>Methods</h1>
+  <section-title>Methods</section-title>
   <p>More text.</p>
 </section>
 ```
@@ -127,7 +157,7 @@ Standard markdown paragraph with *emphasis* and a [link](url).
 
 <figure #fig:elephant align=right src=elephant.jpg | An adult elephant.>
 
-More markdown prose, with a citation <cite smith2023>.
+More markdown prose, with a citation <cite @smith2023>.
 ```
 
 The translation rule is strict: any acadamark document maps to exactly one Layer 1 HTML document. There is no ambiguity.
@@ -136,7 +166,7 @@ The translation rule is strict: any acadamark document maps to exactly one Layer
 
 Three differences:
 
-1. **The target is specified independently.** Layer 1 stands alone. Markdown extensions typically conflate syntax and semantics; acadamark separates them.
+1. **The target is specified independently.** Layer 1 stands alone, and it is canonical. Markdown extensions typically conflate syntax and semantics; acadamark separates them, and keeps the semantic form — not a display projection of it — as the source of truth.
 
 2. **The shorthand is uniform.** One construct (`<tag attrs | content>`) handles all cases that need attributes, instead of accreting per-feature idioms (trailing curly braces for headings, fenced divs for callouts, special prefixes for citations, etc.).
 
@@ -150,7 +180,7 @@ Three differences:
 
 **`@` for references collides with social-media usage.** Not a real problem in academic prose. Pandoc has used `@key` for citations for years without confusion.
 
-**Custom elements require JS for full rendering.** True, but acceptable: the project's premise is that HTML+CSS+JS is the rendering substrate. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration.
+**Custom elements have no built-in semantics without help.** A custom element styled by CSS displays correctly but is, to a screen reader or an outline tool, semantically inert. Acadamark accepts this as the cost of a semantically explicit canonical form, and answers it with the display ladder: the default target adds CSS, and render mode lowers custom elements to their plain-HTML equivalents where real heading semantics are needed. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration. The accessibility gap is met by lowering, not by abandoning the semantic vocabulary.
 
 ## Design directions (discovered through implementation)
 
@@ -164,7 +194,37 @@ The sections above describe acadamark's design as it was conceived. Building the
 
 **All tag forms work for every tag where they make sense.** The shorthand grammar admits several tag forms — short, pipe-content, multi-line pipe-content, long-form nesting, self-closing. The principle is that for any given tag, every form that is *semantically* meaningful should *actually* work, and produce equivalent output. Where a form is silently broken for some tags but not others, authors have no way to know the rule, and the uniformity that justifies the shorthand erodes. The direction: vocabulary entries declare which forms each tag supports, tests cover each declared form, and parser-level conflicts that block a declared form are treated as bugs.
 
-**Standalone HTML is the build target; client-side rendering is the future target.** The pipeline today produces self-contained HTML — every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. That does not change. But a further target is full client-side rendering: an `.acm` source file loaded directly in a browser, parsed and rendered without a build step, in the spirit of JupyterLite. Reaching it means the parser, the plugin pipeline, and the handlers must all run in the browser, not only in Node. This is not current work, but it shapes current decisions — plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so the eventual port is a migration rather than a rewrite.
+**Standalone HTML is the build target; client-side rendering is the future target.** This direction concerns *when* processing happens, a separate axis from the *what form* question settled by the display ladder above. The pipeline today produces self-contained HTML at build time — every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. That does not change. But a further target is full client-side rendering: an `.acm` source file loaded directly in a browser, parsed and rendered without a build step, in the spirit of JupyterLite. Reaching it means the parser, the plugin pipeline, and the handlers must all run in the browser, not only in Node. This is not current work, but it shapes current decisions — plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so the eventual port is a migration rather than a rewrite.
+
+**Markdown forms are shorthand for the canonical acadamark form.** Several
+constructs exist in both registers — `$x$` and `<$ x $>`, a GFM pipe table
+and `<table>`, `# Heading` and `<# ... #>`. Where a construct exists in both,
+the acadamark form is canonical and the markdown form is *surface shorthand
+for it*, not an independent parallel path. This refines the delegation
+principle by drawing a line through the middle of it. Delegation still holds
+for *tokenizing*: finding `$x$` in a stream of text is hard, remark already
+does it well, and acadamark does not reimplement it — that would be
+reinventing a working wheel. But delegation does **not** extend to *node
+identity*. When remark's tokenizer finds a markdown construct that has an
+acadamark equivalent, the resulting standard node (`inlineMath`, `table`,
+`heading`, ...) is rewritten into its canonical `acadamarkTag` form by a
+normalization pass, before any structural or semantic plugin runs.
+Downstream of normalization, only the acadamark form exists; every later
+plugin — numbering, cross-references, asset detection, the eventual JATS
+export — sees one node type per construct, not two. The markdown spelling
+is genuinely just a faster way to type the canonical thing. The split is:
+*delegate the lexer, own the node identity.* Reusing remark's finder is not
+reinventing the wheel; accepting remark's name for what it found would be
+ceding the vocabulary, and the vocabulary is the project. This also makes
+the remark dependency shrink gracefully over time rather than by a hard
+cut: a markdown construct stays delegated as long as remark's tokenizer is
+an adequate wheel for it, and acadamark supersedes at the lexer level only
+for a specific construct, only when remark's coverage is genuinely
+inadequate and a deliberate decision is made — never reflexively. The
+principle is universal in intent: it governs every markdown/acadamark
+overlap. Its implementation is incremental: the normalization pass grows
+one construct at a time, and a construct not yet covered is a not-yet-done
+item, never a decision that it was meant to stay a separate path.
 
 ## What's deliberately out of scope
 
@@ -176,4 +236,4 @@ The sections above describe acadamark's design as it was conceived. Building the
 - A code highlighter. Use Shiki or Prism.
 - A PDF generator. Use Pandoc, Paged.js, or Prince downstream.
 
-JATS export is *in* scope and is a planned deliverable (see "JATS as reference and export target" above). The project's contribution is the specification (Layer 1), the shorthand (Layer 2), the glue plugins that connect them to the existing ecosystem, and the bridge to scholarly publishing via JATS.
+JATS export is *in* scope and is a planned deliverable (see "JATS as reference and export target" above). Render mode — the lossy lowering of Layer 1 to plain HTML headings — is also *in* scope: it is the third rung of the display ladder, not a discarded alternative to it, and it is a planned downstream plugin rather than current work. The project's contribution is the specification (Layer 1, the canonical semantic form), the shorthand (Layer 2), the glue plugins that connect them to the existing ecosystem, the display targets that render Layer 1 for different consumers, and the bridge to scholarly publishing via JATS.

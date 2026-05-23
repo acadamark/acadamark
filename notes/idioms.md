@@ -1,65 +1,90 @@
 # Acadamark Idioms and the Delegation Principle
 
-Acadamark contributes the parts no existing parser owns: the tagged shorthand, the Layer 1 vocabulary, and the JATS bridge. Everything else is delegated.
+Acadamark contributes the parts no existing parser owns: the tagged shorthand, the Layer 1 vocabulary, and the JATS bridge. Everything else is delegated. But "delegated" is precise, and this document defines it precisely — because there is a line running through the middle of delegation, and getting that line right is what keeps acadamark from either reinventing wheels or ceding its own vocabulary.
 
 ## Position
 
 Acadamark is not markdown plus extensions. It is a Layer 1 HTML conventions system. Markdown is accepted as a shortcut idiom because it is familiar and the parsers already exist, but it is not the foundation.
 
-Wherever an existing parser can do work acadamark would otherwise need to do, acadamark delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Acadamark only does work the existing parsers cannot do — the tagged shorthand and the Layer 1 vocabulary.
+Wherever an existing parser can do work acadamark would otherwise need to do, acadamark delegates that *work*. Acadamark does not reimplement remark's tokenizers — finding `$x$` in a stream of text, recognizing `# Heading`, tokenizing `` `code` `` — because that work is hard, remark already does it well, and rebuilding it would be reinventing a working wheel.
 
-At the interpreter, acadamark sigil tags are converted to the equivalent existing mdast/hast node types where possible. `<$x$>` becomes an `inlineMath` node; `rehype-katex` renders it. `` <`x`> `` becomes an `inlineCode` node; rehype renders it natively. Custom Layer 1 elements are produced only where no existing node type fits.
+But delegation stops at the tokenizer. It does not extend to *node identity*. When remark's tokenizer finds a construct that has an acadamark equivalent, the standard node it produces is rewritten into the canonical acadamark form before any downstream plugin runs. The work was delegated; the vocabulary was not.
+
+## The two halves of delegation
+
+Delegation has two halves, and they are decided separately. Conflating them is the mistake this document exists to prevent.
+
+**The lexer.** *Who finds the construct in the source text.* This is delegated to remark by default. `remark-math` finds `$x$`. remark's heading tokenizer finds `# Heading`. remark's code-span tokenizer finds `` `code` ``. Acadamark does not duplicate this. The only exception is a construct for which remark's tokenizer is genuinely inadequate for what acadamark needs — and even then, superseding at the lexer level is a deliberate, per-construct decision, never a reflex. (See "When acadamark supersedes the lexer" below.)
+
+**The node identity.** *What the found construct is called, and therefore what every downstream plugin sees.* This is **not** delegated. A construct that exists in both markdown and acadamark shorthand is canonically the acadamark form. The markdown form is surface shorthand for it. When remark's tokenizer produces a standard node (`inlineMath`, `table`, `heading`, ...) for a construct that has an acadamark equivalent, a **normalization pass** rewrites that node into its canonical `acadamarkTag` form. Downstream of normalization, only the acadamark form exists.
+
+The split, stated once: **delegate the lexer; own the node identity.**
+
+Reusing remark's finder is not reinventing the wheel. Accepting remark's *name* for what it found would be ceding the vocabulary — and the vocabulary is the project.
 
 ## The two-layer rule
 
-The delegation principle operates at two distinct layers, with different rules at each:
+The delegation principle operates at two distinct pipeline layers, with different rules at each.
 
-**At the parser layer.** Acadamark's tokenizer claims `<tag ...>` constructs before any other parser sees them. This is what makes the shorthand work: `<figure | text>` is acadamark, not malformed HTML. Bare markdown idioms (`*emphasis*`, `# heading`, `$x$`) are *not* claimed by acadamark — they are left for the existing parsers to handle.
+**At the parser layer.** Acadamark's tokenizer claims `<tag ...>` constructs before any other parser sees them. This is what makes the shorthand work: `<figure | text>` is acadamark, not malformed HTML. Bare markdown idioms (`*emphasis*`, `# heading`, `$x$`) are *not* claimed by acadamark's tokenizer — they are left for remark's existing tokenizers to find. This is the lexer half of delegation.
 
-**At the interpreter layer.** Acadamark sigil tags are converted to existing mdast/hast node types where possible, so that existing rendering plugins (`rehype-katex`, syntax highlighters, etc.) handle them. Custom Layer 1 elements are produced only where no existing node type fits.
+**At the normalization layer.** After remark's tokenizers have run, a normalization pass rewrites every standard node that has an acadamark equivalent into its canonical `acadamarkTag` form. A bare `$x$` that remark-math tokenized into an `inlineMath` node becomes an `acadamarkTag` with the `$` sigil identity — the same node a `<$ x $>` sigil tag produces. After normalization, the structural and semantic plugins, the hast conversion, and the eventual JATS export all see one node type per construct. This is the node-identity half of delegation.
 
-These are different rules at different stages and should not be conflated.
+These are different rules at different stages and must not be conflated. The parser layer *delegates the finding*. The normalization layer *reclaims the identity*.
+
+(An earlier version of this document stated only the first rule and said acadamark "converts sigil tags to existing node types where possible" — the reverse direction. That was the pre-normalization design, when bare idioms and sigil tags genuinely were separate paths. The normalization pass replaces that: the canonical direction is markdown-node → acadamark-node, not the other way. The rendering plugins downstream — `rehype-katex`, syntax highlighters — still do the rendering work; they are simply driven from the canonical acadamark node, reached through its handler, rather than from a raw markdown node.)
 
 ## Bare idioms acadamark accepts
 
-The following markdown idioms are accepted in casual mode and produce equivalent Layer 1 output to the corresponding tagged forms. The list is representative, not exhaustive.
+The following markdown idioms are accepted in casual mode. Each is shorthand for the corresponding tagged form: remark's tokenizer finds it, and the normalization pass rewrites it to the canonical acadamark node, so the two columns below converge on *one* node, not two equivalent ones. The list is representative, not exhaustive.
 
-| Bare idiom            | Equivalent tagged form           | Layer 1 output                                       |
+| Bare idiom            | Canonical tagged form            | Canonical acadamark node                             |
 |-----------------------|----------------------------------|------------------------------------------------------|
-| `# Heading`           | `<# Heading #>`                  | `<section-title>Heading</section-title>` (when wrapped in section) |
-| `## Heading`          | `<## Heading ##>`                | `<sub-section-title>Heading</sub-section-title>`     |
-| `*emphasis*`          | `<em \| emphasis>`               | `<em>emphasis</em>`                                  |
-| `**strong**`          | `<strong \| strong>`             | `<strong>strong</strong>`                            |
-| `` `code` ``          | `` <`code`> ``                   | `<code>code</code>`                                  |
-| ` ```js\ncode\n``` `  | ` <```js \| code```> `           | `<pre><code class="language-js">code</code></pre>`   |
-| `$x$`                 | `<$x$>`                          | `inlineMath` mdast node, rendered by KaTeX           |
-| `$$x$$`               | `<$$x$$>`                        | `displayMath` mdast node, rendered by KaTeX          |
-| `[text](url)`         | `<a url \| text>`                | `<a href="url">text</a>`                             |
-| `- item` (list)       | `<list +unordered \| - item>`    | `<ul><li>item</li></ul>`                             |
+| `# Heading`           | `<# Heading #>`                  | `$`-family section sigil node (`#`)                  |
+| `## Heading`          | `<## Heading ##>`                | sub-section sigil node (`##`)                        |
+| `*emphasis*`          | `<em \| emphasis>`               | `acadamarkTag` tagname `em`                          |
+| `**strong**`          | `<strong \| strong>`             | `acadamarkTag` tagname `strong`                      |
+| `` `code` ``          | `` <`code`> ``                   | inline-code sigil node (`` ` ``)                     |
+| ` ```js\ncode\n``` `  | ` <```js \| code```> `           | code-block sigil node (`` ``` ``)                    |
+| `$x$`                 | `<$ x $>`                        | inline-math sigil node (`$`)                         |
+| `$$x$$`               | `<$$ x $$>`                      | display-math sigil node (`$$`)                       |
+| `[text](url)`         | `<a url \| text>`                | `acadamarkTag` tagname `a`                           |
+| `\| h \| h \|` (GFM)  | `<table md \| ...>`              | `acadamarkTag` tagname `table`                       |
+| `- item` (list)       | `<list +unordered \| - item>`    | `acadamarkTag` tagname `list`                        |
 
-A few asymmetries worth noting:
+The third column is what the document contains after normalization. There is no separate "markdown node" path that happens to render the same — the markdown spelling has been desugared into the canonical node before any structural plugin runs.
 
-- The bare and tagged forms produce identical Layer 1 output only when the surrounding pipeline configuration agrees. Bare `# Heading` produces `<section-title>` wrapped in `<section>` only when section-wrapping is applied to bare markdown headings — this is an open question in `notes/layer1-naming.md`.
-- The tagged forms support attributes (`<# #intro | Introduction #>`); the bare forms do not. When attributes are needed, the tagged form is the only option.
+A few points worth noting:
+
+- The bare and tagged forms produce identical output because, after normalization, they *are* the identical node. This is stronger than "equivalent output" — it is node identity.
+- The tagged forms support attributes (`<# #intro | Introduction #>`); the bare forms do not. When attributes are needed, the tagged form is the only option. Normalization does not invent attributes; it produces the attribute-free canonical node.
+- The principle is universal in intent — it governs every markdown/acadamark overlap. Its implementation is incremental: the normalization pass grows one construct at a time. A construct not yet covered by normalization is a not-yet-done item, never a decision that it was meant to stay a separate path. Whether a given row above is normalized *today* is a question for `STATUS.md` and the backlog, not for this document.
+
+## When acadamark supersedes the lexer
+
+The default is: delegate the lexer. There is one circumstance that overrides the default — a construct for which remark's tokenizer cannot recognize what acadamark needs to treat as that construct.
+
+The example is math. remark-math's tokenizer recognizes delimiter-shaped math: `$...$` and `$$...$$`. It does not recognize environment-shaped math — `\begin{matrix}...\end{matrix}` and similar. Acadamark intends to support a wider LaTeX math surface than the delimiter forms. For the environment forms, there is no remark wheel to reuse, so acadamark provides its own: the DSL long-form tags (`<matrix>`, `<cases>`, `<align>`, `<eqnarray>`) reserved in the DSL registry. That is not superseding remark — it is covering ground remark never covered.
+
+Genuine lexer supersession — acadamark replacing remark's tokenizer for a construct remark *does* tokenize — is reserved for the case where remark's coverage of that construct is inadequate for acadamark's needs. It is a deliberate, per-construct, spec-recorded decision. It is never done reflexively, and it is never done merely to avoid the normalization pass.
+
+The consequence over time: the remark dependency shrinks *gracefully*, not by a hard cut. Each construct stays delegated for as long as remark's tokenizer is an adequate wheel for it. If acadamark eventually supersedes the lexer for enough constructs, the remark dependency falls away on its own — but that is an organic outcome of per-construct adequacy decisions, not a goal pursued for its own sake.
+
+## The rendering question
+
+Rendering is a third thing, separate from both the lexer and the node identity, and it is delegated cleanly. Acadamark does not render math, diagrams, or syntax-highlighted code. KaTeX renders math; Mermaid renders diagrams; Shiki or Prism highlight code. The normalization pass and the canonical node identity do not change this — they change *which node drives the renderer*, not *who renders*. A canonical `$` sigil node reaches KaTeX through acadamark's math handler; a canonical `table` node reaches acadamark's table handler. The renderer is delegated; the node that drives it is acadamark's own. One construct, one canonical node, one rendering path.
 
 ## Strict mode (deferred)
 
-Strict mode is a planned configuration that disables all markdown idioms, so only acadamark tagged forms are recognized. Specifically: remark's heading, emphasis, link, list, and code-span tokenizers are bypassed; `remark-math` is disabled; only the acadamark micromark extension and plain text are recognized.
+Strict mode is a planned configuration that disables all markdown idioms, so only acadamark tagged forms are recognized. Specifically: remark's heading, emphasis, link, list, and code-span tokenizers are bypassed; `remark-math` and `remark-gfm` are disabled; only the acadamark micromark extension and plain text are recognized.
 
-The bare-sigil idioms above are part of casual mode, not the canonical surface. Strict mode is for documents where the author wants the canonical form throughout — typically because the document will be processed by tooling that depends on a consistent shape.
+Under the normalization model, strict mode is simple to characterize: it is the mode in which there is nothing for the normalization pass to do, because no markdown-form nodes are ever produced. Every construct is authored in its canonical form directly. Strict mode is for documents where the author wants the canonical form throughout — typically because the document will be processed by tooling that depends on a consistent shape.
 
-Strict mode is not yet implemented. This section exists to record the intent so the mode is not defined implicitly later.
-
-## Open questions deferred to interpreter design
-
-These are deferred until the relevant component is built. The expected answers are noted but not binding.
-
-- **`<$...$>` rendering path.** When `acadamarkTagInterpret` handles a `$` sigil, does it produce an `inlineMath` mdast node (letting `rehype-katex` render it downstream), or does it call KaTeX directly and emit rendered HTML inline? The delegation principle in this document points toward the first option. To be confirmed when the interpreter is built.
-
-- **`remark-math` inside recursive parsing.** The recursive-content plugin accepts the inner pipeline as a `{ processor }` option; the caller decides which plugins to include. Whether `remark-math` is part of that inner pipeline determines whether bare `$x$` inside `<aside | text $x$ here>` is treated as inline math or literal text. The delegation principle points toward including it. `remark-math` is not currently a workspace dependency; this question remains open until it is added.
+Strict mode is not yet implemented. This section records the intent so the mode is not defined implicitly later.
 
 ## Related notes
 
 - `notes/recursive-content.md` — design of the recursive-content plugin that turns string content into homogeneous `Node[]` content.
 - `notes/shorthand-syntax.md` — the shorthand syntax specification, including the resolved decision that named-tag content is homogeneous `Node[]` after recursive parsing.
 - `notes/layer1-naming.md` — Layer 1 naming conventions and the rule about deferring to HTML where HTML is sufficient (which is the static-vocabulary counterpart to this document's parser-delegation principle).
+- `DESIGN.md` — the "Markdown forms are shorthand for the canonical acadamark form" design direction, which states this principle at the design-rationale level.
