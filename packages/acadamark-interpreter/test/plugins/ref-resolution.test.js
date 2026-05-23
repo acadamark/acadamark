@@ -223,5 +223,41 @@ export function run() {
     assert.equal(marker.kwargs.text, '1', 'unregistered prefix → just the number');
     console.log('PASS: ref-resolution: unregistered prefix renders just the number');
   }
+
+  // ─── G4 PG-6: code-block cross-reference ─────────────────────────────────
+
+  // --- <ref @code:snippet> resolves to label-tail display text ---
+  {
+    const file = { data: {} };
+    const registry = ensureRegistry(file);
+    registry.assign('code', 'code:snippet', { numbered: false, data: {} });
+    registry.numberRegistry();
+
+    const ref = makeRef('code:snippet');
+    const tree = makeArticleTree(para(ref));
+    acadamarkRefResolution()(tree, file);
+
+    const marker = getBodyChildren(tree)[0].children[0];
+    assert.equal(marker.tagname, '__ref-marker', 'code ref replaced by __ref-marker');
+    assert.equal(marker.kwargs.targetId, 'code:snippet');
+    // Unnumbered (numbered: false) → display text is the label-tail.
+    assert.equal(marker.kwargs.text, 'snippet', 'unnumbered code ref displays label-tail');
+    console.log('PASS: ref-resolution: <ref @code:snippet> → label-tail "snippet" (PG-6)');
+  }
+
+  // --- <ref @code:missing> still produces __ref-error ---
+  {
+    const file = { data: {} };
+    ensureRegistry(file);  // empty registry
+
+    const ref = makeRef('code:missing');
+    const tree = makeArticleTree(para(ref));
+    acadamarkRefResolution()(tree, file);
+
+    const marker = getBodyChildren(tree)[0].children[0];
+    assert.equal(marker.tagname, '__ref-error', 'unresolved code ref → __ref-error');
+    assert.equal(marker.kwargs.targetId, 'code:missing');
+    console.log('PASS: ref-resolution: <ref @code:missing> → __ref-error (PG-6)');
+  }
 }
 

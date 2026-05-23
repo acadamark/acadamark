@@ -1,0 +1,21 @@
+<meta type=article>
+  <title | Code cross-reference test fixture>
+  <author | Ariel Balter>
+</meta>
+
+<section | Code blocks with cross-references>
+
+A code-block sigil with a colon-id:
+
+<``` python #code:hello | def hello():
+    print("hello") ```>
+
+A code-block sigil with no id (not referenceable, no colon):
+
+<``` python | x = 1 + 2 ```>
+
+<section | References to code blocks>
+
+Reference to labeled code block (resolves to label-tail "hello"): see <ref @code:hello>.
+
+Reference to missing code label (produces error): <ref @code:missing>.

@@ -93,6 +93,19 @@ export function acadamarkNumbering() {
       });
     }
 
+    // Visitor for code-block sigil nodes (tagname '```'). Code blocks are
+    // registered with numbered: false — they become findable by colon-label
+    // for <ref @code:snippet> but are not sequentially numbered (G4, PG-6).
+    //
+    // DELIBERATE REVERSIBLE CHOICE (G4 chat session, 2026-05-23): code blocks
+    // are unnumbered. Switching to numbered listings later means changing
+    // `numbered: false` to `numbered: true` here, adding `'code'` to
+    // NUMBERED_TAGNAMES, and adding a CONFIG_KEY entry for 'code' — the same
+    // mechanism figures and tables already use.
+    visitors.set('```', (node) => {
+      registry.assign('code', node.id || null, { numbered: false, data: {} });
+    });
+
     discover(tree, visitors);
 
     if (file?.data) {

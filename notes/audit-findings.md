@@ -233,6 +233,16 @@ and adding a `code` visitor in a later slice, or (b) a design pass on whether
 plain fenced `code` nodes should also support colon-ids. Neither is done in R2;
 this is left for a future investigation.
 
+**Code-block half resolved (G4, 2026-05-23).** Decided option (a): only
+shorthand-wrapped code-block sigil nodes with colon-ids are referenceable. A
+`'```'`-tagname visitor added to `numbering.js` registers these nodes with
+`numbered: false`. `code: 'listing'` added to `DEFAULT_PREFIXES` in
+`ref-resolution.js`. `<ref @code:snippet>` now resolves; plain fenced code
+blocks remain non-referenceable by design. 25/25 tests pass including 4 unit
+tests, 2 ref-resolution tests, and a document-13 integration test.
+
+**Status: Fully resolved.** Section half fixed in R2; code-block half fixed in G4.
+
 ---
 
 ## AUD-10: KaTeX CSS relative font URLs fail when CSS is inlined

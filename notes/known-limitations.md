@@ -134,7 +134,17 @@ ARIA or interactive behavior should register custom elements themselves.
 
 **What this means:** Notes with auto-generated ids (`note-1`, `note-2`) cannot be referenced with `<ref>`. Only notes authored with an explicit colon-id (`<note #note:galton | ...>`) are in the label index.
 
-**Why it exists:** Same as the colon-id restriction above. Auto-ids do not contain colons and are therefore not indexed.
+**Why it exists (by design, not a gap):** Auto-generated note ids are internal placement mechanics — they link the inline marker (`<sup>`) to the note-list entry (`<li>`) via `data-note-id` and `href`. They are not intended as author-facing cross-reference handles. Referencing a note by auto-assigned position is fragile: inserting a new note anywhere before it shifts all subsequent numbers, silently breaking any `<ref @note-1>` the author wrote.
+
+The colon-id model is the right tool: a note that needs cross-referencing is authored with an explicit, meaningful label:
+```
+<note #note:galton | Galton coined "regression" in 1886.>
+...
+See <ref @note:galton>.
+```
+This already resolves correctly. The registry test asserting `findByLabel('note-1') === null` (in `test/lib/registry.test.js`) is the codified form of this contract.
+
+**This limitation is closed as by-design (G4, 2026-05-23).** The full reasoning is in `notes/audit-2026-Q2/G4-phase0-findings.md` Q4.
 
 **Workaround:** Author notes that need cross-referencing with explicit colon-ids.
 

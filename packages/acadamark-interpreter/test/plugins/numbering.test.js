@@ -315,4 +315,129 @@ export function run() {
       'figure inside opaque content has no computedNumber');
     console.log('PASS: numbering: figure inside opaque content is not registered (isOpaqueContent guard)');
   }
+
+  // ─── G4 PG-6: code-block sigil registration ───────────────────────────────
+
+  // --- code sigil with colon-id is registered and findable by label ---
+  {
+    const codeNode = {
+      type: 'acadamarkTag',
+      tagname: '```',
+      id: 'code:snippet',
+      classes: [],
+      kwargs: {},
+      booleans: {},
+      content: 'def hello(): pass',
+      contentHandler: 'code-block',
+      isOpaqueContent: true,
+      positional: ['python'],
+    };
+    const tree = makeArticleTree(codeNode);
+    const file = { data: {} };
+    acadamarkNumbering()(tree, file);
+    const registry = ensureRegistry(file);
+    registry.numberRegistry();
+
+    const entry = registry.findByLabel('code:snippet');
+    assert.ok(entry !== null, 'code:snippet found in label index');
+    assert.equal(entry.type, 'code', 'entry type is "code"');
+    assert.equal(entry.id, 'code:snippet');
+    assert.equal(entry.number, null, 'code blocks are unnumbered (numbered: false)');
+    assert.equal(entry.numbered, false);
+    console.log('PASS: numbering: code-block sigil with colon-id registers and is label-indexed (PG-6)');
+  }
+
+  // --- code sigil with no id registers but is NOT label-indexed ---
+  {
+    const codeNode = {
+      type: 'acadamarkTag',
+      tagname: '```',
+      id: null,
+      classes: [],
+      kwargs: {},
+      booleans: {},
+      content: 'x = 1',
+      contentHandler: 'code-block',
+      isOpaqueContent: true,
+      positional: [],
+    };
+    const tree = makeArticleTree(codeNode);
+    const file = { data: {} };
+    acadamarkNumbering()(tree, file);
+    const registry = ensureRegistry(file);
+    registry.numberRegistry();
+
+    // Auto-id 'code-1' has no colon — not in label index.
+    assert.equal(registry.findByLabel('code-1'), null, 'auto-id code-1 not label-indexed');
+    // But the entry exists in the type entries.
+    assert.equal(registry.entries('code').length, 1, 'one code entry registered');
+    assert.equal(registry.entries('code')[0].id, 'code-1', 'auto-id is code-1');
+    console.log('PASS: numbering: code-block sigil with no id registers but is not label-indexed (PG-6)');
+  }
+
+  // --- code sigil with non-colon id registers but is NOT label-indexed ---
+  {
+    const codeNode = {
+      type: 'acadamarkTag',
+      tagname: '```',
+      id: 'mycode',
+      classes: [],
+      kwargs: {},
+      booleans: {},
+      content: 'y = 2',
+      contentHandler: 'code-block',
+      isOpaqueContent: true,
+      positional: [],
+    };
+    const tree = makeArticleTree(codeNode);
+    const file = { data: {} };
+    acadamarkNumbering()(tree, file);
+    const registry = ensureRegistry(file);
+    registry.numberRegistry();
+
+    assert.equal(registry.findByLabel('mycode'), null, 'non-colon id not label-indexed');
+    assert.equal(registry.entries('code')[0].id, 'mycode', 'non-colon id stored in type entries');
+    console.log('PASS: numbering: code-block sigil with non-colon id not label-indexed (PG-6)');
+  }
+
+  // --- <ref @code:snippet> resolves after code-block registration (PG-6 end-to-end) ---
+  {
+    const ref = {
+      type: 'acadamarkTag', tagname: 'ref',
+      id: null, atRefs: ['code:snippet'], classes: [], kwargs: {}, booleans: {},
+      content: null, contentHandler: 'default', isOpaqueContent: false,
+      positional: [],
+    };
+    const codeNode = {
+      type: 'acadamarkTag',
+      tagname: '```',
+      id: 'code:snippet',
+      classes: [],
+      kwargs: {},
+      booleans: {},
+      content: 'def hello(): pass',
+      contentHandler: 'code-block',
+      isOpaqueContent: true,
+      positional: ['python'],
+    };
+    const body = makeTag('article-body', [codeNode, { type: 'paragraph', children: [ref] }]);
+    const front = makeTag('article-front', []);
+    const article = makeTag('article', [front, body]);
+    const tree = { type: 'root', children: [article] };
+    const file = { data: {} };
+
+    acadamarkNumbering()(tree, file);
+    ensureRegistry(file).numberRegistry();
+    acadamarkRefResolution()(tree, file);
+
+    const paraChildren = tree.children[0].content[1].content[1].children;
+    const resolved = paraChildren[0];
+    assert.equal(resolved.tagname, '__ref-marker',
+      `expected __ref-marker, got ${resolved.tagname}`);
+    assert.equal(resolved.kwargs.targetId, 'code:snippet');
+    // Code block is unnumbered: display text is the label-tail ("snippet").
+    assert.equal(resolved.kwargs.text, 'snippet',
+      'unnumbered code-block ref uses label-tail as text');
+    console.log('PASS: numbering/ref-resolution: <ref @code:snippet> resolves (PG-6 end-to-end)');
+  }
 }

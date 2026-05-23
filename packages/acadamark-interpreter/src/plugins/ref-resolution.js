@@ -39,6 +39,7 @@ const DEFAULT_PREFIXES = {
   note: 'note',
   tab:  'table',
   sec:  'section',
+  code: 'listing',   // G4: code-block sigil registration (PG-6)
   thm:  'theorem',
   lem:  'lemma',
   def:  'definition',

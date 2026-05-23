@@ -411,29 +411,38 @@ output is identical regardless of which flags are set.
 
 ---
 
-### PG-6: Code-block ids not referenceable via `<ref>`
+### ~~PG-6: Code-block ids not referenceable via `<ref>`~~ — IMPLEMENTED (G4)
 
-**What works:** Section ids with colon-prefixed labels (`<## #sec:intro | ...>`)
-are registered in the numbering registry and resolve correctly via `<ref #sec:intro>`.  
-**What's missing:** Code-block ids (`<code #code:snippet | ...>`) are not registered
-in the numbering plugin; `<ref #code:...>` always produces a ref-error.  
-**Spec:** AUD-09 description: "Code-block registration: deferred."  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/numbering.js` — no
-`code` visitor.  
-**AUD status:** AUD-09 (partially tracked; section fix is done, code-block is open).
+**Implemented (G4, 2026-05-23).** Code-block sigil nodes (`` tagname '```' ``) with
+explicit colon-ids (e.g. `` <``` python #code:snippet | ... ```> ``) are now registered
+in the numbering plugin with `numbered: false`, the same model as sections. The id
+`code:snippet` reaches the label index so `<ref @code:snippet>` resolves, displaying
+the label-tail (`snippet`). `code` added to `DEFAULT_PREFIXES` in `ref-resolution.js`
+with display word `'listing'`.
+
+Implemented as option (a): only shorthand-wrapped code blocks with colon-ids are
+referenceable. Plain fenced `` ``` `` blocks (native mdast `code` nodes with no id
+field) remain non-referenceable by design. See `notes/audit-2026-Q2/G4-phase0-findings.md`
+for the representation analysis.
+
+**AUD status:** AUD-09 (the code-block half is now resolved; the section half was
+resolved in R2). See `audit-findings.md` AUD-09.
 
 ---
 
-### PG-7: Note cross-references require colon-ids
+### ~~PG-7: Note cross-references require colon-ids~~ — CLOSED AS BY-DESIGN (G4)
 
-**What works:** `<ref #note:fn1>` resolves if the note has `id="note:fn1"` (a
-colon-prefixed label).  
-**What's missing:** Auto-generated note ids (e.g., `note-1`, `note-2`) are not
-registered in the label index. `<ref #note-1>` always produces a ref-error.  
-**Spec:** `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/ref-resolution.js`
-— only the label index (colon-ids) is used; auto-ids are not populated there.  
-**AUD status:** Untracked.
+**Closed as by-design (G4, 2026-05-23).** Auto-generated note ids (`note-1`,
+`note-2`, ...) are internal placement mechanics (linking inline marker to note-list
+entry), not author-facing cross-reference handles. Referencing a note by
+auto-assigned position is fragile: note insertion shifts all subsequent numbers.
+Notes that need cross-referencing are authored with explicit colon-ids
+(`<note #note:galton | ...>`), which already resolves. No code change.
+
+See `notes/known-limitations.md` "Note cross-references require colon-ids" for
+the full reasoning, and `notes/audit-2026-Q2/G4-phase0-findings.md` Q4.
+
+**AUD status:** Untracked (no AUD item). Closed by documentation.
 
 ---
 

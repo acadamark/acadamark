@@ -508,4 +508,29 @@ export function run() {
     snapshotHast('document-12', hast);
     console.log('PASS: integration doc12 (bare pipe table normalization — both surfaces)');
   }
+
+  // ── Document 13: Code-block cross-references (G4, PG-6) ──────────────────
+  // Exercises code-block sigil nodes with colon-ids:
+  //   - <``` python #code:hello | ... ```> registers in the label index
+  //   - <ref @code:hello> resolves to a __ref-marker (not __ref-error)
+  //   - <ref @code:missing> still produces a ref-error marker
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-13-code-refs.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc13: article structure present');
+    assert.ok(html.includes('<pre>'), 'doc13: <pre> element present for code block');
+    assert.ok(html.includes('id="code:hello"'), 'doc13: code:hello id on <code> element');
+
+    // The labeled code reference must resolve (no ref-error).
+    assert.ok(!html.includes('ref-error') || html.split('ref-error').length === 2,
+      'doc13: at most one ref-error (the intentional missing ref)');
+    assert.ok(html.includes('ref-error'), 'doc13: missing code ref produces ref-error');
+
+    // The resolved ref link must target #code:hello.
+    assert.ok(html.includes('href="#code:hello"'), 'doc13: resolved ref links to #code:hello');
+
+    snapshotHast('document-13', hast);
+    console.log('PASS: integration doc13 (code-block cross-references — PG-6)');
+  }
 }

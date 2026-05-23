@@ -1,0 +1,402 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Code cross-reference test fixture",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 35,
+                          "offset": 34
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Ariel Balter",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 14,
+                          "offset": 13
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Code blocks with cross-references",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 35,
+                          "offset": 34
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A code-block sigil with a colon-id:",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 148
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 36,
+                          "offset": 183
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 148
+                    },
+                    "end": {
+                      "line": 8,
+                      "column": 36,
+                      "offset": 183
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "pre",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {
+                        "className": [
+                          "language-python"
+                        ],
+                        "id": "code:hello"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": " def hello():\n    print(\"hello\") "
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A code-block sigil with no id (not referenceable, no colon):",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 1,
+                          "offset": 249
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 61,
+                          "offset": 309
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 13,
+                      "column": 1,
+                      "offset": 249
+                    },
+                    "end": {
+                      "line": 13,
+                      "column": 61,
+                      "offset": 309
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "pre",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {
+                        "className": [
+                          "language-python"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": " x = 1 + 2 "
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "References to code blocks",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 27,
+                          "offset": 26
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Reference to labeled code block (resolves to label-tail \"hello\"): see ",
+                      "position": {
+                        "start": {
+                          "line": 19,
+                          "column": 1,
+                          "offset": 380
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 71,
+                          "offset": 450
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#code:hello",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "hello"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 19,
+                          "column": 88,
+                          "offset": 467
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 89,
+                          "offset": 468
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 19,
+                      "column": 1,
+                      "offset": 380
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 89,
+                      "offset": 468
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Reference to missing code label (produces error): ",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 1,
+                          "offset": 470
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 51,
+                          "offset": 520
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#code:missing",
+                        "className": [
+                          "ref-error"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "??ref: code:missing??"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 70,
+                          "offset": 539
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 71,
+                          "offset": 540
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 21,
+                      "column": 1,
+                      "offset": 470
+                    },
+                    "end": {
+                      "line": 21,
+                      "column": 71,
+                      "offset": 540
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 22,
+      "column": 1,
+      "offset": 541
+    }
+  }
+}
