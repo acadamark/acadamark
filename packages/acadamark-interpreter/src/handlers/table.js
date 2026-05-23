@@ -175,9 +175,13 @@ function parseMd(text, { hasHeaders }) {
   const dataLines = lines.filter(l => !isSeparatorLine(l));
 
   const allRows = dataLines.map(line => {
-    // Remove leading and trailing `|`, then split
-    const inner = line.replace(/^\|/, '').replace(/\|$/, '');
-    return inner.split('|').map(cell => cell.trim());
+    // Remove leading and trailing `|`, then split on unescaped `|`.
+    // GFM pipe tables use `\|` to include a literal pipe in a cell.
+    // Split on `|` NOT preceded by `\`, then replace `\|` → `|` in each cell.
+    const inner = line.replace(/^\|/, '').replace(/(?<!\\)\|$/, '');
+    return inner
+      .split(/(?<!\\)\|/)
+      .map(cell => cell.trim().replace(/\\\|/g, '|'));
   });
 
   return splitHeadersRows(allRows, hasHeaders);

@@ -20,6 +20,7 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkAcadamark from 'remark-acadamark';
 import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 
@@ -47,7 +48,8 @@ const UPDATE = process.env.ACADAMARK_UPDATE_SNAPSHOTS === '1';
 function runPipeline(source, opts = {}) {
   // AUD-17: this mirror must match the pipeline registered in index.js.
   // G3: remarkMath added to both inner processors; normalization pass added.
-  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath);
+  // NORM-tables: remarkGfm added to all inner processors.
+  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
 
   const processor = unified()
     .use(remarkParse)
@@ -59,8 +61,8 @@ function runPipeline(source, opts = {}) {
 
   // Also capture the hast by running the structural transforms separately and
   // calling toHast directly (so we can store the tree for snapshot comparison).
-  const innerProc2 = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath);
-  const mdast = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).parse(source);
+  const innerProc2 = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+  const mdast = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm).parse(source);
   const file = { data: {} };
   // Apply transforms manually for hast capture.
   remarkRecursiveContent({ processor: innerProc2 })(mdast);
@@ -479,5 +481,31 @@ export function run() {
 
     snapshotHast('document-11', hast);
     console.log('PASS: integration doc11 (bare math normalization — both surfaces)');
+  }
+
+  // ── Document 12: Bare pipe table normalization (NORM-tables) ──────────────
+  // Exercises bare GFM pipe tables in both surfaces:
+  //   - top-level prose (outer processor + normalization pass)
+  //   - named-tag content (inner processor + normalization pass) — two-surface
+  // Aligned-column table exercises all four delimiter types.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-12-bare-table.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc12: article structure present');
+
+    // Bare pipe tables are normalized to <table> acadamarkTag nodes and
+    // rendered via the table handler. Expect HTML <table> elements in output.
+    assert.ok(html.includes('<table'), 'doc12: <table> element present');
+
+    // The top-level table has a row for "Force", "Mass", "Acceleration".
+    assert.ok(html.includes('Force'), 'doc12: Force row present');
+    assert.ok(html.includes('Mass'), 'doc12: Mass row present');
+
+    // The aligned table has columns A, B, C, D.
+    assert.ok(html.includes('>A<'), 'doc12: aligned table A cell present');
+
+    snapshotHast('document-12', hast);
+    console.log('PASS: integration doc12 (bare pipe table normalization — both surfaces)');
   }
 }

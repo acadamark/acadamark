@@ -572,13 +572,21 @@ principle) at the cost of being lossy for cells containing rich inline content
 (emphasis, links, inline math), which flatten to plain text. Rich-celled tables
 should be authored in the acadamark `<table>` form directly.
 
-**Implementation scope (not in G3):** GFM table normalization is deferred to its
-own slice after `remark-gfm` is installed. That slice requires:
-1. Install `remark-gfm` in `acadamark-interpreter`.
-2. Thread `remarkGfm` into both outer and inner processors (matching the
-   two-surface pattern used for `remarkMath` in G3).
-3. Write an mdast-to-pipe-table serializer for the normalization pass.
-4. Add a GFM table entry to the mapping table in `normalize-markdown.js`.
-5. Tests for the lossless (plain-text cells) and lossy (rich inline) cases.
+**Implementation (NORM-tables slice, 2026-05-22):**
+1. `remark-gfm@4.0.1` installed in `acadamark-interpreter`.
+2. `remarkGfm` threaded into both outer and inner processors in `index.js`.
+3. `gfmTableToPipeString(node, file)` serializer in `normalize-markdown.js`.
+4. GFM table entry added to `NORMALIZATIONS` in `normalize-markdown.js`.
+5. `parseMd` in `table.js` updated to handle `\|` escape (required for
+   Option A round-trip correctness; GFM spec escape sequence).
+6. Tests: serializer unit tests (alignment, pipe-escape, markup-loss warnings),
+   field-for-field identity with authored `<table md>`, footnote harmlessness,
+   integration fixture `document-12-bare-table.acm`.
 
-**Status: Decision filed; implementation deferred to GFM-table normalization slice.**
+**remark-gfm footnote note:** `remark-gfm` bundles GFM footnotes (`[^1]`);
+there is no option to disable footnotes alone. Footnote nodes are NOT matched
+by any `NORMALIZATIONS` predicate and pass through the normalization walk
+unchanged, reaching `mdast-util-to-hast`'s built-in handler. No collision with
+the acadamark `<note>` system. No existing fixtures use `[^...]` syntax.
+
+**Status: Implemented. Commit: (NORM-tables commit hash — to be filled after commit).**

@@ -1,0 +1,37 @@
+<meta type=article>
+  <title | Bare pipe table normalization fixture>
+  <author | Test Author>
+</meta>
+
+<section | Top-level bare pipe table>
+
+A bare GFM pipe table in top-level prose, normalized to a canonical table node:
+
+| Symbol | Meaning  |
+| ------ | -------- |
+| F      | Force    |
+| m      | Mass     |
+| a      | Acceleration |
+
+<section | Aligned columns>
+
+A table with explicit column alignment:
+
+| Left | Right | Center | Default |
+| :--- | ---: | :---: | --- |
+| A    | B    | C      | D       |
+| 1    | 2    | 3      | 4       |
+
+<section | Table inside named-tag content>
+
+A bare pipe table inside a named tag's pipe-content (inner processor path):
+
+<note placement=foot | Here is a note with a table:
+
+| Key | Value |
+| --- | ----- |
+| x   | 1     |
+| y   | 2     |
+
+>
+</content>
