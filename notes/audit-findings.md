@@ -600,3 +600,173 @@ unchanged, reaching `mdast-util-to-hast`'s built-in handler. No collision with
 the acadamark `<note>` system. No existing fixtures use `[^...]` syntax.
 
 **Status: Implemented. Commit: `ec0d071` (NORM-tables slice, 2026-05-22).**
+
+---
+
+## AUD-21: Multi-line content in text-position named tags silently lost
+
+**Found during:** Audit 1A gap analysis / `notes/parser-newline-investigation.md` (2026-05).
+
+**Description:**
+In the acadamark parser (`packages/remark-acadamark/src/syntax.js`), the
+text-position named-tag tokenizer (`makeNamedTagTokenizer({ multiLine: false })`)
+calls `nok(code)` when it encounters a line ending in its `attrSection` or
+`content` state. This causes micromark to backtrack entirely — the `<` is treated
+as literal text and no `acadamarkTag` node is produced.
+
+**Empirical result:** `Text.<note | line one\nline two.> end.` → one `text` node
+with the literal string `"Text.<note | line oneline two.> end."` (newline
+collapsed). The tag is never parsed.
+
+**Root cause:** The `if (!multiLine) return nok(code)` branch in the named-tag
+tokenizer's `attrSection` and `content` states. Full root-cause analysis and
+proposed fix (remove the branch; emit `lineEnding` tokens the same way the flow
+tokenizer already does) are documented in `notes/parser-newline-investigation.md`
+Q1 and Q5.
+
+**Issues 1 and 3 share the same root cause and the same fix.**
+
+**Status: Open.** Filed; not fixed. Fix is a future parser slice.
+
+---
+
+## AUD-22: Inline tag at line-start captured as flow construct — paragraph splitting
+
+**Found during:** Audit 1A gap analysis / `notes/parser-newline-investigation.md` (2026-05).
+
+**Note: This is the highest-impact of the three parser-newline bugs.** It causes
+unexpected paragraph splitting in normal authored documents — not an edge case.
+
+**Description:**
+When an acadamark tag appears at the start of a line (even within prose), the
+flow-position tokenizer claims it before the text-position tokenizer can. The
+flow tokenizer calls `ok` in its `afterClose` state unconditionally, regardless
+of what character follows the closing `>`. Any text that follows `>` on the same
+line is left over and becomes the beginning of a new paragraph.
+
+**Empirical result (sigil):** `<$ b $> is two.` at line-start → the `<$ b $>`
+becomes a standalone flow element; `is two.` becomes a separate paragraph.
+
+**Empirical result (named tag):** `<note | content> trailing text.` at line-start
+→ 3 children: paragraph (preceding), `acadamarkTag`, paragraph (`trailing text.`).
+
+**Root cause:** `afterClose` in both the sigil and named-tag flow tokenizers:
+```js
+function afterClose(code) {
+  // ...
+  return ok(code)   // ← unconditional; `code` is the char after `>`
+}
+```
+The tokenizer ignores the character following `>` and locks in the flow match.
+The proposed fix — add an `afterGt` check that calls `nok` if the character after
+`>` is not a line ending or EOF — is documented in
+`notes/parser-newline-investigation.md` Q2 and Q5.
+
+**Status: Open.** Filed; not fixed. Fix is a future parser slice.
+
+---
+
+## AUD-23: Code sigil with multi-line content in text position produces `acadamarkTagError`
+
+**Found during:** Audit 1A gap analysis / `notes/parser-newline-investigation.md` (2026-05).
+
+**Description:**
+In text position, a code-sigil tag spanning a line break (e.g. `` <``` python\ncode here ```> ``)
+triggers the text-position sigil tokenizer's `!multiLine` branch. Unlike the
+named-tag tokenizer (which calls `nok`), the sigil tokenizer calls `ok` on the
+partial token (everything up to but not including the `\n`). `from-markdown.js`
+then passes the incomplete source (no closing sigil) to Peggy, which fails and
+produces an `acadamarkTagError` node.
+
+**Empirical result:** `` Text <``` python\ncode here ```> more. `` → `acadamarkTagError`
+node inside paragraph; `code here ```> more.` is raw text in the output.
+
+**Root cause:** Same as AUD-21 (`!multiLine` early path in text-position tokenizer);
+the difference is `ok` vs `nok`. Full analysis in
+`notes/parser-newline-investigation.md` Q3 and Q5.
+
+**AUD-21 and AUD-23 share the same root cause and the same fix.**
+
+**Status: Open.** Filed; not fixed. Fix is a future parser slice.
+
+---
+
+## AUD-24: Vocabulary `related_plugins` plugin names are stale
+
+**Found during:** Audit 1A reading pass — DRIFT-7, DRIFT-8, DRIFT-9 (2026-05).
+
+**Description:**
+Three vocabulary entries in `packages/layer1-vocabulary/elements/` have
+`related_plugins` sections that name plugins that no longer match the implemented
+plugin names. Three sub-cases:
+
+1. **`cite.md`** — says `acadamarkCitationResolution`; actual name: `acadamarkCiteResolution`.
+2. **`ref.md`** — says `acadamarkCrossReferenceResolution`; actual name: `acadamarkRefResolution`.
+   Also calls it a "rehype plugin" when it runs as an mdast plugin.
+3. **`note.md`** — says `acadamarkNoteNumbering`; actual name: `acadamarkNotes`
+   (numbering and placement were merged into one plugin).
+
+**Fix path:** In each vocabulary entry, correct the `name` field in
+`related_plugins` to match the actual plugin name in
+`packages/acadamark-interpreter/src/plugins/`. Small live-file fix; no code change.
+
+**Status: Open.** Filed; not fixed. Fix is a future vocabulary-doc slice.
+
+---
+
+## AUD-25: Design directions DD-1..DD-5 not referenced from specs they govern
+
+**Found during:** Audit 1A gap analysis — GAP-3 (2026-05).
+
+**Description:**
+`DESIGN.md`'s "Design directions (discovered through implementation)" section
+defines five cross-cutting design directions:
+- DD-1: Content gets parsed; arguments don't.
+- DD-2: Tags with caption-like content support two equivalent forms.
+- DD-3: `<meta>` is for document metadata; `<config>` is for document options.
+- DD-4: All tag forms work for all tags where semantically meaningful.
+- DD-5: Standalone HTML is the build target; client-side rendering is the future.
+
+These directions govern specific vocabulary entries and spec docs, but no
+forward-pointer from the governed spec to the relevant direction exists:
+
+- `config.md` and `meta.md` do not reference DD-3 (the meta-vs-config boundary
+  that AUD-13 found being violated).
+- `<figure>` and `<table>` vocabulary entries do not reference DD-1 (parsed
+  content vs. argument strings — directly relevant to AUD-14).
+- `known-limitations.md`'s self-closing form entry does not reference DD-4.
+
+A reader of `config.md` has no pointer to the meta-vs-config design direction; a
+reader of the figure/table entries has no pointer to the content-parsing direction.
+
+**Fix path:** Add "See also: DD-N in DESIGN.md §Design directions" forward-pointer
+lines to the governed vocabulary entries and spec docs. A separate
+`archive/design-directions-2026-05.md` exists with fuller implementation details.
+The fix is a propagation slice; `DESIGN.md` remains the canonical owner.
+
+**Status: Open.** Filed; not fixed. Fix is a future doc-propagation slice.
+
+---
+
+## AUD-26: `notes/interpreter.md` accuracy unverified against current interpreter code
+
+**Found during:** Audit 1A design questions — DQ-1 (2026-05).
+
+**Description:**
+`notes/interpreter.md` is substantial and reads as a current architecture spec —
+the authoritative description of how the interpreter works (mdast plugin chain,
+`toHast` handlers, schema vs. handler interpreter_strategy). However, it has not
+been audited against the implemented interpreter in
+`packages/acadamark-interpreter/`. Its accuracy is therefore an open unknown.
+
+This supersedes the old `notes/interpreter-design.md` (which described an
+architecture that was never built and is already archived as
+`archive/interpreter-design-2026-05.md`). `interpreter.md` is the live
+architecture reference; its accuracy matters.
+
+**The audit is a future task.** The uncertainty is tracked here rather than
+hidden inside a confident-looking document. A future slice will read
+`interpreter.md` section-by-section against the source code and correct any
+drift.
+
+**Status: Open.** Filed; doc-vs-code audit is a future slice.

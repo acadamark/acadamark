@@ -56,6 +56,8 @@ Four notes documents were moved here during the 2026-Q2 audit because their cont
 
 Phase 0 investigation findings from the 2026-Q2 audit and refactor arc (R2–R4, OQ1, NORM, math-coverage, G4, F1, G1). All conclusions have landed in code; retained as the design-rationale record for why the pipeline and normalization pass are shaped as they are.
 
+Also contains the Audit 1A scaffolding files (drift-and-gaps, design-questions, fixes-applied), archived after open items were migrated into `notes/audit-findings.md`.
+
 - **`R2-phase0-findings.md`** — Slice R2 (registry, numbering, ref-resolution, section registration) investigation.
 - **`R3-phase0-findings.md`** — Slice R3 (handler layer, toHast, float/figure/table rendering) investigation.
 - **`R4-phase0-findings.md`** — Slice R4 (notes, math, inline TeX shortcuts) investigation.
@@ -65,6 +67,9 @@ Phase 0 investigation findings from the 2026-Q2 audit and refactor arc (R2–R4,
 - **`G4-phase0-findings.md`** — G4 (code-block cross-reference registration, PG-6/PG-7) investigation.
 - **`F1-phase0-findings.md`** — F1 (citation key ordering, CSL sort override) investigation.
 - **`G1-phase0-findings.md`** — G1 (inline TeX shortcuts: `^{}` superscript, `_{}` subscript) investigation.
+- **`1A-drift-and-gaps.md`** — Audit 1A reading-pass drift and gap findings (DRIFT-1–11, GAP-1–7). Open items migrated to `notes/audit-findings.md` (AUD-21–26); items annotated in place before archiving.
+- **`1A-design-questions.md`** — Audit 1A design questions (DQ-1–8). Open items migrated; items annotated in place before archiving.
+- **`1A-fixes-applied.md`** — Audit 1A in-place mechanical fixes (FIX-1: process.md test count; FIX-2: known-limitations.md KaTeX font status).
 
 ## `investigations-2026-05/`
 
@@ -77,6 +82,7 @@ Spent Phase-0-style investigations whose conclusions have all landed in code or 
 - **`parser-maturity-investigation.md`** — Parser ecosystem survey (micromark, Peggy, tree-sitter alternatives).
 - **`tables-investigation.md`** — Table DSL options; pipe-table normalization decision.
 - **`theme-investigation.md`** — CSS theming approach; variable naming conventions.
+- **`parser-newline-investigation.md`** — Root-cause analysis of three parser bugs: (1) text-position named-tag multi-line content silently lost (nok backtrack), (2) inline tag at line-start captured as flow construct causing paragraph splitting (highest-impact), (3) code-sigil multi-line text position produces `acadamarkTagError`. All three filed as AUD-21/22/23 in `notes/audit-findings.md`; this file is the root-cause record.
 - **`acadamark_pipeline_runorder_vs_dependency.svg`** — Visual diagram of plugin run-order vs. dependency graph.
 - **`document_elements_sources_display_processing.csv`** — Element-to-processing-strategy mapping table.
 

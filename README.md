@@ -8,6 +8,18 @@ An academic publishing system that uses HTML+CSS+JS as its substrate and a short
 
 In this case, HTML is the wheel.
 
+## If you write academic documents
+
+You already have a tool for this, and you already know its cost.
+
+If you write in **LaTeX**, you have power and precision — and a compile step that fails on a stray brace, an error message that points three lines from the real problem, and a syntax that a co-author who doesn't already know it cannot touch.
+
+If you write in **Quarto, RMarkdown, or Bookdown**, you started with markdown's ease — and then needed citations, cross-references, numbered figures, callouts, and watched the clean syntax accrete curly-brace attributes and fenced-div directives, each flavor incompatible with the next, each its own toolchain.
+
+If you write in **Word**, everything is visible and nothing is structured — equation editors fight you, numbering renumbers itself wrong, and the document has no clean path into the scholarly publishing pipeline at all.
+
+All three share one assumption: the rich, finished document is something you *compile to* or *export to*. But the renderer for rich, structured documents already exists, runs on every device, and needs nothing installed — the web browser. HTML is a mature, semantic document format. What's missing isn't the renderer. It's a way to *write* HTML that doesn't make you quit. That's what acadamark is.
+
 ## The idea in one paragraph
 
 Markdown's success comes from a simple bargain: a small set of typing conventions that map cleanly onto HTML. For academic writing, that bargain breaks down — citations, cross-references, figure numbering, theorems, and structured sections all require extensions, and every project that has tried to add them (RMarkdown, Bookdown, Quarto, Pandoc filters) has invented its own incompatible flavor. Meanwhile, HTML+CSS+JS is already a complete, universally supported typesetting system. Acadamark proposes that the right move isn't another markdown extension — it's a rigorous set of HTML conventions for academic content, plus a uniform shorthand for authoring them that's easier on the fingers than raw HTML.

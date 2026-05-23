@@ -16,6 +16,8 @@ Questions raised during the Audit 1A reading pass that require a design conversa
 
 **Recommendation to consider:** Option A. The interpreter architecture is real and worth having documented. The document needs a rewrite from first principles that describes what was actually built, not what was planned.
 
+**→ Status: Migrated (2026-05-23).** The stale `notes/interpreter-design.md` was retired to `archive/interpreter-design-2026-05.md`. The live question — whether `notes/interpreter.md` accurately describes the current implementation — is filed as AUD-26 in `notes/audit-findings.md`.
+
 ---
 
 ## DQ-2: `notes/plugin-pipeline.md` — update names, but also: does it describe the right architecture?
@@ -41,6 +43,8 @@ Specifically:
 - **(C) Delete it** — the investigation doc covers the same ground with post-implementation accuracy.
 
 **Recommendation to consider:** Option B. The design exploration is worth keeping. A status note at the top clarifies the file is a historical decision record, not a current spec.
+
+**→ Status: Moot (2026-05-23).** `notes/hover-previews-deferred.md` was retired to `archive/hover-previews-deferred-2026-05.md` in the April 2026 cleanup. The rename question no longer applies.
 
 ---
 
@@ -68,6 +72,8 @@ Specifically:
 
 **Also to decide:** Bug 2 (inline tag at line-start becoming flow) may be the most impactful — it can cause unexpected paragraph splitting in authored documents. Is this worth prioritizing ahead of other parser slice work?
 
+**→ Status: Migrated (2026-05-23).** The three bugs are filed as AUD-21 (named-tag multi-line silent loss), AUD-22 (inline-at-line-start paragraph splitting — highest-impact, explicitly flagged), and AUD-23 (code-sigil error node) in `notes/audit-findings.md`.
+
 ---
 
 ## DQ-6: Comma-separated positionals for `<cite>` — support or document as unsupported?
@@ -78,6 +84,8 @@ Specifically:
 
 The fix would be small: add `,` as an allowed attribute separator in the Peggy grammar's `Attributes` rule (or add a `CommaAttributes` variant). But it requires a grammar change + test additions.
 
+**→ Status: Resolved (2026-05-23).** Comma-separated `<cite>` keys already work — this landed in the F1 / parser-maturity slice. `<cite Smith2020,Jones2019>` is supported. The `@`-sigil form with bracketed keys (`<cite [@Smith2020, @Jones2019]>`) is also supported.
+
 ---
 
 ## DQ-7: Should `STATUS.md` be updated now, or as a dedicated audit deliverable?
@@ -87,6 +95,8 @@ The fix would be small: add `,` as an allowed attribute separator in the Peggy g
 **The question:** Should STATUS.md be updated as part of the Audit 1A deliverables (making it the canonical current-state snapshot), or should it be updated after the audit conclusions are written (so it captures the post-audit state)?
 
 A second-order question: who writes the STATUS.md update? It's a high-level narrative document that reads best when written deliberately, not as a diff-correction pass. This might be a good Ariel-writes-with-Claude-assistance task rather than a purely mechanical fix.
+
+**→ Status: Deferred — separate task (2026-05-23).** The STATUS.md rewrite is acknowledged as a distinct task (author-and-Claude collaboration). No code or mechanical fix; left open deliberately.
 
 ---
 
@@ -100,5 +110,7 @@ A second-order question: who writes the STATUS.md update? It's a high-level narr
 **The question:** Should new findings from this audit continue the AUD-N series in `audit-findings.md`? Or should we use the DRIFT-N / GAP-N scheme from this report and keep them here, separate from the AUD series?
 
 The AUD series in `audit-findings.md` mixes bugs, doc drift, and implementation gaps under one number space. A DRIFT / GAP / DQ split might be cleaner going forward.
+
+**→ Status: Resolved (2026-05-23).** Decision: continue the single AUD-N series in `notes/audit-findings.md`. The DRIFT/GAP/DQ scheme was audit-pass scaffolding and retires with the 1A files. New findings from this audit are filed as AUD-21 through AUD-26.
 
 **Recommendation to consider:** Migrate the most actionable findings (parser newline bugs, plugin name drift) into `audit-findings.md` as AUD-16+. Keep the design questions in this file. Keep the DRIFT/GAP findings here for traceability but file the actionable ones in audit-findings.md.

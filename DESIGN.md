@@ -2,19 +2,60 @@
 
 This document captures the design decisions behind acadamark and the reasoning that led to them. It's intended for contributors, for future maintainers, and for the author returning after time away.
 
+## Summary
+
+Academic writing today means LaTeX, a markdown-extension flavor (Quarto, RMarkdown, Bookdown), or Word. The first two treat the finished rich document as something you *compile to* or *render to*, never something you work in directly; Word lets you work in it directly but leaves it structurally inert, with no clean path into the scholarly pipeline. Yet the rich-document renderer already exists, runs on every device, and needs nothing installed: the web browser. HTML is a mature, semantic document format, and the browser displays it natively. What has never been built is the *authoring* layer that would make HTML practical to write — which is the gap that sends academic writing back to those conversion pipelines.
+
+HTML is not hard because its model is wrong. It is hard because it is verbose to type and noisy to read: every element a matched pair of tags, every attribute a quoted pair, every nesting opened and closed by hand. Markdown solved exactly that — the typing — but only for a small set of constructs, and it solved it by abandoning HTML's richness rather than compressing it. The moment a document needs a captioned and numbered figure, a citation, a sidenote, a cross-reference, markdown falls back to raw embedded HTML or to an external processor.
+
+Acadamark is the missing authoring layer. It is a uniform shorthand for a manageable vocabulary of semantic HTML — markdown-like in ease of typing, but without markdown's ceiling and without inventing a new adornment for every feature. An acadamark document *is* HTML: the browser renders it directly, with no compile step in the path.
+
+The project separates two things:
+
+- **Layer 1** — the canonical semantic HTML: a defined vocabulary of custom elements and attributes for academic content. This is the archival, lossless, source-of-truth form.
+- **Layer 2** — the authoring shorthand: a uniform `<tag attrs | content>` syntax that is the practical way a human types Layer 1.
+
+The shape of the system:
+
+```
+                 ┌─────────────────────────────┐
+                 │  display targets            │
+                 │  · Layer 1 + CSS            │
+                 │  · Layer 1 + CSS + JS       │
+   ┌──────────┐  │  · render mode (lowered)    │
+   │  Layer 2 │  └─────────────────────────────┘
+   │ shorthand│              ▲
+   │ (.acm)   │              │  display
+   └──────────┘              │
+        ▲                    │
+        │  lossless          │
+        │  round-trip        │
+        ▼                    │
+   ┌─────────────────────────────────┐         ┌──────────────┐
+   │  Layer 1                        │ ──────► │  JATS XML    │
+   │  canonical semantic HTML        │  export │  (scholarly  │
+   │  (the source of truth)          │ ◄┄┄┄┄┄┄ │   interchange)│
+   └─────────────────────────────────┘  import └──────────────┘
+                                     (lossy, with simplifications)
+```
+
+Two relationships matter, and they are not the same. Layer 2 and Layer 1 are a **lossless round-trip**: they are one document in two notations — the shorthand is simply a faster way to type the canonical form, and any Layer 1 document can be written back as shorthand. JATS, by contrast, sits outside that loop: Layer 1 **exports** to JATS as a first-class, clean operation (this is acadamark's bridge to professional scholarly publishing), while JATS **import** into Layer 1 is supported but acknowledged-lossy — a one-way conversion that applies necessary simplifications, not a faithful reconstruction.
+
+Everything below is the *how*. The working principles in `notes/principles.md`, the delegation rules in `notes/idioms.md`, and the Layer 1 vocabulary specs are implementations of what this summary states; when a design decision is in question, it should trace back to here.
+
 ## The problem
 
-Academic typesetting today splits roughly three ways:
+The barrier acadamark addresses is an authoring barrier. The rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. What is missing is a layer between "rich enough to express scholarly content" and "simple enough to author and display": a manageable vocabulary of HTML conventions for academic semantics, and an ergonomic authoring syntax on top of it.
+
+Academic typesetting today splits roughly three ways, and each leaves that authoring layer unbuilt:
 
 - **LaTeX** is powerful and self-consistent, but fragile (compile-time failures), arcane to read, and outside the dominant web ecosystem.
 
 - **Markdown extensions** (RMarkdown, Bookdown, Quarto, Pandoc filters) add academic features at the cost of fragmenting the markdown ecosystem. Each invents its own syntax for citations, cross-references, figure attributes, and so on. None compose with each other. Each requires its own parser, often outside the JavaScript ecosystem where the rendering ultimately happens. Extensions also accrete idioms — trailing curly-brace attributes, fenced div blocks, double-colon directives — that erode the visual simplicity that made markdown attractive in the first place.
 
-- **Raw HTML** can express anything but is laborious to author by hand and lacks standard conventions for academic semantics.
+- **Raw HTML** can express anything but is laborious to author by hand and lacks standard conventions for academic semantics. This is the verbosity problem the summary describes: HTML's model is sound, but typing and reading it by hand is the barrier.
 
 There is also a gap on the receiving end. JATS (Journal Article Tag Suite) has become the widely accepted interchange format for scholarly articles, but JATS is an XML vocabulary with no standard display target — a JATS document is not directly readable; it needs a stylesheet or a viewer. And JATS is vast: it is built for completeness, not for authoring or for display.
-
-The dominant rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. What is missing is a layer between "rich enough to express scholarly content" and "simple enough to author and display": a manageable vocabulary of HTML conventions for academic semantics, and an ergonomic authoring syntax on top of it.
 
 ## Core insight
 
@@ -56,11 +97,11 @@ Two principles govern acadamark's relationship to JATS:
 
 **JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Acadamark adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and acadamark is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/layer1-naming.md` for the binding rule.)
 
-**JATS as first-class export target.** Acadamark Layer 1 HTML compiles to JATS XML via a planned plugin (`rehype-acadamark-to-jats`). This makes acadamark documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion.
+**JATS as first-class export target.** Acadamark Layer 1 HTML compiles to JATS XML via a planned plugin (`rehype-acadamark-to-jats`). This makes acadamark documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
 
-This is acadamark's bridge to professional publishing. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
+JATS import is the weaker, deliberately lossy direction. A JATS document can be converted *into* Layer 1, but the conversion applies necessary simplifications — JATS's vocabulary is far larger than Layer 1's, and constructs with no Layer 1 equivalent are reduced rather than faithfully preserved. Import is a useful on-ramp from the existing scholarly corpus; it is not a round-trip guarantee. The only lossless round-trip in the system is between Layer 2 shorthand and Layer 1, because those two are the same document in two notations.
 
-The relationship is symmetric in an instructive way. JATS is the vocabulary acadamark *consults* when growing Layer 1, and the format acadamark *exports* to. In effect, Layer 1 is a small, displayable, authorable projection of JATS: where JATS has 200-plus elements and no display target, Layer 1 has perhaps 30-some elements and renders directly in a browser. The point of acadamark's Layer 1 is to be the manageable set of custom HTML elements that lets most JATS-shaped documents be displayed and authored without the full weight of the XML schema.
+The relationship is instructive. JATS is the vocabulary acadamark *consults* when growing Layer 1, and the format acadamark *exports* to. In effect, Layer 1 is a small, displayable, authorable projection of JATS: where JATS has 200-plus elements and no display target, Layer 1 has perhaps 30-some elements and renders directly in a browser. The point of acadamark's Layer 1 is to be the manageable set of custom HTML elements that lets most JATS-shaped documents be displayed and authored without the full weight of the XML schema.
 
 What acadamark does *not* do, and where it differs from JATS:
 
@@ -160,7 +201,7 @@ Standard markdown paragraph with *emphasis* and a [link](url).
 More markdown prose, with a citation <cite @smith2023>.
 ```
 
-The translation rule is strict: any acadamark document maps to exactly one Layer 1 HTML document. There is no ambiguity.
+The translation rule is strict: any acadamark document maps to exactly one Layer 1 HTML document. There is no ambiguity. And because the mapping is exact, it runs both ways — Layer 1 can be expressed back as shorthand without loss. This is the lossless round-trip the summary describes.
 
 ## Why this is not just another markdown extension
 
@@ -196,35 +237,7 @@ The sections above describe acadamark's design as it was conceived. Building the
 
 **Standalone HTML is the build target; client-side rendering is the future target.** This direction concerns *when* processing happens, a separate axis from the *what form* question settled by the display ladder above. The pipeline today produces self-contained HTML at build time — every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. That does not change. But a further target is full client-side rendering: an `.acm` source file loaded directly in a browser, parsed and rendered without a build step, in the spirit of JupyterLite. Reaching it means the parser, the plugin pipeline, and the handlers must all run in the browser, not only in Node. This is not current work, but it shapes current decisions — plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so the eventual port is a migration rather than a rewrite.
 
-**Markdown forms are shorthand for the canonical acadamark form.** Several
-constructs exist in both registers — `$x$` and `<$ x $>`, a GFM pipe table
-and `<table>`, `# Heading` and `<# ... #>`. Where a construct exists in both,
-the acadamark form is canonical and the markdown form is *surface shorthand
-for it*, not an independent parallel path. This refines the delegation
-principle by drawing a line through the middle of it. Delegation still holds
-for *tokenizing*: finding `$x$` in a stream of text is hard, remark already
-does it well, and acadamark does not reimplement it — that would be
-reinventing a working wheel. But delegation does **not** extend to *node
-identity*. When remark's tokenizer finds a markdown construct that has an
-acadamark equivalent, the resulting standard node (`inlineMath`, `table`,
-`heading`, ...) is rewritten into its canonical `acadamarkTag` form by a
-normalization pass, before any structural or semantic plugin runs.
-Downstream of normalization, only the acadamark form exists; every later
-plugin — numbering, cross-references, asset detection, the eventual JATS
-export — sees one node type per construct, not two. The markdown spelling
-is genuinely just a faster way to type the canonical thing. The split is:
-*delegate the lexer, own the node identity.* Reusing remark's finder is not
-reinventing the wheel; accepting remark's name for what it found would be
-ceding the vocabulary, and the vocabulary is the project. This also makes
-the remark dependency shrink gracefully over time rather than by a hard
-cut: a markdown construct stays delegated as long as remark's tokenizer is
-an adequate wheel for it, and acadamark supersedes at the lexer level only
-for a specific construct, only when remark's coverage is genuinely
-inadequate and a deliberate decision is made — never reflexively. The
-principle is universal in intent: it governs every markdown/acadamark
-overlap. Its implementation is incremental: the normalization pass grows
-one construct at a time, and a construct not yet covered is a not-yet-done
-item, never a decision that it was meant to stay a separate path.
+**Markdown forms are shorthand for the canonical acadamark form.** Several constructs exist in both registers — `$x$` and `<$ x $>`, a GFM pipe table and `<table>`, `# Heading` and `<# ... #>`. Where a construct exists in both, the acadamark form is canonical and the markdown form is *surface shorthand for it*, not an independent parallel path. This refines the delegation principle by drawing a line through the middle of it. Delegation still holds for *tokenizing*: finding `$x$` in a stream of text is hard, remark already does it well, and acadamark does not reimplement it — that would be reinventing a working wheel. But delegation does **not** extend to *node identity*. When remark's tokenizer finds a markdown construct that has an acadamark equivalent, the resulting standard node (`inlineMath`, `table`, `heading`, ...) is rewritten into its canonical `acadamarkTag` form by a normalization pass, before any structural or semantic plugin runs. Downstream of normalization, only the acadamark form exists; every later plugin — numbering, cross-references, asset detection, the eventual JATS export — sees one node type per construct, not two. The markdown spelling is genuinely just a faster way to type the canonical thing. The split is: *delegate the lexer, own the node identity.* Reusing remark's finder is not reinventing the wheel; accepting remark's name for what it found would be ceding the vocabulary, and the vocabulary is the project. This also makes the remark dependency shrink gracefully over time rather than by a hard cut: a markdown construct stays delegated as long as remark's tokenizer is an adequate wheel for it, and acadamark supersedes at the lexer level only for a specific construct, only when remark's coverage is genuinely inadequate and a deliberate decision is made — never reflexively. The principle is universal in intent: it governs every markdown/acadamark overlap. Its implementation is incremental: the normalization pass grows one construct at a time, and a construct not yet covered is a not-yet-done item, never a decision that it was meant to stay a separate path.
 
 ## What's deliberately out of scope
 

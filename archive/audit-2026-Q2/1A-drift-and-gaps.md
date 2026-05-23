@@ -37,6 +37,8 @@ remarkRehype → acadamarkTagInterpret → acadamarkSectionNesting → acadamark
 
 **Status:** DRIFT. `notes/interpreter-design.md` needs a full rewrite to match the actual mdast-plugin + handler architecture. This is documented here; rewriting the doc is a task for a dedicated editorial pass (not Audit 1A scope).
 
+**→ Status: Resolved (2026-05-23).** `notes/interpreter-design.md` was retired to `archive/interpreter-design-2026-05.md` in the April 2026 cleanup. `notes/interpreter.md` is now the live architecture reference. AUD-02 is also closed.
+
 ---
 
 ## DRIFT-2: `notes/hover-previews-deferred.md` — feature is implemented, doc says deferred
@@ -51,6 +53,8 @@ remarkRehype → acadamarkTagInterpret → acadamarkSectionNesting → acadamark
 **Also not documented anywhere:** The hover preview trigger logic (`hasNoteMarkers`, `hasRefLinks`, `hasCiteLinks`) — the conditions under which hover JS is injected — has no spec.
 
 **Status:** DRIFT. The file should either be renamed to `hover-preview-investigation.md` (it's historical thinking, not a deferred-feature spec) or updated to reflect what was chosen and built. Suggested action: rename + add a note at the top pointing to the implementation.
+
+**→ Status: Resolved (2026-05-23).** `notes/hover-previews-deferred.md` was retired to `archive/hover-previews-deferred-2026-05.md` in the April 2026 cleanup.
 
 ---
 
@@ -77,6 +81,8 @@ Also: the doc describes `acadamarkTagInterpret` as "the last plugin in the pipel
 The doc's pipeline ordering diagram and all three phase descriptions need updating.
 
 **Status:** DRIFT. Widespread name drift. Lower priority than Drift-1 (interpreter-design.md) because plugin-pipeline.md is more of a planning document. But it's the authoritative spec for the pipeline; it should match what's built.
+
+**→ Status: Resolved (2026-05-23).** `notes/plugin-pipeline.md` was retired to `archive/plugin-pipeline-2026-05.md` in the April 2026 cleanup.
 
 ---
 
@@ -132,6 +138,8 @@ The `related_plugins` section says:
 
 Actual name: `acadamarkCiteResolution`.
 
+**→ Status: Migrated (2026-05-23).** Filed as AUD-24 in `notes/audit-findings.md` (covers all three vocabulary entries: `cite.md`, `ref.md`, `note.md`).
+
 ---
 
 ## DRIFT-8: `ref.md` vocabulary entry — `related_plugins` names wrong
@@ -147,6 +155,8 @@ Actual name: `acadamarkRefResolution`.
 
 Also: the handler responsibilities bullet says "ref-resolution plugin (runs before hast)" — this is correct about the order, but the overall architecture description says it's a "rehype plugin" when it runs as an mdast plugin. Minor but could confuse someone reading both files.
 
+**→ Status: Migrated (2026-05-23).** Filed as AUD-24 (see DRIFT-7 note).
+
 ---
 
 ## DRIFT-9: `note.md` vocabulary entry — `related_plugins` names wrong
@@ -154,6 +164,8 @@ Also: the handler responsibilities bullet says "ref-resolution plugin (runs befo
 **Source:** `packages/layer1-vocabulary/elements/note.md`
 
 Says `acadamarkNoteNumbering`. Actual name: `acadamarkNotes` (numbering and placement are merged into one plugin).
+
+**→ Status: Migrated (2026-05-23).** Filed as AUD-24 (see DRIFT-7 note).
 
 ---
 
@@ -164,6 +176,8 @@ Says `acadamarkNoteNumbering`. Actual name: `acadamarkNotes` (numbering and plac
 Says `acadamarkSectionNesting` — this name is actually correct! The plugin is named `acadamarkSectionNesting` (confirmed from `section-nesting.js`). No drift here, removing this entry.
 
 *(Self-correction during writing: verified against actual plugin name. DRIFT-10 is moot.)*
+
+**→ Status: Moot (2026-05-23).** The finding's own text confirms the plugin name is correct; no action needed.
 
 ---
 
@@ -176,6 +190,8 @@ The note says: "If the node shape ever changes (e.g., migration to standard `.ch
 This is accurate and correctly filed. However, the `notes/recursive-content-spec.md` describes `node.content` being populated with `Node[]` after recursive parsing — which is the current implementation. It does NOT migrate to `.children`. The note in plugin-pipeline.md is fine but the phrasing "ever changes" slightly overstates the uncertainty.
 
 Not a material drift, but the relationship between `node.content` (which becomes `Node[]`) and `.children` (never used for acadamarkTag nodes) could be stated more clearly for plugin authors.
+
+**→ Status: Dropped (2026-05-23).** A phrasing observation, not an actionable finding; no code or spec impact.
 
 ---
 
@@ -225,6 +241,8 @@ These are good design statements. But:
 
 **Severity:** Medium — the gap creates a situation where a reader reads the vocab entries and design directions separately and can't connect them.
 
+**→ Status: Migrated (2026-05-23).** Filed as AUD-25 in `notes/audit-findings.md`. Note: GAP-3's reference to `notes/design-directions.md` is itself stale — the design directions now live in `DESIGN.md`'s "Design directions" section (and `archive/design-directions-2026-05.md`). AUD-25 names the correct owner.
+
 ---
 
 ## GAP-4: `notes/authoring-features-survey.md` is purely prospective — no clear relationship to current scope
@@ -255,6 +273,8 @@ The inline `^{...}` / `_{...}` shortcut spec is fully written in `notes/inline-t
 These are real bugs, not deferred features. None of them appear in `notes/audit-findings.md` or `notes/known-limitations.md`. They were found during an investigation but not filed.
 
 **Severity:** Medium. Recommend adding these as AUD-16, AUD-17, AUD-18 (or a single AUD-16 with three sub-cases).
+
+**→ Status: Migrated (2026-05-23).** Filed as AUD-21 (named-tag multi-line silent loss), AUD-22 (inline-at-line-start paragraph splitting — highest impact), and AUD-23 (code-sigil error node) in `notes/audit-findings.md`.
 
 ---
 
