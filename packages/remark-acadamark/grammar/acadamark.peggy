@@ -167,8 +167,8 @@ HashSigilBodyItem1
   = !("#>") item:HashSigilBodyChar1  { return item }
 
 HashSigilBodyChar1
-  = "\\" c:[<|\\]                           { return c }
-  / "\\" !("#>") c:[!-/:-@\[\\\]^_`{-~]    { return "\\" + c }
+  = "\\" c:[<|\\^_{}]                       { return c }
+  / "\\" !("#>") c:[!-/:-@\[\\\]`|~]       { return "\\" + c }
   / "\\" !("#>") c:[^\n]                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
   / "\\"                                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
   / [^\\]                                   { return text() }
@@ -177,8 +177,8 @@ HashSigilBodyItem2
   = !("##>") item:HashSigilBodyChar2  { return item }
 
 HashSigilBodyChar2
-  = "\\" c:[<|\\]                            { return c }
-  / "\\" !("##>") c:[!-/:-@\[\\\]^_`{-~]    { return "\\" + c }
+  = "\\" c:[<|\\^_{}]                        { return c }
+  / "\\" !("##>") c:[!-/:-@\[\\\]`|~]       { return "\\" + c }
   / "\\" !("##>") c:[^\n]                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
   / "\\"                                     { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
   / [^\\]                                    { return text() }
@@ -187,8 +187,8 @@ HashSigilBodyItem3
   = !("###>") item:HashSigilBodyChar3  { return item }
 
 HashSigilBodyChar3
-  = "\\" c:[<|\\]                             { return c }
-  / "\\" !("###>") c:[!-/:-@\[\\\]^_`{-~]    { return "\\" + c }
+  = "\\" c:[<|\\^_{}]                         { return c }
+  / "\\" !("###>") c:[!-/:-@\[\\\]`|~]       { return "\\" + c }
   / "\\" !("###>") c:[^\n]                    { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
   / "\\"                                      { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
   / [^\\]                                     { return text() }
@@ -299,10 +299,12 @@ TagName = $([a-zA-Z][a-zA-Z0-9_-]*)
 // Regular char: any char except >, \, newline.
 
 ContentItem
-  = "\\" c:[<|\\]                      { return c }
-  / "\\" c:[!-/:-=?@\[\\\]^_`{-~]    { return "\\" + c }
+  = "\\" c:[<|\\^_{}]                  { return c }
+  / "\\" c:[!-/:-=?@\[\\\]`|~]        { return "\\" + c }
   / "\\" c:[^\n>]                      { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
   / "\\"                               { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
+  / SuperscriptShortcut
+  / SubscriptShortcut
   / $("<" [a-zA-Z#$`/] ContentChar* ">")
   / $[^>\\]
 
@@ -313,6 +315,65 @@ ContentItem
 ContentChar
   = "<" [a-zA-Z#$`/] ContentChar* ">"
   / [^>]
+
+// ─── Inline shortcut rules: ^{...} → <sup>, _{...} → <sub> ───────────────
+//
+// Braced form only. Bare ^ and _ (without following {) fall through to the
+// regular-character rule in ContentItem and are treated as literal text.
+//
+// contentHandler: 'default' is set explicitly because makeNode() does not set
+// it, and remarkRecursiveContent skips nodes where contentHandler !== 'default'.
+//
+// BraceContentItem stops at } (the brace closer) and > (the named-tag closer).
+// Recursion inside BraceContentItem handles nested ^{}/_{} constructs.
+//
+// Error cases:
+//   ^{} / _{} (empty braces)       → acadamarkParseError (empty-shortcut)
+//   ^{abc / _{abc (unterminated)   → acadamarkParseError (unterminated-shortcut)
+
+SuperscriptShortcut
+  = "^" "{" content:BraceContentItem+ "}" {
+      return {
+        type: 'acadamarkTag', form: 'shortcut', tagname: 'sup',
+        contentHandler: 'default',
+        content: processContentItems(content),
+        isOpaqueContent: false,
+        positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [],
+        selfClosing: false,
+      }
+    }
+  / "^" "{" "}" { return { type: 'acadamarkParseError', subtype: 'empty-shortcut', source: text() } }
+  / "^" "{" BraceContentItem* { return { type: 'acadamarkParseError', subtype: 'unterminated-shortcut', source: text() } }
+
+SubscriptShortcut
+  = "_" "{" content:BraceContentItem+ "}" {
+      return {
+        type: 'acadamarkTag', form: 'shortcut', tagname: 'sub',
+        contentHandler: 'default',
+        content: processContentItems(content),
+        isOpaqueContent: false,
+        positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [],
+        selfClosing: false,
+      }
+    }
+  / "_" "{" "}" { return { type: 'acadamarkParseError', subtype: 'empty-shortcut', source: text() } }
+  / "_" "{" BraceContentItem* { return { type: 'acadamarkParseError', subtype: 'unterminated-shortcut', source: text() } }
+
+// BraceContentItem: content rule for the interior of ^{...} and _{...}.
+//
+// Mirrors ContentItem's escape structure but stops at } (brace closer) and
+// > (named-tag closer) rather than at > alone. Recursive: calls
+// SuperscriptShortcut / SubscriptShortcut for nested shortcuts.
+
+BraceContentItem
+  = "\\" c:[<|\\^_{}]                  { return c }
+  / "\\" c:[!-/:-=?@\[\\\]`|~]        { return "\\" + c }
+  / "\\" c:[^\n>}]                     { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } }
+  / "\\"                               { return { type: 'acadamarkParseError', subtype: 'unknown-escape-sequence', source: "\\" } }
+  / SuperscriptShortcut
+  / SubscriptShortcut
+  / $("<" [a-zA-Z#$`/] ContentChar* ">")
+  / $[^>}\\]
 
 // ─── Attribute rules ────────────────────────────────────────────────────────
 //

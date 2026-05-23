@@ -677,4 +677,148 @@ console.log('\nAll escape-rules opaque-region grammar tests passed.')
 
 console.log('\nAll multi-line grammar tests passed.')
 
+// ─── G1a: Inline shortcut rules — ^{...} → sup, _{...} → sub ────────────────
+
+{
+  // Simple superscript inside named-tag content.
+  const n = p('<aside | 1^{st}>')
+  // The outer aside node's content is a mixed array (text + sup node).
+  assert.ok(Array.isArray(n.content), 'content is array (mixed)')
+  const items = n.content
+  const supNode = items.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sup')
+  assert.ok(supNode, 'sup node present')
+  assert.equal(supNode.form, 'shortcut', 'form is shortcut')
+  assert.equal(supNode.contentHandler, 'default', 'contentHandler: default')
+  assert.equal(supNode.isOpaqueContent, false, 'isOpaqueContent: false')
+  assert.equal(supNode.content, 'st', 'sup content is "st"')
+  assert.deepEqual(supNode.positional, [])
+  assert.deepEqual(supNode.atRefs, [])
+  console.log('PASS grammar G1a-1: simple ^{st} → sup node')
+}
+
+{
+  // Simple subscript inside named-tag content.
+  const n = p('<aside | H_{2}O>')
+  assert.ok(Array.isArray(n.content), 'content is array')
+  const subNode = n.content.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sub')
+  assert.ok(subNode, 'sub node present')
+  assert.equal(subNode.form, 'shortcut')
+  assert.equal(subNode.contentHandler, 'default', 'contentHandler: default')
+  assert.equal(subNode.content, '2', 'sub content is "2"')
+  console.log('PASS grammar G1a-2: simple _{2} → sub node')
+}
+
+{
+  // Bare ^ (no {) is literal text — NOT an error, NOT a sup.
+  const n = p('<aside | a^b>')
+  assert.equal(typeof n.content, 'string', 'content is plain string — no mixed items')
+  assert.ok(n.content.includes('^'), 'content contains ^')
+  assert.ok(!n.content.includes('{'), 'content has no { brace')
+  console.log('PASS grammar G1a-3: bare ^ is literal text (owner\'s decision)')
+}
+
+{
+  // Bare _ (no {) is literal text — snake_case passes through.
+  const n = p('<aside | snake_case>')
+  assert.equal(typeof n.content, 'string', 'content is plain string')
+  assert.ok(n.content.includes('snake_case'), 'content contains snake_case')
+  console.log('PASS grammar G1a-4: bare _ is literal text — snake_case untouched')
+}
+
+{
+  // Nested: superscript containing subscript — x^{y_{1}}.
+  const n = p('<aside | x^{y_{1}}>')
+  assert.ok(Array.isArray(n.content), 'content is array')
+  const supNode = n.content.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sup')
+  assert.ok(supNode, 'outer sup node present')
+  assert.equal(supNode.contentHandler, 'default')
+  // sup content is mixed array: ["y", subNode]
+  const supContent = supNode.content
+  assert.ok(Array.isArray(supContent), 'sup content is mixed array')
+  const subNode = supContent.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sub')
+  assert.ok(subNode, 'nested sub node present')
+  assert.equal(subNode.contentHandler, 'default', 'nested sub has contentHandler: default')
+  assert.equal(subNode.content, '1', 'nested sub content is "1"')
+  console.log('PASS grammar G1a-5: nested x^{y_{1}} → sup containing sub')
+}
+
+{
+  // Nested acadamark construct inside braces: ^{see <cite @jones>}.
+  // At grammar level, <cite @jones> is collected as raw text via the depth-
+  // tracking alternative (same as in ContentItem). remarkRecursiveContent
+  // later parses the cite node from the sup's string content.
+  const n = p('<aside | ^{see <cite @jones>}>')
+  assert.ok(Array.isArray(n.content), 'content is array')
+  const supNode = n.content.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sup')
+  assert.ok(supNode, 'sup node present')
+  // At grammar level, content is the raw source string including the nested construct.
+  assert.equal(typeof supNode.content, 'string', 'sup content is string at grammar level')
+  assert.ok(supNode.content.includes('<cite @jones>'), 'raw nested construct text present in sup content')
+  console.log('PASS grammar G1a-6: nested acadamark construct in brace content (raw text at grammar level)')
+}
+
+{
+  // Escape inside braces: \^ → literal ^.
+  const n = p('<aside | ^{\\^}>')
+  assert.ok(Array.isArray(n.content), 'content is array')
+  const supNode = n.content.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sup')
+  assert.ok(supNode, 'sup node present')
+  assert.equal(supNode.content, '^', 'escaped \\^ inside braces → literal ^')
+  console.log('PASS grammar G1a-7: \\^ inside brace content → literal ^')
+}
+
+{
+  // Escape outside braces: \^ in named-tag content → literal ^.
+  const n = p('<aside | text \\^ more>')
+  assert.equal(typeof n.content, 'string', 'content is plain string')
+  assert.ok(n.content.includes('^'), 'content contains literal ^')
+  assert.ok(!n.content.includes('\\'), 'content has no backslash')
+  console.log('PASS grammar G1a-8: \\^ outside braces in content → literal ^')
+}
+
+{
+  // Error: empty braces ^{} → acadamarkParseError.
+  const n = p('<aside | ^{}>')
+  assert.ok(Array.isArray(n.content), 'content is array')
+  const errNode = n.content.find((it) => it?.type === 'acadamarkParseError')
+  assert.ok(errNode, 'acadamarkParseError present for empty ^{}')
+  assert.equal(errNode.subtype, 'empty-shortcut')
+  assert.equal(errNode.source, '^{}')
+  console.log('PASS grammar G1a-9: ^{} → acadamarkParseError (empty-shortcut)')
+}
+
+{
+  // Error: unterminated ^{abc → acadamarkParseError.
+  const n = p('<aside | ^{abc>')
+  assert.ok(Array.isArray(n.content), 'content is array (has error)')
+  const errNode = n.content.find((it) => it?.type === 'acadamarkParseError')
+  assert.ok(errNode, 'acadamarkParseError present for unterminated ^{abc')
+  assert.equal(errNode.subtype, 'unterminated-shortcut')
+  console.log('PASS grammar G1a-10: ^{abc (unterminated) → acadamarkParseError')
+}
+
+{
+  // Ordinal 1^{st} edition — text + sup + text in content.
+  const n = p('<aside | The 1^{st} edition.>')
+  assert.ok(Array.isArray(n.content), 'content is mixed array')
+  const supNode = n.content.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sup')
+  assert.ok(supNode, 'sup node in ordinal phrase')
+  assert.equal(supNode.content, 'st')
+  console.log('PASS grammar G1a-11: ordinal phrase with ^{st}')
+}
+
+{
+  // Chemistry H_{2}O — text + sub + text.
+  const n = p('<aside | H_{2}O>')
+  assert.ok(Array.isArray(n.content), 'content is mixed array')
+  const subNode = n.content.find((it) => it?.type === 'acadamarkTag' && it.tagname === 'sub')
+  assert.ok(subNode, 'sub node in chemical formula')
+  assert.equal(subNode.content, '2')
+  // Surrounding text segments contain H and O.
+  const textParts = n.content.filter((it) => typeof it === 'string').join('')
+  assert.ok(textParts.includes('H'), 'H present in text parts')
+  assert.ok(textParts.includes('O'), 'O present in text parts')
+  console.log('PASS grammar G1a-12: H_{2}O — chemistry subscript')
+}
+
 console.log('\nAll grammar unit tests passed.')

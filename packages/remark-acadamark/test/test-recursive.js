@@ -255,5 +255,55 @@ function parseTag(src) {
   console.log('PASS RC-14: PG-13 — \\* pass-through escape in named-tag content produces literal * via remark')
 }
 
+// ─── G1a: Inline shortcuts — recursive parsing of brace content ──────────────
+
+// ─── Test RC-15: ^{...} inside named-tag content → recursively parsed ─────────
+{
+  const node = parseTag('<aside | 1^{st} edition.>')
+  assert.ok(Array.isArray(node.content), 'aside content is Node[]')
+  // Find the sup child node within the aside's content.
+  const supNode = node.content.find((n) => n.type === 'acadamarkTag' && n.tagname === 'sup')
+  assert.ok(supNode, 'sup acadamarkTag present in aside content')
+  assert.equal(supNode.contentHandler, 'default')
+  // After recursiveContent, sup.content should be Node[], not a string.
+  assert.ok(Array.isArray(supNode.content), 'sup content is Node[] after recursive parse')
+  // The text "st" should be in a text node.
+  const textNode = supNode.content.find((n) => n.type === 'text')
+  assert.ok(textNode, 'text node inside sup')
+  assert.equal(textNode.value, 'st')
+  console.log('PASS RC-15: ^{st} inside named-tag content → sup with recursively parsed content')
+}
+
+// ─── Test RC-16: nested ^{_{...}} — nested shortcuts recursively parsed ────────
+{
+  const node = parseTag('<aside | x^{y_{1}}>')
+  assert.ok(Array.isArray(node.content), 'aside content is Node[]')
+  const supNode = node.content.find((n) => n.type === 'acadamarkTag' && n.tagname === 'sup')
+  assert.ok(supNode, 'sup node present')
+  assert.ok(Array.isArray(supNode.content), 'sup content is Node[] after recursive parse')
+  // The sub node should be in the sup's content.
+  const subNode = supNode.content.find((n) => n.type === 'acadamarkTag' && n.tagname === 'sub')
+  assert.ok(subNode, 'nested sub node inside sup content')
+  assert.ok(Array.isArray(subNode.content), 'sub content also recursively parsed')
+  const subText = subNode.content.find((n) => n.type === 'text')
+  assert.ok(subText, 'text inside sub')
+  assert.equal(subText.value, '1')
+  console.log('PASS RC-16: nested x^{y_{1}} → sup and sub both recursively parsed')
+}
+
+// ─── Test RC-17: \^ in named-tag content → literal ^, no sup ─────────────────
+{
+  const node = parseTag('<aside | text \\^ more>')
+  assert.equal(node.contentHandler, 'default')
+  assert.ok(Array.isArray(node.content), 'content is Node[]')
+  // Should contain only text nodes (no sup/sub).
+  const hasSup = node.content.some((n) => n.type === 'acadamarkTag' && n.tagname === 'sup')
+  assert.equal(hasSup, false, 'no sup node — \\^ is escaped to literal ^')
+  // The text should contain literal ^.
+  const fullText = node.content.filter((n) => n.type === 'text').map((n) => n.value).join('')
+  assert.ok(fullText.includes('^'), `text contains literal ^ (got: ${JSON.stringify(fullText)})`)
+  console.log('PASS RC-17: \\^ in named-tag content → literal ^, no superscript')
+}
+
 console.log('\nAll recursive-content tests passed.')
-console.log('\n14/14 recursive-content tests passed.')
+console.log('\n17/17 recursive-content tests passed.')

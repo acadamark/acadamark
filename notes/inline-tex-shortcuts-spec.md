@@ -40,7 +40,13 @@ Per the escape rules principle (any character with syntactic meaning can be esca
 
 The escape rules are extended; the principle is unchanged.
 
-The `^` and `_` characters are significant only when followed by `{`. A bare `^` or `_` in prose without a following `{` is a parse error (handled per the escape rules — produces an `acadamarkParseError` node). This matches the existing strict-mode error behavior.
+The `^` and `_` characters are significant only when followed by `{`. A bare
+`^` or `_` in prose without a following `{` is **ordinary literal text** — not
+a parse error, not a shortcut trigger. Only the two-character sequences `^{`
+and `_{` activate a shortcut. `snake_case`, `a^b`, and URLs with underscores
+are all untouched. (This revises an earlier draft that specified bare `^`/`_`
+as a parse error — that was a mistake, especially for `_` which is common in
+prose.)
 
 ## Recursive content
 
@@ -93,7 +99,7 @@ Reasons:
 
 ## Edge cases
 
-**Empty braces.** `^{}` is presumably an error or a no-op. Probably best as a parse error: empty superscript is rarely intentional, and the error is visible in the rendered output.
+**Empty braces.** `^{}` is a parse error: empty superscript is rarely intentional, and the error is visible in the rendered output.
 
 **Unmatched braces.** `^{abc` (missing closing brace) follows the existing pattern for unterminated constructs: the parser produces `acadamarkParseError` and continues. Same defensive-error pattern as other unterminated multi-character constructs.
 
@@ -108,6 +114,23 @@ Reasons:
 The shortcut applies only in prose regions. Inside opaque content (math sigils `<$...$>`, code sigils `` <`...`> ``, DSL tags), the `^` and `_` characters retain their language-specific meaning and are not interpreted by acadamark.
 
 This matches the existing escape-rules behavior: prose has acadamark conventions; opaque regions defer to embedded languages.
+
+## Implementation surfaces
+
+The implementation has two surfaces, because the Peggy grammar only runs on
+`<...>` constructs found by the micromark boundary finder:
+
+- **Grammar `ContentItem` rules (G1a)** — handles `^{...}` and `_{...}`
+  inside named-tag content (`<aside | 1^{st} edition>`). The
+  `SuperscriptShortcut` / `SubscriptShortcut` / `BraceContentItem` rules live
+  in `grammar/acadamark.peggy`.
+- **Micromark tokenizer (G1b)** — handles `^{...}` and `_{...}` in top-level
+  prose (`The 1^{st} edition...`, outside any `<...>` tag). A new tokenizer in
+  `syntax.js` registers for character codes 94 (`^`) and 95 (`_`) and emits
+  `acadamarkTag` nodes with `tagname: 'sup'`/`'sub'`.
+
+Both surfaces produce identical `acadamarkTag` nodes and are processed by the
+same `remarkRecursiveContent` and interpreter pipeline.
 
 ## Implementation considerations
 
