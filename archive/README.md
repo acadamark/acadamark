@@ -52,6 +52,39 @@ Four notes documents were moved here during the 2026-Q2 audit because their cont
 
 - **`text-based-DSLs-2024-05.md`** — Brief reference list of DSL language names with Wikipedia links. Not a spec or design document; no replacement warranted.
 
+## `audit-2026-Q2/` Phase 0 findings
+
+Phase 0 investigation findings from the 2026-Q2 audit and refactor arc (R2–R4, OQ1, NORM, math-coverage, G4, F1, G1). All conclusions have landed in code; retained as the design-rationale record for why the pipeline and normalization pass are shaped as they are.
+
+- **`R2-phase0-findings.md`** — Slice R2 (registry, numbering, ref-resolution, section registration) investigation.
+- **`R3-phase0-findings.md`** — Slice R3 (handler layer, toHast, float/figure/table rendering) investigation.
+- **`R4-phase0-findings.md`** — Slice R4 (notes, math, inline TeX shortcuts) investigation.
+- **`OQ1-phase0-findings.md`** — OQ1 (open questions round 1: config, meta, bibliography placement) investigation.
+- **`NORM-phase0-findings.md`** — NORM slice (normalize-markdown: bare math and bare pipe-table normalization) investigation.
+- **`math-coverage-phase0-findings.md`** — Math coverage investigation (KaTeX, MathJax, rendering surface, font bundling).
+- **`G4-phase0-findings.md`** — G4 (code-block cross-reference registration, PG-6/PG-7) investigation.
+- **`F1-phase0-findings.md`** — F1 (citation key ordering, CSL sort override) investigation.
+- **`G1-phase0-findings.md`** — G1 (inline TeX shortcuts: `^{}` superscript, `_{}` subscript) investigation.
+
+## `investigations-2026-05/`
+
+Spent Phase-0-style investigations whose conclusions have all landed in code or specs. **Note: `font-investigation.md` is the de-facto reference for the font-bundling rationale (font choices, Latin subsetting, base64 embedding approach) until a dedicated spec exists.** A pointer to it has been added to `notes/known-limitations.md`.
+
+- **`citations-investigation.md`** — Citation.js / citeproc-js integration options; CSL style selection.
+- **`cross-ref-investigation.md`** — Cross-reference resolution strategies; label-index design.
+- **`font-investigation.md`** — Font selection, subsetting, and base64-embedding rationale. **De-facto font-bundling spec.**
+- **`hover-preview-investigation.md`** — Post-implementation hover preview record (Tippy.js + Popper.js).
+- **`parser-maturity-investigation.md`** — Parser ecosystem survey (micromark, Peggy, tree-sitter alternatives).
+- **`tables-investigation.md`** — Table DSL options; pipe-table normalization decision.
+- **`theme-investigation.md`** — CSS theming approach; variable naming conventions.
+- **`acadamark_pipeline_runorder_vs_dependency.svg`** — Visual diagram of plugin run-order vs. dependency graph.
+- **`document_elements_sources_display_processing.csv`** — Element-to-processing-strategy mapping table.
+
+## Single archived documents (2026-05)
+
+- **`inline-tex-shortcuts-spec-2026-05.md`** — Spec for the `^{}`/`_{}` superscript/subscript shortcut syntax. The G1 feature is built; this is the spec it was built against.
+- **`feature-test-document-slice3.5.md`** — Slice-3.5-era markdown feature-test catalog. Originally `notes/test.amd` (wrong extension, stale name). Fully superseded by the current test suite.
+
 ---
 
 ## What's *not* in here

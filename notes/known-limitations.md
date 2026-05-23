@@ -81,6 +81,8 @@ KaTeX font URLs are now patched to base64 data URIs by `patchKatexFontUrls()` in
 
 The limitation below was accurate before the font-loader work and is retained for history:
 
+The font-bundling rationale (font choices, Latin subsetting, base64 embedding approach) is documented in `archive/investigations-2026-05/font-investigation.md`.
+
 ---
 
 ## Layer 1 vocabulary
