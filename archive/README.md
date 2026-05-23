@@ -70,6 +70,7 @@ Also contains the Audit 1A scaffolding files (drift-and-gaps, design-questions, 
 - **`1A-drift-and-gaps.md`** — Audit 1A reading-pass drift and gap findings (DRIFT-1–11, GAP-1–7). Open items migrated to `notes/audit-findings.md` (AUD-21–26); items annotated in place before archiving.
 - **`1A-design-questions.md`** — Audit 1A design questions (DQ-1–8). Open items migrated; items annotated in place before archiving.
 - **`1A-fixes-applied.md`** — Audit 1A in-place mechanical fixes (FIX-1: process.md test count; FIX-2: known-limitations.md KaTeX font status).
+- **`AUD-26-interpreter-pipeline-audit.md`** — AUD-26 Phase 0 doc-vs-code audit of `notes/interpreter.md` and `notes/pipeline.md` (2026-05-23). 14 stale divergences, zero `DRIFT?` findings; both docs corrected in a follow-on doc-only slice (no code changed). AUD-26 closed in `notes/audit-findings.md`.
 
 ## `investigations-2026-05/`
 

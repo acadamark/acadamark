@@ -39,10 +39,14 @@ const result = await unified()
 console.log(String(result)); // HTML string
 ```
 
-Internally, `acadamarkInterpreter` registers twelve mdast-transform plugins and
-a custom compiler on the unified processor. The compiler converts the final
-mdast tree to hast using `mdast-util-to-hast` directly (not via `remark-rehype`,
-which is not installed), then formats and serializes the hast to an HTML string.
+Internally, `acadamarkInterpreter` registers thirteen mdast-transform plugins
+and a custom compiler on the unified processor. (It also registers
+`remarkMath` and `remarkGfm` on the outer processor itself, so bare `$x$`
+math and bare GFM pipe tables are tokenized — see §2 for the full plugin
+order and §3.1 for how the same two extensions are added to the inner
+processor.) The compiler converts the final mdast tree to hast using
+`mdast-util-to-hast` directly (not via `remark-rehype`, which is not
+installed), then formats and serializes the hast to an HTML string.
 
 The interpreter does not expose a streaming API or an AST object. Its output
 is always a synchronously-computable HTML string (despite unified's `process`
@@ -72,7 +76,12 @@ format the hast tree for readable indentation; serialize to HTML.
 The plugin registration order in `acadamarkInterpreter` is:
 
 ```
-1.  remarkRecursiveContent      (Phase 2 — content parsing)
+0a. remarkMath                  (parser extension on outer processor)
+0b. remarkGfm                   (parser extension on outer processor)
+    inner processor: remarkParse + remarkAcadamark + remarkMath + remarkGfm
+1.   remarkRecursiveContent     (Phase 2 — content parsing; takes inner processor)
+1.5. acadamarkNormalizeMarkdown (Phase 0 — normalize delegated-parser nodes
+                                 to canonical acadamarkTag nodes)
 2.  acadamarkConfigDiscovery    (Phase 1 — discovery)
 3.  acadamarkArticleStructuring (Phase 2 — structural)
 4.  acadamarkSectionNesting     (Phase 2 — structural)
@@ -87,10 +96,24 @@ The plugin registration order in `acadamarkInterpreter` is:
     compiler: toHast → rehypeFormat → toHtml
 ```
 
-Note that `remarkRecursiveContent` (step 1) runs before `acadamarkConfigDiscovery`
-(step 2). This is correct: config discovery walks an already-flat root tree,
-but must see the parsed content in `<config>` nodes. The content parsing must
-happen first.
+Note that `remarkRecursiveContent` (step 1) runs before
+`acadamarkNormalizeMarkdown` (step 1.5). This is correct: normalization
+rewrites nodes produced by the delegated parsers (`remark-math`,
+`remark-gfm`), and those nodes are produced on *both* the outer surface and
+the inner surface (via the inner processor inside `remarkRecursiveContent`).
+Running normalize after recursive-content ensures every delegated-parser
+node has surfaced before the rewrite walk. Configuration discovery (step 2)
+then runs on a tree whose math and pipe-table nodes are already canonical
+`acadamarkTag` nodes — so it never has to know about two representations.
+
+`remarkMath` and `remarkGfm` (steps 0a / 0b) are parser-level extensions,
+not mdast transforms, and they affect tokenization during the parse pass;
+they're listed here so the wiring is visible in one place. The step-1.5
+numbering for `acadamarkNormalizeMarkdown` matches the inline `1.5.` comment
+in the source ([src/index.js](../packages/acadamark-interpreter/src/index.js))
+and keeps the existing step-2 through step-12 references in this document
+unchanged. All other Phase 0/1/2/3 plugins retain their original step
+numbers as cited throughout §3 below.
 
 ---
 
@@ -108,11 +131,16 @@ syntax. This plugin feeds those strings through an inner parser pipeline
 (`remarkParse` + `remarkAcadamark`) to produce structured mdast arrays. After
 this step, `node.content` is `Node[]` instead of a string.
 
-**Inner processor:** An independent `unified` instance with only the parsing
-plugins (no structural or compile steps). It is created by `acadamarkInterpreter`
-and passed to this plugin via the `{ processor }` option. The inner processor
-does not include `remarkRecursiveContent` itself; recursion into nested tags
-is handled by the plugin's own tree walk.
+**Inner processor:** An independent `unified` instance with the four parsing
+plugins `remarkParse`, `remarkAcadamark`, `remarkMath`, and `remarkGfm` —
+no structural or compile steps. It is created by `acadamarkInterpreter` and
+passed to this plugin via the `{ processor }` option. The inner processor
+does not include `remarkRecursiveContent` itself; recursion into nested
+tags is handled by the plugin's own tree walk. It also does not include
+`acadamarkNormalizeMarkdown` — normalization runs once on the outer tree
+after this plugin has revealed every pipe-content subtree, so
+delegated-parser nodes produced inside pipe content are normalized at the
+same pass as those produced at the top level.
 
 **What it touches:** Only `acadamarkTag` nodes where `contentHandler ===
 'default'`. Nodes where `contentHandler !== 'default'` (opaque content such
@@ -141,6 +169,58 @@ never approach this limit.
 
 **Cross-reference:** `notes/recursive-content-spec.md` for design rationale
 and edge cases.
+
+---
+
+### 3.1.5 acadamarkNormalizeMarkdown
+
+**Source:** `packages/acadamark-interpreter/src/plugins/normalize-markdown.js`
+
+**Purpose:** Rewrite nodes produced by the delegated parsers (`remark-math`
+and `remark-gfm`, registered on both the outer and inner processors) into
+canonical `acadamarkTag` nodes. After this pass every math construct and
+every pipe-table construct in the tree is represented as one node type,
+indistinguishable from the corresponding authored shorthand.
+
+**Mapping:**
+
+| input node type | from | replacement |
+|----------------|------|-------------|
+| `inlineMath`   | `remark-math` | `acadamarkTag { tagname: '$',  isOpaqueContent: true, contentHandler: 'math' }` |
+| `math`         | `remark-math` | `acadamarkTag { tagname: '$$', isOpaqueContent: true, contentHandler: 'math-display' }` |
+| `table`        | `remark-gfm`  | `acadamarkTag { tagname: 'table', positional: ['md'], isOpaqueContent: true, contentHandler: 'table' }` |
+
+**GFM table serialization:** Tables produced by `remark-gfm` are structured
+mdast subtrees (`tableRow` → `tableCell` → inline children). The
+normalization pass serializes them back to a GFM pipe-table string via
+`gfmTableToPipeString()` and stores that string in the canonical node's
+opaque `content` field, so the table handler's existing `parseMd` path
+re-parses it the same way it would for an authored `<table md | ...>` tag.
+Cells containing inline markup (emphasis, links, inline math) flatten to
+plain text and a `file.message()` warning is emitted; cells with plain text
+only are lossless. Authors who need rich-content cells should write
+`<table md | ...>` directly.
+
+**Drift guards at module load:** The normalize module asserts at load time
+that `getContentHandler('$')`, `getContentHandler('$$')`, and
+`getContentHandler('table')` return the expected handler strings
+(`'math'`, `'math-display'`, `'table'`). If `dsl-registry.js` changes,
+loading throws a clear error rather than producing silently wrong canonical
+nodes.
+
+**Pipeline position:** Step 1.5 — after `remarkRecursiveContent` (both outer
+and inner parses have completed and all delegated-parser nodes are present)
+and before `acadamarkConfigDiscovery` (no structural plugin ever sees an
+`inlineMath` / `math` / `table` node).
+
+**Tree walk:** Uses `walkNormalize()` from `lib/walk-normalize.js` — a
+pre-order DFS that replaces matching nodes in place (the whole `table`
+subtree is replaced before its inline children are visited, so cell
+contents are read directly off the original `remark-gfm` nodes during
+serialization).
+
+**Cross-reference:** AUD-20 in `notes/audit-findings.md` for the Option-A
+decision rationale; `notes/pipeline.md` §4.0 for the pipeline-level view.
 
 ---
 
@@ -357,11 +437,13 @@ nodes) and mdast `.children` arrays.
 
 **Source:** `packages/acadamark-interpreter/src/plugins/numbering.js`
 
-**Purpose:** Register `$$` (display-math), `figure`, and `table` nodes with the
-registry, and register `section`, `sub-section`, and `sub-sub-section` nodes for
-cross-reference lookup. Stores `{ node, entry }` pairs for numbered elements in
-`file.data.acadamarkNumberingPending`. Display numbers are assigned by
-`acadamarkApplyNumbers` (step 8) after `numberRegistry()` runs.
+**Purpose:** Register `$$` (display-math), `figure`, and `table` nodes with
+the registry; register `section`, `sub-section`, and `sub-sub-section` nodes
+for cross-reference lookup; and register code-block sigil nodes (tagname
+`` ``` ``) for cross-reference lookup. Stores `{ node, entry }` pairs for
+numbered elements in `file.data.acadamarkNumberingPending`. Display numbers
+are assigned by `acadamarkApplyNumbers` (step 8) after `numberRegistry()`
+runs.
 
 **Numbered types and registry keys:**
 
@@ -375,6 +457,18 @@ cross-reference lookup. Stores `{ node, entry }` pairs for numbered elements in
 `sub-sub-section` nodes are registered with `numbered: false`. This makes them
 findable by label via `registry.findByLabel()` for cross-references (e.g.,
 `<ref @sec:intro>`), without assigning sequential numbers.
+
+**Code-block sigil registration (G4 / AUD-09 closure):** `` ``` `` nodes
+are registered under registry type `code` with `numbered: false`. A
+colon-label id (e.g. `<``` python #code:newton | ... ```>`) lands in the
+label index, so `<ref @code:newton>` resolves via the same
+`registry.findByLabel()` path that sections use. Plain fenced code blocks
+written without a shorthand wrapper are mdast `code` nodes with no
+shorthand wrapper and no accessible id, so they remain non-referenceable —
+this is a deliberate, reversible choice (see AUD-09 entry in
+`notes/audit-findings.md`). Switching to numbered listings later requires
+flipping `numbered: false` to `numbered: true` here, adding `'code'` to
+`NUMBERED_TAGNAMES`, and adding a `CONFIG_KEY` entry for `'code'`.
 
 **Decision priority (most specific wins):**
 
@@ -467,8 +561,11 @@ the entry's number:
 | Unnumbered target | label-tail of id (e.g., `"newton"` from `eqn:newton`) |
 
 Built-in prefixes: `eqn` → `equation`, `fig` → `figure`, `note` → `note`,
-`tab` → `table`, `sec` → `section`, `thm` → `theorem`, `lem` → `lemma`,
-`def` → `definition`, `ex` → `example`.
+`tab` → `table`, `sec` → `section`, `code` → `listing`, `thm` → `theorem`,
+`lem` → `lemma`, `def` → `definition`, `ex` → `example`.
+
+`code` → `listing` is the G4 addition paired with the code-block sigil
+registration in §3.7; see AUD-09 closure in `notes/audit-findings.md`.
 
 Config key `ref-prefix-{prefix}` overrides a prefix word per-document.
 
@@ -619,8 +716,10 @@ the tree. `allowDangerousHtml: true` is required for raw HTML passthrough
 
 ### 4.2 Asset injection
 
-After `toHast` produces the hast tree, CSS and JS assets are conditionally
-injected. See section 7 for details.
+After `toHast` produces the hast tree, the compiler prepends a document-fonts
+`<style>` element unconditionally, then conditionally prepends KaTeX CSS
+(when math is present) and hover-preview JS+CSS (when notes, refs, or cites
+are present). See section 10 for details.
 
 ### 4.3 Formatting and serialization
 
@@ -999,8 +1098,31 @@ Plugins communicate via `file.data`. Fields set during a pipeline run:
 
 ## 10. Asset injection
 
-Asset injection happens post-hast, pre-serialize, inside the compiler. Three
-categories of assets are managed:
+Asset injection happens post-hast, pre-serialize, inside the compiler. Four
+categories of assets are managed: document fonts (always), KaTeX CSS
+(conditional on math), hover-preview JS+CSS (conditional on notes/refs/cites),
+and lazy-loading machinery shared by the conditional categories.
+
+### 10.0 Document fonts (always injected)
+
+**Injected when:** unconditionally, on every rendered document.
+
+A `<style>` element produced by `getDocumentFontsCss()`
+(`src/assets/font-loader.js`) is prepended to `hast.children` at the start
+of the compile step. The block contains base64-embedded `@font-face`
+declarations for Inter (body and headings) and Source Code Pro (monospace),
+Latin-subsetted. Embedding the font data inline makes documents render with
+the intended typography from `file://` URLs and in environments without
+those fonts installed (e.g. WSL/Linux).
+
+This is the AUD-16 fix; before it, fixture rendering had the fonts wired in
+via the render-fixtures shell but external consumers of the package
+silently fell back to the system font stack. See `notes/pipeline.md` §12.3
+for the same description from the pipeline-stage perspective.
+
+The font assets are read from disk and cached on first call; subsequent
+documents reuse the cached string, same as the conditional asset categories
+below.
 
 ### 10.1 KaTeX CSS
 
@@ -1168,12 +1290,17 @@ To add a new plugin-created internal node type (no vocabulary entry):
 
 ## 14. Source file map
 
+Files reachable from `acadamarkInterpreter` at runtime. Test-only files
+(e.g. `schema/shape-tokens.js`, `schema/validate.js`) are omitted; they
+exist in the source tree but are not on the pipeline's call graph.
+
 ```
 packages/acadamark-interpreter/
   src/
     index.js                      Main entry; acadamarkInterpreter plugin
     interpret-plugin.js           acadamarkTag handler; dispatch logic; registries
     plugins/
+      normalize-markdown.js       acadamarkNormalizeMarkdown (step 1.5)
       config-discovery.js         acadamarkConfigDiscovery
       article-structuring.js      acadamarkArticleStructuring
       section-nesting.js          acadamarkSectionNesting
@@ -1201,6 +1328,7 @@ packages/acadamark-interpreter/
       bool-kwarg.js               readBoolKwarg()
       discover.js                 discover() — shared read-only pre-order DFS walker
       walk-replace.js             walkReplace() — shared in-place node replacement walker
+      walk-normalize.js           walkNormalize() — pre-order DFS used by normalize-markdown
       errors.js                   warnUnknownTag(), warnHandlerError(), ...
     assets/
       font-loader.js              patchKatexFontUrls(); getDocumentFontsCss()

@@ -769,4 +769,17 @@ hidden inside a confident-looking document. A future slice will read
 `interpreter.md` section-by-section against the source code and correct any
 drift.
 
-**Status: Open.** Filed; doc-vs-code audit is a future slice.
+**Status: Resolved (2026-05-23).** Phase 0 audit walked `notes/interpreter.md`
+and `notes/pipeline.md` claim-by-claim against the implemented interpreter and
+found 14 stale divergences (8 in interpreter.md, 6 in pipeline.md) and **zero
+`DRIFT?` findings** — the interpreter is internally consistent; the docs simply
+lagged the G3 math/table-normalization arc and the G4 code-block-registration
+slice. Recurring omissions: `acadamarkNormalizeMarkdown` (step 1.5), the
+`remarkMath`/`remarkGfm` registration on both outer and inner processors, the
+code-block sigil visitor in `numbering.js`, and `code → listing` in
+`DEFAULT_PREFIXES`. One cross-doc contradiction (interpreter.md §10 omitted
+the unconditional `getDocumentFontsCss()` `<style>` injection that
+pipeline.md §12.3 documented correctly) was resolved in favour of pipeline.md
+(which matched the code). Both docs corrected in a single doc-only slice; no
+code changed. Phase 0 audit report archived at
+`archive/audit-2026-Q2/AUD-26-interpreter-pipeline-audit.md`. AUD-26 closed.

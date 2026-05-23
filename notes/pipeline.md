@@ -22,10 +22,10 @@ source text
     │  remarkRecursiveContent
     │
     ▼  Stage 3: mdast transforms (12 plugins)
-    │  config discovery → article structure → section nesting →
-    │  citation index → notes → numbering → apply numbers →
-    │  ref resolution → cite resolution → note placement →
-    │  bibliography
+    │  normalize markdown → config discovery → article structure →
+    │  section nesting → citation index → notes → numbering →
+    │  apply numbers → ref resolution → cite resolution →
+    │  note placement → bibliography
     │
     ▼  Stage 4: mdast → hast
     │  toHast() with acadamarkTag custom handler
@@ -50,6 +50,17 @@ const result = await unified()
   .use(acadamarkInterpreter, options)
   .process(source);
 ```
+
+**Delegated parser extensions auto-registered by the interpreter.**
+`acadamarkInterpreter` also calls `this.use(remarkMath)` and
+`this.use(remarkGfm)` on the outer processor (and includes both in the inner
+processor passed to `remarkRecursiveContent`). This lets the parser tokenize
+bare `$x$` / `$$x$$` math and bare GFM pipe tables anywhere in the source —
+both at the top level and inside named-tag content. The resulting
+`inlineMath` / `math` / `table` nodes are then rewritten to canonical
+`acadamarkTag` nodes by `acadamarkNormalizeMarkdown` (Stage 3's first
+plugin), so the rest of the pipeline only sees one node type. See AUD-20 in
+`notes/audit-findings.md` for the Option-A normalization decision.
 
 ---
 
@@ -112,9 +123,13 @@ this step, `node.content` is a proper array of mdast nodes (possibly containing
 nested `acadamarkTag` nodes).
 
 **Inner processor:** Created by `acadamarkInterpreter` and passed as the
-`{ processor }` option. It runs the same parser plugins as the outer processor
-but does NOT include `remarkRecursiveContent` (this plugin) or any structural
-plugins. Recursion into nested tags is handled by the plugin's own tree walk.
+`{ processor }` option. It runs the same four parser plugins as the outer
+processor — `remarkParse`, `remarkAcadamark`, `remarkMath`, `remarkGfm` —
+but does NOT include `remarkRecursiveContent` (this plugin), the
+normalization pass, or any structural plugins. Recursion into nested tags
+is handled by the plugin's own tree walk. (The structural plugins all run
+on the outer tree, after normalization has rewritten any delegated-parser
+nodes produced on either surface.)
 
 **Paragraph unwrapping:** Pipe text that resolves to a single paragraph (the
 common case for prose content) is unwrapped to its inline children. This means
@@ -135,6 +150,46 @@ including the mixed-content (escape-errors) path.
 Twelve plugins run in sequence, transforming the mdast tree. They are registered
 on the unified processor in this order and run as unified transforms during
 the `processor.run()` step.
+
+### Phase 0 — Normalization
+
+#### 4.0 acadamarkNormalizeMarkdown
+
+**When:** First in Stage 3, immediately after `remarkRecursiveContent`. By
+this point both the outer `remarkParse` run and the inner `remarkParse` run
+(inside `remarkRecursiveContent`) have completed, so all delegated-parser
+nodes (`inlineMath`, `math`, `table`) are present in the tree on both
+surfaces.
+
+**What it does:** Walks the tree and rewrites delegated-parser nodes to
+canonical `acadamarkTag` nodes so that downstream structural and semantic
+plugins see exactly one node type. Settled principle: *delegate the lexer,
+own the node identity*.
+
+| input node type | from | replacement |
+|----------------|------|-------------|
+| `inlineMath`   | `remark-math` | `acadamarkTag { tagname: '$',  isOpaqueContent: true,  contentHandler: 'math' }` |
+| `math`         | `remark-math` | `acadamarkTag { tagname: '$$', isOpaqueContent: true,  contentHandler: 'math-display' }` |
+| `table`        | `remark-gfm`  | `acadamarkTag { tagname: 'table', positional: ['md'], isOpaqueContent: true, contentHandler: 'table' }` |
+
+For GFM tables, the structured `tableRow`/`tableCell` subtree is serialized
+back to a GFM pipe-table string by `gfmTableToPipeString()` so the canonical
+node is byte-identical (modulo whitespace) to what an authored `<table md |
+...>` tag would carry. Inline markup inside cells (emphasis, links, inline
+math) flattens to plain text and produces a `file.message()` warning —
+authors who need rich cell content should write `<table md | ...>` directly.
+
+**Dependencies:** `remarkRecursiveContent` (both outer and inner parses must
+have completed).
+
+**Must precede:** every structural plugin (Phase 1 onwards) — they all
+assume one node type.
+
+**Cross-reference:** AUD-20 in `notes/audit-findings.md` for the Option-A
+decision; `packages/acadamark-interpreter/src/plugins/normalize-markdown.js`
+for the implementation.
+
+---
 
 ### Phase 1 — Discovery
 
@@ -260,12 +315,28 @@ Sequential numbers are assigned in `acadamarkApplyNumbers` (step 4.6.5).
 #### 4.6 acadamarkNumbering
 
 **What it does:** Registers `$$` (display-math), `figure`, and `table` nodes
-with the registry (record-only), and registers `section`, `sub-section`, and
-`sub-sub-section` nodes for cross-reference lookup. Stores `{ node, entry }`
-pairs for numbered elements in `file.data.acadamarkNumberingPending`.
+with the registry (record-only); registers `section`, `sub-section`, and
+`sub-sub-section` nodes for cross-reference lookup; and registers code-block
+sigil nodes (tagname `` ``` ``) under registry type `code` for cross-reference
+lookup. Stores `{ node, entry }` pairs for numbered elements in
+`file.data.acadamarkNumberingPending`.
+
+**Registered types:**
+
+| visitor tagname | registry type | numbered? | purpose |
+|-----------------|---------------|-----------|---------|
+| `$$`            | `equation`    | yes (config-overridable) | sequential equation numbering |
+| `figure`        | `figure`      | yes (config-overridable) | sequential figure numbering |
+| `table`         | `table`       | yes (config-overridable) | sequential table numbering |
+| `section`, `sub-section`, `sub-sub-section` | `section` | no | label-index entry for `<ref @sec:...>` (AUD-09) |
+| `` ``` ``       | `code`        | no | label-index entry for `<ref @code:...>` (G4 / AUD-09) |
+
+Section and code-block entries are `numbered: false` — they land in the
+registry's label index (when their `id` contains `:`) so `findByLabel()` can
+resolve them, but they do not get a sequential display number.
 
 **Output:** `file.data.acadamarkNumberingPending`; registry entries for numbered
-elements (numbers not yet assigned); `node.registryType` set on each node.
+elements (numbers not yet assigned); `node.registryType` set on each numbered node.
 
 **Dependencies:** `acadamarkNotes` (notes claim their registry slots first, so
 note numbers are allocated before equation/figure/table numbers — convention,
@@ -456,7 +527,8 @@ to have run before it.
 | Plugin | Must run after | Produces |
 |--------|---------------|---------|
 | `remarkRecursiveContent` | `remarkAcadamark` (string content set) | `node.content` as `Node[]` |
-| `acadamarkConfigDiscovery` | `remarkRecursiveContent` | `file.data.acadamarkConfig` |
+| `acadamarkNormalizeMarkdown` | `remarkRecursiveContent` (both outer and inner parses complete) | delegated-parser nodes (`inlineMath`, `math`, `table`) rewritten to canonical `acadamarkTag` nodes |
+| `acadamarkConfigDiscovery` | `acadamarkNormalizeMarkdown` | `file.data.acadamarkConfig` |
 | `acadamarkArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `acadamarkSectionNesting` | `acadamarkArticleStructuring` | nested section tree |
 | `buildCitationIndex` | `acadamarkArticleStructuring`, `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
@@ -476,6 +548,11 @@ to have run before it.
 - `remarkRecursiveContent` must precede all structural plugins. Structural
   plugins read node content (e.g., `<meta>` internals, note content) as parsed
   mdast arrays; they cannot work with raw strings.
+- `acadamarkNormalizeMarkdown` must precede every Phase 1+ plugin. After
+  normalization, the structural and semantic plugins only ever see
+  `acadamarkTag` nodes — never raw `inlineMath`, `math`, or GFM `table` nodes.
+  Running any structural plugin first would mean some code paths see two node
+  representations for the same construct.
 - `acadamarkApplyNumbers` must precede `acadamarkRefResolution`. Cross-references
   look up by label; labels are only in the registry after `numberRegistry()` has
   assigned numbers and `fillNumbering` has written them to nodes.
@@ -677,6 +754,15 @@ Here is some text.<note | This is an endnote.> More text.
 **Stage 3 — acadamarkApplyNumbers:**
 - `registry.numberRegistry()` → `entry.number = 1`
 - `fillNumbering(file)` → (no-op for notes; `acadamarkNumberingPending` has equations/figures/tables)
+
+**Stage 3 — acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution:**
+- The `<note>` node is still in the tree at its authored position, so any
+  `<ref>` or `<cite>` tags inside `node.content` are resolved here in
+  document order — by the time `acadamarkNotePlacement` runs, the note's
+  content array contains `__ref-marker` / `__cite-marker` nodes rather than
+  raw `<ref>` / `<cite>` tags. (This single-note example has no inner
+  refs/cites, so these steps are no-ops, but they are the reason
+  `acadamarkNotePlacement` runs as late as step 4.9.)
 
 **Stage 3 — acadamarkNotePlacement:**
 - Splices `<note>` → `__note-marker { noteId: 'note-1', number: 1, refId: 'noteref-1' }`
