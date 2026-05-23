@@ -49,10 +49,9 @@ LAYER 1   ✔ @/# SIGIL SEMANTICS (F1, commit c86da33)
             interpreter.md, pipeline.md, BUILD.md, interpreter-design.md,
             hover-previews-deferred.md all brought current
 
-LAYER 2   OQ-1 ───────────────▶ DF-22, DF-20   (math/gfm idioms)
-(gated)   OQ-2 ───────────────▶ DF-19          (render-mode lowering)
-          DF-1 ⟺ PG-12         (one slice — escape rules are part
-                                of the inline-TeX feature)
+LAYER 2   ✔ G1 — INLINE TEX SHORTCUTS (G1a b6304a3 + G1b 99aaa0b)
+          OQ-1 ────────────────► DF-22, DF-20   (math/gfm idioms)
+          OQ-2 ────────────────► DF-19          (render-mode lowering)
           cross-ref registration: AUD-09 / PG-6 / PG-7
                                 (adjacent to Layer 1 — same subsystem,
                                  NOT blocked by it; can ride along or follow)
@@ -136,16 +135,30 @@ DF-7 in `specified-not-implemented.md` is marked adopted-as-F1.
 These are blocked by a decision or a Layer 1 item. They cannot meaningfully
 start until the gate clears.
 
-### G1 — Inline TeX shortcuts  *(DF-1, with PG-12)* **[verified]**
+### ~~G1 — Inline TeX shortcuts  *(DF-1, with PG-12)*~~ **[IMPLEMENTED]**
 
-`^{…}` → `<sup>`, `_{…}` → `<sub>`. **DF-1 and PG-12 are one slice** — PG-12
-(escape behavior of `^ _ { }`) is *part of* the inline-TeX feature, not separate;
-the inventory says so directly ("depends on inline-TeX shortcuts feature"). The
-spec (`inline-tex-shortcuts-spec.md`) is decision-complete. `<sup>`/`<sub>` vocab
-entries already exist with `interpreter_strategy: schema`, so the moment the
-parser emits them they render — **the gap is parser-only.** Not blocked by F1;
-listed in Layer 2 only because of the internal DF-1/PG-12 coupling. A clean
-bounded slice; good "real feature" candidate.
+**Status:** Complete. G1a (`b6304a3`) added the grammar surface; G1b (`99aaa0b`)
+added the top-level-prose surface. DF-1 and PG-12 are both resolved.
+
+**Two implementation surfaces.** The grammar (Peggy) only runs on `<...>`
+constructs; top-level prose requires a micromark tokenizer. G1a added
+`SuperscriptShortcut` / `SubscriptShortcut` / `BraceContentItem` grammar rules
+(covering shortcuts inside named-tag and hash-sigil content); G1b added
+`tokenizeShortcutTag` in `syntax.js` + `buildShortcutNode` in `from-markdown.js`
+covering top-level prose. Both surfaces emit identical `acadamarkTag` nodes
+(form `shortcut`, tagname `sup`/`sub`, `contentHandler 'default'`). Phase 0
+found the two-surface requirement; the original spec had missed it.
+
+**Settled design (revised from the original spec):** bare `^` or `_` not
+immediately followed by `{` are **ordinary literal text** — not a parse error.
+`snake_case`, `a^b`, URLs containing those characters are untouched. Only `^{`
+and `_{` trigger a shortcut. `^{}` (empty) and `^{abc` (unmatched) are parse
+errors.
+
+**Slice-sizing note:** G1 overflowed one GHC output turn and was split into G1a
++ G1b along the two-surfaces seam. When a slice will touch many files or produce
+a lot of output, split it *before* running — the natural split is usually a real
+architectural boundary.
 
 ### G2 — Render-mode lowering  *(DF-19, gated by OQ-2)* **[verified]**
 
@@ -260,12 +273,10 @@ actively wanted. Not on the active roadmap.
 
 Dependency-respecting; within a layer, order is free:
 
-**Done:** ~~1. PG-13 verify~~ ✔ · ~~2. F2 doc-staleness sweep~~ ✔ · ~~3. F1 `@`/`#` sigil semantics~~ ✔
+**Done:** ~~1. PG-13 verify~~ ✔ · ~~2. F2 doc-staleness sweep~~ ✔ · ~~3. F1 `@`/`#` sigil semantics~~ ✔ · ~~4. G1 inline TeX shortcuts (DF-1+PG-12)~~ ✔
 
 **Next:**
 
-4. **G1 inline TeX** (DF-1+PG-12) — the bounded “real feature.” Spec is
-   decision-complete; parser-only gap; `<sup>`/`<sub>` vocab already exists.
 5. **Decisions: OQ-1 and OQ-2** — short design notes that unblock G2 and G3.
    Either order; neither blocks the other.
 6. **Layer 3 leaves** — any time, by appetite; the `<ref>`-attributes slice

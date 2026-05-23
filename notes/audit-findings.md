@@ -492,6 +492,14 @@ Fix path: have the integration test import and use the real pipeline
 assembly from `index.js` rather than rebuilding it. Deferred — not in
 R3a scope.
 
+**Recurrence record:** The manual mirror has been paid four times:
+- R3a (2026-05) — `fillNotes` import, first surfacing.
+- R3b (2026-05) — pipeline reordering update.
+- R4 (2026-05) — `buildCitationIndex` stage change.
+- G1b (2026-05) — `document-10-shortcuts.acm` integration block added by hand.
+
+Each occurrence strengthens the case for the recommended fix.
+
 Severity: Medium — a maintenance hazard, not a current bug.
 
 ---
@@ -514,5 +522,31 @@ unaffected — no visible `<data>` content appears in any fixture. Whether
 cleanup step) has not been decided.
 
 **Deferred to:** Future cleanup slice or a follow-on indexInputs consolidation.
+
+**Status: Open.**
+
+---
+
+## AUD-19: Double KaTeX CSS injection in math documents
+
+**Found during:** Post-G1 review of rendered documents (2026-05).
+
+**Description:**
+Documents containing math (e.g. `document-5`, `document-6`) carry the KaTeX
+stylesheet **twice** — a small block (~12 KB) and the full block (~370 KB),
+as two separate `<style>` elements. Math-free documents (`document-7`,
+`document-8`) have the stylesheet once. Effect: ~370 KB wasted per math
+document; `document-5`/`document-6` render at ~710–737 KB vs ~336 KB for
+math-free equivalents.
+
+The bug does not affect appearance (the same CSS twice renders identically)
+but is a real asset-injection defect, the same class as the old AUD-16
+font-wiring gap.
+
+**Fix path:** In the asset-injection path in `src/index.js`, identify where
+KaTeX CSS is injected and guard against double-injection (e.g. check whether
+a KaTeX `<style>` block is already present before appending another).
+
+**Severity:** Medium — wasted ~370 KB per math document; no rendering impact.
 
 **Status: Open.**

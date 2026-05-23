@@ -18,8 +18,8 @@ in separate sections at the end).
 
 | Category | Count |
 |---|---|
-| Deferred features (whole capabilities, unbuilt) | 21 |
-| Partial gaps (feature mostly built, one clause missing) | 12 |
+| Deferred features (whole capabilities, unbuilt) | 20 |
+| Partial gaps (feature mostly built, one clause missing) | 11 |
 | Doc-staleness findings | 0 (all resolved, F2 2026-06) |
 | Open questions flagged in specs (not yet decided) | 2 |
 
@@ -35,24 +35,13 @@ implementation.
 
 ---
 
-### DF-1: Inline TeX shortcuts (`^{...}` and `_{...}`)
+### ~~DF-1: Inline TeX shortcuts (`^{...}` and `_{...}`)~~ — ADOPTED AS G1
 
-**Spec:** `notes/inline-tex-shortcuts-spec.md`  
-**Code checked:** Full grep of `remark-acadamark/src/` and `acadamark-interpreter/src/` for `superscript`, `subscript`, `caret`, `underscore`. No matches.  
-**AUD status:** Untracked.
+**Adopted and implemented (G1, commits `b6304a3` G1a and `99aaa0b` G1b).** `^{...}` → `<sup>`, `_{...}` → `<sub>`. Brace content is recursively parsed by `remarkRecursiveContent`. The feature has **two implementation surfaces**: G1a added `SuperscriptShortcut` / `SubscriptShortcut` / `BraceContentItem` rules to the Peggy grammar (covering shortcuts inside named-tag and hash-sigil content); G1b added a micromark tokenizer (`tokenizeShortcutTag` in `syntax.js` + `buildShortcutNode` in `from-markdown.js`) covering top-level prose.
 
-The spec is decision-complete: `^{...}` → `<sup>`, `_{...}` → `<sub>`. Content
-between braces is recursively parsed. `^` and `_` are significant only when
-immediately followed by `{`; bare `^`/`_` without `{` are a parse error. Single-
-character shorthand (`x^2` without braces) is explicitly not supported.
+**The implemented rule (revised from the original spec):** bare `^` or `_` not immediately followed by `{` are **ordinary literal text** — not a parse error. `snake_case`, `a^b`, URLs containing `^` or `_` are untouched. Only `^{` and `_{` trigger a shortcut. This revision was made during G1 Phase 0 investigation. The `notes/inline-tex-shortcuts-spec.md` Status section is updated to reflect this.
 
-Note from `notes/shape-tokens.md`: "When math sigils and inline-TeX shortcuts are
-implemented, they also belong to `inline`." Confirms unimplemented status.
-
-The `<sup>` and `<sub>` vocabulary elements are fully specified (`sup.md`,
-`sub.md`) and their `interpreter_strategy: schema` means they would work via the
-schema-driven handler the moment the parser emits them. The gap is in the parser
-only.
+**Superseded inventory id:** DF-1.
 
 ---
 
@@ -503,20 +492,14 @@ after `>` is `code !== null` and not a line ending, so `nok` is called.
 
 ---
 
-### PG-12: Escape sequences for `^`, `_`, `{`, `}` not yet decided
+### ~~PG-12: Escape sequences for `^`, `_`, `{`, `}` not yet decided~~ — CLOSED
 
-**What works:** Acadamark-significant escapes (`\<`, `\|`, `\\`) and ASCII
-punctuation pass-through escapes (`\[`, `\*`, etc.) are implemented.  
-**What's missing:** The behavior of `\^`, `\_`, `\{`, `\}` is explicitly marked
-"not yet decided" in the spec — they currently match the pass-through rule (stored
-as `\^` etc. for remark to handle), but this will need revision when inline-TeX
-shortcuts (DF-1) are implemented.  
-**Spec:** `notes/escape-rules-spec.md` — final section notes these four characters
-as "not yet decided; depends on inline-TeX shortcuts feature."  
-**Code checked:** `packages/remark-acadamark/grammar/acadamark.peggy`
-`ContentItem` rule — `^`, `_`, `{`, `}` fall into the pass-through branch
-(`[!-/:-=?@\[\\\]^_`{-~]`) and are emitted as `\X`.  
-**AUD status:** Untracked.
+**Resolved as part of G1 (commit `b6304a3`).** When G1a implemented inline-TeX
+shortcuts in the Peggy grammar, the four characters `^`, `_`, `{`, `}` were
+moved into the acadamark-consumed escape class. `\^` produces a literal `^`
+(not a superscript trigger); `\_` produces a literal `_`; `\{` and `\}` are
+literal braces. The escape-rules spec (`notes/escape-rules-spec.md`) "not yet
+decided" note is superseded by the G1 implementation.
 
 ---
 

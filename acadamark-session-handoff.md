@@ -1,10 +1,10 @@
 # acadamark — session handoff
 
 **Written:** 2026-05-22, at the end of the pipeline-refactor session.
-**Updated:** 2026-05-22, after PG-13, RC-12, F2, and F1 landed.
-**Purpose:** Orient the next session. The pipeline refactor (R1–R4) is
-complete, and the first four items of the forward roadmap are also done.
-This document records where things stand and the forward backlog.
+**Updated:** 2026-05-22, after PG-13, RC-12, F2, F1, and G1 (inline TeX shortcuts) landed.
+**Purpose:** Orient the next session. The pipeline refactor (R1–R4) and the first
+Layer 2 feature (G1) are complete. This document records where things stand,
+the working method, and the forward backlog.
 
 ---
 
@@ -21,7 +21,7 @@ Additionally, four more slices have landed since the R4 handoff.
 | R3b | New `src/lib/walk-replace.js` — the replacing counterpart to `discover()`; the three hand-rolled `walkAndReplace`/`walkAndSplice` copies collapsed into it | `f8743c5` |
 | R4 | `libraryLoad` reclassified as an explicit index-build (`buildCitationIndex`); data strand is now index-then-resolve | `7fe5303` |
 
-**Since R4:** Layer 0 and Layer 1 of the roadmap are now complete.
+**Since R4:** Layer 0, Layer 1, and the first Layer 2 item (G1) are now complete.
 
 | Slice | What it did | Commit |
 |-------|-------------|--------|
@@ -29,13 +29,25 @@ Additionally, four more slices have landed since the R4 handoff.
 | RC-12 repair | Fixed a pre-existing fixture-typo failure in `test-recursive.js` that had been aborting the parser test runner before later tests ran | `fb3479f` |
 | F2 | Doc-staleness sweep: `interpreter.md`, `pipeline.md`, `BUILD.md`, `interpreter-design.md`, `hover-previews-deferred.md` all current | `f00c877` |
 | F1 | `@`/`#` sigil semantics: `#` always assigns, `@` always refers; `<ref @key>` and `<cite @key>` canonical; ~33 fixture occurrences migrated | `c86da33` |
+| G1 Phase 0 | Read-only investigation; found the two-surface requirement the spec had missed; findings in `notes/G1-phase0-findings.md` | `5548caf` |
+| G1a | Inline TeX shortcuts — grammar surface: `SuperscriptShortcut`/`SubscriptShortcut`/`BraceContentItem` Peggy rules; `^{}`/`\^` escape extension; shortcuts work inside `<...>` content | `b6304a3` |
+| G1b | Inline TeX shortcuts — top-level prose surface: `tokenizeShortcutTag` micromark tokenizer (`syntax.js` + `from-markdown.js`); shortcuts now work in prose outside any tag; completes G1 (DF-1 + PG-12) | `99aaa0b` |
 
-**Process note from RC-12:** Slice verification now runs **both** package test
-suites — the interpreter's (`node test/run.js`, 23 suites) and the parser's (all
-five test files in `packages/remark-acadamark/test/`). RC-12's failure had been
-aborting the parser suite before completion; it went undetected because only the
-interpreter suite was routinely checked. After the repair, both suites run green
-to completion.
+**G1 two-surface design (on record for future parser work):** The Peggy grammar
+only runs on `<...>` constructs; top-level prose requires a micromark tokenizer.
+The G1 Phase 0 investigation found this; the original spec had missed it. The
+lesson: before any parser slice, verify whether the feature needs a grammar rule,
+a micromark tokenizer, or both.
+
+**G1 slice-sizing note:** G1 overflowed one GHC output turn and was split mid-arc
+into G1a + G1b along the two-surfaces seam. A slice that will touch many files or
+produce a lot of output should be split *before* running, not discovered at the
+limit. The natural split is usually a real architectural boundary.
+
+**G1 correctness model:** G1 is an **output-adding slice** — the fixture
+snapshots for `document-10-shortcuts.acm` are new (expected, reviewed), and the
+existing snapshots were unchanged. See the correctness-models note in the working
+method section below.
 
 **One F1 nuance to have on record:** The Phase 0 prediction that HAST snapshots
 would pass without regeneration was incomplete — the snapshots store source-position
@@ -45,10 +57,9 @@ model for a syntax-migration slice is “HTML content stable,” not “snapshot
 byte-stable.” This was not an output regression.
 
 **Backlog detail** is in:
-- `notes/specified-not-implemented.md` — full inventory; DF-7 is now adopted (F1).
-- `notes/acadamark-backlog-roadmap.md` — dependency-ordered roadmap; Layer 0
-  (PG-13) and Layer 1 (F1, F2) are done; the next items are G1, OQ-1/OQ-2,
-  and the Layer 3 free leaves.
+- `notes/specified-not-implemented.md` — full inventory; DF-1 and PG-12 adopted (G1); DF-7 adopted (F1).
+- `notes/acadamark-backlog-roadmap.md` — dependency-ordered roadmap; Layer 0, Layer 1, and G1 are done;
+  the next items are OQ-1/OQ-2 decisions, then the Layer 3 free leaves.
 
 ---
 
@@ -100,29 +111,68 @@ Both descend acadamarkTag `.content` (guarded by `!isOpaqueContent`) and mdast
 
 - **Phase 0 before every non-trivial slice.** A read-only investigation,
   scoped to a findings document that ends in a "recommended scope" verdict.
-  Every Phase 0 in this arc caught something the plan could not have known
-  (R2's notes-extraction ordering problem; R3's a/b split; R4's Shape A/B
-  fork). Do not skip it.
-- **Each slice ends green** — full suite passing — **with an empty fixture
-  diff** for output-neutral slices. Deliberate output changes get explicit
-  tests instead.
+  Phase 0 can be **light** (a scope-check when the design is settled — G1's
+  was) or **heavy** (when the design is open — R3's was). Every Phase 0 in
+  this arc caught something the plan could not have known (R2's notes-extraction
+  ordering problem; R3's a/b split; R4's Shape A/B fork; G1's two-surface
+  requirement). Do not skip it.
+- **Each slice ends green** — full suite passing — with the correct output
+  proof for the slice type (see "Both correctness models" below). Deliberate
+  output changes get explicit tests instead.
 - **Commit each slice clean before starting the next.**
 - **GHC prompts are separate artifacts** — a short implementation prompt per
   slice, pointing at the plan/findings already in the repo, with a hard "stop
   after this slice" instruction.
 - **`git commit -F` with a message file, never `-m`** — `!` and backticks in
-  slice messages trigger shell history expansion and mangle the message.
+  slice messages trigger shell history expansion and mangle the message. The
+  message file goes *outside* `.git/` (e.g. `/tmp/`), then deleted. This has
+  caused problems in this project before; always use `-F`.
+- **Pre-split big slices into turn-sized pieces.** G1 overflowed one GHC
+  output turn and had to be split mid-arc into G1a + G1b. The lesson: a slice
+  that will touch many files or produce a lot of output should be split *before*
+  running, not discovered at the limit. The natural seam is usually a real
+  architectural boundary (G1's was its two surfaces).
+
+### Both correctness models — state both explicitly
+
+Conflating these two models is a trap. Know which one applies before a slice starts.
+
+**Output-neutral slices** (most refactor work): the proof is an **empty fixture
+diff**. Run `node test/render-fixtures.js` in `packages/acadamark-interpreter`,
+then `git diff test/fixtures/` — it must be empty. A changed snapshot is a red
+flag and means something regressed. Snapshots must not change.
+
+**Output-adding slices** (like G1, or any "implement a new feature"): the proof
+is **"the diff shows exactly the intended new output and nothing else."** Snapshots
+*will* change, and that is expected and reviewed. Regenerating an
+intentionally-changed fixture's snapshot is correct here. Verify that existing
+snapshots were unchanged; only the new fixture's snapshot is new.
 
 ### Key planning documents in the repo
 
 - `notes/pipeline-refactor-plan.md` + `pipeline-refactor-plan-amendment.md` +
   `pipeline-refactor-plan-amendment-2.md` — the refactor plan and its two
   in-flight revisions (the R2/R3 reboundary; the R3a/R3b split).
-- `notes/audit-findings.md` — the rolling AUD findings list (through AUD-18).
-- `notes/audit-2026-Q2/` — the 2026-Q2 audit outputs, plus the Phase 0
-  findings documents: `R2-phase0-findings.md`, `R3-phase0-findings.md`,
-  `R4-phase0-findings.md`.
+- `notes/audit-findings.md` — the rolling AUD findings list (through AUD-19).
+- `notes/audit-2026-Q2/` — the 2026-Q2 audit outputs, plus Phase 0 findings
+  documents: `R2-phase0-findings.md`, `R3-phase0-findings.md`,
+  `R4-phase0-findings.md`, `G1-phase0-findings.md`, `F1-phase0-findings.md`.
 - `notes/audit-cleanup-stopping-point.md` — the audit-cleanup tracking doc.
+
+---
+
+### Decided design calls (settled — do not re-litigate)
+
+These were live questions earlier in the arc and are now resolved.
+
+- **`#` always assigns an id; `@` always refers to one (F1, commit `c86da33`).**
+  `<ref @key>`, `<cite @key>`, `<cite [@a, @b]>` are the canonical attribute-
+  position forms. The unbraced-inline `@` form is explicitly deferred (parked
+  in the roadmap).
+- **`^{`/`_{` braced form only; bare `^`/`_` are literal text, not errors (G1,
+  commit `b6304a3`).** `snake_case`, `a^b`, URLs with `^`/`_` are untouched.
+  Only `^{` and `_{` trigger a shortcut. `^{}` (empty braces) and `^{abc`
+  (unmatched) are parse errors.
 
 ---
 
@@ -153,9 +203,8 @@ then the recurring-cost item, then the substantive design work.
   document — doc-6/doc-9 render at ~710–737 KB vs ~336 KB for doc-7/doc-8. It
   does not affect appearance (the same CSS twice renders the same), but it is a
   real asset-injection bug, the same class as the old AUD-16 font-wiring gap.
-  **Action:** file as a new AUD finding; then fix the double-injection in the
-  asset-injection path in `index.js`. Discovered while reviewing rendered
-  documents at the end of this session — not yet filed.
+  **Filed as AUD-19** in `notes/audit-findings.md`. Fix: guard against
+  double-injection in the asset-injection path in `index.js`.
 - **AUD-18 — `<data>` nodes remain in the tree (already filed).**
   `libraryLoad`/`buildCitationIndex` reads `<data>` and `<library>` nodes but
   never removes them; the compile step handles or silently ignores them. Low
@@ -168,13 +217,13 @@ pipeline. The two are **not linked** — every change to the real pipeline must
 be duplicated by hand in the test, with nothing enforcing it. Filed as AUD-17
 during R3a.
 
-**Three consecutive slices — R3a, R3b, R4 — each required a manual mirror
+**Four consecutive slices — R3a, R3b, R4, G1b — each required a manual mirror
 update.** This is no longer a theoretical hazard; it is a confirmed,
 recurring tax that every future pipeline change pays. **Recommended fix:** have
 the integration test import and use the real pipeline assembly from `index.js`
 rather than rebuilding it by hand. This is a small, well-bounded cleanup and a
-good early candidate — it removes a cost that the Shape B work (3.4) and any
-future pipeline change would otherwise keep paying.
+good early candidate — it removes a cost that any future pipeline change would
+otherwise keep paying.
 
 ### 3.4 Shape B — the `indexInputs` consolidation (deferred from R4)
 
@@ -280,23 +329,21 @@ unaffected by the refactor:
 
 ## 4. Suggested next steps (not prescriptive — your call)
 
-Layer 0 and Layer 1 are done. Reasonable next moves:
+Layer 0, Layer 1, and G1 (first Layer 2 item) are done. Reasonable next moves:
 
-1. **G1 — inline TeX** (DF-1+PG-12). The bounded “real feature”. Parser-only
-   gap; spec is decision-complete; `<sup>`/`<sub>` vocab already exists.
-2. **OQ-1 and OQ-2** — short design-note decisions that unblock G2 (render-mode
-   lowering) and G3 (math/GFM idioms).
-3. **`integration.test.js` mirror fix (3.3)** — small, well-bounded, retires
-   a recurring tax.
-4. **Layer 3 leaves** — any time, by appetite; the `<ref>`-attributes slice
+1. **OQ-1 and OQ-2** — short design-note decisions that unblock G2 (render-mode
+   lowering) and G3 (math/GFM idioms). Either order.
+2. **`integration.test.js` mirror fix (3.3)** — small, well-bounded, retires
+   a recurring tax (paid four times now: R3a, R3b, R4, G1b).
+3. **Layer 3 leaves** — any time, by appetite; the `<ref>`-attributes slice
    (PG-3/4/5) and PG-10 are easy satisfying ones.
-5. **Architecture tier** (JATS, multi-file, book) — when you know the direction.
+4. **Architecture tier** (JATS, multi-file, book) — when you know the direction.
 
 See `notes/acadamark-backlog-roadmap.md` for the full dependency-ordered list.
 
 ---
 
-*The pipeline refactor — R1 through R4 — is complete. The interpreter is
-shape → index → number → resolve. Tests green, output unchanged, everything
-committed and pushed. This is a clean handoff: nothing dangling, only the
-backlog above.*
+*The pipeline refactor — R1 through R4 — is complete. G1 (inline TeX shortcuts,
+DF-1 + PG-12) is also complete. The interpreter is shape → index → number →
+resolve. Tests green, output as expected, everything committed and pushed. This
+is a clean handoff: nothing dangling, only the backlog above.*
