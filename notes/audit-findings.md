@@ -589,4 +589,4 @@ by any `NORMALIZATIONS` predicate and pass through the normalization walk
 unchanged, reaching `mdast-util-to-hast`'s built-in handler. No collision with
 the acadamark `<note>` system. No existing fixtures use `[^...]` syntax.
 
-**Status: Implemented. Commit: (NORM-tables commit hash — to be filled after commit).**
+**Status: Implemented. Commit: `ec0d071` (NORM-tables slice, 2026-05-22).**
