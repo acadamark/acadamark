@@ -200,11 +200,11 @@ Or a separate `<short-title>` element.
 
 ### Multi-file authoring
 
-See `notes/multi-file-authoring-deferred.md`. Major feature deferred.
+See `notes/multi-file-authoring.md`.
 
 ### Multi-column display
 
-See `notes/multi-column-display-deferred.md`. Render-mode feature deferred.
+See `notes/multi-column-display.md`.
 
 ### Cross-document reference resolution
 
@@ -248,11 +248,11 @@ The deferral is about prioritization, not feasibility. As slice 1 lands and subs
 
 ## Related references
 
-- `notes/multi-file-authoring-deferred.md` — multi-file projects.
-- `notes/multi-column-display-deferred.md` — multi-column rendering.
+- `notes/multi-file-authoring.md` — multi-file projects.
+- `notes/multi-column-display.md` — multi-column rendering.
 - `archive/hover-previews-deferred-2026-05.md` — hover-preview rendering for references (archived; the rendering substrate shipped, see `notes/interpreter.md` §10.2).
 - `archive/inline-tex-shortcuts-spec-2026-05.md` — inline TeX shortcuts for math (archived; the feature shipped as G1).
-- `notes/slide-element-deferred.md` — slide/presentation elements.
+- Slide/presentation elements — design discussion item in `notes/acadamark-backlog-roadmap.md` (formerly DF-6); original placeholder at `archive/slide-element-deferred-2026-05.md`.
 - `packages/layer1-vocabulary/SPEC.md` — what's currently in vocabulary.
 - MyST documentation: https://mystmd.org/
 - Quarto documentation: https://quarto.org/

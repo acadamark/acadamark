@@ -36,7 +36,6 @@ This document describes the recommended reading path for understanding acadamark
 The `notes/` directory contains design sketches and specs for features deferred to later slices:
 
 - `archive/inline-tex-shortcuts-spec-2026-05.md` — `_{...}` and `^{...}` shorthands for sub/sup (archived; the feature shipped as G1 and the spec is preserved as the design record).
-- `notes/slide-element-deferred.md` — slide-element design, deferred.
 - `notes/dsl-engines.md` — engine adapters for math, csv, mermaid, etc.
 - `notes/future-interpreter-sketches/` — exploratory sketches for the interpreter.
 

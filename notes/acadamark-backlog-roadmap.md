@@ -365,11 +365,55 @@ concern. Independent leaf, low-priority unless a publication target needs it.
 notes are numbered by `numberRegistry()` at the start of the apply-numbers step.
 A one-paragraph clarification, no code change.
 
-**Slide elements — DF-6 (formerly).** Pre-spec placeholder for
-`<presentation>` + `<slide>` + `<slide-notes>`. `notes/slide-element-deferred.md`
-says "Needs design pass before implementation." Names reserved only;
-nothing implemented or specified beyond the placeholder. Low priority
-unless presentation output becomes a target.
+**Discuss the canonical form for sections — markdown `##` heading vs
+`<#>` sigil tag.** A discussion item, not a build item. The shorthand
+spec (`notes/shorthand-syntax.md`) and DESIGN.md's implicit-closing
+section work are built around the `<#>` sigil; markdown `##` headings also
+produce sections via remark's built-in heading tokenizer. Two forms for
+the identical operation, with no rule for which to use, violates the
+"explicit, consistent" principle. The decision settles which form is
+canonical and how the other relates to it (probably: as the markdown-form
+shorthand the normalization principle would expect). Once decided, the
+result is reconciled into DESIGN.md and `notes/shorthand-syntax.md`.
+
+**Starting position for the discussion (not a settled answer):**
+markdown headings are likely the convenience form and `<#>` is canonical
+when an id or attributes are needed — because `<#>` is the form that
+carries an id, and any cross-referenced section needs an id. The
+discussion may settle differently; this is a starting framing harvested
+from the now-archived audit-cleanup-stopping-point's FLAGGED-1, not a
+prescribed answer.
+
+Filed under the discussion-is-work rule (`doc-ownership.md`).
+
+**Discuss whether to add `<presentation>` / `<slide>` / `<slide-notes>`
+Layer 1 vocabulary for presentations — DF-6 (formerly).** A discussion
+item, not a build item: the design pass that would decide the vocabulary
+has not happened. Use cases: slide-decks rendered for screen presentation
+(parallel to revealjs / beamer); reusing content between papers and
+slides; generating both presentation HTML and printed handouts from one
+source; consistent citation/figure/equation handling between papers and
+presentations. Discussion agenda — six open questions identified at the
+placeholder's filing:
+
+1. Slide-level attributes — transitions, layouts, themes.
+2. How `<presentation>` differs structurally from `<article>` and `<book>`.
+3. Whether slides have explicit type kwargs (title-slide, content-slide,
+   section-divider, etc.).
+4. Speaker-notes mechanism (separate `<slide-notes>` elements vs.
+   attribute on the slide).
+5. How body content relates between paper-mode and presentation-mode (the
+   same `<section>` rendering as a section in paper output but a slide in
+   presentation output?).
+6. How math, figures, citations carry over from paper-authoring
+   conventions.
+
+The first concrete step is a chat-side vocabulary design pass parallel to
+the article and book design passes; the result is either a new spec
+(`presentation.md`, `slide.md`, `slide-notes.md` in the vocabulary
+directory) or a recorded decision not to pursue. Filed under the
+discussion-is-work rule (`doc-ownership.md`); the source placeholder file
+is archived at `archive/slide-element-deferred-2026-05.md`.
 
 **Parser bugs — AUD-04 (formerly), AUD-21–23 (formerly), DF-16 (formerly).**
 Five distinct parser-level bugs surfaced through audits but not yet fixed.

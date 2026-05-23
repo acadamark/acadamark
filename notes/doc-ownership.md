@@ -72,3 +72,14 @@ slice is not done until code and documentation agree.
   "audit findings" document.
 - A spec is edited the moment the design it describes changes — in the same
   slice, never "later."
+- A limitation is one of two things and is filed accordingly — it never gets
+  its own document. A limitation that is a bug or a missing feature is open
+  work: it goes in the backlog. A limitation that is a deliberate, permanent
+  design boundary is part of the design: it goes in `DESIGN.md`'s "Design
+  tensions and accepted tradeoffs" section, with its rationale. Every
+  limitation must be classified as one or the other.
+- Discussing an idea is a type of work. It can be filed as a backlog item like
+  any other — "discuss whether to do X" — and routed normally. Resolving the
+  item produces a spec change, a work item, or a recorded decision not to
+  pursue. An idea worth keeping does not become its own document or a
+  "deferred" file; it becomes a discussion item in the backlog.

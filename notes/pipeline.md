@@ -32,6 +32,19 @@ this document.
 
 ## 1. Overview
 
+Conceptually, the interpreter does four things — it **shapes** the tree
+(recursive content parsing, normalization, article wrapping, section
+nesting), it **indexes** the document's content into the registry
+(configuration, citation library, notes, numbered elements,
+cross-reference labels), it **numbers** what needs numbering
+(equations, figures, tables, notes — one ordered pass per type), and it
+**resolves** references and citations against the now-numbered registry.
+The structural plugins below (Stage 3) realize that split even though
+their phase boundaries are drawn for ordering rather than for conceptual
+grouping. Reading the plugins in their pipeline order shows the
+implementation; reading them as shape-index-number-resolve shows what
+each is doing for the document.
+
 An acadamark document goes through six stages to produce HTML output:
 
 ```

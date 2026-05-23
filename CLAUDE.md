@@ -4,7 +4,7 @@ This file is read by Claude Code at the start of every session in this repositor
 
 ## Documentation system
 
-acadamark's documentation operates under the system defined in `notes/doc-ownership.md`. Read it once. Two rules govern every document: **one job per document** (a spec describes the intended design; the backlog/roadmap holds open work; STATUS shows what is true now; nothing carries two of these jobs); and **no document states a computable fact** (test count, vocabulary count, etc. — run `npm run verify`). A limitation is either an open backlog item or a DESIGN.md accepted tradeoff, never its own document. **Every implementation slice ends with the coherence check defined in `notes/doc-ownership.md`** — perform it and report its result before committing.
+acadamark's documentation operates under the system defined in `notes/doc-ownership.md` — read it once; it is the canonical definition. Two rules govern every document (one job per document; no computable facts), and the Maintenance section names further rules including the limitations rule and the discussion-is-work rule. **Every implementation slice ends with the coherence check defined in `notes/doc-ownership.md`** — perform it and report its result before committing.
 
 ## Project overview
 

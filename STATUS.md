@@ -66,18 +66,16 @@ drift (formerly AUD-24), and design-direction cross-referencing
 
 ## In flight / next
 
-The documentation-system reconciliation is in progress. Reconciliations 1
-and 2 are committed (open work collapsed into the single backlog/roadmap;
-specs stripped of progress tracking; `BUILD.md` and `known-limitations.md`
-migrated and archived; the new `doc-ownership.md` installed). The next
-slice is Reconciliation 3 — final cleanup of the spent planning artifacts
-(audit deliverables in `notes/audit/`, the historical refactor-plan
-documents, the audit-shape transcript, the stopping-point doc). After
-Reconciliation 3 the documentation system is fully in force and the
-project returns to ordinary backlog work from
-`notes/acadamark-backlog-roadmap.md` — likely the integration-test mirror
-fix (formerly AUD-17) or the asset-double-injection fix (formerly AUD-19)
-as small early candidates.
+Nothing currently in flight. The documentation-system reconciliation
+arc (three slices) is complete — the system defined in
+`notes/doc-ownership.md` is in force, and from here every implementation
+slice ends with its coherence check. The project returns to ordinary
+backlog work from `notes/acadamark-backlog-roadmap.md`. Reasonable
+next candidates by appetite: the integration-test mirror fix (formerly
+AUD-17, a small slice that retires a recurring tax paid four times in
+the R3/R4/G1 arc); the asset-double-injection fix (formerly AUD-19);
+the four Layer 0 SUSPECTED CLOSED verifications (each a small code-check
+that probably closes the item).
 
 ## Milestones
 
