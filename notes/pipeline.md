@@ -60,7 +60,7 @@ both at the top level and inside named-tag content. The resulting
 `inlineMath` / `math` / `table` nodes are then rewritten to canonical
 `acadamarkTag` nodes by `acadamarkNormalizeMarkdown` (Stage 3's first
 plugin), so the rest of the pipeline only sees one node type. See AUD-20 in
-`notes/audit-findings.md` for the Option-A normalization decision.
+`archive/audit-findings-2026-05.md` for the Option-A normalization decision.
 
 ---
 
@@ -185,7 +185,7 @@ have completed).
 **Must precede:** every structural plugin (Phase 1 onwards) — they all
 assume one node type.
 
-**Cross-reference:** AUD-20 in `notes/audit-findings.md` for the Option-A
+**Cross-reference:** AUD-20 in `archive/audit-findings-2026-05.md` for the Option-A
 decision; `packages/acadamark-interpreter/src/plugins/normalize-markdown.js`
 for the implementation.
 

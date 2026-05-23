@@ -182,5 +182,6 @@ reconstruct the output with keys in the authored order.
 
 ### `<library src="..."/>` self-closing form is broken for DSL-registry tags
 
-See AUD-08 in `notes/audit-findings.md`. Workaround: use empty-body long-form
+Filed as an open item in `notes/acadamark-backlog-roadmap.md` (formerly
+AUD-08 / DF-21). Workaround: use empty-body long-form
 `<library src="refs.bib">\n</library>`.

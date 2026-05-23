@@ -333,7 +333,7 @@ of section 3.
 - `notes/interpreter.md` — current interpreter architecture (pre-refactor).
 - `notes/pipeline.md` — current full data flow (pre-refactor).
 - `notes/audit-2026-Q2/` — the audit that produced this plan.
-- `notes/audit-findings.md` — the AUD findings referenced in section 5.
+- `archive/audit-findings-2026-05.md` — the AUD findings referenced in section 5 (archived 2026-05-23; open items are now in `notes/acadamark-backlog-roadmap.md`).
 - `notes/at-sigil-reference-proposal.md` — the cross-reference sigil redesign
   that becomes cheaper after this refactor.
 - `lib/registry.js` — the registry; the `assign()` split and `numberRegistry`

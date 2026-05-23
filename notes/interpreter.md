@@ -219,8 +219,9 @@ subtree is replaced before its inline children are visited, so cell
 contents are read directly off the original `remark-gfm` nodes during
 serialization).
 
-**Cross-reference:** AUD-20 in `notes/audit-findings.md` for the Option-A
-decision rationale; `notes/pipeline.md` §4.0 for the pipeline-level view.
+**Cross-reference:** AUD-20 in `archive/audit-findings-2026-05.md` for
+the Option-A decision rationale (closure recorded in `STATUS.md`
+Milestones); `notes/pipeline.md` §4.0 for the pipeline-level view.
 
 ---
 
@@ -465,8 +466,9 @@ label index, so `<ref @code:newton>` resolves via the same
 `registry.findByLabel()` path that sections use. Plain fenced code blocks
 written without a shorthand wrapper are mdast `code` nodes with no
 shorthand wrapper and no accessible id, so they remain non-referenceable —
-this is a deliberate, reversible choice (see AUD-09 entry in
-`notes/audit-findings.md`). Switching to numbered listings later requires
+this is a deliberate, reversible choice (closure recorded in `STATUS.md`
+Milestones; original entry at `archive/audit-findings-2026-05.md`
+AUD-09). Switching to numbered listings later requires
 flipping `numbered: false` to `numbered: true` here, adding `'code'` to
 `NUMBERED_TAGNAMES`, and adding a `CONFIG_KEY` entry for `'code'`.
 
@@ -565,7 +567,8 @@ Built-in prefixes: `eqn` → `equation`, `fig` → `figure`, `note` → `note`,
 `lem` → `lemma`, `def` → `definition`, `ex` → `example`.
 
 `code` → `listing` is the G4 addition paired with the code-block sigil
-registration in §3.7; see AUD-09 closure in `notes/audit-findings.md`.
+registration in §3.7; closure recorded in `STATUS.md` Milestones
+(original AUD-09 entry at `archive/audit-findings-2026-05.md`).
 
 Config key `ref-prefix-{prefix}` overrides a prefix word per-document.
 

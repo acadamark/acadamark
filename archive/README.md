@@ -52,6 +52,16 @@ Four notes documents were moved here during the 2026-Q2 audit because their cont
 
 - **`text-based-DSLs-2024-05.md`** — Brief reference list of DSL language names with Wikipedia links. Not a spec or design document; no replacement warranted.
 
+## 2026-Q2 documentation-system reconciliation (2026-05-23): two tracking files retired
+
+The first of two reconciliation slices installing the new documentation system (per `notes/audit/documentation-system-design-final.md`) collapsed all open work into `notes/acadamark-backlog-roadmap.md` as the single home. The previous practice of tracking open work across three files violated the new "one job per document" rule; these two were retired once their content had landed elsewhere. (`notes/known-limitations.md` was intentionally retained — see note below.)
+
+- **`audit-findings-2026-05.md`** — The rolling AUD / GAP / DRIFT findings list (AUD-01 through AUD-26, plus GAP-8 and GAP-9). Open entries migrated to `notes/acadamark-backlog-roadmap.md`, placed into the appropriate Layer 0–3 section (with the original AUD ids preserved as "formerly AUD-N" markers). Resolved entries — AUD-01, -02, -03, -09, -10, -11, -12, -16, -20, -26 — recorded as a milestone paragraph in `STATUS.md`. Four entries (AUD-06, formerly DF-20, formerly DF-22, formerly OQ-1) were filed in Layer 0 as **SUSPECTED CLOSED** verification items, awaiting code confirmation against the NORM-tables / math-normalization arc.
+
+- **`specified-not-implemented-2026-05.md`** — The full inventory of specified-but-unbuilt features (DF-1..DF-22, PG-1..PG-13, DS-1..DS-5, OQ-1..OQ-2), each with code-verification notes. Open entries migrated to `notes/acadamark-backlog-roadmap.md` with the same "formerly DF-N" / "formerly PG-N" / "formerly OQ-N" preservation; resolved entries (DF-1, DF-7, PG-6, PG-7, PG-12, PG-13, DS-1..DS-5) recorded as the same milestone paragraph in `STATUS.md`.
+
+**`notes/known-limitations.md` is intentionally retained for the second reconciliation slice.** Most of its entries duplicated PG/AUD items and were migrated under their canonical ids; two entries ("custom elements not registered with the browser" and "only colon-ids are referenceable") are by-design constraints — spec content, not open work — and remain in `known-limitations.md` until reconciliation 2 migrates them into the relevant specs and then archives the file.
+
 ## `audit-2026-Q2/` Phase 0 findings
 
 Phase 0 investigation findings from the 2026-Q2 audit and refactor arc (R2–R4, OQ1, NORM, math-coverage, G4, F1, G1). All conclusions have landed in code; retained as the design-rationale record for why the pipeline and normalization pass are shaped as they are.

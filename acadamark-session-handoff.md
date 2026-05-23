@@ -11,12 +11,13 @@ the working method, and the forward backlog.
 **This is one of three tracking documents — know which does what:**
 - **This file** (`acadamark-session-handoff.md`) — orientation. Where things
   stand, the working method, the forward backlog at a glance. Start here.
-- `notes/acadamark-backlog-roadmap.md` — the dependency-ordered roadmap: what
-  to build, in what order, and why (the four-layer structure).
-- `notes/specified-not-implemented.md` — the full inventory: every
-  specified-but-unbuilt item (DF / PG / DS / OQ ids), code-verified, with detail.
+- `notes/acadamark-backlog-roadmap.md` — the single home for all open work
+  (the backlog is its flat set; the same items are also routed by the
+  four-layer structure). Replaces the earlier
+  `notes/specified-not-implemented.md` and `notes/audit-findings.md` (both
+  now archived).
 
-This file points at the other two; it does not duplicate them.
+This file points at the roadmap; it does not duplicate it.
 
 ---
 
@@ -26,9 +27,10 @@ A cold session (no memory of the arc that produced this) should, before picking
 up any work:
 
 1. **Read, in this order:** this handoff (all of it — especially §2's working
-   method); then `notes/acadamark-backlog-roadmap.md` for what's next; then
-   `notes/specified-not-implemented.md` only as needed for detail on a specific
-   item.
+   method); then `notes/acadamark-backlog-roadmap.md` for what's open
+   (every backlog item, with detail, lives there). The earlier
+   `notes/specified-not-implemented.md` and `notes/audit-findings.md`
+   are archived to `archive/`.
 2. **Confirm the repo is green** before trusting anything:
    - Interpreter: `cd packages/acadamark-interpreter && node test/run.js`
      → expect `23/23 suites passed`.
@@ -112,10 +114,13 @@ was regenerated; HTML content was verified unchanged. The correct correctness
 model for a syntax-migration slice is "HTML content stable," not "snapshot
 byte-stable." This was not an output regression.
 
-**Backlog detail** is in:
-- `notes/specified-not-implemented.md` — full inventory; DF-1 and PG-12 adopted (G1); DF-7 adopted (F1).
-- `notes/acadamark-backlog-roadmap.md` — dependency-ordered roadmap; Layer 0, Layer 1, and G1 are done;
-  the next items are OQ-1/OQ-2 decisions, then the Layer 3 free leaves.
+**Backlog detail** is in `notes/acadamark-backlog-roadmap.md` (the single
+home for all open work). The earlier full inventory at
+`notes/specified-not-implemented.md` is archived to
+`archive/specified-not-implemented-2026-05.md`; DF-1 and PG-12 closed via
+G1 and DF-7 via F1 — recorded in `STATUS.md` Milestones. Layer 0, Layer
+1, and G1 are done; next items are OQ-1/OQ-2 decisions, then the Layer 3
+free leaves.
 
 ---
 
@@ -218,10 +223,14 @@ output regression; verify the HTML content, not the raw snapshot bytes.
 - `notes/pipeline-refactor-plan.md` + `pipeline-refactor-plan-amendment.md` +
   `pipeline-refactor-plan-amendment-2.md` — the refactor plan and its two
   in-flight revisions (the R2/R3 reboundary; the R3a/R3b split).
-- `notes/audit-findings.md` — the rolling AUD findings list (through AUD-19).
-- `notes/audit-2026-Q2/` — the 2026-Q2 audit outputs, plus Phase 0 findings
-  documents: `R2-phase0-findings.md`, `R3-phase0-findings.md`,
-  `R4-phase0-findings.md`, `G1-phase0-findings.md`, `F1-phase0-findings.md`.
+- `archive/audit-findings-2026-05.md` — the rolling AUD findings list as
+  it stood at archival (through AUD-26). Open items migrated to
+  `notes/acadamark-backlog-roadmap.md`; resolved items recorded in
+  `STATUS.md` Milestones.
+- `archive/audit-2026-Q2/` — the 2026-Q2 audit outputs, plus Phase 0
+  findings documents: `R2-phase0-findings.md`, `R3-phase0-findings.md`,
+  `R4-phase0-findings.md`, `G1-phase0-findings.md`,
+  `F1-phase0-findings.md`, `AUD-26-interpreter-pipeline-audit.md`.
 - `notes/audit-cleanup-stopping-point.md` — the audit-cleanup tracking doc.
 
 ---
@@ -268,8 +277,9 @@ then the recurring-cost item, then the substantive design work.
   document — doc-6/doc-9 render at ~710–737 KB vs ~336 KB for doc-7/doc-8. It
   does not affect appearance (the same CSS twice renders the same), but it is a
   real asset-injection bug, the same class as the old AUD-16 font-wiring gap.
-  **Filed as AUD-19** in `notes/audit-findings.md`. Fix: guard against
-  double-injection in the asset-injection path in `index.js`.
+  Filed in `notes/acadamark-backlog-roadmap.md` Layer 3 (formerly AUD-19).
+  Fix: guard against double-injection in the asset-injection path in
+  `index.js`.
 - **AUD-18 — `<data>` nodes remain in the tree (already filed).**
   `libraryLoad`/`buildCitationIndex` reads `<data>` and `<library>` nodes but
   never removes them; the compile step handles or silently ignores them. Low
@@ -315,7 +325,9 @@ half — code blocks — was explicitly deferred. A code block is only an
 written in the shorthand-wrapped form with a colon-id; a plain fenced code
 block is a native mdast `code` node with no such id. Registering code blocks
 for cross-reference needs a small investigation of that representation
-question first. Filed in the AUD-09 entry of `audit-findings.md`.
+question first. AUD-09 fully closed (both halves, R2 + G4); see
+`STATUS.md` Milestones for the closure record and
+`archive/audit-findings-2026-05.md` for the original entry.
 
 ### 3.6 Theme / visual design slice (substantive — and the fun one)
 
@@ -358,8 +370,9 @@ verification across all 9 fixture documents.
 
 ### 3.7 Older deferred items still standing
 
-From the 2026-Q2 audit and earlier, still in `notes/audit-findings.md`,
-unaffected by the refactor:
+From the 2026-Q2 audit and earlier, all now migrated into
+`notes/acadamark-backlog-roadmap.md` (Layer 3 or as noted), unaffected
+by the refactor:
 
 - **AUD-04** — no-pipe/no-content short form `<tag attrs>` misread as a
   long-form opener. Workaround: `<tag attrs | >`.
@@ -379,7 +392,8 @@ unaffected by the refactor:
 - **AUD-15** — no documented matrix of which tag forms (short, pipe, long-form,
   self-closing) work for which tags.
 - **GAP-9** — `document-9-demo` has no integration test or snapshot, despite
-  being the most complex fixture. Filed in `audit-findings.md`.
+  being the most complex fixture. Filed in the backlog/roadmap Layer 3
+  (formerly GAP-9).
 
 ### 3.8 Deferred design conversations
 

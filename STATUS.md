@@ -3,7 +3,7 @@
 What acadamark can do today, what is in progress, and what is still aspirational.
 For *why* the project exists, read `README.md` and `DESIGN.md`. For the
 architecture, read `notes/pipeline.md` and `notes/interpreter.md`. For the open
-backlog, read `notes/audit-findings.md` and `notes/specified-not-implemented.md`.
+backlog, read `notes/acadamark-backlog-roadmap.md`.
 
 This file is deliberately thin. It records *state*, not *explanation* — and
 state-descriptions go stale, so there is as little of it here as possible. When
@@ -57,12 +57,12 @@ go stale.)
 
 ### Known open items
 
-The backlog is tracked, not duplicated here. Open bugs, gaps, and design
-findings live in `notes/audit-findings.md` (the AUD-N series) and
-`notes/specified-not-implemented.md`. Notable currently-open items include the
-three parser-newline bugs (AUD-21/22/23), vocabulary plugin-name drift
-(AUD-24), design-direction cross-referencing (AUD-25), and an unverified
-architecture doc (AUD-26).
+The backlog is tracked, not duplicated here. All open bugs, gaps, and
+design findings live in `notes/acadamark-backlog-roadmap.md` (the single
+home for open work). Notable currently-open items include the three
+parser-newline bugs (formerly AUD-21/22/23), vocabulary plugin-name
+drift (formerly AUD-24), and design-direction cross-referencing
+(formerly AUD-25).
 
 ## Milestones
 
@@ -92,3 +92,31 @@ that). One line gets added every few months, not every slice.
   their owning documents; spent investigations and Phase 0 records were
   archived; `DESIGN.md`, `README.md`, and this file were rewritten. The `notes/`
   directory now holds only live documents.
+- **2026-Q2 — individually-tracked closures recorded for archival.** The
+  2026-Q2 documentation audit and follow-on slices closed a series of
+  individually-tracked findings now archived to
+  `archive/audit-findings-2026-05.md` and
+  `archive/specified-not-implemented-2026-05.md`. Recorded here for history
+  before the source files were retired. **AUD items closed:** AUD-01 (equation
+  number right-align, slice 7 CSS); AUD-02 (`interpreter-design.md` pipeline
+  drift, F2 sweep, file archived); AUD-03 (`hover-previews-deferred.md`
+  obsolete, F2 sweep, file archived); AUD-09 (section + code-block ids
+  referenceable via `<ref>`; section half in R2, code-block half in G4,
+  2026-05-23); AUD-10 + AUD-11 + AUD-16 (KaTeX font URLs base64-patched,
+  Inter + Source Code Pro bundled, `getDocumentFontsCss()` wired into
+  `src/index.js`, 2026-05-21); AUD-12 (`<blockquote>` / `<quote>` first-class
+  vocabulary entry + shorthand-alias machinery, 2026-05-21); AUD-20 (GFM
+  table normalization Option A, NORM-tables slice, commit `ec0d071`,
+  2026-05-22); AUD-26 (`interpreter.md` and `pipeline.md` corrected against
+  implemented code, 2026-05-23). **Specified-but-unimplemented items
+  closed:** DF-1 (inline TeX shortcuts adopted as G1, commits `b6304a3`
+  G1a + `99aaa0b` G1b); DF-7 (`@`-sigil reference syntax adopted as F1,
+  commit `c86da33`); PG-6 (code-block colon-ids referenceable via `<ref>`,
+  G4); PG-7 (closed as by-design: auto-generated note ids intentionally
+  not referenceable, G4); PG-12 (`\^`/`\_`/`\{`/`\}` escape decisions
+  settled with G1, commit `b6304a3`); PG-13 (markdown pass-through
+  escapes inside named-tag content verified by test RC-14). **Doc-staleness
+  items closed:** DS-1 (`notes/interpreter.md`); DS-2 (`notes/pipeline.md`);
+  DS-3 (`BUILD.md` parser slice table); DS-4 (`notes/interpreter-design.md`
+  archived); DS-5 (`notes/hover-previews-deferred.md` archived) — all via
+  the F2 doc-staleness sweep, commit `f00c877`.
