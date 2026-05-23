@@ -2,16 +2,71 @@
 
 **Written:** 2026-05-22, at the end of the pipeline-refactor session.
 **Updated:** 2026-05-22, after PG-13, RC-12, F2, F1, and G1 (inline TeX shortcuts) landed.
+**Repo state:** clean and pushed at commit `09223ee` (the docs-reconciliation
+commit after G1). `git log` / `git status` confirm nothing dangling.
 **Purpose:** Orient the next session. The pipeline refactor (R1–R4) and the first
 Layer 2 feature (G1) are complete. This document records where things stand,
 the working method, and the forward backlog.
+
+**This is one of three tracking documents — know which does what:**
+- **This file** (`acadamark-session-handoff.md`) — orientation. Where things
+  stand, the working method, the forward backlog at a glance. Start here.
+- `notes/acadamark-backlog-roadmap.md` — the dependency-ordered roadmap: what
+  to build, in what order, and why (the four-layer structure).
+- `notes/specified-not-implemented.md` — the full inventory: every
+  specified-but-unbuilt item (DF / PG / DS / OQ ids), code-verified, with detail.
+
+This file points at the other two; it does not duplicate them.
+
+---
+
+## 0. Starting a fresh session — do this first
+
+A cold session (no memory of the arc that produced this) should, before picking
+up any work:
+
+1. **Read, in this order:** this handoff (all of it — especially §2's working
+   method); then `notes/acadamark-backlog-roadmap.md` for what's next; then
+   `notes/specified-not-implemented.md` only as needed for detail on a specific
+   item.
+2. **Confirm the repo is green** before trusting anything:
+   - Interpreter: `cd packages/acadamark-interpreter && node test/run.js`
+     → expect `23/23 suites passed`.
+   - Parser: run all five files in `packages/remark-acadamark/test/`
+     individually (`test.js`, `test-grammar.js`, `test-recursive.js`,
+     `line-start-flow-reject.test.js`, `multiline-text-position.test.js`)
+     → all green. There is no top-level parser runner; run them separately.
+3. **Pick the next slice** from the roadmap's "Suggested order" (currently:
+   the OQ-1/OQ-2 design decisions, then the Layer 3 free leaves).
+4. **Follow the slice rhythm** in §2 — Phase 0 prompt first, implementation
+   prompt second. Do not skip Phase 0.
+
+### The slice rhythm (the operating loop)
+
+Every non-trivial slice in this project is **two GHC artifacts**, run in
+sequence, not one:
+
+1. **A Phase 0 prompt** — a read-only investigation. GHC reads the relevant
+   code and produces a findings document (`notes/<slice>-phase0-findings.md`)
+   ending in a "recommended scope" verdict. No code changes.
+2. **An implementation prompt** — written *from* the Phase 0 findings, after a
+   human has read them and settled any open questions the findings surfaced.
+
+The findings document is committed to the repo. The implementation prompt
+points at it. This rhythm is why every slice in this arc landed cleanly — Phase
+0 repeatedly caught things the plan could not have known (see §2). The cost of
+a Phase 0 is an hour; the cost of skipping it is discovering the problem
+mid-implementation. Do not skip it.
+
+Prompts are written as standalone artifacts (a human pastes them into GHC).
+Each ends with a hard "stop after this slice" instruction.
 
 ---
 
 ## 1. Where things stand
 
 The five-slice pipeline refactor is done, verified, committed, and pushed.
-Additionally, four more slices have landed since the R4 handoff.
+Additionally, several more slices have landed since the R4 handoff.
 
 | Slice | What it did | Commit |
 |-------|-------------|--------|
@@ -32,6 +87,7 @@ Additionally, four more slices have landed since the R4 handoff.
 | G1 Phase 0 | Read-only investigation; found the two-surface requirement the spec had missed; findings in `notes/G1-phase0-findings.md` | `5548caf` |
 | G1a | Inline TeX shortcuts — grammar surface: `SuperscriptShortcut`/`SubscriptShortcut`/`BraceContentItem` Peggy rules; `^{}`/`\^` escape extension; shortcuts work inside `<...>` content | `b6304a3` |
 | G1b | Inline TeX shortcuts — top-level prose surface: `tokenizeShortcutTag` micromark tokenizer (`syntax.js` + `from-markdown.js`); shortcuts now work in prose outside any tag; completes G1 (DF-1 + PG-12) | `99aaa0b` |
+| docs | Reconciliation: roadmap, handoff, inventory, audit-findings brought current after G1 | `09223ee` |
 
 **G1 two-surface design (on record for future parser work):** The Peggy grammar
 only runs on `<...>` constructs; top-level prose requires a micromark tokenizer.
@@ -53,8 +109,8 @@ method section below.
 would pass without regeneration was incomplete — the snapshots store source-position
 metadata (column/offset), which shifts by one per `@` character added. `document-8-expected.json`
 was regenerated; HTML content was verified unchanged. The correct correctness
-model for a syntax-migration slice is “HTML content stable,” not “snapshot
-byte-stable.” This was not an output regression.
+model for a syntax-migration slice is "HTML content stable," not "snapshot
+byte-stable." This was not an output regression.
 
 **Backlog detail** is in:
 - `notes/specified-not-implemented.md` — full inventory; DF-1 and PG-12 adopted (G1); DF-7 adopted (F1).
@@ -75,7 +131,8 @@ byte-stable.” This was not an output regression.
 - **Vocabulary:** `packages/layer1-vocabulary/elements/`
 - **Run tests:** Interpreter: `cd packages/acadamark-interpreter && node test/run.js`
   (23 suites). Parser: run all five files in `packages/remark-acadamark/test/`
-  separately (`test-grammar.js`, `test.js`, `test-recursive.js`, etc.) — the
+  separately (`test-grammar.js`, `test.js`, `test-recursive.js`,
+  `line-start-flow-reject.test.js`, `multiline-text-position.test.js`) — the
   parser suite has no top-level runner. **Both suites must be green before a
   slice is declared done.** Render fixtures: `node test/render-fixtures.js` in
   `packages/acadamark-interpreter`, then `git diff test/fixtures/` — **empty
@@ -115,7 +172,8 @@ Both descend acadamarkTag `.content` (guarded by `!isOpaqueContent`) and mdast
   was) or **heavy** (when the design is open — R3's was). Every Phase 0 in
   this arc caught something the plan could not have known (R2's notes-extraction
   ordering problem; R3's a/b split; R4's Shape A/B fork; G1's two-surface
-  requirement). Do not skip it.
+  requirement). Do not skip it. (See §0 "the slice rhythm" for how Phase 0 and
+  the implementation prompt fit together as a two-step loop.)
 - **Each slice ends green** — full suite passing — with the correct output
   proof for the slice type (see "Both correctness models" below). Deliberate
   output changes get explicit tests instead.
@@ -148,6 +206,13 @@ is **"the diff shows exactly the intended new output and nothing else."** Snapsh
 intentionally-changed fixture's snapshot is correct here. Verify that existing
 snapshots were unchanged; only the new fixture's snapshot is new.
 
+A subtler third case (F1 was one): a **syntax-migration slice** changes fixture
+*source* but should not change rendered *output*. The proof there is
+"HTML content stable" — the rendered content is byte-identical even though the
+`.acm` source changed. Note that HAST snapshots store source-position metadata,
+so a source-length change *will* shift snapshot positions without being an
+output regression; verify the HTML content, not the raw snapshot bytes.
+
 ### Key planning documents in the repo
 
 - `notes/pipeline-refactor-plan.md` + `pipeline-refactor-plan-amendment.md` +
@@ -170,9 +235,9 @@ These were live questions earlier in the arc and are now resolved.
   position forms. The unbraced-inline `@` form is explicitly deferred (parked
   in the roadmap).
 - **`^{`/`_{` braced form only; bare `^`/`_` are literal text, not errors (G1,
-  commit `b6304a3`).** `snake_case`, `a^b`, URLs with `^`/`_` are untouched.
-  Only `^{` and `_{` trigger a shortcut. `^{}` (empty braces) and `^{abc`
-  (unmatched) are parse errors.
+  commit `b6304a3`).** `snake_case`, `a^b`, URLs containing those characters
+  are untouched. Only `^{` and `_{` trigger a shortcut. `^{}` (empty braces)
+  and `^{abc` (unmatched) are parse errors.
 
 ---
 
@@ -332,7 +397,9 @@ unaffected by the refactor:
 Layer 0, Layer 1, and G1 (first Layer 2 item) are done. Reasonable next moves:
 
 1. **OQ-1 and OQ-2** — short design-note decisions that unblock G2 (render-mode
-   lowering) and G3 (math/GFM idioms). Either order.
+   lowering) and G3 (math/GFM idioms). Either order. These are *decisions*, not
+   build slices — an hour of thought and a short design note each, recorded in
+   the relevant spec. They are cheap and they unblock larger work.
 2. **`integration.test.js` mirror fix (3.3)** — small, well-bounded, retires
    a recurring tax (paid four times now: R3a, R3b, R4, G1b).
 3. **Layer 3 leaves** — any time, by appetite; the `<ref>`-attributes slice
@@ -345,5 +412,5 @@ See `notes/acadamark-backlog-roadmap.md` for the full dependency-ordered list.
 
 *The pipeline refactor — R1 through R4 — is complete. G1 (inline TeX shortcuts,
 DF-1 + PG-12) is also complete. The interpreter is shape → index → number →
-resolve. Tests green, output as expected, everything committed and pushed. This
-is a clean handoff: nothing dangling, only the backlog above.*
+resolve. Tests green, output as expected, everything committed and pushed at
+`09223ee`. This is a clean handoff: nothing dangling, only the backlog above.*
