@@ -65,12 +65,14 @@ itself owned (see the table) and is kept current the same way.
 These are the facts most likely to be copied and go stale. Each names its
 single owner explicitly so there is no excuse for a copy.
 
-**Test count.** Owned by `STATUS.md`. The number of test suites and tests
-changes nearly every slice. No other document states a count — not the
-handoff, not `process.md`, not `BUILD.md`, not a package README. They say
-"see `STATUS.md` for the current count" or say nothing. `process.md` in
-particular must not embed a suite count in its description of the verify
-script; it describes what the script does, not how many suites exist today.
+**Test count.** Not owned by any committed document — the count changes nearly
+every slice and goes stale the moment it is written down. The source of truth is
+the verify script itself: run `npm run verify` in
+`packages/acadamark-interpreter`. No document states a count: not `STATUS.md`
+(which points to the verify command), not the handoff, not `process.md`, not
+`BUILD.md`, not a package README. `process.md` in particular must not embed a
+suite count in its description of the verify script; it describes what the
+script does, not how many suites exist today.
 
 **Pipeline plugin order.** Owned by `notes/pipeline.md`. `notes/interpreter.md`
 may describe the *internals* of each plugin but points to `pipeline.md` for
