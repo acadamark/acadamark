@@ -224,11 +224,17 @@ Authors who want a short-form empty tag for a registered name (unusual) should u
 
 **Nested same-name tags.** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outermost `<tagname>`. Depth is not tracked inside long-form content at Slice 4 since content is opaque. For example, `<aside>outer<aside>inner</aside>more</aside>` produces one `<aside>` with content `outer<aside>inner`; the trailing `more</aside>` is not consumed and falls through to remark. When recursive content parsing lands, nodes with `contentHandler: "default"` will re-parse their content, at which point nested same-name tags are handled correctly by the inner pipeline.
 
-**Defensive error.** If the finder encounters a long-form opener but reaches end-of-document without finding a matching `</tagname>`, it emits `acadamarkTagError` rather than producing a partial node. The node shape is the same as the sigil-opener error case (see "What the parser produces").
+**Defensive error.** If the finder encounters a long-form opener but reaches end-of-document without finding a matching `</tagname>`, it emits `acadamarkTagError` rather than producing a partial node. The long-form error node retains the `acadamarkTag` fields populated from the opener (`tagname`, `form`, `content`, `kwargs`, etc.) and adds an `error` field — see the **Long-form error node** shape under "What the parser produces". This is a distinct shape from the sigil-opener error node (which is sparse, with `source` instead of `tagname`/`content`); the two error paths reach their failure points at different stages and carry different information.
 
 ## Sigil-tag and DSL-tag verbatim content
 
-Both sigil tags and registered DSL tags treat their content as opaque text. Inside opaque content:
+Two groups of sigil tags and the registered DSL tags treat their content as opaque text:
+
+- The **math sigils** `<$ … $>` and `<$$ … $$>`.
+- The **code sigils** `` <` … `> `` and `` <``` … ``` > ``.
+- **Registered DSL tags** whose `contentHandler` is not `"default"` (e.g. `<csv>`, `<math>`, `<mermaid>`, `<library>`).
+
+Inside opaque content:
 
 - `<` and `>` are not special.
 - `|` is not special.
@@ -237,21 +243,30 @@ Both sigil tags and registered DSL tags treat their content as opaque text. Insi
 
 This is what allows acadamark to embed CSV, TSV, LaTeX, code, mermaid, and other DSLs without any escaping mechanism.
 
+**Hash sigils are not opaque.** The `<#`, `<##`, `<###` heading sigils carry prose-bearing content (`contentHandler: "default"`, `isOpaqueContent: false`). Their content is recursively parsed via the same path as named-tag default content, so markdown idioms and nested acadamark constructs inside a heading body are processed normally. `<# *bold* heading #>` has its emphasis parsed; the result is the same as if the body appeared in any other prose-bearing context. The mirrored closer (`#>` / `##>` / `###>`) ends the sigil at the source level; opacity is a separate property and hash sigils do not have it.
+
 ## DSL tag registry
 
-The registry serves two related but distinct functions: it declares **long-form eligibility** and assigns a **content handler**. Both are properties of being in the registry.
+The registry assigns a **content handler** to every named or sigil tag the parser knows about, and (for named tags only) declares **long-form eligibility**. The two roles cover different tag groups but share the same map.
 
-- **Long-form eligibility.** Only tags listed in the registry are recognized in long-form. The micromark boundary finder reads the tag name and calls `nok` immediately if the name is absent. This means the registry is the parser's mechanism for deciding which tags can have multi-line block content — not just a handler-classification list.
-- **Content handler.** The `contentHandler` field on the resulting node names which handler the interpreter should dispatch to. DSL-handler entries (like `csv → "csv"`, `math → "math"`) name a specific embedded-language handler. Structural entries (like `aside → "default"`, `blockquote → "default"`) use the `"default"` handler, meaning content is re-parsed through the regular remark pipeline when recursive content parsing is implemented.
+- **Content handler (all entries).** The `contentHandler` field on the resulting node names which handler the interpreter should dispatch to. DSL-handler entries (like `csv → "csv"`, `math → "math"`) name a specific embedded-language handler. Structural entries (like `aside → "default"`, `blockquote → "default"`) use the `"default"` handler, meaning content is re-parsed through the regular remark pipeline by the recursive-content plugin. Sigil entries set the per-sigil handler — `$ → "math"`, `# → "default"`, `` ` `` → `"code"`, etc. — and from-markdown.js derives `isOpaqueContent` from the same value (`isOpaqueContent = contentHandler !== "default"`), so the registry is the single source of truth for sigil opacity as well.
+- **Long-form eligibility (named-tag entries only).** Only named tags listed in the registry are recognized in long-form. The micromark boundary finder reads the tag name and calls `nok` immediately if the name is absent. This means the registry is the parser's mechanism for deciding which named tags can have multi-line block content. Sigil tags use mirrored closers, not `</tagname>` closers, and the long-form eligibility test does not apply to them.
 
-Tags not in the registry cannot appear in long-form. Short-form tags not in the registry still receive a `contentHandler` value — `getContentHandler()` returns `"default"` as the fallback for unregistered tags. Only long-form eligibility requires a registry entry.
+Named tags not in the registry cannot appear in long-form. Short-form named tags not in the registry still receive a `contentHandler` value — `getContentHandler()` returns `"default"` as the fallback for unregistered tag names. Only long-form eligibility requires a registry entry.
 
 Every long-form node carries a `contentHandler` string. There is no null/absent case.
 
-Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabulary/` when that package is set up):
+Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabulary/` when that package is set up). Sigil entries and long-form-tag entries live in the same map — sigils so their `contentHandler` (and hence `isOpaqueContent`) can be looked up by the same `getContentHandler()` path as named tags; long-form tags so long-form eligibility and content handling are decided together:
 
 | Tag name    | `contentHandler` value | Content type                |
 |-------------|------------------------|-----------------------------|
+| `#`         | `"default"`            | Section heading (prose, recursively parsed) |
+| `##`        | `"default"`            | Sub-section heading (prose, recursively parsed) |
+| `###`       | `"default"`            | Sub-sub-section heading (prose, recursively parsed) |
+| `$`         | `"math"`               | Inline math (opaque)        |
+| `$$`        | `"math-display"`       | Display math (opaque)       |
+| `` ` ``     | `"code"`               | Inline code (opaque)        |
+| `` ``` ``   | `"code-block"`         | Code block (opaque)         |
 | `csv`       | `"csv"`                | Comma-separated values      |
 | `tsv`       | `"tsv"`                | Tab-separated values        |
 | `math`      | `"math"`               | Math (default: TeX/KaTeX)   |
@@ -261,7 +276,7 @@ Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabula
 | `theorem`   | `"theorem"`            | Theorem (LaTeX-like)        |
 | `matrix`    | `"matrix"`             | Matrix                      |
 | `cases`     | `"cases"`              | Piecewise function          |
-| `align`     | `"align"`              | Aligned equations           |
+| `align`     | `"align"`               | Aligned equations          |
 | `eqnarray`  | `"eqnarray"`           | Equation array              |
 | `aside`     | `"default"`           | Aside (prose, recursively parsed) |
 | `blockquote`| `"default"`           | Blockquote                  |
@@ -360,7 +375,9 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 
 `isOpaqueContent` is set at parse time by `from-markdown.js`. Prose-bearing nodes (`contentHandler: "default"`) get `false`; their `content` starts as a string and becomes `Node[]` after the recursive-content plugin runs. DSL-handler nodes remain `isOpaqueContent: true` permanently.
 
-**Error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-line without finding the mirrored closer, it commits the truncated span as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Shape:
+**Error nodes.** Two distinct error-node shapes are produced, depending on which finder caught the malformed construct.
+
+**Sigil-opener error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-line without finding the mirrored closer, it commits the truncated span as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Parsing failed before any `acadamarkTag` fields were populated, so the shape is sparse:
 
 ```
 {
@@ -372,6 +389,28 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 ```
 
 This behavior is a finite-lifespan guard: when multi-line sigil tags are implemented, the end-of-line check in the micromark finder will be relaxed and these error tokens will become unreachable.
+
+**Long-form error node.** When the micromark finder recognizes a long-form opener but reaches end-of-document without finding the matching `</tagname>` closer, the long-form node has already had its opener parsed (so its `acadamarkTag` fields are populated) before the missing closer is detected. The node's `type` is flipped from `acadamarkTag` to `acadamarkTagError` and an `error` field is added, but the rest of the node's fields are retained:
+
+```
+{
+  type: "acadamarkTagError",
+  form: "long",
+  tagname: "csv",
+  positional: [],
+  booleans: {},
+  kwargs: {},
+  id: null,
+  classes: [],
+  content: "...",          // the verbatim content captured before EOF
+  isOpaqueContent: true,   // or false, per the tag's content handler
+  contentHandler: "csv",   // the resolved handler for the opener's tag name
+  error: "long-form tag has no closing tag",
+  position: { ... }
+}
+```
+
+There is no `source` field on the long-form error node — the long-form path does not go through the catch block that sets it. Downstream consumers of either error type should branch on the presence of `form`/`tagname` (long-form) versus `source` (sigil-opener) when they need to read shape-specific fields.
 
 ## Worked examples
 
@@ -790,7 +829,7 @@ For every prime $p$, there are infinitely many primes congruent to $1 \pmod{p}$.
 
 These were open questions that were settled during implementation.
 
-- **Sigil tags without `|`: body is opaque content, no attribute parsing.** When no `|` is present, the entire body between the opening sigil and the mirrored closer is treated as opaque content — no attribute parsing occurs. Attributes on sigil tags always require `|`. Example: `<# Introduction #>` → `content: " Introduction "` (no attributes parsed). `<# #intro | Introduction #>` → `id: "intro"`, `content: " Introduction "`.
+- **Sigil tags without `|`: no attribute parsing; body type follows the sigil family.** When no `|` is present, the entire body between the opening sigil and the mirrored closer becomes the node's `content` and no attribute parsing occurs. Attributes on sigil tags always require `|`. Whether that body is opaque depends on the sigil family — math (`$`, `$$`) and code (`` ` ``, `` ``` ``) sigils carry opaque content (`isOpaqueContent: true`); hash sigils (`#`, `##`, `###`) carry prose-bearing content that is recursively parsed (`isOpaqueContent: false`). Examples: `<# Introduction #>` → `content: " Introduction "`, `isOpaqueContent: false`, content recursively parsed (no attributes). `<# #intro | Introduction #>` → `id: "intro"`, `content: " Introduction "`, same opacity rule. `<$ x + y $>` → `content: " x + y "`, `isOpaqueContent: true` (no attributes).
 
 - **`-` allowed in keyword values (after `=`).** The naked token in keyword value position allows `-`. In positional or attribute-name position, `-` remains excluded (it disambiguates `-flag`). This permits `src=my-file.jpg` without quoting. There are effectively two naked-token rules: one for names/positionals, one for values.
 
@@ -810,17 +849,19 @@ These were open questions that were settled during implementation.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
 
-- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. Through Slice 2 content is still an opaque string because no recursive parsing has happened yet; the homogeneous shape kicks in when recursive content parsing is implemented.
+- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the remark-acadamark parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
+
+- **`|` in short-form content: subsequent `|` characters are literal.** The "exactly one `|` per construct" rule means only the first `|` separates attributes from content. Any further `|` characters in the content section are stored as literal content; no escaping is needed. Example: `<aside | first | second>` produces `content: " first | second"`.
 
 ## Open questions
 
 Remaining open questions flagged for resolution as implementation proceeds.
 
-- **`|` in short-form content.** After the first `|` separator, subsequent `|` characters in content are treated as literal content (the "exactly one `|` per construct" rule). No escaping needed.
-
 - **Registered sigil characters in `identifier_start` position.** `$` and `` ` `` are registered sigil characters but are not currently excluded from `identifier_start` (the exclusion list covers `#` and `.` and `+`/`-` but not all registered sigils). This means `<figure $weird>` parses `$weird` as a positional. The behavior is consistent between spec and grammar; the design intent is unsettled. Revisit when identifier rules are next touched or when another sigil family is added.
 
 - **No-`|` examples for `$` and `` ` `` sigils.** Examples 11–13 show only the `|` form for dollar and backtick sigils. The no-`|` form is supported and documented in prose; worked examples for it should be added to the Examples section when it is next touched.
+
+(The earlier open question about `|` in short-form content — *"after the first `|` separator, subsequent `|` characters in content are treated as literal content"* — is settled and now appears as a Resolved Decision above.)
 
 ## Inline TeX shortcuts: `^{...}` and `_{...}`
 

@@ -84,13 +84,13 @@ The flag now describes the node's relationship to its content, not the parser's 
 
 This may evolve. There may come a time when a finer distinction is useful — "intentionally opaque versus not yet processed versus processed and structured." If that arises, the flag can be replaced with a more expressive enum. For now, the boolean reflects the relevant distinction.
 
-## Error recovery: blank-line termination
+## Error recovery: blank-line termination (intended design — not yet implemented)
 
-Recursive parsing introduces a content model where paragraphs and blank lines have semantic meaning. This is the architecturally correct moment to introduce localized error recovery for unterminated constructs.
+Recursive parsing introduces a content model where paragraphs and blank lines have semantic meaning. This is the architecturally correct moment for localized error recovery on unterminated constructs. The design described below is the **intended end state**; the current behavior is EOF-consumption, as described in `notes/specs/multiline-spec.md` (a tracked gap against the core always-renders guarantee in `notes/specs/principles.md`).
 
-A blank line — a line that contains only whitespace, between two non-blank lines — terminates any open multi-line construct that has not yet found its closer. The unterminated construct emits `acadamarkTagError` at its opener position; parsing resumes from after the blank line.
+**Intended behavior.** A blank line — a line that contains only whitespace, between two non-blank lines — would terminate any open multi-line construct that has not yet found its closer. The unterminated construct would emit `acadamarkTagError` at its opener position; parsing would resume from after the blank line.
 
-This means:
+Worked example illustrating the intended behavior:
 
 ```
 <figure src=elephant.jpg
@@ -98,16 +98,18 @@ This means:
 paragraph two
 ```
 
-The `<figure src=elephant.jpg` opener has no `>` closer. Without recovery, this would consume to end-of-document. With blank-line termination, the construct ends at the blank line. The error node contains `<figure src=elephant.jpg`. The text `paragraph two` parses normally as a separate paragraph.
+The `<figure src=elephant.jpg` opener has no `>` closer. Under current behavior, this consumes to end-of-document. Under the intended behavior with blank-line termination, the construct would end at the blank line, the error node would contain `<figure src=elephant.jpg`, and `paragraph two` would parse normally as a separate paragraph.
 
 This applies to both:
 
 - The outer parser, when scanning a document for top-level multi-line constructs.
 - The inner (recursive) parser, when scanning a content string for nested constructs.
 
-In both cases, blank-line termination provides localized error recovery — errors no longer consume the rest of the surrounding context.
+In both cases, blank-line termination provides localized error recovery — errors would no longer consume the rest of the surrounding context.
 
-The principle: a document with errors should render the maximum possible correct output. Blank lines are the natural boundary because they already mark paragraph breaks in markdown's content model.
+The principle: a document with errors should render the maximum possible correct output. Blank lines are the natural boundary because they already mark paragraph breaks in markdown's content model. This is the core always-renders guarantee's *visible at the location where the error occurred* half (`principles.md`); EOF-consumption violates that half by causing the error's footprint to swallow downstream content the author wrote correctly.
+
+The work to close this gap is filed in `BACKLOG-ROADMAP.md` as the blank-line-termination / EOF-consumption item (formerly DF-16, in the parser-bug cluster), paired with the parser-error-node-renderer gap; both must close for the always-renders guarantee to hold in full.
 
 ## Implementation note
 
@@ -121,7 +123,7 @@ The plugin walks the tree using `unist-util-visit`. For each `acadamarkTag` node
 
 The pipeline construction needs to be careful not to introduce circular references. The recursive-content plugin itself does not appear in the inner pipeline; recursion is handled by the outer walk, not by an inner application of the plugin.
 
-The blank-line termination logic lives in the micromark finder. When scanning a multi-line construct's content, the finder checks each line ending: if the next line is empty or whitespace-only, the construct terminates with `acadamarkTagError`. The grammar receives the truncated content and parses what it can.
+The blank-line termination logic, when implemented, will live in the micromark finder. The intended design: when scanning a multi-line construct's content, the finder will check each line ending; if the next line is empty or whitespace-only, the construct will terminate with `acadamarkTagError` and the grammar will receive the truncated content and parse what it can. **This logic does not yet exist in the finder** — the current micromark finder consumes through blank lines to EOF for unterminated constructs (the tracked gap described in the *Error recovery: blank-line termination* section above and in `notes/specs/multiline-spec.md`).
 
 ## What's not changed
 

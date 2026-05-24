@@ -124,15 +124,17 @@ The micromark finder scans lines until it finds the appropriate closer:
 
 If the closer is not found before end-of-document, the parser emits an `acadamarkTagError` node, following the defensive error pattern from earlier slices.
 
-## Unterminated constructs: known limitation
+## Unterminated constructs: current behavior and tracked gap
 
 When a multi-line construct opener is recognized but no closer is found before end-of-document, the construct **consumes everything from the opener to EOF** and produces a single `acadamarkTagError` node. Content after the opener that would otherwise parse correctly is subsumed into the error node.
 
-This is the same behavior as long-form DSL tags from Slice 4 (`<csv>` with no `</csv>` consumes to EOF). It is a known limitation.
+This is the same behavior as long-form DSL tags (`<csv>` with no `</csv>` consumes to EOF).
 
-The desirable behavior — localized error at the opener's line, with the rest of the document rendering normally — requires resolving the multi-paragraph content model, which is part of the recursive-content design. Any error-recovery heuristic (e.g. blank-line termination, see `recursive-content-spec.md`) interacts with content-model decisions, so the two designs are settled together.
+This is a **tracked gap against the core always-renders guarantee** defined in `notes/specs/principles.md`, not an accepted limitation. The guarantee requires every error to render visibly at the location where it occurred; an EOF-consuming construct fails the "at the location where it occurred" half by causing the error's footprint to swallow downstream content the author wrote correctly. The intended end state is localized recovery — the error covers only the unterminated opener, and the rest of the document renders normally; the design for this is sketched in `notes/specs/recursive-content-spec.md` under blank-line termination, which interacts with the multi-paragraph content model and is settled together with that model.
 
-**Practical guidance for authors:** a missing `>` or `#>` produces an error that spans to EOF. If a document renders entirely as an error node, search for an unclosed tag near where the rendered content stops.
+The work to close this gap is filed in `BACKLOG-ROADMAP.md` as the blank-line-termination / EOF-consumption item (formerly DF-16, in the parser-bug cluster). It is paired in `principles.md`'s *Current known gaps against the guarantee* section as the sibling of the parser-error-node-renderer gap; both must close for the always-renders guarantee to hold in full.
+
+**Practical guidance for authors:** a missing `>` or `#>` produces an error that spans to EOF until the gap is closed. If a document renders entirely as an error region, search for an unclosed tag near where the rendered content stops.
 
 ## Whitespace inside attribute values
 

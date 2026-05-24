@@ -69,7 +69,7 @@ The user-facing rule says "escape any syntactically-significant character." The 
 
 The user does not need to know which layer owns which character. They escape; the right layer consumes the escape; the right thing happens.
 
-**Temporary state:** Until recursive content parsing is implemented, markdown pass-through escapes (`\*`, `\_`, etc.) inside named-tag content and hash sigil-tag content are stored verbatim as `\*`, `\_`, etc. They will not be processed by remark until the recursive-parsing pass. This is a known temporary state; the visible output will show the literal `\*` until that pass is implemented.
+Markdown pass-through escapes (`\*`, `\_`, etc.) inside named-tag content and hash sigil-tag content are stored verbatim by acadamark and consumed by remark during the recursive-content pass. After that pass runs, `\*` in the source produces a literal `*` in the rendered output via remark's standard CommonMark escape handling, the same as `\*` in prose outside any construct.
 
 ## Escapes in attributes
 
