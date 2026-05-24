@@ -36,6 +36,52 @@ recording it in the spec.
 
 The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `BACKLOG-ROADMAP.md`) at the repository root; specs in `notes/specs/`; the historical record in `notes/archive/`. Anything outside those three is code or does not belong in the repo's documentation surface.
 
+## The spec tier — DESIGN.md and notes/specs/
+
+The "Spec" role covers two tiers. **`DESIGN.md` is the conceptual master
+blueprint**: the layer model, the architectural primitives, the design
+directions, the JATS relationship, the DSL-processor model, scope decisions —
+*what acadamark fundamentally is*. **The `notes/specs/` files are the
+technical blueprint set** — each is the implementation-precise design of one
+subsystem, sitting inside the conceptual frame `DESIGN.md` provides. There is
+no single master technical blueprint file; the technical blueprint is the
+`notes/specs/` set, collectively. Each spec defers up to `DESIGN.md` for
+architecture-level framing.
+
+Both tiers are held to the rebuild-from-docs standard: `DESIGN.md` must be
+sufficient at the conceptual level; each subsystem spec must be sufficient at
+the technical level.
+
+**Placement rule** (which already operated implicitly and is now stated): a
+fact about *how the whole system is structured* belongs in `DESIGN.md`; a
+fact about *how one subsystem works* belongs in that subsystem's
+`notes/specs/` file. The DSL-processor model is the canonical example — it
+is a cross-cutting architectural primitive, so it lives in `DESIGN.md`, not
+as a peer subsystem spec.
+
+### Subsystem index
+
+Each subsystem's blueprint:
+
+- **Authoring syntax / parser** — `notes/specs/shorthand-syntax.md` (the
+  syntactic ground truth), with `notes/specs/escape-rules-spec.md`,
+  `notes/specs/multiline-spec.md`, and `notes/specs/recursive-content-spec.md`
+  for the related parser-layer details.
+- **Interpreter / pipeline** — `notes/specs/interpreter.md` (interpreter
+  architecture: dispatch, handlers, schema, asset injection) and
+  `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow).
+- **Layer 1 vocabulary** — `notes/specs/layer1-naming.md` (the four naming
+  rules) and `notes/specs/shape-tokens.md` (content-shape machinery). The
+  per-element vocabulary entries live separately in
+  `packages/layer1-vocabulary/elements/` with `SPEC.md` alongside.
+- **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
+  processor-delegation principle) and `notes/specs/principles.md`
+  (always-renders, parser-knows-nothing-about-meaning, etc.).
+- **Extension blueprints (designed, not built)** —
+  `notes/specs/multi-file-authoring.md` and
+  `notes/specs/multi-column-display.md`. Their design is specified at the
+  rebuild standard; the unbuilt fact lives in `BACKLOG-ROADMAP.md`.
+
 ## Where each kind of fact lives
 
 - The intended design of any part of the system → its spec.
