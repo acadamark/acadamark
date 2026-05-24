@@ -375,7 +375,7 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 
 **Error nodes.** Two distinct error-node shapes are produced, depending on which finder caught the malformed construct.
 
-**Sigil-opener error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-line without finding the mirrored closer, it commits the truncated span as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Parsing failed before any `acadamarkTag` fields were populated, so the shape is sparse:
+**Sigil-opener error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-document without finding the mirrored closer, it commits the span (from the opener through to EOF) as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Parsing failed before any `acadamarkTag` fields were populated, so the shape is sparse:
 
 ```
 {
@@ -386,7 +386,7 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 }
 ```
 
-This behavior is a finite-lifespan guard: when multi-line sigil tags are implemented, the end-of-line check in the micromark finder will be relaxed and these error tokens will become unreachable.
+Multi-line sigil tags themselves parse cleanly: a sigil opener with a matching closer is handled across line endings in both flow and text positions (`<# heading\n   spans lines #>`, `<$$\n...\n$$>`, etc.). The error token arises only when no closer is found at all — the sigil-side of the EOF-consumption behavior the long-form error below also exhibits. Localizing the error footprint so it covers only the unterminated opener (rather than swallowing everything from the opener to EOF) is a tracked gap against the core always-renders guarantee, filed in `BACKLOG-ROADMAP.md` as the blank-line-termination / EOF-consumption item (formerly DF-16, in the parser-bug cluster).
 
 **Long-form error node.** When the micromark finder recognizes a long-form opener but reaches end-of-document without finding the matching `</tagname>` closer, the long-form node has already had its opener parsed (so its `acadamarkTag` fields are populated) before the missing closer is detected. The node's `type` is flipped from `acadamarkTag` to `acadamarkTagError` and an `error` field is added, but the rest of the node's fields are retained:
 

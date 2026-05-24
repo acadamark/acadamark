@@ -6,10 +6,10 @@ Acadamark uses `\` as the escape character for syntactically-significant charact
 
 In prose content, write `\X` to produce a literal `X` for any character `X` that has syntactic meaning. Significant characters include:
 
-- **Acadamark constructs in content positions:** `<`, `|`, `\`
+- **Acadamark constructs in content positions:** `<`, `|`, `\`, `^`, `_`, `{`, `}`
 - **Markdown idioms acadamark accepts:** `*`, `_` (emphasis), `` ` `` (code spans), `#` (heading at start of line), `$` (math when bounded by `$...$`)
 
-The escape character itself is escaped as `\\`.
+The escape character itself is escaped as `\\`. The four additional content-position characters `^`, `_`, `{`, `}` are acadamark-consumed so that `\^` and `\_` suppress the inline TeX shortcut interpretation (`^{...}` for superscript and `_{...}` for subscript — see `notes/specs/shorthand-syntax.md` §"Inline TeX shortcuts") even before a `{`, and `\{` and `\}` produce literal braces inside content.
 
 **Sigil characters (`#`, `$`, `` ` ``) are syntactically meaningful only at sigil-tag opening positions (`<#`, `<$`, `` <` ``), not in prose content.** In prose, `\#`, `\$`, `` \` `` are markdown pass-through sequences, not acadamark escapes — they pass through to remark, which processes them as CommonMark escapes.
 
@@ -49,7 +49,7 @@ This is deliberate. Silent dropping of `\` would mask author mistakes; permissiv
 A trailing `\` at the end of content (before `>`) is the same error: `unknown escape sequence: \`.
 
 The precise rule: `\X` is processed as follows, in order:
-1. If `X` is an acadamark-significant character in content positions (`<`, `|`, `\`), acadamark consumes the escape and emits literal `X`.
+1. If `X` is an acadamark-significant character in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), acadamark consumes the escape and emits literal `X`.
 2. If `X` is any other ASCII punctuation character (CommonMark's escapable set), acadamark passes `\X` through unchanged for remark to consume.
 3. Otherwise, acadamark emits an `acadamarkParseError` node.
 
@@ -63,7 +63,7 @@ The user-facing rule says "escape any syntactically-significant character." The 
 
 **Inside named-tag content and hash sigil-tag content** (the regions the Peggy grammar processes), when the parser encounters `\X`:
 
-- If `X` is an acadamark-significant character in content positions (`<`, `|`, `\`), acadamark consumes the escape and emits literal `X` in the AST.
+- If `X` is an acadamark-significant character in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), acadamark consumes the escape and emits literal `X` in the AST.
 - If `X` is any other ASCII punctuation, acadamark passes the escape sequence `\X` through unchanged. Remark consumes the escape when recursive content parsing is implemented.
 - If `X` is neither, acadamark emits an `acadamarkParseError` node.
 
@@ -202,7 +202,7 @@ Same here. Inside `<csv>`, the content is CSV source. The CSV parser handles its
 
 ## Implementation note
 
-The escape rules are implemented in the grammar (Peggy) by extending the relevant content rules to recognize `\X` sequences. The grammar consumes `\X` and emits `X` for acadamark-significant `X` in content positions (`<`, `|`, `\`), passes `\X` through unchanged for other ASCII punctuation, and emits `acadamarkParseError` for unrecognized `X`.
+The escape rules are implemented in the grammar (Peggy) by extending the relevant content rules to recognize `\X` sequences. The grammar consumes `\X` and emits `X` for acadamark-significant `X` in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), passes `\X` through unchanged for other ASCII punctuation, and emits `acadamarkParseError` for unrecognized `X`.
 
 **The micromark finder is unaffected.** The finder does not know about backslash escaping. For `\<tagname>` in named-tag content, the finder sees `\` as a regular char, then `<tagname>` increments depth — so the depth tracking works correctly even with an escaped `<`. The grammar then processes `\<` as an escape unit (the escape alternative is tried before the nested-construct alternative), consuming `\<` as literal `<` and leaving `tagname>` as regular text.
 
