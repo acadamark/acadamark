@@ -98,6 +98,8 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] Discuss just-in-time math symbol definitions
 - [ ] Discuss executable code blocks (Jupyter-style; Architecture-tier-sized if adopted)
 - [ ] Discuss `<presentation>` / `<slide>` / `<slide-notes>` vocabulary (formerly DF-6)
+- [ ] Discuss four open design questions prerequisite to multi-file authoring (DF-4): MF-Q1 project-config / `<include>` interaction; MF-Q2 standalone-chapter mode invocation, bibliography scope, and stub-marker family; MF-Q3 project-metadata placement in the assembled AST; MF-Q4 `<include>` pipeline placement and discovery timing
+- [ ] Discuss four open design questions prerequisite to multi-column display (DF-5): MC-Q1 `<config>` syntax for column settings (kwarg vs nested-element form); MC-Q2 render-mode container for `column-count`; MC-Q3 `span` kwarg value space and cascade interaction; MC-Q4 responsive-vs-fixed signaling mechanism
 - [ ] Smart-typography conversions — open design question
 - [ ] Underline and strikethrough shortcuts — open design question
 
@@ -440,6 +442,102 @@ the article and book design passes; the result is either a new spec
 directory) or a recorded decision not to pursue. Filed under the
 discussion-is-work rule (`CONTRIBUTING.md`); the source placeholder file
 is archived at `notes/archive/slide-element-deferred-2026-05.md`.
+
+**Discuss four open design questions prerequisite to multi-file authoring
+(DF-4).** Surfaced by the Front C extensions-cluster spec audit. These
+are forks the `notes/specs/multi-file-authoring.md` blueprint previously
+presented as settled; the audit and fix-slice disclosed them as open and
+filed them here. They are decisions owed before DF-4 (the
+Architecture-tier multi-file authoring arc) is built; they are not
+independent free leaves. Filed under the discussion-is-work rule
+(`CONTRIBUTING.md`). The spec's §"Open design questions" section catalogs
+the same four with the same identifiers.
+
+- **MF-Q1 — project-config / `<include>` interaction.** When the project
+  configuration lists a file and another file also `<include>`s it: is
+  the inclusion de-duplicated (project config canonical, redundant
+  `<include>` silently skipped) or does the file appear at every
+  referenced position (both mechanisms run independently)? And on
+  ordering disagreement between the project config and an `<include>`
+  position, which wins? Both directions are defensible; the choice is a
+  design decision.
+
+- **MF-Q2 — standalone-chapter mode invocation, bibliography scope, and
+  stub-marker family.** Three undecided sub-points: (a) *invocation* —
+  CLI flag, `<config>` option, automatic-on-missing-project-config, or
+  some combination; (b) *bibliography scope* — whether standalone mode
+  loads the project-config-declared shared bibliography (so cross-file
+  `<cite>` still resolves) or treats cross-file cites as unresolved
+  stubs; (c) *stub-marker family* — the spec illustrates `[?ref]` for
+  the cross-reference case; the corresponding marker shapes for cites,
+  notes, and any other cross-file reference are not enumerated.
+
+- **MF-Q3 — project-metadata placement in the assembled AST.** The spec
+  states project metadata is *sourced* from the project config file but
+  does not say where it *lands* in the assembled multi-file AST. Two
+  shapes the spec does not choose between: a synthesized top-level
+  front-matter block (e.g. a `<book-front>` containing a `<meta>`
+  populated from the project config, prepended to the assembled book
+  AST) versus distribution as inherited defaults available to each
+  chapter's per-chapter `<meta>` lookups without appearing as a separate
+  AST node. Different shapes affect downstream cross-reference
+  resolution, JATS export, and rendering.
+
+- **MF-Q4 — `<include>` pipeline placement and discovery timing.** Two
+  undecided sub-points: (a) *pipeline placement* — is `<include>`
+  expansion a structural plugin walking the parsed AST and splicing
+  included file content, or a parser-level extension that re-parses the
+  referenced file inline during the initial parse; (b) *discovery
+  timing* — Phase 1 (Discovery) is project-wide, but `<include>`
+  directives are inside file content and only visible once parsing has
+  happened; does a pre-Phase-1 discovery sweep collect all transitive
+  include targets, or are include-referenced files not listed in the
+  project config invisible to Phase 1's project-wide registries?
+
+**Discuss four open design questions prerequisite to multi-column display
+(DF-5).** Surfaced by the Front C extensions-cluster spec audit. These
+are forks the `notes/specs/multi-column-display.md` blueprint previously
+presented as settled; the audit and fix-slice disclosed them as open and
+filed them here. They are decisions owed before the multi-column display
+feature is built (DF-5 in this document); they are not independent free
+leaves. Filed under the discussion-is-work rule (`CONTRIBUTING.md`). The
+spec's §"Open design questions" section catalogs the same four with the
+same identifiers.
+
+- **MC-Q1 — `<config>` syntax for column settings.** The
+  multi-column-display spec previously illustrated a nested-element
+  form (`<config><columns count=2></config>`) which is not supported by
+  `<config>` as it currently works — `acadamarkConfigDiscovery`
+  (`notes/specs/interpreter.md` §3.2) reads kwargs and does not walk
+  nested children (the gap is also tracked as the formerly-PG-9
+  "nested `<config>` not read" item elsewhere in this document). The
+  fork: adopt the kwarg form `<config columns=2>` (no new machinery),
+  or adopt the nested-element form (requires extending `<config>`'s
+  reading rules and/or registering a `<columns>` vocabulary element).
+  Either is workable as a design.
+
+- **MC-Q2 — render-mode container for `column-count`.** Which container
+  carries the CSS `column-count` (and the analogous typeset
+  directives): the whole-body container (`<article-body>` /
+  `<book-body>`), so the entire body flows in columns; or each
+  `<section>` independently, so per-section override is the natural
+  unit? Affects cascade semantics and figures that cross section
+  boundaries.
+
+- **MC-Q3 — `span` kwarg value space and cascade interaction.** The
+  spec illustrates `span=full`. Which other values are accepted (e.g.
+  `span=2` for a fractional span in a three-column layout,
+  `span=column-set`, `span=none`)? And what does `span=full` mean
+  inside a section that is already `columns=1` (no-op, or widens the
+  figure beyond the single-column section's width)?
+
+- **MC-Q4 — responsive-vs-fixed signaling mechanism.** How does the
+  render-mode lowering know whether the target is responsive (web,
+  column count adapts to viewport width) or fixed (print, columns
+  constant)? Two candidates: a build / CLI target option (e.g.
+  `--target=web` vs `--target=print`), or a `<config>` setting in
+  source. Affects authoring conventions — authors mark intent in source
+  vs. the build target drives the lowering.
 
 **Parser bugs — AUD-04 (formerly), AUD-21–23 (formerly), DF-16 (formerly),
 parser-error-node renderer.** Six distinct parser-level shortfalls surfaced

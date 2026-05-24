@@ -63,10 +63,22 @@ The interpreter reads the included file's content and inserts it at the
 include's location. The included file's content is processed as if it
 were inline (recursive parsing, structural transformations, etc.).
 
-The project configuration is the canonical structure; explicit includes
-are an authoring affordance for finer-grained control. Both work;
-documents using only the project config work; documents using only
-includes work; mixed use works.
+The pipeline integration of `<include>` is an open design question
+(MF-Q4 in §"Open design questions" below): *where* in the pipeline
+include expansion runs (a structural plugin walking the AST versus a
+parser-level re-parse of the referenced file inline), and *when*
+include-referenced files that are not listed in the project config are
+discovered in time to participate in Phase 1's project-wide registries,
+are both undecided.
+
+The project configuration and the explicit include directive are two
+mechanisms that can each carry the document's structure on its own — a
+document using only the project config, or only includes, is well-defined
+in each case taken alone. How the two mechanisms interact when a single
+document uses both is an open design question (MF-Q1 in §"Open design
+questions" below): when the project config lists a file and another file
+also `<include>`s it, the de-duplication rule and the ordering precedence
+have not been decided.
 
 ## Cross-reference implications
 
@@ -79,8 +91,12 @@ files in the project at resolution time:
 - Cross-references (`<ref fig-1>`) reference numbered elements anywhere
   in the project. The numbering plugins process the project as a whole,
   not file-by-file.
-- Notes (`<note>`) are numbered across the project; placement depends on
-  `note-position` (chapter-end notes vs document-end notes).
+- Notes (`<note>`) are numbered across the project. The `placement` kwarg
+  on `<note>` (values `end`, `foot`, `side`, per `notes/specs/interpreter.md`
+  §3.6) governs where each note appears. A chapter-end placement mode for
+  multi-file documents depends on the per-section / per-chapter note
+  collection work tracked as PG-1 in `BACKLOG-ROADMAP.md` landing first;
+  it is not a currently available `placement` value.
 
 Multi-file processing is therefore not "process each file separately and
 concatenate." The plugin pipeline operates on the project's combined
@@ -89,19 +105,29 @@ AST, not per-file ASTs.
 ## Plugin pipeline shape
 
 The interpreter pipeline (see `notes/specs/pipeline.md`) extends to multi-file
-processing without redesign. The registries (configuration, citation,
-numbered-elements) are shared resources populated by multiple file passes
-before resolution runs.
+processing without redesign of the per-phase responsibilities. The
+registries (configuration, citation, numbered-elements) are shared
+resources populated by multiple file passes before resolution runs; *what
+each phase does* is unchanged from the single-file pipeline. The
+difference is that the registries span the project rather than a single
+file.
 
-- **Phase 1 (Discovery).** Reads config, library, bib-entry from all
-  files. Registry is project-wide.
+- **Phase 1 (Discovery).** `acadamarkConfigDiscovery` reads `<config>`
+  blocks (per `notes/specs/pipeline.md` §4.1 and `notes/specs/interpreter.md`
+  §3.2). In multi-file mode the configs read from every file accumulate
+  into the project-wide config registry.
 - **Phase 2 (Structural transformation).** Per-file structural
-  transformation runs, but the project-level structure (book front/body/
-  back containing chapters) is enforced at a separate level — a
-  "project structuring" stage.
-- **Phase 3 (Resolution and rendering).** Cross-references resolve
-  against project-wide registries. Bibliography assembles from the
-  project's cited entries.
+  transformation runs as in the single-file pipeline. The project-level
+  structure (book front/body/back containing chapters) is enforced at a
+  separate level — a "project structuring" stage.
+- **Phase 3 (Resolution and rendering).** Includes the existing
+  `buildCitationIndex` step (`pipeline.md` §4.4 / `interpreter.md` §3.5),
+  which is the step that reads `<library>` / `<data>` citation source —
+  citation library loading is a Phase 3 responsibility in the core
+  pipeline and remains so in multi-file mode, with the resulting citation
+  index spanning the project. Cross-references resolve against
+  project-wide registries; bibliography assembles from the project's
+  cited entries.
 
 A project-level interpreter wrapper coordinates the per-file processing.
 The interpreter itself stays focused; the wrapper handles project-level
@@ -117,8 +143,12 @@ Five patterns deserve explicit framing.
 2. **Chapter metadata.** Each chapter's `<meta>` block stays inside its
    `<book-part>` as the chapter's descriptive metadata container (holding
    `<book-part-title>`, chapter-specific `<author>`, etc.). Project-level
-   metadata (book title, book authors) lives in the project configuration
-   file, not in any single chapter.
+   metadata (book title, book authors) is *sourced* from the project
+   configuration file, not from any single chapter. Where project-level
+   metadata *lands in the assembled multi-file AST* — for example as a
+   synthesized top-level front-matter block, or distributed as
+   per-chapter inherited defaults — is an open design question (MF-Q3 in
+   §"Open design questions" below).
 
 3. **Bibliography.** A shared bibliography file (e.g. `references.bib`)
    referenced from the project config is the typical pattern.
@@ -131,10 +161,72 @@ Five patterns deserve explicit framing.
    knows about all numbered elements across chapters.
 
 5. **Standalone-chapter view.** An author can render just one chapter,
-   not the whole book. The interpreter supports this — processing a
-   single file with its references stub-resolved (showing `[?ref]`
-   markers for cross-file references that cannot resolve in single-file
-   mode).
+   not the whole book — processing a single file with its cross-file
+   references stub-resolved (the spec shows `[?ref]` for the
+   cross-reference case as an illustrative marker shape). The
+   *invocation mechanism* for standalone mode (CLI flag, `<config>`
+   option, automatic-on-missing-project-config), the *scope of stub
+   resolution* (in particular, whether standalone mode loads the
+   project-config-declared shared bibliography to resolve `<cite>` or
+   treats cross-file cites as unresolved stubs), and the *stub-marker
+   family* (the corresponding shapes for cites, notes, and any other
+   cross-file reference) are open design questions (MF-Q2 in §"Open
+   design questions" below).
+
+## Open design questions
+
+These are undecided design forks the rest of the spec previously presented
+as settled. They are not blocking issues — they are decisions owed
+*before* the multi-file feature is built (DF-4 in `BACKLOG-ROADMAP.md`).
+Each is filed as a discussion item in `BACKLOG-ROADMAP.md` (surfaced by
+the Front C extensions-cluster spec audit); the decision happens there,
+not in this spec.
+
+- **MF-Q1 — project-config / `<include>` interaction.** When the project
+  configuration lists a file and another file also `<include>`s it: is
+  the inclusion de-duplicated (project config canonical, redundant
+  `<include>` silently skipped) or does the file appear at every
+  referenced position (both mechanisms run independently)? And if
+  ordering disagrees between the project config and an `<include>`
+  position, which wins? Undecided.
+
+- **MF-Q2 — standalone-chapter mode: invocation and bibliography scope.**
+  Three undecided sub-points:
+  - *Invocation:* CLI flag, `<config>` option, automatic-on-missing-
+    project-config, or some combination?
+  - *Bibliography scope:* in standalone mode, is the project-config-
+    declared shared bibliography loaded (so cross-file `<cite>` still
+    resolves) or treated as unavailable (all cross-file cites become
+    unresolved stubs)?
+  - *Stub-marker family:* the spec illustrates `[?ref]` for the
+    cross-reference case; the corresponding marker shapes for cites,
+    notes, and any other cross-file reference are not enumerated.
+
+- **MF-Q3 — project-metadata placement in the assembled AST.** The spec
+  states project metadata is *sourced* from the project config file but
+  does not say where it *lands* in the assembled multi-file AST. Two
+  shapes (among possible others) the spec does not choose between: a
+  synthesized top-level front-matter block (e.g. a `<book-front>`
+  containing a `<meta>` populated from the project config, prepended to
+  the assembled book AST) versus distribution as inherited defaults
+  available to each chapter's per-chapter `<meta>` lookups without
+  appearing as a separate AST node. Different shapes affect downstream
+  cross-reference resolution, JATS export, and rendering.
+
+- **MF-Q4 — `<include>` pipeline placement and discovery timing.** Two
+  undecided sub-points:
+  - *Pipeline placement:* is `<include>` expansion a structural plugin
+    that walks the parsed AST and splices included file content, or a
+    parser-level extension that re-parses the referenced file inline
+    during the initial parse? The choice has consequences (whether the
+    included file sees the parent's `<config>` context; whether it runs
+    through its own recursive-content pass; what stage owns the
+    file-reading concern).
+  - *Discovery timing:* Phase 1 is project-wide, but `<include>`
+    directives are inside file content and only visible once parsing has
+    happened. Does a pre-Phase-1 discovery sweep collect all transitive
+    include targets, or are include-referenced files not listed in the
+    project config invisible to Phase 1's project-wide registries?
 
 ## Related references
 
