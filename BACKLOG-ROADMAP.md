@@ -306,7 +306,7 @@ Additional small-vocab candidates surfaced in the authoring-features survey
 render-mode concern. Independent leaf, low-priority unless a publication
 target needs it.
 
-**pipeline.md note-numbering explanation — doc-clarity leaf.** In `pipeline.md`
+**pipeline.md note-numbering explanation — doc-clarity leaf.** In `notes/specs/pipeline.md`
 §10.5, the explanation of how a note gets its number is incomplete: it implies
 `fillNumbering` assigns note numbers, but `fillNumbering` is a no-op for notes —
 notes are numbered by `numberRegistry()` at the start of the apply-numbers step.
@@ -533,7 +533,7 @@ documentation findings that need separate slices.
   DSL_REGISTRY per AUD-08). Different tags support different combinations
   and the mapping is undocumented and inconsistent. Authors have no clear
   guide. Fix path: audit every vocabulary entry; create a unified
-  `notes/tag-forms-reference.md` showing the full matrix; identify and
+  `notes/specs/tag-forms-reference.md` showing the full matrix; identify and
   fix inconsistencies; establish a principle ("all tags should support
   all forms that semantically make sense, with the same output").
   Severity: medium — not a runtime bug, but a real documentation and
@@ -708,7 +708,7 @@ rather than ordinary maintenance.
 
 ### Spec-completeness audit (one-time large; future passes will be ordinary)
 
-Audit every spec in the repo (`DESIGN.md`, `notes/*.md`,
+Audit every spec in the repo (`DESIGN.md`, `notes/specs/*.md`,
 `packages/layer1-vocabulary/SPEC.md`, the per-element vocabulary
 entries) against the **rebuild-from-docs standard** stated in the
 documentation system design: *with all code deleted, the remaining
