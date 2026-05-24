@@ -147,7 +147,7 @@ Spent Phase-0-style investigations whose conclusions have all landed in code or 
 Code that's still part of the active project lives outside `archive/`:
 
 - The current parser implementation is in `/packages/remark-acadamark/`.
-- The pure-micromark parser predecessor (Slices 1–2 of the current parser, before the Peggy hybrid switch) is in `/packages/remark-acadamark-pure-micromark-archive/`. It's archived but kept in `/packages/` because it's still part of the current project's architectural history at the implementation level — not a pre-rewrite artifact.
+- The pure-micromark parser predecessor (Slices 1–2 of the current parser, before the Peggy hybrid switch) previously lived at `/packages/remark-acadamark-pure-micromark-archive/` and has been removed from the working tree. Its full implementation is in the git commit graph (retired in `373c4b7`, "Switch to Peggy hybrid parser architecture"); the design rationale for choosing the Peggy hybrid is in `notes/specs/shorthand-syntax.md` §"Parser architecture".
 - The current section-nesting plugin is in `/packages/rehype-section-nesting/`.
 
 ## Reading order, if you're curious

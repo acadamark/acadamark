@@ -40,8 +40,6 @@ The parser is implemented as a hybrid: a small **micromark extension** locates t
 
 The split is chosen for what we call the *freeze property*. micromark's tokenizer is a hand-written state machine — fast, but expensive to extend, and easy to break in subtle ways when modified. Peggy, by contrast, is a declarative PEG grammar where each rule is local and readable, and incremental additions are bounded in scope. By restricting micromark to the narrow job of "find where a tag starts and ends" — and pushing everything *inside* the tag (attribute strings, identifiers, ids, classes, keywords, positionals, flags) into the Peggy grammar — the part of the parser that is hard to change is also the part that should rarely need to change. Future grammar evolution lives in Peggy, where it is visible and bounded.
 
-An earlier pure-micromark prototype, where attribute parsing was also done in the tokenizer, lives at `packages/remark-acadamark-pure-micromark-archive/` for historical reference.
-
 ## Grammar (EBNF)
 
 ```ebnf
