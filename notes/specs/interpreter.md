@@ -115,6 +115,39 @@ and keeps the existing step-2 through step-12 references in this document
 unchanged. All other Phase 0/1/2/3 plugins retain their original step
 numbers as cited throughout §3 below.
 
+### Tree-walking is centralized in shared single-pass walkers (design property)
+
+Interpreter tree traversal is centralized in a small set of shared
+walker helpers. Plugins that walk the tree do not write their own descent
+logic; they call the shared helper that matches their walk shape
+(read-only discovery, in-place replacement, in-place normalization).
+Each walk is **single-pass by design** — everything a given traversal
+needs to accomplish is done in one pass over the tree.
+
+The rationale is maintainability and cohesion. Acadamark trees are not
+plain mdast: an `acadamarkTag` node's children live on `.content`, not
+on `.children`, and opaque-content nodes (math bodies, code, DSL
+payloads) must not be descended into. The standard `unist-util-visit`
+does not encode either rule. Without centralized helpers, every plugin
+would reinvent these descent decisions and they would drift apart over
+time (as they did before consolidation — the audit history records
+plugin walkers that variously skipped, descended through, or mishandled
+opaque content). Routing every walk through one helper per shape keeps
+the descent rules in one place and the per-plugin sites uniform.
+
+The single-pass design has a known future pressure point: it may be
+revisited if multithreading the interpreter for speed becomes
+worthwhile. Multiple passes over disjoint subtrees can be parallelized
+more cleanly than a single sequential pass that performs several
+unrelated jobs at once. No such work is planned; this caveat is
+recorded so the trade is explicit and the design is not mistaken for an
+unconditional commitment to single-pass.
+
+The shared walkers themselves live in
+`packages/acadamark-interpreter/src/lib/` (`discover.js`,
+`walk-replace.js`, `walk-normalize.js`); their per-plugin use sites are
+called out in §3.
+
 ---
 
 ## 3. Plugin chain
@@ -1196,8 +1229,13 @@ document body content. CSS elements come before JS elements.
 
 ## 11. Error handling and failure modes
 
-The guiding principle is: documents always render to something. Errors are
-visible in the rendered output rather than throwing and producing no output.
+The guiding principle is the always-renders guarantee defined in
+`notes/specs/principles.md`: the document always renders to something, *and*
+every error renders visibly at the location where it occurred — both
+halves are core, not deferrable. The interpreter currently honors this
+guarantee for the error categories enumerated in §11.2 below. One
+category — parser-stage error nodes — does not yet render visibly; that
+is a tracked gap against the guarantee, described in §11.5.
 
 ### 11.1 Console warnings (`lib/errors.js`)
 
@@ -1211,7 +1249,12 @@ All warnings use the prefix `[acadamark-interpreter] warning:`.
 | `warnTitlePrecedence()` | Both `<meta>` title and pipe title found |
 | `warnSkippedDocType(type)` | `book` / `book-part` doc type not handled |
 
-### 11.2 Visible error markers in output
+### 11.2 Visible error markers currently emitted
+
+The error categories that the interpreter currently renders as visible
+markers in the document body. This is not a complete enumeration of every
+error type the system can encounter — see §11.5 for the category that does
+not yet render visibly.
 
 | condition | visible marker |
 |-----------|---------------|
@@ -1242,6 +1285,41 @@ They do not appear in the HTML output.
 - Library parse failure → skip that library, continue with others.
 - All citations missing → no bibliography injected; `__cite-error` markers
   appear inline.
+
+### 11.5 Parser-stage error nodes — tracked gap against the always-renders guarantee
+
+The parser (`remark-acadamark`) produces two error node types when source
+constructs cannot be parsed: `acadamarkTagError` (for example, an
+unterminated long-form construct, or a long-form opening whose interior
+the grammar rejects) and `acadamarkParseError` (for example, an unknown
+escape sequence, an empty or unterminated `^{}`/`_{}` shortcut, or a
+named-tag content tree exceeding the recursion-depth limit).
+
+The interpreter currently has **no handler** registered for either node
+type. Neither is dispatched by the `acadamarkTag` handler (that handler
+is invoked only when `node.type === 'acadamarkTag'`, which these error
+types are not), and `INTERNAL_REGISTRY` contains no entries for them.
+When `toHast` encounters them it falls through to
+`mdast-util-to-hast`'s default unknown-node handling, which produces an
+empty `<div>` — visually nothing in the rendered document.
+
+This is a **tracked gap against the core always-renders guarantee** in
+`notes/specs/principles.md`, not an accepted exception. The guarantee
+requires every error to render visibly at the location where it
+occurred; parser-stage error nodes currently do not. The intended end
+state is a compile-step handler that emits these as house-style visible
+markers — the same family as the §11.2 markers above
+(`??ref: id??`, `??cite: key??`, the inline table-parse-error marker) —
+so that an authoring mistake the parser caught is visible in the
+rendered output at its source position.
+
+The work to close this gap is filed in `BACKLOG-ROADMAP.md` as the
+parser-error-node renderer (in the parser-bug cluster, framed as
+core-guarantee work and noted as the sibling of the blank-line /
+EOF-consumption shortfall). It is paired in `principles.md`'s
+*Current known gaps against the guarantee* section as the more
+impactful of the two siblings, since until it closes even bounded
+parser errors are invisible in the rendered output.
 
 ---
 

@@ -175,6 +175,15 @@ hast conversion if the element's content type is `block` rather than `prose`.
 **Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
 are converted to `acadamarkParseError` nodes with `subtype: 'max-recursion-depth'`.
 
+**Parser-stage error nodes.** Max-recursion-depth is one source of
+`acadamarkParseError`; the parser also produces `acadamarkParseError` for
+unknown escape sequences and for empty / unterminated `^{}` and `_{}`
+shortcuts, and produces `acadamarkTagError` for unterminated long-form
+constructs and for long-form openings the grammar rejects. The fate of
+all such nodes through the interpreter compile step — currently a
+tracked gap against the always-renders guarantee — is described in
+`notes/specs/interpreter.md` §11.5.
+
 **Cross-reference:** `notes/specs/recursive-content-spec.md` for the full design,
 including the mixed-content (escape-errors) path.
 
@@ -486,6 +495,11 @@ from `mdast-util-to-hast`.
 - Standard mdast node types (paragraph, emphasis, heading, etc.) are converted
   by built-in mdast-util-to-hast rules.
 - `acadamarkTag` nodes call the custom handler registered in `handlers.acadamarkTag`.
+- Parser-stage error nodes (`acadamarkTagError`, `acadamarkParseError`)
+  fall through to `mdast-util-to-hast`'s default unknown-node handling —
+  the interpreter has no handler for them. This is a tracked gap against
+  the always-renders guarantee, described in `notes/specs/interpreter.md`
+  §11.5.
 
 **The custom handler** dispatches through:
 
