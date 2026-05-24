@@ -47,6 +47,28 @@ root / `notes/`.
 - What is being worked on now → STATUS.md "in flight / next".
 - Test count, vocabulary count, etc. → no document. Run `npm run verify`.
 
+## Reading order (for newcomers)
+
+The document table above lists every doc and its role. For someone new to the
+project, the recommended sequence:
+
+1. `README.md` — the project's purpose and high-level approach.
+2. `STATUS.md` — what is working today, what is in flight, what is pending.
+3. `DESIGN.md` — design rationale: the layer model, JATS relationship, DSL
+   processor delegation, scope decisions, design directions.
+4. `notes/idioms.md` and `notes/principles.md` — the cross-cutting principles
+   (lexer delegation; always-renders; parser-knows-nothing-about-meaning).
+
+For specific subsystems, read the spec for that subsystem under `notes/`: the
+parser specs together (`shorthand-syntax.md`, `escape-rules-spec.md`,
+`multiline-spec.md`, `recursive-content-spec.md`); the interpreter spec
+(`interpreter.md` and `pipeline.md`); the vocabulary spec
+(`packages/layer1-vocabulary/SPEC.md` and the per-element entries); the naming
+rules (`layer1-naming.md`); the shape-token machinery (`shape-tokens.md`).
+
+Open work — `notes/acadamark-backlog-roadmap.md`. Working conventions for AI
+sessions — `CLAUDE.md`.
+
 ## The coherence check
 
 Every implementation slice ends with this check, and reports its result. A

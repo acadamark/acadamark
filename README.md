@@ -67,7 +67,7 @@ The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (
 
 ## Reading order
 
-The project has accumulated enough documentation that knowing where to start matters. See [`notes/reading-order.md`](notes/reading-order.md) for a guided path through the spec and implementation docs, broken out by what you're trying to understand (the parser, the vocabulary, the interpreter, deferred features).
+The project has accumulated enough documentation that knowing where to start matters. See the [Reading order section in `notes/doc-ownership.md`](notes/doc-ownership.md#reading-order-for-newcomers) for a guided path through the spec and implementation docs.
 
 ## Project goals
 

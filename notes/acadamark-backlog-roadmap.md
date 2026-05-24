@@ -356,6 +356,22 @@ inline-semantic (`<abbr>`, `<term>`, `<glossary>`, `<glossary-entry>`); plus the
 theorem-family vocab (DF-11b). All "to be specified" — each needs a short vocab
 spec, then a schema entry. Group them; do as a batch.
 
+Additional small-vocab candidates surfaced in the authoring-features survey
+(archived 2026-05-23) and absorbed into this cluster — same shape, same batch:
+
+- **Programming-related inline elements**: `<kbd>` (keyboard input),
+  `<var>`, `<samp>`, `<output>` (HTML-native; small schema entries).
+- **Collapsible sections**: `<details>` / `<summary>` (HTML-native;
+  pipe-content of `<details>` becomes `<summary>`, body becomes the
+  expandable content).
+- **Rich author metadata**: sub-elements within `<author>` — `<affiliation>`,
+  `<orcid>`, `<email>`, `<corresponding>` (structured author info for journal
+  venues and JATS export). Structurally similar to `<bib-entry>`.
+- **Document-level metadata elements**: `<license>` (SPDX code), `<doi>`,
+  `<short-title>` (or `short` kwarg on `<title>`), `<subject>` (document
+  classifier), `<thumbnail>` (image for social sharing). Each is a small
+  addition to `<meta>`'s allowed children.
+
 **Multi-column display — DF-5.** Deferred-feature doc exists; render-mode
 concern. Independent leaf, low-priority unless a publication target needs it.
 
@@ -385,6 +401,84 @@ from the now-archived audit-cleanup-stopping-point's FLAGGED-1, not a
 prescribed answer.
 
 Filed under the discussion-is-work rule (`doc-ownership.md`).
+
+**Discuss whether the cross-reference resolver should warn on
+type-prefix mismatch.** A discussion item, not a build item. When
+`@fig:priority` resolves to an equation (or `@sec:foo` to a figure,
+etc.), the registry knows the target's actual type and the reference's
+stated prefix disagrees with it. This is a detectable mismatch that
+could be a warning ("ref `@fig:priority` targets an `equation`, not a
+`figure` — did you mean `@eqn:priority`?"). The decision settles whether
+to add the warning, and at what severity (`file.message()` vs visible
+error marker in the rendered output).
+
+**Note:** this is about *catching* a mismatch, not *inferring* the
+prefix. Prefix inference was considered earlier and rejected because it
+makes the id's meaning implicit and breaks down once elements are wrapped
+in `<figure>` downstream — that rejection is context for the discussion,
+not a separate item. Filed under the discussion-is-work rule. Original
+framing in `archive/at-sigil-reference-proposal-2026-05.md`.
+
+**Discuss whether to add compact external-reference syntax.** A
+discussion item, not a build item. MyST supports `wiki:Book` to link to
+Wikipedia's "Book" article, `doi:10.5281/zenodo.6476040` to link to a
+DOI, `arxiv:1234.5678` to link to an arXiv paper, `github:user/repo`
+for GitHub. Compact authoring without typing full URLs. Mechanism:
+parser-level shortcuts that expand `wiki:foo` to
+`<a href="https://en.wikipedia.org/wiki/foo">`. The decision settles
+whether to add this, which prefixes to support, and how the parser
+recognizes them (a registry of prefix → URL-template pairs, with
+`\wiki:foo` as the literal-text escape). This is a parser feature, not
+a vocabulary feature. Harvested from
+`archive/authoring-features-survey-2026-05.md`. Filed under the
+discussion-is-work rule.
+
+**Discuss whether to add external-link rich previews.** A discussion
+item, not a build item. The hover-preview rendering substrate exists
+(currently used for notes, refs, citations — see `notes/interpreter.md`
+§10.2). External link metadata-fetching is the open gap: would require
+fetching target metadata (Wikipedia summary, DOI title + abstract,
+GitHub repo description) at build time and embedding it for the hover
+preview to display. The decision settles whether to add this, which
+sources to support, and how to handle build-time network access (caching,
+offline mode, fallback when fetch fails). Harvested from
+`archive/authoring-features-survey-2026-05.md`. Filed under the
+discussion-is-work rule.
+
+**Discuss whether to add just-in-time math symbol definitions.** A
+discussion item, not a build item. A reference system for mathematical
+symbols, similar to citations: define `\alpha` once with a meaning ("the
+coefficient of foo"), and wherever it appears its definition pops up on
+hover. Substantial design — what counts as a symbol, how definitions are
+authored (`<symbol-def>` element? a `<def>` form inside math content?),
+how the resolver matches symbol references to definitions across the
+document, how it interacts with KaTeX's rendering. The decision settles
+whether to add the feature and what its surface looks like. Harvested
+from `archive/authoring-features-survey-2026-05.md`. Filed under the
+discussion-is-work rule.
+
+**Discuss whether to add executable code blocks (Jupyter-style).** A
+discussion item, not a build item. Authors annotate a code block to mark
+it for execution; the build runs the code in a kernel, captures stdout/
+stderr/return value/plot output, and embeds the result. Established
+convention via RMarkdown / Quarto / Jupyter. The DSL-processor model
+in DESIGN.md provides the substrate: an executable-code processor is one
+more processor extending the registry. The execution-control attribute
+convention (`+eval`, `+echo`, `+output`, `+error`, `cache`,
+`dependencies`) matches existing tooling. The decision settles whether
+acadamark commits to this direction.
+
+**If adopted, this is an Architecture-tier-sized effort, not a Layer 3
+slice.** It brings in a kernel, sandboxing (untrusted code execution is
+a security boundary), output capture, caching, dependency management.
+If the discussion concludes "yes," the item graduates from this
+discussion item to an Architecture-tier arc (parallel to JATS export,
+multi-file authoring, book types) — that is the discussion-is-work
+rule's defined exit when a discussion commits to substantial work.
+Filing here at Layer 3 honestly reflects that the commitment to do it
+does not yet exist; what exists is the question of whether to commit.
+Harvested from `archive/authoring-features-survey-2026-05.md`. Filed
+under the discussion-is-work rule.
 
 **Discuss whether to add `<presentation>` / `<slide>` / `<slide-notes>`
 Layer 1 vocabulary for presentations — DF-6 (formerly).** A discussion

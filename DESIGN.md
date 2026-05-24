@@ -133,6 +133,18 @@ So "compiles to HTML" means compiles to Layer 1. How Layer 1 reaches a screen is
 
 One honest caveat belongs here. Custom elements styled with CSS carry no built-in semantics: to a screen reader, a `<section-title>` is not a heading, it is an unknown element. This is a genuine accessibility gap, and it is the strongest reason render mode is a first-class display target rather than an afterthought — lowering to real `<h1>`/`<h2>` elements restores heading semantics for assistive technology and for tools that read document outlines. But notice the gap argues for *having* a good lowering, not for making lowered HTML canonical. The fix is to ship render mode well, not to discard the semantics at the source.
 
+## Embedded DSLs: processor delegation
+
+Some content cannot be rendered by HTML alone — LaTeX math, ABC music notation, Mermaid diagrams, CSV tables, executable code. Acadamark handles this through a uniform mechanism: tag content the browser cannot render natively is routed, by a tag-to-processor registry, to a specialized processor that returns something the browser *can* render — HTML, SVG, or a rendered code block. The processor delegates the lexer (and the rendering); acadamark owns the tag identity and the routing.
+
+The model is in production. Math content inside `<$ … $>` or `<$$ … $$>` is handed to KaTeX, which returns HTML. Fenced code inside `` <` … `> `` and `` <``` … ``` > `` is handed to a syntax highlighter. The tag-to-processor mapping is the DSL registry; a new processor (Mermaid, ABC, executable code) is added by extending the registry — the parser and interpreter do not need to know about the new content type. Each tag's content stays as a verbatim string through the recursive-content pass (its content handler is not `default`), so the processor receives the source exactly as the author wrote it.
+
+Each processor has its own attribute vocabulary. CSV uses `align`, `header`; Mermaid uses `theme`, `layout`; executable Python uses `+eval`, `+echo`, `+output`. There is no global "valid processor attribute" list — what each tag accepts is what its processor accepts. A small set of attributes converges by convention because they describe the *output* rather than the engine: `caption`, `id`, `class`, `align`, `width`, `height`. Engines free-pass options they do not apply.
+
+Source language and display target are fused in the current model: `<csv>` means both "the source is CSV" and "render as a table"; `<mermaid>` means "the source is Mermaid" and "render as a diagram." This works for the common cases. A future split — `<csv #data> … </csv>` plus `<chart source=#data type=bar>` — would let the same data drive multiple displays; it is a natural extension when the need surfaces, not a redesign.
+
+The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/idioms.md`. There, remark provides the lexer for markdown constructs and acadamark owns the node identity; here, a specialized processor provides the rendering for non-native content and acadamark owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
+
 ## Layer 2: Authoring shorthand
 
 Two registers, both compiling to Layer 1.
