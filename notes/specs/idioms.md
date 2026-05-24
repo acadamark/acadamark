@@ -60,6 +60,12 @@ A few points worth noting:
 - The tagged forms support attributes (`<# #intro | Introduction #>`); the bare forms do not. When attributes are needed, the tagged form is the only option. Normalization does not invent attributes; it produces the attribute-free canonical node.
 - The principle is universal in intent — it governs every markdown/acadamark overlap. Its implementation is incremental: the normalization pass grows one construct at a time. A construct not yet covered by normalization is a not-yet-done item, never a decision that it was meant to stay a separate path. Whether a given row above is normalized *today* is a question for `STATUS.md` and the backlog, not for this document.
 
+### The normalization pass is a registry, not a switch
+
+Incremental growth is not only a rollout schedule — it is an architectural property of the pass itself. The normalization pass is structured as an open registry of per-construct rewrites: each entry pairs a recognizer for one markdown-form node with the rewrite that produces its canonical acadamark node, and the pass walks the tree applying any entry whose recognizer matches. Adding coverage for a new construct is adding an entry to the registry; it is never a modification to a central dispatch over node types.
+
+The rationale is the same rationale that makes the parser refuse to know about vocabulary (see `principles.md`'s parser-knows-nothing-about-meaning principle): a registry keeps each construct's rewrite local to itself, so adding a construct does not perturb the others; it lets the rollout be genuinely one construct at a time rather than one batched edit; and it keeps the pass's shape stable as coverage grows, instead of accreting branches in a switch that no single reader can hold in their head. The registry form is the structural expression of the incremental principle.
+
 ## When acadamark supersedes the lexer
 
 The default is: delegate the lexer. There is one circumstance that overrides the default — a construct for which remark's tokenizer cannot recognize what acadamark needs to treat as that construct.

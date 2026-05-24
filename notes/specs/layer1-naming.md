@@ -13,7 +13,6 @@ Examples:
 - `<article-subtitle>` — subtitle of an article
 - `<section-title>` — title of a section
 - `<sub-section-title>` — title of a sub-section
-- `<figure-caption>` — caption of a figure (alias for HTML's `<figcaption>`)
 
 This rule:
 - Makes element names self-documenting (no glossary required).
@@ -27,7 +26,7 @@ If standard HTML already provides an element that does the job, acadamark uses i
 
 Stays HTML:
 - `<section>`, `<article>`, `<figure>`, `<header>`, `<footer>`, `<aside>`, `<nav>`
-- `<figcaption>` (though `<figure-caption>` is allowed as an alias for naming consistency)
+- `<figcaption>`
 - `<table>`, `<caption>`, `<thead>`, `<tbody>`, `<tr>`, `<td>`, `<th>`
 - `<ul>`, `<ol>`, `<li>`, `<dl>`, `<dt>`, `<dd>`
 - `<a>`, `<img>`, `<code>`, `<pre>`, `<blockquote>`, `<em>`, `<strong>`

@@ -80,6 +80,7 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] AUD-22 — inline tag at line-start splits paragraphs (**highest-impact parser bug; standalone fix**)
 - [ ] AUD-23 — code sigil multi-line in text position produces `acadamarkTagError` (shares fix with AUD-21)
 - [ ] DF-16 — blank-line termination error recovery
+- [ ] Parser-error-node renderer — `acadamarkTagError` / `acadamarkParseError` visible at source location (always-renders core-guarantee work; sibling of DF-16)
 - [ ] AUD-13 — `<config>` silently accepts metadata kwargs that belong in `<meta>`
 - [ ] AUD-15 — no documented inventory of tag forms × tags
 - [ ] AUD-24 — vocabulary `related_plugins` plugin names are stale
@@ -440,8 +441,13 @@ directory) or a recorded decision not to pursue. Filed under the
 discussion-is-work rule (`CONTRIBUTING.md`); the source placeholder file
 is archived at `notes/archive/slide-element-deferred-2026-05.md`.
 
-**Parser bugs — AUD-04 (formerly), AUD-21–23 (formerly), DF-16 (formerly).**
-Five distinct parser-level bugs surfaced through audits but not yet fixed.
+**Parser bugs — AUD-04 (formerly), AUD-21–23 (formerly), DF-16 (formerly),
+parser-error-node renderer.** Six distinct parser-level shortfalls surfaced
+through audits but not yet fixed. The last two are siblings under the
+always-renders guarantee (`notes/specs/principles.md`): DF-16 is the
+"errors stay bounded so the rest of the document is seen" half;
+the parser-error-node renderer is the "produced error nodes are visible
+in the output at their location" half.
 
 - **No-pipe/no-content short form misread as long-form opener
   (formerly AUD-04).** A table with only kwargs and no inline data,
@@ -508,7 +514,37 @@ Five distinct parser-level bugs surfaced through audits but not yet fixed.
   constructs at blank lines for localized error recovery. Currently a
   tag opened before a blank line will consume across the blank line or
   to EOF. Explicit `Status: Deferred` in
-  `notes/specs/recursive-content-spec.md`.
+  `notes/specs/recursive-content-spec.md`. Under the re-tiered
+  always-renders guarantee in `notes/specs/principles.md`, this is a
+  known shortfall against the guarantee, not a permitted exception:
+  the "errors stay bounded so the rest of the document is seen" half
+  is currently violated when EOF-consumption occurs. The route to
+  closing it is partly a design question and partly an implementation
+  question; the item stays open until both are settled.
+
+- **Parser-error-node renderer — `acadamarkTagError` /
+  `acadamarkParseError` visible at source location (always-renders
+  core-guarantee work).** The parser produces `acadamarkTagError` and
+  `acadamarkParseError` nodes for grammar and parse failures, but the
+  interpreter has no compile-step handler registered for these node
+  types, so they currently fall through silently in the rendered
+  output. The always-renders guarantee
+  (`notes/specs/principles.md`) requires them to render visibly at
+  their source location — in the same house style the interpreter
+  already uses for other "the author wrote a reference the system
+  couldn't resolve" cases: `??ref: id??` for an unresolved
+  cross-reference, `??cite: key??` for an unresolved citation, an
+  inline table-parse-error marker for a malformed table body. The
+  parser-error markers should follow the same pattern. Sibling of
+  DF-16 above; both must close for the always-renders guarantee to
+  hold in full. The more impactful of the two, since until it closes
+  even bounded parser errors are invisible in the rendered output.
+  Fix path: register a compile-step handler in
+  `packages/acadamark-interpreter/src/index.js` for the
+  `acadamarkTagError` and `acadamarkParseError` mdast node types that
+  emits a hast element with the house-style marker text and a
+  distinguishing class for styling, mirroring how the unresolved-ref
+  and unresolved-cite markers are emitted today.
 
 **Silent-failure / authoring traps — AUD-13 (formerly).** `<config>`
 silently accepts metadata kwargs that belong in `<meta>` (`title=`,
