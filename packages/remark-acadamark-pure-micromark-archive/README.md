@@ -22,4 +22,4 @@ The active implementation switched to a **Peggy hybrid**: micromark handles only
 - Attribute parsing: permissive positional reading (allows `.`, `:`, `/` once a positional has started); keyword disambiguation by reading tag-name chars then checking for `=`.
 - HTML collision: acadamark text-position tokenizer is prepended and takes priority over remark-parse's built-in HTML inline tokenizer.
 
-See `notes/shorthand-syntax.md` in the project root for the full specification.
+See `notes/specs/shorthand-syntax.md` in the project root for the full specification.

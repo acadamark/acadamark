@@ -13,7 +13,7 @@
  * This registry lives parser-side. A future migration to
  * packages/layer1-vocabulary/ is planned: each long-form element's vocabulary
  * entry would declare its contentHandler there, and the parser would import
- * the map from that package. See notes/shorthand-syntax.md § "DSL tag
+ * the map from that package. See notes/specs/shorthand-syntax.md § "DSL tag
  * registry".
  */
 export const DSL_REGISTRY = new Map([
@@ -67,7 +67,7 @@ export const DSL_REGISTRY = new Map([
   // written.
   //
   // Future migration to packages/layer1-vocabulary/ is planned. See
-  // notes/shorthand-syntax.md § "DSL tag registry".
+  // notes/specs/shorthand-syntax.md § "DSL tag registry".
   ['aside',      'default'],
   ['blockquote', 'default'],
   ['note',       'default'],
