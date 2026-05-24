@@ -136,6 +136,14 @@ slice is not done until code and documentation agree.
 
 - An audit is a process; its only output is backlog items. There is no
   "audit findings" document.
+- An audit finding that is a backlog item is filed into
+  `BACKLOG-ROADMAP.md` at the moment it is surfaced — when the Phase 0
+  report exists — not deferred to the fix slice. Provisional filings are
+  allowed; the backlog, not a report or transcript, is the durable
+  holding place for a surfaced finding. A Phase 0 is not complete until
+  its backlog-worthy findings are filed. A fix slice resolves findings —
+  refines, closes, or addresses them as spec edits — but is not the first
+  place a finding reaches the backlog.
 - A spec is edited the moment the design it describes changes — in the same
   slice, never "later."
 - A limitation is one of two things and is filed accordingly — it never gets
