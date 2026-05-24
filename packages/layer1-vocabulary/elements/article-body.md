@@ -31,10 +31,10 @@ The structural plugin places everything that is neither metadata (`<meta>`) nor 
 - Tables, lists (`<ul>`, `<ol>`).
 - Block-level content from DSL engines (math display, code blocks, etc.).
 
-The classification matches the `block` and `section` shape tokens (see `notes/shape-tokens.md`).
+The classification matches the `block` and `section` shape tokens (see `notes/specs/shape-tokens.md`).
 
 ## See also
 
 - [`<article>`](./article.md) — the container that holds this region.
-- `notes/shape-tokens.md` — definition of `block` and `section` content categories.
-- `notes/pipeline.md` — Phase 2 structural transformation, where the region is generated.
+- `notes/specs/shape-tokens.md` — definition of `block` and `section` content categories.
+- `notes/specs/pipeline.md` — Phase 2 structural transformation, where the region is generated.

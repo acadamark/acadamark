@@ -5,7 +5,7 @@ the document is column-agnostic, and a downstream render-mode lowering
 produces the CSS (or typeset directives) that implement column flow.
 This document describes the intended mechanism. (Whether it is built is
 a STATUS question; the open work is tracked as DF-5 in
-`notes/acadamark-backlog-roadmap.md`.)
+`BACKLOG-ROADMAP.md`.)
 
 ## Use cases
 

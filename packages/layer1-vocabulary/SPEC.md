@@ -4,7 +4,7 @@ The acadamark Layer 1 semantic HTML vocabulary. This is the target for acadamark
 
 This document is the high-level overview: scope, element list by category, governing rules, design decisions. **Field-level details — canonical kwarg value lists, defaults, content shapes, JATS mappings, render-mode lowering — live in the per-element entries under `elements/`.** When the two disagree, the per-element entries are authoritative.
 
-The four governing rules from `notes/layer1-naming.md` apply throughout: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult JATS first.
+The four governing rules from `notes/specs/layer1-naming.md` apply throughout: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult JATS first.
 
 ## Scope
 
@@ -202,7 +202,7 @@ Field-level details (canonical value lists, defaults, inheritance behavior) live
 
 ## Math and code (delegated)
 
-Per `notes/idioms.md`, math and code are delegated to existing parsers and renderers:
+Per `notes/specs/idioms.md`, math and code are delegated to existing parsers and renderers:
 
 - Inline math becomes mdast `inlineMath` (from `remark-math`), rendered by `rehype-katex`.
 - Display math becomes mdast `math`, rendered by `rehype-katex`.
@@ -237,7 +237,7 @@ For future readers and contributors, the load-bearing decisions:
 
 7. **`<bib-entry>` for bibliography entries.** Verbose but avoids collision with `<ref>`.
 
-8. **Section depth as named ladder, not recursive nesting.** `<section>` / `<sub-section>` / `<sub-sub-section>` is the depth ladder. Per `notes/layer1-naming.md` Rule 3.
+8. **Section depth as named ladder, not recursive nesting.** `<section>` / `<sub-section>` / `<sub-sub-section>` is the depth ladder. Per `notes/specs/layer1-naming.md` Rule 3.
 
 9. **Document type via `<meta type=...>`.** Authors declare document type as a kwarg on `<meta>` (`type=article` / `type=book` / `type=book-part`) rather than wrapping content in `<article>` / `<book>` / `<book-part>`. The structural plugin reads the type kwarg and generates the appropriate Layer 1 wrapper structure: article + front/body/back; book + front/body/back; book-part containing `<meta>` and body content directly (no nested front/body/back wrappers). The container elements (`<article>`, `<book>`, `<book-part>`) are real Layer 1 elements that exist in output for semantic structure and clean JATS export. Authors can still write them explicitly as an escape hatch. The `<book-part-meta>` element was removed (May 2026) because book-parts use the same `<meta>` container as articles and books.
 
@@ -249,6 +249,6 @@ For future readers and contributors, the load-bearing decisions:
 - It is the deliverable that makes acadamark's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
 
 For current project status see `STATUS.md`; for the open backlog see
-`notes/acadamark-backlog-roadmap.md`. The interpreter that consumes this
-vocabulary is documented in `notes/interpreter.md`; the pipeline that
-produces and operates on Layer 1 elements is in `notes/pipeline.md`.
+`BACKLOG-ROADMAP.md`. The interpreter that consumes this
+vocabulary is documented in `notes/specs/interpreter.md`; the pipeline that
+produces and operates on Layer 1 elements is in `notes/specs/pipeline.md`.

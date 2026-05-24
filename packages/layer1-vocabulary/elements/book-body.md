@@ -31,4 +31,4 @@ Body-level prose (paragraphs, sections) is **not** typically a direct child of `
 
 - [`<book>`](./book.md) — the container that holds this region.
 - [`<book-part>`](./book-part.md) — the element that fills `<book-body>`.
-- `notes/pipeline.md` — Phase 2 structural transformation, where the region is generated.
+- `notes/specs/pipeline.md` — Phase 2 structural transformation, where the region is generated.

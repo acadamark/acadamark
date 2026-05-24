@@ -5,7 +5,7 @@ files — one file per chapter, separate files for appendices, shared
 bibliography files — with a project-level configuration tying them
 together. This document describes the intended mechanism. (Whether it is
 built is a STATUS question; the open work is tracked as DF-4 in
-`notes/acadamark-backlog-roadmap.md`.)
+`BACKLOG-ROADMAP.md`.)
 
 ## Use cases
 
@@ -88,7 +88,7 @@ AST, not per-file ASTs.
 
 ## Plugin pipeline shape
 
-The interpreter pipeline (see `notes/pipeline.md`) extends to multi-file
+The interpreter pipeline (see `notes/specs/pipeline.md`) extends to multi-file
 processing without redesign. The registries (configuration, citation,
 numbered-elements) are shared resources populated by multiple file passes
 before resolution runs.
@@ -138,7 +138,7 @@ Five patterns deserve explicit framing.
 
 ## Related references
 
-- `notes/pipeline.md` — the pipeline; describes registries that extend
+- `notes/specs/pipeline.md` — the pipeline; describes registries that extend
   to multi-file.
 - `packages/layer1-vocabulary/elements/book.md` — book-shaped documents
   that benefit most from multi-file.

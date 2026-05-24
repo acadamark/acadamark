@@ -1,7 +1,6 @@
-# Documentation ownership
+# Contributing to acadamark
 
-How acadamark's documentation is organized, so that every piece of information
-has one home and the documentation stays coherent with the code.
+This file defines how acadamark's documentation is organized, so that every piece of information has one home and the documentation stays coherent with the code. A contributor — or an AI session — works against this system: a slice ends with the coherence check below, and a piece of content always has a single owning document.
 
 ## The coherence principle
 
@@ -29,14 +28,13 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
-| `notes/interpreter.md`, `notes/pipeline.md`, `notes/*-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, … | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
-| `notes/acadamark-backlog-roadmap.md` | Backlog / Roadmap | ALL open work — bugs, gaps, limitations, planned features, open questions — listed and routed by Layer 0-3. The only home for open work. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `multi-file-authoring.md`, `multi-column-display.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `BACKLOG-ROADMAP.md` | Backlog / Roadmap | ALL open work — bugs, gaps, limitations, planned features, open questions — listed and routed by Layer 0-3. The only home for open work. |
 | `STATUS.md` | Status | Current-state checklist; in-flight/next; milestones (append-only). |
-| `doc-ownership.md` | Governance | This system. |
+| `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
 
-Anything not here is code, an archived document, or does not belong in the repo
-root / `notes/`.
+The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `BACKLOG-ROADMAP.md`) at the repository root; specs in `notes/specs/`; the historical record in `notes/archive/`. Anything outside those three is code or does not belong in the repo's documentation surface.
 
 ## Where each kind of fact lives
 
@@ -56,17 +54,17 @@ project, the recommended sequence:
 2. `STATUS.md` — what is working today, what is in flight, what is pending.
 3. `DESIGN.md` — design rationale: the layer model, JATS relationship, DSL
    processor delegation, scope decisions, design directions.
-4. `notes/idioms.md` and `notes/principles.md` — the cross-cutting principles
+4. `notes/specs/idioms.md` and `notes/specs/principles.md` — the cross-cutting principles
    (lexer delegation; always-renders; parser-knows-nothing-about-meaning).
 
-For specific subsystems, read the spec for that subsystem under `notes/`: the
+For specific subsystems, read the spec for that subsystem under `notes/specs/`: the
 parser specs together (`shorthand-syntax.md`, `escape-rules-spec.md`,
 `multiline-spec.md`, `recursive-content-spec.md`); the interpreter spec
 (`interpreter.md` and `pipeline.md`); the vocabulary spec
 (`packages/layer1-vocabulary/SPEC.md` and the per-element entries); the naming
 rules (`layer1-naming.md`); the shape-token machinery (`shape-tokens.md`).
 
-Open work — `notes/acadamark-backlog-roadmap.md`. Working conventions for AI
+Open work — `BACKLOG-ROADMAP.md`. Working conventions for AI
 sessions — `CLAUDE.md`.
 
 ## The coherence check

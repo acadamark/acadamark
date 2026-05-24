@@ -41,7 +41,7 @@ The shape of the system:
 
 Two relationships matter, and they are not the same. Layer 2 and Layer 1 are a **lossless round-trip**: they are one document in two notations — the shorthand is simply a faster way to type the canonical form, and any Layer 1 document can be written back as shorthand. JATS, by contrast, sits outside that loop: Layer 1 **exports** to JATS as a first-class, clean operation (this is acadamark's bridge to professional scholarly publishing), while JATS **import** into Layer 1 is supported but acknowledged-lossy — a one-way conversion that applies necessary simplifications, not a faithful reconstruction.
 
-Everything below is the *how*. The working principles in `notes/principles.md`, the delegation rules in `notes/idioms.md`, and the Layer 1 vocabulary specs are implementations of what this summary states; when a design decision is in question, it should trace back to here.
+Everything below is the *how*. The working principles in `notes/specs/principles.md`, the delegation rules in `notes/specs/idioms.md`, and the Layer 1 vocabulary specs are implementations of what this summary states; when a design decision is in question, it should trace back to here.
 
 ## The problem
 
@@ -95,7 +95,7 @@ JATS is the established XML schema for academic articles, developed by NIH/NLM a
 
 Two principles govern acadamark's relationship to JATS:
 
-**JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Acadamark adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and acadamark is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/layer1-naming.md` for the binding rule.)
+**JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Acadamark adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and acadamark is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/specs/layer1-naming.md` for the binding rule.)
 
 **JATS as first-class export target.** Acadamark Layer 1 HTML compiles to JATS XML via the `rehype-acadamark-to-jats` plugin. This makes acadamark documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
 
@@ -143,7 +143,7 @@ Each processor has its own attribute vocabulary. CSV uses `align`, `header`; Mer
 
 Source language and display target are fused in the current model: `<csv>` means both "the source is CSV" and "render as a table"; `<mermaid>` means "the source is Mermaid" and "render as a diagram." This works for the common cases. A future split — `<csv #data> … </csv>` plus `<chart source=#data type=bar>` — would let the same data drive multiple displays; it is a natural extension when the need surfaces, not a redesign.
 
-The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/idioms.md`. There, remark provides the lexer for markdown constructs and acadamark owns the node identity; here, a specialized processor provides the rendering for non-native content and acadamark owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
+The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/specs/idioms.md`. There, remark provides the lexer for markdown constructs and acadamark owns the node identity; here, a specialized processor provides the rendering for non-native content and acadamark owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
 
 ## Layer 2: Authoring shorthand
 
@@ -255,7 +255,7 @@ The unified ecosystem is what acadamark uses. The project's surface area shrinks
 
 ## Design directions (discovered through implementation)
 
-The sections above describe acadamark's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work. Open items that bear on these directions live in `notes/acadamark-backlog-roadmap.md`; `archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
+The sections above describe acadamark's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work. Open items that bear on these directions live in `BACKLOG-ROADMAP.md`; `notes/archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
 
 **Content gets parsed; arguments don't.** A value's syntactic form — keyword argument, positional, pipe-content, child element — is incidental. What matters is its semantic role. *Arguments* are configuration: `citation-style="apa"`, `placement="end"`, `src="refs.bib"`. They are opaque strings or enumerations and pass through the pipeline uninterpreted. *Content* is authored prose-and-structure that may contain nested tags, citations, math, or emphasis, and must be parsed recursively. The trap is content-shaped values that happen to be written as keyword arguments — a `caption="..."` containing a `<cite>` is content wearing an argument's clothing, and must be parsed as such. The direction: vocabulary entries declare each keyword argument's role, and the interpreter treats `role: content` arguments the same as child nodes.
 

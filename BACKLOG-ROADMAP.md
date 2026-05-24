@@ -1,6 +1,6 @@
 # acadamark — backlog roadmap
 
-**Reconciled 2026-05-23 to open-work-only.** Per `notes/doc-ownership.md`,
+**Reconciled 2026-05-23 to open-work-only.** Per `CONTRIBUTING.md`,
 this document is the single home for open work in the project. Resolved
 items live as append-only milestone lines in `STATUS.md` and are not
 recorded here.
@@ -141,7 +141,7 @@ a blocker.
   **Standalone** — does NOT share root cause with AUD-21/AUD-23 (those
   two share an `attrSection`/`content` `!multiLine` path; AUD-22 is the
   `afterClose` / `afterGt` path). Proposed fix is already designed in
-  `archive/investigations-2026-05/parser-newline-investigation.md`
+  `notes/archive/investigations-2026-05/parser-newline-investigation.md`
   Q2 + Q5.
 
 - **AUD-17** — *`integration.test.js` hand-mirrors the `index.js`
@@ -204,7 +204,7 @@ line in `STATUS.md`.
   confirmed.**
 
 - **(formerly OQ-1) `remark-math` integration with recursive content
-  parsing.** Originally filed in `notes/idioms.md` as an open question:
+  parsing.** Originally filed in `notes/specs/idioms.md` as an open question:
   whether bare `$x$` inside `<aside | ...>` should be treated as inline
   math. The design half is settled by the normalization principle (yes;
   it normalizes to the `$` node); functionally, bare math now works on
@@ -223,7 +223,7 @@ line in `STATUS.md`.
 
 ### OQ-2 — Render-mode heading-level assignment for `<article-title>` + `<section-title>` coexistence
 
-Where: `notes/layer1-naming.md` open decisions. When both an
+Where: `notes/specs/layer1-naming.md` open decisions. When both an
 `<article-title>` and `<section-title>` are present, do section titles
 become `<h2>` (because the article title takes `<h1>`)? Or do they stay
 `<h1>` and rely on document structure?
@@ -276,7 +276,7 @@ first; it is "planned, not yet specified." A design step precedes the code.
 **Treat as one body of work, not individual items** — each is "write a handler,"
 all additive, none blocks anything. Note DF-10 (the math environments) is the
 "acadamark covers ground remark never covered" case from the lexer-supersession
-discussion in `notes/idioms.md` — it is independent of the math-coverage
+discussion in `notes/specs/idioms.md` — it is independent of the math-coverage
 investigation, which concerns delimiter-shaped math only. (DF-11b — the
 `<proof>`/`<lemma>`/etc. *vocabulary* — needs a vocab design pass first.)
 
@@ -302,7 +302,7 @@ Additional small-vocab candidates surfaced in the authoring-features survey
   classifier), `<thumbnail>` (image for social sharing). Each is a small
   addition to `<meta>`'s allowed children.
 
-**Multi-column display — DF-5.** Spec is `notes/multi-column-display.md`;
+**Multi-column display — DF-5.** Spec is `notes/specs/multi-column-display.md`;
 render-mode concern. Independent leaf, low-priority unless a publication
 target needs it.
 
@@ -314,14 +314,14 @@ A one-paragraph clarification, no code change.
 
 **Discuss the canonical form for sections — markdown `##` heading vs
 `<#>` sigil tag.** A discussion item, not a build item. The shorthand
-spec (`notes/shorthand-syntax.md`) and DESIGN.md's implicit-closing
+spec (`notes/specs/shorthand-syntax.md`) and DESIGN.md's implicit-closing
 section work are built around the `<#>` sigil; markdown `##` headings also
 produce sections via remark's built-in heading tokenizer. Two forms for
 the identical operation, with no rule for which to use, violates the
 "explicit, consistent" principle. The decision settles which form is
 canonical and how the other relates to it (probably: as the markdown-form
 shorthand the normalization principle would expect). Once decided, the
-result is reconciled into DESIGN.md and `notes/shorthand-syntax.md`.
+result is reconciled into DESIGN.md and `notes/specs/shorthand-syntax.md`.
 
 **Starting position for the discussion (not a settled answer):**
 markdown headings are likely the convenience form and `<#>` is canonical
@@ -331,7 +331,7 @@ discussion may settle differently; this is a starting framing harvested
 from the now-archived audit-cleanup-stopping-point's FLAGGED-1, not a
 prescribed answer.
 
-Filed under the discussion-is-work rule (`doc-ownership.md`).
+Filed under the discussion-is-work rule (`CONTRIBUTING.md`).
 
 **Discuss whether the cross-reference resolver should warn on
 type-prefix mismatch.** A discussion item, not a build item. When
@@ -348,7 +348,7 @@ prefix. Prefix inference was considered earlier and rejected because it
 makes the id's meaning implicit and breaks down once elements are wrapped
 in `<figure>` downstream — that rejection is context for the discussion,
 not a separate item. Filed under the discussion-is-work rule. Original
-framing in `archive/at-sigil-reference-proposal-2026-05.md`.
+framing in `notes/archive/at-sigil-reference-proposal-2026-05.md`.
 
 **Discuss whether to add compact external-reference syntax.** A
 discussion item, not a build item. MyST supports `wiki:Book` to link to
@@ -361,19 +361,19 @@ whether to add this, which prefixes to support, and how the parser
 recognizes them (a registry of prefix → URL-template pairs, with
 `\wiki:foo` as the literal-text escape). This is a parser feature, not
 a vocabulary feature. Harvested from
-`archive/authoring-features-survey-2026-05.md`. Filed under the
+`notes/archive/authoring-features-survey-2026-05.md`. Filed under the
 discussion-is-work rule.
 
 **Discuss whether to add external-link rich previews.** A discussion
 item, not a build item. The hover-preview rendering substrate exists
-(currently used for notes, refs, citations — see `notes/interpreter.md`
+(currently used for notes, refs, citations — see `notes/specs/interpreter.md`
 §10.2). External link metadata-fetching is the open gap: would require
 fetching target metadata (Wikipedia summary, DOI title + abstract,
 GitHub repo description) at build time and embedding it for the hover
 preview to display. The decision settles whether to add this, which
 sources to support, and how to handle build-time network access (caching,
 offline mode, fallback when fetch fails). Harvested from
-`archive/authoring-features-survey-2026-05.md`. Filed under the
+`notes/archive/authoring-features-survey-2026-05.md`. Filed under the
 discussion-is-work rule.
 
 **Discuss whether to add just-in-time math symbol definitions.** A
@@ -385,7 +385,7 @@ authored (`<symbol-def>` element? a `<def>` form inside math content?),
 how the resolver matches symbol references to definitions across the
 document, how it interacts with KaTeX's rendering. The decision settles
 whether to add the feature and what its surface looks like. Harvested
-from `archive/authoring-features-survey-2026-05.md`. Filed under the
+from `notes/archive/authoring-features-survey-2026-05.md`. Filed under the
 discussion-is-work rule.
 
 **Discuss whether to add executable code blocks (Jupyter-style).** A
@@ -408,7 +408,7 @@ multi-file authoring, book types) — that is the discussion-is-work
 rule's defined exit when a discussion commits to substantial work.
 Filing here at Layer 3 honestly reflects that the commitment to do it
 does not yet exist; what exists is the question of whether to commit.
-Harvested from `archive/authoring-features-survey-2026-05.md`. Filed
+Harvested from `notes/archive/authoring-features-survey-2026-05.md`. Filed
 under the discussion-is-work rule.
 
 **Discuss whether to add `<presentation>` / `<slide>` / `<slide-notes>`
@@ -437,8 +437,8 @@ The first concrete step is a chat-side vocabulary design pass parallel to
 the article and book design passes; the result is either a new spec
 (`presentation.md`, `slide.md`, `slide-notes.md` in the vocabulary
 directory) or a recorded decision not to pursue. Filed under the
-discussion-is-work rule (`doc-ownership.md`); the source placeholder file
-is archived at `archive/slide-element-deferred-2026-05.md`.
+discussion-is-work rule (`CONTRIBUTING.md`); the source placeholder file
+is archived at `notes/archive/slide-element-deferred-2026-05.md`.
 
 **Parser bugs — AUD-04 (formerly), AUD-21–23 (formerly), DF-16 (formerly).**
 Five distinct parser-level bugs surfaced through audits but not yet fixed.
@@ -451,9 +451,9 @@ Five distinct parser-level bugs surfaced through audits but not yet fixed.
   distinct form for a zero-content short tag without a pipe. **Workaround
   in use:** `<table #id csv src=file.csv caption="..." | >` — the pipe
   with a trailing space serves as an explicit empty-content short form.
-  **Spec impact:** `notes/shorthand-syntax.md` should document the `| >`
+  **Spec impact:** `notes/specs/shorthand-syntax.md` should document the `| >`
   empty-content idiom for zero-content short-form tags;
-  `notes/escape-rules-spec.md` should confirm it is unambiguous.
+  `notes/specs/escape-rules-spec.md` should confirm it is unambiguous.
 
 - **Multi-line content in text-position named tags silently lost
   (formerly AUD-21).** In the text-position named-tag tokenizer
@@ -469,7 +469,7 @@ Five distinct parser-level bugs surfaced through audits but not yet fixed.
   nok(code)` branch in the `attrSection` / `content` states; emit
   `lineEnding` tokens the same way the flow tokenizer already does. Full
   root-cause analysis in
-  `archive/investigations-2026-05/parser-newline-investigation.md`
+  `notes/archive/investigations-2026-05/parser-newline-investigation.md`
   Q1 + Q5.
 
 - **Inline tag at line-start captured as flow construct — paragraph
@@ -508,7 +508,7 @@ Five distinct parser-level bugs surfaced through audits but not yet fixed.
   constructs at blank lines for localized error recovery. Currently a
   tag opened before a blank line will consume across the blank line or
   to EOF. Explicit `Status: Deferred` in
-  `notes/recursive-content-spec.md`.
+  `notes/specs/recursive-content-spec.md`.
 
 **Silent-failure / authoring traps — AUD-13 (formerly).** `<config>`
 silently accepts metadata kwargs that belong in `<meta>` (`title=`,
@@ -683,7 +683,7 @@ gate on OQ-2).
   must be decided when render mode is scoped.
 - **DF-4 — multi-file authoring.** `acadamark.yml` + `<include>`;
   project-wide registries. A real architectural extension. Spec at
-  `notes/multi-file-authoring.md`.
+  `notes/specs/multi-file-authoring.md`.
 - **DF-12 — book / book-part document structuring.** Vocabulary exists;
   `article-structuring.js` currently warns and skips non-article types.
 

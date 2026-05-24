@@ -23,7 +23,7 @@ the only one.
 
 ## Governing rules
 
-The four rules from [`notes/layer1-naming.md`](../../notes/layer1-naming.md)
+The four rules from [`notes/specs/layer1-naming.md`](../../notes/specs/layer1-naming.md)
 apply throughout:
 
 1. **Container-role naming.** Custom elements follow `<container-role>`
@@ -41,11 +41,11 @@ apply throughout:
 - [`STATUS.md`](../../STATUS.md) — current project state.
 - [`DESIGN.md`](../../DESIGN.md) — design rationale, JATS relationship,
   scope decisions.
-- [`notes/layer1-naming.md`](../../notes/layer1-naming.md) — the four
+- [`notes/specs/layer1-naming.md`](../../notes/specs/layer1-naming.md) — the four
   governing rules.
-- [`notes/shape-tokens.md`](../../notes/shape-tokens.md) — the `inline` /
+- [`notes/specs/shape-tokens.md`](../../notes/specs/shape-tokens.md) — the `inline` /
   `block` / `section` content shape tokens used in per-element entries.
-- [`notes/pipeline.md`](../../notes/pipeline.md) — the structural plugin
+- [`notes/specs/pipeline.md`](../../notes/specs/pipeline.md) — the structural plugin
   pipeline that operates on Layer 1 elements.
-- [`notes/interpreter.md`](../../notes/interpreter.md) — handler dispatch
+- [`notes/specs/interpreter.md`](../../notes/specs/interpreter.md) — handler dispatch
   and schema dispatch that consume vocabulary entries.

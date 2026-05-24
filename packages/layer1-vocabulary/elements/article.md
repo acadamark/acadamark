@@ -138,7 +138,7 @@ related_plugins:
       <article-front>/<article-body>/<article-back> regions. Promotes
       <title>/<subtitle> in <meta> to <article-title>/<article-subtitle>.
       Honors explicit <article> if the author wrote it. See
-      notes/pipeline.md for the full pipeline.
+      notes/specs/pipeline.md for the full pipeline.
 
 ---
 

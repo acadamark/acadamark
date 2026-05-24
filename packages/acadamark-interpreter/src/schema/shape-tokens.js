@@ -1,4 +1,4 @@
-// Shape token membership per notes/shape-tokens.md.
+// Shape token membership per notes/specs/shape-tokens.md.
 //
 // Three tokens — inline, block, section — classify Layer 1 elements by where
 // they appear in source and how they render. Vocabulary entries reference these
@@ -6,7 +6,7 @@
 // them at validation time against the lists below.
 //
 // The lists here are the canonical runtime version of the membership tables in
-// notes/shape-tokens.md. Out-of-scope-for-slice-1 elements are included so that
+// notes/specs/shape-tokens.md. Out-of-scope-for-slice-1 elements are included so that
 // validation is permissive across the full vocabulary; dispatch logic for
 // out-of-scope elements is handled separately by the interpreter.
 

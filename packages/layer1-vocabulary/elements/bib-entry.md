@@ -110,7 +110,7 @@ interpreter_strategy: schema
 related_plugins:
   - name: acadamarkBibEntryRegistration
     runs_before: acadamarkCitationResolution
-    purpose: 'Registers <bib-entry> elements in the citation registry. See notes/pipeline.md for the full pipeline.'
+    purpose: 'Registers <bib-entry> elements in the citation registry. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 

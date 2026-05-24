@@ -63,11 +63,11 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 Acadamark is implemented. The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML.
 
-The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for a current snapshot of what works and what doesn't, [`DESIGN.md`](DESIGN.md) for the design rationale, [`BUILD.md`](BUILD.md) for the implementation plan, and [`notes/interpreter.md`](notes/interpreter.md) and [`notes/pipeline.md`](notes/pipeline.md) for the architecture.
+The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for a current snapshot of what works and what doesn't, [`DESIGN.md`](DESIGN.md) for the design rationale, [`BUILD.md`](BUILD.md) for the implementation plan, and [`notes/specs/interpreter.md`](notes/specs/interpreter.md) and [`notes/specs/pipeline.md`](notes/specs/pipeline.md) for the architecture.
 
 ## Reading order
 
-The project has accumulated enough documentation that knowing where to start matters. See the [Reading order section in `notes/doc-ownership.md`](notes/doc-ownership.md#reading-order-for-newcomers) for a guided path through the spec and implementation docs.
+The project has accumulated enough documentation that knowing where to start matters. See the [Reading order section in `CONTRIBUTING.md`](CONTRIBUTING.md#reading-order-for-newcomers) for a guided path through the spec and implementation docs.
 
 ## Project goals
 

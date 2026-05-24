@@ -82,7 +82,7 @@ Under the normalization model, strict mode is simple to characterize: it is the 
 
 ## Related notes
 
-- `notes/recursive-content-spec.md` — design of the recursive-content plugin that turns string content into homogeneous `Node[]` content.
-- `notes/shorthand-syntax.md` — the shorthand syntax specification, including the resolved decision that named-tag content is homogeneous `Node[]` after recursive parsing.
-- `notes/layer1-naming.md` — Layer 1 naming conventions and the rule about deferring to HTML where HTML is sufficient (which is the static-vocabulary counterpart to this document's parser-delegation principle).
+- `notes/specs/recursive-content-spec.md` — design of the recursive-content plugin that turns string content into homogeneous `Node[]` content.
+- `notes/specs/shorthand-syntax.md` — the shorthand syntax specification, including the resolved decision that named-tag content is homogeneous `Node[]` after recursive parsing.
+- `notes/specs/layer1-naming.md` — Layer 1 naming conventions and the rule about deferring to HTML where HTML is sufficient (which is the static-vocabulary counterpart to this document's parser-delegation principle).
 - `DESIGN.md` — the "Markdown forms are shorthand for the canonical acadamark form" design direction, which states this principle at the design-rationale level.

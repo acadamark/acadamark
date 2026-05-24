@@ -139,7 +139,7 @@ generated_by:
 related_plugins:
   - name: acadamarkBibliographyAssembly
     runs_after: acadamarkCitationResolution
-    purpose: 'Assembles cited entries into <bibliography> per the configured style. See notes/pipeline.md for the full pipeline.'
+    purpose: 'Assembles cited entries into <bibliography> per the configured style. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 

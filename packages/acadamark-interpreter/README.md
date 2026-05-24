@@ -30,15 +30,15 @@ console.log(String(result)); // HTML string
 ```
 
 Options: `katexCss`, `hoverPreviewMode`, `assetsDir`. See
-[`notes/interpreter.md`](../../notes/interpreter.md) §12 for details.
+[`notes/specs/interpreter.md`](../../notes/specs/interpreter.md) §12 for details.
 
 ## Documentation
 
 - [`STATUS.md`](../../STATUS.md) — current project state.
-- [`notes/interpreter.md`](../../notes/interpreter.md) — interpreter
+- [`notes/specs/interpreter.md`](../../notes/specs/interpreter.md) — interpreter
   architecture: plugin chain, handler dispatch, schema dispatch, asset
   injection, error handling.
-- [`notes/pipeline.md`](../../notes/pipeline.md) — pipeline stages,
+- [`notes/specs/pipeline.md`](../../notes/specs/pipeline.md) — pipeline stages,
   ordering, dependencies, data-flow examples.
-- [`notes/acadamark-backlog-roadmap.md`](../../notes/acadamark-backlog-roadmap.md)
+- [`BACKLOG-ROADMAP.md`](../../BACKLOG-ROADMAP.md)
   — open work.

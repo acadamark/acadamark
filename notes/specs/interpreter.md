@@ -3,13 +3,13 @@
 This document describes how the acadamark interpreter works. It covers what
 the interpreter is, how its plugin chain is structured, how tags are dispatched
 to hast output, and how assets are bundled. For the pipeline ordering
-narrative — what runs when and why — see `notes/pipeline.md`.
+narrative — what runs when and why — see `notes/specs/pipeline.md`.
 
 For the authoring syntax the interpreter consumes, see
-`notes/shorthand-syntax.md`. For the vocabulary elements it renders, see
+`notes/specs/shorthand-syntax.md`. For the vocabulary elements it renders, see
 `packages/layer1-vocabulary/SPEC.md` and the individual entries in
 `packages/layer1-vocabulary/elements/`. For the recursive-content plugin
-design, see `notes/recursive-content-spec.md`.
+design, see `notes/specs/recursive-content-spec.md`.
 
 ---
 
@@ -110,7 +110,7 @@ then runs on a tree whose math and pipe-table nodes are already canonical
 not mdast transforms, and they affect tokenization during the parse pass;
 they're listed here so the wiring is visible in one place. The step-1.5
 numbering for `acadamarkNormalizeMarkdown` matches the inline `1.5.` comment
-in the source ([src/index.js](../packages/acadamark-interpreter/src/index.js))
+in the source ([src/index.js](../../packages/acadamark-interpreter/src/index.js))
 and keeps the existing step-2 through step-12 references in this document
 unchanged. All other Phase 0/1/2/3 plugins retain their original step
 numbers as cited throughout §3 below.
@@ -167,7 +167,7 @@ visits the newly revealed content to process any nested `acadamarkTag` nodes.
 Maximum depth is 10 (hard-coded constant `MAX_DEPTH`). Documents in practice
 never approach this limit.
 
-**Cross-reference:** `notes/recursive-content-spec.md` for design rationale
+**Cross-reference:** `notes/specs/recursive-content-spec.md` for design rationale
 and edge cases.
 
 ---
@@ -219,9 +219,9 @@ subtree is replaced before its inline children are visited, so cell
 contents are read directly off the original `remark-gfm` nodes during
 serialization).
 
-**Cross-reference:** AUD-20 in `archive/audit-findings-2026-05.md` for
+**Cross-reference:** AUD-20 in `notes/archive/audit-findings-2026-05.md` for
 the Option-A decision rationale (closure recorded in `STATUS.md`
-Milestones); `notes/pipeline.md` §4.0 for the pipeline-level view.
+Milestones); `notes/specs/pipeline.md` §4.0 for the pipeline-level view.
 
 ---
 
@@ -470,7 +470,7 @@ label index, so `<ref @code:newton>` resolves via the same
 written without a shorthand wrapper are mdast `code` nodes with no
 shorthand wrapper and no accessible id, so they remain non-referenceable —
 this is a deliberate, reversible choice (closure recorded in `STATUS.md`
-Milestones; original entry at `archive/audit-findings-2026-05.md`
+Milestones; original entry at `notes/archive/audit-findings-2026-05.md`
 AUD-09). Switching to numbered listings later requires
 flipping `numbered: false` to `numbered: true` here, adding `'code'` to
 `NUMBERED_TAGNAMES`, and adding a `CONFIG_KEY` entry for `'code'`.
@@ -573,7 +573,7 @@ Built-in prefixes: `eqn` → `equation`, `fig` → `figure`, `note` → `note`,
 
 `code` → `listing` is the G4 addition paired with the code-block sigil
 registration in §3.7; closure recorded in `STATUS.md` Milestones
-(original AUD-09 entry at `archive/audit-findings-2026-05.md`).
+(original AUD-09 entry at `notes/archive/audit-findings-2026-05.md`).
 
 Config key `ref-prefix-{prefix}` overrides a prefix word per-document.
 
@@ -1128,7 +1128,7 @@ those fonts installed (e.g. WSL/Linux).
 
 This is the AUD-16 fix; before it, fixture rendering had the fonts wired in
 via the render-fixtures shell but external consumers of the package
-silently fell back to the system font stack. See `notes/pipeline.md` §12.3
+silently fell back to the system font stack. See `notes/specs/pipeline.md` §12.3
 for the same description from the pipeline-stage perspective.
 
 The font assets are read from disk and cached on first call; subsequent
@@ -1359,12 +1359,12 @@ packages/layer1-vocabulary/
 
 ## 15. Cross-references
 
-- `notes/pipeline.md` — pipeline ordering, plugin dependencies, data flow
+- `notes/specs/pipeline.md` — pipeline ordering, plugin dependencies, data flow
   examples.
-- `notes/recursive-content-spec.md` — design of the content re-parsing step.
-- `notes/shorthand-syntax.md` — the authoring syntax the interpreter consumes.
-- `notes/layer1-naming.md` — vocabulary element naming rules.
-- `notes/principles.md` — error-recovery philosophy ("documents always render
+- `notes/specs/recursive-content-spec.md` — design of the content re-parsing step.
+- `notes/specs/shorthand-syntax.md` — the authoring syntax the interpreter consumes.
+- `notes/specs/layer1-naming.md` — vocabulary element naming rules.
+- `notes/specs/principles.md` — error-recovery philosophy ("documents always render
   to something").
 - `BUILD.md` — slice plan and feature roadmap.
 - `packages/layer1-vocabulary/SPEC.md` — vocabulary element specification.

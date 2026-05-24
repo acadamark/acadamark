@@ -3,8 +3,8 @@
 This document describes the acadamark processing pipeline: what stages run,
 in what order, what each stage produces, and how they depend on each other.
 For the implementation details of individual plugins and handlers, see
-`notes/interpreter.md`. For the authoring syntax at the source end of the
-pipeline, see `notes/shorthand-syntax.md`.
+`notes/specs/interpreter.md`. For the authoring syntax at the source end of the
+pipeline, see `notes/specs/shorthand-syntax.md`.
 
 ---
 
@@ -95,7 +95,7 @@ both at the top level and inside named-tag content. The resulting
 `inlineMath` / `math` / `table` nodes are then rewritten to canonical
 `acadamarkTag` nodes by `acadamarkNormalizeMarkdown` (Stage 3's first
 plugin), so the rest of the pipeline only sees one node type. See AUD-20 in
-`archive/audit-findings-2026-05.md` for the Option-A normalization decision.
+`notes/archive/audit-findings-2026-05.md` for the Option-A normalization decision.
 
 ---
 
@@ -175,7 +175,7 @@ hast conversion if the element's content type is `block` rather than `prose`.
 **Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
 are converted to `acadamarkParseError` nodes with `subtype: 'max-recursion-depth'`.
 
-**Cross-reference:** `notes/recursive-content-spec.md` for the full design,
+**Cross-reference:** `notes/specs/recursive-content-spec.md` for the full design,
 including the mixed-content (escape-errors) path.
 
 ---
@@ -220,7 +220,7 @@ have completed).
 **Must precede:** every structural plugin (Phase 1 onwards) — they all
 assume one node type.
 
-**Cross-reference:** AUD-20 in `archive/audit-findings-2026-05.md` for the Option-A
+**Cross-reference:** AUD-20 in `notes/archive/audit-findings-2026-05.md` for the Option-A
 decision; `packages/acadamark-interpreter/src/plugins/normalize-markdown.js`
 for the implementation.
 
@@ -506,7 +506,7 @@ build the hast tree directly.
 - Table raw HTML escape-hatch mode
 - Bibliography HTML
 
-**See also:** `notes/interpreter.md`, section 5 (Handler dispatch) and
+**See also:** `notes/specs/interpreter.md`, section 5 (Handler dispatch) and
 section 6 (Schema dispatch) for full dispatch details.
 
 ---
@@ -924,9 +924,9 @@ and the `citation-js` dependency, both of which are currently Node-only.
 
 ## 15. Cross-references
 
-- `notes/interpreter.md` — handler dispatch, schema dispatch, handler
+- `notes/specs/interpreter.md` — handler dispatch, schema dispatch, handler
   implementations, error handling.
-- `notes/recursive-content-spec.md` — recursive content parsing design.
-- `notes/shorthand-syntax.md` — the authoring syntax at the pipeline input.
-- `notes/layer1-naming.md` — vocabulary element naming rules.
+- `notes/specs/recursive-content-spec.md` — recursive content parsing design.
+- `notes/specs/shorthand-syntax.md` — the authoring syntax at the pipeline input.
+- `notes/specs/layer1-naming.md` — vocabulary element naming rules.
 - `BUILD.md` — slice plan and roadmap for future pipeline stages.

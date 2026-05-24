@@ -2,8 +2,8 @@
 
 What acadamark can do today, what is in progress, and what is still aspirational.
 For *why* the project exists, read `README.md` and `DESIGN.md`. For the
-architecture, read `notes/pipeline.md` and `notes/interpreter.md`. For the open
-backlog, read `notes/acadamark-backlog-roadmap.md`.
+architecture, read `notes/specs/pipeline.md` and `notes/specs/interpreter.md`. For the open
+backlog, read `BACKLOG-ROADMAP.md`.
 
 This file is deliberately thin. It records *state*, not *explanation* — and
 state-descriptions go stale, so there is as little of it here as possible. When
@@ -58,7 +58,7 @@ go stale.)
 ### Known open items
 
 The backlog is tracked, not duplicated here. All open bugs, gaps, and
-design findings live in `notes/acadamark-backlog-roadmap.md` (the single
+design findings live in `BACKLOG-ROADMAP.md` (the single
 home for open work). Notable currently-open items include the three
 parser-newline bugs (formerly AUD-21/22/23), vocabulary plugin-name
 drift (formerly AUD-24), and design-direction cross-referencing
@@ -68,9 +68,9 @@ drift (formerly AUD-24), and design-direction cross-referencing
 
 Nothing currently in flight. The documentation-system reconciliation
 arc (three slices) is complete — the system defined in
-`notes/doc-ownership.md` is in force, and from here every implementation
+`CONTRIBUTING.md` is in force, and from here every implementation
 slice ends with its coherence check. The project returns to ordinary
-backlog work from `notes/acadamark-backlog-roadmap.md`. Reasonable
+backlog work from `BACKLOG-ROADMAP.md`. Reasonable
 next candidates by appetite: the integration-test mirror fix (formerly
 AUD-17, a small slice that retires a recurring tax paid four times in
 the R3/R4/G1 arc); the asset-double-injection fix (formerly AUD-19);
@@ -85,7 +85,7 @@ that). One line gets added every few months, not every slice.
 - **Pre-2026 — origins.** Project conceived as a shorthand-over-HTML
   approach to academic publishing. Early regex-based prototypes explored the
   idea; superseded by the unified/remark/rehype rewrite. (Predecessor material
-  preserved in `archive/`.)
+  preserved in `notes/archive/`.)
 - **Early–mid 2026 — parser and interpreter built.** The shorthand
   parser and the interpreter pipeline were built over a sequence of slices:
   tag grammar, sigil families, escape rules, multi-line content, recursive
@@ -93,7 +93,7 @@ that). One line gets added every few months, not every slice.
   cross-references, figures, tables, math, hover previews, self-contained HTML
   output, bundled fonts.
 - **April 2026 — first repository cleanup.** Historical exploration material
-  moved to `archive/` with an inventory README; stale artifacts removed.
+  moved to `notes/archive/` with an inventory README; stale artifacts removed.
 - **2026-Q2 — pipeline refactor.** The interpreter pipeline was refactored into
   a four-stage architecture (shape → index → number → resolve) across slices
   R1–R4, with a following doc-staleness sweep.
@@ -108,8 +108,8 @@ that). One line gets added every few months, not every slice.
 - **2026-Q2 — individually-tracked closures recorded for archival.** The
   2026-Q2 documentation audit and follow-on slices closed a series of
   individually-tracked findings now archived to
-  `archive/audit-findings-2026-05.md` and
-  `archive/specified-not-implemented-2026-05.md`. Recorded here for history
+  `notes/archive/audit-findings-2026-05.md` and
+  `notes/archive/specified-not-implemented-2026-05.md`. Recorded here for history
   before the source files were retired. **AUD items closed:** AUD-01 (equation
   number right-align, slice 7 CSS); AUD-02 (`interpreter-design.md` pipeline
   drift, F2 sweep, file archived); AUD-03 (`hover-previews-deferred.md`
@@ -129,7 +129,7 @@ that). One line gets added every few months, not every slice.
   not referenceable, G4); PG-12 (`\^`/`\_`/`\{`/`\}` escape decisions
   settled with G1, commit `b6304a3`); PG-13 (markdown pass-through
   escapes inside named-tag content verified by test RC-14). **Doc-staleness
-  items closed:** DS-1 (`notes/interpreter.md`); DS-2 (`notes/pipeline.md`);
+  items closed:** DS-1 (`notes/specs/interpreter.md`); DS-2 (`notes/specs/pipeline.md`);
   DS-3 (`BUILD.md` parser slice table); DS-4 (`notes/interpreter-design.md`
   archived); DS-5 (`notes/hover-previews-deferred.md` archived) — all via
   the F2 doc-staleness sweep, commit `f00c877`.

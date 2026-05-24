@@ -114,7 +114,7 @@ handler_responsibilities:
 related_plugins:
   - name: acadamarkLibraryParsing
     runs_before: acadamarkCitationResolution
-    purpose: 'Phase 1 discovery — dispatches to format-specific parsers (BibTeX, CSL-JSON, etc.) and registers entries. See notes/pipeline.md for the full pipeline.'
+    purpose: 'Phase 1 discovery — dispatches to format-specific parsers (BibTeX, CSL-JSON, etc.) and registers entries. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 

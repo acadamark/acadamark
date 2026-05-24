@@ -26,7 +26,7 @@ Localized recovery is desirable and should be implemented where the implementati
 
 Acadamark does not re-implement what existing parsers already do well. Wherever an existing parser can handle work acadamark would otherwise need to do, acadamark delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Acadamark only does novel work — the tagged shorthand and the Layer 1 vocabulary.
 
-See `notes/idioms.md` for the full statement of this principle including its two-layer form.
+See `notes/specs/idioms.md` for the full statement of this principle including its two-layer form.
 
 ## The spec-first principle
 

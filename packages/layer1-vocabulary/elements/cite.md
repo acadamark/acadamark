@@ -112,7 +112,7 @@ handler_responsibilities:
 related_plugins:
   - name: acadamarkCiteResolution
     runs_after: 'acadamarkLibraryLoad, acadamarkArticleStructuring'
-    purpose: 'Resolves <cite> elements against the citation registry; generates rendered markers. See notes/pipeline.md for the full pipeline.'
+    purpose: 'Resolves <cite> elements against the citation registry; generates rendered markers. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 

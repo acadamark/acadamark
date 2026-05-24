@@ -34,4 +34,4 @@ The structural plugin places these children inside `<article-back>`:
 
 - [`<article>`](./article.md) — the container that holds this region.
 - [`<bibliography>`](./bibliography.md), [`<note-list>`](./note-list.md), [`<data>`](./data.md), [`<config>`](./config.md) — the elements typically placed here.
-- `notes/pipeline.md` — Phase 2 structural transformation, where the region is generated.
+- `notes/specs/pipeline.md` — Phase 2 structural transformation, where the region is generated.

@@ -41,7 +41,7 @@ Water is H<sub | 2>O.
 The vector x<sub | i> represents the i-th component.
 ```
 
-The inline TeX `_{...}` shortcut (G1) lets authors write `H_{2}O` directly in prose, producing the same `<sub>` output. The original design record is preserved at `archive/inline-tex-shortcuts-spec-2026-05.md`.
+The inline TeX `_{...}` shortcut (G1) lets authors write `H_{2}O` directly in prose, producing the same `<sub>` output. The original design record is preserved at `notes/archive/inline-tex-shortcuts-spec-2026-05.md`.
 
 For mathematical content with rich notation, use the math sigil:
 
@@ -71,4 +71,4 @@ Direct mapping; the element name and semantics match.
 
 - [`<sup>`](sup.md) — for superscript content.
 - The math sigil `<$...$>` — for mathematical notation with rich subscript/superscript.
-- [`archive/inline-tex-shortcuts-spec-2026-05.md`](../../archive/inline-tex-shortcuts-spec-2026-05.md) — design record for the `_{...}` shorthand (now implemented as G1).
+- [`notes/archive/inline-tex-shortcuts-spec-2026-05.md`](../../notes/archive/inline-tex-shortcuts-spec-2026-05.md) — design record for the `_{...}` shorthand (now implemented as G1).

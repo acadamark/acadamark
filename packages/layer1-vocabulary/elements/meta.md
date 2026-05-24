@@ -136,7 +136,7 @@ related_plugins:
       article) is present, generates the <article> wrapper plus
       <article-front>/<article-body>/<article-back> regions; promotes
       <title>/<subtitle> in <meta> to <article-title>/<article-subtitle>;
-      places <meta> inside <article-front>. See notes/pipeline.md.
+      places <meta> inside <article-front>. See notes/specs/pipeline.md.
   - name: acadamarkBookStructuring
     purpose: |
       When <meta type=book> or <meta type=book-part> is present (or
@@ -144,7 +144,7 @@ related_plugins:
       <book>/<book-part> wrapper. For books: also generates
       <book-front>/<book-body>/<book-back>. For book-parts: <meta> and
       body content sit directly inside <book-part> with no nested region
-      wrappers. See notes/pipeline.md.
+      wrappers. See notes/specs/pipeline.md.
 
 ---
 

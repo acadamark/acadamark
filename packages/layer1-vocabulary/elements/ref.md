@@ -93,7 +93,7 @@ handler_responsibilities:
 related_plugins:
   - name: acadamarkRefResolution
     runs_after: 'acadamarkArticleStructuring, numbering plugins'
-    purpose: 'Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/pipeline.md for the full pipeline.'
+    purpose: 'Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 
