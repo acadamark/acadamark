@@ -1,132 +1,175 @@
 # acadamark — backlog roadmap
 
-**Written:** 2026-05-22. Updated 2026-05-23 during the documentation-system
-reconciliation: previously the project tracked open work across three
-documents (`audit-findings.md`, `specified-not-implemented.md`,
-`known-limitations.md`); the first two have been archived and their open
-items migrated here. This document is now the single home for all open
-work in the project. Suggested repo home: `notes/`.
+**Reconciled 2026-05-23 to open-work-only.** Per `notes/doc-ownership.md`,
+this document is the single home for open work in the project. Resolved
+items live as append-only milestone lines in `STATUS.md` and are not
+recorded here.
 
 This document organizes the open backlog into a **dependency-ordered
 roadmap**. It is ordered by *what depends on what* and by *how
-fundamental* an item is — not by difficulty. (GHC executes slices
-quickly; staging by difficulty is not useful. Staging by dependency
-is.) The flat backlog (every open item, unordered) and the roadmap (the
-same set arranged into Layers 0–3 + Architecture tier + Standing items)
-are two views of the same set — both live in this file.
+fundamental* an item is — not by difficulty. (Slices execute quickly;
+staging by difficulty is not useful. Staging by dependency is.) The
+flat backlog (every open item, unordered) and the roadmap (the same set
+arranged into Layers 0–3 + Architecture tier + Standing items) are two
+views of the same set — both live in this file. The flat checklist is
+the scannable index; the detailed entries below it are the authoritative
+descriptions.
 
-Items migrated from the archived sources carry "formerly AUD-N",
-"formerly DF-N", "formerly PG-N", or "formerly OQ-N" markers so the
-historical id and the original filing can still be cross-referenced.
-Item identity is now its place in this document.
-
-Per the new `doc-ownership.md` (installed in reconciliation slice 2),
-this roadmap is the only home for open work. Resolved items appear as
-append-only milestone lines in `STATUS.md`, not as struck-through
-entries here (existing struck-through entries are historical anchors
-predating the new system).
+Items migrated from previously-tracked sources (`audit-findings.md`,
+`specified-not-implemented.md`, `known-limitations.md`, all archived)
+carry "formerly AUD-N", "formerly DF-N", "formerly PG-N", or "formerly
+OQ-N" markers so the historical id and the original filing can still be
+cross-referenced. Item identity is now its place in this document.
 
 ---
 
 ## How to read this
 
-The backlog is shallow, not deep. Most inventory items are **independent
-leaves** — no dependency, do in any order, anytime. Only a few real dependency
-chains exist. The roadmap is therefore four layers:
+The backlog is shallow, not deep. Most items are **independent leaves** —
+no dependency, do in any order, anytime. Only a few real dependency
+chains remain. The roadmap is therefore four layers:
 
-- **Layer 0 — verify first.** One item that may already be done.
-- **Layer 1 — foundational.** Items that change the core model or the authoring
-  syntax. Things authored or built afterward depend on these being settled, so
-  they come first — not because they are hard, but because they are *upstream*.
-- **Layer 2 — gated.** Items blocked by a specific decision, by a Layer 1 item,
-  or by a piece of architecture that must be built first. They cannot start
-  until their gate clears.
-- **Layer 3 — free leaves.** No dependencies. Do any of these at any time, in
-  any order. This is most of the backlog.
+- **Layer 0 — verify first.** Items that may already be done — small
+  code-checks that probably close the item.
+- **Layer 1 — foundational.** Items that change the core model or the
+  authoring syntax. Things authored or built afterward depend on these
+  being settled, so they come first — not because they are hard, but
+  because they are *upstream*. **Currently empty.**
+- **Layer 2 — gated.** Items blocked by a specific decision, by a
+  Layer 1 item, or by a piece of architecture that must be built first.
+- **Layer 3 — free leaves.** No dependencies. Do any of these at any
+  time, in any order. This is most of the backlog.
 
-Separately: **doc-staleness (DS-1…DS-5)** is not a feature backlog — it is one
-cleanup slice, and it should be done early because every later slice is read
-against those docs.
+Plus an **Architecture tier** (large multi-slice projects, sequenced by
+intent), **Standing items** (always-present cadence work), and an
+**Explicitly deferred** bucket.
 
 ---
 
-## The dependency graph
+## Open items — checklist
 
-```
-LAYER 0   ✔ PG-13 (closed — test RC-14, commit 411c6b0)
+A flat scannable index of every open item. Detailed entries below.
+Every checkbox here corresponds to one detailed entry; deleting a
+checkbox without resolving the entry — or vice versa — is drift.
 
-LAYER 1   ✔ @/# SIGIL SEMANTICS (F1, commit c86da33)
-(found-     # always-assigns · @ always-refers
- ational)   unifies <ref> and <cite> key syntax
+### Layer 0 — verify first
 
-          ✔ DOC-STALENESS SWEEP (F2, commit f00c877)
-            interpreter.md, pipeline.md, BUILD.md, interpreter-design.md,
-            hover-previews-deferred.md all brought current
+- [ ] Verify formerly AUD-06 — bare GFM pipe tables (NORM-tables / `ec0d071`)
+- [ ] Verify formerly DF-20 — `remark-gfm` lexer-to-canonical bridge
+- [ ] Verify formerly DF-22 — bare `$x$` / `$$x$$` via `remark-math` + normalization
+- [ ] Verify formerly OQ-1 — `remark-math` integration with recursive content
 
-LAYER 2   ✔ G1 — INLINE TEX SHORTCUTS (G1a b6304a3 + G1b 99aaa0b)
+### Layer 2 — gated
 
-          NORM — THE NORMALIZATION PASS  ◄─── new architectural piece
-            a pipeline stage that rewrites standard markdown-form nodes
-            (inlineMath, table, heading, ...) into their canonical
-            acadamarkTag form. Principle settled (DESIGN.md design
-            direction; notes/idioms.md). Pass itself NOT YET BUILT.
-            Needs its own Phase 0. Gates G3.
+- [ ] OQ-2 — render-mode heading-level assignment (`<article-title>` + `<section-title>` coexistence; gates DF-19 in the Architecture tier)
 
-          G3 — MARKDOWN-FORM MATH / GFM  (DF-22, DF-20)
-            ├── gated by NORM (math and tables ride on the
-            │   normalization pass; they are not standalone
-            │   plugin installs anymore)
-            └── math half also gated by the math-coverage
-                investigation (formerly "OQ-1"): is remark-math's
-                tokenizer an adequate wheel, or must acadamark
-                supersede the lexer for some math forms?
+### Layer 3 — free leaves
 
-          G2 — RENDER-MODE LOWERING (DF-19)   ◄─── OUT OF CURRENT SCOPE
-            display-target-three on the display ladder (see DESIGN.md).
-            Downstream; nothing depends on it. Still gated by OQ-2 when
-            it is eventually picked up. Not part of the current
-            "finish Layer 2" arc.
+- [ ] PG-3/4/5 — make `<ref>` honor its parsed attributes (`format`/`type` kwargs, pipe content, `+link`/`+preview`/`+title` flags)
+- [ ] PG-1, PG-2 — per-section footnote collection; margin-positioned sidenotes
+- [ ] PG-8, PG-9, PG-10, PG-11 — citation/config small gaps (multi-key cite order, nested `<config>`, bib heading hardcoded, trailing-whitespace EOL)
+- [ ] DF-21 (= AUD-08), DF-17 — parser leaves: self-closing `<tag />` for DSL-registry tags; qualifying-tag generalization beyond `<table>`
+- [ ] DF-2 — strict mode
+- [ ] DF-3 — `<html-passthrough>` (needs spec written first)
+- [ ] DF-8, DF-9, DF-10, DF-11 — DSL handlers (`<csv>`/`<tsv>` standalone; `<mermaid>`/`<abc>`; math env handlers; `<theorem>` handler + vocab)
+- [ ] DF-13, DF-14, DF-15 — deferred vocab elements (grouped; absorbs additional candidates from the authoring-features survey)
+- [ ] DF-5 — multi-column display
+- [ ] `pipeline.md` note-numbering explanation — doc-clarity leaf
+- [ ] AUD-04 — no-pipe/no-content short form misread as long-form opener
+- [ ] AUD-21 — multi-line content in text-position named tags silently lost (shares fix with AUD-23)
+- [ ] AUD-22 — inline tag at line-start splits paragraphs (**highest-impact parser bug; standalone fix**)
+- [ ] AUD-23 — code sigil multi-line in text position produces `acadamarkTagError` (shares fix with AUD-21)
+- [ ] DF-16 — blank-line termination error recovery
+- [ ] AUD-13 — `<config>` silently accepts metadata kwargs that belong in `<meta>`
+- [ ] AUD-15 — no documented inventory of tag forms × tags
+- [ ] AUD-24 — vocabulary `related_plugins` plugin names are stale
+- [ ] AUD-25 — design directions DD-1..DD-5 not referenced from governed specs
+- [ ] AUD-14 — caption-as-content for `<table>`, `<figure>`, similar (DD-1/DD-2 implementation)
+- [ ] AUD-18 — `<data>` nodes remain in tree after `buildCitationIndex`
+- [ ] AUD-19 — double KaTeX CSS injection in math documents
+- [ ] GAP-9 — `document-9-demo` has no integration test or snapshot
+- [ ] AUD-17 — `integration.test.js` hand-mirrors the `index.js` pipeline (paid four times)
+- [ ] AUD-07 — `table.md` `<csv | ...>` example coordination with DF-8
+- [ ] Discuss canonical form for sections — markdown `##` heading vs `<#>` sigil tag
+- [ ] Discuss type-prefix mismatch warning in cross-reference resolver
+- [ ] Discuss compact external-reference syntax (`wiki:`, `doi:`, `arxiv:`)
+- [ ] Discuss external-link rich previews
+- [ ] Discuss just-in-time math symbol definitions
+- [ ] Discuss executable code blocks (Jupyter-style; Architecture-tier-sized if adopted)
+- [ ] Discuss `<presentation>` / `<slide>` / `<slide-notes>` vocabulary (formerly DF-6)
+- [ ] Smart-typography conversions — open design question
+- [ ] Underline and strikethrough shortcuts — open design question
 
-          G4 — CROSS-REFERENCE REGISTRATION  (AUD-09, PG-6, PG-7)
-            adjacent to F1 — same subsystem, NOT blocked by it.
-            section-id half done (R2). code-block half needs its own
-            Phase 0 (a representation question — see G4 below).
+### Architecture tier
 
-LAYER 3   independent leaves — no dependencies, any order:
-(free)    PG-3, PG-4, PG-5   (<ref> attribute handling)
-          PG-1, PG-2          (per-section / margin notes)
-          PG-8, PG-9, PG-10, PG-11
-          DF-2 (strict mode), DF-3 (html-passthrough — needs spec first)
-          DF-8/9/10/11 (DSL handlers — grouped, see below)
-          DF-13/14/15 (deferred vocab elements — grouped)
-          DF-21 (self-closing), DF-17 (qualifying-tag generalization)
-          DF-5 (multi-column)
-          pipeline.md note-numbering underexplanation (doc-clarity, see Layer 3)
+- [ ] DF-18 — JATS export (`rehypeAcadamarkToJats`)
+- [ ] DF-19 — render-mode lowering (gated by OQ-2 above)
+- [ ] DF-4 — multi-file authoring
+- [ ] DF-12 — book / book-part document structuring
 
-ARCH      DF-18 (JATS export), DF-4 (multi-file), DF-12 (book types)
-(its own  — each a multi-slice project; DF-19 also lands here once
- arc)       OQ-2 is decided. Sequence by intent, not dependency.
+### Standing items
 
-DEFERRED  the unbraced-inline @ form (prose-grammar change) — explicitly
-          parked; revisit only if/when the bare @key affordance is wanted.
-```
+- [ ] Spec-completeness audit (one-time large; not started)
+
+### Explicitly deferred — parked
+
+- The unbraced-inline `@` form (parked; revisit only if/when the bare `@key` affordance is wanted)
+
+---
+
+## Start here — what to work on next
+
+### Open dependency chains
+
+After the reconciliation, the active backlog has **one** hard dependency
+chain:
+
+- **OQ-2 → DF-19.** The heading-level question
+  (`<article-title>` + `<section-title>` coexistence) must be decided
+  before render-mode lowering can be meaningfully scoped.
+
+Everything else in Layers 0, 2, and 3 (and the Architecture tier other
+than DF-19) is independently pickable. The math-coverage investigation
+mentioned in the Layer 0 formerly-OQ-1 entry is opt-in scoping work, not
+a blocker.
+
+### Unblocked, high-value picks (start-here shortlist)
+
+- **AUD-22** — *inline tag at line-start splits paragraphs.* The
+  highest-impact of the three parser-newline bugs (it causes unexpected
+  paragraph splitting in normal authored documents, not edge cases).
+  **Standalone** — does NOT share root cause with AUD-21/AUD-23 (those
+  two share an `attrSection`/`content` `!multiLine` path; AUD-22 is the
+  `afterClose` / `afterGt` path). Proposed fix is already designed in
+  `archive/investigations-2026-05/parser-newline-investigation.md`
+  Q2 + Q5.
+
+- **AUD-17** — *`integration.test.js` hand-mirrors the `index.js`
+  pipeline.* Small, well-bounded; retires a recurring tax paid four
+  times in R3a/R3b/R4/G1b. Good early cleanup.
+
+- **AUD-19** — *double KaTeX CSS injection in math documents.*
+  Concentrated change in the asset-injection path in
+  `packages/acadamark-interpreter/src/index.js`. ~370 KB wasted per math
+  document; no rendering impact.
+
+- **PG-3/4/5** — *`<ref>` attribute handling.* One slice scope — make
+  `<ref>` honor its parsed `format` / `type` kwargs, pipe content, and
+  `+link`/`+preview`/`+title` flags.
+
+- **The four Layer 0 verifications.** Each is a small code-check that
+  probably closes the item; the total verification time is short.
+  Closing them tightens the open-work surface.
 
 ---
 
 ## Layer 0 — verify first
 
-### ~~PG-13 — markdown pass-through escapes inside named-tag content~~ **[CLOSED]**
-
-**Closed (commit `411c6b0`).** Verified resolved by test RC-14 in
-`test-recursive.js`. Not a backlog item. See `STATUS.md` Milestones.
-
-### SUSPECTED CLOSED — items overtaken by NORM / math normalization
-
 These items, migrated here from the now-archived `audit-findings.md` and
 `specified-not-implemented.md`, describe problems that the NORM-tables
 slice (commit `ec0d071`, 2026-05-22) and the math-normalization arc
 appear to have resolved — but the source entries were never updated as
-the arcs landed. Each becomes a small **verification item**, not feature
+the arcs landed. Each is a small **verification item**, not feature
 work: read the relevant code in
 `packages/acadamark-interpreter/src/plugins/normalize-markdown.js` and
 `packages/acadamark-interpreter/src/index.js`, confirm the construct
@@ -163,149 +206,37 @@ line in `STATUS.md`.
 - **(formerly OQ-1) `remark-math` integration with recursive content
   parsing.** Originally filed in `notes/idioms.md` as an open question:
   whether bare `$x$` inside `<aside | ...>` should be treated as inline
-  math. The Layer 2 G3 entry below already retires this framing: "the
-  design half is settled by the normalization principle (yes; it
-  normalizes to the `$` node)." Functionally, bare math now works on
+  math. The design half is settled by the normalization principle (yes;
+  it normalizes to the `$` node); functionally, bare math now works on
   both surfaces. **SUSPECTED CLOSED — verify the integration produces
   the intended behavior; close if confirmed. A separate math-coverage
-  Phase 0 (per the G3 entry below) may still be worth scoping if the
-  explicit adequacy table is wanted, but OQ-1 as an open *question* is
-  no longer open.**
-
----
-
-## Layer 1 — foundational
-
-These come first because they are *upstream* of other work — a syntax change or
-a model change that later work is authored against. Both Layer 1 items are now
-complete.
-
-### ~~F1 — The `@`/`#` sigil-semantics slice~~  **[IMPLEMENTED]**
-
-**Status:** Complete (commit `c86da33`). `#` always assigns an id; `@` always
-refers to one. `<ref>` and `<cite>` share `@key` syntax. Closure recorded
-in `STATUS.md` Milestones (formerly DF-7, adopted as F1).
-
-**Still deferred:** the unbraced-inline `@` form. See "Explicitly deferred."
-
-### ~~F2 — Doc-staleness sweep~~  **[IMPLEMENTED]**
-
-**Status:** Complete (commit `f00c877`). DS-1…DS-5 resolved.
+  Phase 0 may still be worth scoping if the explicit adequacy table is
+  wanted — its purpose would be a three-column table of acadamark's
+  intended math surface, `remark-math`'s tokenizer coverage, and
+  acadamark's existing DSL-math coverage (`<matrix>`, `<cases>`,
+  `<align>`, `<eqnarray>`) — but OQ-1 as an open *question* is no
+  longer open.**
 
 ---
 
 ## Layer 2 — gated items
 
-These are blocked by a decision, a Layer 1 item, or a piece of architecture that
-must be built first. They cannot meaningfully start until the gate clears.
-
-### ~~G1 — Inline TeX shortcuts  *(DF-1, with PG-12)*~~ **[IMPLEMENTED]**
-
-**Status:** Complete. G1a (`b6304a3`) grammar surface; G1b (`99aaa0b`)
-top-level-prose surface. DF-1 and PG-12 resolved. The two-surface structure
-(Peggy grammar surface + micromark top-level-prose surface) is on record as a
-recurring shape for parser slices.
-
-### NORM — The normalization pass  **[IMPLEMENTED for math and tables; ongoing for further constructs]**
-
-**What it is.** A pipeline stage that rewrites standard markdown-form mdast
-nodes — `inlineMath`, `table`, `heading`, and so on — into their canonical
-`acadamarkTag` equivalents, before any structural or semantic plugin runs.
-After the pass, every downstream plugin sees one node type per construct.
-
-**Status.** The pass is built and lives at
-`packages/acadamark-interpreter/src/plugins/normalize-markdown.js`. It
-normalizes `inlineMath`, `math`, and GFM `table` nodes today (NORM-tables
-slice, commit `ec0d071`, 2026-05-22; closure recorded in `STATUS.md`
-Milestones). The 4 SUSPECTED CLOSED items in Layer 0 confirm bare GFM
-tables, bare math, and the recursive-content integration via code check.
-
-**Why it exists.** The "Markdown forms are shorthand for the canonical
-acadamark form" design direction (`DESIGN.md`, reconciled in detail in
-`notes/idioms.md`) settled the principle: delegate the lexer to remark, but
-own the node identity. The normalization pass is the implementation of that
-principle.
-
-**Scope of the principle vs. scope of the pass.** The principle is universal
-in intent — it governs every markdown/acadamark overlap. The pass is
-implemented incrementally — it grows one construct at a time. The current
-scope is math + GFM tables; headings, emphasis, links, lists follow as the
-pass grows. A construct not yet normalized is a not-yet-done item, never a
-decision that it was meant to stay a separate path.
-
-**Action:** add a normalization rule whenever a further markdown/acadamark
-overlap is reached (e.g. headings if/when the `<#>` sigil semantics warrant
-it). Each new construct is a small slice; no further architectural Phase 0
-is needed since the pass itself is established.
-
-### ~~G3 — Markdown-form math / GFM authoring  *(DF-22, DF-20)*~~  **[IMPLEMENTED via NORM-tables and the math-normalization arc; verify-and-close via Layer 0]**
-
-**What it was.** Bare `$x$` / `$$x$$` and bare GFM pipe tables, working as
-shorthand for `<$ ... $>` / `<$$ ... $$>` and `<table>` — i.e. authored in
-markdown form, normalized to the canonical acadamark node, rendered by the
-one existing path for that construct.
-
-**Status.** Implemented as part of the NORM-tables slice (commit
-`ec0d071`). `remark-math` and `remark-gfm` provide the lexer; the
-normalization pass rewrites their output into canonical acadamark nodes
-(`$`, `$$`, `<table md>`). Formal closure is via the 4 SUSPECTED CLOSED
-verification items in Layer 0 — once those check, the G3 framing has
-nothing left to track.
-
-**Remaining open question — math coverage investigation.** Whether
-`remark-math`'s tokenizer is an adequate wheel for every math surface
-acadamark wants (or whether acadamark must supersede the lexer for some
-forms) is a separate code-and-coverage Phase 0 that produces a three-column
-table — acadamark's intended math surface, `remark-math`'s tokenizer
-coverage, and acadamark's existing DSL-math coverage (`<matrix>`,
-`<cases>`, `<align>`, `<eqnarray>`). Worth scoping if the adequacy table
-is wanted, but not blocking; the current normalization works for the
-delimiter-shaped math forms in scope today.
-
-### G2 — Render-mode lowering  *(DF-19, gated by OQ-2)*  **[OUT OF CURRENT SCOPE]**
-
-Render-mode lowering (`<section-title>` → `<h1>`, etc.) is **display-target-three**
-on the display ladder (see `DESIGN.md`, "Layer 1 is canonical; display is a
-downstream ladder"). It is a downstream display concern: nothing else depends
-on it, and it has been explicitly set aside for the current "finish Layer 2"
-arc.
-
-When it is eventually picked up it remains gated by **OQ-2** (the
-`<article-title>` + `<section-title>` heading-level question — see
-`notes/layer1-naming.md` open decisions). OQ-2 is a short design note, to be
-made *when render mode is scoped*, not before — a decision made far ahead of
-its implementation tends to be re-litigated when implementation starts.
-
-DF-19 therefore lands in the Architecture tier, not the current Layer 2 arc.
-
-### ~~G4 — Cross-reference registration  *(AUD-09, PG-6, PG-7)*~~  **[IMPLEMENTED both halves; closure recorded in STATUS.md Milestones, 2026-05-23]**
-
-**Status.** Both halves closed. Section registration done in R2; code-block
-sigil registration done in G4 (decision: only shorthand-wrapped code blocks
-with colon-ids are referenceable; plain fenced `code` nodes intentionally
-non-referenceable). PG-6 implemented; PG-7 closed as by-design (auto-generated
-note ids are internal placement mechanics, not author-facing handles —
-notes that need cross-referencing use explicit colon-ids).
-
-The full reasoning for the by-design closures is in DESIGN.md's
-"Design tensions and accepted tradeoffs" section and in the G4 Phase 0
-findings (`archive/audit-2026-Q2/G4-phase0-findings.md`).
-
 ### OQ-2 — Render-mode heading-level assignment for `<article-title>` + `<section-title>` coexistence
 
 Where: `notes/layer1-naming.md` open decisions. When both an
-`<article-title>` and `<section-title>` are present, do section titles become
-`<h2>` (because the article title takes `<h1>`)? Or do they stay `<h1>` and
-rely on document structure?
+`<article-title>` and `<section-title>` are present, do section titles
+become `<h2>` (because the article title takes `<h1>`)? Or do they stay
+`<h1>` and rely on document structure?
 
-A decision needed before DF-19 (render-mode lowering, Architecture tier) can
-be meaningfully scoped. Filed in Layer 2 because it explicitly gates DF-19.
+A decision needed before DF-19 (render-mode lowering, Architecture tier)
+can be meaningfully scoped. Filed in Layer 2 because it explicitly
+gates DF-19.
 
-The G2 entry above recommends making this call *when render mode is scoped*,
-not before — a decision made far ahead of its implementation tends to be
-re-litigated when implementation starts. This entry exists so the
-dependency is visible from the roadmap rather than buried inside the
-render-mode discussion.
+Recommended: make the call *when render mode is scoped*, not before —
+decisions made far ahead of their implementation tend to be re-litigated
+when implementation starts. This entry exists so the dependency is
+visible from the roadmap rather than buried inside the render-mode
+discussion.
 
 **Action:** decide when DF-19 is scoped.
 
@@ -318,7 +249,7 @@ None of these blocks or is blocked by anything. Pick by appetite.
 **`<ref>` attribute handling — PG-3, PG-4, PG-5.** `format`/`type` kwargs
 ignored (PG-3); author pipe-text ignored (PG-4); `+link`/`+preview`/`+title`
 flags ignored (PG-5). Effectively **one slice** — "make `<ref>` honor its parsed
-attributes." Safe to do independently of F1 and of NORM.
+attributes."
 
 **Notes — PG-1, PG-2.** Per-section footnote collection (PG-1); margin-positioned
 sidenotes (PG-2). Both are placement refinements; notes otherwise work.
@@ -334,8 +265,7 @@ treated as inline (PG-11).
 
 **Strict mode — DF-2.** Bounded; disables markdown idioms. Under the
 normalization model, strict mode is the mode in which the normalization pass
-has nothing to do (no markdown-form nodes are produced). Independent leaf, but
-naturally touched after NORM exists.
+has nothing to do (no markdown-form nodes are produced).
 
 **HTML passthrough — DF-3.** `<html-passthrough>` — needs a *spec* written
 first; it is "planned, not yet specified." A design step precedes the code.
@@ -346,8 +276,8 @@ first; it is "planned, not yet specified." A design step precedes the code.
 **Treat as one body of work, not individual items** — each is "write a handler,"
 all additive, none blocks anything. Note DF-10 (the math environments) is the
 "acadamark covers ground remark never covered" case from the lexer-supersession
-discussion in `notes/idioms.md` — it is independent of NORM and of G3's math
-half, which concern delimiter-shaped math only. (DF-11b — the
+discussion in `notes/idioms.md` — it is independent of the math-coverage
+investigation, which concerns delimiter-shaped math only. (DF-11b — the
 `<proof>`/`<lemma>`/etc. *vocabulary* — needs a vocab design pass first.)
 
 **Deferred vocabulary elements — DF-13, DF-14, DF-15 (grouped).** Metadata
@@ -372,8 +302,9 @@ Additional small-vocab candidates surfaced in the authoring-features survey
   classifier), `<thumbnail>` (image for social sharing). Each is a small
   addition to `<meta>`'s allowed children.
 
-**Multi-column display — DF-5.** Deferred-feature doc exists; render-mode
-concern. Independent leaf, low-priority unless a publication target needs it.
+**Multi-column display — DF-5.** Spec is `notes/multi-column-display.md`;
+render-mode concern. Independent leaf, low-priority unless a publication
+target needs it.
 
 **pipeline.md note-numbering explanation — doc-clarity leaf.** In `pipeline.md`
 §10.5, the explanation of how a note gets its number is incomplete: it implies
@@ -557,7 +488,8 @@ Five distinct parser-level bugs surfaced through audits but not yet fixed.
   paragraph (preceding), `acadamarkTag`, paragraph (`trailing text.`).
   Proposed fix: add an `afterGt` check that calls `nok` if the character
   after `>` is not a line ending or EOF. Documented in
-  `parser-newline-investigation.md` Q2 + Q5.
+  `parser-newline-investigation.md` Q2 + Q5. **Standalone — does not
+  share root cause with AUD-21/AUD-23.**
 
 - **Code sigil with multi-line content in text position produces
   `acadamarkTagError` (formerly AUD-23).** Same root cause as AUD-21
@@ -576,8 +508,7 @@ Five distinct parser-level bugs surfaced through audits but not yet fixed.
   constructs at blank lines for localized error recovery. Currently a
   tag opened before a blank line will consume across the blank line or
   to EOF. Explicit `Status: Deferred` in
-  `notes/recursive-content-spec.md`. Live behavior listed in
-  `notes/known-limitations.md`.
+  `notes/recursive-content-spec.md`.
 
 **Silent-failure / authoring traps — AUD-13 (formerly).** `<config>`
 silently accepts metadata kwargs that belong in `<meta>` (`title=`,
@@ -630,8 +561,7 @@ documentation findings that need separate slices.
   spec docs, but no forward-pointer from the governed spec to the
   relevant direction exists (`config.md` / `meta.md` do not reference
   DD-3 — which AUD-13 violates; `figure.md` / `table.md` do not
-  reference DD-1 — directly relevant to AUD-14 below;
-  `known-limitations.md`'s self-closing entry does not reference DD-4).
+  reference DD-1 — directly relevant to AUD-14 below).
   Fix path: add "See also: DD-N in DESIGN.md §Design directions"
   forward-pointer lines to the governed entries. A propagation slice;
   `DESIGN.md` remains the canonical owner.
@@ -673,9 +603,7 @@ asset-pipeline findings, both low-priority.
   Documents containing math (e.g. `document-5`, `document-6`) carry the
   KaTeX stylesheet **twice** — a small block (~12 KB) and the full
   block (~370 KB), as two separate `<style>` elements. Math-free
-  documents have it once. Effect: ~370 KB wasted per math document;
-  `document-5`/`document-6` render at ~710–737 KB versus ~336 KB for
-  math-free equivalents. No appearance impact. Fix path: in the
+  documents have it once. No appearance impact. Fix path: in the
   asset-injection path in
   `packages/acadamark-interpreter/src/index.js`, identify where KaTeX
   CSS is injected and guard against double-injection (e.g. check
@@ -744,15 +672,18 @@ the special-character list and escape rules grow to match.
 ## Architecture tier — large, each its own arc
 
 Multi-slice projects. Sequence these by *intent* (what acadamark is for next),
-not by dependency — they are mutually independent.
+not by dependency — they are mutually independent (other than DF-19's
+gate on OQ-2).
 
 - **DF-18 — JATS export** (`rehypeAcadamarkToJats`). The vocabulary is
   JATS-aligned by design (`jats_counterpart` on every entry); this is the
-  payoff. A `BUILD.md` Phase-3 piece.
-- **DF-19 — render-mode lowering.** Display-target-three on the display ladder.
-  Lands here once OQ-2 (its gate) is decided. Set aside for the current arc.
-- **DF-4 — multi-file authoring.** `acadamark.yml` + `<include>`; project-wide
-  registries. A real architectural extension.
+  payoff.
+- **DF-19 — render-mode lowering.** Display-target-three on the display
+  ladder. Gated by OQ-2 (Layer 2 above) — the heading-level question
+  must be decided when render mode is scoped.
+- **DF-4 — multi-file authoring.** `acadamark.yml` + `<include>`;
+  project-wide registries. A real architectural extension. Spec at
+  `notes/multi-file-authoring.md`.
 - **DF-12 — book / book-part document structuring.** Vocabulary exists;
   `article-structuring.js` currently warns and skips non-article types.
 
@@ -779,7 +710,7 @@ rather than ordinary maintenance.
 
 Audit every spec in the repo (`DESIGN.md`, `notes/*.md`,
 `packages/layer1-vocabulary/SPEC.md`, the per-element vocabulary
-entries) against the **rebuild-from-docs standard** stated in the new
+entries) against the **rebuild-from-docs standard** stated in the
 documentation system design: *with all code deleted, the remaining
 documentation must be sufficient to rebuild the project.*
 
@@ -791,7 +722,7 @@ A spec that describes *what is implemented* may still be insufficient
 under this standard if it skips the *why*, the constraints that bound
 the design, or the unbuilt parts of the blueprint.
 
-**Why now.** The new documentation system installs the coherence check
+**Why now.** The documentation system installs the coherence check
 as the end of every implementation slice. Future spec drift is caught
 at the slice that introduces it. But existing specs were written under
 the old framing and have never been held to the rebuild standard, so
@@ -802,38 +733,4 @@ check is meaningful.
 backlog items in their appropriate Layer. The audit itself produces no
 fixes — fixes are follow-on slices. Likely to be split into several
 Phase 0 investigations (per spec or per spec-cluster) plus targeted
-fix slices. Not for the current arc.
-
-**Status: filed. Not started.**
-
----
-
-## Suggested order (a default, not a mandate)
-
-Dependency-respecting; within a layer, order is free:
-
-**Done:** ~~PG-13 verify~~ ✔ · ~~F2 doc-staleness sweep~~ ✔ · ~~F1 `@`/`#` sigil
-semantics~~ ✔ · ~~G1 inline TeX shortcuts~~ ✔ · ~~normalization principle into
-the spec~~ ✔ (DESIGN.md design direction + `notes/idioms.md`)
-
-**Next:**
-
-1. **Math-coverage Phase 0** — the read-only investigation that was formerly
-   "OQ-1." Produces the three-column adequacy table and confirms-or-corrects
-   the lexer-supersession claim in `notes/idioms.md`. Can run in parallel with
-   step 2.
-2. **NORM Phase 0** — architecture and initial scope of the normalization pass.
-3. **NORM implementation slice** — build the pass; cover the constructs G3
-   needs (math, tables).
-4. **G3** — markdown-form math and GFM tables, riding on NORM. May split into a
-   tables slice and a math slice; both sit behind NORM.
-5. **G4** — cross-reference registration. The code-block half needs its own
-   Phase 0 first (representation question); the section/note-id parts may be
-   direct.
-6. **Layer 3 leaves** — any time, by appetite. The `<ref>`-attributes slice
-   (PG-3/4/5) and PG-10 are the easy satisfying ones.
-7. **Architecture tier** — when the output/format direction is known. DF-19
-   (render mode) lands here once OQ-2 is decided.
-
-The hard rules: NORM before G3; the math-coverage Phase 0 before G3's math
-half; OQ-2 before DF-19. Everything else is preference.
+fix slices.
