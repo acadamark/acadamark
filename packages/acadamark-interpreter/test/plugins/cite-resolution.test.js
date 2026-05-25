@@ -14,7 +14,8 @@
 import assert from 'node:assert/strict';
 import Cite from 'citation-js';
 import { acadamarkCiteResolution } from '../../src/plugins/cite-resolution.js';
-import { makeTag, isAcadamarkTag } from '../../src/lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
+import { isAcadamarkTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

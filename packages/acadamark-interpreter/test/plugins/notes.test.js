@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { acadamarkNotes } from '../../src/plugins/notes.js';
 import { acadamarkNotePlacement } from '../../src/plugins/note-placement.js';
 import { ensureRegistry } from '../../src/lib/registry.js';
-import { makeTag, isAcadamarkTag } from '../../src/lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
+import { isAcadamarkTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

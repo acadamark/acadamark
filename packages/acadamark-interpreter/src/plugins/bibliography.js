@@ -19,7 +19,8 @@
 // into each entry's div via a string replace. This gives the hover-preview
 // getCiteContent() something to look up with document.getElementById('ref-KEY').
 
-import { isAcadamarkTag, makeTag } from '../lib/ast-helpers.js';
+import { makeTag, makeInternalMarker } from 'acadamark-core/tag';
+import { isAcadamarkTag } from '../lib/ast-helpers.js';
 
 // ─── Deep-search helpers (same pattern as notes.js) ──────────────────────────
 
@@ -58,21 +59,12 @@ function findOrCreateArticleBack(treeChildren) {
  * the handler provides the <bibliography> element).
  */
 function makeBibliographyNode(headingHtml, bibBodyHtml) {
-  return {
-    type: 'acadamarkTag',
-    tagname: '__bibliography',
-    id: null,
-    classes: [],
+  return makeInternalMarker('__bibliography', {
     kwargs: {
       headingHtml, // "References" heading HTML (may be overridden later)
       bibBodyHtml, // citation-js output with id= injected
     },
-    content: null,
-    contentHandler: 'default',
-    isOpaqueContent: false,
-    positional: [],
-    booleans: {},
-  };
+  });
 }
 
 // ─── Bibliography HTML generation ────────────────────────────────────────────

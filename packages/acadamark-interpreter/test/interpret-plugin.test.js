@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { toHast } from 'mdast-util-to-hast';
 import { acadamarkTagHandler } from '../src/interpret-plugin.js';
-import { makeTag } from '../src/lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
 
 function hast(node) {
   return toHast(

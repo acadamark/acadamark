@@ -9,3 +9,4 @@
 
 export { DSL_REGISTRY, getContentHandler } from './dsl-registry.js';
 export { PARSER_TO_VOCAB, resolveVocabKey } from './sigil-mapping.js';
+export { makeTag, makeOpaqueTag, makeInternalMarker } from './tag.js';

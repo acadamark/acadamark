@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { acadamarkSectionNesting } from '../../src/plugins/section-nesting.js';
-import { makeTag } from '../../src/lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
 
 function para(value) {
   return { type: 'paragraph', children: [{ type: 'text', value }] };

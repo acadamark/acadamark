@@ -1436,7 +1436,7 @@ packages/acadamark-interpreter/
       load-vocabulary.js          loadVocabulary(); parseFrontmatter()
     lib/
       registry.js                 createRegistry(); ensureRegistry()
-      ast-helpers.js              makeTag(), isAcadamarkTag(), sectionDepth(), findTag(), extractPlainText()
+      ast-helpers.js              isAcadamarkTag(), sectionDepth(), findTag(), extractPlainText()
       bool-kwarg.js               readBoolKwarg()
       discover.js                 discover() — shared read-only pre-order DFS walker
       walk-replace.js             walkReplace() — shared in-place node replacement walker

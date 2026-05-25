@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { acadamarkLibraryLoad } from '../../src/plugins/library-load.js';
-import { makeTag } from '../../src/lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, '../fixtures');

@@ -25,6 +25,7 @@
 // When the entry.number is null (target registered but unnumbered), the
 // label-tail of the id is used as link text: #eqn:energy → "energy".
 
+import { makeInternalMarker } from 'acadamark-core/tag';
 import { ensureRegistry } from '../lib/registry.js';
 import { walkReplace } from '../lib/walk-replace.js';
 
@@ -73,36 +74,18 @@ function computeRefText(id, entry, config) {
 }
 
 function makeRefMarker(targetId, entry, config) {
-  return {
-    type: 'acadamarkTag',
-    tagname: '__ref-marker',
-    id: null,
-    classes: [],
+  return makeInternalMarker('__ref-marker', {
     kwargs: {
       targetId,
       text: computeRefText(targetId, entry, config),
     },
-    content: null,
-    contentHandler: 'default',
-    isOpaqueContent: false,
-    positional: [],
-    booleans: {},
-  };
+  });
 }
 
 function makeRefError(targetId) {
-  return {
-    type: 'acadamarkTag',
-    tagname: '__ref-error',
-    id: null,
-    classes: [],
+  return makeInternalMarker('__ref-error', {
     kwargs: { targetId: targetId ?? '(none)' },
-    content: null,
-    contentHandler: 'default',
-    isOpaqueContent: false,
-    positional: [],
-    booleans: {},
-  };
+  });
 }
 
 /**

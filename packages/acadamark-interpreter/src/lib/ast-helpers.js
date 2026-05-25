@@ -1,32 +1,8 @@
 // AST helper utilities for the acadamark interpreter structural plugins.
 //
-// These helpers create and query acadamarkTag nodes — the node type produced by
-// remark-acadamark and consumed by the interpreter's structural plugins and
-// mdast-to-hast handler.
-
-/**
- * Create a well-formed acadamarkTag node.
- *
- * @param {string} tagname
- * @param {Array} [content] - child nodes (mdast or acadamarkTag)
- * @param {object} [attrs]
- * @param {string|null} [attrs.id]
- * @param {string[]} [attrs.classes]
- * @param {object} [attrs.kwargs]
- * @returns {import('mdast').Node}
- */
-export function makeTag(tagname, content = [], { id = null, classes = [], kwargs = {} } = {}) {
-  return {
-    type: 'acadamarkTag',
-    tagname,
-    id,
-    classes,
-    kwargs,
-    content,
-    contentHandler: 'default',
-    isOpaqueContent: false,
-  };
-}
+// Query helpers for acadamarkTag nodes — the construction builders live in
+// the inward-pointing `acadamark-core/tag` module (`makeTag`, `makeOpaqueTag`,
+// `makeInternalMarker`).
 
 /**
  * Return true if node is an acadamarkTag, optionally matching a specific

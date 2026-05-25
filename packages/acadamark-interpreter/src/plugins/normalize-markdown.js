@@ -28,6 +28,7 @@
 //   structural change to the pass.
 
 import { getContentHandler } from 'acadamark-core/dsl-registry';
+import { makeOpaqueTag } from 'acadamark-core/tag';
 import { walkNormalize } from '../lib/walk-normalize.js';
 
 // ─── Drift guards at module load ──────────────────────────────────────────────
@@ -204,21 +205,8 @@ const NORMALIZATIONS = [
   // Canonical target:     acadamarkTag with tagname '$'
   {
     predicate: (node) => node.type === 'inlineMath',
-    normalize: (node) => ({
-      type: 'acadamarkTag',
-      form: 'short',
-      tagname: '$',
-      positional: [],
-      booleans: {},
-      kwargs: {},
-      id: null,
-      classes: [],
-      atRefs: [],
-      content: node.value,
-      isOpaqueContent: true,
-      selfClosing: false,
-      contentHandler: _mathHandler,
-    }),
+    normalize: (node) =>
+      makeOpaqueTag('$', node.value, { contentHandler: _mathHandler }),
   },
 
   // ── remark-math: display math ────────────────────────────────────────────
@@ -228,21 +216,8 @@ const NORMALIZATIONS = [
   // info strings) has no canonical analog and is discarded — correct.
   {
     predicate: (node) => node.type === 'math',
-    normalize: (node) => ({
-      type: 'acadamarkTag',
-      form: 'short',
-      tagname: '$$',
-      positional: [],
-      booleans: {},
-      kwargs: {},
-      id: null,
-      classes: [],
-      atRefs: [],
-      content: node.value,
-      isOpaqueContent: true,
-      selfClosing: false,
-      contentHandler: _mathDisplayHandler,
-    }),
+    normalize: (node) =>
+      makeOpaqueTag('$$', node.value, { contentHandler: _mathDisplayHandler }),
   },
 
   // ── remark-gfm: pipe table ───────────────────────────────────────────────
@@ -260,21 +235,11 @@ const NORMALIZATIONS = [
   // dispatch. Math normalizers accept but ignore the `file` arg.
   {
     predicate: (node) => node.type === 'table',
-    normalize: (node, file) => ({
-      type: 'acadamarkTag',
-      form: 'short',
-      tagname: 'table',
-      positional: ['md'],
-      booleans: {},
-      kwargs: {},
-      id: null,
-      classes: [],
-      atRefs: [],
-      content: gfmTableToPipeString(node, file),
-      isOpaqueContent: true,
-      selfClosing: false,
-      contentHandler: _tableHandler,
-    }),
+    normalize: (node, file) =>
+      makeOpaqueTag('table', gfmTableToPipeString(node, file), {
+        contentHandler: _tableHandler,
+        positional: ['md'],
+      }),
   },
 ];
 

@@ -27,7 +27,8 @@
 // The three regions are emitted only when they have content. Empty regions
 // are suppressed entirely. This matches the plugin-pipeline.md contract.
 
-import { makeTag, isAcadamarkTag, findTag } from '../lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
+import { isAcadamarkTag, findTag } from '../lib/ast-helpers.js';
 import { warnSkippedDocType, warnTitlePrecedence } from '../lib/errors.js';
 
 // Tags that belong in <article-back>.

@@ -20,6 +20,7 @@
 // are structurally identical to what fillNotes produced previously. The handlers
 // in handlers/notes.js are unchanged.
 
+import { makeTag, makeInternalMarker } from 'acadamark-core/tag';
 import { findTag } from '../lib/ast-helpers.js';
 import { walkReplace } from '../lib/walk-replace.js';
 import { notePlacement } from './notes.js';
@@ -42,18 +43,7 @@ function findOrCreateArticleBack(treeChildren) {
 
   let back = findTag(article.content ?? [], 'article-back');
   if (!back) {
-    back = {
-      type: 'acadamarkTag',
-      tagname: 'article-back',
-      id: null,
-      classes: [],
-      kwargs: {},
-      content: [],
-      contentHandler: 'default',
-      isOpaqueContent: false,
-      positional: [],
-      booleans: {},
-    };
+    back = makeTag('article-back');
     article.content.push(back);
   }
   return back;
@@ -93,18 +83,10 @@ export function acadamarkNotePlacement() {
       const { id: noteId } = entry;
       const number = entry.number;
       const refId = `noteref-${number}`;
-      return [{
-        type: 'acadamarkTag',
-        tagname: '__note-marker',
-        id: null,
-        classes: [],
+      return [makeInternalMarker('__note-marker', {
         kwargs: { noteId, number, refId },
         content: [],
-        contentHandler: 'default',
-        isOpaqueContent: false,
-        positional: [],
-        booleans: {},
-      }];
+      })];
     });
 
     // Build __note-list-item nodes from pending in document order.
@@ -116,18 +98,11 @@ export function acadamarkNotePlacement() {
       const refId = `noteref-${number}`;
       const placement = notePlacement(noteNode);
       const sidenote = placement === 'side';
-      return {
-        type: 'acadamarkTag',
-        tagname: '__note-list-item',
+      return makeInternalMarker('__note-list-item', {
         id: noteId,
-        classes: [],
         kwargs: { number, refId, sidenote },
         content: Array.isArray(noteNode.content) ? noteNode.content : [],
-        contentHandler: 'default',
-        isOpaqueContent: false,
-        positional: [],
-        booleans: {},
-      };
+      });
     });
 
     // Compute CSS class for the __note-list.
@@ -143,18 +118,10 @@ export function acadamarkNotePlacement() {
           : ['notes'];
 
     // Build the __note-list node.
-    const noteList = {
-      type: 'acadamarkTag',
-      tagname: '__note-list',
-      id: null,
+    const noteList = makeInternalMarker('__note-list', {
       classes: listClass,
-      kwargs: {},
       content: listItems,
-      contentHandler: 'default',
-      isOpaqueContent: false,
-      positional: [],
-      booleans: {},
-    };
+    });
 
     // Inject into article-back, prepending before existing content (bibliography, etc.).
     const back = findOrCreateArticleBack(tree.children);

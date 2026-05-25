@@ -19,7 +19,8 @@
 // child array by remarkRecursiveContent) is promoted to a <section-title>
 // (or <sub-section-title>, <sub-sub-section-title>) as the first child.
 
-import { makeTag, isAcadamarkTag, sectionDepth } from '../lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
+import { isAcadamarkTag, sectionDepth } from '../lib/ast-helpers.js';
 
 // Map from section tagname to its title element name.
 const TITLE_TAG = {

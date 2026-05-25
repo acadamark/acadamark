@@ -21,6 +21,7 @@
 // __cite-marker.keys = all keys (found+missing when mixed; found-only when all found).
 // __cite-error.keys  = only the missing keys (or all if all missing).
 
+import { makeInternalMarker } from 'acadamark-core/tag';
 import { walkReplace } from '../lib/walk-replace.js';
 
 // ─── Key extraction ───────────────────────────────────────────────────────────
@@ -89,38 +90,15 @@ function extractCiteKeys(node) {
 // ─── Internal node factories ──────────────────────────────────────────────────
 
 function makeCiteMarker(keys, html) {
-  return {
-    type: 'acadamarkTag',
-    tagname: '__cite-marker',
-    id: null,
-    classes: [],
-    kwargs: {
-      keys: keys.join(','),
-      html,
-    },
-    content: null,
-    contentHandler: 'default',
-    isOpaqueContent: false,
-    positional: [],
-    booleans: {},
-  };
+  return makeInternalMarker('__cite-marker', {
+    kwargs: { keys: keys.join(','), html },
+  });
 }
 
 function makeCiteError(keys) {
-  return {
-    type: 'acadamarkTag',
-    tagname: '__cite-error',
-    id: null,
-    classes: [],
-    kwargs: {
-      keys: keys.join(','),
-    },
-    content: null,
-    contentHandler: 'default',
-    isOpaqueContent: false,
-    positional: [],
-    booleans: {},
-  };
+  return makeInternalMarker('__cite-error', {
+    kwargs: { keys: keys.join(',') },
+  });
 }
 
 // ─── Plugin ───────────────────────────────────────────────────────────────────

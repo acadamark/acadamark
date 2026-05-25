@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { acadamarkArticleStructuring } from '../../src/plugins/article-structuring.js';
-import { makeTag } from '../../src/lib/ast-helpers.js';
+import { makeTag } from 'acadamark-core/tag';
 
 function para(value) {
   return { type: 'paragraph', children: [{ type: 'text', value }] };
