@@ -272,3 +272,39 @@ that). One line gets added every few months, not every slice.
   `mapAttributes(node, vocab, emit)` API — is recorded in the ADR; the
   lift waits for JATS export so the API is designed against a real
   second consumer.
+- **2026-Q2 — Layer 0 "suspected closed" verifications cleared.** The
+  backlog's Layer 0 section held four items the source entries had
+  marked "SUSPECTED CLOSED" but never reconciled: GFM table support
+  (`formerly AUD-06`), GFM pipe-table normalization to canonical
+  `<table md>` (`formerly DF-20`), bare `$…$` math normalization to
+  canonical `<$>` (`formerly DF-22`), and bare math inside recursive
+  content e.g. `<aside | ... $x$ ...>` (`formerly OQ-1`). A
+  verification slice read the current code (no code changes) and
+  confirmed all four closed: `remark-gfm` ^4.0.1 and `remark-math`
+  ^6.0.0 are dependencies of `acadamark-interpreter` and wired into
+  both the outer pipeline and the inner processor (in
+  `src/index.js` at L337/342/353); the normalization pass
+  (`src/plugins/normalize-markdown.js`) contains the rewrite paths
+  for `inlineMath` → `$`, `math` → `$$`, and `table` → `<table md>`
+  (lines 207, 218, 237 respectively); fixture `document-11-bare-math.acm`
+  exercises bare math at the outer surface (top-level inline + display)
+  and at the inner surface (bare `$E=mc^2$` inside `<aside | ...>`);
+  fixture `document-12-bare-table.acm` exercises bare pipe tables at
+  the outer surface (top-level + aligned-columns) and at the inner
+  surface (bare pipe table inside `<note placement=foot | ...>`); the
+  `normalize-markdown.test.js` unit suite asserts byte-equivalence
+  between each normalized node and the authored sigil/tag form
+  ("normalized $ node matches authored <$ ... $> field-for-field" and
+  the analogous assertions for `$$` and `<table md>`); all 13
+  integration documents pass with snapshots stable. Items 1 and 2
+  closed on one finding (the backlog entries themselves noted "same
+  root"). Backlog Layer 0 section now empty (heading kept with a
+  "Currently clear" note pointing here). Verification only: no
+  product code, no spec falsehoods to correct (`idioms.md` and
+  `recursive-content-spec.md` already describe the design as
+  in-place). The opt-in math-coverage Phase 0 noted in the OQ-1 entry
+  (three-column adequacy table: acadamark's intended math surface vs
+  remark-math's tokenizer coverage vs acadamark's DSL-math coverage)
+  was not in scope and remains opt-in scoping work; the verification
+  did not surface a missing-construct concern for the constructs
+  currently fixture-covered.

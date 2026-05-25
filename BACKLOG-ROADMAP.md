@@ -72,11 +72,9 @@ checkbox without resolving the entry — or vice versa — is drift.
 
 ### Layer 0 — verify first
 
-- [ ] **Verify the NORM-tables / math-normalization closures** — four
-  near-identical code-checks that each probably close their respective
-  item; handled as one grouped slice `[parser+interpreter]` *(verifies
-  the items `formerly AUD-06`, `formerly DF-20`, `formerly DF-22`, and
-  `formerly OQ-1`)*
+*Currently clear.* The four "SUSPECTED CLOSED" verification items
+(`formerly AUD-06`, `DF-20`, `DF-22`, `OQ-1`) were verified against
+the current code and all confirmed closed (see the STATUS milestone).
 
 ### Layer 2 — gated
 
@@ -286,60 +284,15 @@ above.
 
 ## Layer 0 — verify first (detailed)
 
-The four items below describe problems that the NORM-tables slice
-(commit `ec0d071`, 2026-05-22) and the math-normalization arc appear to
-have resolved — but the source entries were never updated as the arcs
-landed. Each is a small **verification item**, not feature work: read
-the relevant code in
-`packages/acadamark-interpreter/src/plugins/normalize-markdown.js` and
-`packages/acadamark-interpreter/src/index.js`, confirm the construct
-behaves as the closure would imply, close the item with a milestone
-line in `STATUS.md`. The four are near-identical in shape and can be
-handled as one grouped slice.
-
-- **Verify GFM table support via `remark-gfm`** `[parser+interpreter]`.
-  Originally filed when `remark-gfm` was absent and
-  `| h1 | h2 |\n|---|---|` parsed as paragraph text. The
-  `<table md | ...>` form was the documented workaround. `remark-gfm`
-  is now installed in `acadamark-interpreter` and threaded into both
-  the outer and inner processors; bare GFM pipe tables normalize to
-  canonical `<table md | ...>` nodes via `acadamarkNormalizeMarkdown`.
-  **SUSPECTED CLOSED — verify against NORM-tables (commit `ec0d071`) /
-  the math-normalization arc; close if confirmed.**
-  *(`formerly AUD-06`)*
-
-- **Verify GFM pipe-table normalization to canonical `<table md>`**
-  `[parser+interpreter]`. Same root as the previous item — `BUILD.md`'s
-  initial dependency list named `remark-gfm` but the package was never
-  installed at filing time. Now installed and the lexer-to-canonical
-  bridge exists via the normalization pass. **SUSPECTED CLOSED —
-  verify against NORM-tables (commit `ec0d071`); close if confirmed.**
-  *(`formerly DF-20`)*
-
-- **Verify bare `$…$` math normalization to canonical `<$>`**
-  `[parser+interpreter]`. Originally filed when `remark-math` was not
-  installed and the open question OQ-1 (below) was undecided. The
-  `<$ | x $>` sigil form worked but bare `$x$` produced paragraph
-  text. `remark-math` is now installed on both surfaces; `inlineMath`
-  and `math` nodes are rewritten to canonical `acadamarkTag` `$` /
-  `$$` nodes by `acadamarkNormalizeMarkdown`. **SUSPECTED CLOSED —
-  verify against the math-normalization arc / commit `ec0d071`; close
-  if confirmed.** *(`formerly DF-22`)*
-
-- **Verify bare math inside recursive content (e.g. inside `<aside>`)**
-  `[parser+interpreter]`. Originally filed in `notes/specs/idioms.md`
-  as an open question: whether bare `$x$` inside `<aside | ...>`
-  should be treated as inline math. The design half is settled by the
-  normalization principle (yes; it normalizes to the `$` node);
-  functionally, bare math now works on both surfaces. **SUSPECTED
-  CLOSED — verify the integration produces the intended behavior;
-  close if confirmed. A separate math-coverage Phase 0 may still be
-  worth scoping if the explicit adequacy table is wanted — its purpose
-  would be a three-column table of acadamark's intended math surface,
-  `remark-math`'s tokenizer coverage, and acadamark's existing
-  DSL-math coverage (`<matrix>`, `<cases>`, `<align>`, `<eqnarray>`)
-  — but OQ-1 as an open *question* is no longer open.**
-  *(`formerly OQ-1`)*
+*Currently clear.* The four items that lived here (`formerly AUD-06`,
+`DF-20`, `DF-22`, `OQ-1`) were verified against the current code and
+all confirmed closed — see the STATUS milestone for the verification
+evidence (`remark-gfm` and `remark-math` installed and wired into both
+processors; `acadamarkNormalizeMarkdown` rewrites `inlineMath` / `math`
+/ `table` nodes to canonical acadamarkTag nodes; `document-11-bare-math.acm`
+and `document-12-bare-table.acm` integration fixtures exercise both the
+outer and inner-via-recursive-content surfaces and pass with snapshots
+stable).
 
 ---
 
