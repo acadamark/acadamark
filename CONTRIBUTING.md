@@ -144,6 +144,14 @@ slice is not done until code and documentation agree.
   its backlog-worthy findings are filed. A fix slice resolves findings —
   refines, closes, or addresses them as spec edits — but is not the first
   place a finding reaches the backlog.
+- A prior observation is a lead, not a fact. When a documentation pass
+  migrates, transcribes, or files an observation from an earlier
+  investigation, an older notes file, or a past slice, it must empirically
+  re-verify that observation against the current code before recording it
+  as live — the earlier observation establishes only that something was
+  once true. Re-verification is part of the pass: the pass is not complete
+  until every filed observation has been re-checked, and an observation
+  that no longer holds is filed with its corrected status, not as live.
 - A spec is edited the moment the design it describes changes — in the same
   slice, never "later."
 - A limitation is one of two things and is filed accordingly — it never gets
