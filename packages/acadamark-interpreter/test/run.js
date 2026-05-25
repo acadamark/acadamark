@@ -3,7 +3,6 @@
 // and report a summary.
 
 import { run as runShapeTokens } from './schema/shape-tokens.test.js';
-import { run as runLoadVocabulary } from './schema/load-vocabulary.test.js';
 import { run as runConfigDiscovery } from './plugins/config-discovery.test.js';
 import { run as runArticleStructuring } from './plugins/article-structuring.test.js';
 import { run as runSectionNesting } from './plugins/section-nesting.test.js';
@@ -30,7 +29,6 @@ import { run as runIntegration } from './integration.test.js';
 
 const suites = [
   ['schema/shape-tokens',          runShapeTokens],
-  ['schema/load-vocabulary',       runLoadVocabulary],
   ['plugins/config-discovery',     runConfigDiscovery],
   ['plugins/article-structuring',  runArticleStructuring],
   ['plugins/section-nesting',      runSectionNesting],

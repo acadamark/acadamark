@@ -1,0 +1,3960 @@
+// GENERATED — do not edit.
+// Regenerated from `packages/layer1-vocabulary/elements/*.md` by
+// `packages/layer1-vocabulary/build/generate-data-module.js`.
+// Source files: 66 vocabulary entries.
+//
+// The generator is build-time-only (it uses `fs` / `js-yaml`); the
+// emitted module below is pure data — no `fs`, no dependencies,
+// browser-safe. Consumers import `VOCABULARY` (and
+// `VOCABULARY_ERRORS` for build-time-surfaced load issues).
+//
+// Shorthand aliases share the spec object reference of their target
+// (matching the previous loader's identity behavior).
+
+const _a = Object.freeze({
+    "semantic_role": "a",
+    "html_output": {
+      "element": "a",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "href": {
+          "maps_to": "href",
+          "notes": "The URL or fragment identifier the anchor points to. Required\nfor hyperlinks; optional for anchors used as link targets.\n",
+        },
+        "target": {
+          "maps_to": "target",
+          "values": [
+            "_self",
+            "_blank",
+            "_parent",
+            "_top",
+          ],
+          "notes": "How the link opens. _blank opens in a new tab/window.\n",
+        },
+        "rel": {
+          "maps_to": "rel",
+          "notes": "Relationship between the current document and the link target.\nCommon values: nofollow, noopener, noreferrer, external.\n",
+        },
+        "title": {
+          "maps_to": "title",
+          "notes": "Tooltip text shown on hover.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Link text. The visible label for the link.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "ext-link",
+      "attributes": {
+        "ext-link-type": "uri",
+        "xlink:href": "from href",
+      },
+      "notes": "JATS uses <ext-link> for external links and <xref> for internal\ncross-references. Acadamark's <a> maps to <ext-link> for external\nURLs; for internal references (acadamark id targets), the JATS\nexporter typically transforms the link into an <xref> instead.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "See [the documentation](https://example.com/docs).",
+        "layer1_html": "<p>See <a href=\"https://example.com/docs\">the documentation</a>.</p>",
+        "notes": "Plain markdown link syntax produces <a> elements. The most common\nauthoring path.\n",
+      },
+      {
+        "source": "<a href=https://example.com | the example site>",
+        "layer1_html": "<a href=\"https://example.com\">the example site</a>",
+      },
+      {
+        "source": "<a href=https://example.com target=_blank rel=noopener | external link>",
+        "layer1_html": "<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener\">external link</a>",
+      },
+      {
+        "source": "<a href=#section-2 | jump to Section 2>",
+        "layer1_html": "<a href=\"#section-2\">jump to Section 2</a>",
+        "notes": "Internal links use fragment identifiers pointing at element ids.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "a.md",
+  });
+
+const _abstract = Object.freeze({
+    "semantic_role": "abstract",
+    "html_output": {
+      "element": "abstract",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-abstract-type",
+          "values": [
+            "unstructured",
+            "structured",
+            "graphical",
+            "executive-summary",
+            "other",
+          ],
+          "default": "unstructured",
+          "notes": "Distinguishes abstract types. Structured abstracts have explicit\nsub-section headings (Background, Methods, Results, Conclusion);\nunstructured abstracts are flowing prose.\n",
+        },
+        "word-limit": {
+          "maps_to": "data-word-limit",
+          "notes": "Optional documentation of the journal's word limit for this\nabstract. Informational only; does not enforce.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Abstract content. Single-paragraph or multi-paragraph. Structured\nabstracts may contain explicit sub-section elements.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "abstract",
+      "attributes": {
+        "abstract-type": "from type",
+      },
+    },
+    "shorthand_examples": [
+      {
+        "source": "<abstract |\nThis paper presents new evidence that elephant populations\nsignificantly affect regional climate patterns through their\nrole in shaping vegetation and carbon storage.\n>\n",
+        "layer1_html": "<abstract>\n  <p>This paper presents new evidence that elephant populations significantly affect regional climate patterns through their role in shaping vegetation and carbon storage.</p>\n</abstract>\n",
+        "notes": "Unstructured abstract (the default). Single paragraph of summary prose.\n",
+      },
+      {
+        "source": "<abstract type=structured |\n**Background:** Elephant populations have declined significantly.\n\n**Methods:** We surveyed 50 forest sites over 10 years.\n\n**Results:** Decline correlates with vegetation loss.\n\n**Conclusion:** Conservation efforts are essential.\n>\n",
+        "layer1_html": "<abstract data-abstract-type=\"structured\">\n  <p><strong>Background:</strong> Elephant populations have declined significantly.</p>\n  <p><strong>Methods:</strong> We surveyed 50 forest sites over 10 years.</p>\n  <p><strong>Results:</strong> Decline correlates with vegetation loss.</p>\n  <p><strong>Conclusion:</strong> Conservation efforts are essential.</p>\n</abstract>\n",
+        "notes": "Structured abstract using markdown bold for section headings.\nCommon in medical and scientific journals. The structure is\nvisible in the rendered output via the bold prefixes.\n",
+      },
+      {
+        "source": "<abstract word-limit=250 |\nThis paper presents...\n>\n",
+        "layer1_html": "<abstract data-word-limit=\"250\">\n  <p>This paper presents...</p>\n</abstract>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "abstract.md",
+  });
+
+const _article_back = Object.freeze({
+    "semantic_role": "article-back",
+    "html_output": {
+      "element": "article-back",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": {
+        "contains": [
+          "bibliography",
+          "note-list",
+          "data",
+          "config",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "article-back.md",
+  });
+
+const _article_body = Object.freeze({
+    "semantic_role": "article-body",
+    "html_output": {
+      "element": "article-body",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": {
+        "contains": [
+          "block",
+          "section",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "article-body.md",
+  });
+
+const _article_front = Object.freeze({
+    "semantic_role": "article-front",
+    "html_output": {
+      "element": "article-front",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": {
+        "contains": [
+          "meta",
+          "article-title",
+          "article-subtitle",
+          "author",
+          "abstract",
+          "data",
+          "config",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "article-front.md",
+  });
+
+const _article_subtitle = Object.freeze({
+    "semantic_role": "article-subtitle",
+    "html_output": {
+      "element": "article-subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "article-subtitle.md",
+  });
+
+const _article_title = Object.freeze({
+    "semantic_role": "article-title",
+    "html_output": {
+      "element": "article-title",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "article-title.md",
+  });
+
+const _article = Object.freeze({
+    "semantic_role": "article",
+    "html_output": {
+      "element": "article",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "numbering-style": {
+          "maps_to": "data-numbering-style",
+          "values": [
+            "arabic",
+            "roman",
+            "alpha",
+          ],
+          "default": "arabic",
+        },
+        "note-position": {
+          "maps_to": "data-note-position",
+          "values": [
+            "foot",
+            "end",
+            "side",
+          ],
+          "default": "foot",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "article-front",
+          "required": false,
+        },
+        {
+          "element": "article-body",
+          "required": false,
+        },
+        {
+          "element": "article-back",
+          "required": false,
+        },
+      ],
+    },
+    "content_handler": "default",
+    "title_extraction": true,
+    "jats_counterpart": {
+      "element": "article",
+      "notes": "JATS <article> wraps <front>, <body>, and <back>. Acadamark uses\n<article-front>, <article-body>, <article-back> as parallel custom\nelements. The mapping is direct. JATS's article-type attribute (with\nvalues like research-article, review-article, editorial, etc.) is\nnot currently set by acadamark — sub-classification within the\narticle category is deferred until a JATS-export slice needs it.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta type=article>\n  <title | The Effect of Elephants on Climate>\n  <author | Jane Goodall>\n  <date | 2024-03-15>\n</meta>\n\n<section | Introduction>\nThe paper begins here.\n\n<section | Conclusion>\nThe paper concludes here.\n",
+        "layer1_html": "<article>\n  <article-front>\n    <meta data-document-type=\"article\">\n      <article-title>The Effect of Elephants on Climate</article-title>\n      <author>Jane Goodall</author>\n      <date>2024-03-15</date>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The paper begins here.</p>\n    </section>\n    <section>\n      <section-title>Conclusion</section-title>\n      <p>The paper concludes here.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "notes": "Typical authoring path: <meta type=article> at the top with no\n<article> wrapper. The structural plugin generates the <article>\ncontainer and the three region wrappers. <title> in <meta> is\npromoted to <article-title>; <meta> itself survives inside\n<article-front>.\n",
+      },
+      {
+        "source": "<article | The Effect of Elephants on Climate>\n<meta>\n  <author | Jane Goodall>\n</meta>\n\n<section | Introduction>\nThe paper begins here.\n",
+        "layer1_html": "<article>\n  <article-front>\n    <meta>\n      <article-title>The Effect of Elephants on Climate</article-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The paper begins here.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "notes": "Explicit-form escape hatch: <article | Title>. The structural plugin\nrespects the explicit wrapper. Pipe content from <article> becomes\n<article-title>, placed as the first child of <meta> (creating\n<meta> if absent, or appending if present).\n",
+      },
+      {
+        "source": "<section | Introduction>\nThe introduction.\n\n<section | Conclusion>\nThe conclusion.\n",
+        "layer1_html": "<article>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The introduction.</p>\n    </section>\n    <section>\n      <section-title>Conclusion</section-title>\n      <p>The conclusion.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "notes": "No <meta> and no <article> declared. The structural plugin assumes\narticle-shaped (the default) and wraps the sections in an implicit\narticle. <article-front> is omitted because there's no metadata.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkArticleStructuring",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Reads <meta type=article> (or <meta> with no type, defaulting to\narticle) and generates the <article> wrapper plus\n<article-front>/<article-body>/<article-back> regions. Promotes\n<title>/<subtitle> in <meta> to <article-title>/<article-subtitle>.\nHonors explicit <article> if the author wrote it. See\nnotes/specs/pipeline.md for the full pipeline.\n",
+      },
+    ],
+    "_sourceFile": "article.md",
+  });
+
+const _aside = Object.freeze({
+    "semantic_role": "aside",
+    "html_output": {
+      "element": "aside",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-aside-type",
+          "values": [
+            "note",
+            "sidebar",
+            "callout",
+            "warning",
+            "tip",
+            "info",
+            "caution",
+          ],
+          "notes": "Optional classification of the aside's role. Affects rendering\n(callouts get visual emphasis; sidebars get layout treatment).\nMaps to JATS via boxed-text content-type at export.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "boxed-text",
+      "notes": "All <aside> variants map to JATS <boxed-text>. The exporter sets\ncontent-type based on the type kwarg (e.g., type=note becomes\n<boxed-text content-type=\"note\">). Default (no type) maps to\n<boxed-text content-type=\"aside\">. JATS <notes> is reserved for\ndocument-level collected footnotes — see <note-list>, not <aside>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<aside | A side note about the elephant.>",
+        "layer1_html": "<aside>A side note about the elephant.</aside>",
+      },
+      {
+        "source": "<aside type=warning .important | Be careful here.>",
+        "layer1_html": "<aside data-aside-type=\"warning\" class=\"important\">Be careful here.</aside>",
+      },
+      {
+        "source": "<aside type=callout |\nThis is a multi-line callout.\n\nIt can contain multiple paragraphs and other content like\n<strong | emphasis> and inline references.\n>\n",
+        "layer1_html": "<aside data-aside-type=\"callout\">\n  <p>This is a multi-line callout.</p>\n  <p>It can contain multiple paragraphs and other content like <strong>emphasis</strong> and inline references.</p>\n</aside>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "aside.md",
+  });
+
+const _author = Object.freeze({
+    "semantic_role": "author",
+    "html_output": {
+      "element": "author",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "affiliation": {
+          "maps_to": "data-affiliation",
+          "notes": "Author's institutional affiliation. Maps to JATS <aff> at export.\n",
+        },
+        "orcid": {
+          "maps_to": "data-orcid",
+          "notes": "Author's ORCID identifier (e.g., 0000-0000-0000-0000).\n",
+        },
+        "email": {
+          "maps_to": "data-email",
+          "notes": "Author's contact email address.\n",
+        },
+        "corresponding": {
+          "maps_to": "data-corresponding",
+          "values": [
+            "true",
+            "false",
+          ],
+          "notes": "Boolean flag for the corresponding author. JATS uses\ncontrib corresp=\"yes\" for the corresponding author.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Author content can be either:\n- Simple: pipe-content as \"Given Family\" name string.\n- Structured: explicit child elements (<given-names>, <surname>, etc.).\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "contrib contrib-type=\"author\"",
+      "notes": "JATS uses <contrib contrib-type=\"author\"> for authors. The structural\nJATS form uses <name><given-names>...</given-names><surname>...</surname></name>\ninside <contrib>. The exporter dispatches based on whether the acadamark\n<author> uses simple or structured form.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<author | Jane Goodall>",
+        "layer1_html": "<author>Jane Goodall</author>",
+        "notes": "Simple form. The pipe content is parsed as \"Given Family\" by JATS\nexport heuristics (last word as surname). Most casual authoring\nuses this form.\n",
+      },
+      {
+        "source": "<author orcid=0000-0001-2345-6789 affiliation=\"Cambridge University\" | Jane Goodall>",
+        "layer1_html": "<author data-orcid=\"0000-0001-2345-6789\" data-affiliation=\"Cambridge University\">Jane Goodall</author>",
+        "notes": "Simple form with attributes. Affiliation, ORCID, and email are\nattached as kwargs. The name still appears as pipe content.\n",
+      },
+      {
+        "source": "<author corresponding=true affiliation=\"Cambridge University\">\n  <given-names | Jane>\n  <surname | Goodall>\n  <email | jane@example.com>\n</author>\n",
+        "layer1_html": "<author data-corresponding=\"true\" data-affiliation=\"Cambridge University\">\n  <given-names>Jane</given-names>\n  <surname>Goodall</surname>\n  <email>jane@example.com</email>\n</author>\n",
+        "notes": "Structured form. Used when authors need explicit given/surname\nseparation, multiple email addresses, or other structured author\nmetadata.\n",
+      },
+      {
+        "source": "<meta>\n  <author | Jane Goodall>\n  <author | David Attenborough>\n  <author corresponding=true | Charles Darwin>\n</meta>\n",
+        "layer1_html": "<meta>\n  <author>Jane Goodall</author>\n  <author>David Attenborough</author>\n  <author data-corresponding=\"true\">Charles Darwin</author>\n</meta>\n",
+        "notes": "Multiple authors are sibling <author> elements. The third is the\ncorresponding author. The structural plugin groups them in\nJATS export as <contrib-group>.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "author.md",
+  });
+
+const _b = Object.freeze({
+    "semantic_role": "b",
+    "html_output": {
+      "element": "b",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-bold-type",
+          "values": [
+            "keyword",
+            "product-name",
+            "lead",
+            "offset",
+            "other",
+          ],
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "bold",
+      "attributes": {
+        "toggle": "no",
+      },
+    },
+    "shorthand_examples": [
+      {
+        "source": "The keyword <b type=keyword | recursion> is fundamental.",
+        "layer1_html": "<p>The keyword <b data-bold-type=\"keyword\">recursion</b> is fundamental.</p>",
+      },
+      {
+        "source": "Use <b type=product-name | Acrobat> to read the file.",
+        "layer1_html": "<p>Use <b data-bold-type=\"product-name\">Acrobat</b> to read the file.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "b.md",
+  });
+
+const _bib_entry = Object.freeze({
+    "semantic_role": "bib-entry",
+    "html_output": {
+      "element": "bib-entry",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <bib-entry> is a custom element representing a single\nbibliography entry in structured acadamark form. Distinct from\n<library> (opaque format) and external file references — this is\nthe acadamark-native way to write a bibliography entry.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+        "required": true,
+        "notes": "The citation key. Must be unique across the document's citation\nregistry. Citations elsewhere use this id to reference the entry.\n",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-bib-type",
+          "values": [
+            "article",
+            "book",
+            "chapter",
+            "thesis",
+            "proceedings",
+            "report",
+            "webpage",
+            "other",
+          ],
+          "required": true,
+          "notes": "The bibliography entry type. Determines required and optional\nchild elements, and how the entry renders in the bibliography.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "author",
+          "required": false,
+          "multiple": true,
+          "notes": "Author(s) of the cited work. Multiple authors as siblings,\nsame as document <author>.\n",
+        },
+        {
+          "element": "editor",
+          "required": false,
+          "multiple": true,
+        },
+        {
+          "element": "year",
+          "required": false,
+        },
+        {
+          "element": "title",
+          "required": false,
+          "notes": "Title of the cited work (article title, book title, etc.).",
+        },
+        {
+          "element": "journal",
+          "required": false,
+          "notes": "Journal name (for type=article).",
+        },
+        {
+          "element": "publisher",
+          "required": false,
+          "notes": "Publisher name (for type=book, etc.).",
+        },
+        {
+          "element": "volume",
+          "required": false,
+        },
+        {
+          "element": "issue",
+          "required": false,
+        },
+        {
+          "element": "pages",
+          "required": false,
+        },
+        {
+          "element": "doi",
+          "required": false,
+        },
+        {
+          "element": "isbn",
+          "required": false,
+        },
+        {
+          "element": "url",
+          "required": false,
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "ref (containing element-citation or mixed-citation)",
+      "notes": "JATS uses <ref id=\"...\"> as the bibliography entry container,\nwith structured content as <element-citation> (when fully structured)\nor <mixed-citation> (when partially structured).\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<bib-entry id=goodall2024 type=article>\n  <author | Jane Goodall>\n  <year | 2024>\n  <title | The Effect of Elephants on Climate>\n  <journal | Nature>\n  <volume | 612>\n  <pages | 234-241>\n  <doi | 10.1038/s41586-024-12345>\n</bib-entry>\n",
+        "layer1_html": "<bib-entry id=\"goodall2024\" data-bib-type=\"article\">\n  <author>Jane Goodall</author>\n  <year>2024</year>\n  <title>The Effect of Elephants on Climate</title>\n  <journal>Nature</journal>\n  <volume>612</volume>\n  <pages>234-241</pages>\n  <doi>10.1038/s41586-024-12345</doi>\n</bib-entry>\n",
+        "notes": "A structured journal article entry. The id (goodall2024) is the\ncitation key.\n",
+      },
+      {
+        "source": "<bib-entry id=darwin1859 type=book>\n  <author | Charles Darwin>\n  <year | 1859>\n  <title | On the Origin of Species>\n  <publisher | John Murray>\n</bib-entry>\n",
+        "layer1_html": "<bib-entry id=\"darwin1859\" data-bib-type=\"book\">\n  <author>Charles Darwin</author>\n  <year>1859</year>\n  <title>On the Origin of Species</title>\n  <publisher>John Murray</publisher>\n</bib-entry>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkBibEntryRegistration",
+        "runs_before": "acadamarkCitationResolution",
+        "purpose": "Registers <bib-entry> elements in the citation registry. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "bib-entry.md",
+  });
+
+const _bibliography = Object.freeze({
+    "semantic_role": "bibliography",
+    "html_output": {
+      "element": "bibliography",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <bibliography> is the rendered bibliography container.\nDistinct from JATS's <ref-list>; the elements correspond but the names differ.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "source": {
+          "maps_to": "data-bibliography-source",
+          "notes": "URL or path to an external bibliography file (BibTeX, CSL-JSON, etc.).\nWhen present, the build system reads the file to populate the citation\nregistry.\n",
+        },
+        "style": {
+          "maps_to": "data-bibliography-style",
+          "values": [
+            "author-year",
+            "numbered",
+            "footnote",
+            "custom",
+          ],
+          "notes": "How the bibliography is rendered. Typically inherits from the\ndocument-level citation-style; this kwarg overrides for the bibliography\nrendering specifically.\n",
+        },
+        "sort": {
+          "maps_to": "data-bibliography-sort",
+          "values": [
+            "alpha",
+            "citation-order",
+            "year",
+            "none",
+          ],
+          "default": "alpha",
+          "notes": "How bibliography entries are sorted. \"alpha\" is alphabetical by author\nsurname (default for author-year styles); \"citation-order\" is the\norder in which entries are first cited (default for numbered styles).\n",
+        },
+        "type": {
+          "maps_to": "data-bibliography-type",
+          "values": [
+            "cited-only",
+            "full",
+            "hybrid",
+          ],
+          "default": "cited-only",
+          "notes": "Which entries appear: \"cited-only\" includes only entries cited in\nthe document; \"full\" includes all registered entries; \"hybrid\"\nincludes cited entries with a separate \"Further Reading\" section.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "bib-entry",
+          "required": false,
+          "multiple": true,
+          "notes": "When the bibliography is rendered (auto-generated), entries appear\nas children. Authors don't typically write these directly — the\nbibliography assembly plugin populates the element.\n",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "ref-list",
+      "notes": "JATS uses <ref-list> as the bibliography container, with <ref>\nchildren for each entry. Direct mapping.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<config>\n  <bibliography source=\"refs.bib\">\n</config>\n",
+        "layer1_html": "<config>\n  <bibliography data-bibliography-source=\"refs.bib\"></bibliography>\n</config>\n",
+        "notes": "Bibliography source declaration in <config>. The source file is\nread at build time; entries are registered with the citation\nsystem. The bibliography itself renders elsewhere (auto-placed\nin <article-back> by default).\n",
+      },
+      {
+        "source": "<article | My Paper>\n<meta>\n  <author | The Author>\n</meta>\n\n<section | Body>\nCited reference <cite goodall2024>.\n\n<data>\n  <library format=bibtex>\n    @article{goodall2024, ... }\n  </library>\n</data>\n",
+        "layer1_html": "<article>\n  <article-front>\n    <article-title>My Paper</article-title>\n    <author>The Author</author>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Body</section-title>\n      <p>Cited reference <cite data-cite-keys=\"goodall2024\">(Goodall 2024)</cite>.</p>\n    </section>\n  </article-body>\n  <article-back>\n    <data>\n      <library data-format=\"bibtex\">...</library>\n    </data>\n    <bibliography>\n      <bib-entry id=\"goodall2024\" data-bib-type=\"article\">\n        <author>Goodall, Jane</author>\n        <year>2024</year>\n        <title>The Effect of Elephants on Climate</title>\n        ...\n      </bib-entry>\n    </bibliography>\n  </article-back>\n</article>\n",
+        "notes": "The <bibliography> element is auto-generated and placed in\n<article-back>. The bibliography assembly plugin collects cited\nentries from all sources (library, bib-entry, external file)\nand renders them in the bibliography.\n",
+      },
+      {
+        "source": "<bibliography type=full sort=alpha>\n  <!-- explicit author placement; entries auto-populated -->\n</bibliography>\n",
+        "layer1_html": "<bibliography data-bibliography-type=\"full\" data-bibliography-sort=\"alpha\">\n  ...\n</bibliography>\n",
+        "notes": "Explicit bibliography placement with full=all entries (not just cited).\nUseful for \"selected bibliography\" or \"further reading\" sections.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "generated_by": [
+      {
+        "plugin": "acadamarkBibliographyAssembly",
+        "when": "The document has citations or bibliography entries. The plugin\ncollects all cited entries from the citation registry and renders\nthem as children of <bibliography>. Auto-placed in article-back\nor book-back unless explicitly written by the author.\n",
+      },
+    ],
+    "related_plugins": [
+      {
+        "name": "acadamarkBibliographyAssembly",
+        "runs_after": "acadamarkCitationResolution",
+        "purpose": "Assembles cited entries into <bibliography> per the configured style. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "bibliography.md",
+  });
+
+const _blockquote = Object.freeze({
+    "semantic_role": "blockquote",
+    "html_output": {
+      "element": "blockquote",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "cite": {
+          "maps_to": "cite",
+          "notes": "URL of the source being quoted. Maps to HTML's standard cite\nattribute on <blockquote>. For inline citation references\n(citing a bibliography entry), use a <cite> element inside the\nblockquote instead.\n",
+        },
+        "type": {
+          "maps_to": "data-blockquote-type",
+          "values": [
+            "verse",
+            "dialogue",
+            "epigraph",
+            "pullquote",
+            "other",
+          ],
+          "notes": "Optional classification of the quotation's role. Affects styling\nand may affect JATS export.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "disp-quote or epigraph",
+      "notes": "JATS uses <disp-quote> for displayed quotations in the main flow and\n<epigraph> for opening epigraphs. The exporter dispatches based on type:\ntype=epigraph maps to <epigraph>; everything else to <disp-quote>.\n",
+    },
+    "shorthand_expansions": [
+      {
+        "shorthand": "quote",
+        "expands_to": "blockquote",
+        "notes": "Authoring shortcut. <quote> is the preferred authoring form;\n<blockquote> is the Layer 1 element. The shorthand expands at\nthe interpreter; the rendered HTML uses HTML's native <blockquote>.\n",
+      },
+    ],
+    "shorthand_examples": [
+      {
+        "source": "<quote | A short quotation.>",
+        "layer1_html": "<blockquote>A short quotation.</blockquote>",
+        "notes": "The <quote> shorthand expands to <blockquote> at Layer 1.\n",
+      },
+      {
+        "source": "<quote cite=https://example.com/source |\nA longer quotation that may contain multiple paragraphs.\n\nThe second paragraph of the quotation.\n>\n",
+        "layer1_html": "<blockquote cite=\"https://example.com/source\">\n  <p>A longer quotation that may contain multiple paragraphs.</p>\n  <p>The second paragraph of the quotation.</p>\n</blockquote>\n",
+      },
+      {
+        "source": "<quote type=epigraph |\nAll happy families are alike; each unhappy family is unhappy in its own way.\n>\n",
+        "layer1_html": "<blockquote data-blockquote-type=\"epigraph\">\n  All happy families are alike; each unhappy family is unhappy in its own way.\n</blockquote>\n",
+      },
+      {
+        "source": "<blockquote | Same as <quote> but using the explicit Layer 1 name.>",
+        "layer1_html": "<blockquote>Same as <quote> but using the explicit Layer 1 name.</blockquote>",
+        "notes": "Authors can also write <blockquote> directly. Both forms produce\nthe same Layer 1 output.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "blockquote.md",
+  });
+
+const _book_back = Object.freeze({
+    "semantic_role": "book-back",
+    "html_output": {
+      "element": "book-back",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": {
+        "contains": [
+          "bibliography",
+          "note-list",
+          "book-part",
+          "data",
+          "config",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-back.md",
+  });
+
+const _book_body = Object.freeze({
+    "semantic_role": "book-body",
+    "html_output": {
+      "element": "book-body",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": {
+        "contains": [
+          "book-part",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-body.md",
+  });
+
+const _book_front = Object.freeze({
+    "semantic_role": "book-front",
+    "html_output": {
+      "element": "book-front",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": {
+        "contains": [
+          "meta",
+          "book-title",
+          "book-subtitle",
+          "author",
+          "editor",
+          "book-part",
+          "data",
+          "config",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-front.md",
+  });
+
+const _book_part_subtitle = Object.freeze({
+    "semantic_role": "book-part-subtitle",
+    "html_output": {
+      "element": "book-part-subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-part-subtitle.md",
+  });
+
+const _book_part_title = Object.freeze({
+    "semantic_role": "book-part-title",
+    "html_output": {
+      "element": "book-part-title",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-part-title.md",
+  });
+
+const _book_part = Object.freeze({
+    "semantic_role": "book-part",
+    "html_output": {
+      "element": "book-part",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "book-part-type": {
+          "maps_to": "book-part-type",
+          "values": [
+            "chapter",
+            "part",
+            "appendix",
+            "preface",
+            "foreword",
+            "introduction",
+            "conclusion",
+            "glossary",
+            "dedication",
+            "other",
+          ],
+          "required": true,
+          "notes": "Always present in Layer 1. The shorthand layer typically supplies\nthis via a shorthand element name (e.g., <chapter> sets it to \"chapter\").\n",
+        },
+        "numbering-style": {
+          "maps_to": "data-numbering-style",
+          "values": [
+            "arabic",
+            "roman",
+            "alpha",
+            "none",
+          ],
+        },
+        "note-position": {
+          "maps_to": "data-note-position",
+          "values": [
+            "foot",
+            "end",
+            "side",
+            "chapter-end",
+          ],
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "meta",
+          "required": false,
+          "contains": [
+            "book-part-title",
+            "book-part-subtitle",
+            "author",
+          ],
+          "notes": "Book-parts use the same <meta> container as articles and books for\ndescriptive metadata. Unlike books, book-parts do NOT have nested\n<book-part-front>/<book-part-body>/<book-part-back> wrappers —\n<meta> and body content sit directly inside <book-part>.\n",
+        },
+        {
+          "element": "body",
+          "required": false,
+          "contains": [
+            "section",
+            "sub-section",
+            "p",
+            "figure",
+            "aside",
+            "blockquote",
+            "table",
+            "book-part",
+          ],
+          "notes": "Body content sits as direct children of <book-part> after <meta>.",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "title_extraction": true,
+    "jats_counterpart": {
+      "element": "book-part",
+      "attributes": {
+        "book-part-type": "from book-part-type",
+      },
+      "notes": "Direct mapping to JATS <book-part>. Recursive structure preserved exactly.",
+    },
+    "shorthand_expansions": [
+      {
+        "shorthand": "chapter",
+        "expands_to": "book-part book-part-type=\"chapter\"",
+        "notes": "The most common book-part type.",
+      },
+      {
+        "shorthand": "part",
+        "expands_to": "book-part book-part-type=\"part\"",
+        "notes": "Named major divisions (\"Part I: Foundations\").",
+      },
+      {
+        "shorthand": "appendix",
+        "expands_to": "book-part book-part-type=\"appendix\"",
+        "notes": "Typically appears in book-back.",
+      },
+      {
+        "shorthand": "preface",
+        "expands_to": "book-part book-part-type=\"preface\"",
+        "notes": "Front-matter prose by the author. Typically in book-front.",
+      },
+      {
+        "shorthand": "foreword",
+        "expands_to": "book-part book-part-type=\"foreword\"",
+        "notes": "Front-matter prose by someone other than the author.",
+      },
+      {
+        "shorthand": "introduction",
+        "expands_to": "book-part book-part-type=\"introduction\"",
+      },
+      {
+        "shorthand": "conclusion",
+        "expands_to": "book-part book-part-type=\"conclusion\"",
+      },
+      {
+        "shorthand": "glossary",
+        "expands_to": "book-part book-part-type=\"glossary\"",
+      },
+    ],
+    "shorthand_examples": [
+      {
+        "source": "<chapter | Origins>\nContent of the chapter.\n",
+        "layer1_html": "<book-part book-part-type=\"chapter\">\n  <meta>\n    <book-part-title>Origins</book-part-title>\n  </meta>\n  <p>Content of the chapter.</p>\n</book-part>\n",
+      },
+      {
+        "source": "<part | Part I: Foundations>\n<chapter | First Chapter>\nContent.\n\n<chapter | Second Chapter>\nContent.\n",
+        "layer1_html": "<book-part book-part-type=\"part\">\n  <meta>\n    <book-part-title>Part I: Foundations</book-part-title>\n  </meta>\n  <book-part book-part-type=\"chapter\">\n    <meta>\n      <book-part-title>First Chapter</book-part-title>\n    </meta>\n    <p>Content.</p>\n  </book-part>\n  <book-part book-part-type=\"chapter\">\n    <meta>\n      <book-part-title>Second Chapter</book-part-title>\n    </meta>\n    <p>Content.</p>\n  </book-part>\n</book-part>\n",
+      },
+      {
+        "source": "<preface | A Note from the Author>\nI wrote this book because...\n\n<chapter | Chapter One>\nBody content.\n\n<appendix | Notation>\nNotation conventions used in this book.\n",
+        "layer1_html": "<book-part book-part-type=\"preface\">\n  <meta>\n    <book-part-title>A Note from the Author</book-part-title>\n  </meta>\n  <p>I wrote this book because...</p>\n</book-part>\n\n<book-part book-part-type=\"chapter\">\n  <meta>\n    <book-part-title>Chapter One</book-part-title>\n  </meta>\n  <p>Body content.</p>\n</book-part>\n\n<book-part book-part-type=\"appendix\">\n  <meta>\n    <book-part-title>Notation</book-part-title>\n  </meta>\n  <p>Notation conventions used in this book.</p>\n</book-part>\n",
+        "notes": "The structural plugin places the preface in book-front, the chapter\nin book-body, and the appendix in book-back based on book-part-type.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkBookStructuring",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Generates <book-part> from <meta type=book-part> or from book-part\nshorthand expansions (<chapter>, <part>, <appendix>, etc.). Inside\neach <book-part>, <meta> and body content sit directly — no nested\nfront/body/back wrappers. Promotes <title>/<subtitle> in <meta> to\n<book-part-title>/<book-part-subtitle>. At the book level, places\nbook-parts into the appropriate region (<book-front>, <book-body>,\n<book-back>) based on book-part-type. See notes/specs/pipeline.md.\n",
+      },
+    ],
+    "deferred_features": [
+      {
+        "name": "book-part-import",
+        "description": "Future support for <book-part src=\"...\"> and shorthand forms\n(<chapter src=\"...\">, <part src=\"...\">) to reference book-parts from\nexternal files.\n",
+      },
+    ],
+    "_sourceFile": "book-part.md",
+  });
+
+const _book_subtitle = Object.freeze({
+    "semantic_role": "book-subtitle",
+    "html_output": {
+      "element": "book-subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-subtitle.md",
+  });
+
+const _book_title = Object.freeze({
+    "semantic_role": "book-title",
+    "html_output": {
+      "element": "book-title",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "book-title.md",
+  });
+
+const _book = Object.freeze({
+    "semantic_role": "book",
+    "html_output": {
+      "element": "book",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "numbering-style": {
+          "maps_to": "data-numbering-style",
+          "values": [
+            "arabic",
+            "roman",
+            "alpha",
+          ],
+          "default": "arabic",
+        },
+        "note-position": {
+          "maps_to": "data-note-position",
+          "values": [
+            "foot",
+            "end",
+            "side",
+            "chapter-end",
+          ],
+          "default": "foot",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "book-front",
+          "required": false,
+        },
+        {
+          "element": "book-body",
+          "required": false,
+        },
+        {
+          "element": "book-back",
+          "required": false,
+        },
+      ],
+    },
+    "content_handler": "default",
+    "title_extraction": true,
+    "jats_counterpart": {
+      "element": "book",
+      "notes": "JATS <book> wraps <book-front>, <book-body>, and <book-back>. Acadamark's\nstructural elements map directly. JATS uses <book-part> recursively for\nall major divisions discriminated by the book-part-type attribute.\nJATS's book-type attribute (with values like monograph, edited-volume,\ntextbook, etc.) is not currently set by acadamark — sub-classification\nwithin the book category is deferred until a JATS-export slice needs it.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta type=book>\n  <title | A Natural History of Elephants>\n  <author | Jane Goodall>\n</meta>\n\n<chapter | Origins>\n<section | Early ancestors>\nContent here.\n\n<chapter | Modern populations>\n<section | African elephants>\nContent here.\n",
+        "layer1_html": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title>A Natural History of Elephants</book-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title>Origins</book-part-title>\n      </meta>\n      <section>\n        <section-title>Early ancestors</section-title>\n        <p>Content here.</p>\n      </section>\n    </book-part>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title>Modern populations</book-part-title>\n      </meta>\n      <section>\n        <section-title>African elephants</section-title>\n        <p>Content here.</p>\n      </section>\n    </book-part>\n  </book-body>\n</book>\n",
+        "notes": "Typical authoring path: <meta type=book> at the top with no <book>\nwrapper. The structural plugin generates <book> + the three region\nwrappers. Each book-part contains its own <meta> with the promoted\n<book-part-title>; no <book-part-meta> wrapper.\n",
+      },
+      {
+        "source": "<meta type=book>\n  <title | The Comprehensive Guide>\n  <author | Author Name>\n</meta>\n\n<part | Part I: Foundations>\n<chapter | First Principles>\nContent.\n\n<chapter | Background>\nContent.\n\n<part | Part II: Applications>\n<chapter | Practical Examples>\nContent.\n",
+        "layer1_html": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title>The Comprehensive Guide</book-title>\n      <author>Author Name</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"part\">\n      <meta>\n        <book-part-title>Part I: Foundations</book-part-title>\n      </meta>\n      <book-part book-part-type=\"chapter\">\n        <meta>\n          <book-part-title>First Principles</book-part-title>\n        </meta>\n        <p>Content.</p>\n      </book-part>\n      <book-part book-part-type=\"chapter\">\n        <meta>\n          <book-part-title>Background</book-part-title>\n        </meta>\n        <p>Content.</p>\n      </book-part>\n    </book-part>\n    <book-part book-part-type=\"part\">\n      <meta>\n        <book-part-title>Part II: Applications</book-part-title>\n      </meta>\n      <book-part book-part-type=\"chapter\">\n        <meta>\n          <book-part-title>Practical Examples</book-part-title>\n        </meta>\n        <p>Content.</p>\n      </book-part>\n    </book-part>\n  </book-body>\n</book>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkBookStructuring",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Reads <meta type=book> and generates the <book> wrapper plus\n<book-front>/<book-body>/<book-back> regions. Promotes\n<title>/<subtitle> in <meta> to <book-title>/<book-subtitle>.\nExpands book-part shorthands (<chapter>, <part>, <appendix>, etc.)\nto <book-part book-part-type=\"...\">. Honors explicit <book> if\nthe author wrote it. See notes/specs/pipeline.md for the full pipeline.\n",
+      },
+    ],
+    "deferred_features": [
+      {
+        "name": "book-part-import",
+        "description": "Future support for <book-part src=\"...\"> and shorthand forms\n(<chapter src=\"...\">, <part src=\"...\">) to reference book-parts from\nexternal files. The build system would inline the referenced content\nbefore rendering.\n",
+      },
+    ],
+    "_sourceFile": "book.md",
+  });
+
+const _cite = Object.freeze({
+    "semantic_role": "cite",
+    "html_output": {
+      "element": "cite",
+      "is_html_native": true,
+      "default_attributes": {},
+      "notes": "Acadamark's <cite> overlaps with HTML's <cite> (which marks \"the title\nof a work\"). Acadamark uses the element more broadly: it represents a\ncitation to a bibliography entry, with the rendered output determined\nby the citation style. The semantic intent is similar (referencing\nother work) but acadamark's version carries citation-resolver semantics\nthat HTML's plain <cite> doesn't.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "keys": {
+          "handled_by": "handler",
+          "notes": "One or more citation keys, supplied as positional arguments.\nMultiple keys group into a single citation: <cite key1 key2>\nrenders as a combined citation (e.g., \"(Smith 2020; Jones 2021)\").\n",
+        },
+        "page": {
+          "handled_by": "handler",
+          "notes": "Page number or page range for the citation locator.\nE.g., <cite goodall2024 page=42>.\n",
+        },
+        "chapter": {
+          "handled_by": "handler",
+          "notes": "Chapter reference within the cited work.\n",
+        },
+        "section": {
+          "handled_by": "handler",
+          "notes": "Section reference within the cited work.\n",
+        },
+        "prefix": {
+          "handled_by": "handler",
+          "notes": "Text to appear before the citation. E.g., \"see also\" in\n\"(see also Smith 2020)\".\n",
+        },
+        "suffix": {
+          "handled_by": "handler",
+          "notes": "Text to appear after the citation.\n",
+        },
+        "style": {
+          "maps_to": "data-citation-style",
+          "values": [
+            "author-year",
+            "numbered",
+            "footnote",
+            "endnote",
+            "inline-author-year",
+            "default",
+          ],
+          "default": "default",
+          "notes": "Override the document-level citation style for this citation.\n\"default\" uses the document-level <citation-style> from <config>.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Content inside <cite> is optional. When present, it overrides the\nautomatically-rendered citation text. Most citations have no content\n(the resolver generates the rendered text from the bibliography entry\nand the citation style).\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "xref ref-type=\"bibr\"",
+      "attributes": {
+        "rid": "from cite key",
+      },
+      "notes": "JATS uses <xref ref-type=\"bibr\" rid=\"...\"> for inline citations.\nThe rendered text inside the JATS xref is the citation marker\n(typically a number or author-year string). Acadamark's <cite>\nmaps directly. Multiple keys produce multiple <xref> elements\ngrouped together.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The argument is supported by data <cite goodall2024>.",
+        "layer1_html": "<p>The argument is supported by data <cite data-cite-keys=\"goodall2024\">(Goodall 2024)</cite>.</p>",
+        "notes": "A simple citation. The resolver renders the citation according\nto the document-level style. For author-year style, this becomes\n\"(Goodall 2024)\". For numbered style, \"[1]\". The actual rendered\ntext is generated by the citation resolver, not written by the author.\n",
+      },
+      {
+        "source": "Multiple sources confirm this <cite goodall2024 attenborough2020 darwin1859>.",
+        "layer1_html": "<p>Multiple sources confirm this <cite data-cite-keys=\"goodall2024 attenborough2020 darwin1859\">(Goodall 2024; Attenborough 2020; Darwin 1859)</cite>.</p>",
+        "notes": "Multiple citation keys group into one citation marker. The resolver\nhandles the joining (with separators appropriate to the style).\n",
+      },
+      {
+        "source": "See <cite goodall2024 page=42> for details.",
+        "layer1_html": "<p>See <cite data-cite-keys=\"goodall2024\" data-page=\"42\">(Goodall 2024, p. 42)</cite> for details.</p>",
+        "notes": "A citation with a page locator. The locator renders alongside the\ncitation marker.\n",
+      },
+      {
+        "source": "See also <cite goodall2024 prefix=\"cf.\" page=42-45>.",
+        "layer1_html": "<p>See also <cite data-cite-keys=\"goodall2024\" data-prefix=\"cf.\" data-page=\"42-45\">(cf. Goodall 2024, pp. 42-45)</cite>.</p>",
+        "notes": "Citation with prefix and page range.\n",
+      },
+      {
+        "source": "A specific work <cite goodall2024 style=footnote>.",
+        "layer1_html": "<p>A specific work <cite data-cite-keys=\"goodall2024\" data-citation-style=\"footnote\">¹</cite>.</p>",
+        "notes": "Per-citation style override. This citation renders as a footnote\nmarker even if the document-level style is something else.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/cite.js",
+    "handler_responsibilities": [
+      "Read the citation keys (positional arguments).",
+      "Resolve each key against the citation registry (entries from external file, <library>, <bib-entry>).",
+      "Apply the citation style (document-level or per-citation override).",
+      "Generate the rendered citation marker text.",
+      "Set the data-cite-keys attribute on the output for cross-reference back to source keys.",
+      "Handle locator information (page, chapter, section).",
+      "Handle prefix and suffix text.",
+      "For unresolved keys, render an error marker (e.g., \"[?key]\") that's visible in output.",
+    ],
+    "related_plugins": [
+      {
+        "name": "acadamarkCiteResolution",
+        "runs_after": "acadamarkLibraryLoad, acadamarkArticleStructuring",
+        "purpose": "Resolves <cite> elements against the citation registry; generates rendered markers. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "cite.md",
+  });
+
+const _code_block = Object.freeze({
+    "semantic_role": "code-block",
+    "html_output": {
+      "element": "code-block",
+      "is_html_native": false,
+      "notes": "The vocabulary entry key is \"code-block\", but the rendered HTML does NOT\nuse a <code-block> wrapping element. The handler emits <pre><code ...>\ndirectly, matching the output of markdown fenced code blocks. The element\nfield is used only as a dispatch key for the interpreter.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+        "notes": "Placed on <code>. Used as cross-reference target.\n",
+      },
+      "classes": {
+        "maps_to": "class",
+        "notes": "Added to <code> alongside any language class.\n",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "The pipe content is verbatim code source. No markdown idioms or acadamark\nconstructs are interpreted inside the code block. Newlines are preserved.\n",
+    },
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/code-block.js",
+    "jats_counterpart": {
+      "element": "code",
+      "notes": "JATS <code> inside <preformat> for block code. The language attribute\nmaps to the JATS language attribute on <code>. Equation numbering and\ncross-references are handled separately.\n",
+    },
+    "_sourceFile": "code-block.md",
+  });
+
+const _code = Object.freeze({
+    "semantic_role": "code",
+    "html_output": {
+      "element": "code",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "language": {
+          "maps_to": "class (as language-X)",
+          "notes": "The programming language of the code. Maps to a class like\n\"language-python\" for syntax highlighting via shiki/prism.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "becomes": "text-content",
+      "notes": "Code content is preserved verbatim. No markdown idioms or acadamark\nconstructs are interpreted inside <code> elements.\n",
+    },
+    "content_handler": "code",
+    "jats_counterpart": {
+      "element": "monospace",
+      "notes": "JATS uses <monospace> for inline code-like content. For block-level\ncode, JATS uses <code> wrapped in <preformat>. Acadamark's inline\n<code> maps to JATS <monospace>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The function is `factorial`.",
+        "layer1_html": "<p>The function is <code>factorial</code>.</p>",
+        "notes": "Plain markdown backticks produce inline <code>. The most common\nauthoring path.\n",
+      },
+      {
+        "source": "Use `<`code`>` for inline code.",
+        "layer1_html": "<p>Use <code>code</code> for inline code.</p>",
+        "notes": "The acadamark sigil form. Equivalent to plain markdown backticks\nbut supports attributes.\n",
+      },
+      {
+        "source": "<code language=python | def hello(): print(\"hi\")>",
+        "layer1_html": "<code class=\"language-python\">def hello(): print(\"hi\")</code>",
+      },
+      {
+        "source": "<code #factorial-impl language=python | def factorial(n):>",
+        "layer1_html": "<code id=\"factorial-impl\" class=\"language-python\">def factorial(n):</code>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "code.md",
+  });
+
+const _config = Object.freeze({
+    "semantic_role": "config",
+    "html_output": {
+      "element": "config",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <config> is a custom element. It does not produce inline\noutput; it carries build-time and render-time configuration that the\npipeline reads to determine how to process the document. The element\nis parsed during a discovery pass before body rendering.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "output-format",
+          "required": false,
+          "multiple": true,
+          "notes": "Future: target output formats (html, pdf, jats, presentation, etc.).",
+        },
+        {
+          "element": "citation-style",
+          "required": false,
+          "notes": "Future: citation rendering style (numbered, author-year, footnote, etc.).",
+        },
+        {
+          "element": "numbering-style",
+          "required": false,
+          "notes": "Future: numbering style for figures, equations, sections.",
+        },
+        {
+          "element": "note-position",
+          "required": false,
+          "notes": "Future: where notes render (foot, end, side, chapter-end).",
+        },
+        {
+          "element": "stylesheet",
+          "required": false,
+          "multiple": true,
+          "notes": "Future: stylesheet references for rendering.",
+        },
+        {
+          "element": "theme",
+          "required": false,
+          "notes": "Future: theme reference.",
+        },
+        {
+          "element": "bibliography",
+          "required": false,
+          "notes": "Bibliography source reference (e.g., <bibliography source=\"refs.bib\">).\nConfiguration about where the bibliography file lives.\n",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "no direct equivalent",
+      "notes": "JATS doesn't have a single configuration element. Most configuration\nis handled at the publication-system level, not in JATS. Acadamark's\n<config> is decomposed at JATS export — relevant settings affect how\nthe export is generated; they don't appear in JATS output.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<config>\n  <bibliography source=\"refs.bib\">\n  <citation-style | author-year>\n</config>\n",
+        "layer1_html": "<config>\n  <bibliography source=\"refs.bib\"></bibliography>\n  <citation-style>author-year</citation-style>\n</config>\n",
+        "notes": "Common configuration: bibliography source file and citation style.\n",
+      },
+      {
+        "source": "<config>\n  <output-format | html>\n  <output-format | jats>\n  <stylesheet | scholarly-default.css>\n  <numbering-style | arabic>\n</config>\n",
+        "layer1_html": "<config>\n  <output-format>html</output-format>\n  <output-format>jats</output-format>\n  <stylesheet>scholarly-default.css</stylesheet>\n  <numbering-style>arabic</numbering-style>\n</config>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkConfigDiscovery",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Phase 1 discovery — extracts <config> values into the configuration registry. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "config.md",
+  });
+
+const _data = Object.freeze({
+    "semantic_role": "data",
+    "html_output": {
+      "element": "data",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <data> is a custom element. It does not produce inline\noutput; it holds resources that other parts of the document reference.\nThe element is parsed and processed for its contents but does not\nrender visibly in the document body.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "library",
+          "required": false,
+          "multiple": true,
+          "notes": "Inline bibliography blocks in BibTeX, CSL-JSON, or other formats.",
+        },
+        {
+          "element": "bib-entry",
+          "required": false,
+          "multiple": true,
+          "notes": "Structured bibliography entries authored in acadamark form.",
+        },
+        {
+          "element": "embedded-image",
+          "required": false,
+          "multiple": true,
+          "notes": "Future: hardcoded image data (base64) referenced by figures.",
+        },
+        {
+          "element": "dataset",
+          "required": false,
+          "multiple": true,
+          "notes": "Future: tabular data referenced by tables or figures.",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "no direct equivalent",
+      "notes": "JATS doesn't have a single resource-block element. Acadamark's <data>\nis decomposed at JATS export: <library> entries are merged into\n<ref-list>; <bib-entry> entries become <ref> elements; embedded image\ndata becomes <graphic> with embedded data; etc. The <data> wrapper\nitself does not appear in JATS output.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<data>\n  <library format=bibtex>\n    @article{goodall2024,\n      author = {Goodall, Jane},\n      title = {The Effect of Elephants on Climate},\n      journal = {Nature},\n      year = {2024}\n    }\n  </library>\n</data>\n",
+        "layer1_html": "<data>\n  <library format=\"bibtex\">\n    @article{goodall2024,\n      author = {Goodall, Jane},\n      title = {The Effect of Elephants on Climate},\n      journal = {Nature},\n      year = {2024}\n    }\n  </library>\n</data>\n",
+        "notes": "A library block in BibTeX format. The library plugin parses this,\nregisters entries in the citation system. The <data> block itself\nproduces no rendered output.\n",
+      },
+      {
+        "source": "<data>\n  <bib-entry id=goodall2024>\n    <author | Jane Goodall>\n    <year | 2024>\n    <title | The Effect of Elephants on Climate>\n    <journal | Nature>\n  </bib-entry>\n</data>\n",
+        "layer1_html": "<data>\n  <bib-entry id=\"goodall2024\">\n    <author>Jane Goodall</author>\n    <year>2024</year>\n    <title>The Effect of Elephants on Climate</title>\n    <journal>Nature</journal>\n  </bib-entry>\n</data>\n",
+        "notes": "Inline structured bibliography entry. Acadamark-native form.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkLibraryParsing",
+        "purpose": "Phase 1 discovery — parses <library> blocks into the citation registry. See notes/specs/pipeline.md for the full pipeline.",
+      },
+      {
+        "name": "acadamarkResourceCollection",
+        "purpose": "Phase 1 discovery — collects <data> blocks regardless of source position. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "data.md",
+  });
+
+const _date = Object.freeze({
+    "semantic_role": "date",
+    "html_output": {
+      "element": "date",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-date-type",
+          "values": [
+            "publication",
+            "submission",
+            "acceptance",
+            "revision",
+            "retraction",
+            "embargo",
+            "other",
+          ],
+          "default": "publication",
+          "notes": "Distinguishes different kinds of dates. The default (publication)\nis the date the document was published.\n",
+        },
+        "format": {
+          "maps_to": "data-date-format",
+          "values": [
+            "iso",
+            "ymd",
+            "ymd-time",
+            "mdy",
+            "dmy",
+            "custom",
+          ],
+          "notes": "Optional hint about how the date should be parsed and formatted.\nDefault is iso (YYYY-MM-DD).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The date value, typically as text. Common formats:\n- ISO 8601: 2024-03-15 (default).\n- With time: 2024-03-15T14:30:00Z.\n- Free-form: \"March 15, 2024\" or \"Spring 2024\".\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "pub-date or date (in history)",
+      "notes": "JATS uses <pub-date> for publication dates. Other date types\n(submission, acceptance, revision) appear inside <history> as\n<date date-type=\"...\">. The exporter dispatches based on the type\nkwarg value.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<date | 2024-03-15>",
+        "layer1_html": "<date data-date-type=\"publication\">2024-03-15</date>",
+        "notes": "Simple publication date. The type defaults to \"publication\" when\nnot specified.\n",
+      },
+      {
+        "source": "<date type=submission | 2023-11-01>",
+        "layer1_html": "<date data-date-type=\"submission\">2023-11-01</date>",
+      },
+      {
+        "source": "<meta>\n  <date type=submission | 2023-11-01>\n  <date type=acceptance | 2024-02-10>\n  <date type=publication | 2024-03-15>\n</meta>\n",
+        "layer1_html": "<meta>\n  <date data-date-type=\"submission\">2023-11-01</date>\n  <date data-date-type=\"acceptance\">2024-02-10</date>\n  <date data-date-type=\"publication\">2024-03-15</date>\n</meta>\n",
+        "notes": "Multiple dates of different types. The publication date is the\nprimary; submission, acceptance, etc., go in JATS history.\n",
+      },
+      {
+        "source": "<date | March 15, 2024>",
+        "layer1_html": "<date data-date-type=\"publication\">March 15, 2024</date>",
+        "notes": "Free-form date format. Acceptable but ISO 8601 is preferred for\nmachine readability and for predictable JATS export.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "date.md",
+  });
+
+const _display_math = Object.freeze({
+    "semantic_role": "display-math",
+    "html_output": {
+      "element": "display-math",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this equation participates in the document-wide numbered\nsequence. Use +numbered (default) to number, -numbered to suppress.\nCan also be written as numbered=true / numbered=false.\nWhen suppressed, the equation renders without a number and is not\nadded to the numbered counter. The config key number-equations=false\nsuppresses all equations unless overridden per-element with +numbered.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
+    },
+    "content_handler": "math-display",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "jats_counterpart": {
+      "element": "disp-formula",
+      "notes": "JATS <disp-formula> wraps a displayed equation. The JATS exporter\ngenerates <tex-math> with the raw LaTeX source plus optionally\n<mml:math>. The id attribute (for cross-references) maps to JATS\nid. Equation numbering maps to JATS <label>.\n",
+    },
+    "_sourceFile": "display-math.md",
+  });
+
+const _editor = Object.freeze({
+    "semantic_role": "editor",
+    "html_output": {
+      "element": "editor",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "affiliation": {
+          "maps_to": "data-affiliation",
+        },
+        "orcid": {
+          "maps_to": "data-orcid",
+        },
+        "email": {
+          "maps_to": "data-email",
+        },
+        "role": {
+          "maps_to": "data-editor-role",
+          "values": [
+            "editor",
+            "co-editor",
+            "series-editor",
+            "volume-editor",
+            "guest-editor",
+            "other",
+          ],
+          "default": "editor",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Same content model as <author>. Simple form (pipe content as name)\nor structured form (explicit child elements).\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "contrib contrib-type=\"editor\"",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<editor | The Editor>",
+        "layer1_html": "<editor>The Editor</editor>",
+      },
+      {
+        "source": "<editor role=series-editor affiliation=\"Cambridge University\" | Jane Goodall>",
+        "layer1_html": "<editor data-editor-role=\"series-editor\" data-affiliation=\"Cambridge University\">Jane Goodall</editor>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "editor.md",
+  });
+
+const _em = Object.freeze({
+    "semantic_role": "em",
+    "html_output": {
+      "element": "em",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "italic",
+      "attributes": {
+        "toggle": "yes",
+      },
+      "notes": "JATS uses <italic> for emphasized text. The toggle attribute controls\nwhether the italic state is asserted or toggled relative to surrounding\ntext (inheritance behavior).\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "This has *emphasized* content.",
+        "layer1_html": "<p>This has <em>emphasized</em> content.</p>",
+        "notes": "Plain markdown emphasis with single asterisks (or single underscores)\nproduces <em> elements. This is the most common authoring path.\n",
+      },
+      {
+        "source": "<em | emphasized>",
+        "layer1_html": "<em>emphasized</em>",
+        "notes": "The explicit form is reached for when attributes are needed.\n",
+      },
+      {
+        "source": "<em #key-term .highlighted | distinguishing feature>",
+        "layer1_html": "<em id=\"key-term\" class=\"highlighted\">distinguishing feature</em>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "em.md",
+  });
+
+const _figure = Object.freeze({
+    "semantic_role": "figure",
+    "html_output": {
+      "element": "figure",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "src": {
+          "handled_by": "handler",
+          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n",
+        },
+        "alt": {
+          "handled_by": "handler",
+          "notes": "Alt text for the generated <img> when src is present. Recommended\nfor accessibility but not required: when alt is not specified, the\nhandler falls back to the figcaption text. Ignored when src is\nabsent.\n",
+        },
+        "align": {
+          "maps_to": "data-align",
+          "values": [
+            "left",
+            "right",
+            "center",
+            "full-width",
+          ],
+          "notes": "How the figure is positioned in the document flow. Affects\nrendering only; not exported to JATS.\n",
+        },
+        "width": {
+          "maps_to": "data-width",
+          "notes": "Suggested rendered width. Can be a CSS length (e.g., \"300px\",\n\"50%\") or a relative value.\n",
+        },
+        "type": {
+          "maps_to": "data-figure-type",
+          "values": [
+            "image",
+            "table",
+            "code",
+            "equation",
+            "diagram",
+            "multi-part",
+            "other",
+          ],
+          "notes": "Optional classification of the figure's content. Maps to JATS\nfig content-type or to wrapping element choices.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this figure participates in the document-wide figure\nsequence. Use +numbered (default) to number, -numbered to suppress.\nCan also be written as numbered=true / numbered=false.\nThe config key number-figures=false suppresses all figures unless\noverridden per-element with +numbered.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "figcaption",
+      "notes": "The pipe content becomes a <figcaption> child of the figure. When\nthe figure has an src kwarg, the figcaption appears alongside the\nauto-generated <img>. When no src is present, the figcaption appears\nalongside whatever the author placed inside the figure (a table,\na code block, an equation, etc.).\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "fig",
+      "attributes": {
+        "fig-type": "from type",
+      },
+      "notes": "JATS <fig> wraps <graphic> (the image) and <caption>. When src is\npresent, the exporter generates <graphic xlink:href=\"...\"> from the\nsrc kwarg. The figcaption becomes <caption>. The fig-type attribute\nmaps from acadamark's type kwarg.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<figure src=elephant.jpg | An adult African elephant.>",
+        "layer1_html": "<figure>\n  <img src=\"elephant.jpg\" alt=\"An adult African elephant.\" />\n  <figcaption>An adult African elephant.</figcaption>\n</figure>\n",
+        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly.\n",
+      },
+      {
+        "source": "<figure #elephant src=elephant.jpg align=right alt=\"A photograph of an elephant\" | An adult African elephant photographed in Tanzania.>",
+        "layer1_html": "<figure id=\"elephant\" data-align=\"right\">\n  <img src=\"elephant.jpg\" alt=\"A photograph of an elephant\" />\n  <figcaption>An adult African elephant photographed in Tanzania.</figcaption>\n</figure>\n",
+      },
+      {
+        "source": "<figure #revenue-table type=table |\n<table>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\nQuarterly revenue for fiscal year 2024.\n>\n",
+        "layer1_html": "<figure id=\"revenue-table\" data-figure-type=\"table\">\n  <table>\n    <tr><th>Quarter</th><th>Revenue</th></tr>\n    <tr><td>Q1</td><td>$100M</td></tr>\n    <tr><td>Q2</td><td>$120M</td></tr>\n  </table>\n  <figcaption>Quarterly revenue for fiscal year 2024.</figcaption>\n</figure>\n",
+        "notes": "A figure without src. The content (a table) is preserved as-is;\nthe trailing line becomes the figcaption. Author convention is\nto put the caption text on its own line at the end of the content.\n",
+      },
+      {
+        "source": "<figure #algorithm type=code |\n<code python |\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n>\nA recursive implementation of the factorial function.\n>\n",
+        "layer1_html": "<figure id=\"algorithm\" data-figure-type=\"code\">\n  <pre><code class=\"language-python\">def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)</code></pre>\n  <figcaption>A recursive implementation of the factorial function.</figcaption>\n</figure>\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/figure.js",
+    "handler_responsibilities": [
+      "Generate <img> child element when src kwarg is present.",
+      "Use alt kwarg as the img's alt attribute, or fall back to the figcaption text.",
+      "Wrap pipe content (or the trailing line of multi-content figures) as <figcaption>.",
+      "Preserve any non-caption content (tables, code blocks, equations) as direct children before the figcaption.",
+      "Handle the type kwarg by setting data-figure-type and potentially adjusting the wrapping.",
+    ],
+    "_sourceFile": "figure.md",
+  });
+
+const _hr = Object.freeze({
+    "semantic_role": "hr",
+    "html_output": {
+      "element": "hr",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-hr-type",
+          "values": [
+            "scene-break",
+            "section-break",
+            "ornamental",
+            "decorative",
+            "other",
+          ],
+          "notes": "Optional classification of the thematic break's role. Affects\nrendering (scene breaks render as blank space; ornamental breaks\nrender with decorative characters or images).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "none",
+      "notes": "The hr element is void; it cannot contain content.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "hr",
+      "notes": "JATS has no direct equivalent. The closest is using <break-quote-content>\nfor similar visual effects, or simply relying on document structure.\nFor acadamark-to-JATS export, hr elements are typically replaced with\na structural break (an empty paragraph or visual marker) since JATS\nprefers explicit semantic structure over thematic breaks.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<hr>",
+        "layer1_html": "<hr />",
+      },
+      {
+        "source": "<hr type=scene-break>",
+        "layer1_html": "<hr data-hr-type=\"scene-break\" />",
+      },
+      {
+        "source": "<p | First paragraph.>\n\n<hr type=ornamental>\n\n<p | Second paragraph after a thematic break.>\n",
+        "layer1_html": "<p>First paragraph.</p>\n<hr data-hr-type=\"ornamental\" />\n<p>Second paragraph after a thematic break.</p>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "hr.md",
+  });
+
+const _i = Object.freeze({
+    "semantic_role": "i",
+    "html_output": {
+      "element": "i",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-italic-type",
+          "values": [
+            "foreign",
+            "taxonomic",
+            "technical",
+            "thought",
+            "ship-name",
+            "other",
+          ],
+          "notes": "Optional classification of the italic's role. Useful for\naccessibility tools and stylesheet targeting.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "italic",
+      "attributes": {
+        "toggle": "no",
+      },
+      "notes": "JATS uses <italic toggle=\"no\"> for italics that assert italic state\nrather than toggling relative to context. This matches <i>'s semantic\nrole: a stylistic distinction without emphasis.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The species is <i type=taxonomic | Loxodonta africana>.",
+        "layer1_html": "<p>The species is <i data-italic-type=\"taxonomic\">Loxodonta africana</i>.</p>",
+      },
+      {
+        "source": "The French <i type=foreign | tour de force> is impressive.",
+        "layer1_html": "<p>The French <i data-italic-type=\"foreign\">tour de force</i> is impressive.</p>",
+      },
+      {
+        "source": "The technical term <i type=technical | mitochondria> refers to organelles.",
+        "layer1_html": "<p>The technical term <i data-italic-type=\"technical\">mitochondria</i> refers to organelles.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "i.md",
+  });
+
+const _img = Object.freeze({
+    "semantic_role": "img",
+    "html_output": {
+      "element": "img",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "src": {
+          "maps_to": "src",
+          "required": true,
+          "notes": "URL of the image. Required.\n",
+        },
+        "alt": {
+          "maps_to": "alt",
+          "required": true,
+          "notes": "Alternative text for accessibility. Required for images that\nconvey meaning. Use empty alt=\"\" for purely decorative images.\n",
+        },
+        "width": {
+          "maps_to": "width",
+        },
+        "height": {
+          "maps_to": "height",
+        },
+        "title": {
+          "maps_to": "title",
+        },
+      },
+    },
+    "content": {
+      "type": "none",
+      "notes": "The img element is void; it has no content. The alt text is set\nvia the alt kwarg, not via content.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "graphic",
+      "attributes": {
+        "xlink:href": "from src",
+      },
+      "notes": "JATS uses <graphic> for images, with xlink:href for the URL. The\nalt text maps to <alt-text> child element in JATS, not an attribute.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "![An adult elephant](elephant.jpg)",
+        "layer1_html": "<img src=\"elephant.jpg\" alt=\"An adult elephant\" />",
+        "notes": "Plain markdown image syntax produces <img> elements via remark.\n",
+      },
+      {
+        "source": "<img src=elephant.jpg alt=\"An adult elephant\">",
+        "layer1_html": "<img src=\"elephant.jpg\" alt=\"An adult elephant\" />",
+      },
+      {
+        "source": "<img #elephant src=elephant.jpg alt=\"An adult African elephant\" width=400>",
+        "layer1_html": "<img id=\"elephant\" src=\"elephant.jpg\" alt=\"An adult African elephant\" width=\"400\" />",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "img.md",
+  });
+
+const _inline_code = Object.freeze({
+    "semantic_role": "inline-code",
+    "html_output": {
+      "element": "inline-code",
+      "is_html_native": false,
+      "notes": "The vocabulary entry key is \"inline-code\", but the rendered HTML does NOT\nuse an <inline-code> wrapping element. The handler emits <code ...>\ndirectly, matching the output of markdown backtick spans. The element\nfield is used only as a dispatch key for the interpreter.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+        "notes": "Placed on <code>. Used as cross-reference target.\n",
+      },
+      "classes": {
+        "maps_to": "class",
+        "notes": "Added to <code> alongside any language class.\n",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "The pipe content is verbatim code source. No markdown idioms or acadamark\nconstructs are interpreted inside inline code.\n",
+    },
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/inline-code.js",
+    "jats_counterpart": {
+      "element": "monospace",
+      "notes": "JATS uses <monospace> for inline code-like content. If a language is\nspecified, it is not directly representable in JATS monospace; the\nattribute is dropped on export.\n",
+    },
+    "_sourceFile": "inline-code.md",
+  });
+
+const _inline_math = Object.freeze({
+    "semantic_role": "inline-math",
+    "html_output": {
+      "element": "inline-math",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
+    },
+    "content_handler": "math",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "jats_counterpart": {
+      "element": "inline-formula",
+      "notes": "JATS <inline-formula> wraps MathML or TeX alternatives. The JATS\nexporter generates <tex-math> with the raw LaTeX source, plus\noptionally a <mml:math> rendered form.\n",
+    },
+    "_sourceFile": "inline-math.md",
+  });
+
+const _li = Object.freeze({
+    "semantic_role": "li",
+    "html_output": {
+      "element": "li",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "value": {
+          "maps_to": "value",
+          "notes": "For ordered lists, sets the explicit number for this item.\nSubsequent items are numbered relative to this value. Maps to\nHTML's standard value attribute on <li>.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "list-item",
+      "notes": "Direct mapping to JATS <list-item>. The value attribute (when\npresent) is preserved.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "- A list item.",
+        "layer1_html": "<li>A list item.</li>",
+        "notes": "Inside a markdown-style list, the dash syntax produces an <li>\nautomatically. No explicit <li> tag needed.\n",
+      },
+      {
+        "source": "<li | A list item with explicit tag.>",
+        "layer1_html": "<li>A list item with explicit tag.</li>",
+        "notes": "The explicit form is used inside an explicit <ul> or <ol> when\nthe item needs attributes.\n",
+      },
+      {
+        "source": "<li #important type=highlighted | A noteworthy item.>\n",
+        "layer1_html": "<li id=\"important\" data-highlighted=\"true\">A noteworthy item.</li>\n",
+      },
+      {
+        "source": "<li |\nA multi-paragraph list item.\n\nThe second paragraph of the item.\n>\n",
+        "layer1_html": "<li>\n  <p>A multi-paragraph list item.</p>\n  <p>The second paragraph of the item.</p>\n</li>\n",
+      },
+      {
+        "source": "<ol>\n  <li | First item>\n  <li value=10 | Item ten>\n  <li | Item eleven>\n</ol>\n",
+        "layer1_html": "<ol>\n  <li>First item</li>\n  <li value=\"10\">Item ten</li>\n  <li>Item eleven</li>\n</ol>\n",
+        "notes": "The value attribute on <li> sets a specific number. Subsequent\nitems count from there.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "li.md",
+  });
+
+const _library = Object.freeze({
+    "semantic_role": "library",
+    "html_output": {
+      "element": "library",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <library> is a custom element. It is a data block: opaque\ncontent processed by a format-specific parser, registers entries with\nthe citation system, produces no inline rendered output.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "format": {
+          "maps_to": "data-format",
+          "values": [
+            "bibtex",
+            "csl-json",
+            "ris",
+            "endnote-xml",
+            "other",
+          ],
+          "required": false,
+          "default": "auto",
+          "notes": "The format of the library content. When omitted, the library-load plugin\nauto-detects the format via citation-js (works reliably for BibTeX and\nCSL-JSON). Authors can set this explicitly when auto-detection might be\nambiguous (e.g., a CSL-JSON string that also looks valid as plain text).\nThe library-load plugin passes this as a hint to citation-js if present.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "becomes": "parsed entries (registered in citation system)",
+      "notes": "Content is preserved verbatim and parsed by a format-specific parser.\nNo acadamark interpretation of the content. Authors typically copy\nthe content directly from a reference manager (Zotero, JabRef, etc.)\nor a text editor.\n",
+    },
+    "content_handler": "library",
+    "jats_counterpart": {
+      "element": "no direct equivalent (entries lift into ref-list)",
+      "notes": "JATS doesn't have an opaque-source equivalent. Library entries\nare parsed at processing time and merged into the citation registry.\nAt JATS export, the registered entries appear in <ref-list> as\n<ref> elements (whether they came from <library>, <bib-entry>, or\nexternal file). The <library> element itself doesn't appear in\nJATS output.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<library format=bibtex>\n  @article{goodall2024,\n    author = {Goodall, Jane},\n    title = {The Effect of Elephants on Climate},\n    journal = {Nature},\n    year = {2024}\n  }\n\n  @book{darwin1859,\n    author = {Darwin, Charles},\n    title = {On the Origin of Species},\n    publisher = {John Murray},\n    year = {1859}\n  }\n</library>\n",
+        "layer1_html": "<library data-format=\"bibtex\">\n  @article{goodall2024,\n    author = {Goodall, Jane},\n    title = {The Effect of Elephants on Climate},\n    journal = {Nature},\n    year = {2024}\n  }\n\n  @book{darwin1859,\n    author = {Darwin, Charles},\n    title = {On the Origin of Species},\n    publisher = {John Murray},\n    year = {1859}\n  }\n</library>\n",
+        "notes": "A BibTeX library block. The parser reads the entries and registers\ngoodall2024 and darwin1859 in the citation registry. Citations\nelsewhere (e.g., <cite goodall2024>) resolve against these entries.\nThe library block itself produces no rendered output.\n",
+      },
+      {
+        "source": "<library format=csl-json>\n  [\n    {\n      \"id\": \"goodall2024\",\n      \"type\": \"article-journal\",\n      \"author\": [{\"family\": \"Goodall\", \"given\": \"Jane\"}],\n      \"title\": \"The Effect of Elephants on Climate\",\n      \"container-title\": \"Nature\",\n      \"issued\": {\"date-parts\": [[2024]]}\n    }\n  ]\n</library>\n",
+        "layer1_html": "<library data-format=\"csl-json\">\n  [\n    {\n      \"id\": \"goodall2024\",\n      ...\n    }\n  ]\n</library>\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/library.js",
+    "handler_responsibilities": [
+      "Read the format kwarg.",
+      "Dispatch to the appropriate format-specific parser (BibTeX, CSL-JSON, RIS, etc.).",
+      "Parse the opaque content into structured bibliography entries.",
+      "Register each entry in the citation registry under its id (bibtex key, csl id, etc.).",
+      "Produce no inline output (the element renders as empty after processing).",
+    ],
+    "related_plugins": [
+      {
+        "name": "acadamarkLibraryParsing",
+        "runs_before": "acadamarkCitationResolution",
+        "purpose": "Phase 1 discovery — dispatches to format-specific parsers (BibTeX, CSL-JSON, etc.) and registers entries. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "library.md",
+  });
+
+const _meta = Object.freeze({
+    "semantic_role": "meta",
+    "html_output": {
+      "element": "meta",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <meta> is a custom element distinct from HTML's <meta>\n(which is a void element used for character encoding, viewport, etc.).\nAcadamark's <meta> is a structured container for descriptive metadata —\ninformation about what the document is. Operational and configuration\ncontent lives in <data> and <config>, respectively.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-document-type",
+          "values": [
+            "article",
+            "book",
+            "book-part",
+          ],
+          "default": "article",
+          "notes": "Declares the document type. Read by the structural plugin\n(acadamarkArticleStructuring / acadamarkBookStructuring) to\ndecide which Layer 1 wrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. If <meta> has no type\nkwarg the structural plugin treats the document as article-shaped.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "title",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "subtitle",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "author",
+          "required": false,
+          "multiple": true,
+        },
+        {
+          "element": "editor",
+          "required": false,
+          "multiple": true,
+        },
+        {
+          "element": "date",
+          "required": false,
+          "multiple": true,
+        },
+        {
+          "element": "abstract",
+          "required": false,
+        },
+        {
+          "element": "keywords",
+          "required": false,
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "article-meta, book-meta, or book-part-meta",
+      "notes": "The JATS mapping depends on the document type (driven by <meta>'s\ntype kwarg, or by the surrounding container if <meta> is nested):\n  type=article (or default) → <article-meta> inside <front>\n  type=book → <book-meta> inside <book-front>\n  type=book-part → <book-part-meta> inside <book-part>\nAt Layer 1 the element is always <meta>; the exporter constructs\nthe type-specific JATS container and the surrounding region wrappers\n(<front>, <book-front>, <book-part>) at export time.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta type=article>\n  <title | The Effect of Elephants on Climate>\n  <author | Jane Goodall>\n  <date | 2024-03-15>\n</meta>\n\n<section | Introduction>\nThe paper begins.\n",
+        "layer1_html": "<article>\n  <article-front>\n    <meta data-document-type=\"article\">\n      <article-title>The Effect of Elephants on Climate</article-title>\n      <author>Jane Goodall</author>\n      <date>2024-03-15</date>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The paper begins.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "notes": "Author writes <meta type=article> at the top with no <article>\nwrapper. The structural plugin reads type=article and generates:\n  - the <article> container\n  - <article-front> wrapping the original <meta>\n  - <article-body> wrapping the section content\n<title> is promoted to <article-title> as the first child of <meta>.\n<meta> itself survives in the output, inside <article-front>.\n",
+      },
+      {
+        "source": "<meta type=book>\n  <title | A Natural History of Elephants>\n  <author | Jane Goodall>\n</meta>\n\n<chapter | Origins>\nContent.\n",
+        "layer1_html": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title>A Natural History of Elephants</book-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title>Origins</book-part-title>\n      </meta>\n      <p>Content.</p>\n    </book-part>\n  </book-body>\n</book>\n",
+        "notes": "type=book generates the book-shaped wrapper instead. Changing the\nsingle kwarg switches the entire output structure. Each book-part\ncontains its own <meta> with <book-part-title>; no <book-part-meta>\nwrapper.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkArticleStructuring",
+        "purpose": "When <meta type=article> (or <meta> with no type, defaulting to\narticle) is present, generates the <article> wrapper plus\n<article-front>/<article-body>/<article-back> regions; promotes\n<title>/<subtitle> in <meta> to <article-title>/<article-subtitle>;\nplaces <meta> inside <article-front>. See notes/specs/pipeline.md.\n",
+      },
+      {
+        "name": "acadamarkBookStructuring",
+        "purpose": "When <meta type=book> or <meta type=book-part> is present (or\nvia shorthand expansions like <chapter>), generates the\n<book>/<book-part> wrapper. For books: also generates\n<book-front>/<book-body>/<book-back>. For book-parts: <meta> and\nbody content sit directly inside <book-part> with no nested region\nwrappers. See notes/specs/pipeline.md.\n",
+      },
+    ],
+    "_sourceFile": "meta.md",
+  });
+
+const _note_list = Object.freeze({
+    "semantic_role": "note-list",
+    "html_output": {
+      "element": "note-list",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-note-list-type",
+          "values": [
+            "end-notes",
+            "chapter-notes",
+            "footnotes-collected",
+            "other",
+          ],
+          "default": "end-notes",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "note",
+          "required": false,
+          "multiple": true,
+          "notes": "Notes are typically not authored directly inside <note-list>.\nThey are placed there by the acadamarkNotePlacement plugin\nbased on the document's note-position setting.\n",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "fn-group",
+      "notes": "JATS uses <fn-group> as the container for collected footnotes.\nThe mapping is direct.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<note-list #endnotes>\n  <note id=\"note-1\" | First collected note.>\n  <note id=\"note-2\" | Second collected note.>\n</note-list>\n",
+        "layer1_html": "<note-list id=\"endnotes\">\n  <note id=\"note-1\">First collected note.</note>\n  <note id=\"note-2\">Second collected note.</note>\n</note-list>\n",
+        "notes": "Authors rarely write <note-list> directly. The element is more\ncommonly generated by the acadamarkNotePlacement plugin, which\ncollects notes from throughout the document into a <note-list>\nat the appropriate location.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "generated_by": [
+      {
+        "plugin": "acadamarkNotePlacement",
+        "when": "Document-level note-position is \"end\" or \"chapter-end\".\nThe plugin collects notes from throughout the document and\nplaces them in a <note-list> at the back-matter location\n(for end notes) or at the end of each chapter (for chapter\nnotes).\n",
+      },
+    ],
+    "_sourceFile": "note-list.md",
+  });
+
+const _note = Object.freeze({
+    "semantic_role": "note",
+    "html_output": {
+      "element": "note",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+        "notes": "Auto-generated when not specified. Used as the target for cross-references\nand as the basis for note numbering.\n",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "placement": {
+          "maps_to": "data-note-placement",
+          "values": [
+            "end",
+            "foot",
+            "side",
+          ],
+          "default": "end",
+          "notes": "Determines where the note content is collected. \"end\" collects at\narticle-back; \"foot\" collects at article-back (distinguished from \"end\"\nby CSS class on the note-list); \"side\" renders the content\ninline-adjacent to the marker. Document-wide default is \"end\".\n",
+        },
+        "position": {
+          "maps_to": "data-note-position",
+          "values": [
+            "foot",
+            "end",
+            "side",
+            "chapter-end",
+            "inline",
+          ],
+          "notes": "Legacy alias for \"placement\". Retained for backwards compatibility.\n\"placement\" is preferred for new documents.\n",
+        },
+        "type": {
+          "maps_to": "data-note-type",
+          "values": [
+            "substantive",
+            "technical",
+            "editorial",
+            "translator",
+            "other",
+          ],
+          "default": "substantive",
+          "notes": "Optional classification. Most notes are substantive (authorial commentary).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "jats_counterpart": {
+      "element": "fn",
+      "notes": "JATS uses <fn> for substantive footnotes regardless of position.\nThe placement (foot of page, end of document, end of chapter) is\na rendering decision, not a structural one.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "Some text<note | A substantive note about the text.>.",
+        "layer1_html": "Some text<note id=\"note-1\">A substantive note about the text.</note>.",
+      },
+      {
+        "source": "A claim<note placement=foot | A footnote.>.",
+        "layer1_html": "<p>A claim<note id=\"note-1\" data-note-placement=\"foot\">A footnote.</note>.</p>",
+      },
+      {
+        "source": "A definition<note placement=side | Inline-adjacent note.>.",
+        "layer1_html": "<p>A definition<note id=\"note-1\" data-note-placement=\"side\">Inline-adjacent note.</note>.</p>",
+      },
+    ],
+    "related_plugins": [
+      {
+        "name": "acadamarkNotes",
+        "runs_after": "acadamarkSectionNesting",
+        "purpose": "Assigns sequential numbers, replaces <note> nodes with markers,\ncollects content into <note-list> at the appropriate location.\n",
+      },
+    ],
+    "_sourceFile": "note.md",
+  });
+
+const _ol = Object.freeze({
+    "semantic_role": "ol",
+    "html_output": {
+      "element": "ol",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-list-type",
+          "values": [
+            "arabic",
+            "alpha",
+            "alpha-upper",
+            "roman",
+            "roman-upper",
+            "other",
+          ],
+          "default": "arabic",
+          "notes": "The numbering style for ordered list items. Values match common\nlist-style-type CSS values, abbreviated for readability.\n",
+        },
+        "start": {
+          "maps_to": "start",
+          "notes": "The starting number for the list. Maps to HTML's standard start\nattribute on <ol>. Default is 1.\n",
+        },
+        "reversed": {
+          "maps_to": "reversed",
+          "notes": "If present, the list counts backward (5, 4, 3, 2, 1 instead of\n1, 2, 3, 4, 5). Maps to HTML's standard reversed attribute.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "li",
+          "required": false,
+          "multiple": true,
+          "contains": [
+            "inline",
+            "block",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "list",
+      "attributes": {
+        "list-type": "order",
+      },
+      "notes": "JATS uses <list list-type=\"order\"> for ordered lists. The\nnumbering style is preserved via the content-type attribute.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "1. First step\n2. Second step\n3. Third step\n",
+        "layer1_html": "<ol>\n  <li>First step</li>\n  <li>Second step</li>\n  <li>Third step</li>\n</ol>\n",
+        "notes": "Plain markdown ordered lists work without explicit acadamark tags.\nThis is the most common authoring path.\n",
+      },
+      {
+        "source": "<ol #procedure type=arabic start=5>\n1. Fifth step\n2. Sixth step\n3. Seventh step\n</ol>\n",
+        "layer1_html": "<ol id=\"procedure\" start=\"5\">\n  <li>Fifth step</li>\n  <li>Sixth step</li>\n  <li>Seventh step</li>\n</ol>\n",
+        "notes": "The numbers in the source markdown are ignored; the start kwarg\nsets the actual numbering. The list renders as 5, 6, 7 because\nstart=5 was specified.\n",
+      },
+      {
+        "source": "<ol type=alpha-upper>\n1. First option\n2. Second option\n3. Third option\n</ol>\n",
+        "layer1_html": "<ol data-list-type=\"alpha-upper\">\n  <li>First option</li>\n  <li>Second option</li>\n  <li>Third option</li>\n</ol>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "ol.md",
+  });
+
+const _p = Object.freeze({
+    "semantic_role": "p",
+    "html_output": {
+      "element": "p",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-paragraph-type",
+          "values": [
+            "normal",
+            "lead",
+            "intro",
+            "abstract",
+            "summary",
+            "other",
+          ],
+          "notes": "Optional classification of the paragraph's role. Mostly used for\nstyling (lead paragraphs render larger; abstract paragraphs styled\ndistinctly).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "p",
+      "notes": "Direct mapping to JATS <p>. JATS does not have paragraph type\nclassifications natively; the data-paragraph-type attribute is\npreserved as an HTML data attribute but does not appear in JATS export.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<p | A simple paragraph.>",
+        "layer1_html": "<p>A simple paragraph.</p>",
+      },
+      {
+        "source": "A paragraph written without explicit tags.",
+        "layer1_html": "<p>A paragraph written without explicit tags.</p>",
+        "notes": "In most cases, paragraphs do not need to be written with explicit\ntags. Plain markdown handles paragraph separation: blank lines\ndelineate paragraphs. The explicit <p> form is used when attributes\n(id, classes, type) are needed.\n",
+      },
+      {
+        "source": "<p type=lead | The opening paragraph of an article.>",
+        "layer1_html": "<p data-paragraph-type=\"lead\">The opening paragraph of an article.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "p.md",
+  });
+
+const _q = Object.freeze({
+    "semantic_role": "q",
+    "html_output": {
+      "element": "q",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "cite": {
+          "maps_to": "cite",
+          "notes": "URL of the source being quoted. Same as <blockquote>'s cite\nattribute but for inline quotations.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "inline-quote or just text with quotation marks",
+      "notes": "JATS doesn't have a dedicated inline-quotation element. The exporter\ntypically emits the quoted text wrapped in literal quotation marks\n(Unicode left/right double quotes) rather than a JATS element.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "She said <q | hello> in passing.",
+        "layer1_html": "<p>She said <q>hello</q> in passing.</p>",
+        "notes": "Browsers automatically render <q> with quotation marks. Authors\ndo not include quotation marks in the content.\n",
+      },
+      {
+        "source": "The phrase <q cite=https://example.com | to be or not to be> is iconic.",
+        "layer1_html": "<p>The phrase <q cite=\"https://example.com\">to be or not to be</q> is iconic.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "q.md",
+  });
+
+const _ref = Object.freeze({
+    "semantic_role": "ref",
+    "html_output": {
+      "element": "ref",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <ref> is a custom element for cross-references. Distinct\nfrom JATS's <ref> (which represents a bibliography reference; in\nacadamark, that's <bib-entry>). Renders as a link to the target with\nappropriate text generated by the resolver.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "target": {
+          "handled_by": "handler",
+          "notes": "The id of the element being referenced. The canonical form uses the\n#id prefix: <ref #eqn:model>. A kwarg form is also accepted as\nlegacy: <ref target=eqn:model>.\nIMPORTANT (current implementation): only colon-ids (ids containing\na colon, e.g., eqn:model, fig:scatter) are in the label index and\ncan be resolved. Non-colon ids produce an unresolved error marker.\nThis restriction may be relaxed in a future slice.\n",
+        },
+        "type": {
+          "handled_by": "handler",
+          "values": [
+            "auto",
+            "figure",
+            "table",
+            "equation",
+            "section",
+            "sub-section",
+            "note",
+            "listing",
+            "theorem",
+            "other",
+          ],
+          "default": "auto",
+          "notes": "DEFERRED. The type kwarg is parsed but not used by the current\nhandler. The resolver always infers type from the registry entry.\n",
+        },
+        "format": {
+          "handled_by": "handler",
+          "values": [
+            "number",
+            "name",
+            "full",
+            "label-only",
+            "default",
+          ],
+          "default": "default",
+          "notes": "DEFERRED. The format kwarg is parsed but not used by the current\nhandler. Rendered text is always the prefix-dictionary default:\n\"equation N\" for equations, \"figure N\" for figures, \"note N\" for\nnotes (prefix word from DEFAULT_PREFIXES, overridable per-document\nvia <config ref-prefix-eqn=\"...\">).\nAuthor-provided pipe content (<ref #id | custom text>) is also\ndeferred (recursive-content slice).\n\"full\" would include the title (\"figure 3: An Adult Elephant\").\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Optional override for the rendered cross-reference text. Most refs\nhave no content; the resolver generates the text automatically.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "xref ref-type=\"...\"",
+      "notes": "JATS uses <xref> with ref-type indicating the kind of target\n(fig, table, sec, equation, fn, etc.). Acadamark's <ref> maps\nto <xref> with the appropriate ref-type derived from the target.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "See <ref #fig:scatter> for details.",
+        "html_output": "<p>See <a href=\"#fig:scatter\" class=\"ref\">figure 1</a> for details.</p>",
+        "notes": "Canonical form: #id prefix. The ref-resolution plugin replaces the\n<ref> node with a __ref-marker before hast conversion. The handler\nthen renders an <a> element with computed text. Prefix word is\nlowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.\n",
+      },
+      {
+        "source": "As shown in <ref #eqn:model>.",
+        "html_output": "<p>As shown in <a href=\"#eqn:model\" class=\"ref\">equation 1</a>.</p>",
+        "notes": "Equation references use the \"equation\" prefix word by default.\nConfig override: <config ref-prefix-eqn=\"Eq.\"> changes this to \"Eq.\".\n",
+      },
+      {
+        "source": "<ref #eqn:missing>",
+        "html_output": "<a href=\"#eqn:missing\" class=\"ref-error\">??ref: eqn:missing??</a>",
+        "notes": "Unresolved target renders a visible error anchor.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/ref.js",
+    "handler_responsibilities": [
+      "ref-resolution plugin (runs before hast): resolve <ref> nodes against the shared label index; replace each with __ref-marker (resolved) or __ref-error (unresolved). Only colon-ids are referenceable.",
+      "__ref-marker handler: render an anchor with href=\"#id\", class=\"ref\", and pre-computed text from node.kwargs.text. Text is produced by the ref-resolution plugin using DEFAULT_PREFIXES (\"equation N\", \"figure N\", etc.) or label-tail for unnumbered labeled targets.",
+      "__ref-error handler: render an anchor with href=\"#id\", class=\"ref-error\", and text \"??ref: id??\".",
+    ],
+    "related_plugins": [
+      {
+        "name": "acadamarkRefResolution",
+        "runs_after": "acadamarkArticleStructuring, numbering plugins",
+        "purpose": "Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "ref.md",
+  });
+
+const _s = Object.freeze({
+    "semantic_role": "s",
+    "html_output": {
+      "element": "s",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-strikethrough-type",
+          "values": [
+            "outdated",
+            "retracted",
+            "deleted",
+            "other",
+          ],
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "strike",
+      "notes": "JATS uses <strike> for strikethrough text.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The price is ~~$50~~ now $40.",
+        "layer1_html": "<p>The price is <s>$50</s> now $40.</p>",
+        "notes": "GFM's tilde syntax produces <s> elements. The most common\nauthoring path for casual strikethrough.\n",
+      },
+      {
+        "source": "The claim <s type=retracted | was unsupported> has been corrected.",
+        "layer1_html": "<p>The claim <s data-strikethrough-type=\"retracted\">was unsupported</s> has been corrected.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "s.md",
+  });
+
+const _section_subtitle = Object.freeze({
+    "semantic_role": "section-subtitle",
+    "html_output": {
+      "element": "section-subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "section-subtitle.md",
+  });
+
+const _section_title = Object.freeze({
+    "semantic_role": "section-title",
+    "html_output": {
+      "element": "section-title",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "section-title.md",
+  });
+
+const _section = Object.freeze({
+    "semantic_role": "section",
+    "html_output": {
+      "element": "section",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "sec-type": {
+          "maps_to": "data-sec-type",
+          "values": [
+            "intro",
+            "methods",
+            "results",
+            "discussion",
+            "conclusion",
+            "supplementary",
+            "materials",
+            "references",
+            "other",
+          ],
+          "notes": "Optional classification of the section's role. Maps to JATS sec-type\nattribute. Values match common JATS conventions for IMRaD-style papers.\n",
+        },
+        "numbering-style": {
+          "maps_to": "data-numbering-style",
+          "values": [
+            "arabic",
+            "roman",
+            "alpha",
+            "none",
+          ],
+          "notes": "Override the inherited numbering style for this section.",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "section-title",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "section-subtitle",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "body",
+          "required": false,
+          "contains": [
+            "block",
+            "section",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "title_extraction": true,
+    "jats_counterpart": {
+      "element": "sec",
+      "attributes": {
+        "sec-type": "from sec-type",
+      },
+      "notes": "JATS uses recursive <sec> for all section depths. Acadamark uses named\ndepth (<section>, <sub-section>, <sub-sub-section>) for explicit\nsemantic clarity. The JATS exporter maps acadamark's depth ladder to\nnested <sec> elements.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<section | Introduction>\nThe paper begins here.\n",
+        "layer1_html": "<section>\n  <section-title>Introduction</section-title>\n  <p>The paper begins here.</p>\n</section>\n",
+      },
+      {
+        "source": "<section #methods sec-type=methods | Methods>\n<section-subtitle | A description of our experimental approach>\nThe methods used in this study were as follows.\n",
+        "layer1_html": "<section id=\"methods\" data-sec-type=\"methods\">\n  <section-title>Methods</section-title>\n  <section-subtitle>A description of our experimental approach</section-subtitle>\n  <p>The methods used in this study were as follows.</p>\n</section>\n",
+      },
+      {
+        "source": "<section | Results>\nResults paragraph.\n\n<sub-section | Quantitative analysis>\nSub-section content.\n\n<sub-section | Qualitative observations>\nSub-section content.\n",
+        "layer1_html": "<section>\n  <section-title>Results</section-title>\n  <p>Results paragraph.</p>\n  <sub-section>\n    <sub-section-title>Quantitative analysis</sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n  <sub-section>\n    <sub-section-title>Qualitative observations</sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n</section>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkSectionNesting",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Phase 2 — implicit closing of peer sections. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "section.md",
+  });
+
+const _span = Object.freeze({
+    "semantic_role": "span",
+    "html_output": {
+      "element": "span",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "style": {
+          "maps_to": "style",
+          "notes": "Inline CSS styles. Use sparingly; classes are usually preferable.\n",
+        },
+        "title": {
+          "maps_to": "title",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "styled-content",
+      "notes": "JATS uses <styled-content> for generic styled inline content.\nThe class attribute maps to JATS's style-type attribute.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "Some text <span .highlight | with highlighting> here.",
+        "layer1_html": "<p>Some text <span class=\"highlight\">with highlighting</span> here.</p>",
+      },
+      {
+        "source": "Text with <span #key-phrase | a marked phrase> for reference.",
+        "layer1_html": "<p>Text with <span id=\"key-phrase\">a marked phrase</span> for reference.</p>",
+      },
+      {
+        "source": "A <span .gloss title=\"ancient Greek for word\" | logos> appears here.",
+        "layer1_html": "<p>A <span class=\"gloss\" title=\"ancient Greek for word\">logos</span> appears here.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "span.md",
+  });
+
+const _strong = Object.freeze({
+    "semantic_role": "strong",
+    "html_output": {
+      "element": "strong",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "bold",
+      "attributes": {
+        "toggle": "yes",
+      },
+    },
+    "shorthand_examples": [
+      {
+        "source": "This is **strongly emphasized** content.",
+        "layer1_html": "<p>This is <strong>strongly emphasized</strong> content.</p>",
+        "notes": "Plain markdown with double asterisks (or double underscores) produces\n<strong> elements.\n",
+      },
+      {
+        "source": "<strong | important>",
+        "layer1_html": "<strong>important</strong>",
+      },
+      {
+        "source": "<strong #critical .warning | This is critical.>",
+        "layer1_html": "<strong id=\"critical\" class=\"warning\">This is critical.</strong>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "strong.md",
+  });
+
+const _sub_section_subtitle = Object.freeze({
+    "semantic_role": "sub-section-subtitle",
+    "html_output": {
+      "element": "sub-section-subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "sub-section-subtitle.md",
+  });
+
+const _sub_section_title = Object.freeze({
+    "semantic_role": "sub-section-title",
+    "html_output": {
+      "element": "sub-section-title",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "sub-section-title.md",
+  });
+
+const _sub_section = Object.freeze({
+    "semantic_role": "sub-section",
+    "html_output": {
+      "element": "sub-section",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "sec-type": {
+          "maps_to": "data-sec-type",
+          "values": [
+            "intro",
+            "methods",
+            "results",
+            "discussion",
+            "conclusion",
+            "supplementary",
+            "materials",
+            "references",
+            "other",
+          ],
+          "notes": "Same values as <section>. Optional classification of the sub-section role.",
+        },
+        "numbering-style": {
+          "maps_to": "data-numbering-style",
+          "values": [
+            "arabic",
+            "roman",
+            "alpha",
+            "none",
+          ],
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "sub-section-title",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "sub-section-subtitle",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "body",
+          "required": false,
+          "contains": [
+            "block",
+            "section",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "title_extraction": true,
+    "jats_counterpart": {
+      "element": "sec",
+      "attributes": {
+        "sec-type": "from sec-type",
+      },
+      "notes": "JATS uses recursive <sec>; acadamark's <sub-section> becomes a nested\n<sec> at depth 2 inside its parent <sec>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<sub-section | Quantitative analysis>\nSub-section content.\n",
+        "layer1_html": "<sub-section>\n  <sub-section-title>Quantitative analysis</sub-section-title>\n  <p>Sub-section content.</p>\n</sub-section>\n",
+      },
+      {
+        "source": "<section | Results>\n<sub-section | Statistical methods>\nSub-section content.\n\n<sub-sub-section | Regression analysis>\nSub-sub-section content.\n\n<sub-section | Sensitivity analyses>\nSub-section content.\n",
+        "layer1_html": "<section>\n  <section-title>Results</section-title>\n  <sub-section>\n    <sub-section-title>Statistical methods</sub-section-title>\n    <p>Sub-section content.</p>\n    <sub-sub-section>\n      <sub-sub-section-title>Regression analysis</sub-sub-section-title>\n      <p>Sub-sub-section content.</p>\n    </sub-sub-section>\n  </sub-section>\n  <sub-section>\n    <sub-section-title>Sensitivity analyses</sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n</section>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkSectionNesting",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Phase 2 — implicit closing of peer sub-sections. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "sub-section.md",
+  });
+
+const _sub_sub_section_subtitle = Object.freeze({
+    "semantic_role": "sub-sub-section-subtitle",
+    "html_output": {
+      "element": "sub-sub-section-subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "sub-sub-section-subtitle.md",
+  });
+
+const _sub_sub_section_title = Object.freeze({
+    "semantic_role": "sub-sub-section-title",
+    "html_output": {
+      "element": "sub-sub-section-title",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "shape": {
+        "contains": [
+          "inline",
+        ],
+      },
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "_sourceFile": "sub-sub-section-title.md",
+  });
+
+const _sub_sub_section = Object.freeze({
+    "semantic_role": "sub-sub-section",
+    "html_output": {
+      "element": "sub-sub-section",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "sec-type": {
+          "maps_to": "data-sec-type",
+          "values": [
+            "intro",
+            "methods",
+            "results",
+            "discussion",
+            "conclusion",
+            "supplementary",
+            "materials",
+            "references",
+            "other",
+          ],
+        },
+        "numbering-style": {
+          "maps_to": "data-numbering-style",
+          "values": [
+            "arabic",
+            "roman",
+            "alpha",
+            "none",
+          ],
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "sub-sub-section-title",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "sub-sub-section-subtitle",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "body",
+          "required": false,
+          "contains": [
+            "block",
+          ],
+          "notes": "Sub-sub-sections do not contain further nested section levels. Depth\nbottoms out at three. Documents requiring deeper nesting should\nreorganize their structure or extend the depth ladder explicitly.\n",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "title_extraction": true,
+    "jats_counterpart": {
+      "element": "sec",
+      "attributes": {
+        "sec-type": "from sec-type",
+      },
+      "notes": "JATS uses recursive <sec>; acadamark's <sub-sub-section> becomes a nested\n<sec> at depth 3 inside its parent.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<sub-sub-section | Regression analysis>\nDetailed methods for the regression.\n",
+        "layer1_html": "<sub-sub-section>\n  <sub-sub-section-title>Regression analysis</sub-sub-section-title>\n  <p>Detailed methods for the regression.</p>\n</sub-sub-section>\n",
+      },
+      {
+        "source": "<section | Methods>\n<sub-section | Statistical methods>\n<sub-sub-section | Regression>\nLinear regression was performed.\n\n<sub-sub-section | Sensitivity testing>\nSensitivity tests were performed.\n",
+        "layer1_html": "<section>\n  <section-title>Methods</section-title>\n  <sub-section>\n    <sub-section-title>Statistical methods</sub-section-title>\n    <sub-sub-section>\n      <sub-sub-section-title>Regression</sub-sub-section-title>\n      <p>Linear regression was performed.</p>\n    </sub-sub-section>\n    <sub-sub-section>\n      <sub-sub-section-title>Sensitivity testing</sub-sub-section-title>\n      <p>Sensitivity tests were performed.</p>\n    </sub-sub-section>\n  </sub-section>\n</section>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "acadamarkSectionNesting",
+        "runs_before": "acadamarkTagInterpret",
+        "purpose": "Phase 2 — implicit closing of peer sub-sub-sections. See notes/specs/pipeline.md for the full pipeline.",
+      },
+    ],
+    "_sourceFile": "sub-sub-section.md",
+  });
+
+const _sub = Object.freeze({
+    "semantic_role": "sub",
+    "html_output": {
+      "element": "sub",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "sub",
+    },
+    "shorthand_examples": [
+      {
+        "source": "Water is H<sub | 2>O.",
+        "layer1_html": "<p>Water is H<sub>2</sub>O.</p>",
+      },
+      {
+        "source": "The vector x<sub | i> represents the i-th component.",
+        "layer1_html": "<p>The vector x<sub>i</sub> represents the i-th component.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "sub.md",
+  });
+
+const _subtitle = Object.freeze({
+    "semantic_role": "subtitle",
+    "html_output": {
+      "element": "subtitle",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "subtitle",
+      "notes": "JATS uses <subtitle> inside <title-group> (for articles) or\n<book-title-group> (for books).\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <title | The Effect of Elephants on Climate>\n  <subtitle | A Multi-Year Field Study in Tanzania>\n</meta>\n",
+        "layer1_html": "<article-front>\n  <article-title>The Effect of Elephants on Climate</article-title>\n  <article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle>\n</article-front>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "subtitle.md",
+  });
+
+const _sup = Object.freeze({
+    "semantic_role": "sup",
+    "html_output": {
+      "element": "sup",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "sup",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The 1<sup | st> edition of the work.",
+        "layer1_html": "<p>The 1<sup>st</sup> edition of the work.</p>",
+      },
+      {
+        "source": "The function f(x) = x<sup | 2>.",
+        "layer1_html": "<p>The function f(x) = x<sup>2</sup>.</p>",
+      },
+      {
+        "source": "The isotope <sup | 12>C is abundant.",
+        "layer1_html": "<p>The isotope <sup>12</sup>C is abundant.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "sup.md",
+  });
+
+const _table = Object.freeze({
+    "semantic_role": "table",
+    "html_output": {
+      "element": "table",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/table.js",
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "positional": [
+        {
+          "name": "format",
+          "values": [
+            "csv",
+            "tsv",
+            "json",
+            "yaml",
+            "md",
+          ],
+          "notes": "Format of inline pipe content. When absent, content is treated as\nraw HTML pass-through (escape-hatch form). Required for all\ndata-driven forms.\n",
+        },
+      ],
+      "booleans": {
+        "headers": {
+          "default": true,
+          "notes": "Whether the first row of the data is a header row. Default true.\nUse -headers to suppress thead generation; rows render as tbody only.\n",
+        },
+        "numbered": {
+          "default": true,
+          "notes": "Whether this table is counted in the numbered table sequence and\nreceives a \"Table N.\" label prefix in its caption.\n",
+        },
+      },
+      "kwargs": {
+        "caption": {
+          "notes": "Short-form caption as a kwarg string. Renders as <caption> inside\nthe table element. When numbered, a \"Table N.\" label span is\nprepended. Long-form caption (<caption | ...> nested tag) is deferred.\n",
+        },
+        "src": {
+          "notes": "Path to an external data file. Relative to the document's assets\ndirectory (configurable via the assetsDir interpreter option).\nThe content handler reads the file at interpretation time.\n",
+        },
+        "type": {
+          "maps_to": "data-table-type",
+          "values": [
+            "data",
+            "layout",
+            "comparison",
+            "schedule",
+            "results",
+            "other",
+          ],
+          "notes": "Optional semantic classification. Affects styling and JATS export.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque-or-structured",
+      "notes": "When a format positional is present (csv, tsv, json, yaml, md), pipe\ncontent is an opaque data string parsed by the corresponding parser.\nWhen no format is present, content is treated as raw HTML (escape-hatch).\nThe long-form structural path (<table>...<tr>...</table>) is handled by\nthe same handler with recursive cell content; this path is partially\nimplemented and may produce basic results.\n",
+    },
+    "content_handler": "table",
+    "jats_counterpart": {
+      "element": "table-wrap",
+      "attributes": {
+        "table-type": "from type",
+      },
+      "notes": "JATS uses <table-wrap> as the container, with <table> nested inside.\nThe acadamark <table> maps to JATS's nested <table>; the wrapping\n<table-wrap> is generated at export to provide JATS's expected structure.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "| Name | Price |\n|------|-------|\n| foo  | 1     |\n| bar  | 2     |\n",
+        "layer1_html": "<table>\n  <thead>\n    <tr><th>Name</th><th>Price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>foo</td><td>1</td></tr>\n    <tr><td>bar</td><td>2</td></tr>\n  </tbody>\n</table>\n",
+        "notes": "Plain markdown table syntax (via remark-gfm). The most common\nauthoring path for simple tables. No explicit acadamark tags needed.\n",
+      },
+      {
+        "source": "<csv | name,price\nfoo,1\nbar,2\n>\n",
+        "layer1_html": "<table>\n  <thead>\n    <tr><th>name</th><th>price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>foo</td><td>1</td></tr>\n    <tr><td>bar</td><td>2</td></tr>\n  </tbody>\n</table>\n",
+        "notes": "The <csv> DSL engine produces a table from CSV source. See the\n<csv> vocabulary entry for details on engine attributes (header\ncontrol, alignment, etc.).\n",
+      },
+      {
+        "source": "<table #revenue type=results>\n  <caption | Quarterly revenue>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\n",
+        "layer1_html": "<table id=\"revenue\" data-table-type=\"results\">\n  <caption>Quarterly revenue</caption>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\n",
+        "notes": "Explicit table with cells, used when fine control over structure\nor attributes is needed.\n",
+      },
+    ],
+    "_sourceFile": "table.md",
+  });
+
+const _title = Object.freeze({
+    "semantic_role": "title",
+    "html_output": {
+      "element": "title",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Acadamark's <title> inside <meta> is a custom element distinct from\nHTML's <title> (which goes in <head> and represents the browser tab title).\nThe render-mode plugin maps acadamark's metadata <title> to HTML's\n<title> in the rendered <head>. The structural plugin promotes\nacadamark's metadata <title> to <article-title> or <book-title> at\nLayer 1 based on the surrounding container.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The title text. Inline elements work normally: <em>, <strong>,\n<i> for foreign words, <math> for mathematical content in titles.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "article-title or book-title (inside title-group inside article-meta or book-meta)",
+      "notes": "JATS represents document titles via <article-title> inside <title-group>\ninside <article-meta>, or via <book-title> inside <book-meta>. Acadamark's\nmetadata <title> gets promoted to the appropriate JATS structure at\nexport time based on the surrounding container.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <title | The Effect of Elephants on Climate>\n</meta>\n",
+        "layer1_html": "<article-front>\n  <article-title>The Effect of Elephants on Climate</article-title>\n</article-front>\n",
+        "notes": "Inside <article>, <title> in <meta> becomes <article-title>.\n",
+      },
+      {
+        "source": "<book>\n  <meta>\n    <title | A Comprehensive Guide>\n  </meta>\n</book>\n",
+        "layer1_html": "<book-front>\n  <book-title>A Comprehensive Guide</book-title>\n</book-front>\n",
+        "notes": "Inside <book>, <title> in <meta> becomes <book-title>.\n",
+      },
+      {
+        "source": "<meta>\n  <title | The role of <i type=taxonomic | Loxodonta africana> in ecosystem dynamics>\n</meta>\n",
+        "layer1_html": "<article-front>\n  <article-title>The role of <i data-italic-type=\"taxonomic\">Loxodonta africana</i> in ecosystem dynamics</article-title>\n</article-front>\n",
+        "notes": "Titles can contain inline elements. The recursive content parsing\nhandles nested constructs.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "title.md",
+  });
+
+const _u = Object.freeze({
+    "semantic_role": "u",
+    "html_output": {
+      "element": "u",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-underline-type",
+          "values": [
+            "misspelling",
+            "proper-name",
+            "editorial-correction",
+            "other",
+          ],
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "underline",
+      "notes": "JATS uses <underline> for underlined text. The element exists but\nis rarely used in scholarly publishing because underline conventionally\nindicates hyperlinks in modern web rendering.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The author wrote <u type=misspelling | recieve> in the original.",
+        "layer1_html": "<p>The author wrote <u data-underline-type=\"misspelling\">recieve</u> in the original.</p>",
+      },
+      {
+        "source": "The Chinese name <u type=proper-name | 王明> appears here.",
+        "layer1_html": "<p>The Chinese name <u data-underline-type=\"proper-name\">王明</u> appears here.</p>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "u.md",
+  });
+
+const _ul = Object.freeze({
+    "semantic_role": "ul",
+    "html_output": {
+      "element": "ul",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "type": {
+          "maps_to": "data-list-type",
+          "values": [
+            "bullet",
+            "checklist",
+            "glossary",
+            "navigation",
+            "other",
+          ],
+          "notes": "Optional classification of the list's role. Affects rendering\n(checklists get checkboxes; navigation lists get layout treatment).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "li",
+          "required": false,
+          "multiple": true,
+          "contains": [
+            "inline",
+            "block",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "list",
+      "attributes": {
+        "list-type": "bullet",
+      },
+      "notes": "JATS uses <list list-type=\"bullet\"> for unordered lists. The\nlist-type attribute is preserved at export. Acadamark's optional\ntype kwarg (checklist, glossary, etc.) is transformed during export:\ntype=checklist becomes list-type=\"bullet\" with content-type=\"checklist\".\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "- First item\n- Second item\n- Third item\n",
+        "layer1_html": "<ul>\n  <li>First item</li>\n  <li>Second item</li>\n  <li>Third item</li>\n</ul>\n",
+        "notes": "Plain markdown unordered lists work without explicit acadamark tags.\nThis is the most common authoring path. Use plain markdown when no\nattributes are needed on the list or items.\n",
+      },
+      {
+        "source": "<ul #key-points type=checklist>\n- First item\n- Second item\n- Third item\n</ul>\n",
+        "layer1_html": "<ul id=\"key-points\" data-list-type=\"checklist\">\n  <li>First item</li>\n  <li>Second item</li>\n  <li>Third item</li>\n</ul>\n",
+      },
+      {
+        "source": "<ul .featured>\n  <li | First item with <em | emphasis>.>\n  <li | Second item.>\n</ul>\n",
+        "layer1_html": "<ul class=\"featured\">\n  <li>First item with <em>emphasis</em>.</li>\n  <li>Second item.</li>\n</ul>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "ul.md",
+  });
+
+export const VOCABULARY = Object.freeze({
+  "a": _a,
+  "abstract": _abstract,
+  "article-back": _article_back,
+  "article-body": _article_body,
+  "article-front": _article_front,
+  "article-subtitle": _article_subtitle,
+  "article-title": _article_title,
+  "article": _article,
+  "aside": _aside,
+  "author": _author,
+  "b": _b,
+  "bib-entry": _bib_entry,
+  "bibliography": _bibliography,
+  "blockquote": _blockquote,
+  "book-back": _book_back,
+  "book-body": _book_body,
+  "book-front": _book_front,
+  "book-part-subtitle": _book_part_subtitle,
+  "book-part-title": _book_part_title,
+  "book-part": _book_part,
+  "book-subtitle": _book_subtitle,
+  "book-title": _book_title,
+  "book": _book,
+  "cite": _cite,
+  "code-block": _code_block,
+  "code": _code,
+  "config": _config,
+  "data": _data,
+  "date": _date,
+  "display-math": _display_math,
+  "editor": _editor,
+  "em": _em,
+  "figure": _figure,
+  "hr": _hr,
+  "i": _i,
+  "img": _img,
+  "inline-code": _inline_code,
+  "inline-math": _inline_math,
+  "li": _li,
+  "library": _library,
+  "meta": _meta,
+  "note-list": _note_list,
+  "note": _note,
+  "ol": _ol,
+  "p": _p,
+  "q": _q,
+  "ref": _ref,
+  "s": _s,
+  "section-subtitle": _section_subtitle,
+  "section-title": _section_title,
+  "section": _section,
+  "span": _span,
+  "strong": _strong,
+  "sub-section-subtitle": _sub_section_subtitle,
+  "sub-section-title": _sub_section_title,
+  "sub-section": _sub_section,
+  "sub-sub-section-subtitle": _sub_sub_section_subtitle,
+  "sub-sub-section-title": _sub_sub_section_title,
+  "sub-sub-section": _sub_sub_section,
+  "sub": _sub,
+  "subtitle": _subtitle,
+  "sup": _sup,
+  "table": _table,
+  "title": _title,
+  "u": _u,
+  "ul": _ul,
+  "quote": _blockquote,  // alias
+});
+
+export const VOCABULARY_ERRORS = Object.freeze([
+]);

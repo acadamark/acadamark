@@ -19,7 +19,7 @@
 // Multi-paragraph content (content.length > 1) is never unwrapped.
 
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
-import { loadVocabulary } from './schema/load-vocabulary.js';
+import { VOCABULARY } from 'layer1-vocabulary';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';
 import { mathHandler } from './handlers/math.js';
@@ -52,10 +52,11 @@ const INTERNAL_REGISTRY = new Map([
   ['__bibliography',   bibliographyHandler],
 ]);
 
-// Load vocabulary once at module import time. The Map is shared across all
-// pipeline invocations in the same process; that's safe because loadVocabulary
-// is idempotent and the vocabulary is read-only at runtime.
-const vocabulary = loadVocabulary();
+// Wrap the build-time-generated VOCABULARY object as a Map at module load,
+// preserving the read-pattern (`vocabulary.get(key)`) the downstream
+// dispatch sites use. The Map is shared across all pipeline invocations
+// in the same process; safe because VOCABULARY is frozen and read-only.
+const vocabulary = new Map(Object.entries(VOCABULARY));
 
 // Maps handler_module values (as declared in vocabulary entries) to the
 // actual handler functions. Slice 1 has only one handler-strategy element.

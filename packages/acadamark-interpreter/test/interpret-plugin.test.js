@@ -161,7 +161,7 @@ export function run() {
   {
     const node = makeAcadaTag('quote', [para('A short quotation.')]);
     const h = hast(node);
-    // <quote> expands to <blockquote> via shorthand alias registered in load-vocabulary.
+    // <quote> expands to <blockquote> via shorthand alias in the generated VOCABULARY.
     assert.equal(h.tagName, 'blockquote');
     assert.equal(h.children[0].type, 'text');
     assert.equal(h.children[0].value, 'A short quotation.');
