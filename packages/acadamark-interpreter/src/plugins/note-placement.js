@@ -21,8 +21,9 @@
 // in handlers/notes.js are unchanged.
 
 import { makeTag, makeInternalMarker } from 'acadamark-core/tag';
+import { walkReplace } from 'acadamark-core/walkers/walk-replace';
+import { ACADAMARK_NOTES_PENDING } from 'acadamark-core/file-data-keys';
 import { findTag } from '../lib/ast-helpers.js';
-import { walkReplace } from '../lib/walk-replace.js';
 import { notePlacement } from './notes.js';
 
 // ─── Article-back helper ──────────────────────────────────────────────────────
@@ -64,7 +65,7 @@ function findOrCreateArticleBack(treeChildren) {
  */
 export function acadamarkNotePlacement() {
   return (tree, file) => {
-    const pending = file?.data?.acadamarkNotesPending;
+    const pending = file?.data?.[ACADAMARK_NOTES_PENDING];
     if (!pending || pending.length === 0) return;
 
     // Build a lookup map: note node object → registry entry.

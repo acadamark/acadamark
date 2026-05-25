@@ -18,7 +18,7 @@
 // Pre-order (visit before descend) guarantees visitor call order matches
 // document order, which is required for numbering to be sequential.
 
-import { isAcadamarkTag } from './ast-helpers.js';
+import { isAcadamarkTag } from '../tag.js';
 
 /**
  * Recursively walk a node array in document order (pre-order DFS).

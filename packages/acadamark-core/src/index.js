@@ -9,4 +9,12 @@
 
 export { DSL_REGISTRY, getContentHandler } from './dsl-registry.js';
 export { PARSER_TO_VOCAB, resolveVocabKey } from './sigil-mapping.js';
-export { makeTag, makeOpaqueTag, makeInternalMarker } from './tag.js';
+export { makeTag, makeOpaqueTag, makeInternalMarker, isAcadamarkTag } from './tag.js';
+export { makeParseError, makeTagError } from './error-nodes.js';
+export { createRegistry, ensureRegistry } from './registry.js';
+export { discover } from './walkers/discover.js';
+export { walkReplace } from './walkers/walk-replace.js';
+export { walkNormalize } from './walkers/walk-normalize.js';
+export { isColonId, parseColonId } from './colon-id.js';
+export { unwrapSingleParagraph } from './paragraph-unwrap.js';
+export * as FileDataKeys from './file-data-keys.js';

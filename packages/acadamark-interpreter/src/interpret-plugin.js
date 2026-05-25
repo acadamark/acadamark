@@ -18,6 +18,7 @@
 // so <em | text> becomes <em>text</em>, not <em><p>text</p></em>.
 // Multi-paragraph content (content.length > 1) is never unwrapped.
 
+import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { loadVocabulary } from './schema/load-vocabulary.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';
@@ -146,18 +147,13 @@ function convertContent(state, node, vocab) {
   // Guard: content must be an array. String content means the node was not
   // re-parsed by remarkRecursiveContent (e.g. raw DSL content). Treat as empty.
   if (!Array.isArray(content)) return [];
-  let nodes;
 
-  if (
-    vocab?.content?.type === 'prose' &&
-    content.length === 1 &&
-    content[0]?.type === 'paragraph'
-  ) {
-    // Unwrap: use the paragraph's children directly.
-    nodes = content[0].children ?? [];
-  } else {
-    nodes = content;
-  }
+  // Prose-bearing tags get the single-paragraph unwrap (per spec); other
+  // tags pass content through as-is.
+  const nodes =
+    vocab?.content?.type === 'prose'
+      ? unwrapSingleParagraph(content)
+      : content;
 
   return nodes.flatMap(child => {
     const h = state.one(child, node);

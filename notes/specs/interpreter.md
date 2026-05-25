@@ -119,12 +119,12 @@ numbers as cited throughout §3 below.
 
 ### Tree-walking is centralized in shared single-pass walkers (design property)
 
-Interpreter tree traversal is centralized in a small set of shared
-walker helpers. Plugins that walk the tree do not write their own descent
-logic; they call the shared helper that matches their walk shape
-(read-only discovery, in-place replacement, in-place normalization).
-Each walk is **single-pass by design** — everything a given traversal
-needs to accomplish is done in one pass over the tree.
+Acadamark tree traversal is centralized in a small set of shared
+walker helpers. Plugins and output generators that walk the tree do not
+write their own descent logic; they call the shared helper that matches
+their walk shape (read-only discovery, in-place replacement, in-place
+normalization). Each walk is **single-pass by design** — everything a
+given traversal needs to accomplish is done in one pass over the tree.
 
 The rationale is maintainability and cohesion. Acadamark trees are not
 plain mdast: an `acadamarkTag` node's children live on `.content`, not
@@ -146,9 +146,13 @@ recorded so the trade is explicit and the design is not mistaken for an
 unconditional commitment to single-pass.
 
 The shared walkers themselves live in
-`packages/acadamark-interpreter/src/lib/` (`discover.js`,
+`packages/acadamark-core/src/walkers/` (`discover.js`,
 `walk-replace.js`, `walk-normalize.js`); their per-plugin use sites are
-called out in §3.
+called out in §3. The centralization originated as an
+interpreter-internal property and broadened to span all consumers when
+the `acadamark-core` extraction made the walkers available to other
+output generators (the forthcoming JATS export and any future target);
+the multithreading caveat above continues to apply.
 
 ---
 

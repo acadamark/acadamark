@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createRegistry, ensureRegistry } from '../../src/lib/registry.js';
+import { createRegistry, ensureRegistry } from 'acadamark-core/registry';
 
 export function run() {
   // --- assign is record-only; numberRegistry fills numbers ---

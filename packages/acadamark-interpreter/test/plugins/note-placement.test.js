@@ -23,7 +23,7 @@ import { acadamarkNotePlacement } from '../../src/plugins/note-placement.js';
 import { acadamarkNumbering, fillNumbering } from '../../src/plugins/numbering.js';
 import { acadamarkRefResolution } from '../../src/plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from '../../src/plugins/cite-resolution.js';
-import { ensureRegistry } from '../../src/lib/registry.js';
+import { ensureRegistry } from 'acadamark-core/registry';
 import { makeTag } from 'acadamark-core/tag';
 import { isAcadamarkTag } from '../../src/lib/ast-helpers.js';
 

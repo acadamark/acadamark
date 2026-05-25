@@ -28,7 +28,7 @@
 // always 1-to-1. If 1-to-N replacement becomes necessary, this contract can be
 // extended — add a note here and update the splice call below.
 
-import { isAcadamarkTag } from './ast-helpers.js';
+import { isAcadamarkTag } from '../tag.js';
 
 /**
  * Walk a node array in-place, replacing nodes that match `predicate`.

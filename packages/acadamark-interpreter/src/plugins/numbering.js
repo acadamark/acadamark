@@ -31,9 +31,10 @@
 // fillNumbering(file) (exported):
 //   - Reads acadamarkNumberingPending and sets node.computedNumber from entry.number
 
-import { ensureRegistry } from '../lib/registry.js';
+import { ensureRegistry } from 'acadamark-core/registry';
+import { discover } from 'acadamark-core/walkers/discover';
+import { ACADAMARK_CONFIG, ACADAMARK_NUMBERING_PENDING } from 'acadamark-core/file-data-keys';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
-import { discover } from '../lib/discover.js';
 
 // Maps the parser-emitted tagname to the registry type used for display labels.
 const NUMBERED_TAGNAMES = new Map([
@@ -63,7 +64,7 @@ const SECTION_TAGNAMES = ['section', 'sub-section', 'sub-sub-section'];
 export function acadamarkNumbering() {
   return (tree, file) => {
     const registry = ensureRegistry(file);
-    const config = file?.data?.acadamarkConfig ?? null;
+    const config = file?.data?.[ACADAMARK_CONFIG] ?? null;
     const pending = [];
 
     const visitors = new Map();
@@ -109,7 +110,7 @@ export function acadamarkNumbering() {
     discover(tree, visitors);
 
     if (file?.data) {
-      file.data.acadamarkNumberingPending = pending;
+      file.data[ACADAMARK_NUMBERING_PENDING] = pending;
     }
   };
 }
@@ -124,7 +125,7 @@ export function acadamarkNumbering() {
  * @param {import('vfile').VFile} file
  */
 export function fillNumbering(file) {
-  for (const { node, entry } of file?.data?.acadamarkNumberingPending ?? []) {
+  for (const { node, entry } of file?.data?.[ACADAMARK_NUMBERING_PENDING] ?? []) {
     node.computedNumber = entry.number;
   }
 }

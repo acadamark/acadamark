@@ -20,6 +20,7 @@
 // getCiteContent() something to look up with document.getElementById('ref-KEY').
 
 import { makeTag, makeInternalMarker } from 'acadamark-core/tag';
+import { ACADAMARK_CITATIONS } from 'acadamark-core/file-data-keys';
 import { isAcadamarkTag } from '../lib/ast-helpers.js';
 
 // ─── Deep-search helpers (same pattern as notes.js) ──────────────────────────
@@ -125,7 +126,7 @@ function findAuthorPlacedBibliography(treeChildren) {
  */
 export function acadamarkBibliography() {
   return (tree, file) => {
-    const citations = file?.data?.acadamarkCitations;
+    const citations = file?.data?.[ACADAMARK_CITATIONS];
 
     const authorPlaced = findAuthorPlacedBibliography(tree.children);
 

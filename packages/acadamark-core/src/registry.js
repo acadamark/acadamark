@@ -26,6 +26,9 @@
 // file.data.acadamarkRegistry, creating it on first call. Pass null/undefined
 // to get a transient registry (useful in isolated tests).
 
+import { isColonId } from './colon-id.js';
+import { ACADAMARK_REGISTRY } from './file-data-keys.js';
+
 /**
  * Create a new registry instance.
  *
@@ -67,7 +70,7 @@ export function createRegistry() {
       const id = providedId || `${type}-${t.sequence}`;
       const entry = { type, id, number: undefined, numbered, data };
       t.entries.set(id, entry);
-      if (id.includes(':')) {
+      if (isColonId(id)) {
         labelIndex.set(id, entry);
       }
       return entry;
@@ -153,8 +156,8 @@ export function createRegistry() {
  */
 export function ensureRegistry(file) {
   if (!file?.data) return createRegistry();
-  if (!file.data.acadamarkRegistry) {
-    file.data.acadamarkRegistry = createRegistry();
+  if (!file.data[ACADAMARK_REGISTRY]) {
+    file.data[ACADAMARK_REGISTRY] = createRegistry();
   }
-  return file.data.acadamarkRegistry;
+  return file.data[ACADAMARK_REGISTRY];
 }

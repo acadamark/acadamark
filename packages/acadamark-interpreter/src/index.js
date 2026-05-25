@@ -89,7 +89,7 @@ import { acadamarkCiteResolution } from './plugins/cite-resolution.js';
 import { acadamarkBibliography } from './plugins/bibliography.js';
 import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plugin.js';
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
-import { ensureRegistry } from './lib/registry.js';
+import { ensureRegistry } from 'acadamark-core/registry';
 
 export { acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { walkNormalize } from '../../src/lib/walk-normalize.js';
+import { walkNormalize } from 'acadamark-core/walkers/walk-normalize';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

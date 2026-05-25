@@ -29,7 +29,7 @@
 
 import { getContentHandler } from 'acadamark-core/dsl-registry';
 import { makeOpaqueTag } from 'acadamark-core/tag';
-import { walkNormalize } from '../lib/walk-normalize.js';
+import { walkNormalize } from 'acadamark-core/walkers/walk-normalize';
 
 // ─── Drift guards at module load ──────────────────────────────────────────────
 // Confirm contentHandler values. These are authoritative in dsl-registry.js;

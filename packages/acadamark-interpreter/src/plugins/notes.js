@@ -32,8 +32,9 @@
 //
 // acadamarkNotePlacement must be called after registry.numberRegistry() has run.
 
-import { ensureRegistry } from '../lib/registry.js';
-import { discover } from '../lib/discover.js';
+import { ensureRegistry } from 'acadamark-core/registry';
+import { discover } from 'acadamark-core/walkers/discover';
+import { ACADAMARK_NOTES_PENDING } from 'acadamark-core/file-data-keys';
 
 /**
  * Read the placement kwarg from a note node.
@@ -75,7 +76,7 @@ export function acadamarkNotes() {
     ]));
 
     if (file?.data) {
-      file.data.acadamarkNotesPending = pending;
+      file.data[ACADAMARK_NOTES_PENDING] = pending;
     }
   };
 }

@@ -135,6 +135,25 @@ export function makeOpaqueTag(
  * @param {Array|null}    [opts.content]
  * @returns {object} acadamarkTag node
  */
+/**
+ * Predicate: returns true iff `node` is an acadamarkTag node. With `name`
+ * supplied, additionally requires the node's tagname to match (string for a
+ * single tagname; array of strings for "any of these tagnames").
+ *
+ * Used by the shared walkers and by interpreter query helpers; lives in
+ * `tag.js` because it is a primitive on the canonical tag shape.
+ *
+ * @param {object|null|undefined} node
+ * @param {string|string[]} [name]
+ * @returns {boolean}
+ */
+export function isAcadamarkTag(node, name) {
+  if (!node || node.type !== 'acadamarkTag') return false;
+  if (name == null) return true;
+  if (Array.isArray(name)) return name.includes(node.tagname);
+  return node.tagname === name;
+}
+
 export function makeInternalMarker(
   tagname,
   { id = null, classes = [], kwargs = {}, content = null } = {},

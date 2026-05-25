@@ -26,8 +26,10 @@
 // label-tail of the id is used as link text: #eqn:energy → "energy".
 
 import { makeInternalMarker } from 'acadamark-core/tag';
-import { ensureRegistry } from '../lib/registry.js';
-import { walkReplace } from '../lib/walk-replace.js';
+import { ensureRegistry } from 'acadamark-core/registry';
+import { walkReplace } from 'acadamark-core/walkers/walk-replace';
+import { parseColonId } from 'acadamark-core/colon-id';
+import { ACADAMARK_CONFIG } from 'acadamark-core/file-data-keys';
 
 /**
  * Built-in prefix → display-word dictionary.
@@ -56,9 +58,9 @@ const DEFAULT_PREFIXES = {
  *   3. entry.number === null                 →  "energy"      (label-tail)
  */
 function computeRefText(id, entry, config) {
-  const colonIdx = id.indexOf(':');
-  const prefix    = colonIdx > 0 ? id.slice(0, colonIdx) : null;
-  const labelTail = colonIdx > 0 ? id.slice(colonIdx + 1) : id;
+  const parsed = parseColonId(id);
+  const prefix    = parsed ? parsed.prefix : null;
+  const labelTail = parsed ? parsed.tail   : id;
 
   if (entry.number === null) {
     // Target exists but is unnumbered — author chose -numbered. Use label-tail.
@@ -96,7 +98,7 @@ function makeRefError(targetId) {
 export function acadamarkRefResolution() {
   return (tree, file) => {
     const registry = ensureRegistry(file);
-    const config = file?.data?.acadamarkConfig;
+    const config = file?.data?.[ACADAMARK_CONFIG];
 
     function processRef(node) {
       const targetId = node.atRefs?.[0] ?? node.kwargs?.target ?? null;

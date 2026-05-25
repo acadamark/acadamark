@@ -22,7 +22,7 @@
 // (noteMap + createMarker instead of a single process callback). All three
 // now delegate here.
 
-import { isAcadamarkTag } from './ast-helpers.js';
+import { isAcadamarkTag } from '../tag.js';
 
 /**
  * Walk a node array in-place, replacing acadamarkTag nodes of a given tagname.

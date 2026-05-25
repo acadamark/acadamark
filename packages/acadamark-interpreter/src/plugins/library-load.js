@@ -25,6 +25,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Cite from 'citation-js';
+import { ACADAMARK_CONFIG, ACADAMARK_CITATIONS } from 'acadamark-core/file-data-keys';
 import { isAcadamarkTag } from '../lib/ast-helpers.js';
 
 /**
@@ -116,10 +117,10 @@ export function buildCitationIndex(tree, file, options = {}) {
 
   // Get citation style from config (default: chicago-author-date).
   const style =
-    file?.data?.acadamarkConfig?.get('citation-style') ?? 'chicago-author-date';
+    file?.data?.[ACADAMARK_CONFIG]?.get('citation-style') ?? 'chicago-author-date';
 
   file.data = file.data ?? {};
-  file.data.acadamarkCitations = {
+  file.data[ACADAMARK_CITATIONS] = {
     cite: mergedCite,
     order: [],   // filled by cite-resolution in citation-document order
     style,

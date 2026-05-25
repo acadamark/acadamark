@@ -2,18 +2,11 @@
 //
 // Query helpers for acadamarkTag nodes — the construction builders live in
 // the inward-pointing `acadamark-core/tag` module (`makeTag`, `makeOpaqueTag`,
-// `makeInternalMarker`).
+// `makeInternalMarker`, `isAcadamarkTag`). `isAcadamarkTag` is re-exported
+// here so existing interpreter-side import sites continue to work.
 
-/**
- * Return true if node is an acadamarkTag, optionally matching a specific
- * tagname (string) or one of several tagnames (string[]).
- */
-export function isAcadamarkTag(node, name) {
-  if (!node || node.type !== 'acadamarkTag') return false;
-  if (name == null) return true;
-  if (Array.isArray(name)) return name.includes(node.tagname);
-  return node.tagname === name;
-}
+export { isAcadamarkTag } from 'acadamark-core/tag';
+import { isAcadamarkTag } from 'acadamark-core/tag';
 
 /**
  * Return the section nesting depth of a node: 1 for section, 2 for

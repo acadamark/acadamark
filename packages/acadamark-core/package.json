@@ -9,7 +9,18 @@
     ".": "./src/index.js",
     "./dsl-registry": "./src/dsl-registry.js",
     "./sigil-mapping": "./src/sigil-mapping.js",
-    "./tag": "./src/tag.js"
+    "./tag": "./src/tag.js",
+    "./error-nodes": "./src/error-nodes.js",
+    "./registry": "./src/registry.js",
+    "./walkers/discover": "./src/walkers/discover.js",
+    "./walkers/walk-replace": "./src/walkers/walk-replace.js",
+    "./walkers/walk-normalize": "./src/walkers/walk-normalize.js",
+    "./colon-id": "./src/colon-id.js",
+    "./paragraph-unwrap": "./src/paragraph-unwrap.js",
+    "./file-data-keys": "./src/file-data-keys.js"
+  },
+  "scripts": {
+    "test": "node test/colon-id.test.js"
   },
   "keywords": [
     "acadamark",

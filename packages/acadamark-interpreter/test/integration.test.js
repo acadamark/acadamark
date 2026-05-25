@@ -36,7 +36,7 @@ import { acadamarkNumbering, fillNumbering } from '../src/plugins/numbering.js';
 import { acadamarkRefResolution } from '../src/plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from '../src/plugins/cite-resolution.js';
 import { acadamarkBibliography } from '../src/plugins/bibliography.js';
-import { ensureRegistry } from '../src/lib/registry.js';
+import { ensureRegistry } from 'acadamark-core/registry';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');

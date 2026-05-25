@@ -22,7 +22,8 @@
 // __cite-error.keys  = only the missing keys (or all if all missing).
 
 import { makeInternalMarker } from 'acadamark-core/tag';
-import { walkReplace } from '../lib/walk-replace.js';
+import { walkReplace } from 'acadamark-core/walkers/walk-replace';
+import { ACADAMARK_CITATIONS } from 'acadamark-core/file-data-keys';
 
 // ─── Key extraction ───────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ function makeCiteError(keys) {
  */
 export function acadamarkCiteResolution() {
   return (tree, file) => {
-    const citations = file?.data?.acadamarkCitations;
+    const citations = file?.data?.[ACADAMARK_CITATIONS];
     if (!citations) return; // no library loaded → no-op
 
     const { cite, order, style } = citations;

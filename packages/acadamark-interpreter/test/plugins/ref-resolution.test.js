@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { acadamarkRefResolution } from '../../src/plugins/ref-resolution.js';
-import { ensureRegistry } from '../../src/lib/registry.js';
+import { ensureRegistry } from 'acadamark-core/registry';
 import { makeTag } from 'acadamark-core/tag';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

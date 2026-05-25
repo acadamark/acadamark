@@ -9,6 +9,8 @@
 // has no consumers; the registry is established so they have somewhere to read
 // from when they are implemented.
 
+import { ACADAMARK_CONFIG } from 'acadamark-core/file-data-keys';
+
 /**
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
@@ -29,7 +31,7 @@ export function acadamarkConfigDiscovery() {
 
     if (file) {
       file.data ??= {};
-      file.data.acadamarkConfig = config;
+      file.data[ACADAMARK_CONFIG] = config;
     }
   };
 }

@@ -9,6 +9,7 @@
 // Schema-mapped attributes (align, width, type) are handled by the same
 // buildProperties logic used in the schema dispatcher.
 
+import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { extractPlainText } from '../lib/ast-helpers.js';
 
 /**
@@ -36,15 +37,11 @@ function buildFigureProperties(node, vocab) {
  * <figcaption>. Unwraps a single paragraph (the typical case for pipe text).
  */
 function buildCaptionHastNodes(state, node) {
-  const content = node.content ?? [];
-
-  // Unwrap single paragraph — the pipe content is prose, not a block container.
-  let nodes;
-  if (content.length === 1 && content[0]?.type === 'paragraph') {
-    nodes = content[0].children ?? [];
-  } else {
-    nodes = content;
-  }
+  // Figcaption pipe content is always prose-like, so unconditionally unwrap a
+  // single paragraph — this is the figure handler's per-call gate (vs the
+  // schema dispatcher's vocab-driven gate; the shared mechanic lives in
+  // acadamark-core/paragraph-unwrap).
+  const nodes = unwrapSingleParagraph(node.content ?? []);
 
   return nodes.flatMap(child => {
     const h = state.one(child, node);
