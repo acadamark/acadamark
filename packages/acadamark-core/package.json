@@ -1,0 +1,17 @@
+{
+  "name": "acadamark-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The inward-pointing shared foundation that acadamark's parser, interpreter, and future output generators depend on. Filesystem-free and browser-safe by design. Depends on nothing internal.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./dsl-registry": "./src/dsl-registry.js",
+    "./sigil-mapping": "./src/sigil-mapping.js"
+  },
+  "keywords": [
+    "acadamark",
+    "core"
+  ]
+}

@@ -25,7 +25,7 @@
  */
 
 import { parse as peggyParse } from './generated/parser.js'
-import { getContentHandler } from './dsl-registry.js'
+import { getContentHandler } from 'acadamark-core/dsl-registry'
 
 // Node types that the built-in onexitlineending treats as containers for
 // end-of-line characters. This list mirrors mdast-util-from-markdown's

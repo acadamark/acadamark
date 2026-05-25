@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "acadamark-core": "*",
     "citation-js": "^0.7.22",
     "hast-util-from-html": "^2.0.3",
     "hast-util-to-html": "^9.0.0",

@@ -27,7 +27,7 @@
 //   paths fit as entries with more complex predicate/normalize bodies — no
 //   structural change to the pass.
 
-import { getContentHandler } from '../../../remark-acadamark/src/dsl-registry.js';
+import { getContentHandler } from 'acadamark-core/dsl-registry';
 import { walkNormalize } from '../lib/walk-normalize.js';
 
 // ─── Drift guards at module load ──────────────────────────────────────────────

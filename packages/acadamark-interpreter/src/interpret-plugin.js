@@ -32,7 +32,7 @@ import {
 } from './handlers/notes.js';
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler } from './handlers/cite.js';
-import { resolveVocabKey } from 'remark-acadamark/sigil-mapping';
+import { resolveVocabKey } from 'acadamark-core/sigil-mapping';
 
 // Internal node types created by the notes plugin — they have no vocabulary
 // entries, so they are dispatched here before the vocabulary lookup.

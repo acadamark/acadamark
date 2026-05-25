@@ -3,7 +3,7 @@
  */
 
 import { markdownLineEnding } from 'micromark-util-character'
-import { DSL_REGISTRY } from './dsl-registry.js'
+import { DSL_REGISTRY } from 'acadamark-core/dsl-registry'
 
 const LT = 60         // <
 const GT = 62         // >

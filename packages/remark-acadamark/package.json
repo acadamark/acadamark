@@ -5,8 +5,7 @@
   "type": "module",
   "main": "src/index.js",
   "exports": {
-    ".": "./src/index.js",
-    "./sigil-mapping": "./src/sigil-mapping.js"
+    ".": "./src/index.js"
   },
   "scripts": {
     "build:grammar": "node build/compile-grammar.js",
@@ -15,6 +14,7 @@
     "demo": "node test/demo.js"
   },
   "dependencies": {
+    "acadamark-core": "*",
     "peggy": "^4.2.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",

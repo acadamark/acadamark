@@ -291,7 +291,7 @@ Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabula
 
 The map currently uses identity keys (tag name = handler name). A future `<equation>` tag could map to `"math"` without changing the handler implementation.
 
-**Implementation note.** The registry is a `Map<string, string>` exported from `src/dsl-registry.js`. The tokenizer uses `.has()` to gate long-form eligibility; `getContentHandler()` returns the mapped handler name, or `"default"` for unregistered tags (the fallback is never reached in practice since unregistered tags are rejected at the tokenizer level). When `packages/layer1-vocabulary/` is set up (Slice 5+), the map migrates there as a declared property of each long-form element spec; the parser imports it. Comments in `src/dsl-registry.js` note the intended migration.
+**Implementation note.** The registry is a `Map<string, string>` exported from `packages/acadamark-core/src/dsl-registry.js`. The tokenizer uses `.has()` to gate long-form eligibility; `getContentHandler()` returns the mapped handler name, or `"default"` for unregistered tags (the fallback is never reached in practice since unregistered tags are rejected at the tokenizer level). When `packages/layer1-vocabulary/` is set up (Slice 5+), the map migrates there as a declared property of each long-form element spec; the parser imports it. Comments in `packages/acadamark-core/src/dsl-registry.js` note the intended migration.
 
 The qualifying-tag pattern (`<category language | content>`) means a generic category tag can declare its content's language as the first positional. `<table csv | ...>` and `<table tsv | ...>` are valid, even though `table` itself is not necessarily a DSL tag.
 
