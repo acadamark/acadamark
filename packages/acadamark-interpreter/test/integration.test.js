@@ -25,7 +25,7 @@ import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 
 import { acadamarkInterpreter, acadamarkNormalizeMarkdown, acadamarkTagHandler, createAcadamarkTagHandler } from '../src/index.js';
-import remarkRecursiveContent from '../../remark-acadamark/src/recursive-content.js';
+import remarkRecursiveContent from 'remark-acadamark/recursive-content';
 import { acadamarkConfigDiscovery } from '../src/plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.js';
 import { acadamarkSectionNesting } from '../src/plugins/section-nesting.js';

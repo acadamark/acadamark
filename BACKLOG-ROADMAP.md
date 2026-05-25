@@ -111,6 +111,16 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] **Have `integration.test.js` import the real pipeline from
   `index.js` instead of hand-mirroring it** `[tests/build]`
   *(`formerly AUD-17`)*
+- [ ] **Fix the `#`/`##`/`###` hash-sigil dispatch — they currently
+  fall through to the unknown-element span** `[interpreter]` —
+  spec-documented hash-sigil heading form is silently unsupported
+  (couple with the opacity-discrepancy bug)
+- [ ] **Fix hash-sigil `isOpaqueContent` discrepancy — spec says
+  `false`, grammar emits `true`** `[parser]` — couple with the
+  hash-sigil dispatch bug above
+- [ ] **Update `shorthand-syntax.md` §"What the parser produces" to
+  list the full 12-field shape (`atRefs` and `selfClosing` are
+  spec-omitted today)** `[specs/docs]`
 
 #### Enhancements
 
@@ -183,6 +193,22 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] **Discuss the backlog's item-counting convention** (when grouped
   checklist lines count as one item vs N) `[specs/docs — backlog
   organization]`
+- [ ] **Discuss hardening the colon-id convention from
+  example-by-implication into an explicit spec rule** —
+  define `prefix:tail` precisely (non-empty prefix) and audit every
+  site that applies the convention for consistency `[cross-cutting]`
+- [ ] **Discuss the sigil as a first-class category** — a canonical
+  sigil registry recording what each sigil is shorthand for and how
+  author-requested sigils are added, reconciled with the DSL registry
+  and `sigil-mapping`. Cross-references the hash-sigil dispatch and
+  opacity bugs above (which are concrete instances in the same area)
+  `[cross-cutting]`
+- [ ] **Discuss auditing documented language features against
+  test-fixture coverage** — a documented spec example (the
+  hash-sigil heading in `shorthand-syntax.md` Example 9) had zero
+  fixture coverage, which is how the `#`-sigil bug stayed latent;
+  decide whether and how to systematically close such gaps
+  `[tests/build]`
 
 ### Architecture tier
 
@@ -463,6 +489,51 @@ path: have the integration test import and use the real pipeline
 assembly from `index.js` rather than rebuilding it. Small,
 well-bounded cleanup; a good early candidate. Severity: medium —
 maintenance hazard, not a current bug. *(`formerly AUD-17`)*
+
+**Fix the `#`/`##`/`###` hash-sigil dispatch** `[interpreter]`. The
+parser's `SigilTag1`/`SigilTag2`/`SigilTag3` rules emit literal `"#"`,
+`"##"`, `"###"` as the `acadamarkTag` node's tagname — matching the
+established sigil pattern (`$`/`$$`/`` ` ``/` ``` ` likewise emit
+literal sigils as tagname). But `acadamark-core/src/sigil-mapping.js`'s
+`PARSER_TO_VOCAB` only maps the dollar and backtick sigils to vocabulary
+keys; the hash sigils have no entry. `resolveVocabKey('#')` therefore
+returns `'#'` unchanged, `vocabulary.get('#')` finds nothing, and the
+interpreter produces a `<span data-acadamark-unknown="#">…</span>`
+fallback for any `<# heading #>`. Spec-documented hash-sigil heading
+form (`shorthand-syntax.md` Example 9) is silently unsupported. The bug
+is **latent today** — no test fixture exercises `<#>`/`<##>`/`<###>`,
+which is how it stayed undetected (see also the coverage-audit
+Discussion item below). Confirmed by Slice 4 Phase 0's Q7 investigation,
+verdict (c). Likely fix: add entries to `PARSER_TO_VOCAB` (`'#' →
+'section'`, `'##' → 'sub-section'`, `'###' → 'sub-sub-section'`); but
+**couple this fix to the opacity-discrepancy item below** — both belong
+to the hash-sigil family and should be done as one coherent piece.
+
+**Fix hash-sigil `isOpaqueContent` discrepancy** `[parser]`.
+`shorthand-syntax.md` L563 says hash sigils are
+prose-bearing with `contentHandler: 'default'` and
+`isOpaqueContent: false`; the grammar at
+`packages/remark-acadamark/grammar/acadamark.peggy` lines 113–144
+explicitly emits `isOpaqueContent: true` for all three hash-sigil
+rules. One side is wrong. Surfaced as the adjacent finding alongside
+Slice 4 Phase 0's Q7. Couple this fix to the hash-sigil dispatch
+item above — same family, same coherent piece of work, likely the
+same slice.
+
+**Update `shorthand-syntax.md` §"What the parser produces" to list
+the full 12-field tag shape** `[specs/docs]`. The spec passage at
+§"What the parser produces" enumerates 10 short-form fields on the
+`acadamarkTag` node (`type`, `form`, `tagname`, `positional`,
+`booleans`, `kwargs`, `id`, `classes`, `content`, `isOpaqueContent`),
+but the parser's grammar `makeNode` factory at
+`packages/remark-acadamark/grammar/acadamark.peggy` produces 12 — the
+spec is silent on `atRefs` and `selfClosing`. Surfaced as a
+pre-existing spec gap during Slice 2 (the spec was the named authority
+for the `acadamarkTag` builders, and the slice had to fall back on the
+grammar's ground-truth output for the missing fields). Small fix:
+add the two fields to the spec passage with their defaults
+(`atRefs: []`, `selfClosing: false`) and a one-line note on what each
+encodes. Not a code change.
 
 ### Enhancements
 
@@ -914,6 +985,57 @@ settles a rule: every checklist line counts as one item regardless of
 how many constituents it has, *or* every grouped line expands to its
 constituents in the count, *or* some other rule. Filed under the
 discussion-is-work rule (`CONTRIBUTING.md`).
+
+**Discuss hardening the colon-id convention into an explicit spec
+rule** `[cross-cutting]`. Today the colon-id convention is defined by
+example: DESIGN.md L254 describes cross-references as `type:name` form
+with examples (`fig:scatter`, `eqn:model`, `sec:methods`), and
+interpreter.md §3.9 describes "the id prefix" being used for reference
+text — but the spec never names the exact rule (`prefix:tail` with
+non-empty prefix). Slice 3 of the acadamark-core extraction arc
+surfaced this gap when consolidating two pre-existing ad-hoc inline
+checks that disagreed (`registry.js` used `id.includes(':')` — would
+have indexed a leading-colon `:foo`; `ref-resolution.js` used
+`indexOf(':') > 0` — correctly rejected `:foo`). The consolidation
+adopted the spec-correct semantics (a flagged spec-conformance fix at
+the registry site) and pinned them with unit tests, but the spec
+itself still defines the rule only by example. This discussion item:
+add an explicit colon-id rule to a spec (DESIGN.md or `interpreter.md`
+§3.9), and audit every site that applies the convention for
+consistency against the explicit rule. Filed under the
+discussion-is-work rule.
+
+**Discuss the sigil as a first-class category** `[cross-cutting]`.
+Acadamark uses a small set of sigils — `#`/`##`/`###` for sections,
+`$`/`$$` for math, `` ` ``/` ``` ` for code — as non-alphabetic
+shorthands for Layer 1 constructs. The DSL registry
+(`acadamark-core/dsl-registry`) records what content handler each
+sigil dispatches to; `acadamark-core/sigil-mapping` records what
+vocabulary key each sigil resolves to. These two registries live
+side by side without a documented relationship, and the hash-sigil
+bugs filed above are concrete failures at exactly the seam between
+them (the parser emits a sigil tagname; the registries don't fully
+agree on what to do next). This discussion item: define the sigil as
+an explicit first-class concept — a canonical registry recording, per
+sigil, its parser tagname, its content handler, its vocabulary key,
+its opacity expectation, and how author-requested new sigils are
+added — and reconcile the existing `dsl-registry` and `sigil-mapping`
+under that explicit model. Cross-references the two hash-sigil Bug
+items above (concrete instances in the same area). Filed under the
+discussion-is-work rule.
+
+**Discuss auditing documented language features against test-fixture
+coverage** `[tests/build]`. The hash-sigil heading is documented in
+the spec (`shorthand-syntax.md` Example 9), described as a fully
+working form — but zero test fixtures exercise `<#>`/`<##>`/`<###>`.
+That coverage gap is why the hash-sigil dispatch bug stayed latent
+through the acadamark-core extraction arc and was only discovered
+through static reading during the Slice 4 Phase 0's Q7 investigation.
+This discussion item: decide whether and how to systematically audit
+spec-documented language features against the test-fixture set, and
+close gaps. Options include — a one-time audit slice; a standing rule
+that every spec example must come with a fixture; a periodic
+coverage-against-spec sweep. Filed under the discussion-is-work rule.
 
 ---
 

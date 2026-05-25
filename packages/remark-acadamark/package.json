@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./recursive-content": "./src/recursive-content.js"
   },
   "scripts": {
     "build:grammar": "node build/compile-grammar.js",
@@ -15,10 +16,12 @@
   },
   "dependencies": {
     "acadamark-core": "*",
-    "peggy": "^4.2.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "peggy": "^4.2.0"
   },
   "keywords": [
     "remark",

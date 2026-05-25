@@ -71,7 +71,7 @@ import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 // Relative path import: remark-acadamark does not re-export this module via
 // its package exports field; we access it directly within the workspace.
-import remarkRecursiveContent from '../../remark-acadamark/src/recursive-content.js';
+import remarkRecursiveContent from 'remark-acadamark/recursive-content';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 import rehypeFormat from 'rehype-format';

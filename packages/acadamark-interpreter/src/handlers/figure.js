@@ -10,27 +10,12 @@
 // buildProperties logic used in the schema dispatcher.
 
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
+import { buildProperties } from '../lib/build-properties.js';
 import { extractPlainText } from '../lib/ast-helpers.js';
 
-/**
- * Build the HTML properties object for the <figure> element, applying vocab
- * attribute mappings for non-handler kwargs (align, width, type, id, class).
- */
-function buildFigureProperties(node, vocab) {
-  const props = {};
-
-  if (node.id) props.id = node.id;
-  if (node.classes?.length) props.className = node.classes;
-
-  const kwargDefs = vocab.acadamark_attributes?.kwargs ?? {};
-  for (const [key, value] of Object.entries(node.kwargs ?? {})) {
-    const def = kwargDefs[key];
-    if (def?.maps_to && def.handled_by !== 'handler') {
-      props[def.maps_to] = value;
-    }
-  }
-  return props;
-}
+// The figure handler uses the shared `buildProperties` helper from
+// `lib/build-properties.js` — see that file's comment for the deferred
+// lift-to-acadamark-core question coupled to JATS export.
 
 /**
  * Convert the figure's pipe content to hast child nodes for use in
@@ -63,7 +48,7 @@ export function figureHandler(state, node, vocab) {
   const src = node.kwargs?.src ?? null;
   const altKwarg = node.kwargs?.alt ?? null;
 
-  const properties = buildFigureProperties(node, vocab);
+  const properties = buildProperties(node, vocab);
   const captionHastNodes = buildCaptionHastNodes(state, node);
   const children = [];
 

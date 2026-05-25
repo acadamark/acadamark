@@ -20,6 +20,7 @@
 
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { VOCABULARY } from 'layer1-vocabulary';
+import { buildProperties } from './lib/build-properties.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';
 import { mathHandler } from './handlers/math.js';
@@ -164,27 +165,9 @@ function convertContent(state, node, vocab) {
 }
 
 // ─── Attribute mapping ────────────────────────────────────────────────────────
-
-/**
- * Build an HTML properties object from the node's id, classes, and kwargs,
- * using the vocabulary's acadamark_attributes mappings.
- */
-function buildProperties(node, vocab) {
-  const props = {};
-
-  if (node.id) props.id = node.id;
-  if (node.classes?.length) props.className = node.classes;
-
-  const kwargDefs = vocab.acadamark_attributes?.kwargs ?? {};
-  for (const [key, value] of Object.entries(node.kwargs ?? {})) {
-    const def = kwargDefs[key];
-    if (def?.maps_to && def.handled_by !== 'handler') {
-      props[def.maps_to] = value;
-    }
-  }
-
-  return props;
-}
+// The shared `buildProperties` helper lives in `lib/build-properties.js` and
+// is imported above; both the schema dispatcher here and the figure handler
+// call it. See that file for the deferred-lift-to-acadamark-core note.
 
 // ─── Unknown-tag fallback ─────────────────────────────────────────────────────
 

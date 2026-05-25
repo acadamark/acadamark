@@ -239,6 +239,10 @@ The unified ecosystem is what acadamark uses. The project's surface area shrinks
 
 `rehype-acadamark-to-jats` takes a Layer 1 hast tree and produces JATS XML. Most mappings are 1:1 element renames; a minority require restructuring. For example, acadamark's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but acadamark's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The acadamark-to-JATS mapping table is the heart of the plugin, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes acadamark a credible scholarly-publishing target rather than just "another web markdown."
 
+### Package structure
+
+The project is organized as an npm workspace with four packages (a fifth, `acadamark-jats-export`, is planned). The dependency graph points inward through a shared `acadamark-core` package that depends on nothing internal; the parser, the interpreter, the JATS exporter (when it arrives), and `layer1-vocabulary` are independent consumers of core. The build/run-time seam is also the browser-safety boundary — `acadamark-core` and the shippable runtime code paths are filesystem-free by design, so the eventual client-side build does not need to redraw the package boundaries. See `notes/specs/acadamark-core.md` for the full architecture-decision record including the dependency diagram, the per-module inventory, the seam definition, and the standing client-side build constraints rule.
+
 ## Design tensions and accepted tradeoffs
 
 **Shorthand is less readable than plain markdown.** Acknowledged. The shorthand is more readable than HTML and more readable than markdown plus the trailing-attribute extensions that academic markdown flavors require. Where plain markdown suffices, acadamark uses it. The shorthand is reached for only when needed.

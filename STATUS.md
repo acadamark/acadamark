@@ -45,9 +45,10 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 
 ### Components
 
+- [x] `acadamark-core` — the inward-pointing shared foundation (`fs`-free, browser-safe)
 - [x] `remark-acadamark` — the shorthand parser (Peggy + micromark hybrid)
 - [x] `acadamark-interpreter` — the full mdast→HTML interpreter pipeline
-- [x] `layer1-vocabulary` — 66 per-element vocabulary entries
+- [x] `layer1-vocabulary` — 66 per-element vocabulary entries (build-time-generated `data.js` ships)
 - [x] Example documents — 13 fixture `.acm` files exercising the system end to end
 
 For the current test status, run `npm run verify` in `packages/acadamark-interpreter`.
@@ -224,3 +225,50 @@ that). One line gets added every few months, not every slice.
   including at the moment the backlog item was written. Item closed as
   misdiagnosis at filing; no spec edit needed (§10.5 is already correct);
   surfaced by the packages/ reconciliation — interpreter cluster Phase 0.
+- **2026-Q2 — `acadamark-core` extraction arc complete.** Five slices
+  (`0a4523a`, `2fabdf5`, `7cc6002`, `442202c`, and this slice's commit)
+  extracted an inward-pointing `acadamark-core` package and reorganized
+  the workspace dependency graph around it. The arc resolved the
+  cross-package DRY audit's Bin A findings (Bin A.1 — the canonical
+  `acadamarkTag` shape was restated with field-drift across 12
+  hand-construction sites; Bin A.2 — the HTML attribute-mapper was
+  duplicated in two interpreter sites). It split the Layer 1 vocabulary
+  into a build-time generator and a committed, browser-safe, `fs`-free
+  run-time data module, deleting the runtime `loadVocabulary` `fs` loader.
+  It drew the build/run-time seam so it doubles as the browser-safety
+  boundary — the package boundaries are now drawn to enable the future
+  client-side build without redrawing them. Architecture-decision record
+  at `notes/specs/acadamark-core.md` (includes the dependency diagram,
+  per-module inventory, build/run-seam definition, and the standing
+  client-side build constraints rule). T2-2's walker centralization
+  preserved and broadened from interpreter-internal to package-spanning.
+  Slice 4 was the arc's highest-risk step (the vocabulary split) and got
+  its own Phase 0; an explicit equivalence-check test (loaded both ways,
+  asserted deep-equal across every key) gated the consumer switch
+  before the old loader was removed. Snapshot tests passed unchanged at
+  every slice. Three traceability annotations recorded here because
+  `BACKLOG-ROADMAP.md` is open-work-only: (i) the colon-id
+  spec-conformance fix at `registry.js` in Slice 3 — leading-colon ids
+  (`:foo`) are no longer indexed in the label index, matching the spec's
+  `type:name` convention, the old behavior was the bug, 17 dedicated
+  unit tests pin the new behavior; (ii) `acadamark-core/src/error-nodes.js`
+  exports `makeParseError` / `makeTagError` builders that intentionally
+  have zero callers today — the JS-side error-node sites are in-place
+  mutations of an existing acadamarkTag stub (per the spec's "fields
+  retained" long-form rule), not fresh constructions; the builders exist
+  ahead of their consumers (the forthcoming parser-error renderer; JATS
+  export's error handling), so a future reader should not "tidy away"
+  apparently-unused exports; (iii) the deleted `loadVocabulary` loader
+  emitted a spurious shorthand-alias self-conflict warning from
+  iterating a map while mutating it — the replacement generator
+  iterates primary entries only and does not reproduce the quirk; the
+  noise is gone with the loader. Six new backlog items were filed at
+  arc close (three Bugs for the `#`-sigil dispatch, the hash-sigil
+  opacity discrepancy, and the `shorthand-syntax.md` 12-vs-10 tag-field
+  gap; three Discussions for colon-id hardening, sigil-as-first-class-
+  category, and documented-but-unfixtured coverage auditing). The arc's
+  one outstanding deferred question — whether the HTML attribute-mapper
+  iteration shape lifts to `acadamark-core` as a generic
+  `mapAttributes(node, vocab, emit)` API — is recorded in the ADR; the
+  lift waits for JATS export so the API is designed against a real
+  second consumer.

@@ -152,7 +152,9 @@ called out in §3. The centralization originated as an
 interpreter-internal property and broadened to span all consumers when
 the `acadamark-core` extraction made the walkers available to other
 output generators (the forthcoming JATS export and any future target);
-the multithreading caveat above continues to apply.
+the multithreading caveat above continues to apply. See
+`notes/specs/acadamark-core.md` for the architecture-decision record
+covering this broadening and the package boundaries it sits within.
 
 ---
 
