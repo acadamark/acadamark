@@ -260,7 +260,7 @@ has nothing to do (no markdown-form nodes are produced).
 first; it is "planned, not yet specified." A design step precedes the code.
 
 **DSL handlers — DF-8, DF-9, DF-10, DF-11 (grouped).** `<csv>`/`<tsv>` standalone
-(DF-8, AUD-05/07); `<mermaid>`/`<abc>` (DF-9); math environments
+(DF-8, AUD-07); `<mermaid>`/`<abc>` (DF-9); math environments
 `<matrix>`/`<cases>`/`<align>`/`<eqnarray>` (DF-10); `<theorem>` handler (DF-11a).
 **Treat as one body of work, not individual items** — each is "write a handler,"
 all additive, none blocks anything. Note DF-10 (the math environments) is the
@@ -695,11 +695,11 @@ asset-pipeline findings, both low-priority.
   early candidate. Severity: medium — maintenance hazard, not a
   current bug.
 
-**Coordinate with AUD-05 / DF-8 — AUD-07 (formerly).**
+**Coordinate with DF-8 — AUD-07 (formerly).**
 `packages/layer1-vocabulary/elements/table.md` includes a shorthand
 example using `<csv | name,price\n...>`. This form relies on the
 `<csv>` shortcut tag, which is registered in DSL_REGISTRY but not yet
-implemented (AUD-05 / DF-8). The example will mislead authors. Fix:
+implemented (DF-8). The example will mislead authors. Fix:
 remove or mark the `<csv>` example as "planned" until the shortcut tag
 lands.
 
