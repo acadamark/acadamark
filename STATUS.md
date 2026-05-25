@@ -308,3 +308,51 @@ that). One line gets added every few months, not every slice.
   was not in scope and remains opt-in scoping work; the verification
   did not surface a missing-construct concern for the constructs
   currently fixture-covered.
+- **2026-Q2 — mechanical-fix batch (4 closed, 1 pulled).** A batch
+  slice cleared four no-decision backlog items and pulled a fifth as
+  decision-laden: (1) **Stale `related_plugins` plugin names in
+  `cite.md`/`ref.md`/`note.md`** (`formerly AUD-24`) — verification
+  found all three `name:` fields already correct
+  (`acadamarkCiteResolution`, `acadamarkRefResolution`,
+  `acadamarkNotes`) and the prior "rehype plugin" miscategorization
+  in `ref.md` no longer present; closed as already-resolved at code
+  level (stale backlog entry — same pattern as the Layer 0
+  verifications). (2) **`shorthand-syntax.md` §"What the parser
+  produces" 10→12 fields** — added `atRefs: []` and
+  `selfClosing: false` to the spec passage, with defaults verified
+  against the parser's grammar `makeNode` factory (the same
+  ground-truth source the Slice 2 builders used); added a defaults
+  note for clarity. Spec only. (3) **`table.md`'s `<csv | …>`
+  example marked planned** (`formerly AUD-07`) — annotated both the
+  YAML examples block and the prose "CSV (or TSV, JSON)" section
+  with explicit "Planned — the standalone `<csv>` handler is not yet
+  implemented" markers, preserving the examples as documentation of
+  intended form while removing the trap that authors would assume
+  `<csv>` works today. Cross-references the qualifying form
+  `<table csv | ...>` (which DOES work today) as the current path.
+  Vocabulary `data.js` regenerated and committed (the example text
+  is carried into the generated module); pretest staleness guard
+  confirmed in-sync. (4) **Double KaTeX CSS injection**
+  (`formerly AUD-19`) — verification of the rendered `document-5`
+  HTML found exactly one KaTeX `<style>` block (L848–L849,
+  `font-family:KaTeX_AMS`); the second `<style>` block at L850–L891
+  is the document fonts CSS (Inter / Source Code Pro,
+  `font-family: 'Inter'`), not a second KaTeX block. The backlog
+  entry's "double KaTeX" description was either a misdiagnosis at
+  filing or fixed by an earlier slice without closing the item;
+  closed as already-resolved at code level. (5) **`integration.test.js`
+  hand-mirrored pipeline** (`formerly AUD-17`) — pulled from batch.
+  Comparison showed the hand-mirror is currently identical to the
+  real `index.js` pipeline (no drift today), but making the test
+  import the real pipeline requires a design ruling: the mirror
+  exists specifically so the test can capture intermediate hast for
+  snapshot inspection, which the real pipeline does not expose
+  through unified's standard API; three options identified
+  (extend interpreter to expose hast via file.data; refactor compile
+  step into an importable function; drop hast snapshots). Item stays
+  open with the finding recorded; awaits ruling. The slice's escape
+  hatch fired as designed. Two items in this batch (1 and 4) turned
+  out to be stale backlog entries — already resolved in code — which
+  is itself useful information about the AUD-era backlog hygiene; no
+  unrecorded code changes were the cause for either (the changes
+  predate this session's tracked history).

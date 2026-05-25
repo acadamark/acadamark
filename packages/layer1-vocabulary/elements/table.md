@@ -98,9 +98,18 @@ shorthand_examples:
         </tbody>
       </table>
     notes: |
-      The <csv> DSL engine produces a table from CSV source. See the
-      <csv> vocabulary entry for details on engine attributes (header
-      control, alignment, etc.).
+      **Planned — the `<csv>` standalone-handler is not yet implemented**
+      (it is registered in `acadamark-core/dsl-registry` but no handler
+      exists yet; an authored `<csv | ...>` today falls through to the
+      unknown-element fallback). The example is preserved here as
+      documentation of the intended form. Today's working CSV authoring
+      path is the qualifying form: `<table csv | ... >` — see the
+      table-with-data-format examples below and the DSL-handlers
+      backlog item.
+
+      When implemented, the `<csv>` DSL engine will produce a table
+      from CSV source. See the `<csv>` vocabulary entry for details on
+      engine attributes (header control, alignment, etc.).
   - source: |
       <table #revenue type=results>
         <caption | Quarterly revenue>
@@ -149,7 +158,7 @@ The element is HTML-native and matches HTML5's semantic intent. Most authors wil
 
 Simple, readable in source, handles most tables in academic writing. The pipe-and-dash syntax produces a complete table including header row.
 
-**CSV (or TSV, JSON).**
+**CSV (or TSV, JSON).** **Planned — the standalone `<csv>` / `<tsv>` / `<json>` handlers are not yet implemented.** The intended form:
 
 ```
 <csv | name,price
@@ -158,7 +167,7 @@ bar,2
 >
 ```
 
-Use when the data exists as CSV/TSV/JSON. The engine handles the conversion to a table. See the `<csv>` vocabulary entry for details on engine-specific attributes (header control, alignment, etc.).
+When implemented, this will be the path used when the data exists as CSV / TSV / JSON; the engine will handle the conversion to a table. See the `<csv>` vocabulary entry for details on engine-specific attributes (header control, alignment, etc.). Today, the working path for CSV data is the qualifying form `<table csv | name,price\n...>` (see the "Explicit `<table>`" subsection below) — this is the standard `<table>` element with `csv` declared as the data format, and the table handler parses it via the same csv engine. The standalone `<csv>` shortcut and the qualifying `<table csv | ...>` form converge to the same parsed table; only the authoring shorthand differs.
 
 **Explicit `<table>`.**
 

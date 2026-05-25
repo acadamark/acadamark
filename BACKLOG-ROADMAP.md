@@ -100,15 +100,11 @@ the current code and all confirmed closed (see the STATUS milestone).
   *(`formerly PG-8, PG-9, PG-11`)*
 - [ ] **Stop `<config>` silently accepting metadata kwargs that belong
   in `<meta>`** `[interpreter]` *(`formerly AUD-13`)*
-- [ ] **Fix double KaTeX CSS injection in math documents**
-  `[interpreter]` *(`formerly AUD-19`)*
-- [ ] **Fix stale `related_plugins` plugin names in three vocabulary
-  entries** `[vocab]` *(`formerly AUD-24`)*
-- [ ] **Update `table.md`'s `<csv | …>` example to mark it planned
-  until the DSL handlers land** `[specs/docs]` *(`formerly AUD-07`)*
-- [ ] **Have `integration.test.js` import the real pipeline from
-  `index.js` instead of hand-mirroring it** `[tests/build]`
-  *(`formerly AUD-17`)*
+- [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
+  shared assembly imported from `index.js`** `[tests/build]` — pipeline
+  is currently identical to the real assembly (no drift), but the rewire
+  needs a design decision on how the test captures intermediate hast for
+  snapshot inspection (today via manual mirror) *(`formerly AUD-17`)*
 - [ ] **Fix the `#`/`##`/`###` hash-sigil dispatch — they currently
   fall through to the unknown-element span** `[interpreter]` —
   spec-documented hash-sigil heading form is silently unsupported
@@ -116,9 +112,6 @@ the current code and all confirmed closed (see the STATUS milestone).
 - [ ] **Fix hash-sigil `isOpaqueContent` discrepancy — spec says
   `false`, grammar emits `true`** `[parser]` — couple with the
   hash-sigil dispatch bug above
-- [ ] **Update `shorthand-syntax.md` §"What the parser produces" to
-  list the full 12-field shape (`atRefs` and `selfClosing` are
-  spec-omitted today)** `[specs/docs]`
 
 #### Enhancements
 
@@ -255,25 +248,12 @@ Equally good next picks; no designated top pick. The shortlist is
 fluid — refresh as priorities shift without disturbing the structure
 above.
 
-- **The Layer 0 verification group** — four small code-checks that
-  each probably close their respective item; a single grouped slice
-  can run all four. Closing them visibly tightens the open-work
-  surface.
-
-- **Have `integration.test.js` import the real pipeline from
-  `index.js`** *(`formerly AUD-17`)*. A safety check that can silently
-  certify a broken pipeline as correct — a hole in a verification
-  mechanism, demonstrated by four recurrences (R3a / R3b / R4 / G1b).
-  Small, well-bounded; high priority.
-
-- **Fix double KaTeX CSS injection in math documents**
-  *(`formerly AUD-19`)*. Concentrated change in the asset-injection
-  path in `packages/acadamark-interpreter/src/index.js`. ~370 KB
-  wasted per math document; no rendering impact.
-
-- **Fix stale `related_plugins` plugin names in three vocabulary
-  entries** *(`formerly AUD-24`)*. Small live-file fix in three
-  vocabulary entries; no code change.
+- **Replace `integration.test.js`'s hand-mirrored pipeline with a
+  shared assembly** *(`formerly AUD-17`)*. The hand-mirror is
+  currently identical to the real pipeline (no drift), but the rewire
+  needs a design ruling on how the test captures intermediate hast for
+  snapshot inspection without manually rebuilding the pipeline. See the
+  detailed entry below for the three options.
 
 - **Make `<ref>` honor its parsed attributes**
   *(`formerly PG-3, PG-4, PG-5`)*. One slice scope — make `<ref>`
@@ -397,51 +377,27 @@ specs should clearly distinguish `<meta>` (document metadata) from
 that produces no visible output. Touches DD-3 in `DESIGN.md` (the
 `<meta>` vs `<config>` boundary). *(`formerly AUD-13`)*
 
-**Fix double KaTeX CSS injection in math documents** `[interpreter]`.
-Documents containing math (e.g. `document-5`, `document-6`) carry the
-KaTeX stylesheet **twice** — a small block (~12 KB) and the full
-block (~370 KB), as two separate `<style>` elements. Math-free
-documents have it once. No appearance impact. Fix path: in the
-asset-injection path in
-`packages/acadamark-interpreter/src/index.js`, identify where KaTeX
-CSS is injected and guard against double-injection (e.g. check
-whether a KaTeX `<style>` block is already present before appending
-another). Severity: medium — wasted bytes, no rendering impact.
-*(`formerly AUD-19`)*
-
-**Fix stale `related_plugins` plugin names in three vocabulary
-entries** `[vocab]`. Three vocabulary entries in
-`packages/layer1-vocabulary/elements/` have `related_plugins` sections
-naming plugins that no longer match the implemented names. `cite.md`
-says `acadamarkCitationResolution` (actual: `acadamarkCiteResolution`).
-`ref.md` says `acadamarkCrossReferenceResolution` (actual:
-`acadamarkRefResolution`) and calls it a "rehype plugin" when it runs
-as an mdast plugin. `note.md` says `acadamarkNoteNumbering` (actual:
-`acadamarkNotes`; numbering and placement were merged into one
-plugin). Small live-file fix; no code change. *(`formerly AUD-24`)*
-
-**Update `table.md`'s `<csv | …>` example to mark it planned until the
-DSL handlers land** `[specs/docs]`.
-`packages/layer1-vocabulary/elements/table.md` includes a shorthand
-example using `<csv | name,price\n...>`. This form relies on the
-`<csv>` shortcut tag, which is registered in DSL_REGISTRY but not yet
-implemented (DF-8). The example will mislead authors. Fix: remove or
-mark the `<csv>` example as "planned" until the shortcut tag lands.
-*(`formerly AUD-07`)*
-
-**Have `integration.test.js` import the real pipeline from `index.js`
-instead of hand-mirroring it** `[tests/build]`. The test maintains a
-separate manual copy of the plugin pipeline assembled in
-`src/index.js`. The two are not linked — every pipeline change must be
-duplicated by hand, with nothing enforcing it. **Recurrence record:
-paid four times** — R3a (2026-05, `fillNotes` import drift, first
-surfacing); R3b (2026-05, pipeline reordering); R4 (2026-05,
-`buildCitationIndex` stage change); G1b (2026-05,
-`document-10-shortcuts.acm` integration block added by hand). Fix
-path: have the integration test import and use the real pipeline
-assembly from `index.js` rather than rebuilding it. Small,
-well-bounded cleanup; a good early candidate. Severity: medium —
-maintenance hazard, not a current bug. *(`formerly AUD-17`)*
+**Replace `integration.test.js`'s hand-mirrored pipeline with a shared
+assembly imported from `index.js`** `[tests/build]`. The test maintains
+a separate hand-written copy of the plugin pipeline assembled in
+`src/index.js`. The original concern was that the two would drift —
+documented recurrence record (paid four times: R3a/R3b/R4/G1b). The
+mechanical-batch verification (2026-Q2) confirmed: **the hand-mirror
+is currently identical to the real pipeline — no drift today.** The
+fix is therefore not "stop the drift" but "stop allowing it." Making
+the rewire is **not mechanical**: the test maintains a manual mirror
+specifically so it can capture the intermediate hast tree for snapshot
+inspection (the `runIntegration` helper returns `{ html, hast }`),
+which the real-pipeline assembly does not expose through unified's
+standard API. Replacing the mirror requires a design choice from one
+of: (a) extend `acadamarkInterpreter` to expose the intermediate hast
+via `file.data`; (b) refactor the interpreter's compile step into a
+separately-importable function the test can call directly; (c) drop
+hast-snapshot inspection and assert only on HTML. Each has different
+consequences for the test's diagnostic power. The fix waits for that
+ruling. Severity: medium — maintenance hazard (zero drift today but
+the pattern remains the structural risk).
+*(`formerly AUD-17`)*
 
 **Fix the `#`/`##`/`###` hash-sigil dispatch** `[interpreter]`. The
 parser's `SigilTag1`/`SigilTag2`/`SigilTag3` rules emit literal `"#"`,
@@ -472,21 +428,6 @@ rules. One side is wrong. Surfaced as the adjacent finding alongside
 Slice 4 Phase 0's Q7. Couple this fix to the hash-sigil dispatch
 item above — same family, same coherent piece of work, likely the
 same slice.
-
-**Update `shorthand-syntax.md` §"What the parser produces" to list
-the full 12-field tag shape** `[specs/docs]`. The spec passage at
-§"What the parser produces" enumerates 10 short-form fields on the
-`acadamarkTag` node (`type`, `form`, `tagname`, `positional`,
-`booleans`, `kwargs`, `id`, `classes`, `content`, `isOpaqueContent`),
-but the parser's grammar `makeNode` factory at
-`packages/remark-acadamark/grammar/acadamark.peggy` produces 12 — the
-spec is silent on `atRefs` and `selfClosing`. Surfaced as a
-pre-existing spec gap during Slice 2 (the spec was the named authority
-for the `acadamarkTag` builders, and the slice had to fall back on the
-grammar's ground-truth output for the missing fields). Small fix:
-add the two fields to the spec passage with their defaults
-(`atRefs: []`, `selfClosing: false`) and a one-line note on what each
-encodes. Not a code change.
 
 ### Enhancements
 

@@ -344,12 +344,18 @@ For each parsed construct, the parser produces a structured node with the follow
   kwargs: { align: "right" },  // map of name → string
   id: "elephant",              // string or null
   classes: ["numbered"],       // array of strings
+  atRefs: ["smith2023"],       // array of strings — @-references (e.g. <ref @fig:x>)
   content: <child nodes or opaque string>,
-  isOpaqueContent: false       // false for prose-bearing tags; true for DSL/math/code
+  isOpaqueContent: false,      // false for prose-bearing tags; true for DSL/math/code
+  selfClosing: false           // true for `<tag />` self-closing form, else false
 }
 ```
 
 For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` → `"##"`, `<###` → `"###"`, `<$` → `"$"`, `<$$` → `"$$"`, `` <` `` → `` "`" ``, etc. The `positional`, `booleans`, etc. fields all behave the same way as for named tags. Sigil tags have `form: "short"`.
+
+Defaults — when an attribute is absent from the source, the field is present on the node with its empty default:
+`positional: []`, `booleans: {}`, `kwargs: {}`, `id: null`, `classes: []`, `atRefs: []`, `isOpaqueContent: false`, `selfClosing: false`.
+`content` is `null` when there is no content (e.g. `<tag attr />`), the verbatim string for opaque-content tags, or the parsed `Node[]` after recursive-content parsing for prose tags. This matches the parser's grammar `makeNode` factory verbatim (`packages/remark-acadamark/grammar/acadamark.peggy`), which is the ground-truth origin of the shape; downstream consumers should expect every field present on every parser-produced node.
 
 For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `acadamarkTag` nodes, or markdown nodes, or plain text).
 

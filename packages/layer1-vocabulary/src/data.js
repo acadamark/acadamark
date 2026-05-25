@@ -3710,7 +3710,7 @@ const _table = Object.freeze({
       {
         "source": "<csv | name,price\nfoo,1\nbar,2\n>\n",
         "layer1_html": "<table>\n  <thead>\n    <tr><th>name</th><th>price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>foo</td><td>1</td></tr>\n    <tr><td>bar</td><td>2</td></tr>\n  </tbody>\n</table>\n",
-        "notes": "The <csv> DSL engine produces a table from CSV source. See the\n<csv> vocabulary entry for details on engine attributes (header\ncontrol, alignment, etc.).\n",
+        "notes": "**Planned — the `<csv>` standalone-handler is not yet implemented**\n(it is registered in `acadamark-core/dsl-registry` but no handler\nexists yet; an authored `<csv | ...>` today falls through to the\nunknown-element fallback). The example is preserved here as\ndocumentation of the intended form. Today's working CSV authoring\npath is the qualifying form: `<table csv | ... >` — see the\ntable-with-data-format examples below and the DSL-handlers\nbacklog item.\n\nWhen implemented, the `<csv>` DSL engine will produce a table\nfrom CSV source. See the `<csv>` vocabulary entry for details on\nengine attributes (header control, alignment, etc.).\n",
       },
       {
         "source": "<table #revenue type=results>\n  <caption | Quarterly revenue>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\n",
