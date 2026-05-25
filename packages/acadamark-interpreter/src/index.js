@@ -1,16 +1,30 @@
 // Main entry for acadamark-interpreter.
 //
-// Exports the unified plugin `acadamarkInterpreter`, which wires together:
-//   1. remarkRecursiveContent  — parses string pipe-content into mdast
-//   2. acadamarkConfigDiscovery — Phase 1: discovery (no tree mutation)
-//   3. acadamarkArticleStructuring — Phase 2: wraps doc in article structure
-//   4. acadamarkSectionNesting — Phase 2: nests section/sub-section/... nodes
-//   5. acadamarkNotes — register note elements, splice markers (record-only)
-//   6. acadamarkNumbering — register equations/figures/tables (record-only)
-//   7. acadamarkApplyNumbers — single numbering stage; fills markers and nodes
-//   8. A custom compiler that converts the final mdast → hast → HTML string
-//      via mdast-util-to-hast (with the acadamarkTag custom handler) and
-//      hast-util-to-html.
+// Exports the unified plugin `acadamarkInterpreter`, which wires together,
+// on the unified processor:
+//   - remarkMath and remarkGfm — parser-level extensions registered on the
+//     outer processor so bare $x$ math and bare GFM pipe tables are tokenized
+//     at parse time (and on the inner processor below for the same reason
+//     inside named-tag content).
+//   - remarkRecursiveContent — re-parses each acadamarkTag's pipe-content
+//     string into a mdast subtree, given an inner processor whose plugin set
+//     mirrors the outer parser plugins (remarkParse + remarkAcadamark +
+//     remarkMath + remarkGfm).
+//   - acadamarkNormalizeMarkdown — rewrites delegated-parser nodes
+//     (inlineMath, math, GFM table) to canonical acadamarkTag nodes so the
+//     downstream pipeline sees one node type.
+//   - The discovery and structural plugins — acadamarkConfigDiscovery,
+//     acadamarkArticleStructuring, acadamarkSectionNesting.
+//   - The semantic-processing plugins — buildCitationIndex (via an anonymous
+//     plugin wrapper), acadamarkNotes (register-only), acadamarkNumbering
+//     (register-only), an anonymous acadamarkApplyNumbers plugin that calls
+//     numberRegistry() and fillNumbering, acadamarkRefResolution,
+//     acadamarkCiteResolution, acadamarkNotePlacement, acadamarkBibliography.
+//   - A custom compiler that converts the final mdast → hast → HTML string
+//     via mdast-util-to-hast (with the acadamarkTag custom handler),
+//     conditional asset injection, and hast-util-to-html.
+// See notes/specs/interpreter.md §2 and notes/specs/pipeline.md §1/§4 for
+// the per-stage descriptions and ordering rationale.
 //
 // WIRING CHOICE
 // remark-rehype is not installed in this workspace; we use mdast-util-to-hast

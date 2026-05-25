@@ -56,7 +56,7 @@ source text
     ▼  Stage 2: Recursive content parsing
     │  remarkRecursiveContent
     │
-    ▼  Stage 3: mdast transforms (12 plugins)
+    ▼  Stage 3: mdast transforms
     │  normalize markdown → config discovery → article structure →
     │  section nesting → citation index → notes → numbering →
     │  apply numbers → ref resolution → cite resolution →
@@ -191,9 +191,13 @@ including the mixed-content (escape-errors) path.
 
 ## 4. Stage 3: mdast transforms
 
-Twelve plugins run in sequence, transforming the mdast tree. They are registered
-on the unified processor in this order and run as unified transforms during
-the `processor.run()` step.
+A sequence of mdast-transform plugins runs in order: the normalization pass,
+then configuration discovery, then the structural plugins (article structuring
+and section nesting), then the semantic plugins (citation index, notes,
+numbering, apply-numbers, ref-resolution, cite-resolution, note-placement,
+bibliography). Each is registered on the unified processor in this order and
+runs as a unified transform during the `processor.run()` step. The per-plugin
+detail follows in §4.0–§4.10.
 
 ### Phase 0 — Normalization
 

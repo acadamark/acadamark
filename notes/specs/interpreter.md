@@ -39,12 +39,14 @@ const result = await unified()
 console.log(String(result)); // HTML string
 ```
 
-Internally, `acadamarkInterpreter` registers thirteen mdast-transform plugins
-and a custom compiler on the unified processor. (It also registers
-`remarkMath` and `remarkGfm` on the outer processor itself, so bare `$x$`
-math and bare GFM pipe tables are tokenized — see §2 for the full plugin
-order and §3.1 for how the same two extensions are added to the inner
-processor.) The compiler converts the final mdast tree to hast using
+Internally, `acadamarkInterpreter` registers — on the unified processor — the
+recursive-content plugin, the normalization pass, the discovery and structural
+plugins, the semantic-processing plugins (notes, numbering, apply-numbers,
+ref-resolution, cite-resolution, note-placement, bibliography), and a custom
+compiler. (It also registers `remarkMath` and `remarkGfm` on the outer
+processor itself, so bare `$x$` math and bare GFM pipe tables are tokenized —
+see §2 for the full plugin order and §3.1 for how the same two extensions
+are added to the inner processor.) The compiler converts the final mdast tree to hast using
 `mdast-util-to-hast` directly (not via `remark-rehype`, which is not
 installed), then formats and serializes the hast to an HTML string.
 
@@ -863,6 +865,20 @@ skips the entry.
 Duplicate keys (two vocabulary files with the same `html_output.element`)
 emit a warning; the later file wins.
 
+After every spec has been loaded into the map, the loader performs a second
+pass that registers shorthand aliases from each spec's `shorthand_expansions`
+list. For each `{ shorthand, expands_to }` pair, the shorthand is added to the
+map as a transparent alias pointing at the same spec as `expands_to`, but only
+when three guards hold: `expands_to` is a bare key (contains no spaces — i.e.
+it names a vocabulary entry without any attached attribute clause),
+`expands_to` is already in the map, and `shorthand` is not. This is what makes
+`<quote | text>` dispatch to the `<blockquote>` vocabulary entry rather than
+falling through to the unknown-tag fallback. Complex expansions whose
+`expands_to` carries attribute clauses (e.g. `book-part book-part-type="chapter"`)
+are not registered as aliases — they require attribute-injection at dispatch
+time and are not handled by the loader. A shorthand whose name collides with
+an existing map key emits a warning and is skipped.
+
 ---
 
 ## 6. Schema dispatch
@@ -1115,6 +1131,13 @@ Auto-generated ids take the form `${type}-${sequence}` (e.g., `note-1`,
 - `lookup(type, id)` — find by type + id.
 - `findByLabel(id)` — find a colon-id across all types.
 - `entries(type)` — get all entries of a type in assignment order.
+- `numberRegistry()` — assign sequential display numbers to all registered
+  entries. Iterates every registered type in insertion order; within each
+  type, walks entries in insertion (document) order and assigns the next
+  positive integer to entries with `numbered: true`; sets `number: null` for
+  entries with `numbered: false`. Called once after all `assign()` calls are
+  complete and before any consumer reads `entry.number`. (This is the call
+  invoked by `acadamarkApplyNumbers` in §3.8.)
 - `reset()` — clear all state (used in tests).
 
 ### 8.4 Cross-reference resolution

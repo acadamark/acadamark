@@ -162,3 +162,16 @@ that). One line gets added every few months, not every slice.
   block-level precedence rule, not the parser bug AUD-23 described;
   guarded by `packages/remark-acadamark/test/multiline-text-position.test.js`
   Issue 3.
+- **2026-Q2 — pipeline.md note-numbering explanation closed
+  (misdiagnosis at filing).** The Layer 3 doc-clarity backlog item
+  asserting that `pipeline.md` §10.5 implies `fillNumbering` assigns note
+  numbers was filed in `b996301` (2026-05-22 14:20) — four hours after
+  `f00c877` (2026-05-22 10:26, the F2 doc-staleness sweep) had already
+  added to §10.5 the exact clarification the item asks for
+  (`fillNumbering(file) → (no-op for notes; acadamarkNumberingPending has
+  equations/figures/tables)`). Git history confirms `f00c877` is the only
+  commit ever to touch a `fillNumbering` mention in `pipeline.md`, so the
+  clarification was present continuously from the moment it was added —
+  including at the moment the backlog item was written. Item closed as
+  misdiagnosis at filing; no spec edit needed (§10.5 is already correct);
+  surfaced by the packages/ reconciliation — interpreter cluster Phase 0.

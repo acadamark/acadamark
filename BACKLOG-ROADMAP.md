@@ -74,7 +74,6 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] DF-8, DF-9, DF-10, DF-11 — DSL handlers (`<csv>`/`<tsv>` standalone; `<mermaid>`/`<abc>`; math env handlers; `<theorem>` handler + vocab)
 - [ ] DF-13, DF-14, DF-15 — deferred vocab elements (grouped; absorbs additional candidates from the authoring-features survey)
 - [ ] DF-5 — multi-column display
-- [ ] `pipeline.md` note-numbering explanation — doc-clarity leaf
 - [ ] DF-16 — blank-line termination error recovery
 - [ ] Parser-error-node renderer — `acadamarkTagError` / `acadamarkParseError` visible at source location (always-renders core-guarantee work; sibling of DF-16)
 - [ ] AUD-13 — `<config>` silently accepts metadata kwargs that belong in `<meta>`
@@ -295,12 +294,6 @@ Additional small-vocab candidates surfaced in the authoring-features survey
 **Multi-column display — DF-5.** Spec is `notes/specs/multi-column-display.md`;
 render-mode concern. Independent leaf, low-priority unless a publication
 target needs it.
-
-**pipeline.md note-numbering explanation — doc-clarity leaf.** In `notes/specs/pipeline.md`
-§10.5, the explanation of how a note gets its number is incomplete: it implies
-`fillNumbering` assigns note numbers, but `fillNumbering` is a no-op for notes —
-notes are numbered by `numberRegistry()` at the start of the apply-numbers step.
-A one-paragraph clarification, no code change.
 
 **Discuss the canonical form for sections — markdown `##` heading vs
 `<#>` sigil tag.** A discussion item, not a build item. The shorthand
