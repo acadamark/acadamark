@@ -58,9 +58,6 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] Verify formerly DF-20 — `remark-gfm` lexer-to-canonical bridge
 - [ ] Verify formerly DF-22 — bare `$x$` / `$$x$$` via `remark-math` + normalization
 - [ ] Verify formerly OQ-1 — `remark-math` integration with recursive content
-- [ ] Verify formerly AUD-04 — no-pipe/no-content short form misread as long-form opener (suspected closed per parser-cluster Phase 0)
-- [ ] Verify formerly AUD-21 — multi-line content in text-position named tags silently lost (suspected closed per parser-cluster Phase 0)
-- [ ] Verify formerly AUD-22 — inline tag at line-start splits paragraphs (suspected closed per parser-cluster Phase 0)
 
 ### Layer 2 — gated
 
@@ -78,7 +75,6 @@ checkbox without resolving the entry — or vice versa — is drift.
 - [ ] DF-13, DF-14, DF-15 — deferred vocab elements (grouped; absorbs additional candidates from the authoring-features survey)
 - [ ] DF-5 — multi-column display
 - [ ] `pipeline.md` note-numbering explanation — doc-clarity leaf
-- [ ] AUD-23 — code sigil multi-line in text position produces `acadamarkTagError`
 - [ ] DF-16 — blank-line termination error recovery
 - [ ] Parser-error-node renderer — `acadamarkTagError` / `acadamarkParseError` visible at source location (always-renders core-guarantee work; sibling of DF-16)
 - [ ] AUD-13 — `<config>` silently accepts metadata kwargs that belong in `<meta>`
@@ -210,63 +206,6 @@ line in `STATUS.md`.
   acadamark's existing DSL-math coverage (`<matrix>`, `<cases>`,
   `<align>`, `<eqnarray>`) — but OQ-1 as an open *question* is no
   longer open.**
-
-The next three entries are parser-bug items that the packages/ reconciliation
-parser-cluster Phase 0 (probes against the current parser) showed do not
-reproduce against current code — but were filed without a verifiable closure
-story (which commit closed them, or whether the original report was a
-misdiagnosis). Each is a small **verification item**: re-run the probe-shaped
-test, confirm the bug does not reproduce, locate the closing change (or
-confirm no fix was needed) so a `STATUS.md` milestone line can record the
-closure, then close.
-
-- **(formerly AUD-04) No-pipe/no-content short form misread as long-form
-  opener.** Originally filed as: a table with only kwargs and no inline
-  data, written as `<table #id csv src=file.csv caption="...">`, was parsed
-  as a long-form tag opening (looking for `</table>`) rather than a
-  short-form no-content tag. Probe of exactly that source and of
-  `<csv src=foo.csv>` against the current parser produces clean short-form
-  `acadamarkTag` nodes with `content: null`. The `| >` workaround the
-  original entry recommended is no longer necessary. **SUSPECTED CLOSED —
-  verify against the parser-cluster Phase 0 probes; close if confirmed.
-  The previously-noted spec-impact follow-ups (documenting the `| >`
-  idiom in `notes/specs/shorthand-syntax.md` and confirming its
-  unambiguity in `notes/specs/escape-rules-spec.md`) are not needed once
-  the closure is confirmed.**
-
-- **(formerly AUD-21) Multi-line content in text-position named tags
-  silently lost.** Originally filed as: in the text-position named-tag
-  tokenizer (`makeNamedTagTokenizer({ multiLine: false })` in
-  `packages/remark-acadamark/src/syntax.js`), encountering a line ending
-  in the `attrSection` or `content` state called `nok(code)`; micromark
-  backtracked entirely and the `<` was treated as literal text with no
-  `acadamarkTag` produced. Empirical claim:
-  `Text.<note | line one\nline two.> end.` produced one text node with
-  the literal string. Probe of exactly that source against the current
-  parser produces the correct structured paragraph: text "Text.", a
-  properly-formed `note` `acadamarkTag` with `content` carrying the
-  embedded newline verbatim, and trailing text " end.". Probes of
-  text-position `<aside>` and `<em>` in the same shape produce the same
-  correct behavior. **SUSPECTED CLOSED — verify against the parser-cluster
-  Phase 0 probes; close if confirmed. The closure may also resolve the
-  shared-fix story for AUD-23 (see the parser-bug cluster below), which
-  will then need its own re-analysis.**
-
-- **(formerly AUD-22) Inline tag at line-start splits paragraphs.**
-  Originally filed as the highest-impact of the three parser-newline bugs:
-  when an acadamark tag appeared at the start of a line in prose, the
-  flow-position tokenizer claimed it before the text-position tokenizer
-  could, and any text after the closing `>` on the same line became a new
-  paragraph. Empirical (sigil): `<$ b $> is two.` at line-start →
-  `<$ b $>` became a standalone flow element, `is two.` became a separate
-  paragraph. Probe of exactly that source against the current parser
-  produces a single paragraph containing the `$` `acadamarkTag` and
-  trailing text " is two." in the same paragraph. Probes of
-  `<note | content> trailing text.` and the same case wrapped in
-  surrounding paragraphs all produce single-paragraph-with-trailing-text
-  behavior. **SUSPECTED CLOSED — verify against the parser-cluster Phase 0
-  probes; close if confirmed. The start-here-shortlist recommendation that
-  named this the next highest-impact pick has been removed.**
 
 ---
 
@@ -587,32 +526,12 @@ same identifiers.
   source. Affects authoring conventions — authors mark intent in source
   vs. the build target drives the lowering.
 
-**Parser bugs — AUD-23 (formerly), DF-16 (formerly),
-parser-error-node renderer.** Three distinct parser-level shortfalls
-surfaced through audits but not yet fixed. The last two are siblings under
-the always-renders guarantee (`notes/specs/principles.md`): DF-16 is the
-"errors stay bounded so the rest of the document is seen" half;
-the parser-error-node renderer is the "produced error nodes are visible
-in the output at their location" half. (Three formerly-listed entries —
-AUD-04, AUD-21, AUD-22 — have been reclassified to Layer 0 verify-first:
-parser-cluster Phase 0 probes show none of them reproduces against the
-current parser. They are awaiting verify-and-close.)
-
-- **Code sigil with multi-line content in text position produces
-  `acadamarkTagError` (formerly AUD-23).** The text-position sigil
-  tokenizer commits a partial token when it encounters a line ending
-  inside the sigil body, and `from-markdown.js` then passes incomplete
-  source (no closing sigil) to Peggy, which fails and produces an
-  `acadamarkTagError` node. Empirical:
-  `` Text <``` python\ncode here ```> more. `` produces an
-  `acadamarkTagError` node inside the paragraph; `` code here ```> more. ``
-  is raw text in the output. Originally filed as "same root cause as
-  AUD-21" (the `!multiLine` early path) with a shared-fix proposal — but
-  AUD-21 has since been reclassified to Layer 0 as not reproducing, which
-  invalidates the shared-fix story. Re-analysis of the root cause is part
-  of the work to close this item; the original investigation in
-  `notes/archive/investigations-2026-05/parser-newline-investigation.md`
-  Q3 + Q5 is still the starting point.
+**Parser bugs — DF-16 (formerly), parser-error-node renderer.** Parser-level
+shortfalls surfaced through audits but not yet fixed. Both are siblings
+under the always-renders guarantee (`notes/specs/principles.md`): DF-16 is
+the "errors stay bounded so the rest of the document is seen" half; the
+parser-error-node renderer is the "produced error nodes are visible in the
+output at their location" half.
 
 - **Blank-line termination error recovery (formerly DF-16).** The
   micromark finder needs to check each line ending and terminate open

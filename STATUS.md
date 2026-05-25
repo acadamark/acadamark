@@ -59,9 +59,8 @@ go stale.)
 
 The backlog is tracked, not duplicated here. All open bugs, gaps, and
 design findings live in `BACKLOG-ROADMAP.md` (the single
-home for open work). Notable currently-open items include the three
-parser-newline bugs (formerly AUD-21/22/23), vocabulary plugin-name
-drift (formerly AUD-24), and design-direction cross-referencing
+home for open work). Notable currently-open items include vocabulary
+plugin-name drift (formerly AUD-24) and design-direction cross-referencing
 (formerly AUD-25).
 
 ## In flight / next
@@ -133,3 +132,33 @@ that). One line gets added every few months, not every slice.
   DS-3 (`BUILD.md` parser slice table); DS-4 (`notes/interpreter-design.md`
   archived); DS-5 (`notes/hover-previews-deferred.md` archived) — all via
   the F2 doc-staleness sweep, commit `f00c877`.
+- **2026-Q2 — parser-bug verify-and-close.** A verify-and-close
+  investigation established that four parser-bug backlog items were all
+  misdiagnoses-at-filing — the parser code had been correct throughout —
+  and closed them. **AUD-04** (no-pipe/no-content short form misread as
+  long-form opener): fixed by `d882586` (the `afterOpenGt` discriminator
+  that routes same-line `>` to the short-form named-tag tokenizer);
+  filed open in `ff5163d` without re-verifying that the later multi-line
+  work had resolved it; newly guarded by the
+  short-form-no-content-no-pipe test added to
+  `packages/remark-acadamark/test/test.js`. **AUD-21** (multi-line content
+  in text-position named tags silently lost): fixed by `ff5163d` (the
+  `!multiLine` early-return removed from `attrSection` / `content` states
+  of `makeNamedTagTokenizer`, per `parser-newline-investigation.md`
+  Issue 1); filed open by `495b47f`, which transcribed the
+  investigation's pre-fix empirical results without checking that the
+  same commit which added the investigation had also landed the fix;
+  guarded by `packages/remark-acadamark/test/multiline-text-position.test.js`
+  Issue 1. **AUD-22** (inline tag at line-start splits paragraphs): fixed
+  by `ff5163d` (the flow-position guard added to `afterClose`/`afterGt`,
+  Issue 2); same transcribe-without-re-verify filing as AUD-21; guarded
+  by `packages/remark-acadamark/test/line-start-flow-reject.test.js`.
+  **AUD-23** (multi-line content in text-position code-sigil tags
+  produces an error node): fixed by `ff5163d` (the `!multiLine`
+  early-return removed from the sigil `body()` state, Issue 3); the
+  parser-cluster reconciliation Phase 0 had over-reported it as "still
+  reproducing" because its probe placed the closing `` ```> `` at
+  line-start, triggering CommonMark's fenced-code-block tokenizer — a
+  block-level precedence rule, not the parser bug AUD-23 described;
+  guarded by `packages/remark-acadamark/test/multiline-text-position.test.js`
+  Issue 3.

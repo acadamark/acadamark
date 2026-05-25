@@ -664,6 +664,33 @@ function parseLongFormTag(src) {
 }
 
 {
+  // Registered DSL tag with kwargs but no pipe and no body content — must
+  // parse as a SHORT-FORM acadamarkTag with content: null, not as a long-form
+  // opener that searches for </table>. Regression guard for the closure of
+  // AUD-04 (formerly filed in audit-findings.md), fixed by commit d882586:
+  // the `afterOpenGt` discriminator routes same-line `>` to the short-form
+  // named-tag tokenizer; only `>` followed by a line ending commits the
+  // long-form opener.
+  const src = '<table #tab:demo csv src=file.csv caption="Demo table">'
+  const tree = parse(src)
+  const tag = tree.children.find((n) => n.type === 'acadamarkTag')
+  assert.ok(tag, 'short-form acadamarkTag produced (not eaten by long-form tokenizer)')
+  assert.equal(tag.form, 'short', 'form is short, not long')
+  assert.equal(tag.tagname, 'table')
+  assert.equal(tag.content, null, 'content is null (no pipe, no body)')
+  assert.equal(tag.id, 'tab:demo')
+  assert.deepEqual(tag.positional, ['csv'])
+  assert.equal(tag.kwargs.src, 'file.csv')
+  assert.equal(tag.kwargs.caption, 'Demo table')
+  assert.equal(
+    tree.children.filter((n) => n.type === 'acadamarkTagError').length,
+    0,
+    'no acadamarkTagError nodes (no missing </table> error)'
+  )
+  console.log('PASS: registered DSL tag with kwargs, no pipe, no content → short-form with content: null (AUD-04 regression guard)')
+}
+
+{
   // Long-form tag with attributes: boolean flags
   const node = parseLongFormTag('<mermaid +dark>\ngraph TD\n  A --> B\n</mermaid>')
   assert.equal(node.type, 'acadamarkTag')

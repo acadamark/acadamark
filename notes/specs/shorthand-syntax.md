@@ -199,6 +199,8 @@ The `|` separator is optional. Without it, the tag has no attributes and the ent
 
 When a sigil tag appears nested inside the content of a named tag, the parser's depth-tracking logic (rule B) must recognize the sigil character as a tag-opening signal. `<` followed immediately by a registered sigil character increments the nesting depth during content scanning, preventing the sigil's closer from prematurely ending the outer construct. For example, in `<figure | nested <$ x $>>`, the inner `$>` does not close `figure` because `<$` was recognized as a depth-incrementing opener.
 
+When an inline triple-backtick code sigil spans soft line breaks inside a paragraph, its closing `` ```> `` must not begin a line — three backticks at the start of a line are claimed by CommonMark's fenced-code-block tokenizer, a block-level rule that runs before the inline tokenizer.
+
 ### Long-form tags
 
 Long-form tags use HTML-shaped syntax for multi-line content:
