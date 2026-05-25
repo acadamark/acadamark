@@ -1,0 +1,46 @@
+# acadamark — what git deliberately does not track.
+#
+# Written to the repo's actual needs, not from a generic boilerplate. Two
+# generated files are deliberately committed; this file is written to not
+# match them (see "Do NOT ignore" at the bottom).
+
+# ─── Dependencies ───────────────────────────────────────────────────────────
+# npm-workspaces hoists most deps to the root `node_modules/`, but per-package
+# `node_modules/` directories also appear (e.g. acadamark-interpreter holds a
+# per-package `.package-lock.json`). The unscoped `node_modules/` pattern (no
+# leading slash) matches at every level.
+node_modules/
+
+# ─── Working prompt files ───────────────────────────────────────────────────
+# `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo
+# root while running a slice; they are working scratch, never artifacts to
+# commit.
+ghc-prompt-*.md
+
+# ─── WSL / Windows download-metadata ────────────────────────────────────────
+# WSL preserves NTFS alternate-data-stream markers as `*.Zone.Identifier`
+# files when prompt files are downloaded from a Windows browser. Mild cruft.
+*.Zone.Identifier
+
+# ─── Do NOT ignore (deliberately committed generated files) ─────────────────
+# Two files in this repo are build-generated but deliberately committed —
+# `git status` should always show them as part of the project, and any
+# `.gitignore` change here that quietly starts matching them is a bug:
+#
+#   packages/layer1-vocabulary/src/data.js
+#     The Layer 1 vocabulary data module, generated from elements/*.md by
+#     packages/layer1-vocabulary/build/generate-data-module.js. Committed per
+#     the Slice 4 Phase 0's Option-A ruling (committed + pretest
+#     regenerate-and-diff staleness guard). See notes/specs/acadamark-core.md.
+#
+#   packages/remark-acadamark/src/generated/parser.js
+#     The Peggy-generated parser, produced from grammar/acadamark.peggy by
+#     packages/remark-acadamark/build/compile-grammar.js. Committed so the
+#     parser package is consumable without a build step at install time.
+#
+# The patterns above are deliberately narrow (node_modules/, ghc-prompt-*.md,
+# *.Zone.Identifier) and do not match either path. If you add a broader
+# pattern below — anything matching `**/*.js` or `**/generated/**` or `**/src/data.*` —
+# add an explicit unignore here so the deliberate files stay tracked, e.g.:
+#   !packages/layer1-vocabulary/src/data.js
+#   !packages/remark-acadamark/src/generated/parser.js
