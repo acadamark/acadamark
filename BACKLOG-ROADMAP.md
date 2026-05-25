@@ -15,11 +15,27 @@ views of the same set — both live in this file. The flat checklist is
 the scannable index; the detailed entries below it are the authoritative
 descriptions.
 
-Items migrated from previously-tracked sources (`audit-findings.md`,
-`specified-not-implemented.md`, `known-limitations.md`, all archived)
-carry "formerly AUD-N", "formerly DF-N", "formerly PG-N", or "formerly
-OQ-N" markers so the historical id and the original filing can still be
-cross-referenced. Item identity is now its place in this document.
+## Identifier convention
+
+Existing items carry historical prefixed identifiers — `AUD-N` (audit
+finding), `DF-N` (deferred feature), `PG-N` (per-gap), `OQ-N` (open
+question), `GAP-N` (testing gap), `MF-QN` / `MC-QN` (spec design
+question). These prefixes once recorded which past audit surfaced the
+item; that organizing role is now obsolete. The live organizing
+principle is the Layer structure (Layer 0/1/2/3, Architecture tier,
+Standing, Deferred) and — within Layer 3 — the subsystem bucket; see
+"How to read this" below.
+
+Existing identifiers are kept unchanged as **opaque stable handles**
+because they are cited by `STATUS.md` milestones, commit messages, and
+some spec files; renumbering would orphan those references. Treat each
+id as the item's name — the prefix no longer carries meaning. The
+"(formerly X)" annotation on some items records a prior identifier so
+historical references continue to resolve.
+
+**New backlog items are not given provenance prefixes.** A new item gets
+a descriptive heading, with a plain neutral identifier only if the item
+genuinely needs a stable handle.
 
 ---
 
@@ -38,7 +54,12 @@ chains remain. The roadmap is therefore four layers:
 - **Layer 2 — gated.** Items blocked by a specific decision, by a
   Layer 1 item, or by a piece of architecture that must be built first.
 - **Layer 3 — free leaves.** No dependencies. Do any of these at any
-  time, in any order. This is most of the backlog.
+  time, in any order. This is most of the backlog. Layer 3 is
+  sub-grouped by **subsystem** — *parser* / *interpreter* / *DSL
+  handlers* / *vocabulary* / *specs & documentation* / *tests & build*
+  / *design discussions* — so the reader can pick by where the work
+  touches the system. The same bucket order is used in both the flat
+  checklist and the detailed view so they scan in parallel.
 
 Plus an **Architecture tier** (large multi-slice projects, sequenced by
 intent), **Standing items** (always-present cadence work), and an
@@ -54,38 +75,55 @@ checkbox without resolving the entry — or vice versa — is drift.
 
 ### Layer 0 — verify first
 
-- [ ] Verify formerly AUD-06 — bare GFM pipe tables (NORM-tables / `ec0d071`)
-- [ ] Verify formerly DF-20 — `remark-gfm` lexer-to-canonical bridge
-- [ ] Verify formerly DF-22 — bare `$x$` / `$$x$$` via `remark-math` + normalization
-- [ ] Verify formerly OQ-1 — `remark-math` integration with recursive content
+- [ ] Verify the NORM-tables / math-normalization closures (formerly AUD-06, DF-20, DF-22, OQ-1) — four near-identical code-checks that each probably close their respective item; handled as one grouped slice
 
 ### Layer 2 — gated
 
 - [ ] OQ-2 — render-mode heading-level assignment (`<article-title>` + `<section-title>` coexistence; gates DF-19 in the Architecture tier)
 
-### Layer 3 — free leaves
+### Layer 3 — free leaves (sub-grouped by subsystem)
+
+**Parser**
+
+- [ ] DF-21 (formerly also AUD-08), DF-17 — parser leaves: self-closing `<tag />` for DSL-registry tags; qualifying-tag generalization beyond `<table>`
+- [ ] DF-2 — strict mode
+- [ ] DF-3 — `<html-passthrough>` (needs spec written first)
+- [ ] DF-16 — blank-line termination error recovery
+- [ ] Parser-error-node renderer — `acadamarkTagError` / `acadamarkParseError` visible at source location (always-renders core-guarantee work; sibling of DF-16; fix path lives in the interpreter's compile step)
+
+**Interpreter**
 
 - [ ] PG-3/4/5 — make `<ref>` honor its parsed attributes (`format`/`type` kwargs, pipe content, `+link`/`+preview`/`+title` flags)
 - [ ] PG-1, PG-2 — per-section footnote collection; margin-positioned sidenotes
 - [ ] PG-8, PG-9, PG-10, PG-11 — citation/config small gaps (multi-key cite order, nested `<config>`, bib heading hardcoded, trailing-whitespace EOL)
-- [ ] DF-21 (= AUD-08), DF-17 — parser leaves: self-closing `<tag />` for DSL-registry tags; qualifying-tag generalization beyond `<table>`
-- [ ] DF-2 — strict mode
-- [ ] DF-3 — `<html-passthrough>` (needs spec written first)
-- [ ] DF-8, DF-9, DF-10, DF-11 — DSL handlers (`<csv>`/`<tsv>` standalone; `<mermaid>`/`<abc>`; math env handlers; `<theorem>` handler + vocab)
-- [ ] DF-13, DF-14, DF-15 — deferred vocab elements (grouped; absorbs additional candidates from the authoring-features survey)
 - [ ] DF-5 — multi-column display
-- [ ] DF-16 — blank-line termination error recovery
-- [ ] Parser-error-node renderer — `acadamarkTagError` / `acadamarkParseError` visible at source location (always-renders core-guarantee work; sibling of DF-16)
 - [ ] AUD-13 — `<config>` silently accepts metadata kwargs that belong in `<meta>`
-- [ ] AUD-15 — no documented inventory of tag forms × tags
-- [ ] AUD-24 — vocabulary `related_plugins` plugin names are stale
-- [ ] AUD-25 — design directions DD-1..DD-5 not referenced from governed specs
 - [ ] AUD-14 — caption-as-content for `<table>`, `<figure>`, similar (DD-1/DD-2 implementation)
 - [ ] AUD-18 — `<data>` nodes remain in tree after `buildCitationIndex`
 - [ ] AUD-19 — double KaTeX CSS injection in math documents
+
+**DSL handlers**
+
+- [ ] DF-8, DF-9, DF-10, DF-11 — DSL handlers (`<csv>`/`<tsv>` standalone; `<mermaid>`/`<abc>`; math env handlers; `<theorem>` handler — DF-11a; paired with DF-11b vocabulary work in the Vocabulary bucket)
+
+**Vocabulary**
+
+- [ ] DF-13, DF-14, DF-15 — deferred vocab elements (grouped; absorbs additional candidates from the authoring-features survey; also covers DF-11b — the `<theorem>`/`<proof>`/`<lemma>`/etc. vocabulary — sibling of DF-11a in DSL handlers)
+- [ ] AUD-24 — vocabulary `related_plugins` plugin names are stale
+
+**Specs / documentation**
+
+- [ ] AUD-15 — no documented inventory of tag forms × tags
+- [ ] AUD-25 — design directions DD-1..DD-5 not referenced from governed specs
+- [ ] AUD-07 — `table.md` `<csv | ...>` example coordination with DF-8
+
+**Tests / build**
+
 - [ ] GAP-9 — `document-9-demo` has no integration test or snapshot
 - [ ] AUD-17 — `integration.test.js` hand-mirrors the `index.js` pipeline (paid four times)
-- [ ] AUD-07 — `table.md` `<csv | ...>` example coordination with DF-8
+
+**Design discussions**
+
 - [ ] Discuss canonical form for sections — markdown `##` heading vs `<#>` sigil tag
 - [ ] Discuss type-prefix mismatch warning in cross-reference resolver
 - [ ] Discuss compact external-reference syntax (`wiki:`, `doi:`, `arxiv:`)
@@ -128,42 +166,47 @@ chain:
 
 Everything else in Layers 0, 2, and 3 (and the Architecture tier other
 than DF-19) is independently pickable. The math-coverage investigation
-mentioned in the Layer 0 formerly-OQ-1 entry is opt-in scoping work, not
+mentioned in the Layer 0 verification group is opt-in scoping work, not
 a blocker.
 
 ### Unblocked, high-value picks (start-here shortlist)
 
+Equally good next picks; no designated top pick. Pick by appetite.
+
+- **The Layer 0 verification group** — four small code-checks that each
+  probably close their respective item; a single grouped slice can run
+  all four. Closing them visibly tightens the open-work surface.
+
 - **AUD-17** — *`integration.test.js` hand-mirrors the `index.js`
   pipeline.* Small, well-bounded; retires a recurring tax paid four
-  times in R3a/R3b/R4/G1b. Good early cleanup.
+  times in R3a/R3b/R4/G1b.
 
 - **AUD-19** — *double KaTeX CSS injection in math documents.*
   Concentrated change in the asset-injection path in
   `packages/acadamark-interpreter/src/index.js`. ~370 KB wasted per math
   document; no rendering impact.
 
+- **AUD-24** — *vocabulary `related_plugins` plugin names stale.* Small
+  live-file fix in three vocabulary entries; no code change.
+
 - **PG-3/4/5** — *`<ref>` attribute handling.* One slice scope — make
   `<ref>` honor its parsed `format` / `type` kwargs, pipe content, and
   `+link`/`+preview`/`+title` flags.
-
-- **The Layer 0 verifications.** Each is a small code-check that
-  probably closes the item; the total verification time is short.
-  Closing them tightens the open-work surface.
 
 ---
 
 ## Layer 0 — verify first
 
-These items, migrated here from the now-archived `audit-findings.md` and
-`specified-not-implemented.md`, describe problems that the NORM-tables
-slice (commit `ec0d071`, 2026-05-22) and the math-normalization arc
-appear to have resolved — but the source entries were never updated as
-the arcs landed. Each is a small **verification item**, not feature
-work: read the relevant code in
+The four items below describe problems that the NORM-tables slice
+(commit `ec0d071`, 2026-05-22) and the math-normalization arc appear to
+have resolved — but the source entries were never updated as the arcs
+landed. Each is a small **verification item**, not feature work: read
+the relevant code in
 `packages/acadamark-interpreter/src/plugins/normalize-markdown.js` and
 `packages/acadamark-interpreter/src/index.js`, confirm the construct
 behaves as the closure would imply, close the item with a milestone
-line in `STATUS.md`.
+line in `STATUS.md`. The four are near-identical in shape and can be
+handled as one grouped slice.
 
 - **(formerly AUD-06) Plain markdown table syntax not supported
   (`remark-gfm` not installed).** Originally filed when `remark-gfm` was
@@ -233,7 +276,73 @@ discussion.
 
 ## Layer 3 — free leaves (no dependencies, any order)
 
-None of these blocks or is blocked by anything. Pick by appetite.
+Sub-grouped by subsystem. None of these blocks or is blocked by anything
+(except where a sibling pointer notes an internal pairing). Pick by
+appetite and by which part of the system you want to touch. The bucket
+order here matches the flat checklist's Layer 3 order, so the two views
+scan in parallel.
+
+### Parser
+
+**Parser leaves — DF-21, DF-17.** Self-closing `<tag />` for DSL-registry tags
+(DF-21, formerly also tracked as AUD-08); generalizing the qualifying-tag pattern beyond
+`<table>` (DF-17 — note: already works *for* `<table>`).
+
+**Strict mode — DF-2.** Bounded; disables markdown idioms. Under the
+normalization model, strict mode is the mode in which the normalization pass
+has nothing to do (no markdown-form nodes are produced).
+
+**HTML passthrough — DF-3.** `<html-passthrough>` — needs a *spec* written
+first; it is "planned, not yet specified." A design step precedes the code.
+
+**Parser bugs — DF-16, parser-error-node renderer.** Parser-level
+shortfalls surfaced through audits but not yet fixed. Both are siblings
+under the always-renders guarantee (`notes/specs/principles.md`): DF-16 is
+the "errors stay bounded so the rest of the document is seen" half; the
+parser-error-node renderer is the "produced error nodes are visible in the
+output at their location" half. They are presented here together because
+they are halves of one always-renders-guarantee story; note that the
+parser-error-node renderer's fix path lives in the interpreter's compile
+step (per its detailed entry below).
+
+- **Blank-line termination error recovery (formerly DF-16).** The
+  micromark finder needs to check each line ending and terminate open
+  constructs at blank lines for localized error recovery. Currently a
+  tag opened before a blank line will consume across the blank line or
+  to EOF. Explicit `Status: Deferred` in
+  `notes/specs/recursive-content-spec.md`. Under the re-tiered
+  always-renders guarantee in `notes/specs/principles.md`, this is a
+  known shortfall against the guarantee, not a permitted exception:
+  the "errors stay bounded so the rest of the document is seen" half
+  is currently violated when EOF-consumption occurs. The route to
+  closing it is partly a design question and partly an implementation
+  question; the item stays open until both are settled.
+
+- **Parser-error-node renderer — `acadamarkTagError` /
+  `acadamarkParseError` visible at source location (always-renders
+  core-guarantee work).** The parser produces `acadamarkTagError` and
+  `acadamarkParseError` nodes for grammar and parse failures, but the
+  interpreter has no compile-step handler registered for these node
+  types, so they currently fall through silently in the rendered
+  output. The always-renders guarantee
+  (`notes/specs/principles.md`) requires them to render visibly at
+  their source location — in the same house style the interpreter
+  already uses for other "the author wrote a reference the system
+  couldn't resolve" cases: `??ref: id??` for an unresolved
+  cross-reference, `??cite: key??` for an unresolved citation, an
+  inline table-parse-error marker for a malformed table body. The
+  parser-error markers should follow the same pattern. Sibling of
+  DF-16 above; both must close for the always-renders guarantee to
+  hold in full. The more impactful of the two, since until it closes
+  even bounded parser errors are invisible in the rendered output.
+  Fix path: register a compile-step handler in
+  `packages/acadamark-interpreter/src/index.js` for the
+  `acadamarkTagError` and `acadamarkParseError` mdast node types that
+  emits a hast element with the house-style marker text and a
+  distinguishing class for styling, mirroring how the unresolved-ref
+  and unresolved-cite markers are emitted today.
+
+### Interpreter
 
 **`<ref>` attribute handling — PG-3, PG-4, PG-5.** `format`/`type` kwargs
 ignored (PG-3); author pipe-text ignored (PG-4); `+link`/`+preview`/`+title`
@@ -248,16 +357,64 @@ ordering (PG-8); nested `<config>` not read (PG-9); hardcoded bibliography
 heading (PG-10 — a config kwarg, very small); trailing-whitespace-before-EOL
 treated as inline (PG-11).
 
-**Parser leaves — DF-21, DF-17.** Self-closing `<tag />` for DSL-registry tags
-(DF-21, AUD-tracked AUD-08); generalizing the qualifying-tag pattern beyond
-`<table>` (DF-17 — note: already works *for* `<table>`).
+**Multi-column display — DF-5.** Spec is `notes/specs/multi-column-display.md`;
+render-mode concern. Independent leaf, low-priority unless a publication
+target needs it.
 
-**Strict mode — DF-2.** Bounded; disables markdown idioms. Under the
-normalization model, strict mode is the mode in which the normalization pass
-has nothing to do (no markdown-form nodes are produced).
+**Silent-failure / authoring traps — AUD-13 (formerly).** `<config>`
+silently accepts metadata kwargs that belong in `<meta>` (`title=`,
+`subtitle=`, `author=`, `date=`). The kwargs produce no warning and no
+visible output. The bug is doubly bad because the syntactic ease of
+`<config>` (kwargs on one tag) is more attractive than `<meta>` (nested
+tags), so authors default to it. Fix path: `<config>` should validate
+its accepted kwargs and warn on unknown ones (especially
+metadata-shaped ones); specs should clearly distinguish `<meta>` (document
+metadata) from `<config>` (document options). Severity: medium — silent
+failure mode that produces no visible output. Touches DD-3 in
+`DESIGN.md` (the `<meta>` vs `<config>` boundary).
 
-**HTML passthrough — DF-3.** `<html-passthrough>` — needs a *spec* written
-first; it is "planned, not yet specified." A design step precedes the code.
+**Caption-as-content (substantive design + slice) — AUD-14 (formerly).**
+Citations inside the `caption=` kwarg of `<table>`, `<figure>`, and
+similar elements are not parsed — the kwarg value is a string, cite
+tags inside it remain literal text in the rendered output. Affects any
+kwarg where rich content might be desirable (figure captions, alt text,
+etc.). Two architectural options identified at filing:
+
+- **Option A (recommended at filing):** captions become first-class
+  child tags rather than attribute values: `<table #tab:burnout csv | ...> <caption | Risk and protective factors, adapted from <cite Mantzalas2022>>`.
+  Recursive content parsing handles citations naturally. Matches
+  Pandoc/Quarto conventions where captions are markdown blocks.
+- **Option B:** attribute values get recursive parsing —
+  `caption="text <cite key>"` would parse the value as acadamark
+  content. More invasive parser change; affects all attribute values,
+  not just captions.
+
+Tied to design directions DD-1 ("content gets parsed; arguments don't")
+and DD-2 ("tags with caption-like content support two equivalent
+forms"). When scoped, follow the design-directions framing. Severity:
+medium-high — affects real authoring need (captions with citations).
+
+**`<data>` nodes remain in tree after `buildCitationIndex` (formerly
+AUD-18).** `buildCitationIndex` reads `<data>` and `<library>` nodes
+at root level but never removes or modifies them. Rendered output is
+unaffected — no visible `<data>` content appears in any fixture, the
+`INTERNAL_REGISTRY` returns `null` for them — but a cleanup pass that
+removes them after their content is consumed has not been decided.
+Low priority; observation, not malfunction. Potential candidate for a
+follow-on `indexInputs` consolidation slice.
+
+**Double KaTeX CSS injection in math documents (formerly AUD-19).**
+Documents containing math (e.g. `document-5`, `document-6`) carry the
+KaTeX stylesheet **twice** — a small block (~12 KB) and the full
+block (~370 KB), as two separate `<style>` elements. Math-free
+documents have it once. No appearance impact. Fix path: in the
+asset-injection path in
+`packages/acadamark-interpreter/src/index.js`, identify where KaTeX
+CSS is injected and guard against double-injection (e.g. check
+whether a KaTeX `<style>` block is already present before appending
+another). Severity: medium — wasted bytes, no rendering impact.
+
+### DSL handlers
 
 **DSL handlers — DF-8, DF-9, DF-10, DF-11 (grouped).** `<csv>`/`<tsv>` standalone
 (DF-8, AUD-07); `<mermaid>`/`<abc>` (DF-9); math environments
@@ -267,13 +424,17 @@ all additive, none blocks anything. Note DF-10 (the math environments) is the
 "acadamark covers ground remark never covered" case from the lexer-supersession
 discussion in `notes/specs/idioms.md` — it is independent of the math-coverage
 investigation, which concerns delimiter-shaped math only. (DF-11b — the
-`<proof>`/`<lemma>`/etc. *vocabulary* — needs a vocab design pass first.)
+`<proof>`/`<lemma>`/etc. *vocabulary* — needs a vocab design pass first; it
+lives in the Vocabulary bucket below as the sibling of DF-11a.)
+
+### Vocabulary
 
 **Deferred vocabulary elements — DF-13, DF-14, DF-15 (grouped).** Metadata
 (`<keywords>`, `<publication-date>`); definition lists (`<dl>`/`<dt>`/`<dd>`);
 inline-semantic (`<abbr>`, `<term>`, `<glossary>`, `<glossary-entry>`); plus the
-theorem-family vocab (DF-11b). All "to be specified" — each needs a short vocab
-spec, then a schema entry. Group them; do as a batch.
+theorem-family vocab (DF-11b — sibling of DF-11a in the DSL handlers bucket
+above). All "to be specified" — each needs a short vocab spec, then a schema
+entry. Group them; do as a batch.
 
 Additional small-vocab candidates surfaced in the authoring-features survey
 (archived 2026-05-23) and absorbed into this cluster — same shape, same batch:
@@ -291,9 +452,90 @@ Additional small-vocab candidates surfaced in the authoring-features survey
   classifier), `<thumbnail>` (image for social sharing). Each is a small
   addition to `<meta>`'s allowed children.
 
-**Multi-column display — DF-5.** Spec is `notes/specs/multi-column-display.md`;
-render-mode concern. Independent leaf, low-priority unless a publication
-target needs it.
+**Vocabulary `related_plugins` plugin names are stale (formerly
+AUD-24).** Three vocabulary entries in
+`packages/layer1-vocabulary/elements/` have `related_plugins` sections
+naming plugins that no longer match the implemented names. `cite.md`
+says `acadamarkCitationResolution` (actual: `acadamarkCiteResolution`).
+`ref.md` says `acadamarkCrossReferenceResolution` (actual:
+`acadamarkRefResolution`) and calls it a "rehype plugin" when it runs
+as an mdast plugin. `note.md` says `acadamarkNoteNumbering` (actual:
+`acadamarkNotes`; numbering and placement were merged into one plugin).
+Small live-file fix; no code change.
+
+### Specs / documentation
+
+**No documented inventory of which tag forms work for which tags
+(formerly AUD-15).** The grammar supports short-form
+(`<tag attrs>`), pipe-content (`<tag attrs | inline content>`),
+multi-line pipe-content, long-form (`<tag attrs>content</tag>` — only
+for DSL_REGISTRY tags), and self-closing (`<tag attrs />` — broken for
+DSL_REGISTRY per AUD-08). Different tags support different combinations
+and the mapping is undocumented and inconsistent. Authors have no clear
+guide. Fix path: audit every vocabulary entry; create a unified
+`notes/specs/tag-forms-reference.md` showing the full matrix; identify and
+fix inconsistencies; establish a principle ("all tags should support
+all forms that semantically make sense, with the same output").
+Severity: medium — not a runtime bug, but a real documentation and
+design-discoverability issue.
+
+**Design directions DD-1..DD-5 not referenced from specs they govern
+(formerly AUD-25).** `DESIGN.md`'s "Design directions (discovered
+through implementation)" section defines five cross-cutting directions
+(DD-1: content gets parsed, arguments don't; DD-2: caption-like
+content supports two equivalent forms; DD-3: `<meta>` vs `<config>`
+boundary; DD-4: all tag forms work for all tags where semantically
+meaningful; DD-5: standalone HTML is the build target, client-side is
+the future). The directions govern specific vocabulary entries and
+spec docs, but no forward-pointer from the governed spec to the
+relevant direction exists (`config.md` / `meta.md` do not reference
+DD-3 — which AUD-13 violates; `figure.md` / `table.md` do not
+reference DD-1 — directly relevant to AUD-14 below).
+Fix path: add "See also: DD-N in DESIGN.md §Design directions"
+forward-pointer lines to the governed entries. A propagation slice;
+`DESIGN.md` remains the canonical owner.
+
+**Coordinate with DF-8 — AUD-07 (formerly).**
+`packages/layer1-vocabulary/elements/table.md` includes a shorthand
+example using `<csv | name,price\n...>`. This form relies on the
+`<csv>` shortcut tag, which is registered in DSL_REGISTRY but not yet
+implemented (DF-8). The example will mislead authors. Fix:
+remove or mark the `<csv>` example as "planned" until the shortcut tag
+lands.
+
+### Tests / build
+
+**`document-9-demo` has no integration test or snapshot (formerly
+GAP-9).** `test/fixtures/document-9-demo.acm` and
+`document-9-demo.html` exist and are re-rendered by
+`render-fixtures.js`, but unlike documents 1–8 there is no
+corresponding `document-9-expected.json` snapshot and no test case in
+`test/integration.test.js`. document-9 is the most complex fixture:
+multi-note forward-reference numbering, external `.bib` library,
+inline + display math with equation numbers, cross-refs — exactly
+the stages added or restructured in the R1 / R2 / R3 slices.
+Without a snapshot, regressions in combined-pipeline paths can go
+undetected. Fix path: run `render-fixtures.js`, generate
+`document-9-expected.json` from current output, add a test case in
+`integration.test.js` mirroring the existing doc6/doc7/doc8 pattern.
+Severity: medium — the dark surface area covers the full pipeline in
+combination.
+
+**`integration.test.js` hand-mirrors the `index.js` pipeline
+(formerly AUD-17).** The test maintains a separate manual copy of
+the plugin pipeline assembled in `src/index.js`. The two are not
+linked — every pipeline change must be duplicated by hand, with
+nothing enforcing it. **Recurrence record: paid four times** —
+R3a (2026-05, `fillNotes` import drift, first surfacing); R3b
+(2026-05, pipeline reordering); R4 (2026-05, `buildCitationIndex`
+stage change); G1b (2026-05, `document-10-shortcuts.acm`
+integration block added by hand). Fix path: have the integration
+test import and use the real pipeline assembly from `index.js`
+rather than rebuilding it. Small, well-bounded cleanup; a good
+early candidate. Severity: medium — maintenance hazard, not a
+current bug.
+
+### Design discussions
 
 **Discuss the canonical form for sections — markdown `##` heading vs
 `<#>` sigil tag.** A discussion item, not a build item. The shorthand
@@ -518,190 +760,6 @@ same identifiers.
   `--target=web` vs `--target=print`), or a `<config>` setting in
   source. Affects authoring conventions — authors mark intent in source
   vs. the build target drives the lowering.
-
-**Parser bugs — DF-16 (formerly), parser-error-node renderer.** Parser-level
-shortfalls surfaced through audits but not yet fixed. Both are siblings
-under the always-renders guarantee (`notes/specs/principles.md`): DF-16 is
-the "errors stay bounded so the rest of the document is seen" half; the
-parser-error-node renderer is the "produced error nodes are visible in the
-output at their location" half.
-
-- **Blank-line termination error recovery (formerly DF-16).** The
-  micromark finder needs to check each line ending and terminate open
-  constructs at blank lines for localized error recovery. Currently a
-  tag opened before a blank line will consume across the blank line or
-  to EOF. Explicit `Status: Deferred` in
-  `notes/specs/recursive-content-spec.md`. Under the re-tiered
-  always-renders guarantee in `notes/specs/principles.md`, this is a
-  known shortfall against the guarantee, not a permitted exception:
-  the "errors stay bounded so the rest of the document is seen" half
-  is currently violated when EOF-consumption occurs. The route to
-  closing it is partly a design question and partly an implementation
-  question; the item stays open until both are settled.
-
-- **Parser-error-node renderer — `acadamarkTagError` /
-  `acadamarkParseError` visible at source location (always-renders
-  core-guarantee work).** The parser produces `acadamarkTagError` and
-  `acadamarkParseError` nodes for grammar and parse failures, but the
-  interpreter has no compile-step handler registered for these node
-  types, so they currently fall through silently in the rendered
-  output. The always-renders guarantee
-  (`notes/specs/principles.md`) requires them to render visibly at
-  their source location — in the same house style the interpreter
-  already uses for other "the author wrote a reference the system
-  couldn't resolve" cases: `??ref: id??` for an unresolved
-  cross-reference, `??cite: key??` for an unresolved citation, an
-  inline table-parse-error marker for a malformed table body. The
-  parser-error markers should follow the same pattern. Sibling of
-  DF-16 above; both must close for the always-renders guarantee to
-  hold in full. The more impactful of the two, since until it closes
-  even bounded parser errors are invisible in the rendered output.
-  Fix path: register a compile-step handler in
-  `packages/acadamark-interpreter/src/index.js` for the
-  `acadamarkTagError` and `acadamarkParseError` mdast node types that
-  emits a hast element with the house-style marker text and a
-  distinguishing class for styling, mirroring how the unresolved-ref
-  and unresolved-cite markers are emitted today.
-
-**Silent-failure / authoring traps — AUD-13 (formerly).** `<config>`
-silently accepts metadata kwargs that belong in `<meta>` (`title=`,
-`subtitle=`, `author=`, `date=`). The kwargs produce no warning and no
-visible output. The bug is doubly bad because the syntactic ease of
-`<config>` (kwargs on one tag) is more attractive than `<meta>` (nested
-tags), so authors default to it. Fix path: `<config>` should validate
-its accepted kwargs and warn on unknown ones (especially
-metadata-shaped ones); specs should clearly distinguish `<meta>` (document
-metadata) from `<config>` (document options). Severity: medium — silent
-failure mode that produces no visible output. Touches DD-3 in
-`DESIGN.md` (the `<meta>` vs `<config>` boundary).
-
-**Documentation drift — AUD-15, AUD-24, AUD-25 (formerly).** Three
-documentation findings that need separate slices.
-
-- **No documented inventory of which tag forms work for which tags
-  (formerly AUD-15).** The grammar supports short-form
-  (`<tag attrs>`), pipe-content (`<tag attrs | inline content>`),
-  multi-line pipe-content, long-form (`<tag attrs>content</tag>` — only
-  for DSL_REGISTRY tags), and self-closing (`<tag attrs />` — broken for
-  DSL_REGISTRY per AUD-08). Different tags support different combinations
-  and the mapping is undocumented and inconsistent. Authors have no clear
-  guide. Fix path: audit every vocabulary entry; create a unified
-  `notes/specs/tag-forms-reference.md` showing the full matrix; identify and
-  fix inconsistencies; establish a principle ("all tags should support
-  all forms that semantically make sense, with the same output").
-  Severity: medium — not a runtime bug, but a real documentation and
-  design-discoverability issue.
-
-- **Vocabulary `related_plugins` plugin names are stale (formerly
-  AUD-24).** Three vocabulary entries in
-  `packages/layer1-vocabulary/elements/` have `related_plugins` sections
-  naming plugins that no longer match the implemented names. `cite.md`
-  says `acadamarkCitationResolution` (actual: `acadamarkCiteResolution`).
-  `ref.md` says `acadamarkCrossReferenceResolution` (actual:
-  `acadamarkRefResolution`) and calls it a "rehype plugin" when it runs
-  as an mdast plugin. `note.md` says `acadamarkNoteNumbering` (actual:
-  `acadamarkNotes`; numbering and placement were merged into one plugin).
-  Small live-file fix; no code change.
-
-- **Design directions DD-1..DD-5 not referenced from specs they govern
-  (formerly AUD-25).** `DESIGN.md`'s "Design directions (discovered
-  through implementation)" section defines five cross-cutting directions
-  (DD-1: content gets parsed, arguments don't; DD-2: caption-like
-  content supports two equivalent forms; DD-3: `<meta>` vs `<config>`
-  boundary; DD-4: all tag forms work for all tags where semantically
-  meaningful; DD-5: standalone HTML is the build target, client-side is
-  the future). The directions govern specific vocabulary entries and
-  spec docs, but no forward-pointer from the governed spec to the
-  relevant direction exists (`config.md` / `meta.md` do not reference
-  DD-3 — which AUD-13 violates; `figure.md` / `table.md` do not
-  reference DD-1 — directly relevant to AUD-14 below).
-  Fix path: add "See also: DD-N in DESIGN.md §Design directions"
-  forward-pointer lines to the governed entries. A propagation slice;
-  `DESIGN.md` remains the canonical owner.
-
-**Caption-as-content (substantive design + slice) — AUD-14 (formerly).**
-Citations inside the `caption=` kwarg of `<table>`, `<figure>`, and
-similar elements are not parsed — the kwarg value is a string, cite
-tags inside it remain literal text in the rendered output. Affects any
-kwarg where rich content might be desirable (figure captions, alt text,
-etc.). Two architectural options identified at filing:
-
-- **Option A (recommended at filing):** captions become first-class
-  child tags rather than attribute values: `<table #tab:burnout csv | ...> <caption | Risk and protective factors, adapted from <cite Mantzalas2022>>`.
-  Recursive content parsing handles citations naturally. Matches
-  Pandoc/Quarto conventions where captions are markdown blocks.
-- **Option B:** attribute values get recursive parsing —
-  `caption="text <cite key>"` would parse the value as acadamark
-  content. More invasive parser change; affects all attribute values,
-  not just captions.
-
-Tied to design directions DD-1 ("content gets parsed; arguments don't")
-and DD-2 ("tags with caption-like content support two equivalent
-forms"). When scoped, follow the design-directions framing. Severity:
-medium-high — affects real authoring need (captions with citations).
-
-**Asset / build-pipeline bugs — AUD-18, AUD-19 (formerly).** Two filed
-asset-pipeline findings, both low-priority.
-
-- **`<data>` nodes remain in tree after `buildCitationIndex` (formerly
-  AUD-18).** `buildCitationIndex` reads `<data>` and `<library>` nodes
-  at root level but never removes or modifies them. Rendered output is
-  unaffected — no visible `<data>` content appears in any fixture, the
-  `INTERNAL_REGISTRY` returns `null` for them — but a cleanup pass that
-  removes them after their content is consumed has not been decided.
-  Low priority; observation, not malfunction. Potential candidate for a
-  follow-on `indexInputs` consolidation slice.
-
-- **Double KaTeX CSS injection in math documents (formerly AUD-19).**
-  Documents containing math (e.g. `document-5`, `document-6`) carry the
-  KaTeX stylesheet **twice** — a small block (~12 KB) and the full
-  block (~370 KB), as two separate `<style>` elements. Math-free
-  documents have it once. No appearance impact. Fix path: in the
-  asset-injection path in
-  `packages/acadamark-interpreter/src/index.js`, identify where KaTeX
-  CSS is injected and guard against double-injection (e.g. check
-  whether a KaTeX `<style>` block is already present before appending
-  another). Severity: medium — wasted bytes, no rendering impact.
-
-**Testing / maintenance — GAP-9, AUD-17 (formerly).**
-
-- **`document-9-demo` has no integration test or snapshot (formerly
-  GAP-9).** `test/fixtures/document-9-demo.acm` and
-  `document-9-demo.html` exist and are re-rendered by
-  `render-fixtures.js`, but unlike documents 1–8 there is no
-  corresponding `document-9-expected.json` snapshot and no test case in
-  `test/integration.test.js`. document-9 is the most complex fixture:
-  multi-note forward-reference numbering, external `.bib` library,
-  inline + display math with equation numbers, cross-refs — exactly
-  the stages added or restructured in the R1 / R2 / R3 slices.
-  Without a snapshot, regressions in combined-pipeline paths can go
-  undetected. Fix path: run `render-fixtures.js`, generate
-  `document-9-expected.json` from current output, add a test case in
-  `integration.test.js` mirroring the existing doc6/doc7/doc8 pattern.
-  Severity: medium — the dark surface area covers the full pipeline in
-  combination.
-
-- **`integration.test.js` hand-mirrors the `index.js` pipeline
-  (formerly AUD-17).** The test maintains a separate manual copy of
-  the plugin pipeline assembled in `src/index.js`. The two are not
-  linked — every pipeline change must be duplicated by hand, with
-  nothing enforcing it. **Recurrence record: paid four times** —
-  R3a (2026-05, `fillNotes` import drift, first surfacing); R3b
-  (2026-05, pipeline reordering); R4 (2026-05, `buildCitationIndex`
-  stage change); G1b (2026-05, `document-10-shortcuts.acm`
-  integration block added by hand). Fix path: have the integration
-  test import and use the real pipeline assembly from `index.js`
-  rather than rebuilding it. Small, well-bounded cleanup; a good
-  early candidate. Severity: medium — maintenance hazard, not a
-  current bug.
-
-**Coordinate with DF-8 — AUD-07 (formerly).**
-`packages/layer1-vocabulary/elements/table.md` includes a shorthand
-example using `<csv | name,price\n...>`. This form relies on the
-`<csv>` shortcut tag, which is registered in DSL_REGISTRY but not yet
-implemented (DF-8). The example will mislead authors. Fix:
-remove or mark the `<csv>` example as "planned" until the shortcut tag
-lands.
 
 **Smart-typography conversions — open design question.** Markdown
 extensions convert `--` to en-dash and `---` to em-dash. Whether
