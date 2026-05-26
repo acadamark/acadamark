@@ -67,9 +67,9 @@ identifier.
 ## Alpha scope
 
 Every open backlog item carries an **alpha-line tag** alongside its
-subsystem tag — one of `[alpha]`, `[post-alpha]`, `[alpha-if-cheap]`,
-or `[undecided]`. The tag is the answer to "is this required to ship
-the alpha release?"
+subsystem tag — one of `[alpha]`, `[post-alpha]`, or `[undecided]`.
+The tag is the answer to "is this required to ship the alpha
+release?"
 
 ### What the alpha release is — the five-point definition
 
@@ -86,21 +86,22 @@ The alpha release demonstrably includes:
 - **`[alpha]`** — release-blocking; must exist for the alpha release.
 - **`[post-alpha]`** — real wanted work, not release-blocking. Future
   milestone or wish-list.
-- **`[alpha-if-cheap]`** — desired for alpha; included only if an
-  effort-check confirms it is not demanding, else falls to
-  `[post-alpha]`. Each `[alpha-if-cheap]` item carries a *pending
-  effort-check* — resolved by a later read-only scoping pass.
 - **`[undecided]`** — genuinely not yet decided; awaits a ruling.
+
+(A transitional **`[alpha-if-cheap]`** tag was used during the
+initial alpha-scoping pass for items the user wanted in alpha
+conditionally on cost; all such items were resolved by a follow-up
+effort-scoping pass on 2026-05-25 — see `STATUS.md` — and the
+category is now empty. If a future item needs the same conditional
+treatment, the tag can be re-introduced.)
 
 ### The alpha set is open
 
 The user is adding to the alpha set beyond what is currently in this
 backlog. New items the user names as alpha will be filed with the
-`[alpha]` tag directly. The `[alpha-if-cheap]` items are provisional
-pending the effort-scoping pass that resolves each to `[alpha]` or
-`[post-alpha]`. Terminology used in the alpha definition (Layer 1,
-canonical acadamark, sigils, markdown idioms, strict mode) is defined
-in `DESIGN.md` §"Layered model and terminology."
+`[alpha]` tag directly. Terminology used in the alpha definition
+(Layer 1, canonical acadamark, sigils, markdown idioms, strict mode)
+is defined in `DESIGN.md` §"Layered model and terminology."
 
 ---
 
@@ -160,9 +161,11 @@ the current code and all confirmed closed (see the STATUS milestone).
 
 - [ ] **Generalize the qualifying-tag pattern beyond `<table>`**
   `[parser]` `[post-alpha]` *(`formerly DF-17`)*
-- [ ] **Refine note placement — per-section footnote collection and
-  margin sidenotes** `[interpreter]` `[alpha-if-cheap]`
-  *(`formerly PG-1, PG-2`)*
+- [ ] **Implement per-section footnote collection** `[interpreter]`
+  `[alpha]` *(`formerly PG-1`)*
+- [ ] **Implement margin sidenotes** `[interpreter]` `[post-alpha]`
+  — coupled to multi-column display rendering (the margin is another
+  column) *(`formerly PG-2`)*
 - [ ] **Make the bibliography heading a config kwarg instead of
   hardcoded** `[interpreter]` `[post-alpha]` *(`formerly PG-10`)*
 - [ ] **Implement DSL handlers** (`<csv>`/`<tsv>`, `<mermaid>`/`<abc>`,
@@ -211,7 +214,7 @@ the current code and all confirmed closed (see the STATUS milestone).
 - [ ] **Discuss four open design questions prerequisite to multi-file
   authoring** (project-config / `<include>` interaction;
   standalone-chapter mode; project-metadata placement; pipeline
-  placement + discovery timing) `[cross-cutting]` `[alpha-if-cheap]`
+  placement + discovery timing) `[cross-cutting]` `[post-alpha]`
   — tracks with multi-file authoring itself
   *(`spec: MF-Q1, MF-Q2, MF-Q3, MF-Q4`)*
 - [ ] **Discuss four open design questions prerequisite to
@@ -250,7 +253,7 @@ the current code and all confirmed closed (see the STATUS milestone).
 - [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
   — gated by the Layer 2 heading-level discussion *(`formerly DF-19`)*
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)
-  `[cross-cutting]` `[alpha-if-cheap]` *(`formerly DF-4`)*
+  `[cross-cutting]` `[post-alpha]` *(`formerly DF-4`)*
 - [ ] **Build book / book-part document structuring** — multi-chapter
   document structure; `article-structuring.js` currently warns and
   skips non-article types `[cross-cutting]` `[alpha]`
@@ -282,13 +285,14 @@ the current code and all confirmed closed (see the STATUS milestone).
   Should be done **before** any of those six AUD items is picked up as
   implementation work, to avoid wasted scoping. `[cross-cutting]`
   `[post-alpha]`
-- [ ] **Verify the section-form reduction ladder converges** — confirm
-  the named form `<section>`, the sigil form `<#>`, and the bare `#`
-  idiom all produce the identical Layer 1 `<section>` node, including
-  id threading (`<# #sec:intro | … #>` must carry its id through). The
-  *implementation* check of the canonical-section-form decision. Cross-
-  reference the sigil-as-first-class-category discussion item — this
-  is partial input to it. `[tests/build]` `[alpha-if-cheap]`
+- [ ] **Build heading normalization and verify the section-form ladder
+  converges** — build the missing heading-normalization in
+  `normalize-markdown.js` so bare markdown `#` reduces to the
+  canonical section form; then verify the named form `<section>`,
+  the sigil form `<#>`, and the bare `#` idiom all produce the
+  identical Layer 1 `<section>` node, including id threading. Has a
+  dependency on the `[alpha]` hash-sigil dispatch bug fix for the
+  sigil-form half. `[interpreter]` `[alpha]`
 
 ### Explicitly deferred — parked
 
@@ -508,10 +512,33 @@ same slice.
 Generalizing the qualifying-tag pattern beyond `<table>` (DF-17 —
 note: already works *for* `<table>`). *(`formerly DF-17`)*
 
-**Refine note placement — per-section footnote collection and margin
-sidenotes** `[interpreter]` `[alpha-if-cheap]`. Per-section footnote
-collection (PG-1); margin-positioned sidenotes (PG-2). Both are
-placement refinements; notes otherwise work. *(`formerly PG-1, PG-2`)*
+**Implement per-section footnote collection** `[interpreter]`
+`[alpha]`. Currently all `<note placement=foot>` notes are collected
+into a single `<note-list class="footnotes">` injected at the start
+of `<article-back>` (the "foot" classification is nominal —
+`notes.js` L11 records "simplified: per-section footnote collection
+is deferred"). This item: walk each section's subtree (sections are
+already nested by the time `acadamarkNotePlacement` runs), inject a
+per-section `<note-list>` for that section's `placement=foot` notes,
+leave numbering global (one sequential count across the document).
+Effort-scoping (2026-05-25) found this is one contained slice — the
+walk-each-section approach uses the existing nested-section tree
+and needs no walker change. A small design call: collect at the
+deepest containing section, the outermost, or a fixed level?
+*(`formerly PG-1`)*
+
+**Implement margin sidenotes** `[interpreter]` `[post-alpha]`. Today
+`placement=side` produces a fallback `<li class="sidenote-fallback">`
+collected in article-back; the plugin comment notes "Future themes
+provide margin positioning." This item: actual margin-positioned
+sidenotes — a sidenote renders in the page margin near its in-text
+anchor. **Should be implemented as part of, or on top of,
+multi-column display rendering** — a margin sidenote is structurally
+another column, and the multi-column layout engine is the machinery
+a margin needs. Implementing sidenotes standalone would build a
+one-off margin-positioning system that the multi-column work would
+duplicate or obsolete. Cross-reference: the multi-column display
+rendering item (also `[post-alpha]`). *(`formerly PG-2`)*
 
 **Make the bibliography heading a config kwarg instead of hardcoded**
 `[interpreter]` `[post-alpha]`. Hardcoded bibliography heading (PG-10 — a config
@@ -624,7 +651,9 @@ not yet specified." A design step precedes the code.
 **Implement multi-column display rendering** `[interpreter]` `[post-alpha]`. Spec is
 `notes/specs/multi-column-display.md`; render-mode concern.
 Independent leaf, low-priority unless a publication target needs it.
-*(`formerly DF-5`)*
+*(`formerly DF-5`)* — Margin sidenotes (see that item) are coupled
+to this work: the margin is another column, and the multi-column
+layout engine is the machinery a margin needs.
 
 **Support caption-as-content for `<table>`, `<figure>`, similar (DD-1
 / DD-2 implementation)** `[cross-cutting]` `[alpha]`. Citations inside the
@@ -753,7 +782,7 @@ placeholder file is archived at
 `notes/archive/slide-element-deferred-2026-05.md`. *(`formerly DF-6`)*
 
 **Discuss four open design questions prerequisite to multi-file
-authoring** `[cross-cutting]` `[alpha-if-cheap]`. Surfaced by the Front C
+authoring** `[cross-cutting]` `[post-alpha]`. Surfaced by the Front C
 extensions-cluster spec audit. These are forks the
 `notes/specs/multi-file-authoring.md` blueprint previously presented
 as settled; the audit and fix-slice disclosed them as open and filed
@@ -959,10 +988,18 @@ DF-19's gate on OQ-2).
   on the display ladder. Gated by OQ-2 (Layer 2 above) — the
   heading-level question must be decided when render mode is scoped.
   *(`formerly DF-19`)*
-- **Build multi-file authoring** `[cross-cutting]` `[alpha-if-cheap]`. `acadamark.yml` +
+- **Build multi-file authoring** `[cross-cutting]` `[post-alpha]`. `acadamark.yml` +
   `<include>`; project-wide registries. A real architectural
   extension. Spec at `notes/specs/multi-file-authoring.md`.
-  *(`formerly DF-4`)*
+  *(`formerly DF-4`)* — Effort-scoping (2026-05-25) found this is a
+  multi-slice arc with four open design questions (MF-Q1–4) that are
+  themselves prerequisites; the user ruled it post-alpha. **The
+  file-reader / path-resolution substrate** — a single contained
+  slice introducing a "current file" concept and path resolution to
+  the otherwise path-agnostic interpreter — could be done early if
+  convenient. It makes future multi-file work cheaper without
+  committing to any of the four MF-Q design questions. The multi-file
+  feature itself is post-alpha.
 - **Build book / book-part document structuring** `[cross-cutting]` `[alpha]`.
   Vocabulary exists; `article-structuring.js` currently warns and
   skips non-article types. *(`formerly DF-12`)*
@@ -1078,16 +1115,47 @@ leave open with a fresh "still applicable" finding. Should be done
 **before** any of those six is picked up as implementation work, to
 avoid wasted scoping work on an already-fixed item.
 
-**Verify the section-form reduction ladder converges** `[tests/build]`
-`[alpha-if-cheap]`. The canonical-section-form decision (recorded in
-DESIGN.md) is that named `<section>` and the sigil form `<#>` are
-co-equal canonical surfaces and the bare markdown `#` heading is a
-lossy-reduction shorthand for them. The decision is documented; the
-implementation check is whether the three reduction paths actually
-converge to the identical Layer 1 `<section>` node. This item: write
-a small fixture-and-test pass that takes all three forms (named,
-sigil, bare-markdown) — both bare and with id (`<# #sec:intro | …
-#>`) — and asserts the resulting AST is structurally identical. The
-sigil-as-first-class-category Discussion item is the spec-side
-follow-on this verification feeds into; this item is the
-implementation half.
+**Build heading normalization and verify the section-form ladder
+converges** `[interpreter]` `[alpha]`. The canonical-section-form
+decision (recorded in DESIGN.md) is that named `<section>` and the
+sigil form `<#>` are co-equal canonical surfaces and the bare
+markdown `#` heading is a lossy-reduction shorthand for them. The
+decision is documented; the implementation does not yet make all
+three converge. Per the effort-scoping pass (2026-05-25):
+
+- **Form 1 — named `<section #sec:intro | Intro>`:** converges
+  today. The parser produces an `acadamarkTag` with
+  `tagname: 'section'`; `section-nesting.js` runs its nesting
+  algorithm; id threads through. This is the reference form.
+- **Form 2 — sigil `<# #sec:intro | Intro #>`:** broken today, **but
+  fixed as a side effect of the `[alpha]` hash-sigil dispatch bug**.
+  The parser captures the id correctly (grammar L113-144); only
+  `acadamark-core/src/sigil-mapping.js` lacks `#`/`##`/`###` entries.
+  Once that fix lands (the hash-sigil dispatch item already filed as
+  `[alpha]`), this form converges to the named form including the
+  id. Explicit dependency.
+- **Form 3 — bare markdown `# Intro`:** does **not** converge today.
+  There is no heading normalization — `normalize-markdown.js`'s
+  comments at L26 and L199 explicitly mark it as future work. A
+  bare-markdown heading currently passes through to `<h1>`, not to
+  the canonical section node.
+
+This item: **build** the missing heading-normalization (a new entry
+in `normalize-markdown.js`'s NORMALIZATIONS set mapping mdast
+`heading` nodes to `section` / `sub-section` / `sub-sub-section`
+acadamarkTag nodes by `depth`; let the existing section-nesting
+plugin handle the rest). Then write a small fixture-and-test pass
+asserting that all three forms produce the structurally identical
+Layer 1 `<section>` node, both bare and with id.
+
+Two bounded design questions the implementation slice must settle:
+(a) heading depths 4–6 have no Layer 1 section counterpart — drop,
+error, or extend the ladder; (b) interaction with OQ-2 (the
+section-title heading-level question, gated `[post-alpha]`) — does a
+top-level `# Title` become the article title or the first section?
+
+The sigil-as-first-class-category Discussion item is the spec-side
+follow-on this work feeds into; this item is the implementation
+half. *(Renamed 2026-05-25 from "Verify the section-form reduction
+ladder converges" — the effort-scoping pass found the work is not
+pure verification, it includes building Form 3's normalization.)*

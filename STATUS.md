@@ -378,3 +378,33 @@ that). One line gets added every few months, not every slice.
   `<#>` are co-equal canonical; the bare markdown `#` is a lossy
   reduction; the implementation verification is filed as a
   `[alpha-if-cheap]` free-leaf item under Other open work.
+- **2026-Q2 — `[alpha-if-cheap]` items resolved; category emptied.**
+  A read-only effort-scoping pass against the three `[alpha-if-cheap]`
+  items, followed by user rulings written as a small backlog-edit
+  slice, resolved every conditional alpha item to a final tag and
+  emptied the category. Multi-file authoring → `[post-alpha]` (the
+  effort-scoping found this is a multi-slice arc with four open
+  design questions; the bundled four-MF-Q discussion item followed
+  along as `[post-alpha]`; the spec records that the file-reader /
+  path-resolution substrate could land early as a contained slice
+  without committing to any MF-Q answer). The "refine note placement"
+  bundled item was **dissolved**: per-section footnote collection →
+  `[alpha]` (formerly PG-1; one contained slice over an
+  already-nested section tree), and margin sidenotes → `[post-alpha]`
+  (formerly PG-2) **coupled to the multi-column display rendering
+  item** — the margin is structurally another column, and the
+  multi-column layout engine is the machinery a margin needs;
+  reciprocal cross-references recorded in both items. The
+  section-form ladder verification → `[alpha]`, **renamed** "Build
+  heading normalization and verify the section-form ladder converges"
+  — the effort-scoping found the work is not pure verification: Form
+  1 (named) converges today, Form 2 (sigil) is fixed as a side effect
+  of the already-`[alpha]` hash-sigil dispatch bug, but Form 3 (bare
+  markdown `#`) does not converge today and requires building the
+  missing heading-normalization in `normalize-markdown.js` (a new
+  NORMALIZATIONS entry, ~one slice; two bounded design questions
+  recorded in the item — heading depth 4–6 handling, OQ-2
+  interaction). The `[alpha-if-cheap]` tag is no longer in the
+  legend's live category list; the legend carries a one-paragraph
+  note explaining the transitional category and its closure for
+  readers encountering the term in commit history.
