@@ -110,37 +110,42 @@ AcadamarkConstruct
 // Hash sigil bodies are prose (escape rules apply): HashSigilBodyItem1/2/3.
 // Dollar and backtick sigil bodies are opaque (no escape processing).
 
+// Hash sigils carry heading prose — recursively parsed, not opaque
+// (contentHandler: 'default', isOpaqueContent: false). makeNode's default
+// for isOpaqueContent is false; the rules below let that default stand
+// rather than overriding it to true.
+
 SigilTag3
   = "<" "###" attrs:Attributes "|" content:HashSigilBodyItem3* "###>" {
-      const node = makeNode("###", { isOpaqueContent: true })
+      const node = makeNode("###")
       Object.assign(node, attrs)
       node.content = processContentItems(content)
       return node
     }
   / "<" "###" content:HashSigilBodyItem3* "###>" {
-      return makeNode("###", { isOpaqueContent: true, content: processContentItems(content) })
+      return makeNode("###", { content: processContentItems(content) })
     }
 
 SigilTag2
   = "<" "##" attrs:Attributes "|" content:HashSigilBodyItem2* "##>" {
-      const node = makeNode("##", { isOpaqueContent: true })
+      const node = makeNode("##")
       Object.assign(node, attrs)
       node.content = processContentItems(content)
       return node
     }
   / "<" "##" content:HashSigilBodyItem2* "##>" {
-      return makeNode("##", { isOpaqueContent: true, content: processContentItems(content) })
+      return makeNode("##", { content: processContentItems(content) })
     }
 
 SigilTag1
   = "<" "#" attrs:Attributes "|" content:HashSigilBodyItem1* "#>" {
-      const node = makeNode("#", { isOpaqueContent: true })
+      const node = makeNode("#")
       Object.assign(node, attrs)
       node.content = processContentItems(content)
       return node
     }
   / "<" "#" content:HashSigilBodyItem1* "#>" {
-      return makeNode("#", { isOpaqueContent: true, content: processContentItems(content) })
+      return makeNode("#", { content: processContentItems(content) })
     }
 
 // ─── Hash sigil body items: prose with escape processing ──────────────────

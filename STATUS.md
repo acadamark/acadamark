@@ -408,3 +408,41 @@ that). One line gets added every few months, not every slice.
   legend's live category list; the legend carries a one-paragraph
   note explaining the transitional category and its closure for
   readers encountering the term in commit history.
+- **2026-Q2 — alpha build Phase 1: hash-sigil dispatch + opacity
+  bugs fixed.** The first alpha build slice. Two coupled `[alpha]`
+  bugs closed: (i) **hash-sigil dispatch** — added `'#' → 'section'`,
+  `'##' → 'sub-section'`, `'###' → 'sub-sub-section'` entries to
+  `acadamark-core/src/sigil-mapping.js` PARSER_TO_VOCAB so the
+  interpreter's vocabulary lookup resolves hash-sigil tagnames to
+  their semantic Layer 1 keys; (ii) **hash-sigil isOpaqueContent
+  discrepancy** — removed `isOpaqueContent: true` from the three
+  hash-sigil grammar rules in `packages/remark-acadamark/grammar/
+  acadamark.peggy` and regenerated the parser, so the grammar emits
+  the spec-correct `isOpaqueContent: false`; the prior bug was
+  runtime-masked by `from-markdown.js`'s contentHandler-based
+  override (the override fired because hash sigils have
+  `contentHandler === 'default'`), but the grammar source is now
+  consistent with both `shorthand-syntax.md` and the DSL registry.
+  A finding surfaced during fixture verification: PARSER_TO_VOCAB
+  alone was insufficient because the structural plugins
+  (`section-nesting.js`, `article-structuring.js`) match sections by
+  tagname, not by `resolveVocabKey`. A small companion
+  sigil-tagname normalization was added to `section-nesting.js`
+  (a `normalizeSigilSectionNames` pre-walk that rewrites `#`/`##`/
+  `###` to the canonical Layer 1 names before nesting), so the
+  structural pipeline treats sigil and named sections identically.
+  New integration fixture `document-14-hash-sigil-headings.acm`
+  exercises all three sigil levels including a sigil with id and
+  prose content (emphasis, inline code) in titles — the absence of
+  such coverage was what let the bug stay latent through the
+  acadamark-core extraction arc. A new `sigil-mapping.test.js` unit
+  test in `acadamark-core` pins the PARSER_TO_VOCAB mappings. One
+  grammar test (`test-grammar.js` L30) was updated to assert the
+  spec-correct `isOpaqueContent: false`; previously it asserted the
+  buggy `true`. Tests: acadamark-core 30/30, remark-acadamark
+  128/128, acadamark-interpreter 24/24 — all 13 prior integration
+  snapshots stable, document-14 snapshot written on first run.
+  Downstream impact: the `[alpha]` section-form / heading-
+  normalization item's Form 2 (sigil) prerequisite is now satisfied;
+  that item now reduces to building Form 3 (bare-markdown) heading
+  normalization in `normalize-markdown.js`.

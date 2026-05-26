@@ -533,4 +533,43 @@ export function run() {
     snapshotHast('document-13', hast);
     console.log('PASS: integration doc13 (code-block cross-references — PG-6)');
   }
+
+  // ── Document 14: Hash-sigil heading dispatch ───────────────────────────────
+  // Phase-1 alpha-build slice fixture. Exercises the `<#>` / `<##>` / `<###>`
+  // sigil-form headings end-to-end to prove:
+  //   - dispatch: `<# … #>` produces a Layer 1 <section>, not an
+  //     unknown-element span (the sigil-mapping fix added `#`/`##`/`###`
+  //     entries to PARSER_TO_VOCAB).
+  //   - opacity: prose content inside the heading is recursively parsed
+  //     (the grammar fix removed `isOpaqueContent: true` from the hash-sigil
+  //     rules so the makeNode default `false` stands; from-markdown.js's
+  //     contentHandler-based override was already correcting at runtime, but
+  //     the grammar source is now consistent with shorthand-syntax.md and
+  //     dsl-registry.js).
+  //   - id threading: `<# #sec:intro | … #>` carries its id through the
+  //     parser's Attributes capture to the resulting <section> node.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-14-hash-sigil-headings.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Dispatch: hash sigils produce real sections, not unknown-element spans.
+    assert.ok(html.includes('<article>'), 'doc14: article structure present');
+    assert.ok(html.includes('<section>'), 'doc14: <section> element from <# … #>');
+    assert.ok(html.includes('<section-title>'), 'doc14: <section-title> extracted');
+    assert.ok(html.includes('<sub-section>'), 'doc14: <sub-section> from <## … ##>');
+    assert.ok(html.includes('<sub-section-title>'), 'doc14: <sub-section-title> extracted');
+    assert.ok(html.includes('<sub-sub-section>'), 'doc14: <sub-sub-section> from <### … ###>');
+    assert.ok(html.includes('<sub-sub-section-title>'), 'doc14: <sub-sub-section-title> extracted');
+    assert.ok(!html.includes('data-acadamark-unknown'), 'doc14: no unknown-element fallback span');
+
+    // Id threading: sigil with id resolves to section with that id.
+    assert.ok(html.includes('id="sec:intro"'), 'doc14: id threads through hash sigil');
+
+    // Opacity: prose content inside the heading was recursively parsed.
+    assert.ok(html.includes('<em>'), 'doc14: emphasis inside <## … ##> rendered (isOpaqueContent: false)');
+    assert.ok(html.includes('<code>'), 'doc14: inline code inside <### … ###> rendered (isOpaqueContent: false)');
+
+    snapshotHast('document-14', hast);
+    console.log('PASS: integration doc14 (hash-sigil heading dispatch — alpha Phase 1)');
+  }
 }

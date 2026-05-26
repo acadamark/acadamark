@@ -149,13 +149,6 @@ the current code and all confirmed closed (see the STATUS milestone).
   assembly (no drift), but the rewire needs a design decision on how
   the test captures intermediate hast for snapshot inspection (today
   via manual mirror) *(`formerly AUD-17`)*
-- [ ] **Fix the `#`/`##`/`###` hash-sigil dispatch — they currently
-  fall through to the unknown-element span** `[interpreter]` `[alpha]`
-  — spec-documented hash-sigil heading form is silently unsupported
-  (couple with the opacity-discrepancy bug)
-- [ ] **Fix hash-sigil `isOpaqueContent` discrepancy — spec says
-  `false`, grammar emits `true`** `[parser]` `[alpha]` — couple with
-  the hash-sigil dispatch bug above
 
 #### Enhancements
 
@@ -290,9 +283,10 @@ the current code and all confirmed closed (see the STATUS milestone).
   `normalize-markdown.js` so bare markdown `#` reduces to the
   canonical section form; then verify the named form `<section>`,
   the sigil form `<#>`, and the bare `#` idiom all produce the
-  identical Layer 1 `<section>` node, including id threading. Has a
-  dependency on the `[alpha]` hash-sigil dispatch bug fix for the
-  sigil-form half. `[interpreter]` `[alpha]`
+  identical Layer 1 `<section>` node, including id threading. The
+  sigil-form half is already done as of the alpha Phase 1 hash-sigil
+  fix (2026-05-25); only Form 3 (bare markdown) remains. `[interpreter]`
+  `[alpha]`
 
 ### Explicitly deferred — parked
 
@@ -475,36 +469,6 @@ consequences for the test's diagnostic power. The fix waits for that
 ruling. Severity: medium — maintenance hazard (zero drift today but
 the pattern remains the structural risk).
 *(`formerly AUD-17`)*
-
-**Fix the `#`/`##`/`###` hash-sigil dispatch** `[interpreter]` `[alpha]`. The
-parser's `SigilTag1`/`SigilTag2`/`SigilTag3` rules emit literal `"#"`,
-`"##"`, `"###"` as the `acadamarkTag` node's tagname — matching the
-established sigil pattern (`$`/`$$`/`` ` ``/` ``` ` likewise emit
-literal sigils as tagname). But `acadamark-core/src/sigil-mapping.js`'s
-`PARSER_TO_VOCAB` only maps the dollar and backtick sigils to vocabulary
-keys; the hash sigils have no entry. `resolveVocabKey('#')` therefore
-returns `'#'` unchanged, `vocabulary.get('#')` finds nothing, and the
-interpreter produces a `<span data-acadamark-unknown="#">…</span>`
-fallback for any `<# heading #>`. Spec-documented hash-sigil heading
-form (`shorthand-syntax.md` Example 9) is silently unsupported. The bug
-is **latent today** — no test fixture exercises `<#>`/`<##>`/`<###>`,
-which is how it stayed undetected (see also the coverage-audit
-Discussion item below). Confirmed by Slice 4 Phase 0's Q7 investigation,
-verdict (c). Likely fix: add entries to `PARSER_TO_VOCAB` (`'#' →
-'section'`, `'##' → 'sub-section'`, `'###' → 'sub-sub-section'`); but
-**couple this fix to the opacity-discrepancy item below** — both belong
-to the hash-sigil family and should be done as one coherent piece.
-
-**Fix hash-sigil `isOpaqueContent` discrepancy** `[parser]` `[alpha]`.
-`shorthand-syntax.md` L563 says hash sigils are
-prose-bearing with `contentHandler: 'default'` and
-`isOpaqueContent: false`; the grammar at
-`packages/remark-acadamark/grammar/acadamark.peggy` lines 113–144
-explicitly emits `isOpaqueContent: true` for all three hash-sigil
-rules. One side is wrong. Surfaced as the adjacent finding alongside
-Slice 4 Phase 0's Q7. Couple this fix to the hash-sigil dispatch
-item above — same family, same coherent piece of work, likely the
-same slice.
 
 ### Enhancements
 
@@ -1127,26 +1091,30 @@ three converge. Per the effort-scoping pass (2026-05-25):
   today. The parser produces an `acadamarkTag` with
   `tagname: 'section'`; `section-nesting.js` runs its nesting
   algorithm; id threads through. This is the reference form.
-- **Form 2 — sigil `<# #sec:intro | Intro #>`:** broken today, **but
-  fixed as a side effect of the `[alpha]` hash-sigil dispatch bug**.
-  The parser captures the id correctly (grammar L113-144); only
-  `acadamark-core/src/sigil-mapping.js` lacks `#`/`##`/`###` entries.
-  Once that fix lands (the hash-sigil dispatch item already filed as
-  `[alpha]`), this form converges to the named form including the
-  id. Explicit dependency.
+- **Form 2 — sigil `<# #sec:intro | Intro #>`:** **converges as of
+  the alpha Phase 1 slice (2026-05-25)** that fixed the hash-sigil
+  dispatch and opacity bugs and added a small companion
+  sigil-tagname normalization in `section-nesting.js`. The id threads
+  through; section-title extraction runs; the resulting Layer 1
+  node is identical to the named-section form. Fixture coverage at
+  `test/fixtures/document-14-hash-sigil-headings.acm`. **Prerequisite
+  satisfied.**
 - **Form 3 — bare markdown `# Intro`:** does **not** converge today.
   There is no heading normalization — `normalize-markdown.js`'s
   comments at L26 and L199 explicitly mark it as future work. A
   bare-markdown heading currently passes through to `<h1>`, not to
   the canonical section node.
 
-This item: **build** the missing heading-normalization (a new entry
-in `normalize-markdown.js`'s NORMALIZATIONS set mapping mdast
-`heading` nodes to `section` / `sub-section` / `sub-sub-section`
+This item: **build** the missing heading-normalization for Form 3
+(a new entry in `normalize-markdown.js`'s NORMALIZATIONS set mapping
+mdast `heading` nodes to `section` / `sub-section` / `sub-sub-section`
 acadamarkTag nodes by `depth`; let the existing section-nesting
-plugin handle the rest). Then write a small fixture-and-test pass
-asserting that all three forms produce the structurally identical
-Layer 1 `<section>` node, both bare and with id.
+plugin handle the rest — which already includes the sigil-tagname
+normalization the Phase 1 slice added). Then extend the existing
+`document-14-hash-sigil-headings.acm` fixture (or add a sibling) to
+exercise bare-markdown `#` headings and assert that all three forms
+produce the structurally identical Layer 1 `<section>` node, both
+bare and with id (Forms 1 and 2 are already covered by document-14).
 
 Two bounded design questions the implementation slice must settle:
 (a) heading depths 4–6 have no Layer 1 section counterpart — drop,

@@ -349,31 +349,31 @@ function peg$parse(input, options) {
   var peg$e55 = peg$classExpectation([" ", "\t", "\n", "\r"], false, false);
 
   var peg$f0 = function(attrs, content) {
-      const node = makeNode("###", { isOpaqueContent: true })
+      const node = makeNode("###")
       Object.assign(node, attrs)
       node.content = processContentItems(content)
       return node
     };
   var peg$f1 = function(content) {
-      return makeNode("###", { isOpaqueContent: true, content: processContentItems(content) })
+      return makeNode("###", { content: processContentItems(content) })
     };
   var peg$f2 = function(attrs, content) {
-      const node = makeNode("##", { isOpaqueContent: true })
+      const node = makeNode("##")
       Object.assign(node, attrs)
       node.content = processContentItems(content)
       return node
     };
   var peg$f3 = function(content) {
-      return makeNode("##", { isOpaqueContent: true, content: processContentItems(content) })
+      return makeNode("##", { content: processContentItems(content) })
     };
   var peg$f4 = function(attrs, content) {
-      const node = makeNode("#", { isOpaqueContent: true })
+      const node = makeNode("#")
       Object.assign(node, attrs)
       node.content = processContentItems(content)
       return node
     };
   var peg$f5 = function(content) {
-      return makeNode("#", { isOpaqueContent: true, content: processContentItems(content) })
+      return makeNode("#", { content: processContentItems(content) })
     };
   var peg$f6 = function(item) { return item };
   var peg$f7 = function(c) { return c };

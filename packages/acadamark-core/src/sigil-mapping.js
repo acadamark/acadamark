@@ -11,6 +11,9 @@
  * Tag names not in this map dispatch directly by their tag name.
  */
 export const PARSER_TO_VOCAB = {
+  '#': 'section',
+  '##': 'sub-section',
+  '###': 'sub-sub-section',
   '$': 'inline-math',
   '$$': 'display-math',
   '```': 'code-block',

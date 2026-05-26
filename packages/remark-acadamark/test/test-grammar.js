@@ -27,7 +27,13 @@ function p(src) {
   const n = p('<# Introduction #>')
   assert.equal(n.tagname, '#')
   assert.equal(n.content, ' Introduction ')
-  assert.equal(n.isOpaqueContent, true)
+  // Hash sigils are prose-bearing per shorthand-syntax.md L569 and
+  // dsl-registry.js (contentHandler: 'default'). The grammar emits the
+  // makeNode default isOpaqueContent: false; from-markdown.js's
+  // contentHandler-based assignment confirms it. Pre-2026-05-25 the
+  // grammar emitted true (a runtime-masked bug fixed in the alpha
+  // Phase 1 slice).
+  assert.equal(n.isOpaqueContent, false)
   assert.equal(n.id, null)
   assert.deepEqual(n.classes, [])
   console.log('PASS grammar: basic <# ... #>')

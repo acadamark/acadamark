@@ -1,0 +1,26 @@
+<meta type=article>
+  <title | Hash-sigil heading dispatch fixture>
+  <author | Test Author>
+</meta>
+
+<# Plain hash-sigil section #>
+
+This top-level section is authored with the `<#>` sigil form rather than the
+named `<section>` form. It should produce a Layer 1 `<section>` element with a
+proper `<section-title>`, not an unknown-element span.
+
+<# #sec:intro | Hash-sigil section with id #>
+
+The id attribute on the sigil-form section must thread through to the section
+node so that `<ref @sec:intro>` can resolve to it.
+
+<## Sub-section with *emphasis* in the title ##>
+
+The double-hash sigil produces a `<sub-section>`. The emphasis in the title
+text must be recursively parsed — proving `isOpaqueContent: false` for hash
+sigils.
+
+<### Sub-sub-section with `inline code` ###>
+
+The triple-hash sigil produces a `<sub-sub-section>`. The inline code in the
+title text must also be recursively parsed.

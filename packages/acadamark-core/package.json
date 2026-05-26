@@ -20,7 +20,7 @@
     "./file-data-keys": "./src/file-data-keys.js"
   },
   "scripts": {
-    "test": "node test/colon-id.test.js"
+    "test": "node test/colon-id.test.js && node test/sigil-mapping.test.js"
   },
   "keywords": [
     "acadamark",
