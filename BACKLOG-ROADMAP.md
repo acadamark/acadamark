@@ -64,6 +64,46 @@ identifier.
 
 ---
 
+## Alpha scope
+
+Every open backlog item carries an **alpha-line tag** alongside its
+subsystem tag — one of `[alpha]`, `[post-alpha]`, `[alpha-if-cheap]`,
+or `[undecided]`. The tag is the answer to "is this required to ship
+the alpha release?"
+
+### What the alpha release is — the five-point definition
+
+The alpha release demonstrably includes:
+
+1. The Layer 1 custom-HTML elements that render a rich document.
+2. Canonical acadamark shorthand authoring that form.
+3. Further shorthands (sigils) and markdown idioms reducing to it.
+4. JATS ⇔ Layer 1 conversion.
+5. Acadamark ⇔ Layer 1 conversion.
+
+### What the tags mean
+
+- **`[alpha]`** — release-blocking; must exist for the alpha release.
+- **`[post-alpha]`** — real wanted work, not release-blocking. Future
+  milestone or wish-list.
+- **`[alpha-if-cheap]`** — desired for alpha; included only if an
+  effort-check confirms it is not demanding, else falls to
+  `[post-alpha]`. Each `[alpha-if-cheap]` item carries a *pending
+  effort-check* — resolved by a later read-only scoping pass.
+- **`[undecided]`** — genuinely not yet decided; awaits a ruling.
+
+### The alpha set is open
+
+The user is adding to the alpha set beyond what is currently in this
+backlog. New items the user names as alpha will be filed with the
+`[alpha]` tag directly. The `[alpha-if-cheap]` items are provisional
+pending the effort-scoping pass that resolves each to `[alpha]` or
+`[post-alpha]`. Terminology used in the alpha definition (Layer 1,
+canonical acadamark, sigils, markdown idioms, strict mode) is defined
+in `DESIGN.md` §"Layered model and terminology."
+
+---
+
 ## Open items — checklist
 
 A flat scannable index of every open item. Detailed entries below.
@@ -79,149 +119,181 @@ the current code and all confirmed closed (see the STATUS milestone).
 ### Layer 2 — gated
 
 - [ ] **Decide section-title heading level when an article-title is
-  present** `[cross-cutting]` *(`formerly OQ-2`)*
+  present** `[cross-cutting]` `[post-alpha]` *(`formerly OQ-2`)*
+  — induced: was only alpha-relevant as a gate on render-mode
+  lowering, which is itself `[post-alpha]`
 
 ### Layer 3 — by work-kind
 
 #### Bugs
 
 - [ ] **Fix self-closing `<tag />` for DSL-registry tags** `[parser]`
-  *(`formerly DF-21, AUD-08`)*
+  `[alpha]` *(`formerly DF-21, AUD-08`)*
 - [ ] **Add blank-line termination error recovery in the micromark
-  finder** `[parser]` *(`formerly DF-16`)*
+  finder** `[parser]` `[alpha]` *(`formerly DF-16`)*
 - [ ] **Render parser-error nodes visibly at their source location**
-  `[interpreter]` — always-renders guarantee work, sibling of the
-  blank-line item above
+  `[interpreter]` `[alpha]` — always-renders guarantee work, sibling
+  of the blank-line item above
 - [ ] **Make `<ref>` honor its parsed attributes** (`format`/`type`
   kwargs, pipe content, `+link`/`+preview`/`+title` flags)
-  `[interpreter]` *(`formerly PG-3, PG-4, PG-5`)*
+  `[interpreter]` `[alpha]` *(`formerly PG-3, PG-4, PG-5`)*
 - [ ] **Close small citation/config bugs** — multi-key cite order,
   nested `<config>` not read, trailing-whitespace EOL `[interpreter]`
-  *(`formerly PG-8, PG-9, PG-11`)*
+  `[alpha]` *(`formerly PG-8, PG-9, PG-11`)*
 - [ ] **Stop `<config>` silently accepting metadata kwargs that belong
-  in `<meta>`** `[interpreter]` *(`formerly AUD-13`)*
+  in `<meta>`** `[interpreter]` `[alpha]` *(`formerly AUD-13`)*
 - [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
-  shared assembly imported from `index.js`** `[tests/build]` — pipeline
-  is currently identical to the real assembly (no drift), but the rewire
-  needs a design decision on how the test captures intermediate hast for
-  snapshot inspection (today via manual mirror) *(`formerly AUD-17`)*
+  shared assembly imported from `index.js`** `[tests/build]`
+  `[post-alpha]` — pipeline is currently identical to the real
+  assembly (no drift), but the rewire needs a design decision on how
+  the test captures intermediate hast for snapshot inspection (today
+  via manual mirror) *(`formerly AUD-17`)*
 - [ ] **Fix the `#`/`##`/`###` hash-sigil dispatch — they currently
-  fall through to the unknown-element span** `[interpreter]` —
-  spec-documented hash-sigil heading form is silently unsupported
+  fall through to the unknown-element span** `[interpreter]` `[alpha]`
+  — spec-documented hash-sigil heading form is silently unsupported
   (couple with the opacity-discrepancy bug)
 - [ ] **Fix hash-sigil `isOpaqueContent` discrepancy — spec says
-  `false`, grammar emits `true`** `[parser]` — couple with the
-  hash-sigil dispatch bug above
+  `false`, grammar emits `true`** `[parser]` `[alpha]` — couple with
+  the hash-sigil dispatch bug above
 
 #### Enhancements
 
 - [ ] **Generalize the qualifying-tag pattern beyond `<table>`**
-  `[parser]` *(`formerly DF-17`)*
+  `[parser]` `[post-alpha]` *(`formerly DF-17`)*
 - [ ] **Refine note placement — per-section footnote collection and
-  margin sidenotes** `[interpreter]` *(`formerly PG-1, PG-2`)*
+  margin sidenotes** `[interpreter]` `[alpha-if-cheap]`
+  *(`formerly PG-1, PG-2`)*
 - [ ] **Make the bibliography heading a config kwarg instead of
-  hardcoded** `[interpreter]` *(`formerly PG-10`)*
+  hardcoded** `[interpreter]` `[post-alpha]` *(`formerly PG-10`)*
 - [ ] **Implement DSL handlers** (`<csv>`/`<tsv>`, `<mermaid>`/`<abc>`,
   math environments, `<theorem>`) `[interpreter — DSL surface]`
-  *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
+  `[alpha]` *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
 - [ ] **Add deferred vocabulary elements** (metadata, definition
   lists, inline-semantic, theorem family, survey absorbs) `[vocab]`
-  *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
+  `[alpha]` — *footnote: "inline-semantic" (formerly DF-15) needs its
+  exact denotation recovered from the original DF-15 source before
+  this sub-part is fully scoped — the detail thinned out across
+  backlog processing.* *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
 - [ ] **Document the tag-form × tag matrix and reconcile inconsistencies**
-  `[specs/docs]` *(`formerly AUD-15`)*
+  `[specs/docs]` `[post-alpha]` *(`formerly AUD-15`)*
 - [ ] **Add forward-pointers from governed specs to design directions
-  DD-1..DD-5** `[specs/docs]` *(`formerly AUD-25`)*
+  DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(`formerly AUD-25`)*
 - [ ] **Add integration test and snapshot for `document-9-demo`**
-  `[tests/build]` *(`formerly GAP-9`)*
+  `[tests/build]` `[alpha]` *(`formerly GAP-9`)*
 
 #### Planned work
 
 - [ ] **Implement strict mode (disable markdown idioms)** `[parser]`
-  *(`formerly DF-2`)*
+  `[post-alpha]` *(`formerly DF-2`)*
 - [ ] **Specify and implement `<html-passthrough>`** — needs a spec
-  written first `[parser]` *(`formerly DF-3`)*
+  written first `[parser]` `[post-alpha]` *(`formerly DF-3`)*
 - [ ] **Implement multi-column display rendering** `[interpreter]`
-  *(`formerly DF-5`)*
+  `[post-alpha]` *(`formerly DF-5`)*
 - [ ] **Support caption-as-content for `<table>`, `<figure>`, similar
-  (DD-1 / DD-2 implementation)** `[cross-cutting]`
+  (DD-1 / DD-2 implementation)** `[cross-cutting]` `[alpha]`
   *(`formerly AUD-14`)*
 
 #### Discussions
 
 - [ ] **Decide whether `<data>` / `<library>` nodes need a cleanup
   pass after `buildCitationIndex` reads them** `[interpreter]`
-  *(`formerly AUD-18`)*
-- [ ] **Discuss the canonical section form — markdown `##` heading
-  vs `<#>` sigil tag** `[cross-cutting]`
+  `[post-alpha]` *(`formerly AUD-18`)*
 - [ ] **Discuss whether the cross-reference resolver should warn on
-  type-prefix mismatch** `[interpreter]`
+  type-prefix mismatch** `[interpreter]` `[post-alpha]`
 - [ ] **Discuss compact external-reference syntax** (`wiki:`, `doi:`,
-  `arxiv:`, `github:`) `[parser]`
+  `arxiv:`, `github:`) `[parser]` `[post-alpha]`
 - [ ] **Discuss external-link rich previews** (build-time metadata
-  fetching) `[interpreter]`
+  fetching) `[interpreter]` `[post-alpha]`
 - [ ] **Discuss just-in-time math symbol definitions** (reference
-  system for math) `[cross-cutting]`
-- [ ] **Discuss executable code blocks** (Jupyter-style;
-  Architecture-tier-sized if adopted) `[cross-cutting]`
+  system for math) `[cross-cutting]` `[post-alpha]`
 - [ ] **Discuss `<presentation>` / `<slide>` / `<slide-notes>`
-  Layer 1 vocabulary** `[vocab]` *(`formerly DF-6`)*
+  Layer 1 vocabulary** `[vocab]` `[post-alpha]` *(`formerly DF-6`)*
 - [ ] **Discuss four open design questions prerequisite to multi-file
   authoring** (project-config / `<include>` interaction;
   standalone-chapter mode; project-metadata placement; pipeline
-  placement + discovery timing) `[cross-cutting]`
+  placement + discovery timing) `[cross-cutting]` `[alpha-if-cheap]`
+  — tracks with multi-file authoring itself
   *(`spec: MF-Q1, MF-Q2, MF-Q3, MF-Q4`)*
 - [ ] **Discuss four open design questions prerequisite to
   multi-column display** (`<config>` syntax; render-mode container;
   `span` value space; responsive-vs-fixed signaling) `[cross-cutting]`
-  *(`spec: MC-Q1, MC-Q2, MC-Q3, MC-Q4`)*
+  `[post-alpha]` *(`spec: MC-Q1, MC-Q2, MC-Q3, MC-Q4`)*
 - [ ] **Discuss smart-typography conversions** (`--` → en-dash,
-  `---` → em-dash) `[parser]`
+  `---` → em-dash) `[parser]` `[post-alpha]`
 - [ ] **Discuss bare-idiom shortcuts for underline and strikethrough**
-  `[parser]`
-- [ ] **Discuss meaningful names for the `Layer 0/1/2/3 /
-  Architecture / Standing` structure** `[specs/docs — backlog
-  organization]`
+  `[parser]` `[post-alpha]`
 - [ ] **Discuss the backlog's item-counting convention** (when grouped
   checklist lines count as one item vs N) `[specs/docs — backlog
-  organization]`
+  organization]` `[post-alpha]`
 - [ ] **Discuss hardening the colon-id convention from
   example-by-implication into an explicit spec rule** —
   define `prefix:tail` precisely (non-empty prefix) and audit every
   site that applies the convention for consistency `[cross-cutting]`
+  `[post-alpha]`
 - [ ] **Discuss the sigil as a first-class category** — a canonical
   sigil registry recording what each sigil is shorthand for and how
   author-requested sigils are added, reconciled with the DSL registry
   and `sigil-mapping`. Cross-references the hash-sigil dispatch and
   opacity bugs above (which are concrete instances in the same area)
-  `[cross-cutting]`
+  `[cross-cutting]` `[post-alpha]`
 - [ ] **Discuss auditing documented language features against
   test-fixture coverage** — a documented spec example (the
   hash-sigil heading in `shorthand-syntax.md` Example 9) had zero
   fixture coverage, which is how the `#`-sigil bug stayed latent;
   decide whether and how to systematically close such gaps
-  `[tests/build]`
+  `[tests/build]` `[post-alpha]`
 
 ### Architecture tier
 
 - [ ] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
-  *(`formerly DF-18`)*
-- [ ] **Build render-mode lowering** `[cross-cutting]` — gated by the
-  Layer 2 heading-level discussion *(`formerly DF-19`)*
+  `[alpha]` *(`formerly DF-18`)*
+- [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
+  — gated by the Layer 2 heading-level discussion *(`formerly DF-19`)*
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)
-  `[cross-cutting]` *(`formerly DF-4`)*
-- [ ] **Build book / book-part document structuring**
-  `[cross-cutting]` *(`formerly DF-12`)*
+  `[cross-cutting]` `[alpha-if-cheap]` *(`formerly DF-4`)*
+- [ ] **Build book / book-part document structuring** — multi-chapter
+  document structure; `article-structuring.js` currently warns and
+  skips non-article types `[cross-cutting]` `[alpha]`
+  *(`formerly DF-12`)*
+- [ ] **Build pagination and print formatting** — page breaks,
+  running heads, print-oriented layout `[cross-cutting]`
+  `[post-alpha]` — split off from the book/book-part item
+- [ ] **Build executable code blocks** — JavaScript execution + Arquero
+  + Vega-Lite (alpha scope may be that subset only) `[cross-cutting]`
+  `[alpha]` — promoted from a Discussion item once the user ruled it
+  alpha
 
 ### Standing items
 
 - [ ] **Run a spec-completeness audit against the rebuild-from-docs
   standard** — one-time large; future passes will be ordinary
-  `[specs/docs]`
+  `[specs/docs]` `[post-alpha]`
+
+### Other open work
+
+- [ ] **Write a print-requirements spec** — pagination, running heads,
+  print formatting; companion to the pagination item in the
+  Architecture tier `[specs/docs]` `[post-alpha]`
+- [ ] **Verify the remaining `(formerly AUD-N)` items against current
+  code** — six items remain: AUD-13, AUD-14, AUD-15, AUD-17, AUD-18,
+  AUD-25. Recent slices found a 6/6 already-resolved rate in this
+  cohort (the four Layer 0 items, AUD-19, AUD-24); the base rate says
+  several of the remaining six are likely already resolved too.
+  Should be done **before** any of those six AUD items is picked up as
+  implementation work, to avoid wasted scoping. `[cross-cutting]`
+  `[post-alpha]`
+- [ ] **Verify the section-form reduction ladder converges** — confirm
+  the named form `<section>`, the sigil form `<#>`, and the bare `#`
+  idiom all produce the identical Layer 1 `<section>` node, including
+  id threading (`<# #sec:intro | … #>` must carry its id through). The
+  *implementation* check of the canonical-section-form decision. Cross-
+  reference the sigil-as-first-class-category discussion item — this
+  is partial input to it. `[tests/build]` `[alpha-if-cheap]`
 
 ### Explicitly deferred — parked
 
-- **The unbraced-inline `@` form** `[parser]` *(parked; revisit only
-  if/when the bare `@key` affordance is wanted)*
+- **The unbraced-inline `@` form** `[parser]` `[post-alpha]` *(parked;
+  revisit only if/when the bare `@key` affordance is wanted)*
 
 ---
 
@@ -279,7 +351,8 @@ stable).
 ## Layer 2 — gated items (detailed)
 
 ### Decide section-title heading level when an article-title is present
-`[cross-cutting — specs/docs + interpreter]`
+`[cross-cutting — specs/docs + interpreter]` `[post-alpha]`
+*(induced: render-mode lowering is `[post-alpha]`, so the gate is too)*
 
 Where: `notes/specs/layer1-naming.md` open decisions. When both an
 `<article-title>` and `<section-title>` are present, do section titles
@@ -311,12 +384,12 @@ scan in parallel.
 
 ### Bugs
 
-**Fix self-closing `<tag />` for DSL-registry tags** `[parser]`.
+**Fix self-closing `<tag />` for DSL-registry tags** `[parser]` `[alpha]`.
 Self-closing `<tag />` for DSL-registry tags (DF-21, formerly also
 tracked as AUD-08). *(`formerly DF-21, AUD-08`)*
 
 **Add blank-line termination error recovery in the micromark finder**
-`[parser]`. The micromark finder needs to check each line ending and
+`[parser]` `[alpha]`. The micromark finder needs to check each line ending and
 terminate open constructs at blank lines for localized error recovery.
 Currently a tag opened before a blank line will consume across the
 blank line or to EOF. Explicit `Status: Deferred` in
@@ -331,7 +404,7 @@ parser-error-node-renderer item below; both must close for the
 always-renders guarantee to hold in full. *(`formerly DF-16`)*
 
 **Render parser-error nodes visibly at their source location**
-`[interpreter]` — `acadamarkTagError` / `acadamarkParseError` visible
+`[interpreter]` `[alpha]` — `acadamarkTagError` / `acadamarkParseError` visible
 at source location (always-renders core-guarantee work). The parser
 produces `acadamarkTagError` and `acadamarkParseError` nodes for
 grammar and parse failures, but the interpreter has no compile-step
@@ -353,19 +426,19 @@ emits a hast element with the house-style marker text and a
 distinguishing class for styling, mirroring how the unresolved-ref and
 unresolved-cite markers are emitted today.
 
-**Make `<ref>` honor its parsed attributes** `[interpreter]`.
+**Make `<ref>` honor its parsed attributes** `[interpreter]` `[alpha]`.
 `format`/`type` kwargs ignored (PG-3); author pipe-text ignored
 (PG-4); `+link`/`+preview`/`+title` flags ignored (PG-5). Effectively
 **one slice** — "make `<ref>` honor its parsed attributes."
 *(`formerly PG-3, PG-4, PG-5`)*
 
-**Close small citation/config bugs** `[interpreter]`. Multi-key cite
+**Close small citation/config bugs** `[interpreter]` `[alpha]`. Multi-key cite
 ordering (PG-8); nested `<config>` not read (PG-9);
 trailing-whitespace-before-EOL treated as inline (PG-11).
 *(`formerly PG-8, PG-9, PG-11`)*
 
 **Stop `<config>` silently accepting metadata kwargs that belong in
-`<meta>`** `[interpreter]`. `<config>` silently accepts metadata
+`<meta>`** `[interpreter]` `[alpha]`. `<config>` silently accepts metadata
 kwargs that belong in `<meta>` (`title=`, `subtitle=`, `author=`,
 `date=`). The kwargs produce no warning and no visible output. The
 bug is doubly bad because the syntactic ease of `<config>` (kwargs on
@@ -378,7 +451,7 @@ that produces no visible output. Touches DD-3 in `DESIGN.md` (the
 `<meta>` vs `<config>` boundary). *(`formerly AUD-13`)*
 
 **Replace `integration.test.js`'s hand-mirrored pipeline with a shared
-assembly imported from `index.js`** `[tests/build]`. The test maintains
+assembly imported from `index.js`** `[tests/build]` `[post-alpha]`. The test maintains
 a separate hand-written copy of the plugin pipeline assembled in
 `src/index.js`. The original concern was that the two would drift —
 documented recurrence record (paid four times: R3a/R3b/R4/G1b). The
@@ -399,7 +472,7 @@ ruling. Severity: medium — maintenance hazard (zero drift today but
 the pattern remains the structural risk).
 *(`formerly AUD-17`)*
 
-**Fix the `#`/`##`/`###` hash-sigil dispatch** `[interpreter]`. The
+**Fix the `#`/`##`/`###` hash-sigil dispatch** `[interpreter]` `[alpha]`. The
 parser's `SigilTag1`/`SigilTag2`/`SigilTag3` rules emit literal `"#"`,
 `"##"`, `"###"` as the `acadamarkTag` node's tagname — matching the
 established sigil pattern (`$`/`$$`/`` ` ``/` ``` ` likewise emit
@@ -418,7 +491,7 @@ verdict (c). Likely fix: add entries to `PARSER_TO_VOCAB` (`'#' →
 **couple this fix to the opacity-discrepancy item below** — both belong
 to the hash-sigil family and should be done as one coherent piece.
 
-**Fix hash-sigil `isOpaqueContent` discrepancy** `[parser]`.
+**Fix hash-sigil `isOpaqueContent` discrepancy** `[parser]` `[alpha]`.
 `shorthand-syntax.md` L563 says hash sigils are
 prose-bearing with `contentHandler: 'default'` and
 `isOpaqueContent: false`; the grammar at
@@ -431,20 +504,20 @@ same slice.
 
 ### Enhancements
 
-**Generalize the qualifying-tag pattern beyond `<table>`** `[parser]`.
+**Generalize the qualifying-tag pattern beyond `<table>`** `[parser]` `[post-alpha]`.
 Generalizing the qualifying-tag pattern beyond `<table>` (DF-17 —
 note: already works *for* `<table>`). *(`formerly DF-17`)*
 
 **Refine note placement — per-section footnote collection and margin
-sidenotes** `[interpreter]`. Per-section footnote collection (PG-1);
-margin-positioned sidenotes (PG-2). Both are placement refinements;
-notes otherwise work. *(`formerly PG-1, PG-2`)*
+sidenotes** `[interpreter]` `[alpha-if-cheap]`. Per-section footnote
+collection (PG-1); margin-positioned sidenotes (PG-2). Both are
+placement refinements; notes otherwise work. *(`formerly PG-1, PG-2`)*
 
 **Make the bibliography heading a config kwarg instead of hardcoded**
-`[interpreter]`. Hardcoded bibliography heading (PG-10 — a config
+`[interpreter]` `[post-alpha]`. Hardcoded bibliography heading (PG-10 — a config
 kwarg, very small). *(`formerly PG-10`)*
 
-**Implement DSL handlers** `[interpreter — DSL surface]`. `<csv>`/`<tsv>`
+**Implement DSL handlers** `[interpreter — DSL surface]` `[alpha]`. `<csv>`/`<tsv>`
 standalone (DF-8, AUD-07); `<mermaid>`/`<abc>` (DF-9); math
 environments `<matrix>`/`<cases>`/`<align>`/`<eqnarray>` (DF-10);
 `<theorem>` handler (DF-11a). **Treat as one body of work, not
@@ -457,7 +530,11 @@ only. (DF-11b — the `<proof>`/`<lemma>`/etc. *vocabulary* — needs a
 vocab design pass first; it lives in the Vocabulary entry below as
 the sibling of DF-11a.) *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
 
-**Add deferred vocabulary elements** `[vocab]`. Metadata
+**Add deferred vocabulary elements** `[vocab]` `[alpha]`.
+
+*Footnote:* the **inline-semantic** sub-part (formerly DF-15) needs its exact denotation recovered from the original DF-15 source before this sub-part is fully scoped — the detail thinned out across backlog processing.
+
+Metadata
 (`<keywords>`, `<publication-date>`); definition lists
 (`<dl>`/`<dt>`/`<dd>`); inline-semantic (`<abbr>`, `<term>`,
 `<glossary>`, `<glossary-entry>`); plus the theorem-family vocab
@@ -486,7 +563,7 @@ shape, same batch:
 *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
 
 **Document the tag-form × tag matrix and reconcile inconsistencies**
-`[specs/docs]`. The grammar supports short-form (`<tag attrs>`),
+`[specs/docs]` `[post-alpha]`. The grammar supports short-form (`<tag attrs>`),
 pipe-content (`<tag attrs | inline content>`), multi-line
 pipe-content, long-form (`<tag attrs>content</tag>` — only for
 DSL_REGISTRY tags), and self-closing (`<tag attrs />` — broken for
@@ -501,7 +578,7 @@ real documentation and design-discoverability issue.
 *(`formerly AUD-15`)*
 
 **Add forward-pointers from governed specs to design directions
-DD-1..DD-5** `[specs/docs]`. `DESIGN.md`'s "Design directions
+DD-1..DD-5** `[specs/docs]` `[post-alpha]`. `DESIGN.md`'s "Design directions
 (discovered through implementation)" section defines five
 cross-cutting directions (DD-1: content gets parsed, arguments don't;
 DD-2: caption-like content supports two equivalent forms; DD-3:
@@ -517,7 +594,7 @@ forward-pointer lines to the governed entries. A propagation slice;
 `DESIGN.md` remains the canonical owner. *(`formerly AUD-25`)*
 
 **Add integration test and snapshot for `document-9-demo`**
-`[tests/build]`. `test/fixtures/document-9-demo.acm` and
+`[tests/build]` `[alpha]`. `test/fixtures/document-9-demo.acm` and
 `document-9-demo.html` exist and are re-rendered by
 `render-fixtures.js`, but unlike documents 1–8 there is no
 corresponding `document-9-expected.json` snapshot and no test case in
@@ -534,23 +611,23 @@ combination. *(`formerly GAP-9`)*
 
 ### Planned work
 
-**Implement strict mode (disable markdown idioms)** `[parser]`.
+**Implement strict mode (disable markdown idioms)** `[parser]` `[post-alpha]`.
 Bounded; disables markdown idioms. Under the normalization model,
 strict mode is the mode in which the normalization pass has nothing
 to do (no markdown-form nodes are produced). *(`formerly DF-2`)*
 
-**Specify and implement `<html-passthrough>`** `[parser]`.
+**Specify and implement `<html-passthrough>`** `[parser]` `[post-alpha]`.
 `<html-passthrough>` — needs a *spec* written first; it is "planned,
 not yet specified." A design step precedes the code.
 *(`formerly DF-3`)*
 
-**Implement multi-column display rendering** `[interpreter]`. Spec is
+**Implement multi-column display rendering** `[interpreter]` `[post-alpha]`. Spec is
 `notes/specs/multi-column-display.md`; render-mode concern.
 Independent leaf, low-priority unless a publication target needs it.
 *(`formerly DF-5`)*
 
 **Support caption-as-content for `<table>`, `<figure>`, similar (DD-1
-/ DD-2 implementation)** `[cross-cutting]`. Citations inside the
+/ DD-2 implementation)** `[cross-cutting]` `[alpha]`. Citations inside the
 `caption=` kwarg of `<table>`, `<figure>`, and similar elements are
 not parsed — the kwarg value is a string, cite tags inside it remain
 literal text in the rendered output. Affects any kwarg where rich
@@ -575,7 +652,7 @@ framing. Severity: medium-high — affects real authoring need
 ### Discussions
 
 **Decide whether `<data>` / `<library>` nodes need a cleanup pass
-after `buildCitationIndex` reads them** `[interpreter]`.
+after `buildCitationIndex` reads them** `[interpreter]` `[post-alpha]`.
 `buildCitationIndex` reads `<data>` and `<library>` nodes at root
 level but never removes or modifies them. Rendered output is
 unaffected — no visible `<data>` content appears in any fixture, the
@@ -585,30 +662,8 @@ decided. Low priority; observation, not malfunction. Potential
 candidate for a follow-on `indexInputs` consolidation slice.
 *(`formerly AUD-18`)*
 
-**Discuss the canonical section form — markdown `##` heading vs
-`<#>` sigil tag** `[cross-cutting]`. A discussion item, not a build
-item. The shorthand spec (`notes/specs/shorthand-syntax.md`) and
-DESIGN.md's implicit-closing section work are built around the `<#>`
-sigil; markdown `##` headings also produce sections via remark's
-built-in heading tokenizer. Two forms for the identical operation,
-with no rule for which to use, violates the "explicit, consistent"
-principle. The decision settles which form is canonical and how the
-other relates to it (probably: as the markdown-form shorthand the
-normalization principle would expect). Once decided, the result is
-reconciled into DESIGN.md and `notes/specs/shorthand-syntax.md`.
-
-**Starting position for the discussion (not a settled answer):**
-markdown headings are likely the convenience form and `<#>` is
-canonical when an id or attributes are needed — because `<#>` is the
-form that carries an id, and any cross-referenced section needs an
-id. The discussion may settle differently; this is a starting framing
-harvested from the now-archived
-audit-cleanup-stopping-point's FLAGGED-1, not a prescribed answer.
-
-Filed under the discussion-is-work rule (`CONTRIBUTING.md`).
-
 **Discuss whether the cross-reference resolver should warn on
-type-prefix mismatch** `[interpreter]`. A discussion item, not a
+type-prefix mismatch** `[interpreter]` `[post-alpha]`. A discussion item, not a
 build item. When `@fig:priority` resolves to an equation (or
 `@sec:foo` to a figure, etc.), the registry knows the target's actual
 type and the reference's stated prefix disagrees with it. This is a
@@ -626,7 +681,7 @@ discussion, not a separate item. Filed under the discussion-is-work
 rule. Original framing in
 `notes/archive/at-sigil-reference-proposal-2026-05.md`.
 
-**Discuss compact external-reference syntax** `[parser]`. A
+**Discuss compact external-reference syntax** `[parser]` `[post-alpha]`. A
 discussion item, not a build item. MyST supports `wiki:Book` to link
 to Wikipedia's "Book" article, `doi:10.5281/zenodo.6476040` to link
 to a DOI, `arxiv:1234.5678` to link to an arXiv paper, `github:user/repo`
@@ -640,7 +695,7 @@ not a vocabulary feature. Harvested from
 `notes/archive/authoring-features-survey-2026-05.md`. Filed under the
 discussion-is-work rule.
 
-**Discuss external-link rich previews** `[interpreter]`. A discussion
+**Discuss external-link rich previews** `[interpreter]` `[post-alpha]`. A discussion
 item, not a build item. The hover-preview rendering substrate exists
 (currently used for notes, refs, citations — see
 `notes/specs/interpreter.md` §10.2). External link metadata-fetching
@@ -653,7 +708,7 @@ when fetch fails). Harvested from
 `notes/archive/authoring-features-survey-2026-05.md`. Filed under the
 discussion-is-work rule.
 
-**Discuss just-in-time math symbol definitions** `[cross-cutting]`.
+**Discuss just-in-time math symbol definitions** `[cross-cutting]` `[post-alpha]`.
 A discussion item, not a build item. A reference system for
 mathematical symbols, similar to citations: define `\alpha` once
 with a meaning ("the coefficient of foo"), and wherever it appears
@@ -666,33 +721,8 @@ and what its surface looks like. Harvested from
 `notes/archive/authoring-features-survey-2026-05.md`. Filed under the
 discussion-is-work rule.
 
-**Discuss executable code blocks (Jupyter-style)** `[cross-cutting]`.
-A discussion item, not a build item. Authors annotate a code block to
-mark it for execution; the build runs the code in a kernel, captures
-stdout/stderr/return value/plot output, and embeds the result.
-Established convention via RMarkdown / Quarto / Jupyter. The
-DSL-processor model in DESIGN.md provides the substrate: an
-executable-code processor is one more processor extending the
-registry. The execution-control attribute convention (`+eval`,
-`+echo`, `+output`, `+error`, `cache`, `dependencies`) matches
-existing tooling. The decision settles whether acadamark commits to
-this direction.
-
-**If adopted, this is an Architecture-tier-sized effort, not a
-Layer 3 slice.** It brings in a kernel, sandboxing (untrusted code
-execution is a security boundary), output capture, caching,
-dependency management. If the discussion concludes "yes," the item
-graduates from this discussion item to an Architecture-tier arc
-(parallel to JATS export, multi-file authoring, book types) — that
-is the discussion-is-work rule's defined exit when a discussion
-commits to substantial work. Filing here at Layer 3 honestly reflects
-that the commitment to do it does not yet exist; what exists is the
-question of whether to commit. Harvested from
-`notes/archive/authoring-features-survey-2026-05.md`. Filed under the
-discussion-is-work rule.
-
 **Discuss `<presentation>` / `<slide>` / `<slide-notes>` Layer 1
-vocabulary** `[vocab]`. A discussion item, not a build item: the
+vocabulary** `[vocab]` `[post-alpha]`. A discussion item, not a build item: the
 design pass that would decide the vocabulary has not happened. Use
 cases: slide-decks rendered for screen presentation (parallel to
 revealjs / beamer); reusing content between papers and slides;
@@ -723,7 +753,7 @@ placeholder file is archived at
 `notes/archive/slide-element-deferred-2026-05.md`. *(`formerly DF-6`)*
 
 **Discuss four open design questions prerequisite to multi-file
-authoring** `[cross-cutting]`. Surfaced by the Front C
+authoring** `[cross-cutting]` `[alpha-if-cheap]`. Surfaced by the Front C
 extensions-cluster spec audit. These are forks the
 `notes/specs/multi-file-authoring.md` blueprint previously presented
 as settled; the audit and fix-slice disclosed them as open and filed
@@ -779,7 +809,7 @@ catalogs the same four with the same identifiers.
 *(`spec: MF-Q1, MF-Q2, MF-Q3, MF-Q4`)*
 
 **Discuss four open design questions prerequisite to multi-column
-display** `[cross-cutting]`. Surfaced by the Front C
+display** `[cross-cutting]` `[post-alpha]`. Surfaced by the Front C
 extensions-cluster spec audit. These are forks the
 `notes/specs/multi-column-display.md` blueprint previously presented
 as settled; the audit and fix-slice disclosed them as open and filed
@@ -826,7 +856,7 @@ catalogs the same four with the same identifiers.
 
 *(`spec: MC-Q1, MC-Q2, MC-Q3, MC-Q4`)*
 
-**Discuss smart-typography conversions** `[parser]`. Markdown
+**Discuss smart-typography conversions** `[parser]` `[post-alpha]`. Markdown
 extensions convert `--` to en-dash and `---` to em-dash. Whether
 acadamark's pipeline accepts such a plugin — and what the escape
 conventions for those sequences look like if it does — is open.
@@ -836,32 +866,15 @@ rules for `--` / `---` follow whatever plugin acadamark accepts;
 acadamark does not own these escapes natively.
 
 **Discuss bare-idiom shortcuts for underline and strikethrough**
-`[parser]`. Markdown lacks clean conventions for underline and
+`[parser]` `[post-alpha]`. Markdown lacks clean conventions for underline and
 strikethrough. Acadamark currently uses `<u | text>` and `<s | text>`
 tagged forms. Whether to add bare-idiom shortcuts (and what they
 would be) is open. Filed from the spent "what is not yet decided"
 section of `escape-rules-spec.md` (Reconciliation 2). If shortcuts
 are added, the special-character list and escape rules grow to match.
 
-**Discuss meaningful names for the `Layer 0/1/2/3 / Architecture /
-Standing` structure** `[specs/docs — backlog organization]`. A
-discussion item, not a build item. The current names encode
-dependency/readiness (verify-first; foundational; gated; free leaves;
-multi-slice arcs; cadence work) and are mechanically clear, but the
-labels read as opaque codes rather than as their intended meanings.
-"Layer 3" reads as a code, not as "free leaves you can pick anytime";
-"Layer 1" is empty and the framing for what would go there is
-implicit; the "Architecture tier" and "Standing items" labels each
-describe themselves better than "Layer N" does. The decision settles
-whether to rename (and to what — plain-language headings like
-"Verify first" / "Foundational" / "Gated" / "Free leaves" /
-"Architecture" / "Standing" are one direction; some other framing
-entirely is another) or to keep the current names with a clearer
-explanation. Filed under the discussion-is-work rule
-(`CONTRIBUTING.md`).
-
 **Discuss the backlog's item-counting convention** `[specs/docs —
-backlog organization]`. A discussion item, not a build item. The
+backlog organization]` `[post-alpha]`. A discussion item, not a build item. The
 backlog has no documented rule for whether a grouped checklist line
 counts as one item or as N items (its constituents). The current
 convention is inconsistent: the Layer 0 grouped checklist line
@@ -881,7 +894,7 @@ constituents in the count, *or* some other rule. Filed under the
 discussion-is-work rule (`CONTRIBUTING.md`).
 
 **Discuss hardening the colon-id convention into an explicit spec
-rule** `[cross-cutting]`. Today the colon-id convention is defined by
+rule** `[cross-cutting]` `[post-alpha]`. Today the colon-id convention is defined by
 example: DESIGN.md L254 describes cross-references as `type:name` form
 with examples (`fig:scatter`, `eqn:model`, `sec:methods`), and
 interpreter.md §3.9 describes "the id prefix" being used for reference
@@ -899,7 +912,7 @@ add an explicit colon-id rule to a spec (DESIGN.md or `interpreter.md`
 consistency against the explicit rule. Filed under the
 discussion-is-work rule.
 
-**Discuss the sigil as a first-class category** `[cross-cutting]`.
+**Discuss the sigil as a first-class category** `[cross-cutting]` `[post-alpha]`.
 Acadamark uses a small set of sigils — `#`/`##`/`###` for sections,
 `$`/`$$` for math, `` ` ``/` ``` ` for code — as non-alphabetic
 shorthands for Layer 1 constructs. The DSL registry
@@ -919,7 +932,7 @@ items above (concrete instances in the same area). Filed under the
 discussion-is-work rule.
 
 **Discuss auditing documented language features against test-fixture
-coverage** `[tests/build]`. The hash-sigil heading is documented in
+coverage** `[tests/build]` `[post-alpha]`. The hash-sigil heading is documented in
 the spec (`shorthand-syntax.md` Example 9), described as a fully
 working form — but zero test fixtures exercise `<#>`/`<##>`/`<###>`.
 That coverage gap is why the hash-sigil dispatch bug stayed latent
@@ -939,26 +952,54 @@ Multi-slice projects. Sequence these by *intent* (what acadamark is for
 next), not by dependency — they are mutually independent (other than
 DF-19's gate on OQ-2).
 
-- **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`. The
+- **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]` `[alpha]`. The
   vocabulary is JATS-aligned by design (`jats_counterpart` on every
   entry); this is the payoff. *(`formerly DF-18`)*
-- **Build render-mode lowering** `[cross-cutting]`. Display-target-three
+- **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`. Display-target-three
   on the display ladder. Gated by OQ-2 (Layer 2 above) — the
   heading-level question must be decided when render mode is scoped.
   *(`formerly DF-19`)*
-- **Build multi-file authoring** `[cross-cutting]`. `acadamark.yml` +
+- **Build multi-file authoring** `[cross-cutting]` `[alpha-if-cheap]`. `acadamark.yml` +
   `<include>`; project-wide registries. A real architectural
   extension. Spec at `notes/specs/multi-file-authoring.md`.
   *(`formerly DF-4`)*
-- **Build book / book-part document structuring** `[cross-cutting]`.
+- **Build book / book-part document structuring** `[cross-cutting]` `[alpha]`.
   Vocabulary exists; `article-structuring.js` currently warns and
   skips non-article types. *(`formerly DF-12`)*
+- **Build pagination / print-targeted output** `[cross-cutting]` `[post-alpha]`.
+  Page-break control, page geometry, print headers/footers, and
+  related print-targeting machinery. Split from the
+  formerly-combined book-and-pagination item: book-structuring is
+  about authoring units (book / book-part / chapter); pagination is
+  about display-target machinery shared across articles and books.
+  Print-mode authoring requirements are scoped in the separate
+  print-requirements spec item under Other open work.
+- **Build executable code blocks (JS / Arquero / Vega-Lite)**
+  `[cross-cutting]` `[alpha]`. Authors annotate a code block to mark
+  it for execution; the build runs the code and embeds the result.
+  Promoted from the Discussions group (formerly an open
+  yes/no-whether-to-commit question) into Architecture-tier as a
+  scoped implementation item, with the user's alpha-line ruling: the
+  alpha scope is in-browser JavaScript execution, with Arquero as
+  the dataframe library and Vega-Lite as the plotting library — a
+  concrete first-target stack chosen because it runs entirely in the
+  browser substrate, sidesteps the kernel / sandboxing / Python
+  install dependencies that a Jupyter-style design would entail, and
+  is small enough to fit the alpha. Established convention via
+  RMarkdown / Quarto / Jupyter, the DSL-processor model in
+  DESIGN.md, and the execution-control attribute convention
+  (`+eval`, `+echo`, `+output`, `+error`, `cache`, `dependencies`)
+  are technique-mining sources — relevant for how the surface looks
+  and how the processor integrates, even though the runtime is not
+  Jupyter. Post-alpha extensions (other languages, kernel-based
+  execution, server-side sandboxing) are not in scope here. Source
+  archived at `notes/archive/authoring-features-survey-2026-05.md`.
 
 ---
 
 ## Explicitly deferred — parked
 
-**The unbraced-inline `@` form** `[parser]`. `…as shown (@fig:priority)…`
+**The unbraced-inline `@` form** `[parser]` `[post-alpha]`. `…as shown (@fig:priority)…`
 with no `<ref>` wrapper. The half of the `@`-sigil proposal NOT
 adopted in F1. A grammar-wide change: `@` significant in prose, `\@`
 escaping, prose-fixture churn. Parked deliberately. Not on the active
@@ -975,7 +1016,7 @@ of the accumulated debt — it is the bootstrap for the new documentation
 system rather than ordinary maintenance.
 
 ### Run a spec-completeness audit against the rebuild-from-docs standard
-`[specs/docs]` *(one-time large; future passes will be ordinary)*
+`[specs/docs]` `[post-alpha]` *(one-time large; future passes will be ordinary)*
 
 Audit every spec in the repo (`DESIGN.md`, `notes/specs/*.md`,
 `packages/layer1-vocabulary/SPEC.md`, the per-element vocabulary
@@ -1003,3 +1044,50 @@ backlog items in their appropriate Layer. The audit itself produces no
 fixes — fixes are follow-on slices. Likely to be split into several
 Phase 0 investigations (per spec or per spec-cluster) plus targeted
 fix slices.
+
+---
+
+## Other open work
+
+Items that do not fit cleanly under a specific Layer or arc — small
+verification / spec / hygiene items filed against the active backlog.
+
+**Write a print-requirements spec** `[specs/docs]` `[post-alpha]`. A
+companion spec to the Architecture-tier pagination item: what print
+output needs to support — page geometry, running heads/feet,
+page-break behaviour around floats and sections, footnote placement
+on the printed page, front-matter pagination conventions
+(roman-numeral pagination for the front matter, arabic for the body),
+how cross-references render when target page numbers are knowable.
+The spec is the authoring-requirements companion to the
+Architecture-tier pagination implementation; the implementation arc
+is gated on this spec being written. Split out from the
+formerly-combined book-and-pagination item.
+
+**Verify the remaining `(formerly AUD-N)` items against current
+code** `[cross-cutting]` `[post-alpha]`. Six items still carry an
+AUD-N origin marker: AUD-13, AUD-14, AUD-15, AUD-17, AUD-18, AUD-25.
+The Layer 0 verification slice and the mechanical-fix batch each
+found a high already-resolved rate in their cohorts (4/4 Layer 0;
+2/2 of the two AUD items in the mechanical batch — AUD-19 and
+AUD-24), so the base rate suggests several of the remaining six are
+likely already resolved by code that landed without closing the
+backlog entry. This item: read each of the six remaining AUD items
+against the current code and either close-as-verified-resolved or
+leave open with a fresh "still applicable" finding. Should be done
+**before** any of those six is picked up as implementation work, to
+avoid wasted scoping work on an already-fixed item.
+
+**Verify the section-form reduction ladder converges** `[tests/build]`
+`[alpha-if-cheap]`. The canonical-section-form decision (recorded in
+DESIGN.md) is that named `<section>` and the sigil form `<#>` are
+co-equal canonical surfaces and the bare markdown `#` heading is a
+lossy-reduction shorthand for them. The decision is documented; the
+implementation check is whether the three reduction paths actually
+converge to the identical Layer 1 `<section>` node. This item: write
+a small fixture-and-test pass that takes all three forms (named,
+sigil, bare-markdown) — both bare and with id (`<# #sec:intro | …
+#>`) — and asserts the resulting AST is structurally identical. The
+sigil-as-first-class-category Discussion item is the spec-side
+follow-on this verification feeds into; this item is the
+implementation half.

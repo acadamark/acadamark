@@ -356,3 +356,25 @@ that). One line gets added every few months, not every slice.
   is itself useful information about the AUD-era backlog hygiene; no
   unrecorded code changes were the cause for either (the changes
   predate this session's tracked history).
+- **2026-Q2 — alpha-line tags written across the backlog; two
+  Discussions closed.** A rulings slice tagged every open backlog
+  item with one of `[alpha]` / `[post-alpha]` / `[alpha-if-cheap]` /
+  `[undecided]` and added the five-point alpha-scope definition to
+  `BACKLOG-ROADMAP.md` (Layer 1 elements + canonical acadamark +
+  sigils/markdown idioms reducing to it + JATS conversion + acadamark
+  conversion). The book / book-part item was split into two: a
+  `[alpha]` book-structuring item and a `[post-alpha]` pagination
+  item, with the print-requirements spec filed as a `[post-alpha]`
+  spec companion. The executable code blocks item was promoted from
+  Discussions to the Architecture tier with an alpha scope of
+  in-browser JavaScript + Arquero + Vega-Lite. Two Discussions were
+  closed by ruling: (i) the layer-naming-structure discussion closed
+  with the decision to keep the current names — the layer metaphor is
+  sound; the hierarchy custom-HTML / strict-acadamark /
+  shorthand-acadamark / +markdown is a real ladder, recorded as the
+  new "Layered model and terminology" section of `DESIGN.md`;
+  (ii) the canonical-section-form discussion closed with the
+  reduction-ladder ruling — named `<section>` and the sigil form
+  `<#>` are co-equal canonical; the bare markdown `#` is a lossy
+  reduction; the implementation verification is filed as a
+  `[alpha-if-cheap]` free-leaf item under Other open work.

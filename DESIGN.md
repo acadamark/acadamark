@@ -215,6 +215,32 @@ More markdown prose, with a citation <cite @smith2023>.
 
 The translation rule is strict: any acadamark document maps to exactly one Layer 1 HTML document. There is no ambiguity. And because the mapping is exact, it runs both ways — Layer 1 can be expressed back as shorthand without loss. This is the lossless round-trip the summary describes.
 
+## Layered model and terminology
+
+The layered model has more names than the two-layer summary suggests, because the shorthand register itself splits into a strict subset and a convenience-extended superset. The terms below are the names used consistently across the spec set and the backlog.
+
+- **Layer 1 (custom-HTML, or semantic HTML).** The canonical, archival representation of a document: the JATS-aligned vocabulary of elements (`<article>`, `<section>`, `<figure>`, `<cite>`, `<ref>`, `<note>`, etc.) catalogued in `packages/layer1-vocabulary/elements/`. A Layer 1 document is the source of truth; every other authoring form reduces to one. Two documents that reduce to the same Layer 1 are equivalent.
+
+- **Canonical acadamark.** The lossless shorthand register — the tag form `<tag #id .class attr=value | content>` and the small set of sigil shorthands defined as canonical (`<#>` / `<##>` / `<###>` for sections; `<$>` / `<$$>` for math; the code-fence sigils). Every canonical-acadamark construct round-trips to and from Layer 1 without loss. The translation is bidirectional; either direction recovers the other.
+
+- **Markdown idioms (lossy convenience shortcuts).** The CommonMark constructs that acadamark also accepts — markdown headings (`#`, `##`, `###`), markdown emphasis (`*`, `_`), markdown lists, markdown tables (via remark-gfm), inline-code backticks, math via `$…$`. These reduce *into* Layer 1 but do not round-trip back from it: Layer 1 → acadamark renders the canonical surface, not the markdown idiom. The relationship is one-way reduction; the markdown surface is a convenience for authoring.
+
+- **Strict mode.** A setting (not yet implemented; reserved as a future configuration switch) that confines accepted input to canonical acadamark only — markdown idioms produce errors rather than silently reducing. The intended use is round-trip-critical pipelines: when an author needs the guarantee that what they wrote will come back unchanged from a Layer 1 → acadamark conversion, strict mode is how they ask for it.
+
+The ladder is: *markdown idiom* → reduces to → *canonical acadamark* → bidirectionally equivalent to → *Layer 1*. The middle step is what makes the round-trip work. The lossy step (markdown idiom → canonical) is acceptable because it goes in the direction of *more* information, not less — naming what was implicit.
+
+### The section-form reduction ladder
+
+The same ladder is the substrate for an explicit decision about section heading forms, recorded here because it has been settled and is referenced from the backlog. Three surfaces all denote a section:
+
+- `<section>…<section-title>…</section-title>…</section>` — the named Layer 1 element form.
+- `<#>…<# #>…</#>` (and the `<# | title #>` shorthand) — the sigil-tag form: canonical acadamark.
+- `# Title` — the bare markdown heading.
+
+The decision: the named form and the sigil form are **co-equal canonical** surfaces — both round-trip to Layer 1 losslessly, and a Layer 1 → acadamark conversion may emit either. The bare markdown heading is a **lossy reduction** to the canonical surface — it produces a section but is not what the round-trip emits. The id-bearing variant `<# #sec:intro | … #>` carries its id through the ladder; the bare-markdown form has no surface for an id and is therefore strictly less expressive than the canonical surfaces.
+
+The implementation check that all three forms actually converge to the identical Layer 1 `<section>` node lives as a free-leaf verification item in the backlog (the "Verify the section-form reduction ladder converges" item in Other open work).
+
 ## Why this is not just another markdown extension
 
 Three differences:
