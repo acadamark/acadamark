@@ -510,6 +510,15 @@ function makeLongFormTokenizer(registry) {
   return function tokenizeLongFormTag(effects, ok, nok) {
     /** @type {number[]} */
     const tagNameCodes = []
+    // Tracks whether the most recently consumed non-whitespace attr-section
+    // character was a `/`. When `>` arrives with this set, the construct is
+    // a self-closing tag (`<tag ... />`) and the long-form tokenizer rejects
+    // so the named-tag tokenizer can claim it (which routes the Peggy grammar
+    // to its SelfClosingNamedTag rule). Without this rejection, DSL-registered
+    // tags like `<csv />` are greedily claimed as long-form openers, their
+    // missing `</csv>` close turns them into acadamarkTagError nodes, and the
+    // self-closing form silently fails for the entire DSL-registry class.
+    let prevWasSlash = false
 
     return start
 
@@ -554,16 +563,23 @@ function makeLongFormTokenizer(registry) {
         effects.enter('lineEnding')
         effects.consume(code)
         effects.exit('lineEnding')
+        prevWasSlash = false  // whitespace clears the slash tracking
         return scanOpenAttrs
       }
       if (code === PIPE) return nok(code)
       if (code === GT) {
+        // Self-closing form `<tag ... />`: reject so the named-tag tokenizer
+        // claims this construct and the grammar's SelfClosingNamedTag rule
+        // produces a node with selfClosing: true. Without this rejection,
+        // DSL-registered tags lose the self-closing form entirely.
+        if (prevWasSlash) return nok(code)
         effects.consume(code)
         return afterOpenGt
       }
       if (code === DQUOTE || code === SQUOTE) {
         const quoteChar = code
         effects.consume(code)
+        prevWasSlash = false
         return function scanQuoted(qCode) {
           if (qCode === null || markdownLineEnding(qCode)) return nok(qCode)
           if (qCode === quoteChar) {
@@ -575,6 +591,14 @@ function makeLongFormTokenizer(registry) {
         }
       }
       effects.consume(code)
+      // Track whether the most recently consumed non-whitespace char was a
+      // slash. Spaces and tabs are non-significant in the attr section, so
+      // they preserve the flag; any other char clears it.
+      if (code === SLASH) {
+        prevWasSlash = true
+      } else if (code !== 32 && code !== 9) {  // not space, not tab
+        prevWasSlash = false
+      }
       return scanOpenAttrs
     }
 

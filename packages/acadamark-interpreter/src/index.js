@@ -88,6 +88,7 @@ import { acadamarkRefResolution } from './plugins/ref-resolution.js';
 import { acadamarkCiteResolution } from './plugins/cite-resolution.js';
 import { acadamarkBibliography } from './plugins/bibliography.js';
 import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plugin.js';
+import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js';
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from 'acadamark-core/registry';
 
@@ -423,7 +424,14 @@ export function acadamarkInterpreter(options = {}) {
   this.compiler = function compileToHtml(tree) {
     const tagHandler = createAcadamarkTagHandler({ assetsDir });
     const hast = toHast(tree, {
-      handlers: { acadamarkTag: tagHandler },
+      handlers: {
+        acadamarkTag: tagHandler,
+        // Parser-error node renderers — the always-renders guarantee
+        // (notes/specs/principles.md) requires acadamarkParseError and
+        // acadamarkTagError nodes to render visibly at their source location.
+        acadamarkParseError: parseErrorHandler,
+        acadamarkTagError: tagErrorHandler,
+      },
       allowDangerousHtml: true,
     });
 

@@ -128,13 +128,15 @@ the current code and all confirmed closed (see the STATUS milestone).
 
 #### Bugs
 
-- [ ] **Fix self-closing `<tag />` for DSL-registry tags** `[parser]`
-  `[alpha]` *(`formerly DF-21, AUD-08`)*
 - [ ] **Add blank-line termination error recovery in the micromark
-  finder** `[parser]` `[alpha]` *(`formerly DF-16`)*
-- [ ] **Render parser-error nodes visibly at their source location**
-  `[interpreter]` `[alpha]` — always-renders guarantee work, sibling
-  of the blank-line item above
+  finder** `[parser]` `[alpha]` — pulled from alpha Phase 2 slice 1
+  (2026-05-25) per the escape hatch: the route is partly a design
+  question (where does the construct end? what shape does the
+  recovery output take?) and partly an implementation question; the
+  design question needs settling before implementation. The sibling
+  parser-error-node renderer half landed in the same slice, so this
+  item is now the sole open gap in the always-renders guarantee per
+  `principles.md`. *(`formerly DF-16`)*
 - [ ] **Make `<ref>` honor its parsed attributes** (`format`/`type`
   kwargs, pipe content, `+link`/`+preview`/`+title` flags)
   `[interpreter]` `[alpha]` *(`formerly PG-3, PG-4, PG-5`)*
@@ -372,47 +374,27 @@ scan in parallel.
 
 ### Bugs
 
-**Fix self-closing `<tag />` for DSL-registry tags** `[parser]` `[alpha]`.
-Self-closing `<tag />` for DSL-registry tags (DF-21, formerly also
-tracked as AUD-08). *(`formerly DF-21, AUD-08`)*
-
 **Add blank-line termination error recovery in the micromark finder**
-`[parser]` `[alpha]`. The micromark finder needs to check each line ending and
-terminate open constructs at blank lines for localized error recovery.
-Currently a tag opened before a blank line will consume across the
-blank line or to EOF. Explicit `Status: Deferred` in
-`notes/specs/recursive-content-spec.md`. Under the re-tiered
-always-renders guarantee in `notes/specs/principles.md`, this is a
-known shortfall against the guarantee, not a permitted exception: the
-"errors stay bounded so the rest of the document is seen" half is
-currently violated when EOF-consumption occurs. The route to closing
-it is partly a design question and partly an implementation question;
-the item stays open until both are settled. Sibling of the
-parser-error-node-renderer item below; both must close for the
-always-renders guarantee to hold in full. *(`formerly DF-16`)*
-
-**Render parser-error nodes visibly at their source location**
-`[interpreter]` `[alpha]` — `acadamarkTagError` / `acadamarkParseError` visible
-at source location (always-renders core-guarantee work). The parser
-produces `acadamarkTagError` and `acadamarkParseError` nodes for
-grammar and parse failures, but the interpreter has no compile-step
-handler registered for these node types, so they currently fall
-through silently in the rendered output. The always-renders guarantee
-(`notes/specs/principles.md`) requires them to render visibly at their
-source location — in the same house style the interpreter already uses
-for other "the author wrote a reference the system couldn't resolve"
-cases: `??ref: id??` for an unresolved cross-reference, `??cite: key??`
-for an unresolved citation, an inline table-parse-error marker for a
-malformed table body. The parser-error markers should follow the same
-pattern. Sibling of the blank-line termination item above; both must
-close for the always-renders guarantee to hold in full. The more
-impactful of the two, since until it closes even bounded parser errors
-are invisible in the rendered output. Fix path: register a compile-step
-handler in `packages/acadamark-interpreter/src/index.js` for the
-`acadamarkTagError` and `acadamarkParseError` mdast node types that
-emits a hast element with the house-style marker text and a
-distinguishing class for styling, mirroring how the unresolved-ref and
-unresolved-cite markers are emitted today.
+`[parser]` `[alpha]`. The micromark finder needs to check each line
+ending and terminate open constructs at blank lines for localized
+error recovery. Currently a tag opened before a blank line will
+consume across the blank line or to EOF. Explicit `Status: Deferred`
+in `notes/specs/recursive-content-spec.md`. Under the always-renders
+guarantee in `notes/specs/principles.md`, this is a known shortfall
+against the guarantee — the "errors stay bounded so the rest of the
+document is seen" half is currently violated when EOF-consumption
+occurs. The route to closing it is partly a design question (where
+does the construct end? what shape does the recovery output take?)
+and partly an implementation question (how does the streaming
+tokenizer notice the blank line in time?); the item stays open until
+both are settled. **Pulled from alpha Phase 2 slice 1 (2026-05-25)
+per the escape hatch**: the design question requires a ruling before
+implementation. The sibling parser-error-node-renderer half landed
+in the same slice (`acadamarkParseError` / `acadamarkTagError` now
+render visibly via the new handlers at
+`packages/acadamark-interpreter/src/handlers/parser-errors.js`), so
+this is now the sole open gap in the always-renders guarantee per
+`principles.md` §"Current known gaps". *(`formerly DF-16`)*
 
 **Make `<ref>` honor its parsed attributes** `[interpreter]` `[alpha]`.
 `format`/`type` kwargs ignored (PG-3); author pipe-text ignored
@@ -547,8 +529,10 @@ shape, same batch:
 `[specs/docs]` `[post-alpha]`. The grammar supports short-form (`<tag attrs>`),
 pipe-content (`<tag attrs | inline content>`), multi-line
 pipe-content, long-form (`<tag attrs>content</tag>` — only for
-DSL_REGISTRY tags), and self-closing (`<tag attrs />` — broken for
-DSL_REGISTRY per AUD-08). Different tags support different
+DSL_REGISTRY tags), and self-closing (`<tag attrs />` — now works
+uniformly across all tag classes including DSL_REGISTRY tags as of
+the alpha Phase 2 slice 1, 2026-05-25; was broken for DSL_REGISTRY
+per AUD-08 before that fix). Different tags support different
 combinations and the mapping is undocumented and inconsistent.
 Authors have no clear guide. Fix path: audit every vocabulary entry;
 create a unified `notes/specs/tag-forms-reference.md` showing the

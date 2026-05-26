@@ -503,3 +503,60 @@ that). One line gets added every few months, not every slice.
   acadamark-interpreter 24/24 suites; 4 prior snapshots updated
   (each change explained as a consequence of the gate's lifts);
   math/code snapshots unchanged (behavior-neutrality verified).
+- **2026-Q2 — alpha build Phase 2 slice 1: parser-side bugs (2 of 3
+  closed, 1 pulled).** Targeted the three parser-side `[alpha]` bugs;
+  closed two and pulled one via the escape hatch.
+  **(i) Self-closing `<tag />` for DSL-registry tags** (formerly
+  DF-21 / AUD-08). Cause: the long-form finder in `syntax.js`
+  greedily claimed `<table />` because `table` is in the DSL
+  registry, then treated the missing `</table>` as a tag error.
+  Fix: added `prevWasSlash` tracking in `makeLongFormTokenizer`'s
+  `scanOpenAttrs`; when `>` arrives with the flag set, the long-form
+  tokenizer rejects, letting the named-tag tokenizer claim the
+  construct and the grammar's `SelfClosingNamedTag` rule emit a
+  `selfClosing: true` node. Spaces and tabs preserve the flag (so
+  `<tag attr / >` still works); any other non-whitespace clears it.
+  No grammar source change (the Peggy grammar already had
+  `SelfClosingNamedTag`); the fix is in the micromark finder layer.
+  **(ii) Render parser-error nodes visibly** (always-renders
+  guarantee work, sibling of the blank-line item). Added
+  `packages/acadamark-interpreter/src/handlers/parser-errors.js`
+  with two compile-step handlers: `parseErrorHandler` for
+  `acadamarkParseError` nodes (renders
+  `<span class="parse-error">??parse: SUBTYPE "SOURCE"??</span>`)
+  and `tagErrorHandler` for `acadamarkTagError` nodes (renders
+  `<span class="tag-error">??tag: NAME — ERROR??</span>`, branching
+  on the sigil-opener vs. long-form variants per the error-node
+  spec). Wired into `toHast`'s `handlers` map in both the main
+  `index.js` compiler and the parallel `runPipeline` in
+  `integration.test.js`. Both handlers preserve mdast `position` on
+  the emitted hast element so source location is carried into the
+  output. The house style (`??...??` markers, distinguishing CSS
+  classes) mirrors the existing unresolved-ref / unresolved-cite /
+  table-parse-error markers per `principles.md`.
+  **(iii) Blank-line termination error recovery** (formerly DF-16)
+  — **pulled via the escape hatch**. The backlog entry explicitly
+  records the item has a design question (where does the construct
+  end? what shape does the recovery output take?) the entry says
+  "stays open until both are settled"; the escape hatch is exactly
+  the case it's armed for. Pulled, recorded with the finding;
+  remains the sole open gap in the always-renders guarantee per
+  `principles.md`.
+  New integration fixture `document-17-parser-edge-cases.acm`
+  exercises both fixes end-to-end: a self-closing `<table />` (no
+  tag-error marker; clean self-close), and a deliberate `\z`
+  unknown-escape that produces the visible `??parse:
+  unknown-escape-sequence "\\z"??` marker, with surrounding prose
+  unaffected. Spec drift: `principles.md` §"Current known gaps"
+  updated — was "two gaps open," now "one gap remains open" with the
+  parser-error-node renderer recorded as closed by this slice.
+  Backlog: bug 1 (self-closing) and bug 3 (parser-error rendering)
+  removed from both views; bug 2 (blank-line) updated with the pull
+  finding; the tag-form-matrix item's mention of AUD-08's brokenness
+  updated to note the fix. Tests: acadamark-core 50/50;
+  remark-acadamark 128/128 (the grammar is unchanged; the syntax.js
+  finder change is exercised through the integration suite);
+  acadamark-interpreter 24/24 suites; all prior integration
+  snapshots stable under strict comparison (no existing fixture
+  exercised `<DSL />` or `\z`, which is itself a coverage finding
+  the fixture closes); doc-17 snapshot written on first run.

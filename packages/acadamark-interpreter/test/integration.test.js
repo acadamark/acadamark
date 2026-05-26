@@ -25,6 +25,7 @@ import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 
 import { acadamarkInterpreter, acadamarkNormalizeMarkdown, acadamarkTagHandler, createAcadamarkTagHandler } from '../src/index.js';
+import { parseErrorHandler, tagErrorHandler } from '../src/handlers/parser-errors.js';
 import remarkRecursiveContent from 'remark-acadamark/recursive-content';
 import { acadamarkConfigDiscovery } from '../src/plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.js';
@@ -84,7 +85,11 @@ function runPipeline(source, opts = {}) {
 
   const tagHandler = createAcadamarkTagHandler(opts);
   const hast = toHast(mdast, {
-    handlers: { acadamarkTag: tagHandler },
+    handlers: {
+      acadamarkTag: tagHandler,
+      acadamarkParseError: parseErrorHandler,
+      acadamarkTagError: tagErrorHandler,
+    },
     allowDangerousHtml: true,
   });
 
@@ -628,5 +633,50 @@ export function run() {
 
     snapshotHast('document-16', hast);
     console.log('PASS: integration doc16 (section-form ladder convergence — alpha item closure)');
+  }
+
+  // ── Document 17: Parser edge cases (alpha Phase 2 slice 1) ────────────────
+  // Validates two coupled fixes:
+  //   - Self-closing DSL-registry tags (formerly DF-21 / AUD-08): the long-
+  //     form finder previously claimed <table /> greedily, treating the
+  //     missing </table> as an error. With the syntax.js fix (prevWasSlash
+  //     check in scanOpenAttrs / GT branch), <table /> falls through to the
+  //     named-tag tokenizer and the grammar's SelfClosingNamedTag rule
+  //     produces a selfClosing: true node.
+  //   - Visible parser-error rendering (always-renders guarantee, per
+  //     principles.md): acadamarkParseError nodes (produced by the grammar
+  //     for malformed escape sequences, etc.) now render as visible
+  //     <span class="parse-error">??parse: …??</span> markers in the house
+  //     style of unresolved refs / cites.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-17-parser-edge-cases.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc17: article structure present');
+
+    // Self-closing <table />: must produce a self-closed <table> element,
+    // NOT a tag-error marker. The handler may render an empty table — what
+    // we assert is that no "tag-error" class appears around it (which would
+    // be the previous buggy behavior).
+    const tagErrorMatches = html.match(/class="tag-error"/g) ?? [];
+    assert.equal(tagErrorMatches.length, 0,
+      `doc17: no tag-error markers (self-closing <table /> should parse cleanly); got ${tagErrorMatches.length}`);
+
+    // Visible parse-error: \z is an unknown escape sequence; the grammar
+    // produces an acadamarkParseError; the new handler renders it as a
+    // visible <span class="parse-error">??parse: unknown-escape-sequence …??</span>.
+    assert.ok(html.includes('class="parse-error"'),
+      'doc17: parse-error span class present in rendered output');
+    assert.ok(html.includes('??parse:'),
+      'doc17: house-style ??parse: …?? marker present in rendered output');
+    assert.ok(html.includes('unknown-escape-sequence'),
+      'doc17: error subtype identifies the cause');
+
+    // Surrounding content continues to render normally — bounded error.
+    assert.ok(html.includes('continues to render normally'),
+      'doc17: surrounding content after error is still rendered');
+
+    snapshotHast('document-17', hast);
+    console.log('PASS: integration doc17 (parser edge cases — alpha Phase 2 slice 1)');
   }
 }

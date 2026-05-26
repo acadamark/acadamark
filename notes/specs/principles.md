@@ -18,13 +18,11 @@ Where localized recovery is hard to implement — for instance, blank-line termi
 
 ### Current known gaps against the guarantee
 
-Two gaps are open against the guarantee at the time of this writing. They are recorded here, in the spec, so that future readers can see them as gaps rather than mistaking the present state for the intended state. The work to close them is tracked in `BACKLOG-ROADMAP.md`.
-
-- **The parser-error-node renderer.** `acadamarkTagError` and `acadamarkParseError` nodes are produced by the parser but the interpreter has no compile-step handler for them, so they do not yet render as visible error markers. The guarantee says they should — in the house style described above. Closing this gap is the more impactful of the two; until it closes, parser errors fall through silently in the rendered output.
+One gap remains open against the guarantee at the time of this writing. It is recorded here, in the spec, so that future readers can see it as a gap rather than mistaking the present state for the intended state. The work to close it is tracked in `BACKLOG-ROADMAP.md`.
 
 - **Blank-line / EOF consumption.** The micromark finder does not terminate open constructs at blank lines, so a tag opened before a blank line consumes across the blank line or to EOF rather than failing in place. This violates the "at the location where it occurred" half by causing the error's footprint to swallow content downstream. Tracked under "blank-line termination error recovery" (formerly DF-16); the route is partly a design question (where does the construct end?) and partly an implementation question (how does the streaming tokenizer notice the blank line in time?).
 
-These two gaps are siblings: the first concerns whether produced error nodes are seen by the reader; the second concerns whether errors are bounded so the rest of the document is seen. Both must close for the guarantee to hold in full.
+(The previously-listed second gap — *the parser-error-node renderer* — is closed as of the alpha Phase 2 slice 1: `acadamarkParseError` and `acadamarkTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/acadamark-interpreter/src/handlers/parser-errors.js`. The first half of the guarantee — produced error nodes are visible in the rendered output — now holds.)
 
 ## The delegation principle
 
