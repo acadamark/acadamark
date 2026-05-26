@@ -8,7 +8,7 @@
   "exports": {
     ".": "./src/index.js",
     "./dsl-registry": "./src/dsl-registry.js",
-    "./sigil-mapping": "./src/sigil-mapping.js",
+    "./tagname-sigil-map": "./src/tagname-sigil-map.js",
     "./tag": "./src/tag.js",
     "./error-nodes": "./src/error-nodes.js",
     "./registry": "./src/registry.js",
@@ -20,7 +20,7 @@
     "./file-data-keys": "./src/file-data-keys.js"
   },
   "scripts": {
-    "test": "node test/colon-id.test.js && node test/sigil-mapping.test.js"
+    "test": "node test/colon-id.test.js && node test/tagname-sigil-map.test.js"
   },
   "keywords": [
     "acadamark",

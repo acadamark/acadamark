@@ -8,8 +8,10 @@ import { makeTag } from 'acadamark-core/tag';
 
 function makeDisplayMath(id = null, booleans = {}, kwargs = {}) {
   return {
+    // Post-normalize-to-canonical gate: tagname is the canonical Layer 1
+    // vocabulary key ('display-math'), not the sigil token ('$$').
     type: 'acadamarkTag',
-    tagname: '$$',
+    tagname: 'display-math',
     id,
     classes: [],
     kwargs,
@@ -194,7 +196,7 @@ export function run() {
   // --- inline math ($) is not numbered ---
   {
     const inlineMath = {
-      type: 'acadamarkTag', tagname: '$',
+      type: 'acadamarkTag', tagname: 'inline-math',
       id: null, classes: [], kwargs: {}, booleans: {},
       content: ' x^2 ', contentHandler: 'math', isOpaqueContent: true,
       positional: [],
@@ -322,7 +324,7 @@ export function run() {
   {
     const codeNode = {
       type: 'acadamarkTag',
-      tagname: '```',
+      tagname: 'code-block',
       id: 'code:snippet',
       classes: [],
       kwargs: {},
@@ -351,7 +353,7 @@ export function run() {
   {
     const codeNode = {
       type: 'acadamarkTag',
-      tagname: '```',
+      tagname: 'code-block',
       id: null,
       classes: [],
       kwargs: {},
@@ -379,7 +381,7 @@ export function run() {
   {
     const codeNode = {
       type: 'acadamarkTag',
-      tagname: '```',
+      tagname: 'code-block',
       id: 'mycode',
       classes: [],
       kwargs: {},
@@ -410,7 +412,7 @@ export function run() {
     };
     const codeNode = {
       type: 'acadamarkTag',
-      tagname: '```',
+      tagname: 'code-block',
       id: 'code:snippet',
       classes: [],
       kwargs: {},

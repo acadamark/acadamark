@@ -24,7 +24,7 @@ import { run as runLibraryLoad } from './plugins/library-load.test.js';
 import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
 import { run as runBibliography } from './plugins/bibliography.test.js';
 import { run as runCiteHandler } from './handlers/cite.test.js';
-import { run as runNormalizeMarkdown } from './plugins/normalize-markdown.test.js';
+import { run as runNormalizeToCanonical } from './plugins/normalize-to-canonical.test.js';
 import { run as runIntegration } from './integration.test.js';
 
 const suites = [
@@ -50,7 +50,7 @@ const suites = [
   ['plugins/cite-resolution',      runCiteResolution],
   ['plugins/bibliography',         runBibliography],
   ['handlers/cite',                runCiteHandler],
-  ['plugins/normalize-markdown',   runNormalizeMarkdown],
+  ['plugins/normalize-to-canonical', runNormalizeToCanonical],
   ['integration',                  runIntegration],
 ];
 

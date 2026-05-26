@@ -1,0 +1,23 @@
+<meta type=article>
+  <title | Section-form ladder convergence proof>
+  <author | Test Author>
+</meta>
+
+<section #sec:named | Convergence title>
+
+The first section is authored as a named `<section>` tag.
+
+<# #sec:sigil | Convergence title #>
+
+The second section is authored as a sigil `<#>` tag with the same title.
+
+# Convergence title
+
+The third section is authored as a bare markdown `#` heading with the same
+title (no id — the bare-markdown form has no surface for one).
+
+After the normalize-to-canonical gate runs, all three sections must produce
+the structurally identical Layer 1 `<section>` node — same tagname, same
+section-title shape, same title text — modulo the absence of an id on the
+bare-markdown form. This is the convergence proof the section-form ladder
+closure depends on.

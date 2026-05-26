@@ -8,7 +8,7 @@
 // The package's contents grow as the acadamark-core extraction arc proceeds.
 
 export { DSL_REGISTRY, getContentHandler } from './dsl-registry.js';
-export { PARSER_TO_VOCAB, resolveVocabKey } from './sigil-mapping.js';
+export { SIGIL_TO_TAGNAME, TAGNAME_TO_SIGIL, isSigilTagname } from './tagname-sigil-map.js';
 export { makeTag, makeOpaqueTag, makeInternalMarker, isAcadamarkTag } from './tag.js';
 export { makeParseError, makeTagError } from './error-nodes.js';
 export { createRegistry, ensureRegistry } from './registry.js';

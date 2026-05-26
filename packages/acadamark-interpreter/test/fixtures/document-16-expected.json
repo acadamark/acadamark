@@ -1,0 +1,435 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Section-form ladder convergence proof",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 39,
+                          "offset": 38
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Test Author",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 13,
+                          "offset": 12
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:named"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Convergence title",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 19,
+                          "offset": 18
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The first section is authored as a named ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 146
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 42,
+                          "offset": 187
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<section>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " tag.",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 53,
+                          "offset": 198
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 58,
+                          "offset": 203
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 146
+                    },
+                    "end": {
+                      "line": 8,
+                      "column": 58,
+                      "offset": 203
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:sigil"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Convergence title",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 19,
+                          "offset": 18
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The second section is authored as a sigil ",
+                      "position": {
+                        "start": {
+                          "line": 12,
+                          "column": 1,
+                          "offset": 243
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 43,
+                          "offset": 285
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<#>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " tag with the same title.",
+                      "position": {
+                        "start": {
+                          "line": 12,
+                          "column": 48,
+                          "offset": 290
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 73,
+                          "offset": 315
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 12,
+                      "column": 1,
+                      "offset": 243
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 73,
+                      "offset": 315
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Convergence title",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 3,
+                          "offset": 319
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 20,
+                          "offset": 336
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The third section is authored as a bare markdown ",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 338
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 50,
+                          "offset": 387
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "#"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " heading with the same\ntitle (no id — the bare-markdown form has no surface for one).",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 53,
+                          "offset": 390
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 63,
+                          "offset": 475
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 16,
+                      "column": 1,
+                      "offset": 338
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 63,
+                      "offset": 475
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "After the normalize-to-canonical gate runs, all three sections must produce\nthe structurally identical Layer 1 ",
+                      "position": {
+                        "start": {
+                          "line": 19,
+                          "column": 1,
+                          "offset": 477
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 36,
+                          "offset": 588
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<section>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " node — same tagname, same\nsection-title shape, same title text — modulo the absence of an id on the\nbare-markdown form. This is the convergence proof the section-form ladder\nclosure depends on.",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 47,
+                          "offset": 599
+                        },
+                        "end": {
+                          "line": 23,
+                          "column": 20,
+                          "offset": 793
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 19,
+                      "column": 1,
+                      "offset": 477
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 20,
+                      "offset": 793
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 24,
+      "column": 1,
+      "offset": 794
+    }
+  }
+}

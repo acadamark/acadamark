@@ -1,0 +1,51 @@
+<meta type=article>
+  <title | Bare markdown heading normalization fixture>
+  <author | Test Author>
+</meta>
+
+# Top-level bare heading
+
+This top-level section is authored as a bare markdown `#` heading. It must
+lift to a canonical `<section>` element with a proper `<section-title>`, not
+flow through as `<h1>`.
+
+## Bare sub-heading with *emphasis* in the title
+
+The bare `##` heading lifts to `<sub-section>`. The emphasis in the title
+text must be lifted recursively — emphasis becomes `<i>` per the decided
+stylistic mapping.
+
+### Bare sub-sub-heading with `inline code`
+
+Triple-hash bare heading lifts to `<sub-sub-section>`. Inline code in the
+title text must also be lifted recursively.
+
+# Top-level with **strong** text and ~~strikethrough~~
+
+Strong (bold) lifts to `<b>`; strikethrough lifts to `<s>` — both per the
+decided mappings.
+
+#### Depth-4 heading passes through as `<h4>`
+
+A depth-4 heading exceeds Layer 1's three section levels. It is **not**
+mapped to a section and **not** mapped to `<b>`. It passes through as a
+literal `<h4>` element with an informative diagnostic emitted.
+
+##### Depth-5 heading passes through as `<h5>`
+
+Same treatment as depth-4.
+
+###### Depth-6 heading passes through as `<h6>`
+
+Same treatment.
+
+# Bare heading inside named-tag content
+
+<aside | An aside containing a recursive heading.
+
+## Nested bare heading inside aside content
+
+The bare `##` heading appearing inside the aside's pipe-content must also
+lift — the gate's walker recurses into acadamarkTag content arrays.
+
+>

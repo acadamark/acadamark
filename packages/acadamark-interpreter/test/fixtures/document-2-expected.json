@@ -193,7 +193,7 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "strong",
+                      "tagName": "b",
                       "properties": {},
                       "children": [
                         {
@@ -212,19 +212,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 10,
-                          "column": 32,
-                          "offset": 416
-                        },
-                        "end": {
-                          "line": 10,
-                          "column": 45,
-                          "offset": 429
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -244,7 +232,7 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "em",
+                      "tagName": "i",
                       "properties": {},
                       "children": [
                         {
@@ -263,19 +251,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 11,
-                          "column": 15,
-                          "offset": 479
-                        },
-                        "end": {
-                          "line": 11,
-                          "column": 28,
-                          "offset": 492
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -771,7 +747,7 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "em",
+                      "tagName": "i",
                       "properties": {},
                       "children": [
                         {
@@ -790,19 +766,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 68,
-                          "offset": 67
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 88,
-                          "offset": 87
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -822,7 +786,7 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "em",
+                      "tagName": "i",
                       "properties": {},
                       "children": [
                         {
@@ -841,19 +805,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 120,
-                          "offset": 119
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 140,
-                          "offset": 139
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",

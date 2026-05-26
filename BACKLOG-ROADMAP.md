@@ -278,16 +278,6 @@ the current code and all confirmed closed (see the STATUS milestone).
   Should be done **before** any of those six AUD items is picked up as
   implementation work, to avoid wasted scoping. `[cross-cutting]`
   `[post-alpha]`
-- [ ] **Build heading normalization and verify the section-form ladder
-  converges** — build the missing heading-normalization in
-  `normalize-markdown.js` so bare markdown `#` reduces to the
-  canonical section form; then verify the named form `<section>`,
-  the sigil form `<#>`, and the bare `#` idiom all produce the
-  identical Layer 1 `<section>` node, including id threading. The
-  sigil-form half is already done as of the alpha Phase 1 hash-sigil
-  fix (2026-05-25); only Form 3 (bare markdown) remains. `[interpreter]`
-  `[alpha]`
-
 ### Explicitly deferred — parked
 
 - **The unbraced-inline `@` form** `[parser]` `[post-alpha]` *(parked;
@@ -1079,51 +1069,3 @@ leave open with a fresh "still applicable" finding. Should be done
 **before** any of those six is picked up as implementation work, to
 avoid wasted scoping work on an already-fixed item.
 
-**Build heading normalization and verify the section-form ladder
-converges** `[interpreter]` `[alpha]`. The canonical-section-form
-decision (recorded in DESIGN.md) is that named `<section>` and the
-sigil form `<#>` are co-equal canonical surfaces and the bare
-markdown `#` heading is a lossy-reduction shorthand for them. The
-decision is documented; the implementation does not yet make all
-three converge. Per the effort-scoping pass (2026-05-25):
-
-- **Form 1 — named `<section #sec:intro | Intro>`:** converges
-  today. The parser produces an `acadamarkTag` with
-  `tagname: 'section'`; `section-nesting.js` runs its nesting
-  algorithm; id threads through. This is the reference form.
-- **Form 2 — sigil `<# #sec:intro | Intro #>`:** **converges as of
-  the alpha Phase 1 slice (2026-05-25)** that fixed the hash-sigil
-  dispatch and opacity bugs and added a small companion
-  sigil-tagname normalization in `section-nesting.js`. The id threads
-  through; section-title extraction runs; the resulting Layer 1
-  node is identical to the named-section form. Fixture coverage at
-  `test/fixtures/document-14-hash-sigil-headings.acm`. **Prerequisite
-  satisfied.**
-- **Form 3 — bare markdown `# Intro`:** does **not** converge today.
-  There is no heading normalization — `normalize-markdown.js`'s
-  comments at L26 and L199 explicitly mark it as future work. A
-  bare-markdown heading currently passes through to `<h1>`, not to
-  the canonical section node.
-
-This item: **build** the missing heading-normalization for Form 3
-(a new entry in `normalize-markdown.js`'s NORMALIZATIONS set mapping
-mdast `heading` nodes to `section` / `sub-section` / `sub-sub-section`
-acadamarkTag nodes by `depth`; let the existing section-nesting
-plugin handle the rest — which already includes the sigil-tagname
-normalization the Phase 1 slice added). Then extend the existing
-`document-14-hash-sigil-headings.acm` fixture (or add a sibling) to
-exercise bare-markdown `#` headings and assert that all three forms
-produce the structurally identical Layer 1 `<section>` node, both
-bare and with id (Forms 1 and 2 are already covered by document-14).
-
-Two bounded design questions the implementation slice must settle:
-(a) heading depths 4–6 have no Layer 1 section counterpart — drop,
-error, or extend the ladder; (b) interaction with OQ-2 (the
-section-title heading-level question, gated `[post-alpha]`) — does a
-top-level `# Title` become the article title or the first section?
-
-The sigil-as-first-class-category Discussion item is the spec-side
-follow-on this work feeds into; this item is the implementation
-half. *(Renamed 2026-05-25 from "Verify the section-form reduction
-ladder converges" — the effort-scoping pass found the work is not
-pure verification, it includes building Form 3's normalization.)*

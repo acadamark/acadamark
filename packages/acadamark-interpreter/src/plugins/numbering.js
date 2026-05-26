@@ -36,9 +36,12 @@ import { discover } from 'acadamark-core/walkers/discover';
 import { ACADAMARK_CONFIG, ACADAMARK_NUMBERING_PENDING } from 'acadamark-core/file-data-keys';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 
-// Maps the parser-emitted tagname to the registry type used for display labels.
+// Maps the canonical post-gate tagname to the registry type used for display
+// labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
+// are rewritten to canonical Layer 1 names before this plugin runs, so the
+// keys here are the canonical names ('display-math', not '$$').
 const NUMBERED_TAGNAMES = new Map([
-  ['$$', 'equation'],
+  ['display-math', 'equation'],
   ['figure', 'figure'],
   ['table', 'table'],
 ]);
@@ -94,16 +97,18 @@ export function acadamarkNumbering() {
       });
     }
 
-    // Visitor for code-block sigil nodes (tagname '```'). Code blocks are
-    // registered with numbered: false — they become findable by colon-label
-    // for <ref @code:snippet> but are not sequentially numbered (G4, PG-6).
+    // Visitor for code-block nodes (canonical tagname 'code-block'; the gate
+    // rewrites the sigil ```' to its canonical name before this plugin runs).
+    // Code blocks are registered with numbered: false — they become findable
+    // by colon-label for <ref @code:snippet> but are not sequentially
+    // numbered (G4, PG-6).
     //
     // DELIBERATE REVERSIBLE CHOICE (G4 chat session, 2026-05-23): code blocks
     // are unnumbered. Switching to numbered listings later means changing
-    // `numbered: false` to `numbered: true` here, adding `'code'` to
+    // `numbered: false` to `numbered: true` here, adding `'code-block'` to
     // NUMBERED_TAGNAMES, and adding a CONFIG_KEY entry for 'code' — the same
     // mechanism figures and tables already use.
-    visitors.set('```', (node) => {
+    visitors.set('code-block', (node) => {
       registry.assign('code', node.id || null, { numbered: false, data: {} });
     });
 

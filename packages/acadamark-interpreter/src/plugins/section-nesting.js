@@ -29,41 +29,6 @@ const TITLE_TAG = {
   'sub-sub-section':  'sub-sub-section-title',
 };
 
-// Map from hash-sigil parser tagname to its canonical Layer 1 section
-// tagname. The parser emits literal sigils ('#', '##', '###') as the
-// tagname of a sigil-form heading; the alpha Phase 1 slice fix at
-// acadamark-core/src/sigil-mapping.js translates these at interpret-time
-// (vocabulary lookup) but the structural plugins (this one,
-// article-structuring) match sections by tagname. Normalize the
-// sigil tagname to its canonical Layer 1 name before nesting so the
-// rest of the structural pipeline treats sigil and named sections
-// identically.
-const SIGIL_TO_SECTION_TAGNAME = {
-  '#':   'section',
-  '##':  'sub-section',
-  '###': 'sub-sub-section',
-};
-
-/**
- * Recursively walk the tree and rewrite any acadamarkTag whose tagname is a
- * hash sigil ('#'/'##'/'###') to the canonical Layer 1 section name
- * ('section'/'sub-section'/'sub-sub-section'). After this pass, all
- * downstream consumers see one shape — the sigil form is indistinguishable
- * from the named-section form in the AST.
- *
- * @param {Array} nodes - array of sibling nodes to examine
- */
-function normalizeSigilSectionNames(nodes) {
-  for (const node of nodes) {
-    if (isAcadamarkTag(node) && SIGIL_TO_SECTION_TAGNAME[node.tagname]) {
-      node.tagname = SIGIL_TO_SECTION_TAGNAME[node.tagname];
-    }
-    if (isAcadamarkTag(node) && Array.isArray(node.content)) {
-      normalizeSigilSectionNames(node.content);
-    }
-  }
-}
-
 /**
  * Extract the title children from a section node's pipe content.
  *
@@ -165,13 +130,10 @@ function walkAndNest(nodes) {
  */
 export function acadamarkSectionNesting() {
   return (tree) => {
-    // Phase A: rewrite hash-sigil tagnames to canonical Layer 1 section
-    // names so the nesting pass and all downstream structural code sees
-    // one shape. Companion to the acadamark-core/sigil-mapping
-    // PARSER_TO_VOCAB fix that resolved the hash-sigil dispatch bug at
-    // the interpret-time vocabulary lookup.
-    normalizeSigilSectionNames(tree.children ?? []);
-    // Phase B: the existing single-pass nesting algorithm.
+    // By this point the normalize-to-canonical gate has rewritten every
+    // sigil tagname and every bare-markdown heading to its canonical
+    // section / sub-section / sub-sub-section name, so the nesting
+    // algorithm matches purely on canonical tagnames via sectionDepth().
     walkAndNest(tree.children ?? []);
   };
 }

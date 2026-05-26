@@ -566,10 +566,67 @@ export function run() {
     assert.ok(html.includes('id="sec:intro"'), 'doc14: id threads through hash sigil');
 
     // Opacity: prose content inside the heading was recursively parsed.
-    assert.ok(html.includes('<em>'), 'doc14: emphasis inside <## … ##> rendered (isOpaqueContent: false)');
-    assert.ok(html.includes('<code>'), 'doc14: inline code inside <### … ###> rendered (isOpaqueContent: false)');
+    // (Post-normalize-to-canonical gate: emphasis lifts to <i>, inlineCode
+    // lifts to <code> per the decided stylistic mapping.)
+    assert.ok(html.includes('<i>'), 'doc14: emphasis inside <## … ##> rendered (lifts to <i>)');
+    assert.ok(html.includes('<code>'), 'doc14: inline code inside <### … ###> rendered');
 
     snapshotHast('document-14', hast);
     console.log('PASS: integration doc14 (hash-sigil heading dispatch — alpha Phase 1)');
+  }
+
+  // ── Document 15: Bare markdown heading lift (normalize-to-canonical) ──────
+  // Validates Group B (bare heading → section for depths 1-3; pass-through
+  // for depths 4-6 with diagnostics) and Group C (recursive inline lift).
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-15-bare-headings.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Depths 1-3 lift to canonical sections.
+    assert.ok(html.includes('<section>'), 'doc15: bare # → <section>');
+    assert.ok(html.includes('<section-title>'), 'doc15: <section-title> extracted from bare heading');
+    assert.ok(html.includes('<sub-section>'), 'doc15: bare ## → <sub-section>');
+    assert.ok(html.includes('<sub-sub-section>'), 'doc15: bare ### → <sub-sub-section>');
+
+    // Recursive inline lift inside heading titles.
+    assert.ok(html.includes('<i>'), 'doc15: emphasis in heading title lifts to <i>');
+    assert.ok(html.includes('<b>'), 'doc15: strong in heading title lifts to <b>');
+    assert.ok(html.includes('<s>'), 'doc15: strikethrough lifts to <s>');
+    assert.ok(html.includes('<code>'), 'doc15: inline code lifts to canonical inline-code element');
+
+    // Depths 4-6 pass through as literal HTML <hN> elements (the named exception).
+    assert.ok(html.includes('<h4>'), 'doc15: depth-4 heading passes through as <h4>');
+    assert.ok(html.includes('<h5>'), 'doc15: depth-5 heading passes through as <h5>');
+    assert.ok(html.includes('<h6>'), 'doc15: depth-6 heading passes through as <h6>');
+
+    snapshotHast('document-15', hast);
+    console.log('PASS: integration doc15 (bare markdown heading lift — normalize-to-canonical gate)');
+  }
+
+  // ── Document 16: Section-form ladder convergence proof ────────────────────
+  // The same section title authored three ways. After the gate, all three
+  // forms must produce structurally identical Layer 1 <section> nodes.
+  // This is the verification the [alpha] "section-form ladder converges"
+  // item required, now satisfied by the normalize-to-canonical gate.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-16-section-form-convergence.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // All three forms produce <section> elements.
+    const sectionMatches = html.match(/<section[ >]/g) ?? [];
+    assert.equal(sectionMatches.length, 3,
+      `doc16: three sections produced (named, sigil, bare-markdown); got ${sectionMatches.length}`);
+
+    // All three produce <section-title> elements with the same title text.
+    const titleMatches = html.match(/<section-title>Convergence title<\/section-title>/g) ?? [];
+    assert.equal(titleMatches.length, 3,
+      `doc16: three identical <section-title> elements; got ${titleMatches.length}`);
+
+    // Named and sigil forms thread their ids; bare-markdown form does not.
+    assert.ok(html.includes('id="sec:named"'), 'doc16: named-form id threads through');
+    assert.ok(html.includes('id="sec:sigil"'), 'doc16: sigil-form id threads through');
+
+    snapshotHast('document-16', hast);
+    console.log('PASS: integration doc16 (section-form ladder convergence — alpha item closure)');
   }
 }

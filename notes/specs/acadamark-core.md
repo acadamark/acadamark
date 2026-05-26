@@ -44,8 +44,8 @@ one outstanding open question.
 
 Edges (consumer → dependency):
 
-- `remark-acadamark` → `acadamark-core` (uses `dsl-registry`, `sigil-mapping`,
-  tag builders, error-node builders).
+- `remark-acadamark` → `acadamark-core` (uses `dsl-registry`,
+  `tagname-sigil-map`, tag builders, error-node builders).
 - `acadamark-interpreter` → `acadamark-core` (uses everything in core);
   `acadamark-interpreter` → `remark-acadamark` (legitimate parser→interpreter
   stage edge: imports `recursive-content` and the parser's unified-plugin
@@ -72,7 +72,7 @@ are filesystem-free, browser-safe, and depend on nothing internal.
 | `src/tag.js` | The canonical `acadamarkTag` node shape; builders `makeTag`, `makeOpaqueTag`, `makeInternalMarker`; the `isAcadamarkTag` predicate | G1 |
 | `src/error-nodes.js` | The canonical `acadamarkParseError` / `acadamarkTagError` shapes; builders `makeParseError`, `makeTagError` | G7 |
 | `src/dsl-registry.js` | The canonical `tagname → contentHandler` map and `getContentHandler` API | G3, G4 |
-| `src/sigil-mapping.js` | The sigil-to-vocabulary-key translation (`resolveVocabKey`); `PARSER_TO_VOCAB` table | G14 |
+| `src/tagname-sigil-map.js` | The bidirectional tagname↔sigil cipher: the single source-of-truth pair list and the two derived lookup maps (`SIGIL_TO_TAGNAME` for the lift direction, `TAGNAME_TO_SIGIL` for the future lowering pass); `isSigilTagname` predicate. Both directions are derived from one literal so they cannot drift. Renamed and broadened from the original `sigil-mapping.js` (which was one-directional) when the normalize-to-canonical gate consolidated lift work; the gate consumes the lift direction. | G14 |
 | `src/colon-id.js` | The cross-reference colon-id convention (`isColonId`, `parseColonId`) | G11 |
 | `src/registry.js` | The cross-target numbering registry (`createRegistry`, `ensureRegistry`, `findByLabel`); registry-entry shape `{ type, id, number, numbered, data }` | G10 |
 | `src/file-data-keys.js` | String constants for `file.data.*` plugin-bus keys (`ACADAMARK_CONFIG`, `ACADAMARK_REGISTRY`, `ACADAMARK_CITATIONS`, `ACADAMARK_NOTES_PENDING`, `ACADAMARK_NUMBERING_PENDING`) | G12 |
@@ -194,8 +194,8 @@ No such work is planned.
 ## Why this package exists
 
 **Inward dependency.** Two packages can share via sideways imports
-(`acadamark-interpreter` used to import `dsl-registry` and `sigil-mapping`
-from `remark-acadamark` directly). Three packages cannot — JATS-export would
+(`acadamark-interpreter` used to import `dsl-registry` and the sigil
+mapping — now `tagname-sigil-map` — from `remark-acadamark` directly). Three packages cannot — JATS-export would
 have to pick which sibling to import from, and either choice picks an
 arbitrary owner of facts that belong to none of them. `acadamark-core` is
 the home for facts that belong to the project, not to a particular producer

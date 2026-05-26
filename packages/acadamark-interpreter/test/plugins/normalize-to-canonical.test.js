@@ -4,18 +4,24 @@ import remarkParse from 'remark-parse';
 import remarkAcadamark from 'remark-acadamark';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
-import { acadamarkNormalizeMarkdown, gfmTableToPipeString } from '../../src/plugins/normalize-markdown.js';
+import { acadamarkNormalizeToCanonical, gfmTableToPipeString } from '../../src/plugins/normalize-to-canonical.js';
+// Alias kept locally so the existing test bodies (which use the prior
+// function name) need fewer edits. The exported `acadamarkNormalizeMarkdown`
+// is itself a backward-compat alias for `acadamarkNormalizeToCanonical`.
+const acadamarkNormalizeMarkdown = acadamarkNormalizeToCanonical;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
- * Parse authored acadamark shorthand and return the first content node.
- * Used to produce the "authoritative" node to compare against.
+ * Parse authored acadamark shorthand and return the first content node,
+ * AFTER running the normalize-to-canonical gate. This is the post-gate
+ * canonical shape — what every downstream stage sees.
  */
 function parseAuthoredShorthand(source) {
   const tree = unified().use(remarkParse).use(remarkAcadamark).parse(source);
-  // The parser wraps in root > paragraph; shorthand sigil nodes may be direct
-  // children of root or inside a paragraph. Find the first acadamarkTag.
+  // Run the gate so authored sigil tagnames get rewritten to canonical
+  // (e.g. authored <$ x $> → tagname 'inline-math' after the gate).
+  acadamarkNormalizeMarkdown()(tree);
   function findTag(nodes) {
     for (const n of nodes) {
       if (n.type === 'acadamarkTag') return n;
@@ -57,11 +63,11 @@ export function run() {
     const para = tree.children[0];
     const mathNode = para.children.find((n) => n.type === 'acadamarkTag');
     assert.ok(mathNode, 'math node found after normalization');
-    assert.equal(mathNode.tagname, '$', 'tagname is $');
+    assert.equal(mathNode.tagname, 'inline-math', 'tagname is canonical inline-math');
     assert.equal(mathNode.content, 'x^2', 'content is LaTeX value');
     assert.equal(mathNode.isOpaqueContent, true, 'isOpaqueContent true');
     assert.equal(mathNode.contentHandler, 'math', 'contentHandler is math');
-    console.log('PASS: normalize-markdown: bare $...$ normalizes to canonical $ node');
+    console.log('PASS: normalize-to-canonical: bare $...$ normalizes to canonical inline-math node');
   }
 
   // --- bare $$...$$ normalizes to canonical $$ node ---
@@ -70,10 +76,10 @@ export function run() {
     acadamarkNormalizeMarkdown()(tree);
     const mathNode = tree.children.find((n) => n.type === 'acadamarkTag');
     assert.ok(mathNode, '$$ math node found after normalization');
-    assert.equal(mathNode.tagname, '$$', 'tagname is $$');
+    assert.equal(mathNode.tagname, 'display-math', 'tagname is canonical display-math');
     assert.equal(mathNode.isOpaqueContent, true, 'isOpaqueContent true');
     assert.equal(mathNode.contentHandler, 'math-display', 'contentHandler is math-display');
-    console.log('PASS: normalize-markdown: bare $$$...$$ normalizes to canonical $$ node');
+    console.log('PASS: normalize-to-canonical: bare $$...$$ normalizes to canonical display-math node');
   }
 
   // --- all required fields present on normalized $ node ---
@@ -82,7 +88,7 @@ export function run() {
     assert.ok(node, 'node found');
     assert.equal(node.type, 'acadamarkTag', 'type');
     assert.equal(node.form, 'short', 'form');
-    assert.equal(node.tagname, '$', 'tagname');
+    assert.equal(node.tagname, 'inline-math', 'tagname is canonical inline-math');
     assert.deepEqual(node.positional, [], 'positional');
     assert.deepEqual(node.booleans, {}, 'booleans');
     assert.deepEqual(node.kwargs, {}, 'kwargs');
@@ -93,7 +99,7 @@ export function run() {
     assert.equal(node.isOpaqueContent, true, 'isOpaqueContent');
     assert.equal(node.selfClosing, false, 'selfClosing');
     assert.equal(node.contentHandler, 'math', 'contentHandler');
-    console.log('PASS: normalize-markdown: all required fields present on normalized $ node');
+    console.log('PASS: normalize-to-canonical: all required fields present on normalized inline-math node');
   }
 
   // --- all required fields present on normalized $$ node ---
@@ -102,7 +108,7 @@ export function run() {
     assert.ok(node, 'node found');
     assert.equal(node.type, 'acadamarkTag', 'type');
     assert.equal(node.form, 'short', 'form');
-    assert.equal(node.tagname, '$$', 'tagname');
+    assert.equal(node.tagname, 'display-math', 'tagname is canonical display-math');
     assert.deepEqual(node.positional, [], 'positional');
     assert.deepEqual(node.booleans, {}, 'booleans');
     assert.deepEqual(node.kwargs, {}, 'kwargs');
@@ -112,7 +118,7 @@ export function run() {
     assert.equal(node.isOpaqueContent, true, 'isOpaqueContent');
     assert.equal(node.selfClosing, false, 'selfClosing');
     assert.equal(node.contentHandler, 'math-display', 'contentHandler');
-    console.log('PASS: normalize-markdown: all required fields present on normalized $$ node');
+    console.log('PASS: normalize-to-canonical: all required fields present on normalized display-math node');
   }
 
   // ── Field-for-field identity with authored shorthand ─────────────────────
@@ -179,20 +185,26 @@ export function run() {
 
   // ── No-op on already-canonical nodes ─────────────────────────────────────
 
-  // --- authored sigil node is not re-processed ---
+  // --- authored sigil node IS rewritten to canonical by group A ---
   {
-    // If authored <$ x $> somehow lands in the tree (it won't via remark-math,
-    // but this confirms walkNormalize's predicate doesn't fire on acadamarkTag nodes).
-    const authored = parseAuthoredShorthand('<$ x $>');
-    // Wrap in a tree to run the pass.
-    const tree = { type: 'root', children: [{ type: 'paragraph', children: [authored] }] };
+    // Post-consolidation: authored <$ x $> reaches the gate with
+    // tagname '$' (the sigil token) and group A rewrites it to the
+    // canonical 'inline-math' so the gate's output is uniform across
+    // authored and bare-markdown paths.
+    const tree = unified().use(remarkParse).use(remarkAcadamark).parse('<$ x $>');
     acadamarkNormalizeMarkdown()(tree);
-    // Should be unchanged (acadamarkTag.type !== 'inlineMath').
-    const after = tree.children[0].children[0];
+    function findTag(nodes) {
+      for (const n of nodes) {
+        if (n.type === 'acadamarkTag') return n;
+        if (n.children) { const r = findTag(n.children); if (r) return r; }
+      }
+      return null;
+    }
+    const after = findTag(tree.children);
+    assert.ok(after, 'authored sigil node found post-gate');
     assert.equal(after.type, 'acadamarkTag', 'still acadamarkTag');
-    assert.equal(after.tagname, '$', 'tagname unchanged');
-    assert.equal(after.content, authored.content, 'content unchanged');
-    console.log('PASS: normalize-markdown: authored sigil node not re-processed by normalization');
+    assert.equal(after.tagname, 'inline-math', 'tagname rewritten to canonical inline-math by group A');
+    console.log('PASS: normalize-to-canonical: authored sigil tagname rewritten to canonical by group A');
   }
 
   // ── math.meta discarded ───────────────────────────────────────────────────
@@ -207,10 +219,10 @@ export function run() {
     acadamarkNormalizeMarkdown()(tree);
     const result = tree.children[0];
     assert.equal(result.type, 'acadamarkTag', 'normalized to acadamarkTag');
-    assert.equal(result.tagname, '$$', 'tagname is $$');
+    assert.equal(result.tagname, 'display-math', 'tagname is canonical display-math');
     assert.equal(result.content, 'E = mc^2', 'content is the value');
     assert.equal(result.meta, undefined, 'meta not present on normalized node');
-    console.log('PASS: normalize-markdown: math.meta is silently discarded');
+    console.log('PASS: normalize-to-canonical: math.meta is silently discarded');
   }
 
   // ── Tree is unchanged when no math present ────────────────────────────────

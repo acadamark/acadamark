@@ -5,23 +5,26 @@ import { mathHandler } from '../../src/handlers/math.js';
 // and rendered directly by KaTeX. We pass a minimal stub.
 const stubState = {};
 
-function makeNode(tagname, content, { id = null, classes = [] } = {}) {
+// The handler runs downstream of the normalize-to-canonical gate, so it
+// receives nodes with canonical tagnames ('inline-math' / 'display-math'),
+// not sigil tagnames ('$' / '$$'). This test helper mirrors that contract.
+function makeNode(canonicalTagname, content, { id = null, classes = [] } = {}) {
   return {
     type: 'acadamarkTag',
-    tagname,
+    tagname: canonicalTagname,
     id,
     classes,
     kwargs: {},
     content,
     isOpaqueContent: true,
-    contentHandler: tagname === '$$' ? 'math-display' : 'math',
+    contentHandler: canonicalTagname === 'display-math' ? 'math-display' : 'math',
   };
 }
 
 export function run() {
   // --- inline math renders to <inline-math> ---
   {
-    const node = makeNode('$', 'a^2 + b^2 = c^2');
+    const node = makeNode('inline-math', 'a^2 + b^2 = c^2');
     const hast = mathHandler(stubState, node);
 
     assert.equal(hast.type, 'element', 'returns element');
@@ -39,7 +42,7 @@ export function run() {
 
   // --- display math renders to <display-math> ---
   {
-    const node = makeNode('$$', '\\int_0^1 f(x)\\,dx');
+    const node = makeNode('display-math', '\\int_0^1 f(x)\\,dx');
     const hast = mathHandler(stubState, node);
 
     assert.equal(hast.tagName, 'display-math', 'tagName is display-math');
@@ -52,7 +55,7 @@ export function run() {
 
   // --- malformed LaTeX renders an error marker rather than throwing ---
   {
-    const node = makeNode('$', '\\invalid{syntax');
+    const node = makeNode('inline-math', '\\invalid{syntax');
     let hast;
     assert.doesNotThrow(() => { hast = mathHandler(stubState, node); }, 'no throw on bad LaTeX');
     assert.equal(hast.tagName, 'inline-math', 'still produces inline-math');
@@ -63,7 +66,7 @@ export function run() {
 
   // --- whitespace around content is trimmed ---
   {
-    const node = makeNode('$', '  x^2  ');
+    const node = makeNode('inline-math', '  x^2  ');
     const hast = mathHandler(stubState, node);
     assert.equal(hast.tagName, 'inline-math');
     // If KaTeX had received "  x^2  " with spaces, the output would still
@@ -74,7 +77,7 @@ export function run() {
 
   // --- fractions render (structural test) ---
   {
-    const node = makeNode('$$', '\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}');
+    const node = makeNode('display-math', '\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}');
     const hast = mathHandler(stubState, node);
     assert.equal(hast.tagName, 'display-math');
     const html = JSON.stringify(hast);
@@ -85,7 +88,7 @@ export function run() {
 
   // --- Greek letters and sum render (structural test) ---
   {
-    const node = makeNode('$$', '\\sum_{i=1}^{n} x_i = X');
+    const node = makeNode('display-math', '\\sum_{i=1}^{n} x_i = X');
     const hast = mathHandler(stubState, node);
     assert.equal(hast.tagName, 'display-math');
     // KaTeX generates mop (math operator) spans for sum.
@@ -96,7 +99,7 @@ export function run() {
 
   // --- id and classes pass through to properties ---
   {
-    const node = makeNode('$$', 'E = mc^2', { id: 'eq:einstein', classes: ['numbered'] });
+    const node = makeNode('display-math', 'E = mc^2', { id: 'eq:einstein', classes: ['numbered'] });
     const hast = mathHandler(stubState, node);
     assert.equal(hast.properties.id, 'eq:einstein', 'id preserved');
     assert.deepEqual(hast.properties.className, ['numbered'], 'classes preserved');
@@ -105,7 +108,7 @@ export function run() {
 
   // --- empty content renders without throwing ---
   {
-    const node = makeNode('$', '');
+    const node = makeNode('inline-math', '');
     let hast;
     assert.doesNotThrow(() => { hast = mathHandler(stubState, node); }, 'empty content does not throw');
     assert.equal(hast.tagName, 'inline-math');

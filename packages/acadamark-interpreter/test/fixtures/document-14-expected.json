@@ -129,33 +129,9 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "<#>",
-                          "position": {
-                            "start": {
-                              "line": 8,
-                              "column": 45,
-                              "offset": 178
-                            },
-                            "end": {
-                              "line": 8,
-                              "column": 50,
-                              "offset": 183
-                            }
-                          }
+                          "value": "<#>"
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 8,
-                          "column": 45,
-                          "offset": 178
-                        },
-                        "end": {
-                          "line": 8,
-                          "column": 50,
-                          "offset": 183
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -180,33 +156,9 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "<section>",
-                          "position": {
-                            "start": {
-                              "line": 9,
-                              "column": 7,
-                              "offset": 217
-                            },
-                            "end": {
-                              "line": 9,
-                              "column": 18,
-                              "offset": 228
-                            }
-                          }
+                          "value": "<section>"
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 9,
-                          "column": 7,
-                          "offset": 217
-                        },
-                        "end": {
-                          "line": 9,
-                          "column": 18,
-                          "offset": 228
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -231,33 +183,9 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "<section>",
-                          "position": {
-                            "start": {
-                              "line": 9,
-                              "column": 53,
-                              "offset": 263
-                            },
-                            "end": {
-                              "line": 9,
-                              "column": 64,
-                              "offset": 274
-                            }
-                          }
+                          "value": "<section>"
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 9,
-                          "column": 53,
-                          "offset": 263
-                        },
-                        "end": {
-                          "line": 9,
-                          "column": 64,
-                          "offset": 274
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -282,33 +210,9 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "<section-title>",
-                          "position": {
-                            "start": {
-                              "line": 10,
-                              "column": 8,
-                              "offset": 297
-                            },
-                            "end": {
-                              "line": 10,
-                              "column": 25,
-                              "offset": 314
-                            }
-                          }
+                          "value": "<section-title>"
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 10,
-                          "column": 8,
-                          "offset": 297
-                        },
-                        "end": {
-                          "line": 10,
-                          "column": 25,
-                          "offset": 314
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -400,33 +304,9 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "<ref @sec:intro>",
-                          "position": {
-                            "start": {
-                              "line": 15,
-                              "column": 14,
-                              "offset": 484
-                            },
-                            "end": {
-                              "line": 15,
-                              "column": 32,
-                              "offset": 502
-                            }
-                          }
+                          "value": "<ref @sec:intro>"
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 15,
-                          "column": 14,
-                          "offset": 484
-                        },
-                        "end": {
-                          "line": 15,
-                          "column": 32,
-                          "offset": 502
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -486,7 +366,7 @@
                         },
                         {
                           "type": "element",
-                          "tagName": "em",
+                          "tagName": "i",
                           "properties": {},
                           "children": [
                             {
@@ -505,19 +385,7 @@
                                 }
                               }
                             }
-                          ],
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 19,
-                              "offset": 18
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 29,
-                              "offset": 28
-                            }
-                          }
+                          ]
                         },
                         {
                           "type": "text",
@@ -565,33 +433,9 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "<sub-section>",
-                              "position": {
-                                "start": {
-                                  "line": 19,
-                                  "column": 34,
-                                  "offset": 606
-                                },
-                                "end": {
-                                  "line": 19,
-                                  "column": 49,
-                                  "offset": 621
-                                }
-                              }
+                              "value": "<sub-section>"
                             }
-                          ],
-                          "position": {
-                            "start": {
-                              "line": 19,
-                              "column": 34,
-                              "offset": 606
-                            },
-                            "end": {
-                              "line": 19,
-                              "column": 49,
-                              "offset": 621
-                            }
-                          }
+                          ]
                         },
                         {
                           "type": "text",
@@ -616,33 +460,9 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "isOpaqueContent: false",
-                              "position": {
-                                "start": {
-                                  "line": 20,
-                                  "column": 43,
-                                  "offset": 691
-                                },
-                                "end": {
-                                  "line": 20,
-                                  "column": 67,
-                                  "offset": 715
-                                }
-                              }
+                              "value": "isOpaqueContent: false"
                             }
-                          ],
-                          "position": {
-                            "start": {
-                              "line": 20,
-                              "column": 43,
-                              "offset": 691
-                            },
-                            "end": {
-                              "line": 20,
-                              "column": 67,
-                              "offset": 715
-                            }
-                          }
+                          ]
                         },
                         {
                           "type": "text",
@@ -707,33 +527,9 @@
                               "children": [
                                 {
                                   "type": "text",
-                                  "value": "inline code",
-                                  "position": {
-                                    "start": {
-                                      "line": 1,
-                                      "column": 23,
-                                      "offset": 22
-                                    },
-                                    "end": {
-                                      "line": 1,
-                                      "column": 36,
-                                      "offset": 35
-                                    }
-                                  }
+                                  "value": "inline code"
                                 }
-                              ],
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 23,
-                                  "offset": 22
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 36,
-                                  "offset": 35
-                                }
-                              }
+                              ]
                             }
                           ]
                         },
@@ -765,33 +561,9 @@
                               "children": [
                                 {
                                   "type": "text",
-                                  "value": "<sub-sub-section>",
-                                  "position": {
-                                    "start": {
-                                      "line": 25,
-                                      "column": 34,
-                                      "offset": 813
-                                    },
-                                    "end": {
-                                      "line": 25,
-                                      "column": 53,
-                                      "offset": 832
-                                    }
-                                  }
+                                  "value": "<sub-sub-section>"
                                 }
-                              ],
-                              "position": {
-                                "start": {
-                                  "line": 25,
-                                  "column": 34,
-                                  "offset": 813
-                                },
-                                "end": {
-                                  "line": 25,
-                                  "column": 53,
-                                  "offset": 832
-                                }
-                              }
+                              ]
                             },
                             {
                               "type": "text",

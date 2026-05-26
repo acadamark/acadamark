@@ -34,7 +34,11 @@ import {
 } from './handlers/notes.js';
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler } from './handlers/cite.js';
-import { resolveVocabKey } from 'acadamark-core/sigil-mapping';
+// resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
+// gate (acadamark-interpreter/src/plugins/normalize-to-canonical.js) rewrites
+// every sigil tagname (sections AND math/code) to its canonical vocabulary
+// name early in the pipeline. By the time a node reaches this handler, its
+// tagname is already the canonical key — see DESIGN.md §"The single gate".
 
 // Internal node types created by the notes plugin — they have no vocabulary
 // entries, so they are dispatched here before the vocabulary lookup.
@@ -82,9 +86,10 @@ export function createAcadamarkTagHandler(opts = {}) {
     const internalFn = INTERNAL_REGISTRY.get(node.tagname);
     if (internalFn) return internalFn(state, node);
 
-    // resolveVocabKey translates parser-emitted sigil names ("$", "$$") to their
-    // vocabulary keys ("inline-math", "display-math"). Named tags are unchanged.
-    const vocab = vocabulary.get(resolveVocabKey(node.tagname));
+    // Direct vocabulary lookup: by this point in the pipeline, the
+    // normalize-to-canonical gate has rewritten every sigil tagname to its
+    // canonical vocabulary key, so node.tagname IS the lookup key.
+    const vocab = vocabulary.get(node.tagname);
 
     if (!vocab) {
       warnUnknownTag(node.tagname);

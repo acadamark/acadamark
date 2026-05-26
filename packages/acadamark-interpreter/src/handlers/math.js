@@ -80,17 +80,21 @@ function stripPositions(nodes) {
  * the vocabulary entry for "inline-math" or "display-math" specifies
  * interpreter_strategy: handler with handler_module: ./handlers/math.js.
  *
- * The parser emits tag names "$" and "$$"; sigil-mapping.js translates these
- * to the vocabulary keys "inline-math" / "display-math" before the dispatcher
- * performs the vocabulary lookup. The original tag name is preserved on
- * node.tagname and used here to determine inline vs display mode.
+ * The parser emits tag names "$" and "$$"; the normalize-to-canonical gate
+ * (plugins/normalize-to-canonical.js) rewrites these to "inline-math" /
+ * "display-math" via the tagname↔sigil map's lift direction before any
+ * downstream stage runs. node.tagname is therefore the canonical vocabulary
+ * key here ("inline-math" or "display-math"), which this handler reads to
+ * determine inline vs display mode.
  *
  * @param {object} _state - mdast-util-to-hast state (unused — no child nodes)
- * @param {object} node   - acadamarkTag with tagname "$" or "$$"
+ * @param {object} node   - acadamarkTag with canonical tagname "inline-math"
+ *                           or "display-math" (the gate has rewritten the
+ *                           parser-emitted "$" / "$$")
  * @returns {import('hast').Element} hast element
  */
 export function mathHandler(_state, node) {
-  const isDisplay = node.tagname === '$$';
+  const isDisplay = node.tagname === 'display-math';
   const latex = extractLatex(node);
   const katexChildren = renderToHast(latex, isDisplay);
 

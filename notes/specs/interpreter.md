@@ -801,12 +801,17 @@ For each node, the handler performs this sequence:
 1. **INTERNAL_REGISTRY lookup** by `node.tagname`. If found, call the registered
    function and return the result (or `null` to suppress the node).
 
-2. **Sigil translation**: `resolveVocabKey(node.tagname)` translates sigil
-   tag names emitted by the parser (`"$"`, `"$$"`, `` "```" ``, `` "`" ``) to
-   their vocabulary keys (`"inline-math"`, `"display-math"`, `"code-block"`,
-   `"inline-code"`). Named tags pass through unchanged.
+2. **Vocabulary lookup** by `node.tagname` directly. By this point in the
+   pipeline, the normalize-to-canonical gate (`plugins/normalize-to-canonical.js`,
+   pipeline step 1.5) has rewritten every sigil tagname to its canonical Layer
+   1 vocabulary name via the tagname↔sigil map's lift direction — sections
+   (`#`/`##`/`###` → `section`/`sub-section`/`sub-sub-section`), math
+   (`$`/`$$` → `inline-math`/`display-math`), and code (`` ` ``/` ``` ` →
+   `inline-code`/`code-block`). The runtime sigil translation that previously
+   lived here (`resolveVocabKey`) was removed when the gate consolidated this
+   work; see `DESIGN.md` §"The single gate".
 
-3. **Vocabulary lookup** by the translated key. If not found:
+3. If the vocabulary lookup did not find an entry:
    - Emit `warnUnknownTag(tagname)` to console.
    - Return `makeUnknownElement()`: `<span data-acadamark-unknown="tagname">`.
 

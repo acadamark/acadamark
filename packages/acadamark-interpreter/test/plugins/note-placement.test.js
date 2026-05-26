@@ -84,7 +84,7 @@ function makeCiteNode(keys) {
 function makeEquation(id) {
   return {
     type: 'acadamarkTag',
-    tagname: '$$',
+    tagname: 'display-math',
     id,
     classes: [],
     kwargs: {},

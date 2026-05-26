@@ -446,3 +446,60 @@ that). One line gets added every few months, not every slice.
   normalization item's Form 2 (sigil) prerequisite is now satisfied;
   that item now reduces to building Form 3 (bare-markdown) heading
   normalization in `normalize-markdown.js`.
+- **2026-Q2 — normalize-to-canonical gate landed; section-form ladder
+  converges; alpha item closed.** The lift architecture's
+  implementation slice. Built `acadamark-core/src/tagname-sigil-map.js`
+  — a single source-of-truth `[sigil, tagname]` pair list with both
+  `SIGIL_TO_TAGNAME` (lift) and `TAGNAME_TO_SIGIL` (lower-direction;
+  no consumer yet but built bidirectional from day one so the two
+  directions cannot drift) derived from it, plus a load-time
+  bijection assertion. Replaces the prior `sigil-mapping.js`'s
+  one-directional `PARSER_TO_VOCAB` / `resolveVocabKey`. Renamed and
+  rewrote `acadamark-interpreter/src/plugins/normalize-markdown.js`
+  → `normalize-to-canonical.js`: the single early pipeline stage
+  that coerces every authored form to canonical Layer 1 shape. The
+  gate rewrites all sigil tagnames uniformly (sections AND math/code
+  — the Option 2 decision from the lift/lower Phase 0); normalizes
+  bare markdown headings to canonical sections at depths 1-3 and
+  passes them through as literal `<h4>` / `<h5>` / `<h6>` at depths
+  4-6 with an informative diagnostic; and recursively lifts inline
+  markdown forms to their canonical Layer 1 equivalents (`emphasis`
+  → `<i>`, `strong` → `<b>`, `delete` → `<s>`, `inlineCode` →
+  `<inline-code>`, `link` → `<a>`, `image` → `<img>`, `break` →
+  `<br>`, raw inline `html` → pass-through with diagnostic). The
+  decision per the Phase 0's stylistic-vs-semantic ruling: bare
+  markdown stars are stylistic (`<i>`/`<b>`), not semantic
+  (`<em>`/`<strong>`). Removed the Phase 1 `normalizeSigilSectionNames`
+  pre-walk from `section-nesting.js` (its work now happens at the
+  gate); removed the now-redundant runtime `resolveVocabKey` call
+  from `interpret-plugin.js` (the gate makes the runtime translation
+  unreachable). Several handler / plugin sites that previously
+  branched on sigil tagnames (`math.js` isDisplay check; `numbering.js`
+  NUMBERED_TAGNAMES and code-block visitor) migrated to the canonical
+  tagnames. Math/code behavior-neutrality verified: the math (doc-4,
+  doc-5, doc-11) and code-block (doc-13) integration snapshots are
+  unchanged under strict comparison — Option 2's gate-based tagname
+  rewrite produces identical hast/HTML. The snapshots that DID change
+  (doc-2, doc-3, doc-8, doc-14) all reflect expected lifts: `em`/`strong`
+  → `i`/`b` in fixtures with bare markdown emphasis, and bare `##`
+  → `<sub-section>` in doc-8's citations fixture (which had been
+  rendering as `<h2>` until the gate). New integration fixtures:
+  `document-15-bare-headings.acm` (bare-heading lift, depths 4-6
+  pass-through, inline lift recursion into aside content) and
+  `document-16-section-form-convergence.acm` (three forms of the same
+  section title — named, sigil, bare-markdown — proving they produce
+  structurally identical Layer 1 `<section>` nodes). New unit suite
+  `acadamark-core/test/tagname-sigil-map.test.js` (33 cases including
+  bijection and round-trip properties). The `[alpha]` "Build heading
+  normalization and verify the section-form ladder converges" item
+  closes — the convergence-proof fixture is its verification.
+  `DESIGN.md` updated: new sections "Lift and lower: two mechanisms"
+  (the cipher vs. the lossy lift), "The single gate" (with the rule
+  that a new authored form is a new rule at the gate, never a sniff
+  in a downstream plugin), "The `<h4>`-`<h6>` exception" (named,
+  deliberate, narrow exception to Layer 1's otherwise-closed
+  vocabulary), and "Deferred: section model in JATS export". Tests:
+  acadamark-core 17+33=50/50; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites; 4 prior snapshots updated
+  (each change explained as a consequence of the gate's lifts);
+  math/code snapshots unchanged (behavior-neutrality verified).

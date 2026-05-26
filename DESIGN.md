@@ -239,7 +239,47 @@ The same ladder is the substrate for an explicit decision about section heading 
 
 The decision: the named form and the sigil form are **co-equal canonical** surfaces — both round-trip to Layer 1 losslessly, and a Layer 1 → acadamark conversion may emit either. The bare markdown heading is a **lossy reduction** to the canonical surface — it produces a section but is not what the round-trip emits. The id-bearing variant `<# #sec:intro | … #>` carries its id through the ladder; the bare-markdown form has no surface for an id and is therefore strictly less expressive than the canonical surfaces.
 
-The implementation check that all three forms actually converge to the identical Layer 1 `<section>` node lives as a free-leaf verification item in the backlog (the "Verify the section-form reduction ladder converges" item in Other open work).
+The implementation check that all three forms actually converge to the identical Layer 1 `<section>` node is satisfied as of the normalize-to-canonical gate landing (the `document-16-section-form-convergence.acm` integration fixture is the convergence proof; the three forms produce structurally identical Layer 1 `<section>` nodes, modulo id presence on the two forms that author one).
+
+## Lift and lower: two mechanisms, not one
+
+Converting between syntax levels uses two distinct mechanisms with different contracts — keeping them apart is what lets each one be simple.
+
+**The tagname↔sigil map (a cipher).** Converts between Layer 1's two canonical-acadamark spellings (named tag ↔ sigil). Pure, **bidirectional**, **lossless**, **data**: a literal source-of-truth list of name↔sigil pairs (`section`↔`#`, `sub-section`↔`##`, `sub-sub-section`↔`###`, `inline-math`↔`$`, `display-math`↔`$$`, `inline-code`↔`` ` ``, `code-block`↔` ``` `). The two sides of a pair are structurally identical and differ only in the tagname token — a substitution, not a transform. The map lives at `packages/acadamark-core/src/tagname-sigil-map.js`; both directions are derived from one literal so they cannot drift. The lift direction (`SIGIL_TO_TAGNAME`) is consumed today by the gate (see below); the lower direction (`TAGNAME_TO_SIGIL`) is reserved for the future lowering pass.
+
+**The lossy lift.** Converts Layer 2 markdown idioms *up* to Layer 1 canonical. **Lift-only** (one-way; Layer 1 lowers to canonical-named-form, not to bare markdown), **lossy** (a markdown idiom may have multiple canonical representations, and one is chosen), a small set of transforms. Each rule is a per-construct rewrite — an mdast `heading` and a canonical section node are different shapes, not the same shape with a different tagname.
+
+## The single gate
+
+All lifting to canonical happens at one early pipeline stage — the **normalize-to-canonical gate** at `packages/acadamark-interpreter/src/plugins/normalize-to-canonical.js`. The gate runs after both parsers (the acadamark Peggy parser and the remark markdown lexer, including remark-math and remark-gfm) have produced nodes, and before any structural plugin runs. Every stage after the gate sees only canonical Layer 1 nodes; no downstream stage handles, sniffs for, or branches on a non-canonical authored form.
+
+The gate's job at a glance:
+
+| Authored form | What the gate emits |
+|---|---|
+| Named `<section>` / `<sub-section>` / etc. | itself (already canonical) |
+| Sigil `<#>` / `<##>` / `<###>` (sections), `<$>` / `<$$>` (math), `` <` `` / ` ``` ` (code) | the canonical Layer 1 name (`section` / `inline-math` / etc.) via the tagname↔sigil map |
+| Bare markdown `#` / `##` / `###` (depths 1-3) | a canonical `<section>` / `<sub-section>` / `<sub-sub-section>` acadamarkTag |
+| Bare markdown emphasis (`*foo*`) | `<i>` |
+| Bare markdown strong (`**foo**`) | `<b>` |
+| Bare GFM strikethrough (`~~foo~~`) | `<s>` |
+| Bare inline code (`` `foo` ``) | the canonical `<inline-code>` |
+| Bare markdown link (`[text](url)`) | the canonical `<a>` |
+| Bare markdown image | the canonical `<img>` |
+| Bare `$x$` / `$$x$$` math | a canonical math acadamarkTag (`inline-math` / `display-math`) |
+| GFM pipe table | a canonical `<table md>` acadamarkTag |
+
+**A new authored form is a new rule at the gate — never a new sniff in a downstream plugin.** This rule is the architecture's payoff: one shape downstream means one set of behaviors, no per-form forking, and a new authored convention has an obvious and structurally enforced place to live.
+
+### The `<h4>`–`<h6>` exception
+
+Layer 1's section ladder caps at three levels (`section` / `sub-section` / `sub-sub-section`). Markdown allows heading depths 1–6. The gate normalizes depths 1–3 to the canonical section ladder; depths 4–6 are **passed through as literal `<h4>` / `<h5>` / `<h6>` HTML elements**, with an informative diagnostic per occurrence ("heading depth N exceeds Layer 1's three section levels; passed through as `<hN>`"). This is a deliberate, narrow, named exception to Layer 1's otherwise-closed custom-element vocabulary — recorded explicitly so a future reader does not assume the vocabulary is perfectly closed.
+
+The exception is one-directional: lifted into the rendered output, not part of the round-trip cipher. Lowering Layer 1 → canonical that encounters an `<h4>` in the input is a separate policy decision deferred to the lowering work.
+
+### Deferred: section model in JATS export
+
+Layer 1's three named section elements (`section` / `sub-section` / `sub-sub-section`, LaTeX-shaped, depth capped at three) are a deliberate choice. The alternative — a single nesting-depth-typed `<section>` — is reconsidered in the JATS export arc, where JATS's own section model interacts with this choice. The decision is recorded there, not here.
 
 ## Why this is not just another markdown extension
 

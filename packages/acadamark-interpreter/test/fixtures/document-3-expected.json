@@ -163,7 +163,7 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "em",
+                      "tagName": "i",
                       "properties": {},
                       "children": [
                         {
@@ -182,19 +182,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 7,
-                          "column": 44,
-                          "offset": 174
-                        },
-                        "end": {
-                          "line": 7,
-                          "column": 54,
-                          "offset": 184
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",
@@ -219,33 +207,9 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "inline code",
-                          "position": {
-                            "start": {
-                              "line": 7,
-                              "column": 59,
-                              "offset": 189
-                            },
-                            "end": {
-                              "line": 7,
-                              "column": 72,
-                              "offset": 202
-                            }
-                          }
+                          "value": "inline code"
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 7,
-                          "column": 59,
-                          "offset": 189
-                        },
-                        "end": {
-                          "line": 7,
-                          "column": 72,
-                          "offset": 202
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "text",

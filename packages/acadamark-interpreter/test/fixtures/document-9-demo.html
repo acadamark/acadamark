@@ -891,123 +891,135 @@ note-list li {
 }</style>
 <article>
   <article-body></config>
-    <h2>Introduction</h2>
-    <p>
-      The past decade has seen a significant reorientation in autism research toward participatory methods that centre the
-      experiences and priorities of autistic people themselves. <cite class="cite" data-keys="Pellicano2014">(Pellicano et al., 2014)</cite> found a striking mismatch between the
-      research agenda set by non-autistic investigators and the topics judged most pressing by autistic adults and their
-      families, with quality-of-life outcomes receiving far less attention than biomedical aetiology.
-    </p>
-    <p>
-      This shift toward participatory design has implications not only for research priorities but for the quantitative
-      tools used to evaluate outcomes. Measures developed without autistic input may fail to capture constructs that matter
-      to autistic participants.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> Standard effect-size metrics assume outcome measures are valid, and validity depends
-      on face-relevance to the population studied.
-    </p>
-    <p>
-      The purpose of this note is to describe a simple framework for weighting research priorities, illustrate it with
-      community data from the literature, and show how commonly used indices behave under different weighting schemes.
-    </p>
-    <h2>Background</h2>
-    <h3>Prevalence and Sampling</h3>
-    <p>
-      Accurate prevalence estimates are a prerequisite for power calculations in community-based studies. The systematic
-      review by <cite class="cite" data-keys="Loomes2017">(Loomes et al., 2017)</cite> revised the male-to-female ratio in autism diagnoses substantially downward from the
-      long-cited 4:1 figure, with implications for studies that stratify by gender. If the true ratio is closer to 3:1 or
-      even 2:1 among certain age groups, studies designed around 4:1 assumptions will be systematically underpowered for
-      female participants.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup>
-    </p>
-    <p>
-      Stigma and underdiagnosis interact in ways that complicate sampling. <cite class="cite" data-keys="GillespieLynch2017">(Gillespie-Lynch et al., 2017)</cite> demonstrated that
-      brief educational interventions can shift attitudes among college students, suggesting that sample frames drawn from
-      university populations may be especially sensitive to the timing of data collection relative to awareness-raising
-      activities on campus.
-    </p>
-    <h3>Burnout as an Outcome Variable</h3>
-    <p>
-      Autistic burnout — characterised by pervasive exhaustion, cognitive difficulties, and reduced tolerance for sensory
-      and social demands — has emerged as a high-priority outcome in community-identified research agendas.
-      <cite class="cite" data-keys="Mantzalas2022">(Mantzalas et al., 2022)</cite> proposed a conceptual model with risk and protective factors organised around three domains:
-      individual, social-environmental, and systemic. The model is summarised schematically in <a href="#tab:burnout" class="ref">table 1</a>.
-    </p>
-    <table id="tab:burnout">
-      <caption><span class="table-label">Table 1.</span> Risk and protective factors for autistic burnout, adapted from &#x3C;cite @Mantzalas2022></caption>
-      <thead>
-        <tr>
-          <th>Domain</th>
-          <th>Risk factors</th>
-          <th>Protective factors</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Individual</td>
-          <td>Masking / camouflaging; sensory sensitivity</td>
-          <td>Self-acceptance; identity clarity</td>
-        </tr>
-        <tr>
-          <td>Social-environmental</td>
-          <td>Unsupportive relationships; workplace demands</td>
-          <td>Affirming community; flexible accommodations</td>
-        </tr>
-        <tr>
-          <td>Systemic</td>
-          <td>Inaccessible services; diagnostic delays</td>
-          <td>Timely support access; anti-stigma policies</td>
-        </tr>
-      </tbody>
-    </table>
-    <p>The three-domain structure maps naturally onto a weighted priority index, developed in the next section.</p>
-    <h2>A Weighted Priority Index</h2>
-    <p>
-      Let 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0077em;">R</span></span></span></span></inline-math> denote a set of research topics, each evaluated on two dimensions: <em>community importance</em>
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math>
-      (rated by autistic participants on a 1--5 scale) and <em>evidence gap</em>
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math> (the inverse of the number of recent
-      high-quality studies, normalised to [0,1]). A combined priority score for topic 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span></inline-math> is:
-    </p>
-    <display-math id="eqn:priority"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></display-math>
-    <p>
-      where 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></inline-math> controls the relative weight given to community preference versus evidence gaps.
-      Setting 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></inline-math> recovers pure community voting; 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> recovers a pure evidence-gap ranking.
-    </p>
-    <p>The normalised priority weight across all topics is:</p>
-    <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.4821em;vertical-align:-1.1218em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.162em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4358em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1218em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span><span class="equation-number">(2)</span></display-math>
-    <p>
-      These weights can then be used to allocate a fixed research budget across topics, or to construct a composite
-      outcome index that reflects community priorities.
-    </p><blockquote>A priority index is only as good as the community consultation that generates the importance ratings. Convenience 
+    <sub-section>
+      <sub-section-title>Introduction</sub-section-title>
+      <p>
+        The past decade has seen a significant reorientation in autism research toward participatory methods that centre the
+        experiences and priorities of autistic people themselves. <cite class="cite" data-keys="Pellicano2014">(Pellicano et al., 2014)</cite> found a striking mismatch between the
+        research agenda set by non-autistic investigators and the topics judged most pressing by autistic adults and their
+        families, with quality-of-life outcomes receiving far less attention than biomedical aetiology.
+      </p>
+      <p>
+        This shift toward participatory design has implications not only for research priorities but for the quantitative
+        tools used to evaluate outcomes. Measures developed without autistic input may fail to capture constructs that matter
+        to autistic participants.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> Standard effect-size metrics assume outcome measures are valid, and validity depends
+        on face-relevance to the population studied.
+      </p>
+      <p>
+        The purpose of this note is to describe a simple framework for weighting research priorities, illustrate it with
+        community data from the literature, and show how commonly used indices behave under different weighting schemes.
+      </p>
+    </sub-section>
+    <sub-section>
+      <sub-section-title>Background</sub-section-title>
+      <sub-sub-section>
+        <sub-sub-section-title>Prevalence and Sampling</sub-sub-section-title>
+        <p>
+          Accurate prevalence estimates are a prerequisite for power calculations in community-based studies. The systematic
+          review by <cite class="cite" data-keys="Loomes2017">(Loomes et al., 2017)</cite> revised the male-to-female ratio in autism diagnoses substantially downward from the
+          long-cited 4:1 figure, with implications for studies that stratify by gender. If the true ratio is closer to 3:1 or
+          even 2:1 among certain age groups, studies designed around 4:1 assumptions will be systematically underpowered for
+          female participants.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup>
+        </p>
+        <p>
+          Stigma and underdiagnosis interact in ways that complicate sampling. <cite class="cite" data-keys="GillespieLynch2017">(Gillespie-Lynch et al., 2017)</cite> demonstrated that
+          brief educational interventions can shift attitudes among college students, suggesting that sample frames drawn from
+          university populations may be especially sensitive to the timing of data collection relative to awareness-raising
+          activities on campus.
+        </p>
+      </sub-sub-section>
+      <sub-sub-section>
+        <sub-sub-section-title>Burnout as an Outcome Variable</sub-sub-section-title>
+        <p>
+          Autistic burnout — characterised by pervasive exhaustion, cognitive difficulties, and reduced tolerance for sensory
+          and social demands — has emerged as a high-priority outcome in community-identified research agendas.
+          <cite class="cite" data-keys="Mantzalas2022">(Mantzalas et al., 2022)</cite> proposed a conceptual model with risk and protective factors organised around three domains:
+          individual, social-environmental, and systemic. The model is summarised schematically in <a href="#tab:burnout" class="ref">table 1</a>.
+        </p>
+        <table id="tab:burnout">
+          <caption><span class="table-label">Table 1.</span> Risk and protective factors for autistic burnout, adapted from &#x3C;cite @Mantzalas2022></caption>
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Risk factors</th>
+              <th>Protective factors</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Individual</td>
+              <td>Masking / camouflaging; sensory sensitivity</td>
+              <td>Self-acceptance; identity clarity</td>
+            </tr>
+            <tr>
+              <td>Social-environmental</td>
+              <td>Unsupportive relationships; workplace demands</td>
+              <td>Affirming community; flexible accommodations</td>
+            </tr>
+            <tr>
+              <td>Systemic</td>
+              <td>Inaccessible services; diagnostic delays</td>
+              <td>Timely support access; anti-stigma policies</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The three-domain structure maps naturally onto a weighted priority index, developed in the next section.</p>
+      </sub-sub-section>
+    </sub-section>
+    <sub-section>
+      <sub-section-title>A Weighted Priority Index</sub-section-title>
+      <p>
+        Let 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0077em;">R</span></span></span></span></inline-math> denote a set of research topics, each evaluated on two dimensions: <i>community importance</i>
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math>
+        (rated by autistic participants on a 1--5 scale) and <i>evidence gap</i>
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math> (the inverse of the number of recent
+        high-quality studies, normalised to [0,1]). A combined priority score for topic 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span></inline-math> is:
+      </p>
+      <display-math id="eqn:priority"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></display-math>
+      <p>
+        where 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></inline-math> controls the relative weight given to community preference versus evidence gaps.
+        Setting 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></inline-math> recovers pure community voting; 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> recovers a pure evidence-gap ranking.
+      </p>
+      <p>The normalised priority weight across all topics is:</p>
+      <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.4821em;vertical-align:-1.1218em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.162em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4358em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0572em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1218em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span><span class="equation-number">(2)</span></display-math>
+      <p>
+        These weights can then be used to allocate a fixed research budget across topics, or to construct a composite
+        outcome index that reflects community priorities.
+      </p><blockquote>A priority index is only as good as the community consultation that generates the importance ratings. Convenience 
 samples of autistic adults with high verbal ability and stable living situations will not reflect the priorities of 
 autistic people with high support needs, those in residential care, or children and adolescents.</blockquote>
-    <h3>Sensitivity to the Mixing Parameter</h3>
-    <p>
-      The sensitivity of topic rankings to 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> can be assessed by computing the Spearman rank correlation between
-      the ranking at 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> and at 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></inline-math>. A high correlation indicates that community preferences and
-      evidence gaps are aligned; a low correlation reveals genuine tension between the two criteria.
-    </p>
-    <p>
-      In practice, one can sweep 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> in steps of 0.1 and report the 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> value at which the top-ranked topic
-      changes. A useful summary statistic is the <em>stability threshold</em>
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6887em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></inline-math>:
-    </p>
-    <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7387em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">min</span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">rank</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0037em;">α</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">}</span></span></span></span></span><span class="equation-number">(3)</span></display-math>
-    <p>where 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6887em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></inline-math> is the community-preferred topic at 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></inline-math>.
-    </p>
-    <h3>Implementation in Python</h3>
-    <p>The index can be computed straightforwardly with NumPy:</p>
-    <pre><code class="language-python" id="code:index"> 
+      <sub-sub-section>
+        <sub-sub-section-title>Sensitivity to the Mixing Parameter</sub-sub-section-title>
+        <p>
+          The sensitivity of topic rankings to 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> can be assessed by computing the Spearman rank correlation between
+          the ranking at 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> and at 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></inline-math>. A high correlation indicates that community preferences and
+          evidence gaps are aligned; a low correlation reveals genuine tension between the two criteria.
+        </p>
+        <p>
+          In practice, one can sweep 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> in steps of 0.1 and report the 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> value at which the top-ranked topic
+          changes. A useful summary statistic is the <i>stability threshold</i>
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6887em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></inline-math>:
+        </p>
+        <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7387em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">min</span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">rank</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0037em;">α</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">}</span></span></span></span></span><span class="equation-number">(3)</span></display-math>
+        <p>where 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6887em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6887em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span></inline-math> is the community-preferred topic at 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></inline-math>.
+        </p>
+      </sub-sub-section>
+      <sub-sub-section>
+        <sub-sub-section-title>Implementation in Python</sub-sub-section-title>
+        <p>The index can be computed straightforwardly with NumPy:</p>
+        <pre><code class="language-python" id="code:index"> 
 import numpy as np
 
 def priority_weights(c, g, alpha):
@@ -1029,116 +1041,122 @@ def priority_weights(c, g, alpha):
     c_norm = (c - 1) / 4          # scale to [0, 1]
     P = alpha * c_norm + (1 - alpha) * g
     return P / P.sum() </code></pre>
-    <p>
-      Note the normalisation of 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></inline-math> to [0, 1] before mixing; without this step, the two terms are on incommensurable
-      scales and 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> does not interpolate smoothly between the two criteria.
-    </p>
-    <h2>Illustrative Application</h2>
-    <p>
-      <cite class="cite" data-keys="CaldwellHarris2023">(Caldwell-Harris, 2023)</cite> emphasises that insider accounts systematically reveal cognitive and social patterns that
-      behavioural observation misses. This insight suggests that for studies measuring cognitive outcomes, community importance
-      ratings (
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math>) should carry more weight than evidence gaps, implying 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.5</span></span></span></span></inline-math>. For studies targeting
-      underserved populations, evidence gaps (
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math>) may deserve more weight, implying 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&#x3C;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.5</span></span></span></span></inline-math>.
-    </p>
-    <p>
-      As an illustration, consider the five topic areas identified by <cite class="cite" data-keys="Pellicano2014,Mantzalas2022">(Mantzalas et al., 2022; Pellicano et al., 2014)</cite>: quality of life,
-      burnout, diagnosis, education, and employment. Hypothetical importance and evidence-gap scores are given in
-      <a href="#tab:scores" class="ref">table 2</a>.
-    </p>
-    <table id="tab:scores">
-      <caption><span class="table-label">Table 2.</span> Hypothetical priority scores for five research topic areas</caption>
-      <thead>
-        <tr>
-          <th>Topic</th>
-          <th>Community importance (c)</th>
-          <th>Evidence gap (g)</th>
-          <th>Priority at α=0.7</th>
-          <th>Priority at α=0.3</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Quality of life</td>
-          <td>5</td>
-          <td>0.8</td>
-          <td>0.86</td>
-          <td>0.59</td>
-        </tr>
-        <tr>
-          <td>Burnout</td>
-          <td>4</td>
-          <td>0.9</td>
-          <td>0.75</td>
-          <td>0.57</td>
-        </tr>
-        <tr>
-          <td>Diagnosis</td>
-          <td>3</td>
-          <td>0.5</td>
-          <td>0.63</td>
-          <td>0.40</td>
-        </tr>
-        <tr>
-          <td>Education</td>
-          <td>3</td>
-          <td>0.6</td>
-          <td>0.63</td>
-          <td>0.43</td>
-        </tr>
-        <tr>
-          <td>Employment</td>
-          <td>4</td>
-          <td>0.7</td>
-          <td>0.78</td>
-          <td>0.52</td>
-        </tr>
-      </tbody>
-    </table>
-    <p>
-      At 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.7</span></span></span></span></inline-math>, quality of life ranks first and diagnosis ranks last; at 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.3</span></span></span></span></inline-math>, burnout ranks
-      first (due to its large evidence gap) and diagnosis still ranks last. The priority ordering is thus reasonably
-      stable across weighting schemes for this hypothetical dataset, consistent with the community's expressed preferences
-      across multiple surveys.
-    </p>
-    <h2>Discussion</h2>
-    <p>
-      The framework described here is intentionally minimal — two input dimensions and one mixing parameter. Real applications
-      would require multi-stakeholder consultation, reliability testing of the importance ratings, and careful
-      operationalisation of the evidence-gap score. The latter in particular raises difficult methodological questions: which
-      databases, which date windows, and how to handle grey literature and community-produced research.
-    </p>
-    <p>
-      The quantitative framing should not obscure the normative commitments it encodes. Choosing 
-      <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> is itself a value
-      judgment about how much weight to give community voice relative to investigator-defined notions of evidentiary need.
-      Transparency about this choice — and community participation in making it — is as important as the arithmetic.
-    </p>
-    <p>
-      The code block above provides a starting point; it is deliberately simple to make the logic inspectable. Production
-      implementations would add validation, uncertainty quantification, and sensitivity reporting.
-    </p>
-    <figure id="fig:priority">
-      <img src="assets/priority-schematic.svg" alt="Schematic of the priority-weighting framework. Topics are
+        <p>
+          Note the normalisation of 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></inline-math> to [0, 1] before mixing; without this step, the two terms are on incommensurable
+          scales and 
+          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> does not interpolate smoothly between the two criteria.
+        </p>
+      </sub-sub-section>
+    </sub-section>
+    <sub-section>
+      <sub-section-title>Illustrative Application</sub-section-title>
+      <p>
+        <cite class="cite" data-keys="CaldwellHarris2023">(Caldwell-Harris, 2023)</cite> emphasises that insider accounts systematically reveal cognitive and social patterns that
+        behavioural observation misses. This insight suggests that for studies measuring cognitive outcomes, community importance
+        ratings (
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math>) should carry more weight than evidence gaps, implying 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.5</span></span></span></span></inline-math>. For studies targeting
+        underserved populations, evidence gaps (
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></inline-math>) may deserve more weight, implying 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&#x3C;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.5</span></span></span></span></inline-math>.
+      </p>
+      <p>
+        As an illustration, consider the five topic areas identified by <cite class="cite" data-keys="Pellicano2014,Mantzalas2022">(Mantzalas et al., 2022; Pellicano et al., 2014)</cite>: quality of life,
+        burnout, diagnosis, education, and employment. Hypothetical importance and evidence-gap scores are given in
+        <a href="#tab:scores" class="ref">table 2</a>.
+      </p>
+      <table id="tab:scores">
+        <caption><span class="table-label">Table 2.</span> Hypothetical priority scores for five research topic areas</caption>
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Community importance (c)</th>
+            <th>Evidence gap (g)</th>
+            <th>Priority at α=0.7</th>
+            <th>Priority at α=0.3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quality of life</td>
+            <td>5</td>
+            <td>0.8</td>
+            <td>0.86</td>
+            <td>0.59</td>
+          </tr>
+          <tr>
+            <td>Burnout</td>
+            <td>4</td>
+            <td>0.9</td>
+            <td>0.75</td>
+            <td>0.57</td>
+          </tr>
+          <tr>
+            <td>Diagnosis</td>
+            <td>3</td>
+            <td>0.5</td>
+            <td>0.63</td>
+            <td>0.40</td>
+          </tr>
+          <tr>
+            <td>Education</td>
+            <td>3</td>
+            <td>0.6</td>
+            <td>0.63</td>
+            <td>0.43</td>
+          </tr>
+          <tr>
+            <td>Employment</td>
+            <td>4</td>
+            <td>0.7</td>
+            <td>0.78</td>
+            <td>0.52</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        At 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.7</span></span></span></span></inline-math>, quality of life ranks first and diagnosis ranks last; at 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.3</span></span></span></span></inline-math>, burnout ranks
+        first (due to its large evidence gap) and diagnosis still ranks last. The priority ordering is thus reasonably
+        stable across weighting schemes for this hypothetical dataset, consistent with the community's expressed preferences
+        across multiple surveys.
+      </p>
+    </sub-section>
+    <sub-section>
+      <sub-section-title>Discussion</sub-section-title>
+      <p>
+        The framework described here is intentionally minimal — two input dimensions and one mixing parameter. Real applications
+        would require multi-stakeholder consultation, reliability testing of the importance ratings, and careful
+        operationalisation of the evidence-gap score. The latter in particular raises difficult methodological questions: which
+        databases, which date windows, and how to handle grey literature and community-produced research.
+      </p>
+      <p>
+        The quantitative framing should not obscure the normative commitments it encodes. Choosing 
+        <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span></span></span></span></inline-math> is itself a value
+        judgment about how much weight to give community voice relative to investigator-defined notions of evidentiary need.
+        Transparency about this choice — and community participation in making it — is as important as the arithmetic.
+      </p>
+      <p>
+        The code block above provides a starting point; it is deliberately simple to make the logic inspectable. Production
+        implementations would add validation, uncertainty quantification, and sensitivity reporting.
+      </p>
+      <figure id="fig:priority">
+        <img src="assets/priority-schematic.svg" alt="Schematic of the priority-weighting framework. Topics are
 plotted in importance–gap space; the diagonal line shows equal weighting (α = 0.5). Topics above the line are favoured
 by community preference; topics below are favoured by evidence-gap criteria.">
-      <figcaption>
-        <span class="figure-label">Figure 1.</span> Schematic of the priority-weighting framework. Topics are
-        plotted in importance–gap space; the diagonal line shows equal weighting (α = 0.5). Topics above the line are favoured
-        by community preference; topics below are favoured by evidence-gap criteria.
-      </figcaption>
-    </figure>
-    <p>
-      <a href="#fig:priority" class="ref">figure 1</a> illustrates how the framework places topics in a two-dimensional space and how the mixing parameter
-      determines which topics rise to the top of the agenda.
-    </p>
+        <figcaption>
+          <span class="figure-label">Figure 1.</span> Schematic of the priority-weighting framework. Topics are
+          plotted in importance–gap space; the diagonal line shows equal weighting (α = 0.5). Topics above the line are favoured
+          by community preference; topics below are favoured by evidence-gap criteria.
+        </figcaption>
+      </figure>
+      <p>
+        <a href="#fig:priority" class="ref">figure 1</a> illustrates how the framework places topics in a two-dimensional space and how the mixing parameter
+        determines which topics rise to the top of the agenda.
+      </p>
+    </sub-section>
   </article-body>
   <article-back>
     <note-list class="endnotes">

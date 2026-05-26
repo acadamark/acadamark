@@ -76,7 +76,7 @@ import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 import rehypeFormat from 'rehype-format';
 
-import { acadamarkNormalizeMarkdown } from './plugins/normalize-markdown.js';
+import { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown } from './plugins/normalize-to-canonical.js';
 import { acadamarkConfigDiscovery } from './plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
@@ -91,7 +91,7 @@ import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plug
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from 'acadamark-core/registry';
 
-export { acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
+export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.
@@ -355,11 +355,16 @@ export function acadamarkInterpreter(options = {}) {
   // 1. Parse pipe-content strings into mdast children.
   this.use(remarkRecursiveContent, { processor: innerProcessor });
 
-  // 1.5. Normalize delegated-parser nodes to canonical acadamarkTag nodes.
-  //      Runs after step 1 so both outer and inner processor runs have
-  //      completed. Runs before step 2 so no structural plugin sees
-  //      un-normalized nodes. G3: math. NORM-tables: GFM pipe tables.
-  this.use(acadamarkNormalizeMarkdown);
+  // 1.5. The normalize-to-canonical gate. Runs after step 1 so both outer
+  //      and inner processor runs have completed. Runs before step 2 so no
+  //      structural plugin sees a non-canonical form. Coerces every
+  //      authored form to canonical Layer 1 shape: sigil tagnames rewritten
+  //      via the tagname↔sigil cipher (lift direction); bare markdown
+  //      headings normalized to sections (depths 1-3) or passed through as
+  //      <hN> (depths 4-6); inline mdast forms lifted to canonical Layer 1
+  //      inline elements. See plugins/normalize-to-canonical.js and
+  //      DESIGN.md §"The single gate".
+  this.use(acadamarkNormalizeToCanonical);
 
   // 2–4. Structural transformation.
   this.use(acadamarkConfigDiscovery);

@@ -29,47 +29,86 @@
             },
             {
               "type": "element",
-              "tagName": "h2",
+              "tagName": "sub-section",
               "properties": {},
               "children": [
                 {
-                  "type": "text",
-                  "value": "Introduction",
-                  "position": {
-                    "start": {
-                      "line": 9,
-                      "column": 4,
-                      "offset": 232
-                    },
-                    "end": {
-                      "line": 9,
-                      "column": 16,
-                      "offset": 244
+                  "type": "element",
+                  "tagName": "sub-section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Introduction",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 4,
+                          "offset": 232
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 16,
+                          "offset": 244
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 9,
-                  "column": 1,
-                  "offset": 229
+                  ]
                 },
-                "end": {
-                  "line": 9,
-                  "column": 16,
-                  "offset": 244
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
                 {
-                  "type": "text",
-                  "value": "The landscape of autism research has shifted considerably over the past decade, driven in part by advocacy from autistic people themselves. ",
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The landscape of autism research has shifted considerably over the past decade, driven in part by advocacy from autistic people themselves. ",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 1,
+                          "offset": 246
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 141,
+                          "offset": 386
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Pellicano2014"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Pellicano et al., 2014)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " documented a striking divergence between researcher priorities and the lived concerns of autistic adults and their families — a finding that prompted a broader conversation about whose questions research should answer.",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 162,
+                          "offset": 407
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 381,
+                          "offset": 626
+                        }
+                      }
+                    }
+                  ],
                   "position": {
                     "start": {
                       "line": 11,
@@ -78,65 +117,65 @@
                     },
                     "end": {
                       "line": 11,
-                      "column": 141,
-                      "offset": 386
+                      "column": 381,
+                      "offset": 626
                     }
                   }
                 },
                 {
                   "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite"
-                    ],
-                    "dataKeys": "Pellicano2014"
-                  },
+                  "tagName": "p",
+                  "properties": {},
                   "children": [
                     {
-                      "type": "raw",
-                      "value": "(Pellicano et al., 2014)"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": " documented a striking divergence between researcher priorities and the lived concerns of autistic adults and their families — a finding that prompted a broader conversation about whose questions research should answer.",
-                  "position": {
-                    "start": {
-                      "line": 11,
-                      "column": 162,
-                      "offset": 407
+                      "type": "text",
+                      "value": "Prevalence estimates have also been revised upward and the male-to-female ratio has been scrutinized more carefully. The review by ",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 1,
+                          "offset": 628
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 132,
+                          "offset": 759
+                        }
+                      }
                     },
-                    "end": {
-                      "line": 11,
-                      "column": 381,
-                      "offset": 626
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Loomes2017"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Loomes et al., 2017)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " found that earlier estimates of a 4:1 ratio significantly overstated the male skew, with implications for how diagnostic criteria are applied to women and girls.",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 150,
+                          "offset": 777
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 312,
+                          "offset": 939
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 11,
-                  "column": 1,
-                  "offset": 246
-                },
-                "end": {
-                  "line": 11,
-                  "column": 381,
-                  "offset": 626
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
-                {
-                  "type": "text",
-                  "value": "Prevalence estimates have also been revised upward and the male-to-female ratio has been scrutinized more carefully. The review by ",
+                  ],
                   "position": {
                     "start": {
                       "line": 13,
@@ -145,100 +184,95 @@
                     },
                     "end": {
                       "line": 13,
-                      "column": 132,
-                      "offset": 759
-                    }
-                  }
-                },
-                {
-                  "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite"
-                    ],
-                    "dataKeys": "Loomes2017"
-                  },
-                  "children": [
-                    {
-                      "type": "raw",
-                      "value": "(Loomes et al., 2017)"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": " found that earlier estimates of a 4:1 ratio significantly overstated the male skew, with implications for how diagnostic criteria are applied to women and girls.",
-                  "position": {
-                    "start": {
-                      "line": 13,
-                      "column": 150,
-                      "offset": 777
-                    },
-                    "end": {
-                      "line": 13,
                       "column": 312,
                       "offset": 939
                     }
                   }
                 }
-              ],
-              "position": {
-                "start": {
-                  "line": 13,
-                  "column": 1,
-                  "offset": 628
-                },
-                "end": {
-                  "line": 13,
-                  "column": 312,
-                  "offset": 939
-                }
-              }
+              ]
             },
             {
               "type": "element",
-              "tagName": "h2",
+              "tagName": "sub-section",
               "properties": {},
               "children": [
                 {
-                  "type": "text",
-                  "value": "Burnout and Well-Being",
-                  "position": {
-                    "start": {
-                      "line": 15,
-                      "column": 4,
-                      "offset": 944
-                    },
-                    "end": {
-                      "line": 15,
-                      "column": 26,
-                      "offset": 966
+                  "type": "element",
+                  "tagName": "sub-section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Burnout and Well-Being",
+                      "position": {
+                        "start": {
+                          "line": 15,
+                          "column": 4,
+                          "offset": 944
+                        },
+                        "end": {
+                          "line": 15,
+                          "column": 26,
+                          "offset": 966
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 15,
-                  "column": 1,
-                  "offset": 941
+                  ]
                 },
-                "end": {
-                  "line": 15,
-                  "column": 26,
-                  "offset": 966
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
                 {
-                  "type": "text",
-                  "value": "Autistic burnout — a state of chronic exhaustion and reduced functioning resulting from sustained masking and sensory overload — has received growing attention in the research literature. ",
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Autistic burnout — a state of chronic exhaustion and reduced functioning resulting from sustained masking and sensory overload — has received growing attention in the research literature. ",
+                      "position": {
+                        "start": {
+                          "line": 17,
+                          "column": 1,
+                          "offset": 968
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 189,
+                          "offset": 1156
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Mantzalas2022"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Mantzalas et al., 2022)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " proposed a conceptual model of the risk and protective factors that contribute to burnout, drawing on both empirical work and community testimony.",
+                      "position": {
+                        "start": {
+                          "line": 17,
+                          "column": 210,
+                          "offset": 1177
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 357,
+                          "offset": 1324
+                        }
+                      }
+                    }
+                  ],
                   "position": {
                     "start": {
                       "line": 17,
@@ -247,65 +281,65 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 189,
-                      "offset": 1156
+                      "column": 357,
+                      "offset": 1324
                     }
                   }
                 },
                 {
                   "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite"
-                    ],
-                    "dataKeys": "Mantzalas2022"
-                  },
+                  "tagName": "p",
+                  "properties": {},
                   "children": [
                     {
-                      "type": "raw",
-                      "value": "(Mantzalas et al., 2022)"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": " proposed a conceptual model of the risk and protective factors that contribute to burnout, drawing on both empirical work and community testimony.",
-                  "position": {
-                    "start": {
-                      "line": 17,
-                      "column": 210,
-                      "offset": 1177
+                      "type": "text",
+                      "value": "Understanding the autistic experience requires moving beyond deficit-focused frameworks. ",
+                      "position": {
+                        "start": {
+                          "line": 19,
+                          "column": 1,
+                          "offset": 1326
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 90,
+                          "offset": 1415
+                        }
+                      }
                     },
-                    "end": {
-                      "line": 17,
-                      "column": 357,
-                      "offset": 1324
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "CaldwellHarris2023"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Caldwell-Harris, 2023)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " argues for an approach grounded in insider accounts, noting that autistic self-report reveals cognitive and social patterns that purely behavioral observation misses.",
+                      "position": {
+                        "start": {
+                          "line": 19,
+                          "column": 116,
+                          "offset": 1441
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 283,
+                          "offset": 1608
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 17,
-                  "column": 1,
-                  "offset": 968
-                },
-                "end": {
-                  "line": 17,
-                  "column": 357,
-                  "offset": 1324
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
-                {
-                  "type": "text",
-                  "value": "Understanding the autistic experience requires moving beyond deficit-focused frameworks. ",
+                  ],
                   "position": {
                     "start": {
                       "line": 19,
@@ -314,100 +348,95 @@
                     },
                     "end": {
                       "line": 19,
-                      "column": 90,
-                      "offset": 1415
-                    }
-                  }
-                },
-                {
-                  "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite"
-                    ],
-                    "dataKeys": "CaldwellHarris2023"
-                  },
-                  "children": [
-                    {
-                      "type": "raw",
-                      "value": "(Caldwell-Harris, 2023)"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": " argues for an approach grounded in insider accounts, noting that autistic self-report reveals cognitive and social patterns that purely behavioral observation misses.",
-                  "position": {
-                    "start": {
-                      "line": 19,
-                      "column": 116,
-                      "offset": 1441
-                    },
-                    "end": {
-                      "line": 19,
                       "column": 283,
                       "offset": 1608
                     }
                   }
                 }
-              ],
-              "position": {
-                "start": {
-                  "line": 19,
-                  "column": 1,
-                  "offset": 1326
-                },
-                "end": {
-                  "line": 19,
-                  "column": 283,
-                  "offset": 1608
-                }
-              }
+              ]
             },
             {
               "type": "element",
-              "tagName": "h2",
+              "tagName": "sub-section",
               "properties": {},
               "children": [
                 {
-                  "type": "text",
-                  "value": "Education and Stigma Reduction",
-                  "position": {
-                    "start": {
-                      "line": 21,
-                      "column": 4,
-                      "offset": 1613
-                    },
-                    "end": {
-                      "line": 21,
-                      "column": 34,
-                      "offset": 1643
+                  "type": "element",
+                  "tagName": "sub-section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Education and Stigma Reduction",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 4,
+                          "offset": 1613
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 34,
+                          "offset": 1643
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 21,
-                  "column": 1,
-                  "offset": 1610
+                  ]
                 },
-                "end": {
-                  "line": 21,
-                  "column": 34,
-                  "offset": 1643
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
                 {
-                  "type": "text",
-                  "value": "Reducing stigma in higher education settings has been identified as a key priority. ",
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Reducing stigma in higher education settings has been identified as a key priority. ",
+                      "position": {
+                        "start": {
+                          "line": 23,
+                          "column": 1,
+                          "offset": 1645
+                        },
+                        "end": {
+                          "line": 23,
+                          "column": 85,
+                          "offset": 1729
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "GillespieLynch2017"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Gillespie-Lynch et al., 2017)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " evaluated an online training program for college students and found meaningful improvements in both knowledge and attitudes toward autistic peers.",
+                      "position": {
+                        "start": {
+                          "line": 23,
+                          "column": 111,
+                          "offset": 1755
+                        },
+                        "end": {
+                          "line": 23,
+                          "column": 258,
+                          "offset": 1902
+                        }
+                      }
+                    }
+                  ],
                   "position": {
                     "start": {
                       "line": 23,
@@ -416,65 +445,65 @@
                     },
                     "end": {
                       "line": 23,
-                      "column": 85,
-                      "offset": 1729
+                      "column": 258,
+                      "offset": 1902
                     }
                   }
                 },
                 {
                   "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite"
-                    ],
-                    "dataKeys": "GillespieLynch2017"
-                  },
+                  "tagName": "p",
+                  "properties": {},
                   "children": [
                     {
-                      "type": "raw",
-                      "value": "(Gillespie-Lynch et al., 2017)"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": " evaluated an online training program for college students and found meaningful improvements in both knowledge and attitudes toward autistic peers.",
-                  "position": {
-                    "start": {
-                      "line": 23,
-                      "column": 111,
-                      "offset": 1755
+                      "type": "text",
+                      "value": "Multi-pronged approaches combining awareness training with structural accommodation have shown the most promise. ",
+                      "position": {
+                        "start": {
+                          "line": 25,
+                          "column": 1,
+                          "offset": 1904
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 114,
+                          "offset": 2017
+                        }
+                      }
                     },
-                    "end": {
-                      "line": 23,
-                      "column": 258,
-                      "offset": 1902
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Mantzalas2022,Pellicano2014"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Mantzalas et al., 2022; Pellicano et al., 2014)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " both point to the importance of community involvement in designing interventions rather than imposing them from outside.",
+                      "position": {
+                        "start": {
+                          "line": 25,
+                          "column": 151,
+                          "offset": 2054
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 272,
+                          "offset": 2175
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 23,
-                  "column": 1,
-                  "offset": 1645
-                },
-                "end": {
-                  "line": 23,
-                  "column": 258,
-                  "offset": 1902
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
-                {
-                  "type": "text",
-                  "value": "Multi-pronged approaches combining awareness training with structural accommodation have shown the most promise. ",
+                  ],
                   "position": {
                     "start": {
                       "line": 25,
@@ -483,100 +512,95 @@
                     },
                     "end": {
                       "line": 25,
-                      "column": 114,
-                      "offset": 2017
-                    }
-                  }
-                },
-                {
-                  "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite"
-                    ],
-                    "dataKeys": "Mantzalas2022,Pellicano2014"
-                  },
-                  "children": [
-                    {
-                      "type": "raw",
-                      "value": "(Mantzalas et al., 2022; Pellicano et al., 2014)"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": " both point to the importance of community involvement in designing interventions rather than imposing them from outside.",
-                  "position": {
-                    "start": {
-                      "line": 25,
-                      "column": 151,
-                      "offset": 2054
-                    },
-                    "end": {
-                      "line": 25,
                       "column": 272,
                       "offset": 2175
                     }
                   }
                 }
-              ],
-              "position": {
-                "start": {
-                  "line": 25,
-                  "column": 1,
-                  "offset": 1904
-                },
-                "end": {
-                  "line": 25,
-                  "column": 272,
-                  "offset": 2175
-                }
-              }
+              ]
             },
             {
               "type": "element",
-              "tagName": "h2",
+              "tagName": "sub-section",
               "properties": {},
               "children": [
                 {
-                  "type": "text",
-                  "value": "A Missing Reference",
-                  "position": {
-                    "start": {
-                      "line": 27,
-                      "column": 4,
-                      "offset": 2180
-                    },
-                    "end": {
-                      "line": 27,
-                      "column": 23,
-                      "offset": 2199
+                  "type": "element",
+                  "tagName": "sub-section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A Missing Reference",
+                      "position": {
+                        "start": {
+                          "line": 27,
+                          "column": 4,
+                          "offset": 2180
+                        },
+                        "end": {
+                          "line": 27,
+                          "column": 23,
+                          "offset": 2199
+                        }
+                      }
                     }
-                  }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 27,
-                  "column": 1,
-                  "offset": 2177
+                  ]
                 },
-                "end": {
-                  "line": 27,
-                  "column": 23,
-                  "offset": 2199
-                }
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "p",
-              "properties": {},
-              "children": [
                 {
-                  "type": "text",
-                  "value": "For contrast, this citation should produce a visible error: ",
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "For contrast, this citation should produce a visible error: ",
+                      "position": {
+                        "start": {
+                          "line": 29,
+                          "column": 1,
+                          "offset": 2201
+                        },
+                        "end": {
+                          "line": 29,
+                          "column": 61,
+                          "offset": 2261
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite-error"
+                        ],
+                        "dataKeys": "NOTAKEY"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "??cite: NOTAKEY??"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 29,
+                          "column": 76,
+                          "offset": 2276
+                        },
+                        "end": {
+                          "line": 29,
+                          "column": 77,
+                          "offset": 2277
+                        }
+                      }
+                    }
+                  ],
                   "position": {
                     "start": {
                       "line": 29,
@@ -585,72 +609,28 @@
                     },
                     "end": {
                       "line": 29,
-                      "column": 61,
-                      "offset": 2261
-                    }
-                  }
-                },
-                {
-                  "type": "element",
-                  "tagName": "cite",
-                  "properties": {
-                    "className": [
-                      "cite-error"
-                    ],
-                    "dataKeys": "NOTAKEY"
-                  },
-                  "children": [
-                    {
-                      "type": "text",
-                      "value": "??cite: NOTAKEY??"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "value": ".",
-                  "position": {
-                    "start": {
-                      "line": 29,
-                      "column": 76,
-                      "offset": 2276
-                    },
-                    "end": {
-                      "line": 29,
                       "column": 77,
                       "offset": 2277
                     }
                   }
-                }
-              ],
-              "position": {
-                "start": {
-                  "line": 29,
-                  "column": 1,
-                  "offset": 2201
                 },
-                "end": {
-                  "line": 29,
-                  "column": 77,
-                  "offset": 2277
+                {
+                  "type": "raw",
+                  "value": "</bibliography>",
+                  "position": {
+                    "start": {
+                      "line": 32,
+                      "column": 1,
+                      "offset": 2294
+                    },
+                    "end": {
+                      "line": 32,
+                      "column": 16,
+                      "offset": 2309
+                    }
+                  }
                 }
-              }
-            },
-            {
-              "type": "raw",
-              "value": "</bibliography>",
-              "position": {
-                "start": {
-                  "line": 32,
-                  "column": 1,
-                  "offset": 2294
-                },
-                "end": {
-                  "line": 32,
-                  "column": 16,
-                  "offset": 2309
-                }
-              }
+              ]
             }
           ]
         },
