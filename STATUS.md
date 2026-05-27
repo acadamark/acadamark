@@ -812,3 +812,42 @@ that). One line gets added every few months, not every slice.
   fixed-by-the-design-revealing-the-code-was-already-right, not
   fixed-by-a-code-change — is recorded here so a future reader
   doesn't search the diff for the "fix."
+- **2026-Q2 — vocabulary entries for `<meta>` allowlist members
+  added.** Added five Layer 1 vocabulary entries that the
+  apparatus-tag reconciliation (`578d6f0`) had left as a gap: `doi`,
+  `license`, `lang`, `version`, `keywords` — the `<meta>` allowlist
+  members that lifted correctly at the gate but rendered as
+  `<span data-acadamark-unknown="…">` for want of vocabulary
+  entries. Each entry written to the existing entry schema
+  (frontmatter with `semantic_role`, `html_output`,
+  `acadamark_attributes`, `content`, `content_handler`,
+  `jats_counterpart`, `shorthand_examples`,
+  `interpreter_strategy: schema`) and a markdown body. JATS
+  counterparts verified where straightforward (`<doi>` → `<article-id
+  pub-id-type="doi">`; `<license>` → `<license>` inside
+  `<permissions>`; `<keywords>` → `<kwd-group>` of `<kwd>`) and
+  honestly recorded with uncertainty where the JATS situation is
+  contestable (`<lang>` → `xml:lang` attribute, not an element;
+  `<version>` → `<article-version>` where the schema variant supports
+  it or `<custom-meta>` fallback). **Backlog claim contradicted:**
+  the backlog item asserted `<abstract>` also needed an entry, but
+  `abstract.md` was already present and comprehensive — only five
+  entries added, not six. Surfaced as a finding in this slice's
+  report; no code change needed for `<abstract>`. Vocabulary
+  `data.js` regenerated (66 → 71 entries; +5 new); `pretest`
+  staleness guard passes. New integration fixture
+  `document-25-meta-allowlist-elements.acm` exercises a `<meta>`
+  carrying all five new kwargs plus an `<abstract>`; asserts each
+  renders as a real custom element and that no
+  `data-acadamark-unknown` span remains. One existing snapshot
+  changed: `document-20-expected.json` had a `<doi>` rendering as
+  `<span data-acadamark-unknown="doi">` (because doc-20 includes a
+  `<meta doi=…>`); now renders as `<doi>` — the expected
+  unknown-span → real-element correction. No other snapshots
+  changed. Updated the vocabulary test's hardcoded entry-count check
+  (67 → 72, with the rationale recorded inline). Backlog: the
+  `[alpha]` "Add vocabulary entries for `<meta>` allowlist members
+  and `<abstract>`" item removed from both views (item count 39 →
+  38). Tests: layer1-vocabulary 52/52 (one count assertion updated);
+  acadamark-core 50/50; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites.

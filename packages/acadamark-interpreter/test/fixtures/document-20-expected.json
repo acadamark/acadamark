@@ -42,10 +42,8 @@
                 },
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "data-acadamark-unknown": "doi"
-                  },
+                  "tagName": "doi",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",

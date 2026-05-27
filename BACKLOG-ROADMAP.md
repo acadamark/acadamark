@@ -161,21 +161,6 @@ the current code and all confirmed closed (see the STATUS milestone).
   DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(`formerly AUD-25`)*
 - [ ] **Add integration test and snapshot for `document-9-demo`**
   `[tests/build]` `[alpha]` *(`formerly GAP-9`)*
-- [ ] **Add vocabulary entries for `<meta>` allowlist members and
-  `<abstract>`** `[vocab]` `[alpha]` — The apparatus-tag
-  reconciliation (2026-05-25) defined the `<meta>` allowlist as
-  `title / subtitle / author / date / doi / license / lang /
-  version / keywords`, but only the first three plus `editor` and
-  `subtitle` have vocabulary entries today. The kwargs lift correctly
-  but render as `<span data-acadamark-unknown="…">` until vocabulary
-  entries exist for `doi`, `license`, `lang`, `version`, `keywords`.
-  Additionally `<abstract>` is its own tag (per the reconciliation
-  ruling, NOT a `<meta>` child) and needs its own entry. Small
-  vocabulary additions; each entry is a few lines of frontmatter.
-  **Re-tagged `[alpha]` (2026-05-26 reconciliation slice):** these
-  are small, uniform element-spec entries with no expensive branch,
-  and the `<meta>` allowlist that depends on them has already shipped
-  — they are not conditional alpha work, they are small alpha work.
 
 #### Planned work
 

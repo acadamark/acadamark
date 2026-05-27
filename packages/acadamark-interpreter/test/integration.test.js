@@ -889,4 +889,42 @@ export function run() {
     snapshotHast('document-24', hast);
     console.log('PASS: integration doc24 (unclosed tag at EOF — Option A EOF-only terminator)');
   }
+
+  // ── Document 25: <meta> allowlist members + <abstract> render correctly ───
+  // Validates the five new vocabulary entries (doi, license, lang, version,
+  // keywords) added to close the missing-<meta>-allowlist-vocabulary item.
+  // Before this slice, these <meta> kwargs lifted correctly at the
+  // normalize-to-canonical gate but rendered as <span data-acadamark-unknown>
+  // because their target Layer 1 elements had no vocabulary entries. Now
+  // each renders as a real custom element.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-25-meta-allowlist-elements.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc25: article structure present');
+
+    // None of the previously-unknown meta members should render as an
+    // unknown-element span anymore.
+    assert.ok(!/data-acadamark-unknown="(doi|license|lang|version|keywords)"/.test(html),
+      'doc25: no data-acadamark-unknown spans for the new meta allowlist members');
+
+    // Each new element renders as a real custom element carrying its value.
+    assert.ok(html.includes('<doi>10.5555/test.2024</doi>'),
+      'doc25: <doi> renders with its value');
+    assert.ok(html.includes('<license>CC BY 4.0</license>'),
+      'doc25: <license> renders with its value');
+    assert.ok(html.includes('<lang>en-US</lang>'),
+      'doc25: <lang> renders with its value');
+    assert.ok(html.includes('<version>1.0.0</version>'),
+      'doc25: <version> renders with its value');
+    assert.ok(html.includes('<keywords>elephants, conservation, climate</keywords>'),
+      'doc25: <keywords> renders with its value');
+
+    // <abstract> continues to render (the pre-existing entry covers it).
+    assert.ok(html.includes('<abstract>'),
+      'doc25: <abstract> still renders');
+
+    snapshotHast('document-25', hast);
+    console.log('PASS: integration doc25 (<meta> allowlist members render as real elements)');
+  }
 }

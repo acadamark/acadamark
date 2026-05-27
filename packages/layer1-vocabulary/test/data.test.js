@@ -24,10 +24,14 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 66 primary + 1 'quote' alias = 67.
+// Entry count: 71 primary + 1 'quote' alias = 72.
+// (Was 66 + 1 = 67 prior to 2026-Q2 — five new <meta> allowlist members
+// added: doi, license, lang, version, keywords. The apparatus-tag
+// reconciliation defined the <meta> allowlist; this slice closed the
+// missing-vocabulary-entries gap.)
 check(
-  `VOCABULARY has 67 entries (66 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 67,
+  `VOCABULARY has 72 entries (71 primary + 'quote' alias)`,
+  Object.keys(VOCABULARY).length === 72,
 );
 
 // Build-time loader has nothing to report in normal state.

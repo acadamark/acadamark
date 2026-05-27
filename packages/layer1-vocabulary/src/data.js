@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 66 vocabulary entries.
+// Source files: 71 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -1540,6 +1540,9 @@ const _config = Object.freeze({
       "classes": {
         "maps_to": "class",
       },
+      "kwargs": {
+        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/acadamark-interpreter/src/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
+      },
     },
     "content": {
       "type": "structured",
@@ -1798,6 +1801,50 @@ const _display_math = Object.freeze({
       "notes": "JATS <disp-formula> wraps a displayed equation. The JATS exporter\ngenerates <tex-math> with the raw LaTeX source plus optionally\n<mml:math>. The id attribute (for cross-references) maps to JATS\nid. Equation numbering maps to JATS <label>.\n",
     },
     "_sourceFile": "display-math.md",
+  });
+
+const _doi = Object.freeze({
+    "semantic_role": "doi",
+    "html_output": {
+      "element": "doi",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The DOI value, as text. Typically the bare DOI string (e.g.\n\"10.1234/example.2024\") rather than a URL form.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "article-id",
+      "attributes": {
+        "pub-id-type": "doi",
+      },
+      "notes": "JATS uses <article-id pub-id-type=\"doi\">VALUE</article-id> inside\n<article-meta>. The exporter constructs the article-id element with\nthe pub-id-type attribute set to \"doi\" from the value in <doi>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <doi | 10.1234/example.2024>\n</meta>\n",
+        "layer1_html": "<meta>\n  <doi>10.1234/example.2024</doi>\n</meta>\n",
+        "notes": "Bare DOI as the typical authoring form.\n",
+      },
+      {
+        "source": "<meta doi=\"10.5555/test\" />",
+        "layer1_html": "<meta>\n  <doi>10.5555/test</doi>\n</meta>\n",
+        "notes": "Kwarg-form authoring lifts to the child-tag form at the\nnormalize-to-canonical gate (per the apparatus-tag reconciliation,\nDESIGN.md §\"Apparatus-tag positioning\").\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "doi.md",
   });
 
 const _editor = Object.freeze({
@@ -2252,6 +2299,88 @@ const _inline_math = Object.freeze({
     "_sourceFile": "inline-math.md",
   });
 
+const _keywords = Object.freeze({
+    "semantic_role": "keywords",
+    "html_output": {
+      "element": "keywords",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Comma-separated keyword list as text, OR a structured list of\nindividual <keyword> child elements. The simpler comma-separated\nform is preferred for ergonomics; the structured form is useful\nwhen individual keywords need ids or other attributes for\ncross-referencing.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "kwd-group",
+      "notes": "JATS uses <kwd-group> containing <kwd> elements, inside\n<article-meta>. Comma-separated acadamark content splits on\ncommas at export time; structured <keyword> children map\ndirectly to <kwd>. Multiple <kwd-group> elements (each with a\nkwd-group-type attribute) are allowed in JATS for multi-language\nkeyword sets — acadamark does not currently model that distinction\nat the authoring layer.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <keywords | elephants, conservation, climate, carbon storage>\n</meta>\n",
+        "layer1_html": "<meta>\n  <keywords>elephants, conservation, climate, carbon storage</keywords>\n</meta>\n",
+        "notes": "Comma-separated keyword list — the simpler and more common\nauthoring form. The exporter splits on commas when emitting JATS.\n",
+      },
+      {
+        "source": "<meta keywords=\"elephants, conservation, climate\" />",
+        "layer1_html": "<meta>\n  <keywords>elephants, conservation, climate</keywords>\n</meta>\n",
+        "notes": "Kwarg-form authoring lifts to the child-tag form at the gate.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "keywords.md",
+  });
+
+const _lang = Object.freeze({
+    "semantic_role": "lang",
+    "html_output": {
+      "element": "lang",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The document's primary language, typically as a BCP 47 / ISO 639-1\nlanguage tag (e.g. \"en\", \"en-US\", \"fr\", \"ja\"). Free-form language\nnames (\"English\", \"French\") are accepted but the tag form is\npreferred for machine readability.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct element; maps to xml:lang attribute)",
+      "notes": "JATS does not have a dedicated <lang> element. Language is expressed\nvia the xml:lang attribute, typically on the <article> root or on\n<title-group> for language-specific titles. The exporter reads the\nvalue from <meta>'s <lang> and emits it as an xml:lang attribute on\nthe appropriate JATS container — there is no <lang> element in the\nJATS output. Verified: JATS 1.3 uses xml:lang on the root element\nrather than a child element for the document's primary language.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <lang | en-US>\n</meta>\n",
+        "layer1_html": "<meta>\n  <lang>en-US</lang>\n</meta>\n",
+        "notes": "BCP 47 language tag. The Layer 1 form preserves the value as a\nchild element of <meta>; downstream consumers (the JATS exporter,\nthe render-mode lowering) project it where each format expects.\n",
+      },
+      {
+        "source": "<meta lang=\"fr\" />",
+        "layer1_html": "<meta>\n  <lang>fr</lang>\n</meta>\n",
+        "notes": "Kwarg-form authoring lifts to the child-tag form at the gate.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "lang.md",
+  });
+
 const _li = Object.freeze({
     "semantic_role": "li",
     "html_output": {
@@ -2382,6 +2511,56 @@ const _library = Object.freeze({
     "_sourceFile": "library.md",
   });
 
+const _license = Object.freeze({
+    "semantic_role": "license",
+    "html_output": {
+      "element": "license",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "href": {
+          "maps_to": "href",
+          "notes": "Optional URL of the license terms (e.g. https://creativecommons.org/licenses/by/4.0/).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The license name or short identifier (e.g. \"CC BY 4.0\",\n\"MIT License\", \"All rights reserved\"). The optional href kwarg\ncarries the canonical URL of the license terms.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "license",
+      "attributes": {
+        "xlink:href": "from href",
+      },
+      "notes": "JATS uses <license xlink:href=\"...\"> inside <permissions> inside\n<article-meta>. The license content can be free-form text or a\nstructured <license-p>. Acadamark's <license> maps to JATS's\n<license> directly; the href kwarg maps to xlink:href.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <license href=\"https://creativecommons.org/licenses/by/4.0/\" | CC BY 4.0>\n</meta>\n",
+        "layer1_html": "<meta>\n  <license href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</license>\n</meta>\n",
+        "notes": "License name with canonical URL.\n",
+      },
+      {
+        "source": "<meta license=\"MIT License\" />",
+        "layer1_html": "<meta>\n  <license>MIT License</license>\n</meta>\n",
+        "notes": "Kwarg-form authoring (license name only) lifts to the child-tag\nform at the normalize-to-canonical gate.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "license.md",
+  });
+
 const _meta = Object.freeze({
     "semantic_role": "meta",
     "html_output": {
@@ -2443,14 +2622,11 @@ const _meta = Object.freeze({
           "multiple": true,
         },
         {
-          "element": "abstract",
-          "required": false,
-        },
-        {
           "element": "keywords",
           "required": false,
         },
       ],
+      "notes": "The structured-child content above is one of two equivalent authoring\nforms for <meta>. The other is the kwarg form: <meta title=\"...\"\nauthor=\"...\" doi=\"...\">. The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the META_KWARGS\nallowlist (title / subtitle / author / date / doi / license / lang /\nversion / keywords). Unknown kwargs are dropped with a diagnostic;\n<config>-shaped kwargs (e.g. citation-style) on <meta> get a\n\"did you mean <config>?\" misuse hint.\n\nNOTE on <abstract>: an <abstract> tag is the *its own element*, not\na child of <meta> — descriptive but distinct from descriptive\nmetadata. The vocabulary entry for <abstract> is not yet written\n(filed as a finding in BACKLOG-ROADMAP.md). Until that entry exists,\ndocuments that include an abstract should author it as <abstract>\noutside <meta>; in <meta>, the key 'abstract' is NOT in the\nallowlist and would be dropped with a diagnostic.\n",
     },
     "content_handler": "default",
     "jats_counterpart": {
@@ -2831,7 +3007,7 @@ const _ref = Object.freeze({
           "notes": "The id of the element being referenced. The canonical form uses the\n#id prefix: <ref #eqn:model>. A kwarg form is also accepted as\nlegacy: <ref target=eqn:model>.\nIMPORTANT (current implementation): only colon-ids (ids containing\na colon, e.g., eqn:model, fig:scatter) are in the label index and\ncan be resolved. Non-colon ids produce an unresolved error marker.\nThis restriction may be relaxed in a future slice.\n",
         },
         "type": {
-          "handled_by": "handler",
+          "maps_to": "data-ref-type",
           "values": [
             "auto",
             "figure",
@@ -2845,10 +3021,10 @@ const _ref = Object.freeze({
             "other",
           ],
           "default": "auto",
-          "notes": "DEFERRED. The type kwarg is parsed but not used by the current\nhandler. The resolver always infers type from the registry entry.\n",
+          "notes": "Author-supplied hint about the intended kind of target. Flows\nthrough to a data-ref-type attribute on the rendered anchor,\navailable for CSS/JS to use. The resolver-generated display text\nis still computed from the id prefix and the DEFAULT_PREFIXES\ndictionary; this kwarg does not currently override that text.\n",
         },
         "format": {
-          "handled_by": "handler",
+          "maps_to": "data-ref-format",
           "values": [
             "number",
             "name",
@@ -2857,7 +3033,21 @@ const _ref = Object.freeze({
             "default",
           ],
           "default": "default",
-          "notes": "DEFERRED. The format kwarg is parsed but not used by the current\nhandler. Rendered text is always the prefix-dictionary default:\n\"equation N\" for equations, \"figure N\" for figures, \"note N\" for\nnotes (prefix word from DEFAULT_PREFIXES, overridable per-document\nvia <config ref-prefix-eqn=\"...\">).\nAuthor-provided pipe content (<ref #id | custom text>) is also\ndeferred (recursive-content slice).\n\"full\" would include the title (\"figure 3: An Adult Elephant\").\n",
+          "notes": "Author-supplied formatting hint. Flows through to a\ndata-ref-format attribute on the rendered anchor, available for\nCSS/JS. The resolver-generated display text is still computed\nfrom the prefix dictionary; future enhancements may use this\nattribute to vary the rendered text.\n",
+        },
+      },
+      "booleans": {
+        "link": {
+          "default": true,
+          "notes": "Controls whether the rendered ref is a navigable hyperlink. Default\nis +link, producing <a href=\"#targetId\" class=\"ref\">...</a>. The\n-link form produces <span class=\"ref\">...</span> instead — useful\nwhen the author wants the ref's display text without making it a\nnavigable anchor (e.g. inside a passage that itself describes the\ncross-reference rather than invoking it).\n",
+        },
+        "preview": {
+          "default": true,
+          "notes": "Controls the hover preview that attaches to the rendered ref by\ndefault. Default +preview attaches a tippy tooltip showing the\ntarget element's content. -preview adds data-no-preview=\"true\"\nto the rendered anchor; the hover-preview script's attacher\nskips elements with that attribute.\n",
+        },
+        "title": {
+          "default": true,
+          "notes": "Reserved / unimplemented. The original intent has not been\nrecovered; deliberately set aside until that intent is\narticulated. Future work, not a current feature.\n",
         },
       },
     },
@@ -3886,6 +4076,47 @@ const _ul = Object.freeze({
     "_sourceFile": "ul.md",
   });
 
+const _version = Object.freeze({
+    "semantic_role": "version",
+    "html_output": {
+      "element": "version",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The document's version, as a free-form string. Common forms:\nsemantic version (\"1.0.0\", \"2.3.1\"), date-based (\"2024.03.15\"),\nrevision label (\"v2\", \"rev 3\", \"draft\"), or any other versioning\nscheme the author uses.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct standard element; uncertain — may map to article-version or custom-meta)",
+      "notes": "JATS does not have a single canonical version element. JATS 1.3+\nintroduced <article-version> in some extensions (e.g. for preprint\nmetadata) but it is not universally present in the core schema. A\nsafe fallback is <custom-meta meta-name=\"version\">VALUE</custom-meta>\ninside <article-meta>. The exporter should prefer <article-version>\nwhen targeting a schema variant that supports it, and fall back to\n<custom-meta> otherwise. Uncertainty recorded here per the\napparatus-tag reconciliation slice's directive to not guess.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <version | 1.0.0>\n</meta>\n",
+        "layer1_html": "<meta>\n  <version>1.0.0</version>\n</meta>\n",
+        "notes": "Semantic version. Other formats are equally valid as a free-form\nstring.\n",
+      },
+      {
+        "source": "<meta version=\"draft-2\" />",
+        "layer1_html": "<meta>\n  <version>draft-2</version>\n</meta>\n",
+        "notes": "Kwarg-form authoring lifts to the child-tag form at the gate.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "version.md",
+  });
+
 export const VOCABULARY = Object.freeze({
   "a": _a,
   "abstract": _abstract,
@@ -3917,6 +4148,7 @@ export const VOCABULARY = Object.freeze({
   "data": _data,
   "date": _date,
   "display-math": _display_math,
+  "doi": _doi,
   "editor": _editor,
   "em": _em,
   "figure": _figure,
@@ -3925,8 +4157,11 @@ export const VOCABULARY = Object.freeze({
   "img": _img,
   "inline-code": _inline_code,
   "inline-math": _inline_math,
+  "keywords": _keywords,
+  "lang": _lang,
   "li": _li,
   "library": _library,
+  "license": _license,
   "meta": _meta,
   "note-list": _note_list,
   "note": _note,
@@ -3953,6 +4188,7 @@ export const VOCABULARY = Object.freeze({
   "title": _title,
   "u": _u,
   "ul": _ul,
+  "version": _version,
   "quote": _blockquote,  // alias
 });
 
