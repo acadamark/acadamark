@@ -91,9 +91,6 @@ A flat scannable index of every open item. Detailed entries below.
   math environments, `<theorem>`) `[interpreter — DSL surface]`
   `[alpha]` *(→ roadmap: Phase 2)* *(formerly DF-8, DF-9, DF-10,
   DF-11a)*
-- [ ] **Add deferred vocabulary elements — theorem family**
-  `[vocab]` `[alpha]` *(→ roadmap: Phase 1)* *(formerly DF-11b
-  remainder)*
 - [ ] **Document the tag-form × tag matrix and reconcile
   inconsistencies** `[specs/docs]` `[post-alpha]` *(formerly AUD-15)*
 - [ ] **Add forward-pointers from governed specs to design directions
@@ -307,20 +304,6 @@ only. The `<theorem>` handler couples with the theorem-family
 vocabulary (the open vocab sub-slice 3) — these are likely to land
 together in a combined slice or as a paired sequence. *(formerly DF-8,
 DF-9, DF-10, DF-11a)*
-
-### Add deferred vocabulary elements — theorem family
-`[vocab]` `[alpha]` *(→ roadmap: Phase 1)*
-
-Sub-slice 3 of the deferred-vocab work, remaining after sub-slice 1
-(scalar/inline, `13cac93`) and sub-slice 2 (structural blocks, in
-flight). The theorem family: `<theorem>`, `<proof>`, `<lemma>`,
-`<corollary>`, `<definition>`, `<example>`, and any internal parts
-that follow the container-role rule (e.g. `<theorem-statement>`,
-`<theorem-proof>`). Each needs a short vocab spec, then a schema
-entry. The sub-slice's open design call is whether to combine the
-vocab entries and the matching `<theorem>` handler in one slice
-(since they couple) or in two — to be decided in the sub-slice's
-Phase 0. *(formerly DF-11b remainder)*
 
 ### Document the tag-form × tag matrix and reconcile inconsistencies
 `[specs/docs]` `[post-alpha]`

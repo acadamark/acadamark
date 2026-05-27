@@ -1140,4 +1140,92 @@ export function run() {
     snapshotHast('document-28', hast);
     console.log('PASS: integration doc28 (deferred-vocab sub-slice 2 structural blocks render)');
   }
+
+  // ── Document 29: deferred-vocab sub-slice 3 (theorem family) ───────────────
+  // Proves the eight theorem-family elements render as real elements via
+  // schema dispatch: theorem, lemma, corollary, proposition, definition,
+  // example, remark, proof. The matching <theorem> handler — numbering,
+  // label rendering, QED, optional-name display — is Phase 2 work and
+  // not exercised here; the fixture only proves the vocabulary is wired.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-29-deferred-vocab-sub3.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Each of the eight elements appears as a real tag in the output.
+    // <theorem>'s pre-existing 'theorem' content-handler entry (line 45
+    // of dsl-registry.js) marks every <theorem> node isOpaqueContent: true,
+    // which the schema dispatch then drops at convert-content time. So
+    // <theorem> renders as the real element with attributes intact but
+    // empty body. We assert the element renders and its attributes flow
+    // through; the body assertion is exercised via the other seven
+    // elements (which use the 'default' handler / recursive content
+    // parse). The opacity is the slice's recorded line-45 finding.
+    assert.ok(
+      /<theorem\b[^>]*id="thm:pyth"[^>]*>/.test(html),
+      'doc29: <theorem> renders as a real element with its id intact',
+    );
+    assert.ok(
+      /<proof\b[^>]*>By similar triangles/.test(html),
+      'doc29: <proof> renders with its body',
+    );
+    assert.ok(
+      /<lemma\b[^>]*>[\s\S]*Zorn/i.test(html) || /<lemma\b[^>]*>[\s\S]*every chain/i.test(html),
+      'doc29: <lemma> renders with its body',
+    );
+    assert.ok(
+      /<corollary\b[^>]*>Every prime greater than 2 is odd/.test(html),
+      'doc29: <corollary> renders with its body',
+    );
+    assert.ok(
+      /<proposition\b[^>]*>[\s\S]*Cauchy-Schwarz|inner-product space/i.test(html),
+      'doc29: <proposition> renders with its body',
+    );
+    assert.ok(
+      /<definition\b[^>]*>[\s\S]*group/i.test(html),
+      'doc29: <definition> renders with its body',
+    );
+    assert.ok(
+      /<example\b[^>]*>[\s\S]*integers/i.test(html),
+      'doc29: <example> renders with its body',
+    );
+    assert.ok(
+      /<remark\b[^>]*>[\s\S]*compactness/i.test(html),
+      'doc29: <remark> renders with its body',
+    );
+
+    // The `name` kwarg flows through to data-name on at least one element.
+    // Exercised on <theorem name="Pythagoras">, <lemma name="Zorn">,
+    // <proposition name="Cauchy-Schwarz">, <definition name="Group">.
+    assert.ok(
+      html.includes('data-name="Pythagoras"'),
+      'doc29: <theorem name="Pythagoras"> lifts name kwarg to data-name attribute',
+    );
+    assert.ok(
+      html.includes('data-name="Zorn"'),
+      'doc29: <lemma name="Zorn"> lifts name kwarg to data-name attribute',
+    );
+    assert.ok(
+      html.includes('data-name="Cauchy-Schwarz"'),
+      'doc29: <proposition name="Cauchy-Schwarz"> lifts name kwarg to data-name attribute',
+    );
+    assert.ok(
+      html.includes('data-name="Group"'),
+      'doc29: <definition name="Group"> lifts name kwarg to data-name attribute',
+    );
+
+    // No element renders as the unknown-span fallback — the vocab entries
+    // cover all eight.
+    for (const tag of ['theorem', 'lemma', 'corollary', 'proposition', 'definition', 'example', 'remark', 'proof']) {
+      assert.ok(
+        !html.includes(`data-acadamark-unknown="${tag}"`),
+        `doc29: <${tag}> renders as a real element (no unknown-span fallback)`,
+      );
+    }
+
+    snapshotHast('document-29', hast);
+    console.log('PASS: integration doc29 (deferred-vocab sub-slice 3 theorem-family render)');
+  }
 }

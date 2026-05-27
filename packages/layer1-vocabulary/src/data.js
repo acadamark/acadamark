@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 90 vocabulary entries.
+// Source files: 98 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -1728,6 +1728,60 @@ const _config = Object.freeze({
     "_sourceFile": "config.md",
   });
 
+const _corollary = Object.freeze({
+    "semantic_role": "corollary",
+    "html_output": {
+      "element": "corollary",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the corollary's label, parallel to\n<theorem>'s `name` kwarg.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this corollary participates in the propositional\ntheorem-family shared counter. Default true.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "corollary",
+      },
+      "notes": "JATS <statement content-type=\"corollary\">.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<corollary | Every prime greater than 2 is odd.>\n",
+        "layer1_html": "<corollary>Every prime greater than 2 is odd.</corollary>\n",
+      },
+      {
+        "source": "<corollary #cor:bounded>\nAny continuous function on a closed interval is bounded.\n</corollary>\n",
+        "layer1_html": "<corollary id=\"cor:bounded\">Any continuous function on a closed interval is bounded.</corollary>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "corollary.md",
+  });
+
 const _data = Object.freeze({
     "semantic_role": "data",
     "html_output": {
@@ -1921,6 +1975,60 @@ const _dd = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "dd.md",
+  });
+
+const _definition = Object.freeze({
+    "semantic_role": "definition",
+    "html_output": {
+      "element": "definition",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the definition's label.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this definition participates in the definition counter.\n<definition> runs on its own counter (separate from the\npropositional theorem-family counter), matching amsthm's\nconventional \"definition\" theorem-style family. Default true.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "definition",
+      },
+      "notes": "JATS <statement content-type=\"definition\">.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<definition | A *group* is a set with an associative binary operation, identity, and inverses.>\n",
+        "layer1_html": "<definition>A <em>group</em> is a set with an associative binary operation, identity, and inverses.</definition>\n",
+      },
+      {
+        "source": "<definition name=\"Group\" #def:group>\nA *group* is a set $G$ together with a binary operation\n$\\cdot$ satisfying associativity, identity, and inverses.\n</definition>\n",
+        "layer1_html": "<definition id=\"def:group\" data-name=\"Group\">A <em>group</em> is a set $G$ together with a binary operation $\\cdot$ satisfying associativity, identity, and inverses.</definition>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "definition.md",
   });
 
 const _details = Object.freeze({
@@ -2312,6 +2420,60 @@ const _email = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "email.md",
+  });
+
+const _example = Object.freeze({
+    "semantic_role": "example",
+    "html_output": {
+      "element": "example",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the example's label.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this example participates in the example counter.\n<example> runs on its own counter (separate from theorem,\nlemma, definition counters), matching amsthm's conventional\n\"example\" theorem-style family. Default true.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "example",
+      },
+      "notes": "JATS <statement content-type=\"example\">.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<example | The integers under addition form a group.>\n",
+        "layer1_html": "<example>The integers under addition form a group.</example>\n",
+      },
+      {
+        "source": "<example #ex:integers>\nThe integers $\\mathbb{Z}$ under addition form a group: the\noperation is associative, $0$ is the identity, and every\ninteger has an additive inverse.\n</example>\n",
+        "layer1_html": "<example id=\"ex:integers\">The integers $\\mathbb{Z}$ under addition form a group: the operation is associative, $0$ is the identity, and every integer has an additive inverse.</example>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "example.md",
   });
 
 const _figure = Object.freeze({
@@ -2874,6 +3036,61 @@ const _lang = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "lang.md",
+  });
+
+const _lemma = Object.freeze({
+    "semantic_role": "lemma",
+    "html_output": {
+      "element": "lemma",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the lemma's label, parallel to\n<theorem>'s `name` kwarg. Honored by the Phase-2 handler.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this lemma participates in the propositional theorem-\nfamily shared counter. Default true; -numbered suppresses.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "Body content directly (no internal element parts), per the\ntheorem-family convention.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "lemma",
+      },
+      "notes": "JATS <statement content-type=\"lemma\">. The Phase-2 handler\nconstructs <label> and (when `name` is set) <title> at export.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<lemma | Every continuous function on a compact set attains its maximum.>\n",
+        "layer1_html": "<lemma>Every continuous function on a compact set attains its maximum.</lemma>\n",
+      },
+      {
+        "source": "<lemma name=\"Zorn\" #lem:zorn>\nEvery non-empty partially-ordered set in which every chain has\nan upper bound contains a maximal element.\n</lemma>\n",
+        "layer1_html": "<lemma id=\"lem:zorn\" data-name=\"Zorn\">Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</lemma>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "lemma.md",
   });
 
 const _li = Object.freeze({
@@ -3557,6 +3774,117 @@ const _p = Object.freeze({
     "_sourceFile": "p.md",
   });
 
+const _proof = Object.freeze({
+    "semantic_role": "proof",
+    "html_output": {
+      "element": "proof",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix — e.g. \"Proof (of Theorem 1.2)\" or\n\"Proof (sketch)\". Honored by the Phase-2 handler.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Whether this proof is numbered. Default false — proofs are\nconventionally unnumbered (a proof's identity comes from the\ntheorem it proves, not from a counter). An author who wants\nnumbering can opt-in per instance with +numbered.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The proof body — paragraphs, math, lists, etc. The closing QED\nsymbol is rendered by the Phase-2 handler at the end of the\nbody, not authored explicitly.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "proof",
+      },
+      "notes": "JATS <statement content-type=\"proof\">. <proof> is a peer-level\nelement in both JATS and acadamark, not nested inside the\ntheorem it proves.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<theorem | The sum of two even integers is even.>\n\n<proof>\nLet $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is\neven. $\\square$\n</proof>\n",
+        "layer1_html": "<theorem>The sum of two even integers is even.</theorem>\n<proof>Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is even. $\\square$</proof>\n",
+        "notes": "The canonical pattern: <theorem> followed by sibling <proof>.\nThe proof is NOT nested inside the theorem.\n",
+      },
+      {
+        "source": "<proof name=\"of Theorem 1.2\">\nThe argument follows from the preceding lemma.\n</proof>\n",
+        "layer1_html": "<proof data-name=\"of Theorem 1.2\">The argument follows from the preceding lemma.</proof>\n",
+        "notes": "Optional `name` kwarg lets the proof identify what it proves\n(useful when the proof is separated from its theorem by\nintervening text).\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "proof.md",
+  });
+
+const _proposition = Object.freeze({
+    "semantic_role": "proposition",
+    "html_output": {
+      "element": "proposition",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the proposition's label.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this proposition participates in the propositional\ntheorem-family shared counter. Default true.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "proposition",
+      },
+      "notes": "JATS <statement content-type=\"proposition\">.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<proposition | The sum of two even integers is even.>\n",
+        "layer1_html": "<proposition>The sum of two even integers is even.</proposition>\n",
+      },
+      {
+        "source": "<proposition name=\"Cauchy-Schwarz\">\nFor any vectors $u$, $v$ in an inner-product space,\n$|\\langle u, v \\rangle| \\le \\|u\\| \\, \\|v\\|$.\n</proposition>\n",
+        "layer1_html": "<proposition data-name=\"Cauchy-Schwarz\">For any vectors $u$, $v$ in an inner-product space, $|\\langle u, v \\rangle| \\le \\|u\\| \\, \\|v\\|$.</proposition>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "proposition.md",
+  });
+
 const _publication_date = Object.freeze({
     "semantic_role": "publication-date",
     "html_output": {
@@ -3764,6 +4092,60 @@ const _ref = Object.freeze({
       },
     ],
     "_sourceFile": "ref.md",
+  });
+
+const _remark = Object.freeze({
+    "semantic_role": "remark",
+    "html_output": {
+      "element": "remark",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the remark's label. Honored by the\nPhase-2 handler even though <remark> is unnumbered (a named\nremark may render as \"Remark (Name):\" without a number).\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Whether this remark is numbered. Default false — <remark> is\nconventionally unnumbered (the \"remark\" theorem-style family\nin amsthm is unnumbered). An author who wants numbering can\nopt-in per instance with +numbered, but most usage relies on\nthe default.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "remark",
+      },
+      "notes": "JATS <statement content-type=\"remark\">.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<remark | The converse does not hold in general.>\n",
+        "layer1_html": "<remark>The converse does not hold in general.</remark>\n",
+      },
+      {
+        "source": "<remark>\nThe hypothesis of compactness is essential here; without it\nthe conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).\n</remark>\n",
+        "layer1_html": "<remark>The hypothesis of compactness is essential here; without it the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).</remark>\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "remark.md",
   });
 
 const _s = Object.freeze({
@@ -4756,6 +5138,63 @@ const _term = Object.freeze({
     "_sourceFile": "term.md",
   });
 
+const _theorem = Object.freeze({
+    "semantic_role": "theorem",
+    "html_output": {
+      "element": "theorem",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "name": {
+          "maps_to": "data-name",
+          "notes": "Optional name suffix for the theorem's label (the\n\"(Pythagoras)\" half of \"Theorem 1.2 (Pythagoras)\"). Honored\nby the Phase-2 theorem handler at label-rendering time;\nuntil that handler lands, the kwarg flows through to the\nrendered HTML as `data-name=\"...\"` via schema dispatch.\nLaTeX amsthm precedent: `\\begin{theorem}[Pythagoras]`.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this theorem participates in the theorem-family\nshared counter (see \"Numbering\" below). Use +numbered\n(default) to number; -numbered to suppress. Can also be\nwritten as numbered=true / numbered=false.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The theorem's body is paragraphs and inline content directly —\nno internal element parts (no <theorem-statement> wrapper). The\nLaTeX amsthm and JATS prior-art both place body content directly\ninside the theorem container.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "statement",
+      "attributes": {
+        "content-type": "theorem",
+      },
+      "notes": "JATS does not have a dedicated <theorem> element; all theorem-\nfamily elements (theorem, lemma, corollary, proposition,\ndefinition, example, remark, proof) map to <statement> with a\ncontent-type attribute identifying the rhetorical role. JATS\n<statement> contains <label> (the prefix string like\n\"Theorem 1.2:\"), optional <title> (the optional name from the\n`name` kwarg), then <p> paragraphs. The Phase-2 handler\nconstructs the <label> and <title> at export time; this slice\njust records the mapping.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>\n",
+        "layer1_html": "<theorem>If $a^2 + b^2 = c^2$ then the triangle is right-angled.</theorem>\n",
+        "notes": "Short-form with pipe content. The body is parsed normally.\n",
+      },
+      {
+        "source": "<theorem name=\"Pythagoras\" #thm:pyth>\nIf $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$\nis right-angled.\n</theorem>\n",
+        "layer1_html": "<theorem id=\"thm:pyth\" data-name=\"Pythagoras\">If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$ is right-angled.</theorem>\n",
+        "notes": "Long-form with the optional name kwarg. Cross-referenceable\nvia id (the \"thm:\" colon-prefix convention is consistent with\n\"fig:\", \"eqn:\", \"sec:\" elsewhere in acadamark). The name\nkwarg lifts to `data-name`; the Phase-2 handler will render\nit as the \"(Pythagoras)\" suffix to the label \"Theorem N\".\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "theorem.md",
+  });
+
 const _title = Object.freeze({
     "semantic_role": "title",
     "html_output": {
@@ -5033,9 +5472,11 @@ export const VOCABULARY = Object.freeze({
   "code-block": _code_block,
   "code": _code,
   "config": _config,
+  "corollary": _corollary,
   "data": _data,
   "date": _date,
   "dd": _dd,
+  "definition": _definition,
   "details": _details,
   "display-math": _display_math,
   "dl": _dl,
@@ -5044,6 +5485,7 @@ export const VOCABULARY = Object.freeze({
   "editor": _editor,
   "em": _em,
   "email": _email,
+  "example": _example,
   "figure": _figure,
   "glossary-entry": _glossary_entry,
   "glossary": _glossary,
@@ -5055,6 +5497,7 @@ export const VOCABULARY = Object.freeze({
   "kbd": _kbd,
   "keywords": _keywords,
   "lang": _lang,
+  "lemma": _lemma,
   "li": _li,
   "library": _library,
   "license": _license,
@@ -5066,9 +5509,12 @@ export const VOCABULARY = Object.freeze({
   "orcid": _orcid,
   "output": _output,
   "p": _p,
+  "proof": _proof,
+  "proposition": _proposition,
   "publication-date": _publication_date,
   "q": _q,
   "ref": _ref,
+  "remark": _remark,
   "s": _s,
   "samp": _samp,
   "section-subtitle": _section_subtitle,
@@ -5089,6 +5535,7 @@ export const VOCABULARY = Object.freeze({
   "sup": _sup,
   "table": _table,
   "term": _term,
+  "theorem": _theorem,
   "title": _title,
   "u": _u,
   "ul": _ul,

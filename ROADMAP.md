@@ -57,37 +57,49 @@ pickable within the phase.
 
 ## Current position
 
-**In flight:** vocabulary completeness — sub-slice 2 of three (Phase 1
-below). The flat-line of completed work to date is recorded in
-`STATUS.md`.
+**Phase 1 (vocabulary completeness) is closed** as of the deferred-
+vocabulary sub-slice 3 commit (2026-05-27). The alpha-tagged
+vocabulary set has no remaining `[alpha]` gaps. The roadmap moves to
+Phase 2 next — output handlers and DSL surface, including the
+theorem-family handler that now has its Layer 1 vocabulary to operate
+on.
 
-The roadmap's near-term sequence is Phase 1 → Phase 2 → Phase 3 → Phase
-4 → Phase 5, with Phase 6 (the alpha integration check) closing the
+The flat-line of completed work to date is recorded in `STATUS.md`.
+
+The roadmap's near-term sequence is Phase 2 → Phase 3 → Phase 4 →
+Phase 5, with Phase 6 (the alpha integration check) closing the
 milestone. Phase 7 onwards is post-alpha.
 
 ---
 
-## Phase 1 — Vocabulary completeness *(alpha — supports line 1)*
+## Phase 1 — Vocabulary completeness *(alpha — supports line 1)* *(CLOSED)*
 
 Layer 1's vocabulary set must be present and rendering before any
 output-producing arc on top of it (handlers, JATS export, render-mode
-lowering) can be meaningfully built. The deferred-vocabulary item is
+lowering) can be meaningfully built. The deferred-vocabulary item was
 the last gap.
 
-**Items:**
+**Items (all done):**
 
 - **Add deferred vocabulary elements** *(formerly DF-13, DF-14, DF-15,
-  DF-11b)*. Three sub-slices: scalar/inline (sub-slice 1 — done,
-  `13cac93`); structural blocks (sub-slice 2 — in flight); theorem
-  family (sub-slice 3). The theorem-family sub-slice opens a coupling
-  question with Phase 2's theorem handler — see Phase 2.
+  DF-11b)*. Three sub-slices, all shipped:
+  - Sub-slice 1 (scalar/inline) — `13cac93`.
+  - Sub-slice 2 (structural blocks: `<dl>`/`<dt>`/`<dd>`,
+    `<glossary>`/`<glossary-entry>`, `<details>`/`<summary>`) —
+    `c1adfb7`.
+  - Sub-slice 3 (theorem family: `<theorem>`, `<lemma>`, `<corollary>`,
+    `<proposition>`, `<definition>`, `<example>`, `<remark>`, `<proof>`)
+    — 2026-05-27. The matching `<theorem>` handler — numbering, label
+    rendering, QED, optional-name display — is Phase 2 work, decoupled
+    from the vocab entries by ruling.
 - **Add vocabulary entries for `<meta>` allowlist members and
   `<abstract>`** — done, `b3c8a2c`. Listed here for the roadmap
   reader; not an open item.
 
-**Exits:** when all three deferred-vocabulary sub-slices are in,
-`data.js` is regenerated, and the alpha-tagged vocabulary set has no
-remaining `[alpha]` gaps.
+**Exit satisfied:** all three deferred-vocabulary sub-slices are in;
+`data.js` regenerated and committed at each sub-slice; the
+alpha-tagged vocabulary set has no remaining `[alpha]` gaps. The
+phase exits.
 
 ---
 

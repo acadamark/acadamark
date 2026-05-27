@@ -1153,3 +1153,110 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
   remark-acadamark 128/128; acadamark-interpreter 24/24 suites
   (incl. new doc28).
+- **2026-Q2 — deferred-vocabulary sub-slice 3: theorem-family
+  elements shipped (8 entries); "Add deferred vocabulary elements"
+  closed; ROADMAP Phase 1 closed.** The third and final build
+  sub-slice closing the `[alpha]` "Add deferred vocabulary
+  elements" item. Eight Layer 1 vocabulary entries added:
+  - **Propositional theorem family** (4, sharing a counter by
+    convention): `theorem`, `lemma`, `corollary`, `proposition`.
+  - **Own-counter** (2): `definition`, `example` (rhetorically
+    distinct from the propositional family).
+  - **Unnumbered** (2): `remark`, `proof`.
+  All eight map to JATS `<statement content-type="X">` — JATS does
+  not have separate theorem-family elements; the eight share one
+  element with a discriminating attribute, settled context recorded
+  in each entry.
+  Settled context, recorded in each entry per the slice prompt's
+  fixed input (no design decisions taken in the slice):
+  - **No internal element parts** — body content is paragraphs and
+    inline directly, no `<theorem-statement>` / `<theorem-body>`
+    wrapper. Resolves the earlier speculative claim in
+    `layer1-naming.md` ("internal parts likely follow the
+    container-role rule"); LaTeX amsthm and JATS both put body
+    content directly inside the container, and acadamark follows.
+    `layer1-naming.md` L142 rewritten in this slice to record the
+    settled answer.
+  - **`<proof>` is a peer, not a child** of theorem-like statements.
+    Matches LaTeX (`\begin{proof}` is independent of any theorem
+    environment) and JATS (`<statement content-type="proof">` is a
+    peer statement). Acadamark follows.
+  - **Optional `name` kwarg** per element — the "(Pythagoras)" suffix
+    pattern. Recorded under each entry's `acadamark_attributes.kwargs`
+    with `maps_to: data-name`. The schema dispatch flows the kwarg
+    through to the rendered HTML; the Phase-2 handler will use it for
+    the visible label.
+  - **Numbering convention** per element — `booleans.numbered` with
+    the right `default:` value. The four propositional members share
+    a counter by convention; that shared-counter wiring is recorded
+    in prose only (the vocab schema has no mechanism for declaring
+    "shares a counter with these other elements" — see the Step 2
+    escape-hatch finding below).
+  **Two escape-hatch findings, recorded honestly:**
+  - *No schema mechanism for shared-counter declarations.* The vocab
+    schema uses `booleans.numbered` per element; the actual counter
+    sharing is hardcoded in `numbering.js`'s `NUMBERED_TAGNAMES`. No
+    field in the entry schema lets one element declare "shares a
+    counter with these others." Per the slice prompt's escape hatch,
+    the four propositional elements record `numbered: true` (without
+    a shared declaration) and the convention is in their NOTES prose
+    only. The Phase-2 handler will implement the shared-counter wiring
+    by extending `NUMBERED_TAGNAMES` (or its replacement).
+  - *Pre-existing `<theorem>` DSL_REGISTRY entry at line 45 points at
+    a non-existent dedicated handler.* The line-45 entry
+    `['theorem', 'theorem']` predates this slice; it makes every
+    `<theorem>` node `isOpaqueContent: true`, which the schema
+    dispatch drops at convert-content time. Per the slice prompt's
+    "don't fix existing entries" rule, this slice left line 45 alone
+    and added the other seven theorem-family elements to
+    DSL_REGISTRY's structural-long-form section with the `'default'`
+    handler (recursive content parse). Result: the seven new
+    elements render with full body content via long-form authoring;
+    `<theorem>` renders as the real custom HTML element with its
+    attributes intact (id, data-name) but **empty body**. The
+    fixture asserts the `<theorem>` element renders and that
+    `data-name="Pythagoras"` flows through, but does not assert the
+    body content for `<theorem>`. The line-45 entry will be
+    reconciled when the Phase-2 theorem handler ships (either
+    `'theorem'` and the handler consumes opaque content, or
+    `'default'` and the handler operates on the parsed tree). Both
+    the DSL_REGISTRY file comment and the slice's STATUS milestone
+    record this; the L60-67 comment in dsl-registry.js (the
+    "theorem-family omitted pending vocabulary specification" note)
+    was updated to reflect the new state.
+  Seven theorem-family elements (sans `<theorem>`) added to
+  `DSL_REGISTRY` for long-form-eligibility — same judgment call as
+  sub-slice 2 (registry data, not parser code; required for the
+  entries to be authorable in their natural long-form). Without it,
+  the entries would be hollow.
+  Vocabulary `data.js` regenerated (90 → 98 primary entries; 99
+  with the `quote` alias). Pretest staleness guard passes. Test
+  count assertion bumped 91 → 99.
+  New integration fixture
+  `document-29-deferred-vocab-sub3.acm` + `integration doc29`
+  exercises all eight elements end-to-end: a `<theorem>` (short-form
+  with the opacity workaround) + `<proof>` peer + `<lemma>` /
+  `<corollary>` / `<proposition>` propositional siblings + `<definition>`
+  / `<example>` / `<remark>` rhetorical-family elements. Assertions:
+  each renders as a real element; the `name` kwarg flows through to
+  `data-name` on `<theorem>`, `<lemma>`, `<proposition>`,
+  `<definition>`; no `data-acadamark-unknown` span for any of the
+  eight. Numbering output is not asserted (Phase-2 work).
+  **No existing snapshot changed** — the eight entries are net-new
+  vocabulary; no prior fixture authored any of these elements.
+  **Closures:**
+  - The `[alpha]` "Add deferred vocabulary elements" backlog item
+    closes. Removed from both backlog views (checklist + detailed
+    entry).
+  - ROADMAP Phase 1 (vocabulary completeness) closes. Phase 1 was
+    the deferred-vocabulary item + the already-done `<meta>`
+    allowlist work; both are done. ROADMAP updated to note Phase 1
+    is CLOSED and the roadmap moves to Phase 2 next (output
+    handlers and DSL surface, including the theorem-family handler
+    that now has its Layer 1 vocabulary to operate on).
+  - The line-142 speculative theorem-family claim in
+    `notes/specs/layer1-naming.md` retracted; the settled answer
+    (no internal parts; `<proof>` is a peer) recorded in its place.
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc29).

@@ -61,10 +61,12 @@ export const DSL_REGISTRY = new Map([
   // level uses (e.g. <figure src=x.jpg>) that would produce errors as long-form
   // openers. Add figure here once the design for long-form figure is settled.
   //
-  // NOTE: theorem-family elements (proof, lemma, corollary, definition,
-  // example) omitted pending Layer 1 vocabulary specification for them
-  // (see SPEC.md "Theorem-family"). Add them once their element specs are
-  // written.
+  // NOTE: theorem-family elements (proof, lemma, corollary, proposition,
+  // definition, example, remark) shipped in deferred-vocabulary sub-slice 3
+  // (2026-05-27) — see the "Theorem family (sans <theorem>)" section below.
+  // <theorem> itself stays on its existing dedicated-handler entry above
+  // (placeholder pointing at a non-existent handler); reconciled when the
+  // Phase-2 theorem handler ships.
   //
   // Future migration to packages/layer1-vocabulary/ is planned. See
   // notes/specs/shorthand-syntax.md § "DSL tag registry".
@@ -98,6 +100,42 @@ export const DSL_REGISTRY = new Map([
   ['dl',         'default'],
   ['glossary',   'default'],
   ['details',    'default'],
+
+  // Theorem family (sans <theorem>) — added in deferred-vocabulary
+  // sub-slice 3 (2026-05-27). Seven entries: lemma, corollary,
+  // proposition, definition, example, remark, proof. All are
+  // structural long-form containers (their natural authoring is
+  // `<lemma>…</lemma>` etc., body content placed directly with no
+  // internal wrapper element per the LaTeX amsthm and JATS prior
+  // art). Long-form-eligibility registration is the same pattern
+  // <aside>/<note>/<dl> follow; the 'default' handler means content
+  // is recursively re-parsed through remark.
+  //
+  // <theorem> is intentionally NOT registered here — it has a
+  // pre-existing entry above (line ~45, ['theorem', 'theorem']) that
+  // points at a non-existent dedicated handler. Sub-slice 3 left
+  // that entry alone per the slice prompt's "don't fix existing
+  // entries" rule and recorded the situation as a finding: with that
+  // registration <theorem>'s body content is opaque (no recursive
+  // parse), so authored markdown / nested tags inside <theorem> stay
+  // as raw text in the <theorem> element. When the Phase-2 theorem
+  // handler ships, the line-45 entry can either stay 'theorem' (and
+  // the handler will operate on opaque content) or migrate to
+  // 'default' (and the handler will operate on the parsed tree) —
+  // either decision aligns the seven sibling registrations with
+  // <theorem>'s.
+  //
+  // The matching <theorem>/<lemma>/etc. handler — numbering, label
+  // rendering, QED, optional-name display — is Phase 2 work; until
+  // it lands these tags render via schema dispatch as real custom
+  // HTML elements with the body content shape described above.
+  ['lemma',      'default'],
+  ['corollary',  'default'],
+  ['proposition','default'],
+  ['definition', 'default'],
+  ['example',    'default'],
+  ['remark',     'default'],
+  ['proof',      'default'],
 
   // ── Metadata container ───────────────────────────────────────────────────
   // <meta> was previously registered here as ['meta', 'default'] for its
