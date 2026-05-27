@@ -75,7 +75,7 @@ Two terms are used throughout this document and the project. *Rich text* is text
 
 The Layer 1 specification (see `notes/`) defines:
 
-- **Structural elements.** Standard HTML5 (`article`, `section`, `figure`, `aside`, `nav`) wherever it suffices. Custom elements (`<sub-section>`, `<theorem>`, `<proof>`, etc.) where HTML5 is insufficient, using the native custom-elements mechanism.
+- **Structural elements.** Standard HTML5 (`article`, `section`, `aside`, `nav`) wherever it suffices. Custom elements (`<sub-section>`, `<fig>`, `<theorem>`, `<proof>`, etc.) where HTML5 is insufficient, using the native custom-elements mechanism. (HTML5's `<figure>` is accepted as an authoring alias for canonical `<fig>` — see "Frameable elements" below.)
 
 - **Semantic attributes.** A defined vocabulary of `data-*` attributes for academic metadata: `data-cite-key`, `data-figure-number`, `data-ref-target`, `data-numbering-style`, etc. Standard `id` and `class` retain their normal meanings.
 
@@ -110,6 +110,16 @@ What acadamark does *not* do, and where it differs from JATS:
 - JATS rewards completeness; acadamark rewards getting started. Required JATS metadata can be filled with defaults or generated at export time.
 
 Acadamark stays a small subset of JATS in vocabulary terms — but a subset that compiles cleanly into JATS for downstream use.
+
+## The vocabulary-boundary principle
+
+The Layer 1 vocabulary holds *document ideas* — JATS-shaped, semantic, archival. It does **not** hold web-presentation artifacts. The test for whether something belongs in the vocabulary is one question: *is it a property of the document, or of how some channel happens to display the document?* If it is a property of the document, it is a Layer 1 candidate. If it is a property of a display channel — a thumbnail for social-media sharing, a favicon, an Open Graph image, a per-platform render hint — it does not belong in Layer 1 even if a renderer would find it useful.
+
+The principle keeps Layer 1 small and JATS-shaped. The vocabulary's job is to be the archival representation of the document; presentation artifacts that decorate one delivery channel are correctly held elsewhere (build configuration, theme assets, per-target metadata files), not in the source-of-truth vocabulary.
+
+**Worked example:** `<thumbnail>` was considered during the deferred-vocabulary scoping and ruled out under this principle. A thumbnail image used for social-media link previews is a property of how one channel (a social platform's link unfurler) displays a pointer *to* the document; it is not a property of the document itself. The same author considering "what would my document need?" does not name a thumbnail; only the consideration "what does Twitter need to make this link pretty?" produces one. That distinction is the principle in action.
+
+The principle does not prevent presentation concerns from being addressed by acadamark — they are addressed by the display ladder (next section), by theme CSS, and by per-target export configuration. It only governs the *vocabulary*: what gets a Layer 1 entry, and what does not.
 
 ## Layer 1 is canonical; display is a downstream ladder
 
@@ -214,7 +224,7 @@ The two registers mix freely. Use markdown for prose, drop into tag shorthand wh
 
 Standard markdown paragraph with *emphasis* and a [link](url).
 
-<figure #fig:elephant align=right src=elephant.jpg | An adult elephant.>
+<fig #fig:elephant align=right source=elephant.jpg | An adult elephant.>
 
 More markdown prose, with a citation <cite @smith2023>.
 ```
@@ -225,7 +235,7 @@ The translation rule is strict: any acadamark document maps to exactly one Layer
 
 The layered model has more names than the two-layer summary suggests, because the shorthand register itself splits into a strict subset and a convenience-extended superset. The terms below are the names used consistently across the spec set and the backlog.
 
-- **Layer 1 (custom-HTML, or semantic HTML).** The canonical, archival representation of a document: the JATS-aligned vocabulary of elements (`<article>`, `<section>`, `<figure>`, `<cite>`, `<ref>`, `<note>`, etc.) catalogued in `packages/layer1-vocabulary/elements/`. A Layer 1 document is the source of truth; every other authoring form reduces to one. Two documents that reduce to the same Layer 1 are equivalent.
+- **Layer 1 (custom-HTML, or semantic HTML).** The canonical, archival representation of a document: the JATS-aligned vocabulary of elements (`<article>`, `<section>`, `<fig>`, `<cite>`, `<ref>`, `<note>`, etc.) catalogued in `packages/layer1-vocabulary/elements/`. A Layer 1 document is the source of truth; every other authoring form reduces to one. Two documents that reduce to the same Layer 1 are equivalent.
 
 - **Canonical acadamark.** The lossless shorthand register — the tag form `<tag #id .class attr=value | content>` and the small set of sigil shorthands defined as canonical (`<#>` / `<##>` / `<###>` for sections; `<$>` / `<$$>` for math; the code-fence sigils). Every canonical-acadamark construct round-trips to and from Layer 1 without loss. The translation is bidirectional; either direction recovers the other.
 
@@ -298,6 +308,64 @@ The positioning rule: apparatus tags belong at the **document edges**, not in th
 The rule is enforced today as a warning, not a hard error: a misplaced apparatus tag does not fail rendering. Hardening to error-level enforcement is a separate later decision.
 
 Apparatus tags also have a coupled interface principle. Each apparatus tag can be authored two equivalent ways: with **kwargs** for scalar values (`<meta title="X" author="Y">`) or with **child tags** for structured values (`<meta><title>X</title><author>Y</author></meta>`). The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag allowlist (`META_KWARGS` for `<meta>`; an analogous `CONFIG_KWARGS` for `<config>`); unknown kwargs are dropped with informative diagnostics. A kwarg on the wrong apparatus tag — e.g. `<config title=…>` — additionally gets a "did you mean `<meta>`?" misuse hint, and symmetrically for `<meta citation-style=…>`. Both forms are valid authoring; both reduce to the same canonical shape; the lift is the same single-gate normalization the architecture uses for every other authored form.
+
+## Structured-data-container tags
+
+The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which the apparatus tags `<meta>` and `<config>` are the first members and `<author>` is the next.
+
+A structured-data-container tag is one whose body is *structured acadamark data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside acadamark (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds acadamark's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different, and the machinery they share is the kwargs-or-child-tags lift, not the foreign-language dispatch.
+
+The interface for every structured-data container is uniform: the tag accepts kwargs for scalar fields *and* child tags for the same fields in their structured form; the gate's lift turns the kwarg form into the canonical child-tag form per a per-tag allowlist; the canonical Layer 1 shape always carries child tags. This is the same single-gate normalization the architecture uses for every other authored form.
+
+**`<author>` is a structured-data-container tag**, parallel to `<meta>`. Its allowlisted scalar fields lift to child tags: `name`, `affiliation`, `orcid`, `email`, and the `+corresponding` boolean (the `corresponding=true` form lifts to a `+corresponding` flag on the canonical node). Authored kwarg-form:
+
+```
+<author name="Jane Goodall" affiliation="Cambridge University" orcid=0000-0001-2345-6789 +corresponding>
+```
+
+Authored child-tag form (equivalent after lift):
+
+```
+<author>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+</author>
+```
+
+Both reduce to the same canonical Layer 1 shape. Multiple authors are sibling `<author>` elements inside `<meta>`.
+
+The `<author>` structured-interface work is alpha-scope — `<author>` carrying structured author data is a Layer 1 vocabulary obligation the alpha release ships, not a JATS-export-boundary patch. The implementation slice that builds this interface is filed in the backlog as a sibling of the `<meta>` apparatus reconciliation (`578d6f0`) and absorbs the missing `<name>` vocabulary entry that the deferred-vocab sub-slice 1 surfaced as a follow-on.
+
+(`<author>` is not itself document-apparatus in the apparatus-positioning sense — it lives as a child of `<meta>`, not at the document edges — so it is not subject to the apparatus-positioning rule. It shares the interface principle, not the positioning principle.)
+
+## Frameable elements: a shared capability
+
+A small group of Layer 1 elements share a common capability: they interrupt the text flow, may carry an optional outline box, an optional title (rendered at the top), and an optional caption (rendered below). Numbering — "Fig. 3", "Table 2" — is folded into the caption-and-title rendering; it is *not* a separate authored field or attribute. We call this capability **frameable**.
+
+Frameable is a **capability shared by several distinct elements**, not an umbrella element that wraps them. Every frameable element carries the *identical* attribute set and the *identical* behavior — title, caption, border, numbering — because the capability is shared. Authoring a frameable construct does not nest an inner content element inside an outer wrapper; the frameable element *is* the construct.
+
+### Members
+
+The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; acadamark does not police it (the same posture acadamark takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`).
+
+### `<fig>` is the sole graphical element
+
+Every image in Layer 1 is a `<fig>`. There is **no** `<figure>`, `<img>`, or `<picture>` as a distinct Layer 1 element. `<fig>` carries `source`, `title`, `caption`, `border`, and `alt-text`. A caption on a `<fig>` is optional; there is no separate "unwrapped image" element for the uncaptioned case — an uncaptioned image is a `<fig>` with no caption.
+
+The canonical name is `<fig>` (the JATS name — keeping Layer 1 JATS-shaped and the export close to pass-through). `<figure>` is **accepted as an authoring alias** for `<fig>`, normalized to canonical `<fig>` at the lift gate. The alias is allowed because `figure` is the one frameable member with a genuine, universal abbreviation — the `fig`↔`figure` pair is a real and bounded alias case, not arbitrary; allowing it does not open a general aliasing precedent for other tags.
+
+### What this supersedes
+
+This design **replaces** the prior `<figure>`-as-umbrella model, in which `<figure>` was a single element that wrapped an inner content element (an `<img>` generated from a `src` kwarg, or an author-placed `<table>` / `<code>` / `<equation>`) plus a `<figcaption>`. Under the new design there is no umbrella: `<fig>` is its own first-class element for graphical content; `<table>`/`<code>`/`<svg>`/`<mermaid>` are their own first-class elements for their own content; the frameable capability is shared across all of them at the same level. A consequence: removing the umbrella also removes the layer of tag nesting the umbrella enforced (`<figure type=table | <table>…</table>>` collapses to a frameable `<table>` directly).
+
+The implementation work — updating the `figure.md`, `img.md`, `table.md`, `code.md` vocabulary entries; refactoring the figure handler; updating the gate's bare-markdown-image lift to emit `<fig>` rather than `<img>`; auditing caption handling, cross-referencing, and numbering against the umbrella assumption — is scoped as a **Phase 0** (read-only investigation) followed by an implementation slice. Both are filed in the backlog as `[alpha]` items. The Phase 0 is a prerequisite to the implementation slice; this design section is its design baseline.
+
+### Open sub-questions within this design
+
+- **The exact membership list of the frameable class.** `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, `<frame>` are settled; the full enumeration of DSL-registry block elements that take the frameable capability is to be confirmed by the Phase 0 (the Phase 0 enumerates current DSL-registry members and rules each one frameable or not).
+
+The two earlier-open questions inside this design — the existence of a generic `<frame>` and the `figure`/`fig`/`img`/`picture` question — are **resolved** by this design (recorded above as decided). They are not re-filed as open.
 
 ## Multi-paragraph tag content; unclosed tags terminate at EOF
 

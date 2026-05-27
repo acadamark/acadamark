@@ -895,3 +895,102 @@ that). One line gets added every few months, not every slice.
   sub-slice 3 (theorem family) follow. Tests: layer1-vocabulary
   52/52; acadamark-core 50/50; remark-acadamark 128/128;
   acadamark-interpreter 24/24 suites.
+- **2026-Q2 — design decisions recorded; two earlier rulings
+  superseded.** A recording slice (no product code) wrote down a
+  batch of settled design decisions into `DESIGN.md` and the backlog,
+  and retired two earlier rulings these decisions replace.
+  **Added to `DESIGN.md`** as three new sections:
+  (i) **the vocabulary-boundary principle** — the Layer 1 vocabulary
+  holds *document ideas* (JATS-shaped, semantic, archival), not
+  web-presentation artifacts. Worked example: `<thumbnail>` (ruled
+  out under this principle — a social-sharing image is a property of
+  one delivery channel, not of the document).
+  (ii) **frameable elements: a shared capability** — frameable is a
+  *uniform capability* (optional outline box, optional title,
+  optional caption, numbering folded into rendering) shared across
+  several distinct Layer 1 elements (`<fig>`, `<table>`, `<code>`,
+  `<svg>`, `<mermaid>`, the other DSL-registry block elements, and a
+  generic `<frame>`), **not** an umbrella tag wrapping inner content.
+  `<fig>` is the sole graphical element (no separate `<img>` /
+  `<picture>`); `<figure>` is accepted as an authoring alias for
+  canonical `<fig>`, normalized at the lift gate. The two
+  earlier-open sub-questions (the generic `<frame>`; the
+  `figure`/`fig`/`img`/`picture` question) are resolved by this
+  design; one sub-question (the exact membership list of the
+  frameable class) remains open and is recorded as such.
+  (iii) **structured-data-container tags** — generalizes the
+  apparatus-tag-positioning section's kwargs-or-child-tags interface
+  principle into an explicit category. `<author>` is named as a
+  structured-data-container parallel to `<meta>`; its alpha-scope
+  interface accepts both forms, the gate lifts kwargs to canonical
+  child tags, and Layer 1 `<author>` carries child tags
+  (`<name>`/`<affiliation>`/`<orcid>`/`<email>`) plus the
+  `+corresponding` boolean.
+  **Two supersession searches performed:**
+  - *The `<figure>`-as-umbrella model.* Located in DESIGN.md as
+    scattered references (L78 HTML5-element list, L217 two-register
+    example, L228 canonical-vocabulary illustration) and most
+    explicitly in the `figure.md` vocab entry. The three DESIGN.md
+    mentions were rewritten: removed `figure` from the HTML5-native
+    list (since `<fig>` is canonical and not HTML5-native, `<figure>`
+    is now just an alias); rewrote the example to use `<fig>`;
+    rewrote the canonical-vocabulary list to name `<fig>`. The
+    vocab-entry rewrite (`figure.md`, `img.md`, `table.md`,
+    `code.md`) is *implementation work* — out of scope for a
+    recording slice; covered by the new frameable-class Phase 0 +
+    implementation slice filed in the backlog. Result: no DESIGN.md
+    text now describes the umbrella model as current.
+  - *The "author is flat for the alpha" ruling.* Located in exactly
+    one place: the `578d6f0` apparatus-tag-reconciliation milestone
+    in STATUS.md (one line: "`author` is flat per the ruling;
+    structured author data is attempted at the JATS export
+    boundary"). The ruling was never propagated into any current
+    spec — not into DESIGN.md, BACKLOG-ROADMAP.md, principles.md,
+    idioms.md, layer1-naming.md, or the `author.md` vocab entry. The
+    STATUS milestone is append-only history (state-at-that-time) and
+    is *not rewritten* by this slice; the supersession is recorded
+    by the new DESIGN.md "Structured-data-container tags" section and
+    by this milestone. Result: no current live spec text carries the
+    old ruling; future readers reading the apparatus-tag-reconciliation
+    milestone will see the original ruling as part of that historical
+    record but will reach the superseding decision via DESIGN.md and
+    this milestone.
+    *Two live-spec/code carriers of the old ruling were surfaced by
+    the supersession search and could not be retired under this
+    slice's no-product-code constraint:* (a)
+    `packages/layer1-vocabulary/elements/meta.md` L267
+    (vocab spec: "`<author>` — author (a single flat value per
+    `<author>`) … Structured author data … is attempted at the JATS
+    export boundary"); (b)
+    `packages/acadamark-interpreter/src/lib/apparatus-allowlists.js`
+    L20-29 (code comment: "`author` is FLAT … structured author data
+    is attempted at the JATS export boundary, not carried in the
+    authoring surface"). Both are filed into the new `<author>`
+    structured-interface reconciliation backlog item as cleanup the
+    implementation slice must perform — recorded there as the
+    "Cleanup the slice must also do" subsection of the item's
+    detailed entry.
+  **Backlog corrections (deferred-vocabulary item):**
+  `<corresponding>` and `<short-title>` were originally enumerated
+  among the deferred-vocab item's elements; both are **ruled kwargs,
+  not elements**. `<corresponding>` is `+corresponding` on
+  `<author>`, folded into the new `<author>` structured-interface
+  reconciliation item (below). `<short-title>` is `short=` on
+  `<title>`, filed as a small `[alpha]` item. `<thumbnail>` (also
+  originally listed) is dropped entirely per the new
+  vocabulary-boundary principle.
+  **Two new `[alpha]` backlog items filed** (not implemented, only
+  filed): (a) **frameable-class Phase 0** — read-only investigation
+  mapping every site in the code that assumes the `<figure>`-umbrella
+  model; prerequisite to the implementation slice; coupled to the
+  existing AUD-14 caption-as-content item via reciprocal
+  cross-references. (b) **`<author>` structured-interface
+  reconciliation** — implementation slice parallel to `578d6f0`;
+  absorbs the missing `<name>` vocabulary entry that the
+  deferred-vocab sub-slice 1 milestone surfaced as a follow-on. One
+  small `[alpha]` item also filed: (c) `<title> short=` kwarg.
+  **No product code changed.** All writes confined to `DESIGN.md`,
+  `BACKLOG-ROADMAP.md`, and `STATUS.md`. The two superseded rulings
+  are searched for and confirmed retired in all live spec surfaces;
+  the only remaining mention of each is in append-only history
+  (STATUS milestones), which is the correct location for them.

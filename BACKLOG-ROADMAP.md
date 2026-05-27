@@ -172,6 +172,9 @@ the current code and all confirmed closed (see the STATUS milestone).
   DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(`formerly AUD-25`)*
 - [ ] **Add integration test and snapshot for `document-9-demo`**
   `[tests/build]` `[alpha]` *(`formerly GAP-9`)*
+- [ ] **Add `short=` kwarg on `<title>`** `[vocab]` `[alpha]`
+  — small kwarg addition (ruled out of the deferred-vocabulary item as
+  a kwarg, not an element)
 
 #### Planned work
 
@@ -183,7 +186,24 @@ the current code and all confirmed closed (see the STATUS milestone).
   `[post-alpha]` *(`formerly DF-5`)*
 - [ ] **Support caption-as-content for `<table>`, `<figure>`, similar
   (DD-1 / DD-2 implementation)** `[cross-cutting]` `[alpha]`
-  *(`formerly AUD-14`)*
+  — coupled to the frameable-class Phase 0 below, which audits every
+  caption / cross-reference / numbering site against the umbrella
+  assumption *(`formerly AUD-14`)*
+- [ ] **Frameable-class Phase 0** `[cross-cutting]` `[alpha]`
+  — read-only investigation mapping every site in the code that
+  assumes the `<figure>`-umbrella model (caption handling,
+  cross-referencing, numbering, the DD-1/DD-2 caption-as-content
+  item). Prerequisite to the frameable-class implementation slice.
+  Design baseline: `DESIGN.md` §"Frameable elements: a shared
+  capability."
+- [ ] **`<author>` structured-interface reconciliation** `[vocab]`
+  `[alpha]` — implementation slice parallel to the `<meta>`
+  apparatus-tag reconciliation (`578d6f0`). Gives `<author>` the
+  kwargs-or-child-tags lift, the `+corresponding` boolean kwarg, and
+  child elements (`<name>`, `<affiliation>`, `<orcid>`, `<email>`).
+  Absorbs the **missing `<name>` vocabulary entry** surfaced as a
+  finding in the deferred-vocab sub-slice 1 milestone. Design baseline:
+  `DESIGN.md` §"Structured-data-container tags."
 
 #### Discussions
 
@@ -451,7 +471,7 @@ the sibling of DF-11a.) *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
 
 **Sub-slice 3 remaining:** theorem family — `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` (DF-11b — vocabulary half of the theorem cluster; couples with the DF-11a handlers item, so vocab lands first, handlers follow).
 
-The original `<keywords>` and the rich-author-metadata kwargs (`<doi>`, `<license>`, `<lang>`, `<version>`, `<keywords>`) shipped earlier (2026-05-25 apparatus-tag reconciliation follow-on). Two of the survey-absorbed elements — `<corresponding>` and `<short-title>` — were ruled to be **kwargs**, not elements (`+corresponding` boolean on `<author>`; `short=` kwarg on `<title>`); their implementation is separate bookkeeping. `<thumbnail>` was dropped entirely (a web-presentation artifact, not a document element).
+The original `<keywords>` and the rich-author-metadata kwargs (`<doi>`, `<license>`, `<lang>`, `<version>`, `<keywords>`) shipped earlier (2026-05-25 apparatus-tag reconciliation follow-on). Three survey-absorbed elements were **ruled out as elements**: `<corresponding>` is a kwarg (`+corresponding` boolean on `<author>`), folded into the **`<author>` structured-interface reconciliation** item filed under Planned work below; `<short-title>` is a kwarg (`short=` on `<title>`), filed as the small **`<title> short=` kwarg** item under Enhancements below; `<thumbnail>` is dropped entirely per `DESIGN.md` §"The vocabulary-boundary principle" (a thumbnail is a web-presentation artifact for one delivery channel, not a property of the document).
 
 The remaining sub-slices (2 + 3) keep this item open until sub-slice 3 completes.
 
@@ -465,13 +485,25 @@ shape, same batch:
   pipe-content of `<details>` becomes `<summary>`, body becomes the
   expandable content).
 - **Rich author metadata**: sub-elements within `<author>` —
-  `<affiliation>`, `<orcid>`, `<email>`, `<corresponding>`
-  (structured author info for journal venues and JATS export).
-  Structurally similar to `<bib-entry>`.
+  `<affiliation>`, `<orcid>`, `<email>` (structured author info for
+  journal venues and JATS export). Structurally similar to
+  `<bib-entry>`. Note: `<corresponding>` was originally listed here
+  and is **ruled a kwarg, not an element** — `+corresponding`
+  boolean on `<author>` (already present on `<author>`); the
+  structured-author interface (kwargs-or-child-tags lift parallel to
+  `<meta>`) is filed separately as the **`<author>` structured-interface
+  reconciliation** item under Planned work below, which absorbs the
+  missing `<name>` vocabulary entry and the `+corresponding` kwarg work.
 - **Document-level metadata elements**: `<license>` (SPDX code),
-  `<doi>`, `<short-title>` (or `short` kwarg on `<title>`),
-  `<subject>` (document classifier), `<thumbnail>` (image for social
-  sharing). Each is a small addition to `<meta>`'s allowed children.
+  `<doi>`, `<subject>` (document classifier). Each is a small addition
+  to `<meta>`'s allowed children. Two originally-listed members are
+  **ruled out**: `<short-title>` is a kwarg, not an element —
+  `short=` kwarg on `<title>`, filed as a small `[alpha]` item
+  (the `<title> short=` kwarg) under Enhancements below; `<thumbnail>`
+  is dropped entirely under the vocabulary-boundary principle
+  (`DESIGN.md` §"The vocabulary-boundary principle") — a thumbnail is
+  a web-presentation artifact for one delivery channel, not a property
+  of the document.
 
 *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
 
@@ -524,6 +556,17 @@ Fix path: run `render-fixtures.js`, generate
 Severity: medium — the dark surface area covers the full pipeline in
 combination. *(`formerly GAP-9`)*
 
+**Add `short=` kwarg on `<title>`** `[vocab]` `[alpha]`. Small kwarg
+addition. `<short-title>` was originally enumerated as an element in
+the deferred-vocabulary cluster; ruled a kwarg, not an element, in the
+2026-05-26 design-recording slice. The work: extend `<title>`'s vocab
+entry with a `short=` kwarg that maps to `data-short-title` (or
+equivalent JATS-shaped attribute on Layer 1 `<title>`), with the JATS
+counterpart `<alt-title alt-title-type="short">`. One vocab entry edit,
+one regenerated `data.js`, fixture coverage. Filed at small-`[alpha]`
+size because it ships in a single contained slice and is part of the
+alpha-required Layer 1 vocabulary obligation.
+
 ### Planned work
 
 **Implement strict mode (disable markdown idioms)** `[parser]` `[post-alpha]`.
@@ -563,8 +606,90 @@ architectural options identified at filing:
 Tied to design directions DD-1 ("content gets parsed; arguments
 don't") and DD-2 ("tags with caption-like content support two
 equivalent forms"). When scoped, follow the design-directions
-framing. Severity: medium-high — affects real authoring need
+framing. **Coupled to the frameable-class Phase 0 below** — the
+Phase 0 audits caption / cross-reference / numbering sites against
+the prior `<figure>`-umbrella assumption, which is the same surface
+this item touches. The two will likely be scoped together when work
+begins. Severity: medium-high — affects real authoring need
 (captions with citations). *(`formerly AUD-14`)*
+
+**Frameable-class Phase 0** `[cross-cutting]` `[alpha]`. Read-only
+investigation. Maps every site in the code that today assumes the
+`<figure>`-as-umbrella model — the model in which `<figure>` was a
+single wrapping element that contained an inner content element
+(`<img>` from a `src` kwarg, or an author-placed `<table>`/`<code>`/
+`<equation>`) plus a `<figcaption>`. The new design (recorded in
+`DESIGN.md` §"Frameable elements: a shared capability") supersedes
+the umbrella: frameable is a uniform capability shared across `<fig>`,
+`<table>`, `<code>`, `<svg>`, `<mermaid>`, the other DSL-registry
+block elements, and a generic `<frame>`; `<fig>` is the sole
+graphical element (no separate `<img>`/`<picture>`); `<figure>` is
+the authoring alias for canonical `<fig>`.
+
+The Phase 0 catalogs: every reference to `<figure>` in product code
+and vocabulary entries; every caption-handling site (the figure
+handler at `packages/acadamark-interpreter/src/handlers/figure.js`;
+the table handler; any inline-code caption surface); every
+cross-reference site that knows about figure ids vs other ids; the
+numbering pipeline's handling of "figures" as a category vs the
+per-frameable-tag numbering domains; the gate's bare-markdown-image
+lift (today emits `<img>`, must emit `<fig>` in the new design); the
+existing `figure.md` / `img.md` / `table.md` / `code.md` vocab entries
+and the rewrites each needs; the DD-1 / DD-2 caption-as-content
+backlog item (AUD-14 above) which overlaps this surface and is
+explicitly coupled. Output: a recommended-scope verdict naming the
+implementation slices that follow.
+
+Prerequisite to the frameable-class implementation slice. **Do not
+implement during Phase 0 — read-only, per the standard Phase 0
+contract.** One open sub-question recorded inside the design (the
+exact membership list of the frameable class) is one of the items the
+Phase 0 confirms by enumerating current DSL-registry members.
+
+**`<author>` structured-interface reconciliation** `[vocab]` `[alpha]`.
+Implementation slice parallel to the `<meta>` apparatus-tag
+reconciliation (`578d6f0`). `<author>` is a structured-data-container
+tag (per `DESIGN.md` §"Structured-data-container tags") — it accepts
+both kwarg form (`<author name="…" affiliation="…" orcid=… +corresponding>`)
+and child-tag form (`<author><name | …><affiliation | …>…</author>`);
+the gate's lift normalizes the kwarg form to the canonical child-tag
+form per a per-tag allowlist.
+
+The slice's work: define the `<author>` allowlist (the slice prompt
+names `name`, `affiliation`, `orcid`, `email`, and the
+`+corresponding` boolean); add the per-tag lift rule to the
+normalize-to-canonical gate; rewrite the `author.md` vocab entry to
+match (today's entry documents `affiliation`/`orcid`/`email`/`corresponding`
+as `data-*` kwargs, which is the pre-reconciliation surface); add
+`<author>` to `DSL_REGISTRY` so its long-form child-tag content is
+parsed recursively (the deferred-vocab sub-slice 1 milestone surfaced
+that `<author>` is not in `DSL_REGISTRY` today, so the child-tag form
+doesn't parse as long-form). **Absorbs the missing `<name>`
+vocabulary entry** — `<name>` is an `<author>` child element and
+belongs with this work, not loosely with another vocab sub-slice (the
+deferred-vocab sub-slice 1 milestone records `<name>` as a finding
+for this item).
+
+The slice is alpha-scope because structured author data is a Layer 1
+vocabulary obligation the alpha release ships (it is not a JATS-export
+patch). It supersedes the "author is flat for the alpha" ruling
+recorded in the `578d6f0` apparatus-tag reconciliation milestone
+(STATUS.md history) — see the 2026-Q2 "design decisions recorded"
+milestone in STATUS.md for the supersession trail.
+
+**Cleanup the slice must also do** (live carriers of the old ruling
+the design-recording slice could not retire under its no-product-code
+constraint, surfaced by its supersession search): rewrite
+`packages/layer1-vocabulary/elements/meta.md` L267 (today reads
+"`<author>` — author (a single flat value per `<author>`); …
+Structured author data … is attempted at the JATS export boundary.");
+rewrite the comment block in
+`packages/acadamark-interpreter/src/lib/apparatus-allowlists.js`
+L20-29 (today reads "`author` is FLAT (single value, not a structured
+author-object); structured author data is attempted at the JATS export
+boundary, not carried in the authoring surface."). Both predate this
+ruling and must be brought into line when the structured `<author>`
+interface lands.
 
 ### Discussions
 
