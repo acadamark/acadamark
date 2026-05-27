@@ -1075,4 +1075,69 @@ export function run() {
     snapshotHast('document-27', hast);
     console.log('PASS: integration doc27 (<author> structured-interface reconciliation)');
   }
+
+  // ── Document 28: deferred-vocab sub-slice 2 (structural blocks) ────────────
+  // Proves the seven structural-block elements render as real elements:
+  // <dl>/<dt>/<dd> (definition lists), <glossary>/<glossary-entry>,
+  // <details>/<summary> (HTML-native disclosure).
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-28-deferred-vocab-sub2.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Each of the seven elements appears as a real tag in the output.
+    // The dl block contributes <dl>, <dt>, <dd>.
+    assert.ok(html.includes('<dl>'), 'doc28: <dl> renders as a real element');
+    assert.ok(
+      html.includes('<dt>acadamark</dt>'),
+      'doc28: <dt> renders with its term content',
+    );
+    assert.ok(
+      html.includes('<dd>An academic publishing system built on HTML+CSS+JS.</dd>'),
+      'doc28: <dd> renders with its description content',
+    );
+
+    // The glossary block contributes <glossary>, <glossary-entry>, and
+    // additional <dt>/<dd> inside each entry.
+    assert.ok(
+      html.includes('<glossary id="project-terms">'),
+      'doc28: <glossary> renders with its id',
+    );
+    assert.ok(
+      html.includes('<glossary-entry id="term:acadamark">'),
+      'doc28: <glossary-entry> renders with its colon-id',
+    );
+
+    // Disclosure: <details> and <summary>; the kwarg-form open=true
+    // renders as the open attribute on the canonical Layer 1 node.
+    // (The +open boolean form is known not to render via the schema
+    // dispatch — buildProperties does not iterate node.booleans;
+    // filed as a [post-alpha] backlog item. The fixture uses
+    // open=true to demonstrate the rendered attribute.)
+    assert.ok(
+      html.includes('<summary>Background reading</summary>'),
+      'doc28: <summary> renders with its heading content',
+    );
+    // Both <details> blocks render.
+    const detailsMatches = html.split('<details').length - 1;
+    assert.equal(detailsMatches, 2, 'doc28: both <details> blocks render');
+    assert.ok(
+      /<details\s+open="true">/.test(html),
+      'doc28: open=true kwarg renders as the open attribute on canonical <details>',
+    );
+
+    // No element renders as the unknown-span fallback — the vocab entries
+    // cover all seven.
+    for (const tag of ['dl', 'dt', 'dd', 'glossary', 'glossary-entry', 'details', 'summary']) {
+      assert.ok(
+        !html.includes(`data-acadamark-unknown="${tag}"`),
+        `doc28: <${tag}> renders as a real element (no unknown-span fallback)`,
+      );
+    }
+
+    snapshotHast('document-28', hast);
+    console.log('PASS: integration doc28 (deferred-vocab sub-slice 2 structural blocks render)');
+  }
 }

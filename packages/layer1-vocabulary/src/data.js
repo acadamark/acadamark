@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 83 vocabulary entries.
+// Source files: 90 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -1882,6 +1882,114 @@ const _date = Object.freeze({
     "_sourceFile": "date.md",
   });
 
+const _dd = Object.freeze({
+    "semantic_role": "dd",
+    "html_output": {
+      "element": "dd",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The description / definition of the preceding <dt> term. Prose\ncontent; may contain inline markup and block content (paragraphs,\nnested lists, etc.). Multi-paragraph descriptions are valid.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "def",
+      "notes": "JATS uses <def> inside <def-item> inside <def-list>. Direct\none-to-one mapping at the definition-text level; the JATS exporter\nwraps the <dt>/<dd> pair in <def-item> at export.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<dd | An academic publishing system built on HTML+CSS+JS.>",
+        "layer1_html": "<dd>An academic publishing system built on HTML+CSS+JS.</dd>",
+        "notes": "A definition-list description. Appears as a child of <dl>,\nfollowing the term it defines.\n",
+      },
+      {
+        "source": "<dd |\nA multi-paragraph definition.\n\nThe second paragraph of the definition.\n>\n",
+        "layer1_html": "<dd>\n  <p>A multi-paragraph definition.</p>\n  <p>The second paragraph of the definition.</p>\n</dd>\n",
+        "notes": "Multi-paragraph descriptions are valid — the pipe content's\nparagraph structure is preserved.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "dd.md",
+  });
+
+const _details = Object.freeze({
+    "semantic_role": "details",
+    "html_output": {
+      "element": "details",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "open": {
+          "maps_to": "open",
+          "values": [
+            "true",
+            "false",
+          ],
+          "notes": "HTML's open attribute on <details>. When present, the disclosure\nis expanded by default. Either +open or open=true form works;\nabsence (or -open / open=false) renders collapsed.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "summary",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "__block__",
+          "required": false,
+          "multiple": true,
+          "contains": [
+            "block",
+          ],
+        },
+      ],
+      "notes": "A <details> typically begins with a <summary> (the visible heading\nof the disclosure) and is followed by the body content that the\nsummary controls. The body is arbitrary block content; the spec's\nshape marks it as __block__ rather than enumerating allowed\nelements (the body is genuinely open, parallel to <aside>'s prose\ncontent).\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; HTML-native)",
+      "notes": "JATS has no disclosure/collapsible primitive. <details> is an\nHTML-native presentation construct for interactive disclosure of\ncontent. Recorded honestly as having no JATS counterpart, per the\n<lang> / <kbd> precedent. At JATS export the exporter must decide\nwhether to flatten <details> (always-include the body) or drop it;\nthe default expectation is to flatten — the body content is\ndocument-meaningful and should reach the JATS output regardless of\nthe HTML-side interactive disclosure.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<details>\n  <summary | More background>\n  Additional context for the curious reader. The summary is the\n  visible heading; this body shows when the disclosure is opened.\n</details>\n",
+        "layer1_html": "<details>\n  <summary>More background</summary>\n  <p>Additional context for the curious reader. The summary is the visible heading; this body shows when the disclosure is opened.</p>\n</details>\n",
+        "notes": "The canonical shape: a <summary> for the visible heading,\nfollowed by the disclosure body. The body is recursively parsed\nas prose / block content.\n",
+      },
+      {
+        "source": "<details +open>\n  <summary | Always-expanded section>\n  This disclosure is expanded by default.\n</details>\n",
+        "layer1_html": "<details open>\n  <summary>Always-expanded section</summary>\n  <p>This disclosure is expanded by default.</p>\n</details>\n",
+        "notes": "The +open boolean kwarg expands the disclosure by default.\nMaps to HTML's standard open attribute.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "details.md",
+  });
+
 const _display_math = Object.freeze({
     "semantic_role": "display-math",
     "html_output": {
@@ -1916,6 +2024,65 @@ const _display_math = Object.freeze({
       "notes": "JATS <disp-formula> wraps a displayed equation. The JATS exporter\ngenerates <tex-math> with the raw LaTeX source plus optionally\n<mml:math>. The id attribute (for cross-references) maps to JATS\nid. Equation numbering maps to JATS <label>.\n",
     },
     "_sourceFile": "display-math.md",
+  });
+
+const _dl = Object.freeze({
+    "semantic_role": "dl",
+    "html_output": {
+      "element": "dl",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "dt",
+          "required": false,
+          "multiple": true,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "dd",
+          "required": false,
+          "multiple": true,
+          "contains": [
+            "inline",
+            "block",
+          ],
+        },
+      ],
+      "notes": "A definition list alternates <dt> (term) and <dd> (description)\nchildren. The spec declares both as multiple+optional because a\nwell-formed <dl> may pair one term with several descriptions, or\nseveral terms with one shared description (HTML5 permits both\npatterns). Parser-level validation of the alternation / pairing\nis not performed (always-renders posture); the intended structure\nis documented here and demonstrated by fixtures.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "def-list",
+      "notes": "JATS uses <def-list> for definition lists, with <def-item> wrapping\neach term/definition pair: <def-list><def-item><term/><def/>\n</def-item>...</def-list>. Acadamark's <dl> follows HTML's flatter\npattern (alternating <dt>/<dd> siblings); the JATS exporter groups\nadjacent <dt>/<dd> pairs into <def-item> wrappers at export.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<dl>\n  <dt | acadamark>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n  <dt | Layer 1>\n  <dd | The canonical semantic HTML vocabulary.>\n  <dt | Layer 2>\n  <dd | The shorthand authoring syntax that compiles to Layer 1.>\n</dl>\n",
+        "layer1_html": "<dl>\n  <dt>acadamark</dt>\n  <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n  <dt>Layer 1</dt>\n  <dd>The canonical semantic HTML vocabulary.</dd>\n  <dt>Layer 2</dt>\n  <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>\n</dl>\n",
+        "notes": "Long-form <dl> with short-form <dt>/<dd> children. The natural\nauthoring pattern.\n",
+      },
+      {
+        "source": "<dl .compact>\n  <dt | term-1>\n  <dd | First definition of term-1.>\n  <dd | Second definition of term-1.>\n</dl>\n",
+        "layer1_html": "<dl class=\"compact\">\n  <dt>term-1</dt>\n  <dd>First definition of term-1.</dd>\n  <dd>Second definition of term-1.</dd>\n</dl>\n",
+        "notes": "One term with multiple definitions — a valid HTML pattern.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "dl.md",
   });
 
 const _doi = Object.freeze({
@@ -1960,6 +2127,47 @@ const _doi = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "doi.md",
+  });
+
+const _dt = Object.freeze({
+    "semantic_role": "dt",
+    "html_output": {
+      "element": "dt",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The term being defined. Typically short — a word or phrase — but\nmay contain inline markup (emphasis, code, math) where useful.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "term",
+      "notes": "JATS uses <term> inside <def-item> inside <def-list>. Direct\none-to-one mapping at the term-text level; the JATS exporter\nwraps the <dt>/<dd> pair in <def-item> at export.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<dt | acadamark>",
+        "layer1_html": "<dt>acadamark</dt>",
+        "notes": "A definition-list term. Appears as a child of <dl>.\n",
+      },
+      {
+        "source": "<dt | <code | strict-mode>>",
+        "layer1_html": "<dt><code>strict-mode</code></dt>",
+        "notes": "Inline markup in a term. The recursive-content pass parses the\npipe content normally.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "dt.md",
   });
 
 const _editor = Object.freeze({
@@ -2208,6 +2416,101 @@ const _figure = Object.freeze({
       "Handle the type kwarg by setting data-figure-type and potentially adjusting the wrapping.",
     ],
     "_sourceFile": "figure.md",
+  });
+
+const _glossary_entry = Object.freeze({
+    "semantic_role": "glossary-entry",
+    "html_output": {
+      "element": "glossary-entry",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "dt",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "dd",
+          "required": false,
+          "multiple": true,
+          "contains": [
+            "inline",
+            "block",
+          ],
+        },
+      ],
+      "notes": "A single glossary entry holds one term and its definition, reusing\nthe <dt>/<dd> child shapes of <dl>. Multiple <dd> children are\npermitted for one term (HTML5 pattern); a missing <dt> or <dd> is\nnot enforced at parser time (always-renders posture).\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "def-item",
+      "notes": "JATS uses <def-item> inside <glossary> (or inside <def-list>) to\nwrap a term/definition pair. Acadamark's <glossary-entry> maps\ndirectly to JATS <def-item> — the envelope around the <term>/<def>\npair. (JATS does not have a separate \"glossary-entry\" name; the\npairing structure is provided by <def-item>.)\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<glossary-entry #term:acadamark>\n  <dt | acadamark>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n</glossary-entry>\n",
+        "layer1_html": "<glossary-entry id=\"term:acadamark\">\n  <dt>acadamark</dt>\n  <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n</glossary-entry>\n",
+        "notes": "A single glossary entry. The id uses the \"term:\" colon-prefix\nconvention so cross-references like <ref @term:acadamark> can\nresolve into the entry.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "glossary-entry.md",
+  });
+
+const _glossary = Object.freeze({
+    "semantic_role": "glossary",
+    "html_output": {
+      "element": "glossary",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "glossary-entry",
+          "required": false,
+          "multiple": true,
+        },
+      ],
+      "notes": "A glossary holds a sequence of <glossary-entry> children, each a\npaired term and definition. Distinct from <dl> (which uses raw\nalternating <dt>/<dd> children with flexible pairing) — a glossary\nhas a fixed entry-pair shape and is referenceable as a unit.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "glossary",
+      "notes": "JATS has a <glossary> element. Acadamark's <glossary> maps directly,\nwith children mapping per <glossary-entry>'s entry. JATS's <glossary>\ncan also wrap a <def-list>; the exporter chooses the structure based\non whether the source uses <glossary> or <dl>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<glossary #project-terms>\n  <glossary-entry>\n    <dt | acadamark>\n    <dd | An academic publishing system built on HTML+CSS+JS.>\n  </glossary-entry>\n  <glossary-entry>\n    <dt | Layer 1>\n    <dd | The canonical semantic HTML vocabulary.>\n  </glossary-entry>\n</glossary>\n",
+        "layer1_html": "<glossary id=\"project-terms\">\n  <glossary-entry>\n    <dt>acadamark</dt>\n    <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n  </glossary-entry>\n  <glossary-entry>\n    <dt>Layer 1</dt>\n    <dd>The canonical semantic HTML vocabulary.</dd>\n  </glossary-entry>\n</glossary>\n",
+        "notes": "A glossary with two entries. Each <glossary-entry> uses <dt>/<dd>\nfor its term and definition (the same shapes <dl> uses), wrapped\nin the entry's own envelope for cross-reference / styling.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "glossary.md",
   });
 
 const _hr = Object.freeze({
@@ -4234,6 +4537,47 @@ const _subtitle = Object.freeze({
     "_sourceFile": "subtitle.md",
   });
 
+const _summary = Object.freeze({
+    "semantic_role": "summary",
+    "html_output": {
+      "element": "summary",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The visible heading of the parent <details> disclosure. Typically\nshort — a phrase — but may contain inline markup.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; HTML-native)",
+      "notes": "Like its parent <details>, <summary> has no JATS counterpart. At\nJATS export the <summary>'s text typically becomes the heading\nportion of whatever flattened structure the exporter chooses for\nthe parent <details> (e.g., a <sec>'s <title>).\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<summary | More background>",
+        "layer1_html": "<summary>More background</summary>",
+        "notes": "The visible heading of a <details> disclosure. Appears as a\nchild of <details>.\n",
+      },
+      {
+        "source": "<summary | Click to reveal the <em | hidden> details>",
+        "layer1_html": "<summary>Click to reveal the <em>hidden</em> details</summary>",
+        "notes": "Inline markup in a summary. The recursive-content pass parses\nthe pipe content normally.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "summary.md",
+  });
+
 const _sup = Object.freeze({
     "semantic_role": "sup",
     "html_output": {
@@ -4691,12 +5035,18 @@ export const VOCABULARY = Object.freeze({
   "config": _config,
   "data": _data,
   "date": _date,
+  "dd": _dd,
+  "details": _details,
   "display-math": _display_math,
+  "dl": _dl,
   "doi": _doi,
+  "dt": _dt,
   "editor": _editor,
   "em": _em,
   "email": _email,
   "figure": _figure,
+  "glossary-entry": _glossary_entry,
+  "glossary": _glossary,
   "hr": _hr,
   "i": _i,
   "img": _img,
@@ -4735,6 +5085,7 @@ export const VOCABULARY = Object.freeze({
   "sub": _sub,
   "subject": _subject,
   "subtitle": _subtitle,
+  "summary": _summary,
   "sup": _sup,
   "table": _table,
   "term": _term,

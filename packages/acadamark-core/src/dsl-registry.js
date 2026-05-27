@@ -85,6 +85,20 @@ export const DSL_REGISTRY = new Map([
   ['ol',         'default'],
   ['li',         'default'],
 
+  // Definition lists, glossaries, and disclosure containers — added in
+  // deferred-vocabulary sub-slice 2 (2026-05-27). These are structural
+  // long-form containers; their vocabulary entries live at
+  // `packages/layer1-vocabulary/elements/{dl,glossary,details}.md` and
+  // their child shapes (<dt>/<dd>, <glossary-entry>, <summary>+body)
+  // are declared via the entries' `content.shape`. Long-form-eligibility
+  // here lets authors write the natural `<dl>…</dl>`, `<glossary>…</glossary>`,
+  // and `<details>…</details>` forms; without these entries the parser
+  // would treat the open tags as void short-form. Same registration
+  // rationale `<ul>`/`<ol>`/`<aside>`/`<note>` follow.
+  ['dl',         'default'],
+  ['glossary',   'default'],
+  ['details',    'default'],
+
   // ── Metadata container ───────────────────────────────────────────────────
   // <meta> was previously registered here as ['meta', 'default'] for its
   // long-form eligibility. Migrated to the structured-element registry

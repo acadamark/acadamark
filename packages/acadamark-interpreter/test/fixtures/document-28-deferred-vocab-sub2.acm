@@ -1,0 +1,63 @@
+<meta type=article title="Deferred-vocab sub-slice 2 fixture">
+</meta>
+
+<section | Definition list>
+
+A `<dl>` pairs terms with their descriptions:
+
+<dl>
+<dt | acadamark>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+<dt | Layer 1>
+<dd | The canonical semantic HTML vocabulary.>
+<dt | Layer 2>
+<dd | The shorthand authoring syntax that compiles to Layer 1.>
+</dl>
+
+<section | Glossary>
+
+A `<glossary>` is a curated collection of `<glossary-entry>` items,
+each carrying a `<dt>`/`<dd>` pair:
+
+<glossary #project-terms>
+<glossary-entry #term:acadamark>
+<dt | acadamark>
+<dd | The publishing system.>
+</glossary-entry>
+<glossary-entry #term:layer1>
+<dt | Layer 1>
+<dd | The canonical vocabulary.>
+</glossary-entry>
+</glossary>
+
+<section | Collapsible disclosure>
+
+A `<details>` block carries a `<summary>` heading; the body shows
+when the disclosure is opened:
+
+<details>
+<summary | Background reading>
+Additional context for the curious reader. The summary above is the
+visible heading; this paragraph is the disclosure body.
+</details>
+
+A second `<details>` with an `open` kwarg expands by default:
+
+<details open=true>
+<summary | Always-expanded note>
+This disclosure is expanded by default.
+</details>
+
+This fixture exercises all seven sub-slice-2 elements end-to-end. The
+test asserts each renders as a real custom (or HTML-native) element
+with its content — no `data-acadamark-unknown` spans remain. Closed-
+child-set / parent-child structural validation is a spec concern only;
+the parser does not enforce it (always-renders posture).
+
+(Note on the `open` form: the kwarg form `open=true` is used here
+rather than the `+open` boolean form because of a pre-existing
+limitation in `buildProperties` — it does not iterate `node.booleans`,
+so `+flag` markers silently drop through the schema dispatch. The
+limitation is filed as a `[post-alpha]` backlog item for a future
+fix; this slice does not address it. Once fixed, `+open` will render
+identically to `open=true`.)

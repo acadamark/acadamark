@@ -134,6 +134,18 @@ the current code and all confirmed closed (see the STATUS milestone).
   assembly (no drift), but the rewire needs a design decision on how
   the test captures intermediate hast for snapshot inspection (today
   via manual mirror) *(`formerly AUD-17`)*
+- [ ] **`buildProperties` does not iterate `node.booleans`**
+  `[interpreter]` `[post-alpha]` — boolean kwargs (`+flag` form)
+  silently drop on render for any tag that does not lift them to
+  kwargs at the gate. Surfaced by the `<author>` structured-interface
+  reconciliation (`beb2fb3`) and confirmed by deferred-vocab
+  sub-slice 2 (`<details +open>` does not render the `open`
+  attribute). The `<author>` slice worked around it for `+corresponding`
+  via `liftStructuredKwargs`'s boolean-promotion step; other tags
+  hitting this face the same silent surprise. Root-cause fix: have
+  `buildProperties` (in `acadamark-interpreter/src/lib/build-properties.js`)
+  honor the vocabulary entry's `booleans:` declarations, the same way
+  it honors `kwargs:` today.
 
 #### Enhancements
 
@@ -157,14 +169,15 @@ the current code and all confirmed closed (see the STATUS milestone).
   `affiliation`, `orcid`, `email`, `subject` (metadata / author
   sub-elements); `abbr`, `term` (inline-semantic); `kbd`, `var`,
   `samp`, `output` (HTML-native inline, no JATS counterpart).
-  **Sub-slice 2 remaining:** structural blocks — `dl`/`dt`/`dd`,
-  `glossary`/`glossary-entry`, `details`/`summary`. **Sub-slice 3
-  remaining:** theorem family — `theorem`, `proof`, `lemma`,
-  `corollary`, `definition`, `example` (coupled with the
-  DF-11a handlers item). The inline-semantic denotation gap
-  flagged by the original footnote was resolved by the scoping
-  pass (the detail was never lost; the DF-15 archive entry has
-  the same list as the detailed entry below).
+  **Sub-slice 2 done (2026-05-27):** structural blocks — seven
+  entries: `dl`, `dt`, `dd` (definition lists); `glossary`,
+  `glossary-entry`; `details`, `summary` (HTML-native disclosure,
+  no JATS counterpart). **Sub-slice 3 remaining:** theorem family
+  — `theorem`, `proof`, `lemma`, `corollary`, `definition`,
+  `example` (coupled with the DF-11a handlers item). The
+  inline-semantic denotation gap flagged by the original footnote
+  was resolved by the scoping pass (the detail was never lost; the
+  DF-15 archive entry has the same list as the detailed entry below).
   *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
 - [ ] **Document the tag-form × tag matrix and reconcile inconsistencies**
   `[specs/docs]` `[post-alpha]` *(`formerly AUD-15`)*
@@ -415,6 +428,36 @@ ruling. Severity: medium — maintenance hazard (zero drift today but
 the pattern remains the structural risk).
 *(`formerly AUD-17`)*
 
+**`buildProperties` does not iterate `node.booleans`** `[interpreter]`
+`[post-alpha]`. The schema renderer's attribute-mapping helper
+(`packages/acadamark-interpreter/src/lib/build-properties.js`) iterates
+`node.kwargs` and applies each kwarg's vocabulary-declared `maps_to`
+when `handled_by !== 'handler'`. It does not iterate `node.booleans`.
+A tag whose vocabulary entry declares a kwarg in the `booleans:`
+section therefore silently drops the `+flag` boolean-form authoring
+through the schema dispatch — the attribute never reaches HTML output.
+
+Surfaced in two places: the `<author>` structured-interface
+reconciliation (`beb2fb3`) found `+corresponding` did not render to
+the `corresponding` attribute, and worked around it by promoting the
+boolean into the kwarg surface at the gate
+(`liftStructuredKwargs`'s booleanKwargs handling). Deferred-vocab
+sub-slice 2 then re-encountered the same limitation with
+`<details +open>` and worked around it in the same way by switching
+the doc28 fixture to the kwarg form `open=true` (with a note in
+the fixture and the entry).
+
+Both workarounds are localized to their slice. A root-cause fix is
+small: extend `buildProperties` to also iterate `node.booleans`,
+looking up each key against the vocabulary entry's `booleans:`
+declarations (parallel to how it looks up kwargs against the entry's
+`kwargs:` declarations). Once landed, the workarounds in
+`liftStructuredKwargs` and the `open=true` form preference become
+unnecessary. Severity: low — only affects tags that declare booleans
+with `maps_to`, and the workarounds work; but the silent-drop is a
+genuine correctness gap that surprises anyone authoring with the
+`+flag` form.
+
 ### Enhancements
 
 **Generalize the qualifying-tag pattern beyond `<table>`** `[parser]` `[post-alpha]`.
@@ -475,7 +518,7 @@ the sibling of DF-11a.) *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
 - Inline-semantic (the inline two of DF-15's four): `abbr`, `term`.
 - HTML-native inline (no JATS counterpart, recorded per the `<lang>` precedent): `kbd`, `var`, `samp`, `output`.
 
-**Sub-slice 2 remaining:** structural blocks — definition lists (`<dl>`/`<dt>`/`<dd>`, formerly DF-14); glossary structure (`<glossary>`/`<glossary-entry>` — the structural two of DF-15's four); collapsibles (`<details>`/`<summary>`).
+**Sub-slice 2 done (2026-05-27):** structural blocks — seven entries shipped: definition lists (`<dl>`/`<dt>`/`<dd>`, formerly DF-14); glossary structure (`<glossary>`/`<glossary-entry>` — the structural two of DF-15's four); collapsibles (`<details>`/`<summary>`, HTML-native disclosure with no JATS counterpart, recorded honestly per the `<lang>` / `<kbd>` precedent). Sub-slice 2 also added `<dl>`, `<glossary>`, and `<details>` to `DSL_REGISTRY` as structural long-form containers (the same registration `<ul>`/`<ol>`/`<aside>` use), so their natural long-form authoring (`<dl>…</dl>` etc.) parses.
 
 **Sub-slice 3 remaining:** theorem family — `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` (DF-11b — vocabulary half of the theorem cluster; couples with the DF-11a handlers item, so vocab lands first, handlers follow).
 

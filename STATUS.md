@@ -1085,3 +1085,71 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
   remark-acadamark 128/128; acadamark-interpreter 24/24 suites (incl.
   new doc27); **no existing snapshot changed**.
+- **2026-Q2 — deferred-vocabulary sub-slice 2: structural-block
+  elements shipped (7 entries).** The second of three build sub-slices
+  closing the `[alpha]` "Add deferred vocabulary elements" item. Seven
+  Layer 1 vocabulary entries added:
+  - **Definition lists** (3): `dl` → JATS `<def-list>`; `dt` → JATS
+    `<term>` inside `<def-item>`; `dd` → JATS `<def>` inside
+    `<def-item>`. The JATS exporter groups adjacent `<dt>`/`<dd>`
+    pairs into `<def-item>` wrappers at export (acadamark follows
+    HTML's flatter alternating-siblings pattern).
+  - **Glossary** (2): `glossary` → JATS `<glossary>`; `glossary-entry`
+    → JATS `<def-item>` (inside `<glossary>`). The `glossary-entry`
+    envelope is acadamark's named pairing convenience; JATS does not
+    have a separate `glossary-entry` element. Glossary entries
+    typically carry an id using the `term:` colon-prefix convention
+    (consistent with `fig:`, `eqn:`, `sec:`) for cross-references.
+  - **Disclosure** (2): `details` and `summary`. **No JATS counterpart**
+    — recorded honestly per the `<lang>` / `<kbd>` precedent. JATS
+    has no disclosure / interactive-toggle construct; at export the
+    `<details>` is expected to be flattened (summary text becomes a
+    heading, body becomes content), with the exact target structure
+    a JATS-export-time choice.
+  Three structural long-form containers (`<dl>`, `<glossary>`,
+  `<details>`) also registered in `DSL_REGISTRY` under the existing
+  "Structural long-form tags" section — same registration `<ul>`/
+  `<ol>`/`<aside>`/`<note>`/`<blockquote>` use, for the same reason:
+  the natural authoring of these containers is long-form (`<dl>…</dl>`
+  with nested `<dt>`/`<dd>`), which requires long-form-eligibility.
+  This was a judgment call against the slice prompt's "no parser or
+  interpreter code changes" constraint — DSL_REGISTRY is registry
+  data in `acadamark-core` (not parser or interpreter code in the
+  literal sense) and is the same kind of registry-data change a vocab
+  entry is. Without it, the seven entries would be hollow — authorable
+  only in their unnatural short-form. Recorded here so the call is
+  visible.
+  Vocabulary `data.js` regenerated (83 → 90 primary entries; 91 with
+  the `quote` alias). Pretest staleness guard passes; test count
+  assertion bumped 84 → 91.
+  New integration fixture `document-28-deferred-vocab-sub2.acm` +
+  `integration doc28` exercises all seven elements end-to-end: a
+  `<dl>` with three term/description pairs; a `<glossary>` with two
+  `<glossary-entry>` items, each carrying a `<dt>`/`<dd>`; two
+  `<details>` blocks (one default-collapsed, one with `open=true`).
+  Assertions: each of the seven renders as a real element with its
+  content; no `data-acadamark-unknown` span for any of them; both
+  `<details>` blocks render; the `open=true` kwarg renders as
+  `open="true"` on the canonical `<details>`. **No existing snapshot
+  changed** — the new fixture is new output, no prior fixture
+  authored any of these seven elements.
+  **One finding piggybacked as a `[post-alpha]` backlog item**
+  (Step 8 of the slice prompt): `buildProperties` does not iterate
+  `node.booleans` — the schema renderer's attribute-mapping helper
+  iterates `node.kwargs` but not `node.booleans`, so a `+flag`
+  boolean-form authoring silently drops through the schema dispatch
+  unless promoted to kwargs at the gate. Surfaced first by the
+  `<author>` reconciliation (`beb2fb3`) which worked around it for
+  `+corresponding` via `liftStructuredKwargs`'s boolean-promotion
+  step; re-encountered in this slice with `<details +open>` which the
+  doc28 fixture switched to the kwarg form `open=true` (with a note
+  in both fixture and entry) to demonstrate the rendered attribute.
+  Item filed in both backlog views with the root-cause fix recorded
+  (extend `buildProperties` to also iterate `node.booleans` per the
+  vocabulary entry's `booleans:` declarations). This slice records
+  the finding; the fix is a separate item.
+  Backlog: the "Add deferred vocabulary elements" item remains open
+  — sub-slice 2 ticked off; sub-slice 3 (theorem family) follows.
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc28).
