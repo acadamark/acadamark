@@ -765,3 +765,50 @@ that). One line gets added every few months, not every slice.
   `tagname-sigil-map` module). Backlog item count: 41 → 40
   (PG-8 removed from both views). No product code changed; no
   test runs needed.
+- **2026-Q2 — blank-line-termination closed (formerly DF-16);
+  always-renders guarantee fully honored.** A closing slice for the
+  blank-line-termination bug. The Phase 0 for it had already verified
+  that the chosen design (Option A — blank line inside a tag is a
+  paragraph break, not a terminator; tag terminates only on its
+  explicit closing `>` or at EOF; unclosed tag produces a visible
+  `acadamarkTagError`) was *already implemented* in the current code:
+  all three open-tag tokenizers in `syntax.js` scan through line
+  endings transparently and terminate at EOF; `from-markdown.js`
+  stamps `acadamarkTagError` for the EOF-without-closer case; the
+  Phase 2 slice 1 `tagErrorHandler` (`handlers/parser-errors.js`)
+  renders it visibly. Parser-level tests RC-6 (multi-paragraph
+  content) and ML-8 (unterminated multi-line construct → error)
+  already pin both halves at the parser level. Under the user's
+  ruling on Q3 (EOF-only — no additional hard structural boundary
+  terminator, to avoid reintroducing the blank-line-as-signal
+  heuristic Option A was chosen to avoid), no implementation work
+  remains. **This slice changed no product code.** Its product was:
+  two new integration fixtures pinning the behavior end-to-end
+  against regression — `document-23-multi-paragraph-tag-content.acm`
+  (an `<aside>` with a blank-line-separated multi-paragraph content
+  block; asserts two `<p>` children, no `tag-error` marker) and
+  `document-24-unclosed-tag-at-eof.acm` (an `<aside>` opened with
+  `|` and never closed; asserts the visible `??tag: …??` marker,
+  the article body still renders, no document failure);
+  `principles.md` §"Current known gaps" rewritten — both
+  previously-tracked gaps (parser-error-node renderer; blank-line/
+  EOF consumption) are now recorded as closed, and **no gaps remain
+  open against the always-renders guarantee**; `DESIGN.md` gained a
+  new "Multi-paragraph tag content; unclosed tags terminate at EOF"
+  section recording the Option A design and the EOF-only ruling with
+  its rationale (avoid the blank-line-as-signal heuristic) and
+  acknowledged bounded tradeoff (an unclosed tag near document top
+  swallows downstream content into the error node — bounded because
+  the error renders visibly at the open position; tighter
+  localization is an incremental future change, not foreclosed).
+  Tests: acadamark-core 50/50; remark-acadamark 128/128 (RC-6 and
+  ML-8 included); acadamark-interpreter 24/24 suites; **no existing
+  snapshot changed** — the Phase 0's premise that the current code
+  already implements Option A is confirmed empirically by zero
+  pre-existing diffs. Backlog: DF-16 removed from both views; item
+  count 40 → 39. Bugs section now holds exactly one item (AUD-17,
+  the `integration.test.js` hand-mirror — a separate post-alpha
+  item). The unusual nature of this closure —
+  fixed-by-the-design-revealing-the-code-was-already-right, not
+  fixed-by-a-code-change — is recorded here so a future reader
+  doesn't search the diff for the "fix."

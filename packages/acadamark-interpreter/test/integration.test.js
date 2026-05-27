@@ -833,4 +833,60 @@ export function run() {
     snapshotHast('document-22', hast);
     console.log('PASS: integration doc22 (apparatus-tag mid-body positioning warning)');
   }
+
+  // ── Document 23: multi-paragraph tag content (Option A, part 1) ───────────
+  // Pins Option A's allow-multi-paragraph-tag-content half. A blank line
+  // inside <aside | ...> is a paragraph break, not a terminator — the aside
+  // must produce two paragraph children in the rendered output. RC-6 in
+  // remark-acadamark/test/test-recursive.js covers this at the parser level;
+  // this fixture covers the full integration pipeline end-to-end.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-23-multi-paragraph-tag-content.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc23: article structure present');
+    assert.ok(html.includes('<aside>'), 'doc23: aside renders (not consumed as error)');
+    assert.ok(!html.includes('class="tag-error"'),
+      'doc23: no tag-error marker — blank line did not terminate the aside');
+
+    // The aside content must contain two paragraphs.
+    const asideSlice = html.substring(html.indexOf('<aside>'), html.indexOf('</aside>'));
+    const paragraphCount = (asideSlice.match(/<p>/g) ?? []).length;
+    assert.ok(paragraphCount >= 2,
+      `doc23: aside contains at least two <p> elements; got ${paragraphCount}`);
+    assert.ok(asideSlice.includes('First paragraph of the aside.'),
+      'doc23: first paragraph text present in aside');
+    assert.ok(asideSlice.includes('Second paragraph of the aside'),
+      'doc23: second paragraph text present in aside');
+
+    snapshotHast('document-23', hast);
+    console.log('PASS: integration doc23 (multi-paragraph tag content — Option A allow-half)');
+  }
+
+  // ── Document 24: unclosed tag at EOF (Option A, part 2) ───────────────────
+  // Pins the EOF-only-terminator half of Option A. The aside opens with `|`
+  // and never closes; under EOF-only termination, the tokenizer consumes to
+  // EOF and from-markdown.js stamps acadamarkTagError. The Phase 2 slice 1
+  // tagErrorHandler renders it as a visible <span class="tag-error">??tag:
+  // …??</span> marker at the open position. The document still renders
+  // (always-renders guarantee).
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-24-unclosed-tag-at-eof.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Document still renders (always-renders): article structure present;
+    // the pre-error body section content renders normally.
+    assert.ok(html.includes('<article>'), 'doc24: article still renders despite unclosed tag');
+    assert.ok(html.includes('Document body before the unclosed tag'),
+      'doc24: pre-error section content renders');
+
+    // The unclosed-tag error renders as the house-style visible marker.
+    assert.ok(html.includes('class="tag-error"'),
+      'doc24: tag-error span class present at the unclosed-tag position');
+    assert.ok(html.includes('??tag:'),
+      'doc24: house-style ??tag: …?? marker present in rendered output');
+
+    snapshotHast('document-24', hast);
+    console.log('PASS: integration doc24 (unclosed tag at EOF — Option A EOF-only terminator)');
+  }
 }

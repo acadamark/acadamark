@@ -299,6 +299,14 @@ The rule is enforced today as a warning, not a hard error: a misplaced apparatus
 
 Apparatus tags also have a coupled interface principle. Each apparatus tag can be authored two equivalent ways: with **kwargs** for scalar values (`<meta title="X" author="Y">`) or with **child tags** for structured values (`<meta><title>X</title><author>Y</author></meta>`). The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag allowlist (`META_KWARGS` for `<meta>`; an analogous `CONFIG_KWARGS` for `<config>`); unknown kwargs are dropped with informative diagnostics. A kwarg on the wrong apparatus tag — e.g. `<config title=…>` — additionally gets a "did you mean `<meta>`?" misuse hint, and symmetrically for `<meta citation-style=…>`. Both forms are valid authoring; both reduce to the same canonical shape; the lift is the same single-gate normalization the architecture uses for every other authored form.
 
+## Multi-paragraph tag content; unclosed tags terminate at EOF
+
+A blank line inside an open tag is a **paragraph break, not a terminator** — multi-paragraph tag content is allowed (`<aside | First paragraph.\n\nSecond paragraph.>` produces an aside with two paragraph children). A tag terminates only on its **explicit closing `>`** or at **EOF**. An unclosed tag — one whose stream ends without its closer — produces a visible `acadamarkTagError` at the tag's opening position; the consumed span renders as the error node's best-effort content.
+
+EOF is the **only** terminator besides the explicit `>`. There is no additional "hard structural boundary" terminator (e.g. end of region, start of a new structural construct). This was a deliberate design choice: a structural-boundary terminator would require the tokenizer to detect blank-line-followed-by-a-tag-opener, reintroducing exactly the blank-line-as-signal heuristic this design was chosen to avoid. The bounded cost of EOF-only termination — an unclosed tag near the top of a long document swallows the rest of the document into the error node — is acceptable: the error renders visibly at the open position (so the author sees *where* the problem is) and the conspicuously missing downstream content is itself a strong author signal. Tighter localization, if ever needed, is an incremental future change — not foreclosed by EOF-only.
+
+The design rests on and reinforces the always-renders guarantee in `principles.md`: errors stay bounded enough that the document renders and the author can locate the problem. Multi-paragraph tag content is a desirable feature; it yields to the always-renders guarantee if the two ever conflict, but under EOF-only termination they do not. Integration fixtures `document-23-multi-paragraph-tag-content.acm` and `document-24-unclosed-tag-at-eof.acm` pin both halves against regression.
+
 ## Why this is not just another markdown extension
 
 Three differences:

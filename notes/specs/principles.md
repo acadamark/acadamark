@@ -18,11 +18,15 @@ Where localized recovery is hard to implement — for instance, blank-line termi
 
 ### Current known gaps against the guarantee
 
-One gap remains open against the guarantee at the time of this writing. It is recorded here, in the spec, so that future readers can see it as a gap rather than mistaking the present state for the intended state. The work to close it is tracked in `BACKLOG-ROADMAP.md`.
+**No gaps remain open against the guarantee at the time of this writing.** The previously-tracked gaps are closed:
 
-- **Blank-line / EOF consumption.** The micromark finder does not terminate open constructs at blank lines, so a tag opened before a blank line consumes across the blank line or to EOF rather than failing in place. This violates the "at the location where it occurred" half by causing the error's footprint to swallow content downstream. Tracked under "blank-line termination error recovery" (formerly DF-16); the route is partly a design question (where does the construct end?) and partly an implementation question (how does the streaming tokenizer notice the blank line in time?).
+- **The parser-error-node renderer** — closed as of the alpha Phase 2 slice 1 (commit `e17a892`). `acadamarkParseError` and `acadamarkTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/acadamark-interpreter/src/handlers/parser-errors.js`.
 
-(The previously-listed second gap — *the parser-error-node renderer* — is closed as of the alpha Phase 2 slice 1: `acadamarkParseError` and `acadamarkTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/acadamark-interpreter/src/handlers/parser-errors.js`. The first half of the guarantee — produced error nodes are visible in the rendered output — now holds.)
+- **Blank-line / EOF consumption** — resolved per the Option A design (decided 2026-05-26). A blank line inside an open tag is a paragraph break, not a terminator; multi-paragraph tag content is allowed; a tag terminates only on its explicit closing `>` or at EOF; an unclosed tag is detected at EOF and produces a visible `acadamarkTagError` at its opening position. The previous "the tag consumes across the blank line" framing was based on the opposite design (blank-line-terminates) being assumed correct — the Option A ruling resolved the open question and confirmed the existing tokenizer behavior is the right behavior. Integration fixtures `document-23-multi-paragraph-tag-content.acm` and `document-24-unclosed-tag-at-eof.acm` pin both halves against regression. The design itself is recorded in `DESIGN.md`.
+
+**One acknowledged bounded tradeoff** of the EOF-only design (not a gap): an unclosed tag near the top of a long document swallows the rest of the document into the error node's source. The error still renders visibly at the open position, and the conspicuously missing downstream content is itself a strong author signal — so the always-renders guarantee holds. Tighter localization (a structural-boundary terminator earlier than EOF) was considered and rejected: it would require detecting blank-line-followed-by-a-tag-opener, reintroducing exactly the blank-line-as-signal heuristic Option A was chosen to avoid. If tighter localization is ever needed, it remains an incremental future change — not foreclosed by EOF-only.
+
+With both gaps closed, the always-renders guarantee is fully honored in the current implementation.
 
 ## The delegation principle
 

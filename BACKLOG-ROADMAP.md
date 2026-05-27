@@ -128,20 +128,6 @@ the current code and all confirmed closed (see the STATUS milestone).
 
 #### Bugs
 
-- [ ] **Add blank-line termination error recovery in the micromark
-  finder** `[parser]` `[alpha]` — pulled from alpha Phase 2 slice 1
-  (2026-05-25) per the escape hatch. **Design decided
-  (2026-05-26, "Option A"):** a blank line inside an open tag is a
-  paragraph break, not a terminator; multi-paragraph tag content is
-  allowed; a tag terminates only on its explicit closing `>`; an
-  unclosed tag is detected at EOF (or a hard structural boundary —
-  still an open sub-question) and produces a visible
-  `acadamarkTagError`. Governing principle: the always-renders
-  guarantee is non-negotiable and the multi-paragraph feature yields
-  to it. Sole open gap in the always-renders guarantee per
-  `principles.md`. Phase 0 in progress (the implementation question
-  — how the streaming tokenizer terminates correctly — was the only
-  remaining open work). *(`formerly DF-16`)*
 - [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
   shared assembly imported from `index.js`** `[tests/build]`
   `[post-alpha]` — pipeline is currently identical to the real
@@ -382,45 +368,6 @@ order here matches the flat checklist's Layer 3 order, so the two views
 scan in parallel.
 
 ### Bugs
-
-**Add blank-line termination error recovery in the micromark finder**
-`[parser]` `[alpha]`. The original framing: the micromark finder
-does not terminate open constructs at blank lines; a tag opened
-before a blank line consumes across the blank line or to EOF rather
-than failing in place — a known shortfall against the always-renders
-guarantee per `notes/specs/principles.md`. Pulled from alpha Phase 2
-slice 1 (2026-05-25) per the escape hatch, with the design question
-explicitly flagged. The sibling parser-error-node-renderer half
-landed in that same slice (`acadamarkParseError` /
-`acadamarkTagError` now render visibly via the new handlers at
-`packages/acadamark-interpreter/src/handlers/parser-errors.js`).
-This item is now the sole open gap in the always-renders guarantee
-per `principles.md` §"Current known gaps".
-
-**Design decided (2026-05-26, "Option A"):**
-- A **blank line inside an open tag is a paragraph break**, not a
-  terminator. Multi-paragraph tag content is **allowed** — a tag may
-  legitimately contain blank lines.
-- A tag is terminated **only by its explicit closing `>`**.
-- An **unclosed tag** is therefore detected not at a blank line but
-  at **EOF (or a hard structural boundary)**: if the stream ends
-  with a tag still open, that tag was unclosed — an error.
-- The unclosed-tag error produces an **`acadamarkTagError` node**
-  (the visible renderer built in Phase 2 slice 1). The content the
-  tag did consume still renders as best-effort tag content; the
-  error marker appears at the tag's open position.
-- **Governing principle (locked):** the always-renders guarantee is
-  non-negotiable. Multi-paragraph tag content is a desirable feature
-  but yields to graceful handling if the two ever conflict.
-
-The remaining open work is the **implementation question** —
-`principles.md`'s "how does the streaming tokenizer notice the blank
-line in time?" — being investigated by a Phase 0 in progress. There
-is one sub-question the Phase 0 surfaces for a user ruling: whether
-EOF is the only hard terminator (the simplest design — an unclosed
-tag swallows to EOF and errors), or whether some structural boundary
-(end of region, start of a new structural construct) should also
-terminate. *(`formerly DF-16`)*
 
 **Replace `integration.test.js`'s hand-mirrored pipeline with a shared
 assembly imported from `index.js`** `[tests/build]` `[post-alpha]`. The test maintains
