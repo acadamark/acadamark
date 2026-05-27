@@ -52,7 +52,11 @@ import { makeTag, makeOpaqueTag, isAcadamarkTag } from 'acadamark-core/tag';
 import { walkNormalize } from 'acadamark-core/walkers/walk-normalize';
 import { SIGIL_TO_TAGNAME, isSigilTagname } from 'acadamark-core/tagname-sigil-map';
 import {
-  META_KWARGS, META_KWARGS_LIFTED, isMetaKwarg,
+  STRUCTURED_ELEMENTS,
+  isStructuredElement,
+  getStructuredSpec,
+} from 'acadamark-core/structured-elements';
+import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 
@@ -364,60 +368,111 @@ function liftRawHtml(node, file) {
   return node;
 }
 
-// ─── Group D helper: apparatus-tag kwarg → child-tag lift ────────────────────
+// ─── Group D helper: structured-element kwarg → child-tag lift ───────────────
 //
-// Per the apparatus-tag reconciliation (2026-05-25), <meta> and <config> have
-// two authoring forms — kwargs and child tags — that both produce the same
-// Layer 1 child-tag canonical shape. The lift converts the kwarg form to the
-// child-tag form here at the gate, so downstream consumers (article-structuring,
-// config-discovery) see one shape.
+// Per DESIGN.md §"Structured-data-container tags", a structured-element tag
+// (registered in acadamark-core/structured-elements.js — today: <meta>,
+// <author>) accepts two authoring forms: kwargs and child tags. Both produce
+// the same Layer 1 child-tag canonical shape. The lift here converts the
+// kwarg form to the child-tag form per the per-tag spec, so downstream
+// consumers see one shape.
 //
-// For <meta>: each allowlisted kwarg (META_KWARGS_LIFTED) becomes a child tag
-// with the kwarg's value as text. The `type` kwarg stays on <meta> as a
-// kwarg — it controls structural routing in article-structuring, not document
-// descriptive content. Unknown kwargs trigger a "did you mean <config>?" hint
-// if they match the config allowlist, otherwise a generic unknown-kwarg
-// warning, and are dropped.
+// Per-spec field meanings (see structured-elements.js for the schema):
+//   acceptedKwargs    — accepted kwargs at all; rest are warned + dropped.
+//   liftedKwargs      — subset that lifts from kwarg form to child-tag form.
+//                       Accepted-but-not-lifted kwargs stay as kwargs (e.g.
+//                       <meta>'s `type`, which controls structural routing).
+//   booleanKwargs     — boolean markers always stay as kwargs (e.g.
+//                       <author>'s `+corresponding`).
+//   misusePartnerTag  — if set, an unknown kwarg accepted by the partner
+//                       triggers a "did you mean <partner>?" hint. Today
+//                       only <meta> pairs with <config>; the <config>
+//                       partner consults are done via the apparatus-allowlists
+//                       isConfigKwarg predicate (since <config> is not itself
+//                       a structured element).
 //
-// For <config>: each accepted kwarg (per isConfigKwarg) stays as a kwarg on
-// <config>. The Layer 1 vocab describes <config>'s configuration interface as
-// structured-children-or-kwargs; the existing config-discovery plugin reads
-// the kwargs, so we keep the kwarg form for <config> rather than lifting to
-// children. Unknown kwargs trigger the misuse hint and are dropped.
+// <config> remains kwarg-driven and handled by the legacy liftConfigKwargs
+// below — its content is processing options, not a record of named
+// document-descriptive fields, and the authoring surface today is kwargs-only.
 
-function liftMetaKwargs(node, file) {
+function liftStructuredKwargs(node, file) {
+  const tagname = node.tagname;
+  const spec = getStructuredSpec(tagname);
+  if (!spec) return node; // defensive; gate's predicate should filter
+
   const kwargs = node.kwargs ?? {};
   const newKwargs = {};
   const liftedChildren = [];
 
+  // Boolean-kwarg surface unification: +key / -key forms arrive in
+  // node.booleans; key=true / key=false kwarg forms arrive in node.kwargs.
+  // For any key declared in spec.booleanKwargs, promote node.booleans[key]
+  // into node.kwargs so the canonical Layer 1 home is uniformly node.kwargs
+  // (which is what the schema's buildProperties iterates). Without this,
+  // the +form would not render to an HTML attribute through the schema
+  // dispatcher (booleans are read only by per-tag handlers, not the schema
+  // dispatch). Performed before the kwarg loop so the boolean-promoted key
+  // lands in newKwargs via the boolean-kwarg branch below.
+  if (node.booleans) {
+    for (const key of spec.booleanKwargs) {
+      if (node.booleans[key] !== undefined) {
+        kwargs[key] = node.booleans[key];
+        delete node.booleans[key];
+      }
+    }
+  }
+
+  const partner = spec.misusePartnerTag;
+  const partnerSpec = partner ? getStructuredSpec(partner) : null;
+
   for (const [key, value] of Object.entries(kwargs)) {
-    if (META_KWARGS_LIFTED.has(key)) {
-      // Lift to a child tag. The child holds a single text node with the
-      // kwarg's value. The structural plugin (article-structuring) then
-      // promotes <title>/<subtitle> to <article-title>/<article-subtitle>
-      // and leaves the other tags as their author-shaped names.
-      liftedChildren.push(makeTag(key, [{ type: 'text', value: String(value) }]));
-    } else if (META_KWARGS.has(key)) {
-      // Allowlisted but not lifted (currently just `type`). Stays as a kwarg.
+    if (spec.booleanKwargs.has(key)) {
+      // Boolean marker — keep as kwarg. (Booleans authored via `+key` arrive
+      // in node.booleans, not node.kwargs, so this branch is reached only when
+      // the author wrote `key=true`-style. Either way the canonical home is
+      // the kwarg surface.)
       newKwargs[key] = value;
-    } else if (isConfigKwarg(key)) {
-      // Misuse: a <config>-shaped key appears on <meta>.
+    } else if (spec.liftedKwargs.has(key)) {
+      // Lift to a child tag. The child holds a single text node with the
+      // kwarg's value. Downstream structural plugins consume the canonical
+      // child-tag form (e.g. article-structuring promotes <title> to
+      // <article-title> inside <meta>).
+      liftedChildren.push(makeTag(key, [{ type: 'text', value: String(value) }]));
+    } else if (spec.acceptedKwargs.has(key)) {
+      // Allowlisted but not lifted. Stays as a kwarg.
+      newKwargs[key] = value;
+    } else if (partner === 'config' && isConfigKwarg(key)) {
+      // Misuse: a <config>-shaped key on <meta>. The partner-pair message
+      // is hard-coded for the <meta> ↔ <config> pairing because <config>
+      // doesn't have a STRUCTURED_ELEMENTS entry to consult.
       file?.message?.(
-        `<meta> does not accept '${key}' — this is a <config> setting. ` +
-        `<meta> holds descriptive document metadata (title, author, etc.); ` +
+        `<${tagname}> does not accept '${key}' — this is a <config> setting. ` +
+        `<${tagname}> holds descriptive document metadata; ` +
         `<config> holds processing options. ` +
         `See DESIGN.md "<meta> is for metadata; <config> is for options".`,
         node,
-        'normalize-to-canonical:config-kwarg-in-meta',
+        `normalize-to-canonical:config-kwarg-in-${tagname}`,
+      );
+      // Dropped.
+    } else if (partnerSpec?.acceptedKwargs.has(key)) {
+      // Generic partner-misuse for structured-element pairs (when the
+      // partner is itself a structured element). Today no pair uses this
+      // path (the only pair is <meta>↔<config>, handled above), but the
+      // mechanism is here for future structured-element pairings.
+      file?.message?.(
+        `<${tagname}> does not accept '${key}' — this is a <${partner}> kwarg. ` +
+        `Did you mean to author <${partner}>?`,
+        node,
+        `normalize-to-canonical:${partner}-kwarg-in-${tagname}`,
       );
       // Dropped.
     } else {
-      // Unknown to both surfaces.
+      // Unknown.
       file?.message?.(
-        `<meta> received unknown kwarg '${key}'. Accepted <meta> kwargs: ` +
-        `${[...META_KWARGS].join(', ')}.`,
+        `<${tagname}> received unknown kwarg '${key}'. Accepted <${tagname}> kwargs: ` +
+        `${[...spec.acceptedKwargs].join(', ')}.`,
         node,
-        'normalize-to-canonical:unknown-meta-kwarg',
+        `normalize-to-canonical:unknown-${tagname}-kwarg`,
       );
       // Dropped.
     }
@@ -431,6 +486,30 @@ function liftMetaKwargs(node, file) {
     const existingContent = Array.isArray(node.content) ? node.content : [];
     node.content = [...liftedChildren, ...existingContent];
   }
+
+  // Optional child-tag validation. Opt-in per spec.validateChildren — off for
+  // <meta> (behavior-preserving with the pre-migration code, which never
+  // validated children); on for <author> (new interface, fresh expectations).
+  if (spec.validateChildren) {
+    const content = Array.isArray(node.content) ? node.content : [];
+    for (const child of content) {
+      if (
+        isAcadamarkTag(child) &&
+        typeof child.tagname === 'string' &&
+        !spec.childAllowlist.has(child.tagname)
+      ) {
+        file?.message?.(
+          `<${tagname}> does not accept <${child.tagname}> as a child tag. ` +
+          `Accepted children: ${[...spec.childAllowlist].join(', ')}.`,
+          child,
+          `normalize-to-canonical:unknown-${tagname}-child`,
+        );
+        // Leave the child in place (always-renders pattern; the child still
+        // renders, the author sees the diagnostic).
+      }
+    }
+  }
+
   return node;
 }
 
@@ -438,10 +517,16 @@ function liftConfigKwargs(node, file) {
   const kwargs = node.kwargs ?? {};
   const newKwargs = {};
 
+  // <meta>'s accepted kwargs come from the structured-element spec — that's
+  // where <meta>'s allowlist lives post-migration. The misuse hint fires when
+  // a <meta>-shaped kwarg appears on <config>.
+  const metaSpec = getStructuredSpec('meta');
+  const isMetaShapedKey = (key) => metaSpec?.acceptedKwargs.has(key) ?? false;
+
   for (const [key, value] of Object.entries(kwargs)) {
     if (isConfigKwarg(key)) {
       newKwargs[key] = value;
-    } else if (isMetaKwarg(key)) {
+    } else if (isMetaShapedKey(key)) {
       // Misuse: a <meta>-shaped key on <config>.
       file?.message?.(
         `<config> does not accept '${key}' — this is a <meta> kwarg. ` +
@@ -535,20 +620,24 @@ const NORMALIZATIONS = [
     },
   },
 
-  // ─── Group A2: apparatus-tag kwarg → child-tag (or kwarg) lift ────────
+  // ─── Group A2: structured-element + <config> kwarg lift ───────────────
   //
-  // For <meta>: allowlisted kwargs lift to child tags (the Layer 1
-  // canonical shape), with the lift-time misuse-feedback hints.
+  // For any structured-element tag (today: <meta>, <author>; registered in
+  // acadamark-core/structured-elements.js): allowlisted kwargs lift to
+  // child tags per the per-tag spec, with the lift-time misuse-feedback
+  // hints. Layer 1 carries the child-tag form.
   // For <config>: allowlisted kwargs stay as kwargs (the existing
-  // config-discovery shape), with the misuse-feedback hints. Unknown
-  // kwargs on either are dropped with diagnostics.
+  // config-discovery shape), with the misuse-feedback hint when a
+  // <meta>-shaped kwarg appears on <config>. <config> is not a structured
+  // element — its content is processing options, not a record of named
+  // document-descriptive fields.
   //
-  // Per DESIGN.md §"Apparatus-tag positioning" and the reconciliation
-  // architecture: this is one rule per the single-gate principle, not a
-  // sniff in a downstream plugin.
+  // Per DESIGN.md §"Structured-data-container tags" + §"Apparatus-tag
+  // positioning" + the single-gate principle: each lift is one rule here,
+  // not a sniff in a downstream plugin.
   {
-    predicate: (node) => isAcadamarkTag(node) && node.tagname === 'meta',
-    normalize: (node, file) => liftMetaKwargs(node, file),
+    predicate: (node) => isAcadamarkTag(node) && isStructuredElement(node.tagname),
+    normalize: (node, file) => liftStructuredKwargs(node, file),
   },
   {
     predicate: (node) => isAcadamarkTag(node) && node.tagname === 'config',

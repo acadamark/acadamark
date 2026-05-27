@@ -311,16 +311,26 @@ Apparatus tags also have a coupled interface principle. Each apparatus tag can b
 
 ## Structured-data-container tags
 
-The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which the apparatus tags `<meta>` and `<config>` are the first members and `<author>` is the next.
+The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which `<meta>` was the first member and `<author>` is the second. (`<config>` is *not* a structured-data container: its body is processing options, not a record of named document-descriptive fields, and the authoring surface today is kwargs-only.)
 
-A structured-data-container tag is one whose body is *structured acadamark data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside acadamark (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds acadamark's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different, and the machinery they share is the kwargs-or-child-tags lift, not the foreign-language dispatch.
+A structured-data-container tag is one whose body is *structured acadamark data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside acadamark (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds acadamark's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different.
 
-The interface for every structured-data container is uniform: the tag accepts kwargs for scalar fields *and* child tags for the same fields in their structured form; the gate's lift turns the kwarg form into the canonical child-tag form per a per-tag allowlist; the canonical Layer 1 shape always carries child tags. This is the same single-gate normalization the architecture uses for every other authored form.
+The interface for every structured-data container is uniform: the tag accepts kwargs for scalar fields *and* child tags for the same fields in their structured form; the normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag spec; the canonical Layer 1 shape carries child tags (plus any boolean-marker kwargs). This is the same single-gate normalization the architecture uses for every other authored form.
 
-**`<author>` is a structured-data-container tag**, parallel to `<meta>`. Its allowlisted scalar fields lift to child tags: `name`, `affiliation`, `orcid`, `email`, and the `+corresponding` boolean (the `corresponding=true` form lifts to a `+corresponding` flag on the canonical node). Authored kwarg-form:
+### Infrastructure
+
+The structured-data-container registry is **`STRUCTURED_ELEMENTS`** in `packages/acadamark-core/src/structured-elements.js`. Each entry is a per-tag spec recording its accepted kwargs, the subset that lifts to child tags, boolean-marker kwargs, the child allowlist, an opt-in child-tag-validation flag, and an optional misuse-feedback partner pointer. The registry is **separate from `DSL_REGISTRY`** by design — `DSL_REGISTRY` owns DSL content-handler dispatch; `STRUCTURED_ELEMENTS` owns the kwarg/child-tag interface. The parser's long-form-eligibility check (in `remark-acadamark/src/syntax.js`) consults the union of both registries via a derived `LONG_FORM_TAGS` set.
+
+The lift gate consumes the spec generically in `normalize-to-canonical.js`'s `liftStructuredKwargs(node, file)`. Adding a new structured-data container is a registry-entry edit plus (when the tag is new) a vocabulary entry — no gate-code change.
+
+### `<author>`
+
+`<author>` is a structured-data-container, parallel to `<meta>`. Its allowlisted child elements: `<name>`, `<affiliation>`, `<orcid>`, `<email>`. Its boolean kwarg: `+corresponding` (a scalar marker; stays a kwarg on the canonical Layer 1 node, never lifted to a child tag).
+
+Authored kwarg form (self-closing — see *Kwarg-form authoring* below):
 
 ```
-<author name="Jane Goodall" affiliation="Cambridge University" orcid=0000-0001-2345-6789 +corresponding>
+<author name="Jane Goodall" affiliation="Cambridge University" orcid=0000-0001-2345-6789 +corresponding />
 ```
 
 Authored child-tag form (equivalent after lift):
@@ -333,11 +343,13 @@ Authored child-tag form (equivalent after lift):
 </author>
 ```
 
-Both reduce to the same canonical Layer 1 shape. Multiple authors are sibling `<author>` elements inside `<meta>`.
-
-The `<author>` structured-interface work is alpha-scope — `<author>` carrying structured author data is a Layer 1 vocabulary obligation the alpha release ships, not a JATS-export-boundary patch. The implementation slice that builds this interface is filed in the backlog as a sibling of the `<meta>` apparatus reconciliation (`578d6f0`) and absorbs the missing `<name>` vocabulary entry that the deferred-vocab sub-slice 1 surfaced as a follow-on.
+Both reduce to the same canonical Layer 1 shape. Multiple authors are sibling `<author>` elements inside `<meta>`. The `+corresponding` and `corresponding=true` surface forms both normalize to a `corresponding="true"` attribute on the canonical Layer 1 node — the gate promotes the `+`-form from the parser's `node.booleans` surface into `node.kwargs` so the schema renderer's attribute mapping fires uniformly.
 
 (`<author>` is not itself document-apparatus in the apparatus-positioning sense — it lives as a child of `<meta>`, not at the document edges — so it is not subject to the apparatus-positioning rule. It shares the interface principle, not the positioning principle.)
+
+### Kwarg-form authoring: the self-close requirement
+
+A structured-data container is long-form-eligible (its child-tag form is `<tag>…</tag>`). A consequence: a kwarg-only authoring (no pipe content, no `/`) is otherwise indistinguishable from a long-form opener, and the parser claims it as long-form and scans forward for `</tag>`. The kwarg form therefore **must self-close** — `<author name="…" />` — or use explicit long-form-with-empty-body — `<author name="…"></author>`. This is the same constraint `<table />` follows for the same reason. (`<meta>`'s existing fixtures all use the explicit-close form, so the constraint is not new; it becomes visible with `<author>` because the kwarg-only form is more natural for short author records.)
 
 ## Frameable elements: a shared capability
 

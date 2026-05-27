@@ -86,12 +86,15 @@ export const DSL_REGISTRY = new Map([
   ['li',         'default'],
 
   // ── Metadata container ───────────────────────────────────────────────────
-  // <meta> is the document metadata container. It always has children
-  // (title, author, abstract, etc.) and therefore always uses long-form
-  // syntax: <meta type=article>...</meta>. Without this registration the
-  // parser would treat <meta> as a void short-form tag and its children
-  // would become top-level siblings rather than nested content.
-  ['meta',       'default'],
+  // <meta> was previously registered here as ['meta', 'default'] for its
+  // long-form eligibility. Migrated to the structured-element registry
+  // (acadamark-core/structured-elements.js) — <meta> is a structured-data-
+  // container, not a DSL. The parser's long-form admission consults
+  // `LONG_FORM_TAGS` (the union of DSL_REGISTRY's tags and
+  // STRUCTURED_ELEMENTS's tags), so <meta> stays long-form-eligible without
+  // its entry living here. `getContentHandler('meta')` falls back to
+  // 'default' (the unregistered-tag default), which is the same value the
+  // explicit entry returned — so opacity behavior is unchanged.
 
   // ── Citation support (slice 6) ───────────────────────────────────────────
   // <data> is a structural container whose content is recursively parsed

@@ -1,56 +1,32 @@
-// Apparatus-tag kwarg / child-tag allowlists.
+// Apparatus-tag kwarg allowlists.
 //
-// Per the apparatus-tag reconciliation (2026-05-25), <meta> and <config> are
-// both authorable in two surface forms:
+// Per the apparatus-tag reconciliation (2026-05-25, `578d6f0`), <meta> and
+// <config> are both authorable with kwargs, with kwargs accepted against a
+// per-tag allowlist and a misuse-feedback hint fired when a kwarg appears on
+// the wrong apparatus tag.
 //
-//   - kwarg form:        <meta title="..."> / <config citation-style="apa">
-//   - child-tag form:    <meta><title>...</title></meta> / <config><citation-style>...</citation-style></config>
+// HISTORICAL NOTE on <meta>: <meta>'s kwarg allowlist used to live in this
+// file (META_KWARGS, META_KWARGS_LIFTED, isMetaKwarg). The 2026-05-27
+// structured-element-infrastructure slice moved <meta>'s spec to its
+// canonical home — the structured-element registry at
+// `acadamark-core/structured-elements.js`. <meta> is now one of several
+// structured-data-container tags (alongside <author>); its kwargs / lifted
+// subset / misuse-partner pointer all live in that registry's spec entry.
+// The interpreter's lift gate consumes the spec from there.
 //
-// The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical
-// gate lifts the kwarg form into the canonical child-tag shape using these
-// allowlists; unknown keys are dropped from the lift with an informative
-// diagnostic.
+// This file shrinks accordingly: only <config>'s allowlist remains here.
+// <config> is NOT a structured-data-container — its content is processing
+// options, not a record of named document-descriptive fields, and the
+// authoring surface today is kwargs-only (no child-tag form lifted by the
+// gate). <config> stays kwarg-driven and stays here.
 //
-// Allowlists live here (shared between the lift gate, the misuse-feedback
-// check, and the discovery plugins) so a new accepted key is added in one
-// place. Adding a key here does NOT add the implementation behind it — for
-// <config> keys, the implementing plugin must consume the value. The
-// per-key implementation status is documented in CONFIG_KWARGS below.
-
-/**
- * <meta> allowlist — descriptive document metadata.
- *
- * Per the apparatus-tag reconciliation ruling: this is the complete <meta>
- * key set. `author` is FLAT (single value, not a structured author-object);
- * structured author data is attempted at the JATS export boundary, not
- * carried in the authoring surface. `abstract` is deliberately NOT here —
- * the abstract is its own tag (<abstract>); the missing <abstract>
- * vocabulary entry is filed as a separate item.
- */
-export const META_KWARGS = new Set([
-  'title',
-  'subtitle',
-  'author',
-  'date',
-  'doi',
-  'license',
-  'lang',
-  'version',
-  'keywords',
-  // Pre-existing kwarg controlling document type — read by article-structuring
-  // / book-structuring. Not lifted to a child tag; stays on <meta> as the
-  // structural-routing signal.
-  'type',
-]);
-
-/**
- * Subset of META_KWARGS that should be lifted from kwarg form to child-tag
- * form. `type` is excluded because it stays as a kwarg (it controls
- * structural routing, not document descriptive content).
- */
-export const META_KWARGS_LIFTED = new Set([
-  'title', 'subtitle', 'author', 'date', 'doi', 'license', 'lang', 'version', 'keywords',
-]);
+// The misuse-feedback pairing still works across the file boundary: <meta>'s
+// spec (in structured-elements.js) names 'config' as its misusePartnerTag,
+// and `isConfigKwarg` (exported from this file) is what the gate consults to
+// fire the "did you mean <config>?" hint from the <meta> side. The reverse
+// direction — `<meta>`-shaped kwarg on `<config>` — is handled by the
+// <config> branch in normalize-to-canonical.js, which consults
+// `isStructuredKwarg('meta', key)` (imported from structured-elements).
 
 /**
  * <config> allowlist — processing and display settings.
@@ -94,11 +70,4 @@ export const CONFIG_KWARG_PREFIXES = ['ref-prefix-'];
 export function isConfigKwarg(key) {
   if (CONFIG_KWARGS.has(key)) return true;
   return CONFIG_KWARG_PREFIXES.some(prefix => key.startsWith(prefix));
-}
-
-/**
- * Predicate: does the given key belong to <meta>'s accepted kwargs?
- */
-export function isMetaKwarg(key) {
-  return META_KWARGS.has(key);
 }

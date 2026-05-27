@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.js",
     "./dsl-registry": "./src/dsl-registry.js",
+    "./structured-elements": "./src/structured-elements.js",
     "./tagname-sigil-map": "./src/tagname-sigil-map.js",
     "./tag": "./src/tag.js",
     "./error-nodes": "./src/error-nodes.js",

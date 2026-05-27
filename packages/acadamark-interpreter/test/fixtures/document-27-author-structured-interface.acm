@@ -1,0 +1,41 @@
+<meta type=article title="Structured-author interface fixture">
+<author name="Jane Roe" orcid="0000-0000-0000-0000" affiliation="University A" +corresponding />
+<author>
+<name | Jane Roe>
+<orcid | 0000-0000-0000-0000>
+<affiliation | University A>
+</author>
+<author bogus="x" | Charles Darwin>
+</meta>
+
+<section | Body>
+
+This fixture proves the `<author>` structured interface. The first two
+`<author>` elements carry the *same* information in two surface forms:
+
+1. The **kwarg form** — `name`, `orcid`, `affiliation` lift to child
+   tags at the gate; `+corresponding` stays as a boolean kwarg on the
+   canonical Layer 1 node. The kwarg form uses self-closing `/>` to
+   disambiguate from a long-form opener (the same constraint
+   `<table />` follows — `<author>` is now long-form-eligible, so a
+   kwarg-only `<author …>` with no pipe and no `/` would be claimed
+   as a long-form opener).
+2. The **child-tag form** — the same fields authored directly as
+   `<name>`, `<orcid>`, `<affiliation>` children. Long-form
+   `<author>...</author>` is the natural shape here.
+
+Both reduce to equivalent Layer 1 structures (the kwarg-form variant
+also carries `+corresponding`, which is unique to it as the
+corresponding-author marker).
+
+The third `<author>` exercises the unknown-kwarg path: `bogus=x` is
+not in the allowlist and is dropped with an informative diagnostic;
+the pipe content "Charles Darwin" sits as text content of the
+canonical `<author>` (the backward-compatible casual form — the pipe
+in the opener disambiguates from long-form).
+
+Note on indentation: nested long-form close tags (`</author>` inside
+`<meta>`) must sit at column 0 of their line — the long-form close
+tokenizer requires the `<` immediately after the line ending. This is
+a known parser constraint (same one all long-form-eligible nested
+tags follow); the fixture authors the body unindented to satisfy it.

@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 82 vocabulary entries.
+// Source files: 83 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -550,58 +550,84 @@ const _author = Object.freeze({
         "maps_to": "class",
       },
       "kwargs": {
+        "name": {
+          "lifts_to_child": "name",
+          "notes": "The author's name. Authored as a kwarg, lifted at the\nnormalize-to-canonical gate to a <name> child tag. Equivalent\nto authoring <name | ...> inside the <author>'s child-tag form.\n",
+        },
         "affiliation": {
-          "maps_to": "data-affiliation",
-          "notes": "Author's institutional affiliation. Maps to JATS <aff> at export.\n",
+          "lifts_to_child": "affiliation",
+          "notes": "Author's institutional affiliation. Lifts to <affiliation>.\n",
         },
         "orcid": {
-          "maps_to": "data-orcid",
-          "notes": "Author's ORCID identifier (e.g., 0000-0000-0000-0000).\n",
+          "lifts_to_child": "orcid",
+          "notes": "Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts\nto <orcid>.\n",
         },
         "email": {
-          "maps_to": "data-email",
-          "notes": "Author's contact email address.\n",
+          "lifts_to_child": "email",
+          "notes": "Author's contact email address. Lifts to <email>.\n",
         },
         "corresponding": {
-          "maps_to": "data-corresponding",
+          "maps_to": "corresponding",
           "values": [
             "true",
             "false",
           ],
-          "notes": "Boolean flag for the corresponding author. JATS uses\ncontrib corresp=\"yes\" for the corresponding author.\n",
+          "notes": "Marks this author as the corresponding author (JATS\ncontrib corresp=\"yes\"). A scalar marker — stays as a kwarg/\nattribute on the canonical Layer 1 <author>; never lifted to\na child tag. Both surface forms are accepted: +corresponding\n(boolean shorthand) and corresponding=true (explicit kwarg)\nboth normalize to a `corresponding=\"true\"` attribute on the\ncanonical Layer 1 node. The structured-element gate promotes\nthe +form into the kwarg surface so the schema renderer's\nattribute mapping fires uniformly.\n",
         },
       },
     },
     "content": {
-      "type": "prose",
-      "becomes": "children",
-      "notes": "Author content can be either:\n- Simple: pipe-content as \"Given Family\" name string.\n- Structured: explicit child elements (<given-names>, <surname>, etc.).\n",
+      "type": "structured",
+      "shape": [
+        {
+          "element": "name",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "affiliation",
+          "required": false,
+          "multiple": true,
+        },
+        {
+          "element": "orcid",
+          "required": false,
+        },
+        {
+          "element": "email",
+          "required": false,
+          "multiple": true,
+        },
+      ],
+      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\nacadamark-core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
     },
     "content_handler": "default",
     "jats_counterpart": {
       "element": "contrib contrib-type=\"author\"",
-      "notes": "JATS uses <contrib contrib-type=\"author\"> for authors. The structural\nJATS form uses <name><given-names>...</given-names><surname>...</surname></name>\ninside <contrib>. The exporter dispatches based on whether the acadamark\n<author> uses simple or structured form.\n",
+      "notes": "JATS uses <contrib contrib-type=\"author\"> for authors. The structural\nJATS form uses <name><given-names>...</given-names><surname>...</surname></name>\ninside <contrib>. Acadamark's <name> is a single unparsed string\nmatching JATS's <string-name>; the exporter elects to emit\n<string-name> verbatim or decompose it into <surname>/<given-names>\nper the target schema's requirements. <affiliation>, <orcid>,\n<email> map to JATS <aff>, <contrib-id contrib-id-type=\"orcid\">,\nand <email> respectively. +corresponding becomes corresp=\"yes\" on\nthe <contrib> element.\n",
     },
     "shorthand_examples": [
       {
         "source": "<author | Jane Goodall>",
-        "layer1_html": "<author>Jane Goodall</author>",
-        "notes": "Simple form. The pipe content is parsed as \"Given Family\" by JATS\nexport heuristics (last word as surname). Most casual authoring\nuses this form.\n",
+        "layer1_html": "<author>Jane Goodall</author>\n",
+        "notes": "Backward-compatible casual form (carried forward from before the\nstructured-interface reconciliation). The pipe content sits as\ntext content of <author>; it is NOT lifted to a <name> child —\nauthors who want the structured shape use the kwarg form below\nor the child-tag form. JATS export reads the name string either\nway.\n",
       },
       {
-        "source": "<author orcid=0000-0001-2345-6789 affiliation=\"Cambridge University\" | Jane Goodall>",
-        "layer1_html": "<author data-orcid=\"0000-0001-2345-6789\" data-affiliation=\"Cambridge University\">Jane Goodall</author>",
-        "notes": "Simple form with attributes. Affiliation, ORCID, and email are\nattached as kwargs. The name still appears as pipe content.\n",
+        "source": "<author name=\"Jane Goodall\" orcid=\"0000-0001-2345-6789\" affiliation=\"Cambridge University\" +corresponding />",
+        "layer1_html": "<author +corresponding>\n  <name>Jane Goodall</name>\n  <orcid>0000-0001-2345-6789</orcid>\n  <affiliation>Cambridge University</affiliation>\n</author>\n",
+        "notes": "Kwarg form. Each lifted kwarg becomes a child tag at the gate;\n+corresponding stays as a boolean kwarg on the canonical\nLayer 1 <author>.\n",
       },
       {
-        "source": "<author corresponding=true affiliation=\"Cambridge University\">\n  <given-names | Jane>\n  <surname | Goodall>\n  <email | jane@example.com>\n</author>\n",
-        "layer1_html": "<author data-corresponding=\"true\" data-affiliation=\"Cambridge University\">\n  <given-names>Jane</given-names>\n  <surname>Goodall</surname>\n  <email>jane@example.com</email>\n</author>\n",
-        "notes": "Structured form. Used when authors need explicit given/surname\nseparation, multiple email addresses, or other structured author\nmetadata.\n",
+        "source": "<author +corresponding>\n  <name | Jane Goodall>\n  <affiliation | Cambridge University>\n  <orcid | 0000-0001-2345-6789>\n  <email | jane@example.com>\n</author>\n",
+        "layer1_html": "<author +corresponding>\n  <name>Jane Goodall</name>\n  <affiliation>Cambridge University</affiliation>\n  <orcid>0000-0001-2345-6789</orcid>\n  <email>jane@example.com</email>\n</author>\n",
+        "notes": "Child-tag form. The canonical Layer 1 shape. Both this form and\nthe equivalent kwarg form above produce the same Layer 1 output.\n",
       },
       {
-        "source": "<meta>\n  <author | Jane Goodall>\n  <author | David Attenborough>\n  <author corresponding=true | Charles Darwin>\n</meta>\n",
-        "layer1_html": "<meta>\n  <author>Jane Goodall</author>\n  <author>David Attenborough</author>\n  <author data-corresponding=\"true\">Charles Darwin</author>\n</meta>\n",
-        "notes": "Multiple authors are sibling <author> elements. The third is the\ncorresponding author. The structural plugin groups them in\nJATS export as <contrib-group>.\n",
+        "source": "<meta>\n  <author | Jane Goodall>\n  <author | David Attenborough>\n  <author +corresponding | Charles Darwin>\n</meta>\n",
+        "layer1_html": "<meta>\n  <author>Jane Goodall</author>\n  <author>David Attenborough</author>\n  <author +corresponding>Charles Darwin</author>\n</meta>\n",
+        "notes": "Multiple authors are sibling <author> elements inside <meta>.\nThe third is the corresponding author. JATS export groups them\nas <contrib-group>.\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -2825,6 +2851,47 @@ const _meta = Object.freeze({
     "_sourceFile": "meta.md",
   });
 
+const _name = Object.freeze({
+    "semantic_role": "name",
+    "html_output": {
+      "element": "name",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The author's name as a single string (e.g. \"Jane Goodall\"). No\nsurname/given-name decomposition at Layer 1 — the value passes\nthrough verbatim. The JATS exporter is the boundary that splits\na Western-style name into <surname>/<given-names> if required by\nthe target JATS schema; cultures with non-Western name ordering\n(surname-first, mononym) are preserved as-is at Layer 1 and\ntreated specially at export.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "string-name",
+      "notes": "JATS uses <string-name> inside <name> as the \"unparsed name\"\nform — the full name string when the document does not commit to\na surname/given-names split. JATS's structured <name> wraps\n<surname>/<given-names>; <string-name> is the unparsed sibling.\nAcadamark's <name> matches <string-name> directly because Layer 1\npreserves the author-written form without imposing a name-model.\nThe exporter chooses between emitting <string-name> verbatim or\nparsing it into <surname>/<given-names> per the target schema's\nrequirements.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<author>\n  <name | Jane Goodall>\n</author>\n",
+        "layer1_html": "<author>\n  <name>Jane Goodall</name>\n</author>\n",
+        "notes": "The common case. Pipe content becomes the name string.\n",
+      },
+      {
+        "source": "<author name=\"Jane Goodall\" orcid=\"0000-0001-2345-6789\" +corresponding>",
+        "layer1_html": "<author corresponding>\n  <name>Jane Goodall</name>\n  <orcid>0000-0001-2345-6789</orcid>\n</author>\n",
+        "notes": "Kwarg form of <author>. The `name` kwarg lifts to a <name> child\ntag at the normalize-to-canonical gate, parallel to <meta>'s\nkwarg-to-child-tag lift. The `+corresponding` boolean stays as\na kwarg/attribute on the canonical Layer 1 <author> (it is a\nscalar marker, not a structured field).\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "name.md",
+  });
+
 const _note_list = Object.freeze({
     "semantic_role": "note-list",
     "html_output": {
@@ -4642,6 +4709,7 @@ export const VOCABULARY = Object.freeze({
   "library": _library,
   "license": _license,
   "meta": _meta,
+  "name": _name,
   "note-list": _note_list,
   "note": _note,
   "ol": _ol,

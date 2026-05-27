@@ -264,7 +264,7 @@ When both the container shorthand and `<meta>`'s `<title>` are present, the stru
 
 - `<title>` — document title.
 - `<subtitle>` — document subtitle.
-- `<author>` — author (a single flat value per `<author>`; multiple `<author>` tags for multi-author works). Structured author data (affiliation, ORCID, role) is not carried in the authoring surface — it is attempted at the JATS export boundary.
+- `<author>` — author. `<author>` is itself a structured-data-container tag (parallel to `<meta>`): it accepts both a kwarg form (`<author name="…" orcid="…" +corresponding>`) and a child-tag form (`<author><name | …><affiliation | …><orcid | …><email | …></author>`); the kwarg form lifts to the child-tag form at the normalize-to-canonical gate. Layer 1 `<author>` bears child tags plus the `+corresponding` boolean kwarg. Multiple authors are sibling `<author>` elements inside `<meta>`. See [`<author>`](author.md) and `DESIGN.md` §"Structured-data-container tags."
 - `<editor>` — editor (multiple allowed; common in edited volumes).
 - `<date>` — date (multiple allowed; type kwarg distinguishes publication, submission, etc.).
 - `<doi>`, `<license>`, `<lang>`, `<version>`, `<keywords>` — additional document-descriptive metadata. The kwarg forms (`doi=`, `license=`, etc.) lift to these child tags at the gate; the child-tag forms are authored directly. (Vocabulary entries for the names without existing `.md` files in `packages/layer1-vocabulary/elements/` are filed as findings in `BACKLOG-ROADMAP.md`.)

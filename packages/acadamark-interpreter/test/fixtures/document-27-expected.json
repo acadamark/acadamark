@@ -1,0 +1,1181 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Structured-author interface fixture"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {
+                    "corresponding": true
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "name",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Jane Roe"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "orcid",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "0000-0000-0000-0000"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "affiliation",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "University A"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "name",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Jane Roe",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 10,
+                              "offset": 9
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "orcid",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "0000-0000-0000-0000",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 21,
+                              "offset": 20
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "affiliation",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "University A",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 14,
+                              "offset": 13
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Charles Darwin",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 16,
+                          "offset": 15
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Body",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 6,
+                          "offset": 5
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This fixture proves the ",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 1,
+                          "offset": 320
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 25,
+                          "offset": 344
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<author>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " structured interface. The first two\n",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 35,
+                          "offset": 354
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 1,
+                          "offset": 391
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<author>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " elements carry the ",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 11,
+                          "offset": 401
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 31,
+                          "offset": 421
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "same",
+                          "position": {
+                            "start": {
+                              "line": 14,
+                              "column": 32,
+                              "offset": 422
+                            },
+                            "end": {
+                              "line": 14,
+                              "column": 36,
+                              "offset": 426
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " information in two surface forms:",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 37,
+                          "offset": 427
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 71,
+                          "offset": 461
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 13,
+                      "column": 1,
+                      "offset": 320
+                    },
+                    "end": {
+                      "line": 14,
+                      "column": 71,
+                      "offset": 461
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "ol",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The ",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 4,
+                              "offset": 466
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 8,
+                              "offset": 470
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "b",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "kwarg form",
+                              "position": {
+                                "start": {
+                                  "line": 16,
+                                  "column": 10,
+                                  "offset": 472
+                                },
+                                "end": {
+                                  "line": 16,
+                                  "column": 20,
+                                  "offset": 482
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " — ",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 22,
+                              "offset": 484
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 25,
+                              "offset": 487
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "name"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ", ",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 31,
+                              "offset": 493
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 33,
+                              "offset": 495
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "orcid"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ", ",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 40,
+                              "offset": 502
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 42,
+                              "offset": 504
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "affiliation"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " lift to child\ntags at the gate; ",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 55,
+                              "offset": 517
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 22,
+                              "offset": 553
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "+corresponding"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " stays as a boolean kwarg on the\ncanonical Layer 1 node. The kwarg form uses self-closing ",
+                          "position": {
+                            "start": {
+                              "line": 17,
+                              "column": 38,
+                              "offset": 569
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 61,
+                              "offset": 662
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "/>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " to\ndisambiguate from a long-form opener (the same constraint\n",
+                          "position": {
+                            "start": {
+                              "line": 18,
+                              "column": 65,
+                              "offset": 666
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 1,
+                              "offset": 731
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<table />"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " follows — ",
+                          "position": {
+                            "start": {
+                              "line": 20,
+                              "column": 15,
+                              "offset": 745
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 26,
+                              "offset": 756
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<author>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " is now long-form-eligible, so a\nkwarg-only ",
+                          "position": {
+                            "start": {
+                              "line": 20,
+                              "column": 36,
+                              "offset": 766
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 15,
+                              "offset": 813
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<author …>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " with no pipe and no ",
+                          "position": {
+                            "start": {
+                              "line": 21,
+                              "column": 27,
+                              "offset": 825
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 48,
+                              "offset": 846
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "/"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " would be claimed\nas a long-form opener).",
+                          "position": {
+                            "start": {
+                              "line": 21,
+                              "column": 51,
+                              "offset": 849
+                            },
+                            "end": {
+                              "line": 22,
+                              "column": 27,
+                              "offset": 893
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 463
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 27,
+                          "offset": 893
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The ",
+                          "position": {
+                            "start": {
+                              "line": 23,
+                              "column": 4,
+                              "offset": 897
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 8,
+                              "offset": 901
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "b",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "child-tag form",
+                              "position": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 10,
+                                  "offset": 903
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 24,
+                                  "offset": 917
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " — the same fields authored directly as\n",
+                          "position": {
+                            "start": {
+                              "line": 23,
+                              "column": 26,
+                              "offset": 919
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 1,
+                              "offset": 959
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<name>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ", ",
+                          "position": {
+                            "start": {
+                              "line": 24,
+                              "column": 12,
+                              "offset": 970
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 14,
+                              "offset": 972
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<orcid>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ", ",
+                          "position": {
+                            "start": {
+                              "line": 24,
+                              "column": 23,
+                              "offset": 981
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 25,
+                              "offset": 983
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<affiliation>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " children. Long-form\n",
+                          "position": {
+                            "start": {
+                              "line": 24,
+                              "column": 40,
+                              "offset": 998
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 1,
+                              "offset": 1019
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<author>...</author>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " is the natural shape here.",
+                          "position": {
+                            "start": {
+                              "line": 25,
+                              "column": 26,
+                              "offset": 1044
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 53,
+                              "offset": 1071
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 23,
+                          "column": 1,
+                          "offset": 894
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 53,
+                          "offset": 1071
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 16,
+                      "column": 1,
+                      "offset": 463
+                    },
+                    "end": {
+                      "line": 25,
+                      "column": 53,
+                      "offset": 1071
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Both reduce to equivalent Layer 1 structures (the kwarg-form variant\nalso carries ",
+                      "position": {
+                        "start": {
+                          "line": 27,
+                          "column": 1,
+                          "offset": 1073
+                        },
+                        "end": {
+                          "line": 28,
+                          "column": 14,
+                          "offset": 1155
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "+corresponding"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", which is unique to it as the\ncorresponding-author marker).",
+                      "position": {
+                        "start": {
+                          "line": 28,
+                          "column": 30,
+                          "offset": 1171
+                        },
+                        "end": {
+                          "line": 29,
+                          "column": 30,
+                          "offset": 1231
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 27,
+                      "column": 1,
+                      "offset": 1073
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 30,
+                      "offset": 1231
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The third ",
+                      "position": {
+                        "start": {
+                          "line": 31,
+                          "column": 1,
+                          "offset": 1233
+                        },
+                        "end": {
+                          "line": 31,
+                          "column": 11,
+                          "offset": 1243
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<author>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " exercises the unknown-kwarg path: ",
+                      "position": {
+                        "start": {
+                          "line": 31,
+                          "column": 21,
+                          "offset": 1253
+                        },
+                        "end": {
+                          "line": 31,
+                          "column": 56,
+                          "offset": 1288
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "bogus=x"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is\nnot in the allowlist and is dropped with an informative diagnostic;\nthe pipe content \"Charles Darwin\" sits as text content of the\ncanonical ",
+                      "position": {
+                        "start": {
+                          "line": 31,
+                          "column": 65,
+                          "offset": 1297
+                        },
+                        "end": {
+                          "line": 34,
+                          "column": 11,
+                          "offset": 1441
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<author>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " (the backward-compatible casual form — the pipe\nin the opener disambiguates from long-form).",
+                      "position": {
+                        "start": {
+                          "line": 34,
+                          "column": 21,
+                          "offset": 1451
+                        },
+                        "end": {
+                          "line": 35,
+                          "column": 45,
+                          "offset": 1544
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 31,
+                      "column": 1,
+                      "offset": 1233
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 45,
+                      "offset": 1544
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Note on indentation: nested long-form close tags (",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 1,
+                          "offset": 1546
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 51,
+                          "offset": 1596
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "</author>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " inside\n",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 62,
+                          "offset": 1607
+                        },
+                        "end": {
+                          "line": 38,
+                          "column": 1,
+                          "offset": 1615
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<meta>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ") must sit at column 0 of their line — the long-form close\ntokenizer requires the ",
+                      "position": {
+                        "start": {
+                          "line": 38,
+                          "column": 9,
+                          "offset": 1623
+                        },
+                        "end": {
+                          "line": 39,
+                          "column": 24,
+                          "offset": 1705
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " immediately after the line ending. This is\na known parser constraint (same one all long-form-eligible nested\ntags follow); the fixture authors the body unindented to satisfy it.",
+                      "position": {
+                        "start": {
+                          "line": 39,
+                          "column": 27,
+                          "offset": 1708
+                        },
+                        "end": {
+                          "line": 41,
+                          "column": 69,
+                          "offset": 1886
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 37,
+                      "column": 1,
+                      "offset": 1546
+                    },
+                    "end": {
+                      "line": 41,
+                      "column": 69,
+                      "offset": 1886
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 42,
+      "column": 1,
+      "offset": 1887
+    }
+  }
+}

@@ -196,14 +196,22 @@ the current code and all confirmed closed (see the STATUS milestone).
   item). Prerequisite to the frameable-class implementation slice.
   Design baseline: `DESIGN.md` §"Frameable elements: a shared
   capability."
-- [ ] **`<author>` structured-interface reconciliation** `[vocab]`
-  `[alpha]` — implementation slice parallel to the `<meta>`
-  apparatus-tag reconciliation (`578d6f0`). Gives `<author>` the
-  kwargs-or-child-tags lift, the `+corresponding` boolean kwarg, and
-  child elements (`<name>`, `<affiliation>`, `<orcid>`, `<email>`).
-  Absorbs the **missing `<name>` vocabulary entry** surfaced as a
-  finding in the deferred-vocab sub-slice 1 milestone. Design baseline:
-  `DESIGN.md` §"Structured-data-container tags."
+- [ ] **Migrate `<data>` onto the structured-element infrastructure**
+  `[cross-cutting]` `[post-alpha]` — `<data>` is a structural container
+  whose content is a list of resources (`<library>`, `<bib-entry>`),
+  not a record of named fields. The 2026-05-27 structured-element-
+  infrastructure slice ruled it does not fit the structured-data-container
+  category as currently defined (no kwarg surface, no field record),
+  and left it in `DSL_REGISTRY` as-is. Revisit: extend the infrastructure
+  to also cover list-of-resources containers, or define a sibling
+  registry for them.
+- [ ] **Rename the `dslRegistry` option on `acadamarkSyntax`**
+  `[parser]` `[post-alpha]` — the option's default became `LONG_FORM_TAGS`
+  (DSL_REGISTRY ∪ STRUCTURED_ELEMENTS) in the 2026-05-27
+  structured-element-infrastructure slice; the name is now misleading.
+  Rename to `longFormRegistry` (or similar) and update the JSDoc / index.js
+  surface. Bounded: this is a one-package public-API change with a small
+  internal consumer set.
 
 #### Discussions
 
@@ -485,15 +493,15 @@ shape, same batch:
   pipe-content of `<details>` becomes `<summary>`, body becomes the
   expandable content).
 - **Rich author metadata**: sub-elements within `<author>` —
-  `<affiliation>`, `<orcid>`, `<email>` (structured author info for
-  journal venues and JATS export). Structurally similar to
-  `<bib-entry>`. Note: `<corresponding>` was originally listed here
-  and is **ruled a kwarg, not an element** — `+corresponding`
-  boolean on `<author>` (already present on `<author>`); the
-  structured-author interface (kwargs-or-child-tags lift parallel to
-  `<meta>`) is filed separately as the **`<author>` structured-interface
-  reconciliation** item under Planned work below, which absorbs the
-  missing `<name>` vocabulary entry and the `+corresponding` kwarg work.
+  `<name>`, `<affiliation>`, `<orcid>`, `<email>` (structured author
+  info for journal venues and JATS export). **All shipped** — the
+  three of `<affiliation>`/`<orcid>`/`<email>` in deferred-vocab
+  sub-slice 1 (`13cac93`); `<name>` plus the structured-author
+  interface (kwargs-or-child-tags lift parallel to `<meta>`) in the
+  2026-Q2 structured-element-infrastructure slice. `<corresponding>`
+  was originally listed here as an element and was **ruled a kwarg,
+  not an element** — `+corresponding` boolean on `<author>`, also
+  shipped with the structured-element infrastructure.
 - **Document-level metadata elements**: `<license>` (SPDX code),
   `<doi>`, `<subject>` (document classifier). Each is a small addition
   to `<meta>`'s allowed children. Two originally-listed members are
@@ -646,50 +654,40 @@ contract.** One open sub-question recorded inside the design (the
 exact membership list of the frameable class) is one of the items the
 Phase 0 confirms by enumerating current DSL-registry members.
 
-**`<author>` structured-interface reconciliation** `[vocab]` `[alpha]`.
-Implementation slice parallel to the `<meta>` apparatus-tag
-reconciliation (`578d6f0`). `<author>` is a structured-data-container
-tag (per `DESIGN.md` §"Structured-data-container tags") — it accepts
-both kwarg form (`<author name="…" affiliation="…" orcid=… +corresponding>`)
-and child-tag form (`<author><name | …><affiliation | …>…</author>`);
-the gate's lift normalizes the kwarg form to the canonical child-tag
-form per a per-tag allowlist.
+**Migrate `<data>` onto the structured-element infrastructure**
+`[cross-cutting]` `[post-alpha]`. The 2026-05-27 structured-element-
+infrastructure slice (which built the registry, migrated `<meta>` onto
+it, and added `<author>`) assessed `<data>` and ruled it does not fit
+the structured-data-container category as currently defined: `<data>`'s
+content is a *list of resources* (`<library>`, `<bib-entry>`, etc.) —
+one-of-same-kind, plural — not a *record of named fields* with
+distinct scalar values. It also has no kwarg surface today. Leaving
+`<data>` in `DSL_REGISTRY` was the no-force outcome of the slice's
+Step 5 assessment.
 
-The slice's work: define the `<author>` allowlist (the slice prompt
-names `name`, `affiliation`, `orcid`, `email`, and the
-`+corresponding` boolean); add the per-tag lift rule to the
-normalize-to-canonical gate; rewrite the `author.md` vocab entry to
-match (today's entry documents `affiliation`/`orcid`/`email`/`corresponding`
-as `data-*` kwargs, which is the pre-reconciliation surface); add
-`<author>` to `DSL_REGISTRY` so its long-form child-tag content is
-parsed recursively (the deferred-vocab sub-slice 1 milestone surfaced
-that `<author>` is not in `DSL_REGISTRY` today, so the child-tag form
-doesn't parse as long-form). **Absorbs the missing `<name>`
-vocabulary entry** — `<name>` is an `<author>` child element and
-belongs with this work, not loosely with another vocab sub-slice (the
-deferred-vocab sub-slice 1 milestone records `<name>` as a finding
-for this item).
+This item: revisit `<data>` after observing how the structured-element
+infrastructure ages with `<meta>` and `<author>`. Two paths to choose
+between when scoping: (a) extend the structured-element registry to
+also cover list-of-resources containers (the spec gains a
+`childrenAreList: true` flag or similar); (b) define a sibling
+registry for that pattern and keep `STRUCTURED_ELEMENTS` strictly
+about field-record containers. Either way, the goal is to remove
+`<data>` from `DSL_REGISTRY`'s long-form-eligibility role (since
+`<data>` is not a DSL) and place it in a category that matches what
+it is.
 
-The slice is alpha-scope because structured author data is a Layer 1
-vocabulary obligation the alpha release ships (it is not a JATS-export
-patch). It supersedes the "author is flat for the alpha" ruling
-recorded in the `578d6f0` apparatus-tag reconciliation milestone
-(STATUS.md history) — see the 2026-Q2 "design decisions recorded"
-milestone in STATUS.md for the supersession trail.
-
-**Cleanup the slice must also do** (live carriers of the old ruling
-the design-recording slice could not retire under its no-product-code
-constraint, surfaced by its supersession search): rewrite
-`packages/layer1-vocabulary/elements/meta.md` L267 (today reads
-"`<author>` — author (a single flat value per `<author>`); …
-Structured author data … is attempted at the JATS export boundary.");
-rewrite the comment block in
-`packages/acadamark-interpreter/src/lib/apparatus-allowlists.js`
-L20-29 (today reads "`author` is FLAT (single value, not a structured
-author-object); structured author data is attempted at the JATS export
-boundary, not carried in the authoring surface."). Both predate this
-ruling and must be brought into line when the structured `<author>`
-interface lands.
+**Rename the `dslRegistry` option on `acadamarkSyntax`** `[parser]`
+`[post-alpha]`. The plugin option's default became `LONG_FORM_TAGS`
+(the union of `DSL_REGISTRY` and `STRUCTURED_ELEMENTS`) in the
+2026-05-27 structured-element-infrastructure slice; the historical
+option name is now misleading. The 2026-05-27 slice left the name
+unchanged to avoid a public-API churn inside an already-large slice
+(see the JSDoc comment in `packages/remark-acadamark/src/syntax.js`
+for the explanation). This item: rename to `longFormRegistry` (or
+similar), update the JSDoc in `syntax.js` and the plugin entry in
+`packages/remark-acadamark/src/index.js`, audit any internal callers
+that pass the option (the codebase grep at slice-end found no such
+callers; the option is exposed but unused by default consumers).
 
 ### Discussions
 

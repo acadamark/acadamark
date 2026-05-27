@@ -3,7 +3,14 @@
  */
 
 import { markdownLineEnding } from 'micromark-util-character'
-import { DSL_REGISTRY } from 'acadamark-core/dsl-registry'
+// Long-form-eligibility consults the union of DSL_REGISTRY (true DSLs +
+// historical structural-container tags like <aside>, <note>, <ul>, <data>)
+// and STRUCTURED_ELEMENTS (<meta>, <author>). The union is precomputed in
+// acadamark-core as LONG_FORM_TAGS and exposed for parser use; the parser
+// only needs `.has(tagname)` to decide whether `<tag>…</tag>` can open as
+// long-form. See acadamark-core/structured-elements.js for the rationale
+// for keeping the two registries separate.
+import { LONG_FORM_TAGS } from 'acadamark-core/structured-elements'
 
 const LT = 60         // <
 const GT = 62         // >
@@ -55,10 +62,16 @@ function isTagNameContinueCode(code) {
  * Single-line constructs produce a single chunk; no behaviour change.
  *
  * @param {{ dslRegistry?: Set<string> }} [options]
+ *   `dslRegistry` is the historical option name; it now overrides the
+ *   long-form-eligibility set (the union of DSL_REGISTRY and
+ *   STRUCTURED_ELEMENTS via LONG_FORM_TAGS). The default is the union;
+ *   callers that want the historical DSL_REGISTRY-only behavior pass it
+ *   explicitly. The option name is preserved for back-compat with internal
+ *   consumers; a rename is filed as a follow-up.
  * @returns {import('micromark-util-types').Extension}
  */
 export function acadamarkSyntax(options = {}) {
-  const registry = options.dslRegistry ?? DSL_REGISTRY
+  const registry = options.dslRegistry ?? LONG_FORM_TAGS
   return {
     flow: {
       [LT]: [

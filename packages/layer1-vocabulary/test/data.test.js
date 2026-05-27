@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 82 primary + 1 'quote' alias = 83.
+// Entry count: 83 primary + 1 'quote' alias = 84.
 // Recent additions:
 // - 2026-Q2: 5 <meta> allowlist members (doi, license, lang, version,
 //   keywords) added by the apparatus-tag reconciliation follow-on.
@@ -33,9 +33,12 @@ function check(label, cond) {
 //   publication-date, affiliation, orcid, email, subject (metadata /
 //   author sub-elements); abbr, term (inline-semantic); kbd, var,
 //   samp, output (HTML-native inline). Brought count from 71 → 82.
+// - 2026-Q2: <name> added by the <author> structured-interface
+//   reconciliation slice (the missing entry surfaced as a finding in
+//   deferred-vocab sub-slice 1). Brought count from 82 → 83 primary.
 check(
-  `VOCABULARY has 83 entries (82 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 83,
+  `VOCABULARY has 84 entries (83 primary + 'quote' alias)`,
+  Object.keys(VOCABULARY).length === 84,
 );
 
 // Build-time loader has nothing to report in normal state.

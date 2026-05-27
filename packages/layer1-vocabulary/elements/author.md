@@ -10,138 +10,199 @@ acadamark_attributes:
   classes:
     maps_to: class
   kwargs:
+    name:
+      lifts_to_child: name
+      notes: |
+        The author's name. Authored as a kwarg, lifted at the
+        normalize-to-canonical gate to a <name> child tag. Equivalent
+        to authoring <name | ...> inside the <author>'s child-tag form.
     affiliation:
-      maps_to: data-affiliation
+      lifts_to_child: affiliation
       notes: |
-        Author's institutional affiliation. Maps to JATS <aff> at export.
+        Author's institutional affiliation. Lifts to <affiliation>.
     orcid:
-      maps_to: data-orcid
+      lifts_to_child: orcid
       notes: |
-        Author's ORCID identifier (e.g., 0000-0000-0000-0000).
+        Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts
+        to <orcid>.
     email:
-      maps_to: data-email
+      lifts_to_child: email
       notes: |
-        Author's contact email address.
+        Author's contact email address. Lifts to <email>.
     corresponding:
-      maps_to: data-corresponding
+      maps_to: corresponding
       values: ['true', 'false']
       notes: |
-        Boolean flag for the corresponding author. JATS uses
-        contrib corresp="yes" for the corresponding author.
+        Marks this author as the corresponding author (JATS
+        contrib corresp="yes"). A scalar marker — stays as a kwarg/
+        attribute on the canonical Layer 1 <author>; never lifted to
+        a child tag. Both surface forms are accepted: +corresponding
+        (boolean shorthand) and corresponding=true (explicit kwarg)
+        both normalize to a `corresponding="true"` attribute on the
+        canonical Layer 1 node. The structured-element gate promotes
+        the +form into the kwarg surface so the schema renderer's
+        attribute mapping fires uniformly.
 content:
-  type: prose
-  becomes: children
+  type: structured
+  shape:
+    - element: name
+      required: false
+      contains: [inline]
+    - element: affiliation
+      required: false
+      multiple: true
+    - element: orcid
+      required: false
+    - element: email
+      required: false
+      multiple: true
   notes: |
-    Author content can be either:
-    - Simple: pipe-content as "Given Family" name string.
-    - Structured: explicit child elements (<given-names>, <surname>, etc.).
+    <author> is a structured-data-container tag (parallel to <meta>;
+    see DESIGN.md §"Structured-data-container tags"). It accepts two
+    equivalent authoring forms: kwargs (scalar fields) and child tags
+    (structured fields). The normalize-to-canonical gate lifts the
+    kwarg form to the canonical child-tag form per the spec in
+    acadamark-core/structured-elements.js. The Layer 1 canonical
+    shape carries child tags plus the +corresponding boolean kwarg.
+
+    An unrecognized child tag inside <author> produces an informative
+    diagnostic (warn, not error — the always-renders pattern).
 content_handler: default
 jats_counterpart:
   element: 'contrib contrib-type="author"'
   notes: |
     JATS uses <contrib contrib-type="author"> for authors. The structural
     JATS form uses <name><given-names>...</given-names><surname>...</surname></name>
-    inside <contrib>. The exporter dispatches based on whether the acadamark
-    <author> uses simple or structured form.
+    inside <contrib>. Acadamark's <name> is a single unparsed string
+    matching JATS's <string-name>; the exporter elects to emit
+    <string-name> verbatim or decompose it into <surname>/<given-names>
+    per the target schema's requirements. <affiliation>, <orcid>,
+    <email> map to JATS <aff>, <contrib-id contrib-id-type="orcid">,
+    and <email> respectively. +corresponding becomes corresp="yes" on
+    the <contrib> element.
 shorthand_examples:
   - source: '<author | Jane Goodall>'
-    layer1_html: '<author>Jane Goodall</author>'
+    layer1_html: |
+      <author>Jane Goodall</author>
     notes: |
-      Simple form. The pipe content is parsed as "Given Family" by JATS
-      export heuristics (last word as surname). Most casual authoring
-      uses this form.
-  - source: '<author orcid=0000-0001-2345-6789 affiliation="Cambridge University" | Jane Goodall>'
-    layer1_html: '<author data-orcid="0000-0001-2345-6789" data-affiliation="Cambridge University">Jane Goodall</author>'
+      Backward-compatible casual form (carried forward from before the
+      structured-interface reconciliation). The pipe content sits as
+      text content of <author>; it is NOT lifted to a <name> child —
+      authors who want the structured shape use the kwarg form below
+      or the child-tag form. JATS export reads the name string either
+      way.
+  - source: '<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />'
+    layer1_html: |
+      <author +corresponding>
+        <name>Jane Goodall</name>
+        <orcid>0000-0001-2345-6789</orcid>
+        <affiliation>Cambridge University</affiliation>
+      </author>
     notes: |
-      Simple form with attributes. Affiliation, ORCID, and email are
-      attached as kwargs. The name still appears as pipe content.
+      Kwarg form. Each lifted kwarg becomes a child tag at the gate;
+      +corresponding stays as a boolean kwarg on the canonical
+      Layer 1 <author>.
   - source: |
-      <author corresponding=true affiliation="Cambridge University">
-        <given-names | Jane>
-        <surname | Goodall>
+      <author +corresponding>
+        <name | Jane Goodall>
+        <affiliation | Cambridge University>
+        <orcid | 0000-0001-2345-6789>
         <email | jane@example.com>
       </author>
     layer1_html: |
-      <author data-corresponding="true" data-affiliation="Cambridge University">
-        <given-names>Jane</given-names>
-        <surname>Goodall</surname>
+      <author +corresponding>
+        <name>Jane Goodall</name>
+        <affiliation>Cambridge University</affiliation>
+        <orcid>0000-0001-2345-6789</orcid>
         <email>jane@example.com</email>
       </author>
     notes: |
-      Structured form. Used when authors need explicit given/surname
-      separation, multiple email addresses, or other structured author
-      metadata.
+      Child-tag form. The canonical Layer 1 shape. Both this form and
+      the equivalent kwarg form above produce the same Layer 1 output.
   - source: |
       <meta>
         <author | Jane Goodall>
         <author | David Attenborough>
-        <author corresponding=true | Charles Darwin>
+        <author +corresponding | Charles Darwin>
       </meta>
     layer1_html: |
       <meta>
         <author>Jane Goodall</author>
         <author>David Attenborough</author>
-        <author data-corresponding="true">Charles Darwin</author>
+        <author +corresponding>Charles Darwin</author>
       </meta>
     notes: |
-      Multiple authors are sibling <author> elements. The third is the
-      corresponding author. The structural plugin groups them in
-      JATS export as <contrib-group>.
+      Multiple authors are sibling <author> elements inside <meta>.
+      The third is the corresponding author. JATS export groups them
+      as <contrib-group>.
 interpreter_strategy: schema
 ---
 
 # `<author>`
 
-A document author. Multiple authors are written as multiple sibling `<author>` elements inside `<meta>` (or chapter-level `<meta>` in edited volumes).
+A document author. `<author>` is a structured-data-container tag — it accepts both a kwarg form and a child-tag form, both reducing to the same Layer 1 child-tag shape.
 
 ## Semantic intent
 
 `<author>` represents one author of a document. Multiple authors are sibling elements; their order reflects authorship order (first author first, etc.).
 
-The element is structured to support both casual and rigorous authoring:
+The element is the canonical home for structured author metadata: the author's name, institutional affiliation, ORCID identifier, contact email, and the corresponding-author marker. Both casual and rigorous authoring are supported:
 
-- **Simple form**: pipe content is the author name. Sufficient for most papers.
-- **Structured form**: explicit child elements for given name, surname, email, ORCID. Used when scholarly metadata requires precise structure.
+- **Casual:** a single pipe content (`<author | Jane Goodall>`) is the author's name.
+- **Rigorous:** explicit child tags (`<name>`, `<affiliation>`, `<orcid>`, `<email>`) for scholarly-publishing metadata.
+- **Kwarg shorthand:** the same structured fields authored as kwargs (`<author name="…" orcid="…">`) — the gate lifts these to child tags.
 
-## Authoring
+## Why structured
 
-**Simple form (most common).**
+`<author>` was previously documented as a flat element (the author's name as the only content, with scholarly metadata deferred to the JATS export boundary). That stance was superseded — structured author data is a Layer 1 obligation the alpha release ships, not a JATS-export concession. The shared structured-element infrastructure (see `DESIGN.md` §"Structured-data-container tags" and the `acadamark-core/structured-elements.js` registry) gives `<author>` the same kwarg/child-tag duality `<meta>` has.
+
+## Authoring patterns
+
+**Simplest form (backward-compatible).**
 
 ```
 <author | Jane Goodall>
 ```
 
-The pipe content is the full name. JATS export heuristics parse this as "given name(s) + surname" with the last word as surname. This works correctly for English-style names; non-English name conventions (where surname comes first) need the structured form.
+The pipe content sits as text content of `<author>`. This is the casual form carried forward from before the structured-interface reconciliation; the value is NOT lifted to a `<name>` child. Authors who want the structured shape use the kwarg form or the child-tag form below. JATS export reads the name string either way.
 
-**Simple form with attributes.**
-
-```
-<author orcid=0000-0001-2345-6789 affiliation="Cambridge University" | Jane Goodall>
-```
-
-Common metadata (affiliation, ORCID, email) attaches as kwargs. The name remains in the pipe content.
-
-**Structured form.**
+**Kwarg form (self-closing).**
 
 ```
-<author corresponding=true affiliation="Cambridge University">
-  <given-names | Jane>
-  <surname | Goodall>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+```
+
+Each lifted kwarg becomes a child tag at the gate. `+corresponding` is a boolean kwarg — a scalar marker — and stays as a kwarg on the canonical Layer 1 `<author>` (it is not lifted to a child tag).
+
+**The self-closing `/>` is required for the kwarg form.** `<author>` is long-form-eligible (so the child-tag form below parses), which means the parser otherwise treats `<author …>` (no pipe, no `/`) as a long-form opener and scans forward for `</author>`. `/>` disambiguates — same constraint `<table />` follows for the same reason. Authors who prefer to be explicit can use `<author kwargs></author>` (long-form with empty body) as an alternative.
+
+**Child-tag form (the canonical Layer 1 shape).**
+
+```
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
   <email | jane@example.com>
 </author>
 ```
 
-Used when scholarly metadata requires explicit structure: non-English name conventions, multiple email addresses, multiple affiliations, or precise given/family name separation.
+The most explicit form. Useful when:
+
+- A name is non-Western (the structured child carries the unparsed name string regardless of conventions).
+- An author has multiple affiliations (`<affiliation>` accepts multiple siblings).
+- An author has multiple email addresses (same).
+- The structured form is preferred for downstream tooling (JATS export benefits from explicit structure).
 
 ## Multiple authors
 
-Multiple authors are sibling `<author>` elements. No explicit grouping required:
+Multiple authors are sibling `<author>` elements inside `<meta>`. No explicit grouping required:
 
 ```
 <meta>
   <author | Jane Goodall>
   <author | David Attenborough>
-  <author | Charles Darwin>
+  <author +corresponding | Charles Darwin>
 </meta>
 ```
 
@@ -149,35 +210,45 @@ The JATS exporter wraps siblings in `<contrib-group>` automatically.
 
 ## Corresponding author
 
-Mark the corresponding author with `corresponding=true`:
+Mark the corresponding author with the `+corresponding` boolean kwarg:
 
 ```
-<author corresponding=true | Jane Goodall>
+<author +corresponding | Jane Goodall>
 ```
 
-JATS export uses `corresp="yes"` on the contrib element. Tooling that needs to identify the corresponding author can find this attribute.
+Or, equivalently in any other form (kwarg form, child-tag form). JATS export uses `corresp="yes"` on the contrib element. Tooling that needs to identify the corresponding author finds this attribute.
 
-## Attributes
+## The kwarg → child-tag lift
 
-`affiliation` — institutional affiliation. Free-form text or a structured reference to a separate `<aff>` element (future).
+The normalize-to-canonical gate lifts the kwarg form to the child-tag form per the per-tag spec recorded in `acadamark-core/structured-elements.js`. The lift fires whenever an `<author>` has a kwarg whose key is in the lifted set (`name`, `affiliation`, `orcid`, `email`). The kwarg value becomes the lifted child tag's text content.
 
-`orcid` — ORCID identifier. The four-block dashed form (`0000-0000-0000-0000`).
+`+corresponding` is in the boolean-kwargs set — it always stays as a kwarg on the canonical node, never as a child tag.
 
-`email` — contact email address.
+An unrecognized `<author>` kwarg produces an informative diagnostic and is dropped.
 
-`corresponding` — boolean flag. `true` marks this author as the corresponding author.
+## Unknown children
+
+`<author>` validates its children against the allowlist (`name`, `affiliation`, `orcid`, `email`). An unrecognized child tag produces an informative diagnostic (warn, not error — the always-renders pattern). The unrecognized child still renders, the author sees the diagnostic in the build output.
+
+## Child elements
+
+The accepted children of `<author>`:
+
+- [`<name>`](name.md) — the author's name (typically a single string).
+- [`<affiliation>`](affiliation.md) — institutional affiliation.
+- [`<orcid>`](orcid.md) — ORCID identifier.
+- [`<email>`](email.md) — contact email address.
 
 ## JATS mapping
 
 | acadamark | JATS |
-|-----------|------|
+|---|---|
 | `<author>` | `<contrib contrib-type="author">` |
-| Simple form pipe content | `<name><given-names>...</given-names><surname>...</surname></name>` (parsed) |
-| Structured form children | `<name>` with explicit `<given-names>` and `<surname>` |
-| `affiliation` | `<aff>` (structured) or attribute |
-| `orcid` | `<contrib-id contrib-id-type="orcid">` |
-| `email` | `<email>` |
-| `corresponding=true` | `corresp="yes"` attribute on `<contrib>` |
+| `<name>` child | `<string-name>` (or decomposed `<name><given-names>…</given-names><surname>…</surname></name>` per target schema) |
+| `<affiliation>` child | `<aff>` |
+| `<orcid>` child | `<contrib-id contrib-id-type="orcid">` |
+| `<email>` child | `<email>` |
+| `+corresponding` kwarg | `corresp="yes"` attribute on `<contrib>` |
 
 ## Render-mode lowering
 
@@ -187,4 +258,5 @@ In render mode, `<author>` lowers to a `<span class="author">` or similar. The v
 
 - [`<editor>`](editor.md) — for book editors (different role).
 - [`<meta>`](meta.md) — the metadata wrapper that holds authors.
-- `<given-names>`, `<surname>`, `<email>` — structured-form sub-elements (briefly documented within this entry; standalone entries can be added if richer documentation is needed).
+- [`<name>`](name.md), [`<affiliation>`](affiliation.md), [`<orcid>`](orcid.md), [`<email>`](email.md) — `<author>`'s child elements.
+- `DESIGN.md` §"Structured-data-container tags" — the design baseline.

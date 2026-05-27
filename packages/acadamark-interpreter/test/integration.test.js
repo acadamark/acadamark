@@ -988,4 +988,91 @@ export function run() {
     snapshotHast('document-26', hast);
     console.log('PASS: integration doc26 (deferred-vocab sub-slice 1 elements render)');
   }
+
+  // ── Document 27: <author> structured-interface reconciliation ──────────────
+  // Proves kwarg form and child-tag form of <author> normalize to
+  // equivalent Layer 1 structures, and the unknown-kwarg path warns + drops.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-27-author-structured-interface.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Author 1 (kwarg form): name / orcid / affiliation lift to child tags;
+    // +corresponding stays as a kwarg/attribute.
+    // Author 2 (child-tag form): same fields authored directly. The lift
+    // produces the same child tags for author 1; both authors carry
+    // <name>Jane Roe</name>, <orcid>0000-0000-0000-0000</orcid>,
+    // <affiliation>University A</affiliation>.
+    //
+    // We assert each child element appears with its value, and that the
+    // corresponding-marker fires only on author 1.
+    assert.ok(
+      html.includes('<name>Jane Roe</name>'),
+      'doc27: <name>Jane Roe</name> renders (appears for both kwarg-form and child-tag-form authors)',
+    );
+    assert.ok(
+      html.includes('<orcid>0000-0000-0000-0000</orcid>'),
+      'doc27: <orcid> renders with its value',
+    );
+    assert.ok(
+      html.includes('<affiliation>University A</affiliation>'),
+      'doc27: <affiliation> renders with its value',
+    );
+
+    // Both forms produce the same two child elements per author, so each
+    // string above appears at least twice in the output (once per author).
+    const matches = (s, sub) => (s.split(sub).length - 1);
+    assert.equal(
+      matches(html, '<name>Jane Roe</name>'),
+      2,
+      'doc27: <name>Jane Roe</name> appears twice (kwarg-form + child-tag-form authors)',
+    );
+    assert.equal(
+      matches(html, '<orcid>0000-0000-0000-0000</orcid>'),
+      2,
+      'doc27: <orcid> appears twice (both forms)',
+    );
+    assert.equal(
+      matches(html, '<affiliation>University A</affiliation>'),
+      2,
+      'doc27: <affiliation> appears twice (both forms)',
+    );
+
+    // +corresponding becomes the data-corresponding kwarg/attribute on the
+    // canonical Layer 1 node (per the author.md schema's boolean kwarg
+    // declaration). Only author 1 has it.
+    assert.ok(
+      html.includes('corresponding'),
+      'doc27: corresponding attribute appears (author 1)',
+    );
+
+    // Author 3 (Charles Darwin): pipe content sits as text in <author>; the
+    // bogus=x kwarg is dropped with a diagnostic. We don't assert on the
+    // diagnostic in HTML (it goes to file.messages), only that the rendered
+    // text remains and bogus=x does not appear as an attribute.
+    assert.ok(
+      html.includes('Charles Darwin'),
+      'doc27: backward-compatible casual form keeps pipe content',
+    );
+    // The fixture's own prose mentions the test name "bogus" in a <code>
+    // span; we check that bogus is not an *attribute* on the rendered
+    // <author> elements (which is what the lift's drop should ensure).
+    assert.ok(
+      !/<author[^>]*\bbogus\b[^>]*>/.test(html),
+      'doc27: unknown kwarg "bogus" does not appear as an <author> attribute (lift dropped it)',
+    );
+
+    // No <author> child is rendered as an unknown-span (the new <name>
+    // vocab entry covers it; <affiliation>/<orcid>/<email> were shipped in
+    // deferred-vocab sub-slice 1).
+    assert.ok(
+      !html.includes('data-acadamark-unknown="name"'),
+      'doc27: <name> renders as a real element (the new vocab entry covers it)',
+    );
+
+    snapshotHast('document-27', hast);
+    console.log('PASS: integration doc27 (<author> structured-interface reconciliation)');
+  }
 }

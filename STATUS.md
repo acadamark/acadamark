@@ -994,3 +994,94 @@ that). One line gets added every few months, not every slice.
   are searched for and confirmed retired in all live spec surfaces;
   the only remaining mention of each is in append-only history
   (STATUS milestones), which is the correct location for them.
+- **2026-Q2 — structured-element infrastructure built; `<meta>`
+  migrated; `<author>` added; supersession #2 completed.** Built the
+  shared infrastructure for structured-data-container tags (tags
+  holding a record of named fields, accepting both kwarg and child-tag
+  authoring forms, with a kwarg→child-tag lift at the gate). The
+  infrastructure lives at `packages/acadamark-core/src/structured-elements.js`
+  as a separate registry from `DSL_REGISTRY`; the parser's
+  long-form-eligibility check consults the union via a derived
+  `LONG_FORM_TAGS` set. Each entry is a per-tag spec: accepted kwargs,
+  the subset lifted to child tags, boolean-marker kwargs, child
+  allowlist, an opt-in child-validation flag, and an optional
+  misuse-feedback partner pointer. The interpreter's
+  `normalize-to-canonical.js` consumes the spec generically via
+  `liftStructuredKwargs(node, file)`; the previous `<meta>`-specific
+  `liftMetaKwargs` and the `META_KWARGS` / `META_KWARGS_LIFTED` /
+  `isMetaKwarg` data in `apparatus-allowlists.js` were replaced by the
+  generic mechanism (apparatus-allowlists.js now holds only `<config>`
+  data, since `<config>` is not a structured-data-container).
+  Migrated `<meta>` onto the infrastructure: removed `['meta', 'default']`
+  from `DSL_REGISTRY` (its long-form-eligibility now comes from
+  `STRUCTURED_ELEMENTS`); moved `<meta>`'s allowlist + lifted-subset +
+  `<config>` partner pointer into the new registry's `<meta>` spec.
+  **Behavior-preserving** for `<meta>`: every existing `<meta>`
+  integration snapshot (doc1, doc8, doc21, doc25, …) passes under
+  strict comparison with no diff. `<meta>`'s `validateChildren` flag
+  is deliberately off in the migration so the surface change is
+  purely internal.
+  Added `<author>` as the second structured-data-container: child
+  allowlist `name`/`affiliation`/`orcid`/`email`; boolean kwarg
+  `corresponding`; `validateChildren: true`. Both `+corresponding`
+  (boolean-form) and `corresponding=true` (kwarg-form) normalize to
+  the same canonical `corresponding="true"` attribute on the Layer 1
+  node — the gate promotes the boolean-form from `node.booleans` into
+  `node.kwargs` so the schema renderer's attribute mapping fires
+  uniformly. Added the `<name>` vocabulary entry (the entry the
+  deferred-vocab sub-slice 1 milestone surfaced as missing — `<name>`
+  is `<author>`'s name-string child element; JATS counterpart is
+  `<string-name>`, the unparsed-name form). Rewrote `author.md` to
+  document the structured interface; updated `meta.md` L267 to remove
+  the "author is flat" wording and point to `author.md` instead.
+  Vocabulary `data.js` regenerated (83 → 84 entries including the
+  `quote` alias; 83 primary); test count assertion bumped.
+  **`<data>` decision** (per the slice's Step 5 assessment): `<data>`
+  was assessed but **not** migrated. Its content is a list of
+  resources (`<library>`/`<bib-entry>`), not a record of named
+  fields; no kwarg surface. It does not fit the structured-data-
+  container shape as currently defined. Left in `DSL_REGISTRY` as-is;
+  filed a `[post-alpha]` follow-up backlog item to revisit (extend
+  the registry's spec to also cover list-of-resources containers, or
+  define a sibling registry).
+  **Supersession #2 completed.** The "author is flat for the alpha"
+  ruling, recorded in the `578d6f0` apparatus-tag-reconciliation
+  milestone, had two live product-code carriers the recording slice
+  (`1d100eb`) could not retire under its no-product-code constraint:
+  `meta.md` L267 and `apparatus-allowlists.js` L20-29. This slice
+  retired both. A repo-wide grep confirms no live spec or code
+  surface carries the old wording — the only remaining mentions are
+  in append-only history (the original 578d6f0 milestone and 1d100eb's
+  supersession-trail milestone, both correct as historical record)
+  and one explanatory comment in the new `structured-elements.js`
+  that explicitly retires the ruling.
+  **One authoring constraint surfaced** (now documented in
+  `DESIGN.md` §"Structured-data-container tags" + `author.md`): a
+  structured-data container in kwarg-only form must self-close
+  (`<author … />`) or use explicit-close-with-empty-body
+  (`<author …></author>`). Without one, the parser's long-form
+  tokenizer claims `<author …>` as a long-form opener and scans for
+  `</author>`. This is the same constraint `<table />` follows for
+  the same reason. The doc27 fixture exercises it; the fixture also
+  notes the related constraint that nested long-form close tags must
+  sit at column 0 of their line (an existing parser characteristic
+  surfaced when authoring nested `<author>` inside `<meta>` for the
+  fixture).
+  Two follow-up backlog items filed (both `[post-alpha]`):
+  (a) the `<data>` migration revisit above; (b) renaming the
+  `dslRegistry` option on `acadamarkSyntax` (the option's default
+  became `LONG_FORM_TAGS` and the name is now misleading; the slice
+  kept the historical name to avoid a public-API churn in an
+  already-large refactor).
+  Backlog: the `<author>` structured-interface reconciliation item
+  removed from both views (closed by this slice).
+  New integration fixture `document-27-author-structured-interface.acm`
+  + `integration doc27` test asserts kwarg-form and child-tag-form
+  `<author>` produce equivalent Layer 1 child structures (each child
+  element appears exactly twice — once per form), `+corresponding`
+  carries through to the canonical Layer 1 node, the unknown-kwarg
+  `bogus=x` is dropped (not present as an `<author>` attribute), and
+  the backward-compatible casual pipe-content form still works.
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites (incl.
+  new doc27); **no existing snapshot changed**.
