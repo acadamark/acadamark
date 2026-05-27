@@ -48,10 +48,25 @@ content:
     - element: date
       required: false
       multiple: true
-    - element: abstract
-      required: false
     - element: keywords
       required: false
+  notes: |
+    The structured-child content above is one of two equivalent authoring
+    forms for <meta>. The other is the kwarg form: <meta title="..."
+    author="..." doi="...">. The normalize-to-canonical gate lifts the
+    kwarg form to the canonical child-tag form per the META_KWARGS
+    allowlist (title / subtitle / author / date / doi / license / lang /
+    version / keywords). Unknown kwargs are dropped with a diagnostic;
+    <config>-shaped kwargs (e.g. citation-style) on <meta> get a
+    "did you mean <config>?" misuse hint.
+
+    NOTE on <abstract>: an <abstract> tag is the *its own element*, not
+    a child of <meta> — descriptive but distinct from descriptive
+    metadata. The vocabulary entry for <abstract> is not yet written
+    (filed as a finding in BACKLOG-ROADMAP.md). Until that entry exists,
+    documents that include an abstract should author it as <abstract>
+    outside <meta>; in <meta>, the key 'abstract' is NOT in the
+    allowlist and would be dropped with a diagnostic.
 content_handler: default
 jats_counterpart:
   element: 'article-meta, book-meta, or book-part-meta'
@@ -249,13 +264,12 @@ When both the container shorthand and `<meta>`'s `<title>` are present, the stru
 
 - `<title>` — document title.
 - `<subtitle>` — document subtitle.
-- `<author>` — author (multiple allowed).
+- `<author>` — author (a single flat value per `<author>`; multiple `<author>` tags for multi-author works). Structured author data (affiliation, ORCID, role) is not carried in the authoring surface — it is attempted at the JATS export boundary.
 - `<editor>` — editor (multiple allowed; common in edited volumes).
 - `<date>` — date (multiple allowed; type kwarg distinguishes publication, submission, etc.).
-- `<abstract>` — article abstract.
-- `<keywords>` — keyword list (future; not yet specified).
+- `<doi>`, `<license>`, `<lang>`, `<version>`, `<keywords>` — additional document-descriptive metadata. The kwarg forms (`doi=`, `license=`, etc.) lift to these child tags at the gate; the child-tag forms are authored directly. (Vocabulary entries for the names without existing `.md` files in `packages/layer1-vocabulary/elements/` are filed as findings in `BACKLOG-ROADMAP.md`.)
 
-Other elements may be added to the descriptive vocabulary as needs emerge. Operational content (configuration, references) does not go in `<meta>`; it goes in `<config>` or `<data>` respectively.
+**Not in `<meta>`:** `<abstract>` is its own tag, distinct from descriptive metadata; an `<abstract>` vocabulary entry is filed as a separate finding. Operational content (configuration, references) does not go in `<meta>`; it goes in `<config>` or `<data>` respectively.
 
 ## What does NOT go in `<meta>`
 

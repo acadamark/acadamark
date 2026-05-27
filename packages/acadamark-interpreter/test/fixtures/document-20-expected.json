@@ -1,0 +1,1014 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Apparatus-tag reconciliation fixture"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Test Author"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "data-acadamark-unknown": "doi"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "10.1234/example"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#(none)",
+                        "className": [
+                          "ref-error"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "??ref: (none)??"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " reconciliation — kwargs, flags",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 7,
+                          "offset": 6
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 38,
+                          "offset": 37
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The ",
+                      "position": {
+                        "start": {
+                          "line": 5,
+                          "column": 1,
+                          "offset": 161
+                        },
+                        "end": {
+                          "line": 5,
+                          "column": 5,
+                          "offset": 165
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<ref>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " tag now honors kwargs (",
+                      "position": {
+                        "start": {
+                          "line": 5,
+                          "column": 12,
+                          "offset": 172
+                        },
+                        "end": {
+                          "line": 5,
+                          "column": 36,
+                          "offset": 196
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "type"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 5,
+                          "column": 42,
+                          "offset": 202
+                        },
+                        "end": {
+                          "line": 5,
+                          "column": 44,
+                          "offset": 204
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "format"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ") as data attributes and\nthe boolean flags ",
+                      "position": {
+                        "start": {
+                          "line": 5,
+                          "column": 52,
+                          "offset": 212
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 19,
+                          "offset": 255
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "+link"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "/",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 26,
+                          "offset": 262
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 27,
+                          "offset": 263
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "-link"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 34,
+                          "offset": 270
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 36,
+                          "offset": 272
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "+preview"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "/",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 46,
+                          "offset": 282
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 47,
+                          "offset": 283
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "-preview"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 57,
+                          "offset": 293
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 58,
+                          "offset": 294
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 5,
+                      "column": 1,
+                      "offset": 161
+                    },
+                    "end": {
+                      "line": 6,
+                      "column": 58,
+                      "offset": 294
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "display-math",
+                  "properties": {
+                    "id": "eqn:newton"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "katex-display"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "katex"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "katex-html"
+                                ],
+                                "ariaHidden": "true"
+                              },
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.6833em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ],
+                                        "style": "margin-right:0.1389em;"
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "F"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mrel"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "="
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.4306em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "ma"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "equation-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "(1)"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A default ref renders as a hyperlink with hover preview enabled:\n",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 1,
+                          "offset": 326
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 1,
+                          "offset": 391
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#eqn:newton",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "equation 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 18,
+                          "offset": 408
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 19,
+                          "offset": 409
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 10,
+                      "column": 1,
+                      "offset": 326
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 19,
+                      "offset": 409
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "With ",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 1,
+                          "offset": 411
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 6,
+                          "offset": 416
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "-link"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", the ref renders as a span (no anchor):\n",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 13,
+                          "offset": 423
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 1,
+                          "offset": 464
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "equation 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 24,
+                          "offset": 487
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 25,
+                          "offset": 488
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 13,
+                      "column": 1,
+                      "offset": 411
+                    },
+                    "end": {
+                      "line": 14,
+                      "column": 25,
+                      "offset": 488
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "With ",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 490
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 6,
+                          "offset": 495
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "-preview"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", the ref renders as an anchor but the hover-preview script\nwill skip attachment (data-no-preview=\"true\" stamped on the element):\n",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 16,
+                          "offset": 505
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 1,
+                          "offset": 635
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#eqn:newton",
+                        "className": [
+                          "ref"
+                        ],
+                        "data-no-preview": "true"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "equation 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 18,
+                          "column": 27,
+                          "offset": 661
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 28,
+                          "offset": 662
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 16,
+                      "column": 1,
+                      "offset": 490
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 28,
+                      "offset": 662
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "With explicit type/format kwargs flowing through to data attributes:\n",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "offset": 664
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 1,
+                          "offset": 733
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#eqn:newton",
+                        "className": [
+                          "ref"
+                        ],
+                        "data-ref-type": "equation",
+                        "data-ref-format": "number"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "equation 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 46,
+                          "offset": 778
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 47,
+                          "offset": 779
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "offset": 664
+                    },
+                    "end": {
+                      "line": 21,
+                      "column": 47,
+                      "offset": 779
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Apparatus-tag misuse — kwargs in the wrong place",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 50,
+                          "offset": 49
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The previous section demonstrates correct usage. This fixture also includes\na top-level ",
+                      "position": {
+                        "start": {
+                          "line": 25,
+                          "column": 1,
+                          "offset": 843
+                        },
+                        "end": {
+                          "line": 26,
+                          "column": 13,
+                          "offset": 931
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "config",
+                      "properties": {},
+                      "children": []
+                    },
+                    {
+                      "type": "text",
+                      "value": " block with a deliberate misuse — a ",
+                      "position": {
+                        "start": {
+                          "line": 26,
+                          "column": 21,
+                          "offset": 939
+                        },
+                        "end": {
+                          "line": 26,
+                          "column": 57,
+                          "offset": 975
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "meta",
+                      "properties": {},
+                      "children": []
+                    },
+                    {
+                      "type": "text",
+                      "value": "-shaped kwarg\nappearing on ",
+                      "position": {
+                        "start": {
+                          "line": 26,
+                          "column": 63,
+                          "offset": 981
+                        },
+                        "end": {
+                          "line": 27,
+                          "column": 14,
+                          "offset": 1008
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "config",
+                      "properties": {},
+                      "children": []
+                    },
+                    {
+                      "type": "text",
+                      "value": ". The lift gate emits a \"did you mean ",
+                      "position": {
+                        "start": {
+                          "line": 27,
+                          "column": 22,
+                          "offset": 1016
+                        },
+                        "end": {
+                          "line": 27,
+                          "column": 60,
+                          "offset": 1054
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "meta",
+                      "properties": {},
+                      "children": []
+                    },
+                    {
+                      "type": "text",
+                      "value": "?\" hint\nand drops the kwarg from the config map.",
+                      "position": {
+                        "start": {
+                          "line": 27,
+                          "column": 66,
+                          "offset": 1060
+                        },
+                        "end": {
+                          "line": 28,
+                          "column": 41,
+                          "offset": 1108
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 25,
+                      "column": 1,
+                      "offset": 843
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 41,
+                      "offset": 1108
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 31,
+      "column": 1,
+      "offset": 1192
+    }
+  }
+}

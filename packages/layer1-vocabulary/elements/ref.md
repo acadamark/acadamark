@@ -26,25 +26,49 @@ acadamark_attributes:
         can be resolved. Non-colon ids produce an unresolved error marker.
         This restriction may be relaxed in a future slice.
     type:
-      handled_by: handler
+      maps_to: data-ref-type
       values: [auto, figure, table, equation, section, sub-section, note, listing, theorem, other]
       default: auto
       notes: |
-        DEFERRED. The type kwarg is parsed but not used by the current
-        handler. The resolver always infers type from the registry entry.
+        Author-supplied hint about the intended kind of target. Flows
+        through to a data-ref-type attribute on the rendered anchor,
+        available for CSS/JS to use. The resolver-generated display text
+        is still computed from the id prefix and the DEFAULT_PREFIXES
+        dictionary; this kwarg does not currently override that text.
     format:
-      handled_by: handler
+      maps_to: data-ref-format
       values: [number, name, full, label-only, default]
       default: default
       notes: |
-        DEFERRED. The format kwarg is parsed but not used by the current
-        handler. Rendered text is always the prefix-dictionary default:
-        "equation N" for equations, "figure N" for figures, "note N" for
-        notes (prefix word from DEFAULT_PREFIXES, overridable per-document
-        via <config ref-prefix-eqn="...">).
-        Author-provided pipe content (<ref #id | custom text>) is also
-        deferred (recursive-content slice).
-        "full" would include the title ("figure 3: An Adult Elephant").
+        Author-supplied formatting hint. Flows through to a
+        data-ref-format attribute on the rendered anchor, available for
+        CSS/JS. The resolver-generated display text is still computed
+        from the prefix dictionary; future enhancements may use this
+        attribute to vary the rendered text.
+  booleans:
+    link:
+      default: true
+      notes: |
+        Controls whether the rendered ref is a navigable hyperlink. Default
+        is +link, producing <a href="#targetId" class="ref">...</a>. The
+        -link form produces <span class="ref">...</span> instead — useful
+        when the author wants the ref's display text without making it a
+        navigable anchor (e.g. inside a passage that itself describes the
+        cross-reference rather than invoking it).
+    preview:
+      default: true
+      notes: |
+        Controls the hover preview that attaches to the rendered ref by
+        default. Default +preview attaches a tippy tooltip showing the
+        target element's content. -preview adds data-no-preview="true"
+        to the rendered anchor; the hover-preview script's attacher
+        skips elements with that attribute.
+    title:
+      default: true
+      notes: |
+        Reserved / unimplemented. The original intent has not been
+        recovered; deliberately set aside until that intent is
+        articulated. Future work, not a current feature.
 content:
   type: prose
   becomes: children
@@ -151,17 +175,21 @@ If the target id is not in the registry, the reference renders as a visible erro
 
 Same principle as unresolved citations: the document renders even when there are errors.
 
-**Deferred: `type` kwarg.**
+**`type` kwarg.**
 
-`<ref #fig:scatter type=figure>` is parsed; the `type` kwarg is currently ignored. The resolver always infers the display word from the id prefix. Deferred. See `known-limitations.md`.
+`<ref #fig:scatter type=figure>` flows the kwarg to a `data-ref-type="figure"` attribute on the rendered anchor (available for CSS/JS to use). The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.
 
-**Deferred: `format` kwarg.**
+**`format` kwarg.**
 
-`<ref #eqn:newton format=number>` is parsed; the `format` kwarg is currently ignored. Rendered text is always the prefix-dictionary default. Deferred. See `known-limitations.md`.
+`<ref #eqn:newton format=number>` flows the kwarg to a `data-ref-format="number"` attribute on the rendered anchor. The resolver-generated display text is still the prefix-dictionary default; future enhancements may use this attribute to vary the rendered text.
 
-**Deferred: pipe content.**
+**Boolean flags `+link` / `-link`, `+preview` / `-preview`.**
 
-`<ref #fig:scatter | the scatter plot>` is parsed; the pipe content is not used as link text. The resolver-generated text is always used. Deferred to the recursive-content slice.
+Both default to on. `-link` produces a `<span class="ref">` instead of `<a>`; `-preview` adds `data-no-preview="true"` so the hover-preview attacher skips this ref.
+
+**Pipe content (`<ref #id | custom text>`).**
+
+Still deferred to a future slice — the resolver-generated text is always used as the link text. Pipe content on `<ref>` is not surfaced in the rendered output.
 
 ## Content
 
@@ -175,9 +203,15 @@ This is rarely needed. The resolver-generated text is usually preferred because 
 
 ## Attributes
 
-`type` indicates the intended kind of target. Parsed but currently ignored — the resolver infers the display word from the id prefix. Default: `auto`. See `known-limitations.md`.
+`type` indicates the intended kind of target. Flows to a `data-ref-type` attribute on the rendered anchor; available for CSS/JS. Default: `auto`. The resolver-generated display text continues to come from the id prefix.
 
-`format` controls how the cross-reference renders. Parsed but currently ignored — rendered text is always the prefix-dictionary default. Default: `default`. See `known-limitations.md`.
+`format` indicates the desired text formatting variant. Flows to a `data-ref-format` attribute on the rendered anchor; available for CSS/JS. Default: `default`. The resolver-generated display text continues to come from the prefix dictionary.
+
+`+link` (default) renders the ref as a navigable `<a>` anchor. `-link` renders a `<span class="ref">` instead — useful when the surrounding prose describes a cross-reference rather than invoking it.
+
+`+preview` (default) attaches a hover preview to the rendered anchor. `-preview` adds `data-no-preview="true"` so the hover-preview script skips this ref.
+
+`+title` is reserved for future use; the original intent is not yet recovered. Authoring it has no current effect.
 
 ## Cross-reference types
 

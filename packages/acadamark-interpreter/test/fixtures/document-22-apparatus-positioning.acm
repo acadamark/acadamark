@@ -1,0 +1,23 @@
+<meta type=article>
+  <title | Apparatus-tag positioning fixture>
+</meta>
+
+<section | A correctly-placed body section>
+
+The apparatus-tag positioning rule warns when `<meta>`/`<config>`/`<data>`/
+`<library>` appear inside another tag's content. This section is body
+content — no apparatus tags belong here. But the aside below deliberately
+places a `<config>` mid-body to trigger the diagnostic.
+
+<aside | This aside contains a misplaced apparatus tag.
+
+<config citation-style="chicago" />
+
+The aside continues, but the misplaced <config> got a warning and is
+silently ignored at its mis-placed position (the document still renders
+per the always-renders pattern).
+>
+
+<section | Surrounding content continues>
+
+Content after the misplaced apparatus tag renders normally.

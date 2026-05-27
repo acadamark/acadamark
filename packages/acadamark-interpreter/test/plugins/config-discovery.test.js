@@ -50,53 +50,16 @@ export function run() {
     console.log('PASS: config-discovery later declarations override earlier');
   }
 
-  // --- unknown kwarg is dropped from the config map and a warning is emitted ---
-  // (AUD-13 fix, 2026-05-25). Captures file.messages to assert the warning.
-  {
-    const tree = {
-      type: 'root',
-      children: [
-        {
-          type: 'acadamarkTag',
-          tagname: 'config',
-          kwargs: { 'citation-style': 'apa', 'foo-bar': 'baz' },
-          content: null,
-        },
-      ],
-    };
-    const messages = [];
-    const file = { data: {}, message(msg) { messages.push(msg); } };
-    acadamarkConfigDiscovery()(tree, file);
-    assert.equal(file.data.acadamarkConfig.get('citation-style'), 'apa', 'known kwarg accepted');
-    assert.equal(file.data.acadamarkConfig.has('foo-bar'), false, 'unknown kwarg dropped from map');
-    assert.equal(messages.length, 1, 'one warning emitted for unknown kwarg');
-    assert.ok(/foo-bar/.test(String(messages[0])), 'warning mentions the offending kwarg name');
-    console.log('PASS: config-discovery warns on unknown kwarg and drops it (AUD-13)');
-  }
+  // Note (2026-05-25, apparatus-tag reconciliation): kwarg validation and
+  // unknown-kwarg / misuse-feedback warnings have moved to the
+  // normalize-to-canonical gate (plugins/normalize-to-canonical.js's
+  // liftConfigKwargs). The gate runs before this plugin, so by the time
+  // config-discovery sees a <config> node, its kwargs are already validated
+  // and unknown kwargs are already dropped. The validation tests live with
+  // the gate (plugins/normalize-to-canonical.test.js); this file no longer
+  // duplicates them.
 
-  // --- metadata-shaped kwarg gets the specific "did you mean <meta>?" hint ---
-  {
-    const tree = {
-      type: 'root',
-      children: [
-        {
-          type: 'acadamarkTag',
-          tagname: 'config',
-          kwargs: { title: 'Wrong place' },
-          content: null,
-        },
-      ],
-    };
-    const messages = [];
-    const file = { data: {}, message(msg) { messages.push(msg); } };
-    acadamarkConfigDiscovery()(tree, file);
-    assert.equal(file.data.acadamarkConfig.has('title'), false, 'metadata kwarg dropped');
-    assert.equal(messages.length, 1);
-    assert.ok(/<meta>/.test(String(messages[0])), 'warning suggests <meta>');
-    console.log('PASS: config-discovery hints <meta> for metadata-shaped kwargs (AUD-13 + DD-3)');
-  }
-
-  // --- PG-9: deeply-nested <config> is now read by the recursive walk ---
+  // --- PG-9: deeply-nested <config> is read by the recursive walk ---
   {
     const tree = {
       type: 'root',

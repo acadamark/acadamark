@@ -14,6 +14,28 @@ acadamark_attributes:
     maps_to: id
   classes:
     maps_to: class
+  kwargs:
+    notes: |
+      <config> accepts an allowlisted set of kwargs as an authoring shorthand
+      for its structured-children configuration interface. The current
+      allowlist (interpreter-side, see
+      packages/acadamark-interpreter/src/lib/apparatus-allowlists.js):
+        - citation-style          (live; consumed by cite-resolution)
+        - number-equations        (live; consumed by numbering)
+        - number-figures          (live; consumed by numbering)
+        - number-tables           (live; consumed by numbering)
+        - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)
+        - theme                   (reserved; future)
+        - display-style           (reserved; future)
+        - note-position           (reserved; future)
+        - bibliography-position   (reserved; future)
+        - reference-library       (reserved; future)
+        - strict-mode             (reserved; future)
+      Unknown kwargs are dropped at the normalize-to-canonical gate with an
+      informative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on
+      <config> additionally triggers a "did you mean <meta>?" hint. Both
+      the kwarg form and the structured-children form below are valid
+      authoring spellings; both reduce to the same canonical Layer 1 shape.
 content:
   type: structured
   shape:

@@ -1,0 +1,30 @@
+<meta type=article title="Apparatus-tag reconciliation fixture" author="Test Author" doi="10.1234/example" />
+
+<section | <ref> reconciliation — kwargs, flags>
+
+The `<ref>` tag now honors kwargs (`type`, `format`) as data attributes and
+the boolean flags `+link`/`-link`, `+preview`/`-preview`.
+
+<$$ #eqn:newton | F = ma $$>
+
+A default ref renders as a hyperlink with hover preview enabled:
+<ref @eqn:newton>.
+
+With `-link`, the ref renders as a span (no anchor):
+<ref @eqn:newton -link>.
+
+With `-preview`, the ref renders as an anchor but the hover-preview script
+will skip attachment (data-no-preview="true" stamped on the element):
+<ref @eqn:newton -preview>.
+
+With explicit type/format kwargs flowing through to data attributes:
+<ref @eqn:newton type=equation format=number>.
+
+<section | Apparatus-tag misuse — kwargs in the wrong place>
+
+The previous section demonstrates correct usage. This fixture also includes
+a top-level <config> block with a deliberate misuse — a <meta>-shaped kwarg
+appearing on <config>. The lift gate emits a "did you mean <meta>?" hint
+and drops the kwarg from the config map.
+
+<config citation-style="apa" title="Mis-placed metadata kwarg" theme="classic" />

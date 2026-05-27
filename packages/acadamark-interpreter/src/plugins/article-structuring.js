@@ -41,6 +41,51 @@ function isBackMatter(node) {
   return isAcadamarkTag(node) && BACK_MATTER_TAGS.has(node.tagname);
 }
 
+// Apparatus tags — document-apparatus, not body content. Per the apparatus-
+// tag positioning principle (DESIGN.md §"Apparatus-tag positioning"), these
+// belong at the document edges (typically <meta> at start, the rest at end),
+// never mid-body inside another tag's content.
+//
+// <library> is included even though it is typically nested inside <data> —
+// the position check below treats <data> as transparent for <library>'s
+// purposes (a <library> inside <data> is correctly placed).
+const APPARATUS_TAGS = new Set(['meta', 'config', 'data', 'library']);
+
+/**
+ * Recursively walk acadamarkTag content arrays looking for apparatus tags
+ * mid-body. An apparatus tag at root (handled by the partition below) or
+ * nested inside <data> (legitimate — <library> sits in <data>) is fine; an
+ * apparatus tag inside any *other* content is a positioning warning.
+ *
+ * Informative diagnostic only — the document still renders (per the always-
+ * renders pattern). Hardening to an error is a separate one-line ruling.
+ */
+function warnMisplacedApparatus(nodes, file, parentTagname /* null at root */) {
+  for (const node of (nodes ?? [])) {
+    if (!isAcadamarkTag(node)) continue;
+    // At root (parentTagname === null), apparatus tags are correctly placed;
+    // the partition below assigns them to front / back / data-siblings as
+    // appropriate. Skip the warning for root-level apparatus tags.
+    // Inside <data>, a nested <library> (or other apparatus tag) is legitimate.
+    if (parentTagname !== null && parentTagname !== 'data' && APPARATUS_TAGS.has(node.tagname)) {
+      file?.message?.(
+        `<${node.tagname}> is a document-apparatus tag and belongs at the document edges ` +
+        `(typically <meta> at the start, <config>/<data>/<library> at the end). ` +
+        `Mid-body placement (inside <${parentTagname}>) is wrong — the structural plugin ` +
+        `cannot route this tag to its correct region. The document still renders, but the ` +
+        `apparatus tag is silently ignored at its mis-placed position.`,
+        node,
+        'article-structuring:apparatus-tag-mid-body',
+      );
+    }
+    // Recurse into the node's content. Skip opaque content (no nested
+    // acadamarkTag nodes live there).
+    if (Array.isArray(node.content) && !node.isOpaqueContent) {
+      warnMisplacedApparatus(node.content, file, node.tagname);
+    }
+  }
+}
+
 /**
  * Promote <title> and <subtitle> inside <meta>.content to <article-title>
  * and <article-subtitle>. The elements are mutated in place; they remain
@@ -109,8 +154,14 @@ function applyTitleAfterPipe(children, metaNode) {
  * @returns {(tree: import('mdast').Root) => void}
  */
 export function acadamarkArticleStructuring() {
-  return (tree) => {
+  return (tree, file) => {
     const children = tree.children ?? [];
+
+    // Apparatus-tag positioning check: warn (informatively) on any
+    // <meta>/<config>/<data>/<library> found mid-body. Runs before the
+    // partition below, so the warning fires regardless of whether the
+    // misplaced tag gets routed anywhere coherent.
+    warnMisplacedApparatus(children, file, null);
 
     // Detect document type from <meta> tag.
     const metaNode = findTag(children, 'meta');

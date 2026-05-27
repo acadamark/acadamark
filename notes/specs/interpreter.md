@@ -618,11 +618,16 @@ registration in §3.7; closure recorded in `STATUS.md` Milestones
 
 Config key `ref-prefix-{prefix}` overrides a prefix word per-document.
 
-The `format` and `type` kwargs on `<ref>` are parsed but the design for
-their effect on rendered output (numeric-only vs. labeled, type-disambiguated
-prefix word, etc.) is open work in the roadmap. Likewise, author-supplied
-pipe content in `<ref>` (custom link text) is parsed but its design
-treatment as the link text override is open work.
+The `format` and `type` kwargs on `<ref>` flow through to `data-ref-format`
+and `data-ref-type` attributes on the rendered anchor (the apparatus-tag
+reconciliation slice, 2026-05-25). The resolver-generated display text is
+still computed from the id prefix and the `DEFAULT_PREFIXES` dictionary;
+varying that text per `format` / `type` is future enhancement work, not
+required for the kwargs to be honored. The `+link` / `+preview` boolean
+flags control the rendered output's anchor-vs-span shape and hover-preview
+attachment respectively (both default true). The `+title` flag is reserved.
+Author-supplied pipe content in `<ref>` (custom link text override) is
+still deferred.
 
 ---
 

@@ -137,15 +137,6 @@ the current code and all confirmed closed (see the STATUS milestone).
   parser-error-node renderer half landed in the same slice, so this
   item is now the sole open gap in the always-renders guarantee per
   `principles.md`. *(`formerly DF-16`)*
-- [ ] **Make `<ref>` honor its parsed attributes** (`format`/`type`
-  kwargs, pipe content, `+link`/`+preview`/`+title` flags)
-  `[interpreter]` `[alpha]` — pulled from alpha Phase 2 slice 2
-  (2026-05-25) at Step 1 per the design-question check: the backlog
-  entry frames this as "one slice" but each of the four sub-attributes
-  has an open design question in the dependent specs (`ref.md` marks
-  `type` / `format` / pipe content "DEFERRED", and `+link`/`+preview`/
-  `+title` flags are not spec'd anywhere). Needs a design pass on each
-  attribute before implementation. *(`formerly PG-3, PG-4, PG-5`)*
 - [ ] **Multi-key citation key ordering preserved over CSL's alphabetical
   sort** `[interpreter]` `[alpha]` — pulled from the formerly-PG-8/9/11
   cluster (alpha Phase 2 slice 2, 2026-05-25) per the escape hatch:
@@ -189,6 +180,17 @@ the current code and all confirmed closed (see the STATUS milestone).
   DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(`formerly AUD-25`)*
 - [ ] **Add integration test and snapshot for `document-9-demo`**
   `[tests/build]` `[alpha]` *(`formerly GAP-9`)*
+- [ ] **Add vocabulary entries for `<meta>` allowlist members and
+  `<abstract>`** `[vocab]` `[alpha-if-cheap]` — The apparatus-tag
+  reconciliation (2026-05-25) defined the `<meta>` allowlist as
+  `title / subtitle / author / date / doi / license / lang /
+  version / keywords`, but only the first three plus `editor` and
+  `subtitle` have vocabulary entries today. The kwargs lift correctly
+  but render as `<span data-acadamark-unknown="…">` until vocabulary
+  entries exist for `doi`, `license`, `lang`, `version`, `keywords`.
+  Additionally `<abstract>` is its own tag (per the reconciliation
+  ruling, NOT a `<meta>` child) and needs its own entry. Small
+  vocabulary additions; each entry is a few lines of frontmatter.
 
 #### Planned work
 
@@ -329,11 +331,6 @@ above.
   snapshot inspection without manually rebuilding the pipeline. See the
   detailed entry below for the three options.
 
-- **Make `<ref>` honor its parsed attributes**
-  *(`formerly PG-3, PG-4, PG-5`)*. One slice scope — make `<ref>`
-  honor its parsed `format` / `type` kwargs, pipe content, and
-  `+link`/`+preview`/`+title` flags.
-
 ---
 
 ## Layer 0 — verify first (detailed)
@@ -407,35 +404,6 @@ render visibly via the new handlers at
 `packages/acadamark-interpreter/src/handlers/parser-errors.js`), so
 this is now the sole open gap in the always-renders guarantee per
 `principles.md` §"Current known gaps". *(`formerly DF-16`)*
-
-**Make `<ref>` honor its parsed attributes** `[interpreter]` `[alpha]`.
-`format`/`type` kwargs ignored (PG-3); author pipe-text ignored
-(PG-4); `+link`/`+preview`/`+title` flags ignored (PG-5). The backlog
-entry framed this as "one slice" but **pulled from alpha Phase 2 slice
-2 (2026-05-25) at Step 1 per the design-question check**: each of the
-four sub-attributes has an open design question.
-- `format` kwarg: vocab entry (`ref.md`) explicitly marks "DEFERRED.
-  The format kwarg is parsed but not used by the current handler";
-  values `number/name/full/label-only/default` each need a defined
-  output shape, and `full` would require title-capture work that
-  doesn't exist today.
-- `type` kwarg: vocab entry says "DEFERRED. The resolver always infers
-  type from the registry entry." What does an explicit `type=` do —
-  override the inference word? — is undefined.
-- pipe content (PG-4): vocab entry says pipe-content-as-link-text "is
-  also deferred"; how it interacts with the auto-generated text is
-  unspecified.
-- `+link`/`+preview`/`+title` flags (PG-5): **not specified anywhere
-  in the vocab entry, `interpreter.md` §3.9, or `principles.md`.** The
-  flags' intended semantics would need to be designed from scratch.
-
-`interpreter.md` §3.9 corroborates: "The `format` and `type` kwargs on
-`<ref>` are parsed but the design for their effect on rendered output
-… is open work in the roadmap. Likewise, author-supplied pipe content
-in `<ref>` (custom link text) is parsed but its design treatment as
-the link text override is open work." The honor-attributes item
-needs a per-attribute design pass first; the implementation slice is
-gated on those rulings. *(`formerly PG-3, PG-4, PG-5`)*
 
 **Multi-key citation key ordering preserved over CSL's alphabetical
 sort** `[interpreter]` `[alpha]`. `<cite [@smith2020, @jones2019]>` is

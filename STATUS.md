@@ -634,3 +634,98 @@ that). One line gets added every few months, not every slice.
   closed as part of this slice; PG-8 re-filed as its own pulled item
   with the finding. The remaining-AUD-N item's count updated from
   six to five (AUD-13 closed by fix, not by verify).
+- **2026-Q2 — apparatus-tag reconciliation.** A reconciliation slice
+  closing the `<ref>`-attributes bug pulled in Phase 2 slice 2 and
+  formalizing the `<meta>` / `<config>` / `<data>` / `<library>`
+  positioning + interface architecture per the user's settled
+  rulings. Six pieces:
+  **(i) `<ref>` reconciled as a normal tag.** The `type` and `format`
+  kwargs flow to `data-ref-type` / `data-ref-format` attributes on
+  the rendered anchor (via the marker → handler path); the `+link`
+  flag controls anchor-vs-span rendering (`-link` → `<span class="ref">`,
+  no `href`); the `+preview` flag controls hover-preview attachment
+  (`-preview` → `data-no-preview="true"`, honored by the
+  `hover-preview.js` attacher); `+title` is documented as reserved /
+  unimplemented (original intent not recovered). `ref.md` and
+  `interpreter.md` §3.9 had their "DEFERRED" / "open work" language
+  removed; the kwarg `maps_to` declarations added; the boolean flag
+  surface documented as a new `booleans:` section in the vocab entry.
+  Sniffing-site audit: only `ref-resolution.js` (resolver) and
+  `hover-preview.js` (preview attacher) touch `<ref>` behavior — both
+  updated.
+  **(ii) Apparatus-tag positioning rule.** A new
+  `warnMisplacedApparatus` walk inside `article-structuring.js`
+  emits an informative diagnostic when `<meta>` / `<config>` /
+  `<data>` / `<library>` appears inside another tag's content (not
+  at root). `<data>` is treated as transparent for `<library>`
+  (the legitimate `<data><library /></data>` nesting). The rule is
+  warning-level (informative diagnostic, not error); hardening to
+  error-level enforcement is a separate later one-line ruling.
+  **(iii) `<meta>` / `<config>` interface unified.** Both apparatus
+  tags accept two equivalent authoring forms — kwargs and child tags
+  — that reduce to the same Layer 1 canonical shape. For `<meta>`,
+  the lift at `normalize-to-canonical.js` converts allowlisted
+  kwargs to child tags (`title="X"` → `<title>X</title>`). For
+  `<config>`, kwargs stay as kwargs (matching the existing
+  config-discovery shape). The lift is one rule per tag at the
+  single gate (per the architecture), not a sniff in a downstream
+  plugin.
+  **(iv) `<meta>` allowlist defined**:
+  `title / subtitle / author / date / doi / license / lang / version /
+  keywords`, plus `type` (which stays as a structural-routing kwarg,
+  not lifted). `author` is flat per the ruling; structured author
+  data is attempted at the JATS export boundary. `abstract` is
+  deliberately NOT in the allowlist — it is its own tag; the
+  missing `<abstract>` vocabulary entry is filed as a finding in a
+  new backlog item alongside the missing `doi`/`license`/`lang`/
+  `version`/`keywords` entries.
+  **(v) `<config>` allowlist reconciled**. The AUD-13 fix's
+  inferred allowlist is extended with the user's enumerated keys:
+  live = `citation-style / number-equations / number-figures /
+  number-tables / ref-prefix-*`; reserved = `theme / display-style /
+  note-position / bibliography-position / reference-library /
+  strict-mode`. Per the prompt's instruction NOT to silently
+  implement new settings: reserved keys are accepted into the
+  config map without warnings but no plugin consumes them yet;
+  the per-key status is documented in
+  `acadamark-interpreter/src/lib/apparatus-allowlists.js`.
+  Adding a key here does not implement its behavior.
+  **(vi) Misuse feedback** fires for the complete key sets in both
+  directions: `<meta>`-shaped key in `<config>` gets a "did you
+  mean `<meta>`?" hint; `<config>`-shaped key in `<meta>` gets a
+  "did you mean `<config>`?" hint. Both are informative
+  diagnostics, not errors; the offending kwarg is dropped.
+  New shared module: `acadamark-interpreter/src/lib/apparatus-allowlists.js`
+  (allowlists as data + predicates, single source of truth for the
+  gate's lift, the misuse-feedback hints, and any future consumers).
+  Validation moved out of `config-discovery.js` (which is now a
+  read-only kwarg-collector) into the gate, keeping the
+  single-gate architecture consistent.
+  Three new fixtures: `document-20-apparatus-reconciliation.acm`
+  (`<ref>` with kwargs/flags + misuse hint end-to-end);
+  `document-21-meta-kwargs-and-children.acm` (kwarg form of `<meta>`
+  produces the same Layer 1 shape as authored child-tag form);
+  `document-22-apparatus-positioning.acm` (misplaced `<config>`
+  inside an aside triggers the warning; document still renders).
+  Five new unit tests added to `normalize-to-canonical.test.js`
+  covering the four kwarg-handling paths (unknown drop, meta-shaped
+  hint, lift, type-kwarg preservation, config-shaped-on-meta hint).
+  Config-discovery's prior validation tests were noted as relocated
+  (the gate owns validation now) — the recursive-walk test stays.
+  Spec drift: `ref.md` and `interpreter.md` updated; `config.md`
+  documents the kwarg surface alongside its existing structured-
+  children one (resolving the drift Phase 2 slice 2 surfaced);
+  `meta.md` removes `<abstract>` from the child-tag list and notes
+  the missing-entry finding. `DESIGN.md` records the
+  apparatus-tag positioning principle as a new principle
+  (alongside "The single gate" and "The h4-h6 exception"). Tests:
+  acadamark-core 50/50; remark-acadamark 128/128 (grammar
+  unchanged); acadamark-interpreter 24/24 suites; all prior
+  integration snapshots stable under strict comparison; the three
+  new fixtures' snapshots written on first run. Backlog: the
+  pulled `<ref>` honor-attributes item (formerly PG-3/4/5) removed
+  from both views; the start-here shortlist's stale `<ref>` entry
+  removed; one new alpha-if-cheap item filed for the missing
+  `<meta>`-allowlist vocabulary entries. The escape hatch did not
+  fire — neither `+preview` flag-gating (small) nor the
+  kwarg→child-tag lift (a normalize rule) needed structural rework.

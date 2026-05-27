@@ -750,4 +750,87 @@ export function run() {
     snapshotHast('document-17', hast);
     console.log('PASS: integration doc17 (parser edge cases — alpha Phase 2 slice 1)');
   }
+
+  // ── Document 20: apparatus-tag reconciliation — <ref> flags/kwargs ────────
+  // Validates the <ref> reconciliation: kwargs flow to data attributes;
+  // -link emits <span>; -preview adds data-no-preview; misuse hints fire.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-20-apparatus-reconciliation.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc20: article structure present');
+
+    // Default ref → <a href="#eqn:newton" class="ref">equation 1</a> (the
+    // hyperlink-default behavior, unchanged).
+    assert.ok(/<a href="#eqn:newton" class="ref">equation 1<\/a>/.test(html),
+      'doc20: default ref renders as anchor with default text');
+
+    // -link ref → <span class="ref">equation 1</span> (no anchor).
+    assert.ok(/<span class="ref">equation 1<\/span>/.test(html),
+      'doc20: -link ref renders as <span> (no anchor)');
+
+    // -preview ref → <a> with data-no-preview="true".
+    assert.ok(/data-no-preview="true"/.test(html),
+      'doc20: -preview ref carries data-no-preview attribute');
+
+    // type/format kwargs flow through to data-ref-type / data-ref-format.
+    assert.ok(/data-ref-type="equation"/.test(html),
+      'doc20: type kwarg flows to data-ref-type attribute');
+    assert.ok(/data-ref-format="number"/.test(html),
+      'doc20: format kwarg flows to data-ref-format attribute');
+
+    // Misuse: <config title="..."> with a metadata-shaped kwarg drops it.
+    // The fixture source contains "Mis-placed metadata kwarg" as the value;
+    // it must NOT appear in the rendered output anywhere (the kwarg was
+    // dropped at the gate).
+    assert.ok(!html.includes('Mis-placed metadata kwarg'),
+      'doc20: <config title=...> kwarg dropped from output (misuse hint)');
+
+    snapshotHast('document-20', hast);
+    console.log('PASS: integration doc20 (apparatus-tag reconciliation: <ref> + misuse hints)');
+  }
+
+  // ── Document 21: <meta> kwarg ↔ child-tag convergence ─────────────────────
+  // Validates that <meta> authored with kwargs (title=, author=, doi=)
+  // produces the same Layer 1 child-tag shape as if the author had written
+  // explicit <title>, <author>, <doi> children.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-21-meta-kwargs-and-children.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc21: article structure present');
+
+    // article-structuring promotes the lifted <title> to <article-title>.
+    assert.ok(html.includes('<article-title>Equivalent metadata via kwarg form</article-title>'),
+      'doc21: kwarg title lifts to child <title> then promotes to <article-title>');
+
+    // <author> child created from the author= kwarg.
+    assert.ok(html.includes('<author>Ariel Balter</author>'),
+      'doc21: kwarg author lifts to child <author>');
+
+    snapshotHast('document-21', hast);
+    console.log('PASS: integration doc21 (<meta> kwarg form lifts to canonical child-tag form)');
+  }
+
+  // ── Document 22: apparatus-tag mid-body positioning warning ───────────────
+  // Validates that a <config> placed inside an <aside>'s content triggers
+  // the positioning warning (informative diagnostic; document still renders).
+  // No HTML assertion checks for the warning text (warnings go to
+  // file.messages, not the rendered output) — the assertion is that the
+  // document renders and surrounding content is intact.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-22-apparatus-positioning.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc22: article still renders despite misplaced apparatus');
+    assert.ok(html.includes('A correctly-placed body section'),
+      'doc22: pre-violation content renders');
+    assert.ok(html.includes('Surrounding content continues'),
+      'doc22: post-violation content renders');
+    assert.ok(html.includes('<aside>'),
+      'doc22: the aside containing the misplaced apparatus still renders');
+
+    snapshotHast('document-22', hast);
+    console.log('PASS: integration doc22 (apparatus-tag mid-body positioning warning)');
+  }
 }

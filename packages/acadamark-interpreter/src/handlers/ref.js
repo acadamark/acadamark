@@ -4,10 +4,17 @@
 // runs before hast conversion. The handlers here are registered in
 // interpret-plugin.js under the INTERNAL_REGISTRY.
 //
-// __ref-marker kwargs: { targetId, text }
-//   Renders: <a href="#targetId" class="ref">TEXT</a>
-//   where TEXT is pre-computed by ref-resolution: "equation 3", "figure 1",
-//   "note 2", or label-tail for unnumbered labeled targets.
+// __ref-marker kwargs (post-2026-05-25 apparatus-tag reconciliation):
+//   targetId    — id of the referenced element
+//   text        — pre-computed display text ("equation 3", "figure 1", etc.)
+//   refType     — author-supplied type= kwarg (or null); flows to data-ref-type
+//   refFormat   — author-supplied format= kwarg (or null); flows to data-ref-format
+//   linkFlag    — true (default) emits <a>; false (-link) emits <span>
+//   previewFlag — true (default) allows hover-preview; false (-preview) adds
+//                 data-no-preview="true" so hover-preview.js skips attachment
+//
+//   Renders: <a href="#targetId" class="ref" [data-*]>TEXT</a>
+//        or  <span class="ref" [data-*]>TEXT</span>      (when -link)
 //
 // __ref-error kwargs: { targetId }
 //   Renders: <a href="#targetId" class="ref-error">??ref: targetId??</a>
@@ -21,15 +28,36 @@
  * @returns {import('hast').Element}
  */
 export function refMarkerHandler(_state, node) {
-  const { targetId, text } = node.kwargs;
+  const { targetId, text, refType, refFormat, linkFlag, previewFlag } = node.kwargs;
 
+  // -link emits a <span> (plain text rendering, no navigable anchor).
+  if (linkFlag === false) {
+    const properties = { className: ['ref'] };
+    if (refType) properties['data-ref-type'] = refType;
+    if (refFormat) properties['data-ref-format'] = refFormat;
+    if (previewFlag === false) properties['data-no-preview'] = 'true';
+    return {
+      type: 'element',
+      tagName: 'span',
+      properties,
+      children: [{ type: 'text', value: text }],
+    };
+  }
+
+  // Default: emit an <a> anchor. Property order preserves the pre-2026-05-25
+  // shape (href, className) so existing snapshots stay byte-identical when no
+  // new kwargs / flags are authored.
+  const properties = {
+    href: `#${targetId}`,
+    className: ['ref'],
+  };
+  if (refType) properties['data-ref-type'] = refType;
+  if (refFormat) properties['data-ref-format'] = refFormat;
+  if (previewFlag === false) properties['data-no-preview'] = 'true';
   return {
     type: 'element',
     tagName: 'a',
-    properties: {
-      href: `#${targetId}`,
-      className: ['ref'],
-    },
+    properties,
     children: [{ type: 'text', value: text }],
   };
 }

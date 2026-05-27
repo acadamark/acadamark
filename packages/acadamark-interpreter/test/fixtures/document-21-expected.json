@@ -1,0 +1,321 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Equivalent metadata via kwarg form"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Ariel Balter"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Convergence of kwarg and child-tag ",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 37,
+                          "offset": 36
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "meta",
+                      "properties": {},
+                      "children": []
+                    },
+                    {
+                      "type": "text",
+                      "value": " forms",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 43,
+                          "offset": 42
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 49,
+                          "offset": 48
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The two authoring forms of ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 155
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 28,
+                          "offset": 182
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<meta>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " must produce the same Layer 1 child-tag\nshape. The ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 36,
+                          "offset": 190
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 12,
+                          "offset": 242
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<meta>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " above uses the kwarg form; the gate lifts each\nallowlisted kwarg to a corresponding child tag. The result is the same as\nauthoring with explicit ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 20,
+                          "offset": 250
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 25,
+                          "offset": 396
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<title>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " and ",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 34,
+                          "offset": 405
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 39,
+                          "offset": 410
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<author>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " child tags.",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 49,
+                          "offset": 420
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 61,
+                          "offset": 432
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 155
+                    },
+                    "end": {
+                      "line": 9,
+                      "column": 61,
+                      "offset": 432
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This fixture exercises only the META allowlist keys that have existing\nLayer 1 vocabulary entries (title, author, date, subtitle). The other\nallowlist entries (doi, license, lang, version, keywords) lift correctly\nbut their target vocabulary entries are not yet defined — filed as a\nfinding for a separate vocabulary item, parallel to the missing\n",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 1,
+                          "offset": 434
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 781
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "abstract",
+                      "properties": {},
+                      "children": []
+                    },
+                    {
+                      "type": "text",
+                      "value": " entry the slice prompt noted.",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 11,
+                          "offset": 791
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 41,
+                          "offset": 821
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 11,
+                      "column": 1,
+                      "offset": 434
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 41,
+                      "offset": 821
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 17,
+      "column": 1,
+      "offset": 822
+    }
+  }
+}

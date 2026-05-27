@@ -762,6 +762,9 @@ note-list li {
    * @param {Element} linkEl  The <a class="ref" href="#..."> element.
    */
   function attachRefTooltip(linkEl) {
+    // -preview opt-out: ref-resolution.js / handlers/ref.js stamp
+    // data-no-preview="true" when the author wrote -preview on the <ref>.
+    if (linkEl.getAttribute('data-no-preview') === 'true') return;
     var href = linkEl.getAttribute('href');
     if (!href || href.charAt(0) !== '#') return;
     var targetId = href.slice(1);

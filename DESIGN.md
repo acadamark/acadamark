@@ -281,6 +281,18 @@ The exception is one-directional: lifted into the rendered output, not part of t
 
 Layer 1's three named section elements (`section` / `sub-section` / `sub-sub-section`, LaTeX-shaped, depth capped at three) are a deliberate choice. The alternative — a single nesting-depth-typed `<section>` — is reconsidered in the JATS export arc, where JATS's own section model interacts with this choice. The decision is recorded there, not here.
 
+## Apparatus-tag positioning
+
+A small set of acadamark tags carry information *about* the document rather than the document's body content: `<meta>` (descriptive metadata — title, author, etc.), `<config>` (processing and display settings), `<data>` (referenced resources), `<library>` (bibliography source). These are the **document-apparatus tags**.
+
+The positioning rule: apparatus tags belong at the **document edges**, not in the middle of body flow. The convention is `<meta>` at the start; `<config>` / `<data>` / `<library>` at the end. The structural plugins assume this — they route apparatus tags from the root level into their appropriate regions (`<article-front>`, `<article-back>`, or to root-level siblings). An apparatus tag found mid-body (inside another tag's content array) cannot be routed coherently; the structural plugin emits an informative diagnostic and leaves the misplaced tag where it is. The document still renders (per the always-renders pattern).
+
+`<library>` is a special case: it is legitimately nested inside `<data>` (the typical authoring pattern is `<data><library src="refs.bib" /></data>`). The position check treats `<data>` as transparent — a `<library>` inside `<data>` is correctly placed; a `<library>` anywhere else triggers the warning.
+
+The rule is enforced today as a warning, not a hard error: a misplaced apparatus tag does not fail rendering. Hardening to error-level enforcement is a separate later decision.
+
+Apparatus tags also have a coupled interface principle. Each apparatus tag can be authored two equivalent ways: with **kwargs** for scalar values (`<meta title="X" author="Y">`) or with **child tags** for structured values (`<meta><title>X</title><author>Y</author></meta>`). The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag allowlist (`META_KWARGS` for `<meta>`; an analogous `CONFIG_KWARGS` for `<config>`); unknown kwargs are dropped with informative diagnostics. A kwarg on the wrong apparatus tag — e.g. `<config title=…>` — additionally gets a "did you mean `<meta>`?" misuse hint, and symmetrically for `<meta citation-style=…>`. Both forms are valid authoring; both reduce to the same canonical shape; the lift is the same single-gate normalization the architecture uses for every other authored form.
+
 ## Why this is not just another markdown extension
 
 Three differences:

@@ -51,6 +51,10 @@ import { getContentHandler } from 'acadamark-core/dsl-registry';
 import { makeTag, makeOpaqueTag, isAcadamarkTag } from 'acadamark-core/tag';
 import { walkNormalize } from 'acadamark-core/walkers/walk-normalize';
 import { SIGIL_TO_TAGNAME, isSigilTagname } from 'acadamark-core/tagname-sigil-map';
+import {
+  META_KWARGS, META_KWARGS_LIFTED, isMetaKwarg,
+  CONFIG_KWARGS, isConfigKwarg,
+} from '../lib/apparatus-allowlists.js';
 
 // ─── Drift guards at module load ──────────────────────────────────────────────
 // Confirm contentHandler values. These are authoritative in dsl-registry.js;
@@ -360,6 +364,110 @@ function liftRawHtml(node, file) {
   return node;
 }
 
+// ─── Group D helper: apparatus-tag kwarg → child-tag lift ────────────────────
+//
+// Per the apparatus-tag reconciliation (2026-05-25), <meta> and <config> have
+// two authoring forms — kwargs and child tags — that both produce the same
+// Layer 1 child-tag canonical shape. The lift converts the kwarg form to the
+// child-tag form here at the gate, so downstream consumers (article-structuring,
+// config-discovery) see one shape.
+//
+// For <meta>: each allowlisted kwarg (META_KWARGS_LIFTED) becomes a child tag
+// with the kwarg's value as text. The `type` kwarg stays on <meta> as a
+// kwarg — it controls structural routing in article-structuring, not document
+// descriptive content. Unknown kwargs trigger a "did you mean <config>?" hint
+// if they match the config allowlist, otherwise a generic unknown-kwarg
+// warning, and are dropped.
+//
+// For <config>: each accepted kwarg (per isConfigKwarg) stays as a kwarg on
+// <config>. The Layer 1 vocab describes <config>'s configuration interface as
+// structured-children-or-kwargs; the existing config-discovery plugin reads
+// the kwargs, so we keep the kwarg form for <config> rather than lifting to
+// children. Unknown kwargs trigger the misuse hint and are dropped.
+
+function liftMetaKwargs(node, file) {
+  const kwargs = node.kwargs ?? {};
+  const newKwargs = {};
+  const liftedChildren = [];
+
+  for (const [key, value] of Object.entries(kwargs)) {
+    if (META_KWARGS_LIFTED.has(key)) {
+      // Lift to a child tag. The child holds a single text node with the
+      // kwarg's value. The structural plugin (article-structuring) then
+      // promotes <title>/<subtitle> to <article-title>/<article-subtitle>
+      // and leaves the other tags as their author-shaped names.
+      liftedChildren.push(makeTag(key, [{ type: 'text', value: String(value) }]));
+    } else if (META_KWARGS.has(key)) {
+      // Allowlisted but not lifted (currently just `type`). Stays as a kwarg.
+      newKwargs[key] = value;
+    } else if (isConfigKwarg(key)) {
+      // Misuse: a <config>-shaped key appears on <meta>.
+      file?.message?.(
+        `<meta> does not accept '${key}' — this is a <config> setting. ` +
+        `<meta> holds descriptive document metadata (title, author, etc.); ` +
+        `<config> holds processing options. ` +
+        `See DESIGN.md "<meta> is for metadata; <config> is for options".`,
+        node,
+        'normalize-to-canonical:config-kwarg-in-meta',
+      );
+      // Dropped.
+    } else {
+      // Unknown to both surfaces.
+      file?.message?.(
+        `<meta> received unknown kwarg '${key}'. Accepted <meta> kwargs: ` +
+        `${[...META_KWARGS].join(', ')}.`,
+        node,
+        'normalize-to-canonical:unknown-meta-kwarg',
+      );
+      // Dropped.
+    }
+  }
+
+  node.kwargs = newKwargs;
+  // Prepend lifted children so they appear before any author-supplied child
+  // tags (preserving the author's child-tag ordering for those they wrote
+  // directly).
+  if (liftedChildren.length > 0) {
+    const existingContent = Array.isArray(node.content) ? node.content : [];
+    node.content = [...liftedChildren, ...existingContent];
+  }
+  return node;
+}
+
+function liftConfigKwargs(node, file) {
+  const kwargs = node.kwargs ?? {};
+  const newKwargs = {};
+
+  for (const [key, value] of Object.entries(kwargs)) {
+    if (isConfigKwarg(key)) {
+      newKwargs[key] = value;
+    } else if (isMetaKwarg(key)) {
+      // Misuse: a <meta>-shaped key on <config>.
+      file?.message?.(
+        `<config> does not accept '${key}' — this is a <meta> kwarg. ` +
+        `<meta> holds descriptive document metadata (title, author, date, etc.); ` +
+        `<config> holds processing options (citation-style, numbering, etc.). ` +
+        `See DESIGN.md "<meta> is for metadata; <config> is for options".`,
+        node,
+        'normalize-to-canonical:meta-kwarg-in-config',
+      );
+      // Dropped.
+    } else {
+      const liveKeys = [...CONFIG_KWARGS.keys()];
+      file?.message?.(
+        `<config> received unknown kwarg '${key}'. Accepted <config> kwargs: ` +
+        `${liveKeys.join(', ')}, or any starting with ref-prefix-.`,
+        node,
+        'normalize-to-canonical:unknown-config-kwarg',
+      );
+      // Dropped.
+    }
+  }
+
+  node.kwargs = newKwargs;
+  return node;
+}
+
 // ─── Per-construct mapping ────────────────────────────────────────────────────
 //
 // Each entry: { predicate, normalize }.
@@ -425,6 +533,26 @@ const NORMALIZATIONS = [
       node.tagname = SIGIL_TO_TAGNAME[node.tagname];
       return node;
     },
+  },
+
+  // ─── Group A2: apparatus-tag kwarg → child-tag (or kwarg) lift ────────
+  //
+  // For <meta>: allowlisted kwargs lift to child tags (the Layer 1
+  // canonical shape), with the lift-time misuse-feedback hints.
+  // For <config>: allowlisted kwargs stay as kwargs (the existing
+  // config-discovery shape), with the misuse-feedback hints. Unknown
+  // kwargs on either are dropped with diagnostics.
+  //
+  // Per DESIGN.md §"Apparatus-tag positioning" and the reconciliation
+  // architecture: this is one rule per the single-gate principle, not a
+  // sniff in a downstream plugin.
+  {
+    predicate: (node) => isAcadamarkTag(node) && node.tagname === 'meta',
+    normalize: (node, file) => liftMetaKwargs(node, file),
+  },
+  {
+    predicate: (node) => isAcadamarkTag(node) && node.tagname === 'config',
+    normalize: (node, file) => liftConfigKwargs(node, file),
   },
 
   // ─── Group B: bare markdown heading → section ─────────────────────────

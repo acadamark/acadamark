@@ -75,11 +75,29 @@ function computeRefText(id, entry, config) {
   return prefixWord ? `${prefixWord} ${entry.number}` : `${entry.number}`;
 }
 
-function makeRefMarker(targetId, entry, config) {
+function makeRefMarker(targetId, entry, config, srcNode) {
   return makeInternalMarker('__ref-marker', {
     kwargs: {
       targetId,
       text: computeRefText(targetId, entry, config),
+      // Author kwargs flow through to data-attributes on the rendered anchor
+      // (handled by handlers/ref.js's refMarkerHandler). This is the
+      // "kwargs flow through like a normal tag" reconciliation — the kwargs
+      // are no longer silently discarded; they become HTML data-attributes
+      // available for styling/scripting, even though the auto-generated
+      // display text still comes from the prefix dictionary.
+      refType: srcNode?.kwargs?.type ?? null,
+      refFormat: srcNode?.kwargs?.format ?? null,
+      // Boolean flag controls (defaults established by the renderer).
+      // `link` (default true): emit <a> anchor; -link emits <span> instead.
+      // `preview` (default true): hover preview attaches to the rendered
+      // anchor; -preview adds data-no-preview="true" so hover-preview.js
+      // skips attaching tippy.
+      // Both default to true when the flag is absent. We pass them through
+      // as explicit booleans so the handler can distinguish "absent"
+      // (default) from "explicit -flag" (suppress).
+      linkFlag: srcNode?.booleans?.link ?? true,
+      previewFlag: srcNode?.booleans?.preview ?? true,
     },
   });
 }
@@ -114,7 +132,7 @@ export function acadamarkRefResolution() {
         return [makeRefError(targetId)];
       }
 
-      return [makeRefMarker(targetId, entry, config)];
+      return [makeRefMarker(targetId, entry, config, node)];
     }
 
     walkReplace(tree.children, 'ref', processRef);

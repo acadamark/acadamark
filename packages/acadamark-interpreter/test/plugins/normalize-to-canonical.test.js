@@ -451,4 +451,128 @@ export function run() {
     assert.equal(file.messages.length, 0, 'no warnings from footnote normalization');
     console.log('PASS: normalize-markdown: footnoteReference not normalized (harmless pass-through)');
   }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // Apparatus-tag kwarg lift + validation (2026-05-25 reconciliation)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // --- <config> unknown kwarg is dropped + warning emitted ---
+  {
+    const tree = {
+      type: 'root',
+      children: [
+        {
+          type: 'acadamarkTag',
+          tagname: 'config',
+          kwargs: { 'citation-style': 'apa', 'foo-bar': 'baz' },
+          content: null,
+        },
+      ],
+    };
+    const messages = [];
+    const file = { data: {}, message(msg) { messages.push(msg); } };
+    acadamarkNormalizeMarkdown()(tree, file);
+    const configNode = tree.children[0];
+    assert.equal(configNode.kwargs['citation-style'], 'apa', 'known kwarg accepted');
+    assert.equal(configNode.kwargs['foo-bar'], undefined, 'unknown kwarg dropped from node');
+    assert.equal(messages.length, 1, 'one warning emitted');
+    assert.ok(/foo-bar/.test(String(messages[0])), 'warning mentions the offending kwarg name');
+    console.log('PASS: normalize-to-canonical: <config> unknown kwarg dropped + warned (AUD-13)');
+  }
+
+  // --- <meta>-shaped kwarg on <config> → "did you mean <meta>?" hint ---
+  {
+    const tree = {
+      type: 'root',
+      children: [
+        {
+          type: 'acadamarkTag',
+          tagname: 'config',
+          kwargs: { title: 'Wrong place' },
+          content: null,
+        },
+      ],
+    };
+    const messages = [];
+    const file = { data: {}, message(msg) { messages.push(msg); } };
+    acadamarkNormalizeMarkdown()(tree, file);
+    const configNode = tree.children[0];
+    assert.equal(configNode.kwargs.title, undefined, 'meta kwarg dropped from <config>');
+    assert.equal(messages.length, 1);
+    assert.ok(/<meta>/.test(String(messages[0])), 'warning suggests <meta>');
+    console.log('PASS: normalize-to-canonical: <config> with meta-shaped kwarg hints <meta>');
+  }
+
+  // --- <meta> allowlisted kwarg → child tag (the kwarg → child-tag lift) ---
+  {
+    const tree = {
+      type: 'root',
+      children: [
+        {
+          type: 'acadamarkTag',
+          tagname: 'meta',
+          kwargs: { title: 'The Document', author: 'Ariel' },
+          content: [],
+        },
+      ],
+    };
+    const file = { data: {} };
+    acadamarkNormalizeMarkdown()(tree, file);
+    const metaNode = tree.children[0];
+    // The lifted kwargs are now in content as child tags.
+    const titleChild = metaNode.content.find(n => n.tagname === 'title');
+    const authorChild = metaNode.content.find(n => n.tagname === 'author');
+    assert.ok(titleChild, '<title> child created from title kwarg');
+    assert.ok(authorChild, '<author> child created from author kwarg');
+    assert.equal(titleChild.content[0].value, 'The Document', 'title content carried through');
+    assert.equal(authorChild.content[0].value, 'Ariel', 'author content carried through');
+    // The kwargs are gone from the node (lifted, not duplicated).
+    assert.equal(metaNode.kwargs.title, undefined, 'title kwarg removed after lift');
+    assert.equal(metaNode.kwargs.author, undefined, 'author kwarg removed after lift');
+    console.log('PASS: normalize-to-canonical: <meta> kwargs lift to child tags');
+  }
+
+  // --- <meta> type kwarg stays as kwarg (not lifted) ---
+  {
+    const tree = {
+      type: 'root',
+      children: [
+        {
+          type: 'acadamarkTag',
+          tagname: 'meta',
+          kwargs: { type: 'article', title: 'X' },
+          content: [],
+        },
+      ],
+    };
+    const file = { data: {} };
+    acadamarkNormalizeMarkdown()(tree, file);
+    const metaNode = tree.children[0];
+    assert.equal(metaNode.kwargs.type, 'article', 'type kwarg preserved (structural routing)');
+    assert.ok(metaNode.content.find(n => n.tagname === 'title'), 'title still lifted');
+    console.log('PASS: normalize-to-canonical: <meta> type= kwarg stays as kwarg');
+  }
+
+  // --- <config>-shaped kwarg on <meta> → "did you mean <config>?" hint ---
+  {
+    const tree = {
+      type: 'root',
+      children: [
+        {
+          type: 'acadamarkTag',
+          tagname: 'meta',
+          kwargs: { 'citation-style': 'apa' },
+          content: [],
+        },
+      ],
+    };
+    const messages = [];
+    const file = { data: {}, message(msg) { messages.push(msg); } };
+    acadamarkNormalizeMarkdown()(tree, file);
+    const metaNode = tree.children[0];
+    assert.equal(metaNode.kwargs['citation-style'], undefined, 'config kwarg dropped from <meta>');
+    assert.equal(messages.length, 1);
+    assert.ok(/<config>/.test(String(messages[0])), 'warning suggests <config>');
+    console.log('PASS: normalize-to-canonical: <meta> with config-shaped kwarg hints <config>');
+  }
 }
