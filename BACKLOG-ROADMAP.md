@@ -139,12 +139,23 @@ the current code and all confirmed closed (see the STATUS milestone).
   `principles.md`. *(`formerly DF-16`)*
 - [ ] **Make `<ref>` honor its parsed attributes** (`format`/`type`
   kwargs, pipe content, `+link`/`+preview`/`+title` flags)
-  `[interpreter]` `[alpha]` *(`formerly PG-3, PG-4, PG-5`)*
-- [ ] **Close small citation/config bugs** — multi-key cite order,
-  nested `<config>` not read, trailing-whitespace EOL `[interpreter]`
-  `[alpha]` *(`formerly PG-8, PG-9, PG-11`)*
-- [ ] **Stop `<config>` silently accepting metadata kwargs that belong
-  in `<meta>`** `[interpreter]` `[alpha]` *(`formerly AUD-13`)*
+  `[interpreter]` `[alpha]` — pulled from alpha Phase 2 slice 2
+  (2026-05-25) at Step 1 per the design-question check: the backlog
+  entry frames this as "one slice" but each of the four sub-attributes
+  has an open design question in the dependent specs (`ref.md` marks
+  `type` / `format` / pipe content "DEFERRED", and `+link`/`+preview`/
+  `+title` flags are not spec'd anywhere). Needs a design pass on each
+  attribute before implementation. *(`formerly PG-3, PG-4, PG-5`)*
+- [ ] **Multi-key citation key ordering preserved over CSL's alphabetical
+  sort** `[interpreter]` `[alpha]` — pulled from the formerly-PG-8/9/11
+  cluster (alpha Phase 2 slice 2, 2026-05-25) per the escape hatch:
+  citation-js / CSL styles sort cluster items by author alphabetical
+  internally; preserving author input order requires either modifying
+  the CSL style XML (not per-call), formatting each key individually
+  and joining (loses cluster-level features like sharing authors), or
+  patching citation-js. Needs a design ruling on whether to override
+  CSL convention. The two sibling sub-bugs (PG-9 nested `<config>`, PG-11
+  trailing whitespace) landed in the same slice. *(`formerly PG-8`)*
 - [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
   shared assembly imported from `index.js`** `[tests/build]`
   `[post-alpha]` — pipeline is currently identical to the real
@@ -273,8 +284,9 @@ the current code and all confirmed closed (see the STATUS milestone).
   print formatting; companion to the pagination item in the
   Architecture tier `[specs/docs]` `[post-alpha]`
 - [ ] **Verify the remaining `(formerly AUD-N)` items against current
-  code** — six items remain: AUD-13, AUD-14, AUD-15, AUD-17, AUD-18,
-  AUD-25. Recent slices found a 6/6 already-resolved rate in this
+  code** — five items remain: AUD-14, AUD-15, AUD-17, AUD-18,
+  AUD-25 (AUD-13 closed by alpha Phase 2 slice 2, 2026-05-25). Recent
+  slices found a 6/6 already-resolved rate in this
   cohort (the four Layer 0 items, AUD-19, AUD-24); the base rate says
   several of the remaining six are likely already resolved too.
   Should be done **before** any of those six AUD items is picked up as
@@ -398,27 +410,49 @@ this is now the sole open gap in the always-renders guarantee per
 
 **Make `<ref>` honor its parsed attributes** `[interpreter]` `[alpha]`.
 `format`/`type` kwargs ignored (PG-3); author pipe-text ignored
-(PG-4); `+link`/`+preview`/`+title` flags ignored (PG-5). Effectively
-**one slice** — "make `<ref>` honor its parsed attributes."
-*(`formerly PG-3, PG-4, PG-5`)*
+(PG-4); `+link`/`+preview`/`+title` flags ignored (PG-5). The backlog
+entry framed this as "one slice" but **pulled from alpha Phase 2 slice
+2 (2026-05-25) at Step 1 per the design-question check**: each of the
+four sub-attributes has an open design question.
+- `format` kwarg: vocab entry (`ref.md`) explicitly marks "DEFERRED.
+  The format kwarg is parsed but not used by the current handler";
+  values `number/name/full/label-only/default` each need a defined
+  output shape, and `full` would require title-capture work that
+  doesn't exist today.
+- `type` kwarg: vocab entry says "DEFERRED. The resolver always infers
+  type from the registry entry." What does an explicit `type=` do —
+  override the inference word? — is undefined.
+- pipe content (PG-4): vocab entry says pipe-content-as-link-text "is
+  also deferred"; how it interacts with the auto-generated text is
+  unspecified.
+- `+link`/`+preview`/`+title` flags (PG-5): **not specified anywhere
+  in the vocab entry, `interpreter.md` §3.9, or `principles.md`.** The
+  flags' intended semantics would need to be designed from scratch.
 
-**Close small citation/config bugs** `[interpreter]` `[alpha]`. Multi-key cite
-ordering (PG-8); nested `<config>` not read (PG-9);
-trailing-whitespace-before-EOL treated as inline (PG-11).
-*(`formerly PG-8, PG-9, PG-11`)*
+`interpreter.md` §3.9 corroborates: "The `format` and `type` kwargs on
+`<ref>` are parsed but the design for their effect on rendered output
+… is open work in the roadmap. Likewise, author-supplied pipe content
+in `<ref>` (custom link text) is parsed but its design treatment as
+the link text override is open work." The honor-attributes item
+needs a per-attribute design pass first; the implementation slice is
+gated on those rulings. *(`formerly PG-3, PG-4, PG-5`)*
 
-**Stop `<config>` silently accepting metadata kwargs that belong in
-`<meta>`** `[interpreter]` `[alpha]`. `<config>` silently accepts metadata
-kwargs that belong in `<meta>` (`title=`, `subtitle=`, `author=`,
-`date=`). The kwargs produce no warning and no visible output. The
-bug is doubly bad because the syntactic ease of `<config>` (kwargs on
-one tag) is more attractive than `<meta>` (nested tags), so authors
-default to it. Fix path: `<config>` should validate its accepted
-kwargs and warn on unknown ones (especially metadata-shaped ones);
-specs should clearly distinguish `<meta>` (document metadata) from
-`<config>` (document options). Severity: medium — silent failure mode
-that produces no visible output. Touches DD-3 in `DESIGN.md` (the
-`<meta>` vs `<config>` boundary). *(`formerly AUD-13`)*
+**Multi-key citation key ordering preserved over CSL's alphabetical
+sort** `[interpreter]` `[alpha]`. `<cite [@smith2020, @jones2019]>` is
+passed to citation-js's `cite.format('citation', {...})` in author
+order, but citation-js's CSL processor sorts cluster items by author
+name (CSL convention) before formatting. The fix would require one of:
+(a) modifying the CSL style XML to disable the per-style sort (not a
+runtime option); (b) calling `cite.format` for each key individually
+and joining the results (loses cluster-level features like merging
+shared authors); (c) patching citation-js's internal sort. Each option
+has a design tradeoff — most academic readers expect CSL-conformant
+alphabetical-author ordering, so this item is also asking whether
+acadamark should diverge from a strong citation convention. **Pulled
+from alpha Phase 2 slice 2 (2026-05-25) per the escape hatch**: needs
+both a design ruling and a non-trivial implementation choice. Sibling
+sub-bugs PG-9 (nested `<config>`) and PG-11 (trailing whitespace)
+landed in the same slice. *(`formerly PG-8`)*
 
 **Replace `integration.test.js`'s hand-mirrored pipeline with a shared
 assembly imported from `index.js`** `[tests/build]` `[post-alpha]`. The test maintains
@@ -1040,8 +1074,10 @@ is gated on this spec being written. Split out from the
 formerly-combined book-and-pagination item.
 
 **Verify the remaining `(formerly AUD-N)` items against current
-code** `[cross-cutting]` `[post-alpha]`. Six items still carry an
-AUD-N origin marker: AUD-13, AUD-14, AUD-15, AUD-17, AUD-18, AUD-25.
+code** `[cross-cutting]` `[post-alpha]`. Five items still carry an
+AUD-N origin marker: AUD-14, AUD-15, AUD-17, AUD-18, AUD-25.
+(AUD-13, the `<config>` silent-accept bug, was closed by alpha
+Phase 2 slice 2 — fixed, not verify-and-close.)
 The Layer 0 verification slice and the mechanical-fix batch each
 found a high already-resolved rate in their cohorts (4/4 Layer 0;
 2/2 of the two AUD items in the mechanical batch — AUD-19 and

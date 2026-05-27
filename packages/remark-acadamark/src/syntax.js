@@ -169,7 +169,18 @@ function makeSigilTagTokenizer({ multiLine }) {
       // follows on the same line. If we accept here, the tag becomes a block
       // node and the trailing text becomes a separate paragraph. Rejecting lets
       // the paragraph form and the text-position tokenizer handle the tag inline.
+      //
+      // PG-11 (2026-05-25): trailing whitespace (space/tab) before the line
+      // ending is tolerated — it does not disqualify flow-position recognition.
+      // Without this, `<# Heading #> ` (trailing space) is silently reclaimed
+      // by the text-position tokenizer as inline, which is rarely what the
+      // author meant.
       if (multiLine && code !== null && !markdownLineEnding(code)) {
+        if (code === 32 || code === 9) {
+          // Skip whitespace and re-check the next char.
+          effects.consume(code)
+          return afterClose
+        }
         return nok(code)
       }
       effects.exit('acadamarkTagRaw')
@@ -353,7 +364,14 @@ function makeNamedTagTokenizer({ multiLine }) {
       // Issue 2 fix: flow-position tokenizer rejects when non-EOL content
       // follows on the same line, so the paragraph forms and the text-position
       // tokenizer handles the tag inline.
+      //
+      // PG-11 (2026-05-25): trailing whitespace (space/tab) before the line
+      // ending is tolerated — same reasoning as the sigil afterClose above.
       if (multiLine && code !== null && !markdownLineEnding(code)) {
+        if (code === 32 || code === 9) {
+          effects.consume(code)
+          return afterGt
+        }
         return nok(code)
       }
       effects.exit('acadamarkTagRaw')

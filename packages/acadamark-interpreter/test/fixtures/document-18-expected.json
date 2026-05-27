@@ -1,0 +1,800 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Config edge-case fixture",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 26,
+                          "offset": 25
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Test Author",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 13,
+                          "offset": 12
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Trailing whitespace after a sigil close",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 41,
+                          "offset": 40
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A sigil heading with trailing whitespace after the ",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 1,
+                          "offset": 175
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 52,
+                          "offset": 226
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "#>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " (formerly PG-11)\nmust still be recognized as a flow construct. Before the fix it was\nsilently reclaimed as inline text. The line below has a space after the\ncloser; the sigil heading must produce a ",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 56,
+                          "offset": 230
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 42,
+                          "offset": 429
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<sub-section>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 57,
+                          "offset": 444
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 58,
+                          "offset": 445
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 10,
+                      "column": 1,
+                      "offset": 175
+                    },
+                    "end": {
+                      "line": 13,
+                      "column": 58,
+                      "offset": 445
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A sigil with trailing whitespace",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 34,
+                              "offset": 33
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Surrounding prose continues to render normally below the sigil heading.",
+                          "position": {
+                            "start": {
+                              "line": 17,
+                              "column": 1,
+                              "offset": 489
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 72,
+                              "offset": 560
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 17,
+                          "column": 1,
+                          "offset": 489
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 72,
+                          "offset": 560
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Cross-reference using the ref-prefix override",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 47,
+                          "offset": 46
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The ",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 1,
+                          "offset": 621
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 5,
+                          "offset": 625
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<config ref-prefix-eqn=\"Eq.\">"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " at the document top must produce\n\"Eq. 1\" when this section references an equation. The config kwarg is on a\ntop-level ",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 36,
+                          "offset": 656
+                        },
+                        "end": {
+                          "line": 23,
+                          "column": 11,
+                          "offset": 775
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<config>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " (existing path), proving the existing single-top-level\ndiscovery still works alongside the new recursive walk.",
+                      "position": {
+                        "start": {
+                          "line": 23,
+                          "column": 21,
+                          "offset": 785
+                        },
+                        "end": {
+                          "line": 24,
+                          "column": 56,
+                          "offset": 896
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 21,
+                      "column": 1,
+                      "offset": 621
+                    },
+                    "end": {
+                      "line": 24,
+                      "column": 56,
+                      "offset": 896
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "display-math",
+                  "properties": {
+                    "id": "eqn:newton"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "katex-display"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "katex"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "katex-html"
+                                ],
+                                "ariaHidden": "true"
+                              },
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.6833em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ],
+                                        "style": "margin-right:0.1389em;"
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "F"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mrel"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "="
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.4306em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "ma"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "equation-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "(1)"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Newton's second law is shown in ",
+                      "position": {
+                        "start": {
+                          "line": 28,
+                          "column": 1,
+                          "offset": 928
+                        },
+                        "end": {
+                          "line": 28,
+                          "column": 33,
+                          "offset": 960
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#eqn:newton",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Eq. 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " — this should render as\n\"Eq. 1\" (not \"equation 1\") because of the ref-prefix override above.",
+                      "position": {
+                        "start": {
+                          "line": 28,
+                          "column": 50,
+                          "offset": 977
+                        },
+                        "end": {
+                          "line": 29,
+                          "column": 69,
+                          "offset": 1070
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 28,
+                      "column": 1,
+                      "offset": 928
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 69,
+                      "offset": 1070
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Nested config block is now read",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 33,
+                          "offset": 32
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A nested ",
+                      "position": {
+                        "start": {
+                          "line": 33,
+                          "column": 1,
+                          "offset": 1117
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 10,
+                          "offset": 1126
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<config>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " block (formerly PG-9, \"deeply-nested ",
+                      "position": {
+                        "start": {
+                          "line": 33,
+                          "column": 20,
+                          "offset": 1136
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 58,
+                          "offset": 1174
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<config>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " not\nread\") is now discovered by the recursive walk. The block below sits\ninside this section, not at root; before the fix its ",
+                      "position": {
+                        "start": {
+                          "line": 33,
+                          "column": 68,
+                          "offset": 1184
+                        },
+                        "end": {
+                          "line": 35,
+                          "column": 54,
+                          "offset": 1311
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "ref-prefix-fig"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "\noverride would be silently ignored. With the fix, a figure ref following\nit should render with \"Fig.\" instead of \"figure\".",
+                      "position": {
+                        "start": {
+                          "line": 35,
+                          "column": 70,
+                          "offset": 1327
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 50,
+                          "offset": 1450
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 33,
+                      "column": 1,
+                      "offset": 1117
+                    },
+                    "end": {
+                      "line": 37,
+                      "column": 50,
+                      "offset": 1450
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            },
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 40,
+      "column": 1,
+      "offset": 1483
+    }
+  }
+}

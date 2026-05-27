@@ -1,0 +1,15 @@
+<meta type=article>
+  <title | Config unknown-kwargs fixture>
+  <author | Test Author>
+</meta>
+
+<config title="Title in the wrong place" foo-bar="some-value">
+
+<section | Introduction>
+
+This document deliberately abuses `<config>` to trigger the unknown-kwarg
+warnings (formerly AUD-13). `title=` is a metadata-shaped kwarg and should
+trigger the "did you mean `<meta>`?" hint. `foo-bar=` is an unknown kwarg
+and should trigger the generic unknown-kwarg warning. Both kwargs must be
+dropped from the config map — they were silently absorbed before the fix
+and would have shown up nowhere in the rendered output.

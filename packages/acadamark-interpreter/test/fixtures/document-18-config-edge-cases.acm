@@ -1,0 +1,39 @@
+<meta type=article>
+  <title | Config edge-case fixture>
+  <author | Test Author>
+</meta>
+
+<config ref-prefix-eqn="Eq.">
+
+<section | Trailing whitespace after a sigil close>
+
+A sigil heading with trailing whitespace after the `#>` (formerly PG-11)
+must still be recognized as a flow construct. Before the fix it was
+silently reclaimed as inline text. The line below has a space after the
+closer; the sigil heading must produce a `<sub-section>`.
+
+<## A sigil with trailing whitespace ##>
+
+Surrounding prose continues to render normally below the sigil heading.
+
+<section | Cross-reference using the ref-prefix override>
+
+The `<config ref-prefix-eqn="Eq.">` at the document top must produce
+"Eq. 1" when this section references an equation. The config kwarg is on a
+top-level `<config>` (existing path), proving the existing single-top-level
+discovery still works alongside the new recursive walk.
+
+<$$ #eqn:newton | F = ma $$>
+
+Newton's second law is shown in <ref @eqn:newton> — this should render as
+"Eq. 1" (not "equation 1") because of the ref-prefix override above.
+
+<section | Nested config block is now read>
+
+A nested `<config>` block (formerly PG-9, "deeply-nested `<config>` not
+read") is now discovered by the recursive walk. The block below sits
+inside this section, not at root; before the fix its `ref-prefix-fig`
+override would be silently ignored. With the fix, a figure ref following
+it should render with "Fig." instead of "figure".
+
+<config ref-prefix-fig="Fig.">

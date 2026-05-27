@@ -560,3 +560,77 @@ that). One line gets added every few months, not every slice.
   snapshots stable under strict comparison (no existing fixture
   exercised `<DSL />` or `\z`, which is itself a coverage finding
   the fixture closes); doc-17 snapshot written on first run.
+- **2026-Q2 — alpha build Phase 2 slice 2: interpreter-side bugs
+  (3 closed, 2 pulled).** Targeted the three interpreter-side
+  `[alpha]` bugs (with the Phase 2 slice 1 lesson — escape hatch
+  more readily armed). Step 1's design-question check fired
+  immediately on bug 1; sub-bug PG-8 of bug 2 fired mid-step on
+  investigation; the rest landed.
+  **(i) `<ref>` honor its parsed attributes** (formerly PG-3/4/5) —
+  **pulled at Step 1**. The backlog entry framed this as "effectively
+  one slice" but the dependent specs (`ref.md`, `interpreter.md`
+  §3.9) explicitly mark each individual sub-attribute — `format`
+  kwarg, `type` kwarg, pipe-content link-text override — as
+  "DEFERRED" with the design treatment open. The fourth sub-feature
+  (`+link`/`+preview`/`+title` boolean flags) has no spec anywhere
+  in the vocab or specs at all. Implementing this requires settling
+  at least four design questions first; the implementation slice is
+  gated on those rulings.
+  **(ii) Small cite/config bugs cluster** (formerly PG-8/9/11) —
+  partial: 2 of 3 closed.
+  - **PG-9 (nested `<config>` not read):** closed. Rewrote
+    `acadamarkConfigDiscovery` to walk the tree recursively through
+    both mdast `children` and acadamarkTag `content` arrays (with
+    opacity guards), so `<config>` blocks inside `<meta>`, inside a
+    section, or anywhere else are discovered. Top-level discovery
+    still works — the recursive walk is a superset, not a replacement.
+  - **PG-11 (trailing whitespace before EOL):** closed. In
+    `packages/remark-acadamark/src/syntax.js`, the flow-position
+    `afterClose` (sigil-tag tokenizer) and `afterGt` (named-tag
+    tokenizer) now skip trailing space/tab characters before checking
+    for the line ending. Without this fix, `<# Heading #> ` (trailing
+    space) was silently reclaimed by the text-position tokenizer as
+    inline, which was rarely what the author meant. No grammar source
+    change.
+  - **PG-8 (multi-key citation key ordering):** **pulled** per the
+    escape hatch. citation-js / CSL styles sort cluster items by
+    author name internally as a CSL convention; preserving author
+    input order would require either modifying the CSL style XML (not
+    per-call), formatting each key individually and joining (loses
+    cluster-level features), or patching citation-js. This is both a
+    design question (should acadamark diverge from CSL convention?)
+    and a non-trivial implementation choice. Re-filed as its own
+    backlog item.
+  **(iii) `<config>` no longer silently accepts metadata kwargs**
+  (formerly AUD-13) — closed. `acadamarkConfigDiscovery` now validates
+  every kwarg against an allowlist (`citation-style`,
+  `number-equations`, `number-figures`, `number-tables`, and the
+  `ref-prefix-*` prefix family). Unknown kwargs are dropped from the
+  config map and a `file.message()` warning is emitted. Metadata-shaped
+  kwargs (`title`, `subtitle`, `author`, `date`) get a more specific
+  hint suggesting the author meant `<meta>` per DD-3 in `DESIGN.md`.
+  New fixtures: `document-18-config-edge-cases.acm` (exercises PG-9
+  recursive walk via a nested `<config>`, PG-11 trailing-whitespace
+  sigil, and the end-to-end `ref-prefix-eqn` override producing
+  "Eq. 1"); `document-19-config-unknown-kwargs.acm` (deliberately
+  abuses `<config>` with `title=` and `foo-bar=`, asserts both are
+  dropped and the `<meta>` title wins). New unit tests in
+  `plugins/config-discovery.test.js` (the two prior tests used
+  unspec'd kwargs `numbering=`/`note-position=` and were updated to
+  use the actually-consumed `citation-style`/`ref-prefix-eqn`; three
+  new tests pin the validation-and-warn behavior including the
+  recursive walk and the metadata-hint case). Spec drift: none —
+  `principles.md` doesn't list AUD-13 as a known gap; the `config.md`
+  vocab entry describes a structured-children configuration interface
+  that is not (yet) the implemented surface, which is a separate
+  larger drift item, not introduced by this slice. Tests:
+  acadamark-core 50/50; remark-acadamark 128/128 (grammar unchanged;
+  the syntax.js change is exercised through integration); acadamark-
+  interpreter 24/24 suites; all prior integration snapshots stable
+  under strict comparison; doc-18 and doc-19 snapshots written on
+  first run. Backlog: bug 3 (AUD-13) removed from both views; bug 1
+  (PG-3/4/5) updated in both views with pull-at-Step-1 finding; bug 2
+  (PG-8/9/11) reshaped — the bundled entry is gone; PG-9 + PG-11
+  closed as part of this slice; PG-8 re-filed as its own pulled item
+  with the finding. The remaining-AUD-N item's count updated from
+  six to five (AUD-13 closed by fix, not by verify).
