@@ -145,6 +145,12 @@ Source language and display target are fused in the current model: `<csv>` means
 
 The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/specs/idioms.md`. There, remark provides the lexer for markdown constructs and acadamark owns the node identity; here, a specialized processor provides the rendering for non-native content and acadamark owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
 
+### Citation formatting is delegated to citation-js / CSL
+
+A specific application of the delegation pattern: **citation formatting, ordering, and style questions are delegated to citation-js / CSL — acadamark does not reimplement or override them.** Bibliography rendering, cluster ordering, author-name disambiguation, "ibid" suppression, locale-specific punctuation, and every other citation-presentation concern is the CSL style's job; acadamark hands the citation keys and the chosen style to citation-js and accepts the result. This is what makes "any CSL-compliant processor" interchangeable with citation-js in principle: acadamark holds only the citation keys and the user-chosen style name, both standard CSL inputs.
+
+The practical consequence: an authoring-side request that would *override* a CSL convention is not an acadamark concern. The canonical example is within-cluster citation ordering — CSL styles sort cluster items by their own internal rules (typically alphabetical-by-author); preserving author input order against that sort would require either overriding the CSL style's XML or patching citation-js. Both are out of scope by this principle. The author who needs a non-CSL ordering chooses a CSL style that produces it, or hand-formats the cluster as prose rather than as a `<cite>`. Acadamark stays on the CSL side of that boundary.
+
 ## Layer 2: Authoring shorthand
 
 Two registers, both compiling to Layer 1.

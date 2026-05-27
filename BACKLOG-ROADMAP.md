@@ -130,23 +130,18 @@ the current code and all confirmed closed (see the STATUS milestone).
 
 - [ ] **Add blank-line termination error recovery in the micromark
   finder** `[parser]` `[alpha]` — pulled from alpha Phase 2 slice 1
-  (2026-05-25) per the escape hatch: the route is partly a design
-  question (where does the construct end? what shape does the
-  recovery output take?) and partly an implementation question; the
-  design question needs settling before implementation. The sibling
-  parser-error-node renderer half landed in the same slice, so this
-  item is now the sole open gap in the always-renders guarantee per
-  `principles.md`. *(`formerly DF-16`)*
-- [ ] **Multi-key citation key ordering preserved over CSL's alphabetical
-  sort** `[interpreter]` `[alpha]` — pulled from the formerly-PG-8/9/11
-  cluster (alpha Phase 2 slice 2, 2026-05-25) per the escape hatch:
-  citation-js / CSL styles sort cluster items by author alphabetical
-  internally; preserving author input order requires either modifying
-  the CSL style XML (not per-call), formatting each key individually
-  and joining (loses cluster-level features like sharing authors), or
-  patching citation-js. Needs a design ruling on whether to override
-  CSL convention. The two sibling sub-bugs (PG-9 nested `<config>`, PG-11
-  trailing whitespace) landed in the same slice. *(`formerly PG-8`)*
+  (2026-05-25) per the escape hatch. **Design decided
+  (2026-05-26, "Option A"):** a blank line inside an open tag is a
+  paragraph break, not a terminator; multi-paragraph tag content is
+  allowed; a tag terminates only on its explicit closing `>`; an
+  unclosed tag is detected at EOF (or a hard structural boundary —
+  still an open sub-question) and produces a visible
+  `acadamarkTagError`. Governing principle: the always-renders
+  guarantee is non-negotiable and the multi-paragraph feature yields
+  to it. Sole open gap in the always-renders guarantee per
+  `principles.md`. Phase 0 in progress (the implementation question
+  — how the streaming tokenizer terminates correctly — was the only
+  remaining open work). *(`formerly DF-16`)*
 - [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
   shared assembly imported from `index.js`** `[tests/build]`
   `[post-alpha]` — pipeline is currently identical to the real
@@ -181,7 +176,7 @@ the current code and all confirmed closed (see the STATUS milestone).
 - [ ] **Add integration test and snapshot for `document-9-demo`**
   `[tests/build]` `[alpha]` *(`formerly GAP-9`)*
 - [ ] **Add vocabulary entries for `<meta>` allowlist members and
-  `<abstract>`** `[vocab]` `[alpha-if-cheap]` — The apparatus-tag
+  `<abstract>`** `[vocab]` `[alpha]` — The apparatus-tag
   reconciliation (2026-05-25) defined the `<meta>` allowlist as
   `title / subtitle / author / date / doi / license / lang /
   version / keywords`, but only the first three plus `editor` and
@@ -191,6 +186,10 @@ the current code and all confirmed closed (see the STATUS milestone).
   Additionally `<abstract>` is its own tag (per the reconciliation
   ruling, NOT a `<meta>` child) and needs its own entry. Small
   vocabulary additions; each entry is a few lines of frontmatter.
+  **Re-tagged `[alpha]` (2026-05-26 reconciliation slice):** these
+  are small, uniform element-spec entries with no expensive branch,
+  and the `<meta>` allowlist that depends on them has already shipped
+  — they are not conditional alpha work, they are small alpha work.
 
 #### Planned work
 
@@ -244,8 +243,9 @@ the current code and all confirmed closed (see the STATUS milestone).
 - [ ] **Discuss the sigil as a first-class category** — a canonical
   sigil registry recording what each sigil is shorthand for and how
   author-requested sigils are added, reconciled with the DSL registry
-  and `sigil-mapping`. Cross-references the hash-sigil dispatch and
-  opacity bugs above (which are concrete instances in the same area)
+  and `tagname-sigil-map` (formerly `sigil-mapping`). The hash-sigil
+  dispatch and opacity bugs (closed in alpha Phase 1, `61fdf5f`) were
+  the concrete instances that surfaced the case for this discussion.
   `[cross-cutting]` `[post-alpha]`
 - [ ] **Discuss auditing documented language features against
   test-fixture coverage** — a documented spec example (the
@@ -384,43 +384,43 @@ scan in parallel.
 ### Bugs
 
 **Add blank-line termination error recovery in the micromark finder**
-`[parser]` `[alpha]`. The micromark finder needs to check each line
-ending and terminate open constructs at blank lines for localized
-error recovery. Currently a tag opened before a blank line will
-consume across the blank line or to EOF. Explicit `Status: Deferred`
-in `notes/specs/recursive-content-spec.md`. Under the always-renders
-guarantee in `notes/specs/principles.md`, this is a known shortfall
-against the guarantee — the "errors stay bounded so the rest of the
-document is seen" half is currently violated when EOF-consumption
-occurs. The route to closing it is partly a design question (where
-does the construct end? what shape does the recovery output take?)
-and partly an implementation question (how does the streaming
-tokenizer notice the blank line in time?); the item stays open until
-both are settled. **Pulled from alpha Phase 2 slice 1 (2026-05-25)
-per the escape hatch**: the design question requires a ruling before
-implementation. The sibling parser-error-node-renderer half landed
-in the same slice (`acadamarkParseError` / `acadamarkTagError` now
-render visibly via the new handlers at
-`packages/acadamark-interpreter/src/handlers/parser-errors.js`), so
-this is now the sole open gap in the always-renders guarantee per
-`principles.md` §"Current known gaps". *(`formerly DF-16`)*
+`[parser]` `[alpha]`. The original framing: the micromark finder
+does not terminate open constructs at blank lines; a tag opened
+before a blank line consumes across the blank line or to EOF rather
+than failing in place — a known shortfall against the always-renders
+guarantee per `notes/specs/principles.md`. Pulled from alpha Phase 2
+slice 1 (2026-05-25) per the escape hatch, with the design question
+explicitly flagged. The sibling parser-error-node-renderer half
+landed in that same slice (`acadamarkParseError` /
+`acadamarkTagError` now render visibly via the new handlers at
+`packages/acadamark-interpreter/src/handlers/parser-errors.js`).
+This item is now the sole open gap in the always-renders guarantee
+per `principles.md` §"Current known gaps".
 
-**Multi-key citation key ordering preserved over CSL's alphabetical
-sort** `[interpreter]` `[alpha]`. `<cite [@smith2020, @jones2019]>` is
-passed to citation-js's `cite.format('citation', {...})` in author
-order, but citation-js's CSL processor sorts cluster items by author
-name (CSL convention) before formatting. The fix would require one of:
-(a) modifying the CSL style XML to disable the per-style sort (not a
-runtime option); (b) calling `cite.format` for each key individually
-and joining the results (loses cluster-level features like merging
-shared authors); (c) patching citation-js's internal sort. Each option
-has a design tradeoff — most academic readers expect CSL-conformant
-alphabetical-author ordering, so this item is also asking whether
-acadamark should diverge from a strong citation convention. **Pulled
-from alpha Phase 2 slice 2 (2026-05-25) per the escape hatch**: needs
-both a design ruling and a non-trivial implementation choice. Sibling
-sub-bugs PG-9 (nested `<config>`) and PG-11 (trailing whitespace)
-landed in the same slice. *(`formerly PG-8`)*
+**Design decided (2026-05-26, "Option A"):**
+- A **blank line inside an open tag is a paragraph break**, not a
+  terminator. Multi-paragraph tag content is **allowed** — a tag may
+  legitimately contain blank lines.
+- A tag is terminated **only by its explicit closing `>`**.
+- An **unclosed tag** is therefore detected not at a blank line but
+  at **EOF (or a hard structural boundary)**: if the stream ends
+  with a tag still open, that tag was unclosed — an error.
+- The unclosed-tag error produces an **`acadamarkTagError` node**
+  (the visible renderer built in Phase 2 slice 1). The content the
+  tag did consume still renders as best-effort tag content; the
+  error marker appears at the tag's open position.
+- **Governing principle (locked):** the always-renders guarantee is
+  non-negotiable. Multi-paragraph tag content is a desirable feature
+  but yields to graceful handling if the two ever conflict.
+
+The remaining open work is the **implementation question** —
+`principles.md`'s "how does the streaming tokenizer notice the blank
+line in time?" — being investigated by a Phase 0 in progress. There
+is one sub-question the Phase 0 surfaces for a user ruling: whether
+EOF is the only hard terminator (the simplest design — an unclosed
+tag swallows to EOF and errors), or whether some structural boundary
+(end of region, start of a new structural construct) should also
+terminate. *(`formerly DF-16`)*
 
 **Replace `integration.test.js`'s hand-mirrored pipeline with a shared
 assembly imported from `index.js`** `[tests/build]` `[post-alpha]`. The test maintains
@@ -886,18 +886,18 @@ Acadamark uses a small set of sigils — `#`/`##`/`###` for sections,
 `$`/`$$` for math, `` ` ``/` ``` ` for code — as non-alphabetic
 shorthands for Layer 1 constructs. The DSL registry
 (`acadamark-core/dsl-registry`) records what content handler each
-sigil dispatches to; `acadamark-core/sigil-mapping` records what
-vocabulary key each sigil resolves to. These two registries live
-side by side without a documented relationship, and the hash-sigil
-bugs filed above are concrete failures at exactly the seam between
-them (the parser emits a sigil tagname; the registries don't fully
-agree on what to do next). This discussion item: define the sigil as
-an explicit first-class concept — a canonical registry recording, per
-sigil, its parser tagname, its content handler, its vocabulary key,
-its opacity expectation, and how author-requested new sigils are
-added — and reconcile the existing `dsl-registry` and `sigil-mapping`
-under that explicit model. Cross-references the two hash-sigil Bug
-items above (concrete instances in the same area). Filed under the
+sigil dispatches to; `acadamark-core/tagname-sigil-map` (formerly
+`sigil-mapping`, renamed in `cf8ed69`) records the
+bidirectional name↔sigil cipher. These two registries live side by
+side without a documented relationship; the hash-sigil bugs closed
+in alpha Phase 1 (`61fdf5f`) were concrete failures at exactly the
+seam between them — fixed point-wise, but the underlying lack of a
+unified sigil concept remains. This discussion item: define the
+sigil as an explicit first-class concept — a canonical registry
+recording, per sigil, its parser tagname, its content handler, its
+vocabulary key, its opacity expectation, and how author-requested
+new sigils are added — and reconcile the existing `dsl-registry` and
+`tagname-sigil-map` under that explicit model. Filed under the
 discussion-is-work rule.
 
 **Discuss auditing documented language features against test-fixture

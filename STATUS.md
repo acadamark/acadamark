@@ -729,3 +729,39 @@ that). One line gets added every few months, not every slice.
   `<meta>`-allowlist vocabulary entries. The escape hatch did not
   fire — neither `+preview` flag-gating (small) nor the
   kwarg→child-tag lift (a normalize rule) needed structural rework.
+- **2026-Q2 — backlog reconciliation against current code.** A
+  reconciliation slice ran with the working assumption that
+  `BACKLOG-ROADMAP.md` might have drifted from reality (a
+  recently-observed external copy listed several closed bugs as
+  open). **The repo backlog had NOT drifted.** Every closed item
+  was already correctly removed from both views by its closing
+  slice; the three items in the Bugs section at the time of the
+  reconciliation were exactly the three that genuinely remained
+  open. Every status call was verified against evidence — the
+  closing commit (`61fdf5f`, `e17a892`, `cf8ed69`, `d89e50a`,
+  `578d6f0`) and the current code — not against slice reports or
+  assumptions. The "recently-observed copy" was a stale external
+  view, not the version-controlled file. The slice did fold in
+  three owed recordings: (i) **PG-8 (multi-key cite ordering)
+  closed as not-a-bug** — citation cluster ordering is delegated
+  to citation-js / CSL by design; the broader principle
+  ("citation formatting, ordering, and style questions are
+  delegated to citation-js / CSL — acadamark does not reimplement
+  or override them") is now recorded in `DESIGN.md` as a sibling
+  of the existing processor-delegation principle. (ii) The
+  missing-`<meta>`-allowlist-vocabulary item **re-tagged
+  `[alpha-if-cheap]` → `[alpha]`** — small uniform element-spec
+  entries with no expensive branch; not conditional alpha work.
+  (iii) The blank-line-termination entry **updated with the
+  decided Option A design** — blank line inside an open tag is a
+  paragraph break, not a terminator; multi-paragraph tag content
+  allowed; explicit `>` is the only terminator; unclosed tags
+  detected at EOF (or a hard structural boundary, sub-question)
+  produce a visible `acadamarkTagError`. The implementation
+  question being investigated by a Phase 0 in progress.
+  Two small stale cross-references found in passing and corrected
+  (the sigil-first-class Discussion item's reference to closed
+  hash-sigil bugs "above" and to the renamed `sigil-mapping` →
+  `tagname-sigil-map` module). Backlog item count: 41 → 40
+  (PG-8 removed from both views). No product code changed; no
+  test runs needed.
