@@ -306,15 +306,6 @@ audit, test rewires.
 
 **Items:**
 
-- **Add blank-line termination error recovery in the micromark
-  finder** *(formerly DF-16)*. The sole remaining open gap against
-  the always-renders guarantee in `principles.md`. Pulled from Phase
-  2 slice 1 (escape hatch); needs a design ruling on construct
-  termination shape before implementation.
-- **Multi-key citation key ordering preserved over CSL's
-  alphabetical sort** *(formerly PG-8)*. Pulled from Phase 2 slice 2
-  (escape hatch); needs a design ruling on whether to override CSL
-  convention.
 - **`buildProperties` doesn't iterate `node.booleans`** *(filed by
   sub-slice 2 of the deferred-vocab work)*. The root-cause fix that
   `<author>` worked around for `+corresponding`.

@@ -71,12 +71,6 @@ A flat scannable index of every open item. Detailed entries below.
 
 ### Bugs
 
-- [ ] **Add blank-line termination error recovery in the micromark
-  finder** `[parser]` `[alpha]` *(→ roadmap: Phase 11)* *(formerly
-  DF-16)*
-- [ ] **Multi-key citation key ordering preserved over CSL's
-  alphabetical sort** `[interpreter]` `[alpha]` *(→ roadmap: Phase 11)*
-  *(formerly PG-8)*
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
 - [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
@@ -202,53 +196,6 @@ A flat scannable index of every open item. Detailed entries below.
 ---
 
 ## Detailed entries — Bugs
-
-### Add blank-line termination error recovery in the micromark finder
-`[parser]` `[alpha]` *(→ roadmap: Phase 11)*
-
-The micromark finder needs to check each line ending and terminate
-open constructs at blank lines for localized error recovery. Currently
-a tag opened before a blank line will consume across the blank line or
-to EOF. Explicit `Status: Deferred` in
-`notes/specs/recursive-content-spec.md`. Under the always-renders
-guarantee in `notes/specs/principles.md`, this is a known shortfall —
-the "errors stay bounded so the rest of the document is seen" half is
-currently violated when EOF-consumption occurs. The route is partly a
-design question (where does the construct end? what shape does the
-recovery output take?) and partly an implementation question (how does
-the streaming tokenizer notice the blank line in time?); the item
-stays open until both are settled. **Pulled from alpha Phase 2 slice 1
-(2026-05-25) per the escape hatch**: the design question requires a
-ruling before implementation. The sibling parser-error-node-renderer
-half landed in the same slice (`acadamarkParseError` /
-`acadamarkTagError` now render visibly via the new handlers at
-`packages/acadamark-interpreter/src/handlers/parser-errors.js`), so
-this is now the sole open gap in the always-renders guarantee per
-`principles.md` §"Current known gaps". *(formerly DF-16)*
-
-### Multi-key citation key ordering preserved over CSL's alphabetical sort
-`[interpreter]` `[alpha]` *(→ roadmap: Phase 11)*
-
-`<cite [@smith2020, @jones2019]>` is passed to citation-js's
-`cite.format('citation', {...})` in author order, but citation-js's
-CSL processor sorts cluster items by author name (CSL convention)
-before formatting. The fix would require one of: (a) modifying the
-CSL style XML to disable the per-style sort (not a runtime option);
-(b) calling `cite.format` for each key individually and joining the
-results (loses cluster-level features like merging shared authors);
-(c) patching citation-js's internal sort. Each option has a design
-tradeoff — most academic readers expect CSL-conformant alphabetical-
-author ordering, so this item is also asking whether acadamark should
-diverge from a strong citation convention. **Pulled from alpha Phase
-2 slice 2 (2026-05-25) per the escape hatch**: needs both a design
-ruling and a non-trivial implementation choice. Sibling sub-bugs
-PG-9 (nested `<config>`) and PG-11 (trailing whitespace) landed in
-the same slice. *(formerly PG-8)*
-
-The citation-delegation principle recorded in `DESIGN.md` is relevant
-here: "lean on citation-js for all such citation questions" — the
-discussion that resolves this bug will have to weigh divergence from
-CSL convention against that principle.
 
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`
