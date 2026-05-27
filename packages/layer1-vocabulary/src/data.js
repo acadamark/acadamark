@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 71 vocabulary entries.
+// Source files: 82 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -88,6 +88,53 @@ const _a = Object.freeze({
     "_sourceFile": "a.md",
   });
 
+const _abbr = Object.freeze({
+    "semantic_role": "abbr",
+    "html_output": {
+      "element": "abbr",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "title": {
+          "maps_to": "title",
+          "notes": "The abbreviation's expansion. Standard HTML <abbr title=\"...\"> —\nbrowsers display the expansion as a tooltip on hover. Strongly\nrecommended on first use of an abbreviation; optional on\nsubsequent uses if the expansion is already in scope.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The abbreviation as text — typically a short uppercase token\n(DOI, DOM, NASA, CSS, CRISPR). Inline elements may appear in the\ncontent though this is unusual.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "abbrev",
+      "notes": "JATS uses <abbrev> with the expansion typically supplied either\nas the content of a child <def> element or as the title-like\nattribute, depending on the JATS version. The exporter maps\nacadamark's title kwarg to the JATS form the target schema expects.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The <abbr title=\"Document Object Model\" | DOM> is the browser API for HTML.",
+        "layer1_html": "<p>The <abbr title=\"Document Object Model\">DOM</abbr> is the browser API for HTML.</p>",
+        "notes": "Standard pattern — abbreviation with its expansion as the title\nkwarg. Browsers show the expansion in a hover tooltip.\n",
+      },
+      {
+        "source": "Using <abbr | CSS> selectors.",
+        "layer1_html": "<p>Using <abbr>CSS</abbr> selectors.</p>",
+        "notes": "Bare abbreviation, no title. Acceptable when the expansion\nhas already been introduced earlier in the document.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "abbr.md",
+  });
+
 const _abstract = Object.freeze({
     "semantic_role": "abstract",
     "html_output": {
@@ -151,6 +198,48 @@ const _abstract = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "abstract.md",
+  });
+
+const _affiliation = Object.freeze({
+    "semantic_role": "affiliation",
+    "html_output": {
+      "element": "affiliation",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+        "notes": "Optional id, useful for cross-referencing the affiliation from\nmultiple <author> elements (e.g. <author><affiliation #aff1 | …>)\nand reusing the id with subsequent authors.\n",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The affiliation as text — typically institution, department, city,\ncountry. Free-form short prose; inline elements (e.g. <i type=other>\nfor italicized institution names) work normally.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "aff",
+      "notes": "JATS uses <aff> inside <contrib> (the JATS counterpart of <author>).\nMultiple authors sharing an affiliation reference it by id via\n<xref ref-type=\"aff\" rid=\"...\">; the exporter generates the xref\nstructure from acadamark's affiliation ids.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<author>\n  <name | Jane Goodall>\n  <affiliation | Anthropic>\n</author>\n",
+        "layer1_html": "<author>\n  <name>Jane Goodall</name>\n  <affiliation>Anthropic</affiliation>\n</author>\n",
+        "notes": "Simple author affiliation. The affiliation sits as a sub-element\nof <author>, parallel to other rich-author-metadata elements\n(<orcid>, <email>).\n",
+      },
+      {
+        "source": "<author>\n  <name | Jane Goodall>\n  <affiliation #aff1 | Anthropic, San Francisco, USA>\n</author>\n<author>\n  <name | David Attenborough>\n  <affiliation #aff1 />\n</author>\n",
+        "layer1_html": "<author>\n  <name>Jane Goodall</name>\n  <affiliation id=\"aff1\">Anthropic, San Francisco, USA</affiliation>\n</author>\n<author>\n  <name>David Attenborough</name>\n  <affiliation id=\"aff1\"></affiliation>\n</author>\n",
+        "notes": "Shared affiliation. The id on the first affiliation lets\nsubsequent authors reference the same one by id via a\nself-closing tag. JATS exporter generates the appropriate\n<xref ref-type=\"aff\" rid=\"aff1\"> structure.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "affiliation.md",
   });
 
 const _article_back = Object.freeze({
@@ -1955,6 +2044,42 @@ const _em = Object.freeze({
     "_sourceFile": "em.md",
   });
 
+const _email = Object.freeze({
+    "semantic_role": "email",
+    "html_output": {
+      "element": "email",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The email address as text (e.g. \"jane@example.org\"). No special\nparsing — the value passes through verbatim.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "email",
+      "notes": "JATS uses <email> inside <contrib> for author contact email.\nDirect one-to-one mapping.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<author>\n  <name | Jane Goodall>\n  <email | jane@example.org>\n</author>\n",
+        "layer1_html": "<author>\n  <name>Jane Goodall</name>\n  <email>jane@example.org</email>\n</author>\n",
+        "notes": "Author contact email. Common in journal article metadata for\nthe corresponding author (see also the +corresponding boolean\nkwarg on <author>).\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "email.md",
+  });
+
 const _figure = Object.freeze({
     "semantic_role": "figure",
     "html_output": {
@@ -2297,6 +2422,47 @@ const _inline_math = Object.freeze({
       "notes": "JATS <inline-formula> wraps MathML or TeX alternatives. The JATS\nexporter generates <tex-math> with the raw LaTeX source, plus\noptionally a <mml:math> rendered form.\n",
     },
     "_sourceFile": "inline-math.md",
+  });
+
+const _kbd = Object.freeze({
+    "semantic_role": "kbd",
+    "html_output": {
+      "element": "kbd",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The keyboard input as text — typically a single key, a chord\n(Ctrl+C), or a short sequence. Inline elements within <kbd> are\npermitted but unusual; nested <kbd> is the conventional way to\ndistinguish individual keys in a chord.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; HTML-native)",
+      "notes": "JATS has no dedicated element for keyboard input — the closest\nis <named-content content-type=\"...\"> with a chosen content-type,\nor simply emitting the text as inline prose. The exporter chooses\nper the target schema variant; the default is to emit the kbd\ncontent as inline text with no special JATS markup. This is a\nconscious tradeoff: <kbd> is a presentation concern for technical\ndocumentation, not a scholarly-content concern JATS models.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "Press <kbd | Ctrl+C> to copy.",
+        "layer1_html": "<p>Press <kbd>Ctrl+C</kbd> to copy.</p>",
+        "notes": "Single chord as a kbd block. Browsers render <kbd> in a\nmonospace font by default, distinguishing it from surrounding\nprose.\n",
+      },
+      {
+        "source": "Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.",
+        "layer1_html": "<p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>",
+        "notes": "Nested <kbd> distinguishes individual keys in a chord. Browsers\nrender the outer block as the chord and the inner blocks as\nindividual keys, both monospace.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "kbd.md",
   });
 
 const _keywords = Object.freeze({
@@ -2884,6 +3050,86 @@ const _ol = Object.freeze({
     "_sourceFile": "ol.md",
   });
 
+const _orcid = Object.freeze({
+    "semantic_role": "orcid",
+    "html_output": {
+      "element": "orcid",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The ORCID identifier as text. The canonical form is the bare 16-digit\nID with hyphens (e.g. \"0000-0002-1825-0097\"); URL form\n(\"https://orcid.org/0000-0002-1825-0097\") is also accepted but the\nbare form is preferred — tooling can construct the URL when needed.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "contrib-id",
+      "attributes": {
+        "contrib-id-type": "orcid",
+      },
+      "notes": "JATS uses <contrib-id contrib-id-type=\"orcid\">ID</contrib-id> inside\n<contrib>. The exporter constructs the contrib-id element with the\ncontrib-id-type attribute set to \"orcid\" from the value in <orcid>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<author>\n  <name | Jane Goodall>\n  <orcid | 0000-0002-1825-0097>\n</author>\n",
+        "layer1_html": "<author>\n  <name>Jane Goodall</name>\n  <orcid>0000-0002-1825-0097</orcid>\n</author>\n",
+        "notes": "Bare 16-digit ORCID — the canonical form.\n",
+      },
+      {
+        "source": "<author>\n  <name | Jane Goodall>\n  <orcid | https://orcid.org/0000-0002-1825-0097>\n</author>\n",
+        "layer1_html": "<author>\n  <name>Jane Goodall</name>\n  <orcid>https://orcid.org/0000-0002-1825-0097</orcid>\n</author>\n",
+        "notes": "URL form is accepted but bare form is preferred.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "orcid.md",
+  });
+
+const _output = Object.freeze({
+    "semantic_role": "output",
+    "html_output": {
+      "element": "output",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The result of a calculation as text — typically a single value\nor short result fragment.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; HTML-native)",
+      "notes": "JATS has no dedicated element for calculation results. The\nexporter emits the content as inline text with no special JATS\nmarkup. The same situation as the other programming-related\nHTML-native inline elements (<kbd>, <var>, <samp>); recorded\nhonestly per the <lang>  precedent.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The function returns <output | 42> for the test input.",
+        "layer1_html": "<p>The function returns <output>42</output> for the test input.</p>",
+        "notes": "Result of a calculation in prose. <output> is semantically\ndistinct from <samp> — <samp> is what a program prints (a\ndisplay artifact); <output> is the result of a computation\n(a semantic value). Browsers render both similarly.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "output.md",
+  });
+
 const _p = Object.freeze({
     "semantic_role": "p",
     "html_output": {
@@ -2939,6 +3185,61 @@ const _p = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "p.md",
+  });
+
+const _publication_date = Object.freeze({
+    "semantic_role": "publication-date",
+    "html_output": {
+      "element": "publication-date",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "format": {
+          "maps_to": "data-date-format",
+          "values": [
+            "iso",
+            "ymd",
+            "ymd-time",
+            "mdy",
+            "dmy",
+            "custom",
+          ],
+          "notes": "Optional hint about how the date should be parsed and formatted.\nDefault is iso (YYYY-MM-DD). Same set as <date>'s format kwarg.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The publication date as text. ISO 8601 (YYYY-MM-DD) is preferred\nfor machine readability; free-form dates (\"March 15, 2024\",\n\"Spring 2024\") are accepted.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "pub-date",
+      "notes": "JATS uses <pub-date> inside <article-meta> for the publication\ndate. The exporter parses ISO-format dates into structured\n<year>/<month>/<day> children; free-form dates pass through as\ntext content.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <publication-date | 2024-03-15>\n</meta>\n",
+        "layer1_html": "<meta>\n  <publication-date>2024-03-15</publication-date>\n</meta>\n",
+        "notes": "ISO 8601 publication date — the preferred form.\n",
+      },
+      {
+        "source": "<meta>\n  <publication-date | March 15, 2024>\n</meta>\n",
+        "layer1_html": "<meta>\n  <publication-date>March 15, 2024</publication-date>\n</meta>\n",
+        "notes": "Free-form publication date. Acceptable but ISO 8601 is preferred\nfor predictable JATS export and machine readability.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "publication-date.md",
   });
 
 const _q = Object.freeze({
@@ -3143,6 +3444,47 @@ const _s = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "s.md",
+  });
+
+const _samp = Object.freeze({
+    "semantic_role": "samp",
+    "html_output": {
+      "element": "samp",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The sample output as text — typically a literal value, message,\nor short fragment a program would produce.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; HTML-native)",
+      "notes": "JATS has no dedicated element for sample output. The exporter\nemits the content as inline text with no special JATS markup.\nThe same situation as the other programming-related HTML-native\ninline elements (<kbd>, <var>, <output>); recorded honestly per\nthe <lang> precedent.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The command prints <samp | Hello, world!> to stdout.",
+        "layer1_html": "<p>The command prints <samp>Hello, world!</samp> to stdout.</p>",
+        "notes": "Sample output from a program. Browsers render <samp> in a\nmonospace font by default, distinguishing it from surrounding\nprose.\n",
+      },
+      {
+        "source": "Set <var | threshold> to <samp | 0.05>.",
+        "layer1_html": "<p>Set <var>threshold</var> to <samp>0.05</samp>.</p>",
+        "notes": "<samp> for the sample value paired with <var> for the variable\nname — the natural pair for documenting configuration in\ntechnical writing.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "samp.md",
   });
 
 const _section_subtitle = Object.freeze({
@@ -3744,6 +4086,53 @@ const _sub = Object.freeze({
     "_sourceFile": "sub.md",
   });
 
+const _subject = Object.freeze({
+    "semantic_role": "subject",
+    "html_output": {
+      "element": "subject",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "scheme": {
+          "maps_to": "data-subject-scheme",
+          "notes": "Optional classification scheme this subject belongs to (e.g.\n\"MSC2020\" for the AMS Mathematics Subject Classification, \"ACM\"\nfor ACM Computing Classification, \"MeSH\" for biomedical\nsubjects). Identifies the controlled vocabulary the subject\nvalue is drawn from.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The subject classifier as text — either a free-form topic (\"ecology\nof large mammals\") or a controlled-vocabulary identifier (\"Q57.32\")\nwhen the scheme kwarg names the vocabulary.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "subject",
+      "notes": "JATS uses <subj-group><subject>VALUE</subject></subj-group> inside\n<article-meta> to record document subjects. The exporter wraps\n<subject> in the appropriate <subj-group>, optionally setting\nsubj-group-type from the scheme kwarg. Multiple <subject> elements\nare allowed for documents with multiple subject classifications.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<meta>\n  <subject | Ecology of large mammals>\n</meta>\n",
+        "layer1_html": "<meta>\n  <subject>Ecology of large mammals</subject>\n</meta>\n",
+        "notes": "Free-form subject. Common for general-interest documents.\n",
+      },
+      {
+        "source": "<meta>\n  <subject scheme=MSC2020 | 92D40>\n  <subject scheme=MSC2020 | 92D25>\n</meta>\n",
+        "layer1_html": "<meta>\n  <subject data-subject-scheme=\"MSC2020\">92D40</subject>\n  <subject data-subject-scheme=\"MSC2020\">92D25</subject>\n</meta>\n",
+        "notes": "Multiple subjects from a controlled vocabulary. The scheme\nidentifies the classification system; the JATS exporter\ngenerates the appropriate <subj-group subj-group-type=\"...\"> wrapper.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "subject.md",
+  });
+
 const _subtitle = Object.freeze({
     "semantic_role": "subtitle",
     "html_output": {
@@ -3911,6 +4300,51 @@ const _table = Object.freeze({
     "_sourceFile": "table.md",
   });
 
+const _term = Object.freeze({
+    "semantic_role": "term",
+    "html_output": {
+      "element": "term",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+        "notes": "Optional id, useful for cross-referencing the term-introduction\nfrom later prose (e.g. <ref @term:eigenvector>).\n",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The term being introduced — typically a noun phrase, italicized or\nvisually distinguished in the rendered output.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "named-content",
+      "attributes": {
+        "content-type": "term",
+      },
+      "notes": "JATS uses <named-content content-type=\"term\"> for marked\nterminology. The exporter constructs the named-content element\nwith the content-type attribute from acadamark's <term>.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "An <term | eigenvector> is a non-zero vector that scales under a linear transformation.",
+        "layer1_html": "<p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>",
+        "notes": "Standard term introduction. The element marks the word as\n\"this is a term being introduced,\" typically rendered in italic\nor bold by default CSS.\n",
+      },
+      {
+        "source": "An <term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize <term | eigenvector>s to operators.",
+        "layer1_html": "<p>An <term id=\"term:eigenvector\">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>",
+        "notes": "First introduction carries an id so later references can link\nback to it. Subsequent uses of the same term (without an id)\nstill mark it as a term being referenced, distinct from running\nprose, without re-asserting the introduction.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "term.md",
+  });
+
 const _title = Object.freeze({
     "semantic_role": "title",
     "html_output": {
@@ -4076,6 +4510,47 @@ const _ul = Object.freeze({
     "_sourceFile": "ul.md",
   });
 
+const _var = Object.freeze({
+    "semantic_role": "var",
+    "html_output": {
+      "element": "var",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The variable name as text — typically a single short identifier\n(x, n, foo, threshold). Inline elements within <var> are permitted\nbut unusual.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; HTML-native)",
+      "notes": "JATS has no dedicated element for variable names in prose — for\nmathematical variables, the typical JATS pattern is to use <italic>\nor to embed in <mml:math> for proper mathematics markup. For\nprogramming-language variable references, the exporter emits the\ncontent as inline text with no special JATS markup. This is a\nconscious tradeoff: <var> is an HTML / technical-prose convention,\nnot a scholarly-content concern JATS models.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The function takes a parameter <var | n> and returns <var | n>²+1.",
+        "layer1_html": "<p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>",
+        "notes": "Variable names in prose. Browsers render <var> in italic by\ndefault, distinguishing it from surrounding prose.\n",
+      },
+      {
+        "source": "Set <var | threshold> to <samp | 0.05>.",
+        "layer1_html": "<p>Set <var>threshold</var> to <samp>0.05</samp>.</p>",
+        "notes": "<var> for the variable name and <samp> for a sample value —\nthe natural pair for documenting configuration in technical writing.\n",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "var.md",
+  });
+
 const _version = Object.freeze({
     "semantic_role": "version",
     "html_output": {
@@ -4119,7 +4594,9 @@ const _version = Object.freeze({
 
 export const VOCABULARY = Object.freeze({
   "a": _a,
+  "abbr": _abbr,
   "abstract": _abstract,
+  "affiliation": _affiliation,
   "article-back": _article_back,
   "article-body": _article_body,
   "article-front": _article_front,
@@ -4151,12 +4628,14 @@ export const VOCABULARY = Object.freeze({
   "doi": _doi,
   "editor": _editor,
   "em": _em,
+  "email": _email,
   "figure": _figure,
   "hr": _hr,
   "i": _i,
   "img": _img,
   "inline-code": _inline_code,
   "inline-math": _inline_math,
+  "kbd": _kbd,
   "keywords": _keywords,
   "lang": _lang,
   "li": _li,
@@ -4166,10 +4645,14 @@ export const VOCABULARY = Object.freeze({
   "note-list": _note_list,
   "note": _note,
   "ol": _ol,
+  "orcid": _orcid,
+  "output": _output,
   "p": _p,
+  "publication-date": _publication_date,
   "q": _q,
   "ref": _ref,
   "s": _s,
+  "samp": _samp,
   "section-subtitle": _section_subtitle,
   "section-title": _section_title,
   "section": _section,
@@ -4182,12 +4665,15 @@ export const VOCABULARY = Object.freeze({
   "sub-sub-section-title": _sub_sub_section_title,
   "sub-sub-section": _sub_sub_section,
   "sub": _sub,
+  "subject": _subject,
   "subtitle": _subtitle,
   "sup": _sup,
   "table": _table,
+  "term": _term,
   "title": _title,
   "u": _u,
   "ul": _ul,
+  "var": _var,
   "version": _version,
   "quote": _blockquote,  // alias
 });

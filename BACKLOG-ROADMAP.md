@@ -151,10 +151,21 @@ the current code and all confirmed closed (see the STATUS milestone).
   `[alpha]` *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
 - [ ] **Add deferred vocabulary elements** (metadata, definition
   lists, inline-semantic, theorem family, survey absorbs) `[vocab]`
-  `[alpha]` — *footnote: "inline-semantic" (formerly DF-15) needs its
-  exact denotation recovered from the original DF-15 source before
-  this sub-part is fully scoped — the detail thinned out across
-  backlog processing.* *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
+  `[alpha]` — split into three sub-slices by the scoping pass
+  (2026-05-26). **Sub-slice 1 done (2026-05-26):** schema-clear
+  scalars / inline elements — eleven entries: `publication-date`,
+  `affiliation`, `orcid`, `email`, `subject` (metadata / author
+  sub-elements); `abbr`, `term` (inline-semantic); `kbd`, `var`,
+  `samp`, `output` (HTML-native inline, no JATS counterpart).
+  **Sub-slice 2 remaining:** structural blocks — `dl`/`dt`/`dd`,
+  `glossary`/`glossary-entry`, `details`/`summary`. **Sub-slice 3
+  remaining:** theorem family — `theorem`, `proof`, `lemma`,
+  `corollary`, `definition`, `example` (coupled with the
+  DF-11a handlers item). The inline-semantic denotation gap
+  flagged by the original footnote was resolved by the scoping
+  pass (the detail was never lost; the DF-15 archive entry has
+  the same list as the detailed entry below).
+  *(`formerly DF-13, DF-14, DF-15, DF-11b`)*
 - [ ] **Document the tag-form × tag matrix and reconcile inconsistencies**
   `[specs/docs]` `[post-alpha]` *(`formerly AUD-15`)*
 - [ ] **Add forward-pointers from governed specs to design directions
@@ -429,15 +440,20 @@ the sibling of DF-11a.) *(`formerly DF-8, DF-9, DF-10, DF-11a`)*
 
 **Add deferred vocabulary elements** `[vocab]` `[alpha]`.
 
-*Footnote:* the **inline-semantic** sub-part (formerly DF-15) needs its exact denotation recovered from the original DF-15 source before this sub-part is fully scoped — the detail thinned out across backlog processing.
+**Split into three sub-slices (scoping pass 2026-05-26).** The inline-semantic denotation question the original footnote flagged was resolved by the scoping pass — the DF-15 archive entry (`notes/archive/specified-not-implemented-2026-05.md`) preserves the exact element list (`<abbr>`, `<term>`, `<glossary>`, `<glossary-entry>`), matching the enumeration below; the detail was never lost.
 
-Metadata
-(`<keywords>`, `<publication-date>`); definition lists
-(`<dl>`/`<dt>`/`<dd>`); inline-semantic (`<abbr>`, `<term>`,
-`<glossary>`, `<glossary-entry>`); plus the theorem-family vocab
-(DF-11b — sibling of DF-11a in the DSL handlers entry above). All
-"to be specified" — each needs a short vocab spec, then a schema
-entry. Group them; do as a batch.
+**Sub-slice 1 done (2026-05-26):** the schema-clear scalars and inline elements — eleven entries shipped:
+- Metadata / author sub-elements: `publication-date`, `affiliation`, `orcid`, `email`, `subject`.
+- Inline-semantic (the inline two of DF-15's four): `abbr`, `term`.
+- HTML-native inline (no JATS counterpart, recorded per the `<lang>` precedent): `kbd`, `var`, `samp`, `output`.
+
+**Sub-slice 2 remaining:** structural blocks — definition lists (`<dl>`/`<dt>`/`<dd>`, formerly DF-14); glossary structure (`<glossary>`/`<glossary-entry>` — the structural two of DF-15's four); collapsibles (`<details>`/`<summary>`).
+
+**Sub-slice 3 remaining:** theorem family — `<theorem>`, `<proof>`, `<lemma>`, `<corollary>`, `<definition>`, `<example>` (DF-11b — vocabulary half of the theorem cluster; couples with the DF-11a handlers item, so vocab lands first, handlers follow).
+
+The original `<keywords>` and the rich-author-metadata kwargs (`<doi>`, `<license>`, `<lang>`, `<version>`, `<keywords>`) shipped earlier (2026-05-25 apparatus-tag reconciliation follow-on). Two of the survey-absorbed elements — `<corresponding>` and `<short-title>` — were ruled to be **kwargs**, not elements (`+corresponding` boolean on `<author>`; `short=` kwarg on `<title>`); their implementation is separate bookkeeping. `<thumbnail>` was dropped entirely (a web-presentation artifact, not a document element).
+
+The remaining sub-slices (2 + 3) keep this item open until sub-slice 3 completes.
 
 Additional small-vocab candidates surfaced in the authoring-features
 survey (archived 2026-05-23) and absorbed into this cluster — same

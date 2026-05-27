@@ -927,4 +927,65 @@ export function run() {
     snapshotHast('document-25', hast);
     console.log('PASS: integration doc25 (<meta> allowlist members render as real elements)');
   }
+
+  // ── Document 26: deferred-vocabulary sub-slice 1 elements render ──────────
+  // Validates the eleven new entries added by the deferred-vocab sub-slice 1:
+  //   - metadata / author sub-elements: publication-date, affiliation, orcid,
+  //     email, subject
+  //   - inline-semantic: abbr, term
+  //   - HTML-native inline (no JATS counterpart): kbd, var, samp, output
+  // Each must render as a real custom element with its value, never as a
+  // <span data-acadamark-unknown="…"> fallback.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-26-deferred-vocab-sub1.acm'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc26: article structure present');
+
+    // None of the eleven should render as unknown-element spans.
+    const elementNames = ['publication-date', 'affiliation', 'orcid', 'email',
+      'subject', 'abbr', 'term', 'kbd', 'var', 'samp', 'output'];
+    for (const name of elementNames) {
+      const unknownPattern = new RegExp(`data-acadamark-unknown="${name}"`);
+      assert.ok(!unknownPattern.test(html),
+        `doc26: no data-acadamark-unknown span for <${name}>`);
+    }
+
+    // Each renders as a real custom element with its value.
+    assert.ok(html.includes('<publication-date>2024-03-15</publication-date>'),
+      'doc26: <publication-date> renders with its value');
+    assert.ok(html.includes('<affiliation>Anthropic, San Francisco</affiliation>'),
+      'doc26: <affiliation> renders with its value');
+    assert.ok(html.includes('<orcid>0000-0002-1825-0097</orcid>'),
+      'doc26: <orcid> renders with its value');
+    // <email> content gets remark-autolinked into a <a href="mailto:...">.
+    // The assertion is that the <email> element wraps the autolinked content,
+    // not the bare email string — proving the vocabulary entry is in effect
+    // (no unknown-span) and the email value is carried through.
+    assert.ok(/<email><a href="mailto:contact@example\.org">contact@example\.org<\/a><\/email>/.test(html),
+      'doc26: <email> wraps the (autolinked) email value');
+    assert.ok(html.includes('92D40</subject>'),
+      'doc26: <subject> renders with its value (scheme as data attribute)');
+    assert.ok(/<subject [^>]*data-subject-scheme="MSC2020"/.test(html),
+      'doc26: <subject> scheme kwarg flows to data-subject-scheme attribute');
+
+    // Inline-semantic — abbr with title kwarg flowing through.
+    assert.ok(/<abbr [^>]*title="Document Object Model"[^>]*>DOM<\/abbr>/.test(html),
+      'doc26: <abbr> renders with its title kwarg carried as the title attribute');
+    assert.ok(html.includes('<term id="term:eigenvector">eigenvector</term>'),
+      'doc26: <term> renders with its id carried through');
+
+    // HTML-native inline.
+    assert.ok(html.includes('<kbd>Ctrl+C</kbd>'),
+      'doc26: <kbd> renders with its value');
+    assert.ok(html.includes('<var>n</var>'),
+      'doc26: <var> renders with its value');
+    assert.ok(html.includes('<samp>Hello, world!</samp>'),
+      'doc26: <samp> renders with its value');
+    assert.ok(html.includes('<output>42</output>'),
+      'doc26: <output> renders with its value');
+
+    snapshotHast('document-26', hast);
+    console.log('PASS: integration doc26 (deferred-vocab sub-slice 1 elements render)');
+  }
 }

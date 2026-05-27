@@ -851,3 +851,47 @@ that). One line gets added every few months, not every slice.
   38). Tests: layer1-vocabulary 52/52 (one count assertion updated);
   acadamark-core 50/50; remark-acadamark 128/128;
   acadamark-interpreter 24/24 suites.
+- **2026-Q2 — deferred-vocabulary sub-slice 1: schema-clear
+  scalars and inline elements shipped (11 entries).** The first of
+  three build sub-slices closing the `[alpha]` "Add deferred
+  vocabulary elements" item. A scoping pass (2026-05-26) split the
+  item into three sub-slices by natural seams and resolved the
+  long-standing "inline-semantic denotation lost" concern (the
+  DF-15 archive entry preserves the full element list; the detail
+  was never lost). This sub-slice shipped eleven Layer 1 vocabulary
+  entries — the schema-clear group with no design questions:
+  - **Metadata / author sub-elements** (5): `publication-date` →
+    JATS `<pub-date>`; `affiliation` → JATS `<aff>`; `orcid` →
+    JATS `<contrib-id contrib-id-type="orcid">`; `email` → JATS
+    `<email>`; `subject` → JATS `<subj-group>/<subject>` (with
+    optional `scheme` kwarg → `subj-group-type`).
+  - **Inline-semantic** (2): `abbr` → JATS `<abbrev>` (with
+    `title` kwarg for expansion, standard HTML pattern); `term` →
+    JATS `<named-content content-type="term">`.
+  - **HTML-native inline, no JATS counterpart** (4): `kbd`,
+    `var`, `samp`, `output`. JATS counterpart honestly recorded
+    as `(no direct JATS counterpart; HTML-native)` per the
+    `<lang>` precedent — no invented counterpart.
+  Vocabulary `data.js` regenerated (71 → 82 entries; +11);
+  pretest staleness guard passes. New integration fixture
+  `document-26-deferred-vocab-sub1.acm` exercises all eleven
+  elements end-to-end: integration test asserts each renders as a
+  real custom element with its value, no `data-acadamark-unknown`
+  span, `abbr`'s `title` kwarg carries through, `term`'s id
+  threads, `subject`'s `scheme` kwarg flows to
+  `data-subject-scheme`. Vocabulary test entry-count assertion
+  updated 72 → 83 (71 + 11 + quote alias). **No existing snapshot
+  changed** — expected, since the new entries simply provide
+  vocabulary for elements that no existing fixture authored. Two
+  findings surfaced and recorded: `<name>` is not in the vocabulary
+  today (the affiliation.md example uses it but no entry exists —
+  separate follow-on); `<author>` is not in `DSL_REGISTRY` so the
+  structural-author-children authoring pattern (`<author><affiliation
+  | …></author>`) doesn't parse as long-form today and the new
+  author-sub-element entries' structural homing is a follow-on
+  decision. Neither blocks the rendering correctness this sub-slice
+  proves. The backlog item remains open — sub-slice 2 (structural
+  blocks: definition lists, glossary, details/summary) and
+  sub-slice 3 (theorem family) follow. Tests: layer1-vocabulary
+  52/52; acadamark-core 50/50; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites.

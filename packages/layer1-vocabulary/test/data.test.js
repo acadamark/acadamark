@@ -24,14 +24,18 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 71 primary + 1 'quote' alias = 72.
-// (Was 66 + 1 = 67 prior to 2026-Q2 — five new <meta> allowlist members
-// added: doi, license, lang, version, keywords. The apparatus-tag
-// reconciliation defined the <meta> allowlist; this slice closed the
-// missing-vocabulary-entries gap.)
+// Entry count: 82 primary + 1 'quote' alias = 83.
+// Recent additions:
+// - 2026-Q2: 5 <meta> allowlist members (doi, license, lang, version,
+//   keywords) added by the apparatus-tag reconciliation follow-on.
+//   Brought count from 66 → 71 primary.
+// - 2026-Q2: 11 deferred-vocabulary sub-slice 1 elements added —
+//   publication-date, affiliation, orcid, email, subject (metadata /
+//   author sub-elements); abbr, term (inline-semantic); kbd, var,
+//   samp, output (HTML-native inline). Brought count from 71 → 82.
 check(
-  `VOCABULARY has 72 entries (71 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 72,
+  `VOCABULARY has 83 entries (82 primary + 'quote' alias)`,
+  Object.keys(VOCABULARY).length === 83,
 );
 
 // Build-time loader has nothing to report in normal state.
