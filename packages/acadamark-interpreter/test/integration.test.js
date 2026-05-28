@@ -1229,4 +1229,83 @@ export function run() {
     snapshotHast('document-29', hast);
     console.log('PASS: integration doc29 (deferred-vocab sub-slice 3 theorem-family render)');
   }
+
+  // ── Document 30: Phase 2 slice 2a — CSV/TSV handlers + <code> long-form fix ──
+  // Proves: <csv> and <tsv> standalone tags render as real <table> elements
+  // (matching the qualifying form's output); <code> long-form's body content
+  // renders (the pre-fix bug was the schema dispatch dropping opaque content).
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-30-csv-tsv-code-handlers.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // CSV — first row is headers; subsequent rows are tbody.
+    assert.ok(
+      /<table[^>]*id="csv:demo"[^>]*>/.test(html),
+      'doc30: <csv #csv:demo> renders as <table id="csv:demo">',
+    );
+    // Headers / cells appear as <th>/<td>; the pretty-printer may insert
+    // whitespace between them, so we match by individual cell contents
+    // rather than the compact row form.
+    assert.ok(
+      html.includes('<th>name</th>') && html.includes('<th>age</th>') && html.includes('<th>city</th>'),
+      'doc30: CSV header row renders as <th> cells in <thead>',
+    );
+    assert.ok(/<thead>[\s\S]*?<th>name<\/th>[\s\S]*?<\/thead>/.test(html),
+      'doc30: CSV <thead> wraps the header cells',
+    );
+    assert.ok(
+      html.includes('<td>Alice</td>') && html.includes('<td>Boston</td>'),
+      'doc30: CSV body rows render with their cells',
+    );
+
+    // TSV — same shape, tab-delimited.
+    assert.ok(
+      html.includes('<th>fruit</th>') && html.includes('<th>color</th>') && html.includes('<th>count</th>'),
+      'doc30: TSV header row renders',
+    );
+    assert.ok(
+      html.includes('<td>apple</td>') && html.includes('<td>red</td>'),
+      'doc30: TSV body rows render',
+    );
+
+    // Neither <csv> nor <tsv> appears as a real element in the rendered HTML
+    // (the handler builds a <table> directly; the source tag is consumed).
+    assert.ok(
+      !html.includes('<csv') && !html.includes('<tsv'),
+      'doc30: <csv> and <tsv> source tags do not appear in rendered HTML',
+    );
+
+    // <code> long-form fix: body content renders (previously was empty).
+    assert.ok(
+      /<code[^>]*class="language-python"[^>]*>def factorial\(n\)/.test(html),
+      'doc30: <code language=python | …> renders with body content + language class',
+    );
+    assert.ok(
+      /<code>x = 42<\/code>/.test(html),
+      'doc30: <code | x = 42> short-form-with-pipe renders body content (no language)',
+    );
+    assert.ok(
+      /<code[^>]*class="language-javascript"[^>]*>const sum/.test(html),
+      'doc30: <code language=javascript | …> renders with body + js language class',
+    );
+    // Confirm no empty <code></code> elements (the pre-fix symptom).
+    assert.ok(
+      !/<code[^>]*><\/code>/.test(html),
+      'doc30: no empty <code></code> elements (post-fix body content always present)',
+    );
+
+    // No data-acadamark-unknown spans for any of the three tags.
+    for (const tag of ['csv', 'tsv', 'code']) {
+      assert.ok(
+        !html.includes(`data-acadamark-unknown="${tag}"`),
+        `doc30: <${tag}> renders as a real element (no unknown-span fallback)`,
+      );
+    }
+
+    snapshotHast('document-30', hast);
+    console.log('PASS: integration doc30 (Phase 2 slice 2a — CSV/TSV handlers + <code> long-form fix)');
+  }
 }

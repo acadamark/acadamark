@@ -1,0 +1,56 @@
+<meta type=article title="CSV/TSV handlers + <code> long-form fixture (Phase 2 slice 2a)">
+</meta>
+
+<section | Standalone CSV>
+
+The `<csv>` tag parses its content as comma-separated values and renders
+a real HTML `<table>`. The handler reuses `table.js`'s `parseCsv` parser
+and `renderParsedTable` builder, so `<csv>` and `<table csv | …>` produce
+equivalent output for the same data.
+
+<csv #csv:demo>
+name,age,city
+Alice,30,Boston
+Bob,25,Seattle
+Carol,42,Austin
+</csv>
+
+A CSV block with the default header-row treatment.
+
+<section | Standalone TSV>
+
+The `<tsv>` tag is the tab-separated counterpart.
+
+<tsv>
+fruit	color	count
+apple	red	7
+banana	yellow	12
+</tsv>
+
+<section | The `<code>` long-form bug fix>
+
+Phase 0 of the Phase 2 handler bundle (commit `af7a0a3`) surfaced a
+latent bug: `<code>` long-form was registered as
+`interpreter_strategy: schema` while its DSL_REGISTRY entry made
+content opaque. The schema dispatch dropped opaque content at
+`convertContent`, so `<code | body>` rendered as an empty
+`<code></code>` element with the pipe content silently lost. Phase 2
+slice 2a added `handlers/code.js` (parallel to the existing
+`inline-code.js`) and switched the vocab to handler dispatch. The
+content now renders correctly:
+
+<code language=python | def factorial(n): return 1 if n == 0 else n * factorial(n - 1)>
+
+Two more `<code>` forms to confirm the handler covers the natural
+shapes:
+
+<code | x = 42>
+
+The short-form-with-pipe-content above renders as a plain `<code>`
+with no language class.
+
+<code language=javascript | const sum = (a, b) => a + b>
+
+And the language kwarg flows through to a `language-X` class on the
+rendered `<code>` element, same as the inline-code sigil
+`` <`language … `> ``.

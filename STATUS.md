@@ -1391,3 +1391,70 @@ that). One line gets added every few months, not every slice.
   mermaid/abcjs/papaparse are not (Family 2 has real dependency-
   footprint impact). No product code, no specs, no vocab, no
   backlog edits. Findings file + this STATUS line only.
+- **2026-Q2 — Phase 2 slice 2a: CSV/TSV handlers + adjacent
+  cleanup.** First implementation slice of Phase 2. Four pieces of
+  work in one commit:
+
+  **1. CSV/TSV handlers shipped.** Two new vocab entries (`csv.md`,
+  `tsv.md`) declaring `interpreter_strategy: handler` +
+  `handler_module`. Two new handler modules (`handlers/csv.js`,
+  `handlers/tsv.js`) — thin wrappers around `table.js`'s reusable
+  `parseCsv` / `parseTsv` parsers and the shared `renderParsedTable`
+  helper extracted from `tableHandler`'s body in this slice. The
+  standalone `<csv>` and the `<table csv>` qualifying form now share
+  parsing and rendering — equivalent output for the same data.
+  Vocab `data.js` regenerated (98 → 100 primary; 101 with `quote`
+  alias). Test count assertion bumped 99 → 101.
+
+  **2. ROADMAP.md drift fix** for the two stale four-family /
+  theorem-handler references at L60-65 and L92-94 (Phase 0 Q1.7
+  finding) — rewritten to reflect the post-`dfdb4f0` three-family
+  scope.
+
+  **3. `<code>` long-form bug fixed** (Phase 0 Q1.5 finding):
+  `<code>` vocab declared `interpreter_strategy: schema` while its
+  DSL_REGISTRY entry made content opaque; schema dispatch dropped
+  opaque content. Created `handlers/code.js` (parallel to
+  `inline-code.js`); switched `code.md` to handler strategy.
+  `<code | body>` long-form / short-form-with-pipe now renders
+  correctly with body text and optional `language-X` class.
+
+  **4. `<library>` stale handler_module reconciled** (Phase 0 Q1.5
+  finding): vocab declared `handler_module: ./handlers/library.js`
+  pointing at a file that doesn't exist. Actual library processing
+  is at PLUGIN time (`library-load.js`), not handler time; and
+  `<library>` was already being suppressed from rendered output via
+  the `INTERNAL_REGISTRY` interception at `interpret-plugin.js:48-49`
+  — so the handler-not-found path the Phase 0 finding diagnosed was
+  actually never reached (the symptom is right, the mechanism
+  intercepts upstream). Fix: switched vocab to
+  `interpreter_strategy: schema`; removed the stale `handler_module`
+  line; expanded `related_plugins` to explain the plugin-based
+  processing path and the upstream `INTERNAL_REGISTRY` suppression.
+
+  Shared infrastructure: `table.js` now exports `parseCsv`,
+  `parseTsv`, and the new `renderParsedTable` helper.
+  `HANDLER_REGISTRY` at `interpret-plugin.js:68-77` grew from 5
+  entries to 8 (csv, tsv, code added).
+
+  Fixture coverage: `document-30-csv-tsv-code-handlers.acm` +
+  `integration doc30` exercises all three additions end-to-end
+  (`<csv>` with header row + id; `<tsv>` with header row; three
+  `<code>` forms covering long-form / short-form-no-language /
+  language=javascript). Assertions confirm rendered `<table>`
+  shapes for csv/tsv, body-content presence for code, no
+  `data-acadamark-unknown` spans, no empty `<code></code>`
+  elements.
+
+  **Snapshot zero-diff confirmed.** Verified via
+  `git diff --stat` on `test/fixtures/*.json` and
+  `test/fixtures/*.html` — empty output before staging doc30's new
+  files. No existing snapshot changed.
+
+  Phase 2 handler-bundle item remains open — sub-slices 2b (math
+  envs) and 2c (Mermaid/ABC) follow per the Phase 0 split
+  recommendation.
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc30).

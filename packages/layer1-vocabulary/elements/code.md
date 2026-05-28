@@ -43,7 +43,16 @@ shorthand_examples:
     layer1_html: '<code class="language-python">def hello(): print("hi")</code>'
   - source: '<code #factorial-impl language=python | def factorial(n):>'
     layer1_html: '<code id="factorial-impl" class="language-python">def factorial(n):</code>'
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/code.js
+handler_responsibilities:
+  - Pull the opaque content string from `node.content`.
+  - Honor the `language` kwarg (mapped to a `language-X` class for
+    downstream syntax highlighters).
+  - Apply id / classes on the rendered `<code>` element.
+  - Emit a `<code>` element with the code text as a single text child.
+  - Mirrors handlers/inline-code.js's shape so long-form and sigil
+    forms produce consistent output.
 ---
 
 # `<code>`

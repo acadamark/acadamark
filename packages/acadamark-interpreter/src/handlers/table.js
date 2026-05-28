@@ -15,6 +15,13 @@
 // When no format word is given, content is treated as raw HTML (escape-hatch).
 //
 // See notes/tables-investigation.md for Phase 0 findings.
+//
+// This module also exports `parseCsv`, `parseTsv`, and the shared
+// `renderParsedTable` helper for the standalone `<csv>` / `<tsv>` handlers
+// (handlers/csv.js, handlers/tsv.js). Phase 2 slice 2a (2026-05-27) added
+// those handlers; rather than duplicate the parsers and the
+// headers/rows-to-hast machinery, the standalone handlers share table.js's
+// implementation via these exports.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -34,7 +41,7 @@ import { readBoolKwarg } from '../lib/bool-kwarg.js';
  * @param {boolean} opts.hasHeaders - whether the first row is the header
  * @returns {{ headers: string[]|null, rows: string[][] }}
  */
-function parseCsv(text, { hasHeaders }) {
+export function parseCsv(text, { hasHeaders }) {
   const allRows = parseDelimited(text, ',');
   return splitHeadersRows(allRows, hasHeaders);
 }
@@ -47,7 +54,7 @@ function parseCsv(text, { hasHeaders }) {
  * @param {object} opts
  * @returns {{ headers: string[]|null, rows: string[][] }}
  */
-function parseTsv(text, { hasHeaders }) {
+export function parseTsv(text, { hasHeaders }) {
   const lines = text.trim().split('\n').filter(l => l.trim() !== '');
   const allRows = lines.map(line =>
     line.split('\t').map(cell => cell.trim()),
@@ -460,7 +467,24 @@ export function tableHandler(_state, node, _vocab, options) {
     return makeErrorTable(err.message, id);
   }
 
-  // Build the table element.
+  return renderParsedTable({ parsed, tableProps, captionText, computedNumber });
+}
+
+/**
+ * Build a hast <table> element from already-parsed {headers, rows} data.
+ *
+ * Shared helper used by `tableHandler` and by the standalone `<csv>` /
+ * `<tsv>` handlers (handlers/csv.js, handlers/tsv.js). Centralizing the
+ * headers/rows-to-hast machinery here keeps the three handlers consistent.
+ *
+ * @param {object} args
+ * @param {{ headers: string[]|null, rows: any[][] }} args.parsed
+ * @param {object} args.tableProps         - hast properties for the outer <table>
+ * @param {string|null} [args.captionText] - optional caption text
+ * @param {number|null} [args.computedNumber] - optional sequence number
+ * @returns {import('hast').Element}
+ */
+export function renderParsedTable({ parsed, tableProps, captionText = null, computedNumber = null }) {
   const tableChildren = [];
 
   if (captionText !== null || computedNumber !== null) {

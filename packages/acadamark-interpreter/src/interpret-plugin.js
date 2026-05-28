@@ -24,9 +24,12 @@ import { buildProperties } from './lib/build-properties.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';
 import { mathHandler } from './handlers/math.js';
+import { codeHandler } from './handlers/code.js';
 import { codeBlockHandler } from './handlers/code-block.js';
 import { inlineCodeHandler } from './handlers/inline-code.js';
 import { tableHandler } from './handlers/table.js';
+import { csvHandler } from './handlers/csv.js';
+import { tsvHandler } from './handlers/tsv.js';
 import {
   noteMarkerHandler,
   noteListHandler,
@@ -64,13 +67,17 @@ const INTERNAL_REGISTRY = new Map([
 const vocabulary = new Map(Object.entries(VOCABULARY));
 
 // Maps handler_module values (as declared in vocabulary entries) to the
-// actual handler functions. Slice 1 has only one handler-strategy element.
+// actual handler functions. Each entry has a matching `handler_module`
+// declaration in `layer1-vocabulary/elements/<tag>.md`.
 const HANDLER_REGISTRY = new Map([
   ['./handlers/figure.js', figureHandler],
   ['./handlers/math.js', mathHandler],
+  ['./handlers/code.js', codeHandler],
   ['./handlers/code-block.js', codeBlockHandler],
   ['./handlers/inline-code.js', inlineCodeHandler],
   ['./handlers/table.js', tableHandler],
+  ['./handlers/csv.js', csvHandler],
+  ['./handlers/tsv.js', tsvHandler],
 ]);
 
 /**

@@ -60,9 +60,10 @@ pickable within the phase.
 **Phase 1 (vocabulary completeness) is closed** as of the deferred-
 vocabulary sub-slice 3 commit (2026-05-27). The alpha-tagged
 vocabulary set has no remaining `[alpha]` gaps. The roadmap moves to
-Phase 2 next — output handlers and DSL surface, including the
-theorem-family handler that now has its Layer 1 vocabulary to operate
-on.
+Phase 2 next — output handlers and DSL surface for the three handler
+families (CSV/TSV, Mermaid/ABC, math environments). The theorem
+family was confirmed regular vocabulary (no handler dispatch needed)
+by the 2026-05-27 DSL/long-form parser bug fix.
 
 The flat-line of completed work to date is recorded in `STATUS.md`.
 
@@ -89,9 +90,12 @@ the last gap.
     `c1adfb7`.
   - Sub-slice 3 (theorem family: `<theorem>`, `<lemma>`, `<corollary>`,
     `<proposition>`, `<definition>`, `<example>`, `<remark>`, `<proof>`)
-    — 2026-05-27. The matching `<theorem>` handler — numbering, label
-    rendering, QED, optional-name display — is Phase 2 work, decoupled
-    from the vocab entries by ruling.
+    — 2026-05-27. The theorem family is regular Layer 1 vocabulary; no
+    handler dispatch is needed (confirmed by the DSL/long-form parser
+    bug fix the same day). Any future enhancement to theorem-family
+    rendering (numbering, label rendering, QED, optional-name display)
+    is regular-vocabulary work scheduled separately if and when taken
+    up — it is not part of Phase 2's handler bundle.
 - **Add vocabulary entries for `<meta>` allowlist members and
   `<abstract>`** — done, `b3c8a2c`. Listed here for the roadmap
   reader; not an open item.

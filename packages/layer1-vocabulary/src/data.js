@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 98 vocabulary entries.
+// Source files: 100 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -1636,7 +1636,15 @@ const _code = Object.freeze({
         "layer1_html": "<code id=\"factorial-impl\" class=\"language-python\">def factorial(n):</code>",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/code.js",
+    "handler_responsibilities": [
+      "Pull the opaque content string from `node.content`.",
+      "Honor the `language` kwarg (mapped to a `language-X` class for downstream syntax highlighters).",
+      "Apply id / classes on the rendered `<code>` element.",
+      "Emit a `<code>` element with the code text as a single text child.",
+      "Mirrors handlers/inline-code.js's shape so long-form and sigil forms produce consistent output.",
+    ],
     "_sourceFile": "code.md",
   });
 
@@ -1780,6 +1788,68 @@ const _corollary = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "corollary.md",
+  });
+
+const _csv = Object.freeze({
+    "semantic_role": "csv",
+    "html_output": {
+      "element": "csv",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). `<csv>` is a DSL — its content is comma-separated\nsource data, parsed by the CSV handler and rendered as a real HTML\n`<table>` element. The schema `html_output.element` field is ignored\nbecause `interpreter_strategy: handler` routes through the handler\ninstead; the handler builds the `<table>` shape directly. `<csv>`\nitself does not appear in the rendered HTML.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption for the rendered table. When set, renders as\n`<caption>` inside the table. The numbering plugin (when\napplicable) prepends a \"Table N.\" label.\n",
+        },
+      },
+      "booleans": {
+        "headers": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether the first row is the header row. Default true (+headers\n/ headers=true). Use -headers to treat every row as data; no\n`<thead>` is generated.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "becomes": "parsed CSV rows (rendered as <table>)",
+      "notes": "Content is comma-separated source data, preserved verbatim and parsed\nby the handler. No acadamark interpretation. Quoted fields with RFC\n4180 escaping are supported (same parser as `<table csv>`).\n",
+    },
+    "content_handler": "csv",
+    "jats_counterpart": {
+      "element": "table-wrap",
+      "notes": "JATS uses `<table-wrap>` for a tabular figure. The CSV handler's\noutput (an HTML `<table>` with rows and headers) corresponds to JATS\n`<table-wrap>/<table>`. The CSV source itself does not appear in JATS\noutput — only the parsed table structure.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<csv>\nname,age,city\nAlice,30,Boston\nBob,25,Seattle\n</csv>\n",
+        "layer1_html": "<table>\n  <thead><tr><th>name</th><th>age</th><th>city</th></tr></thead>\n  <tbody>\n    <tr><td>Alice</td><td>30</td><td>Boston</td></tr>\n    <tr><td>Bob</td><td>25</td><td>Seattle</td></tr>\n  </tbody>\n</table>\n",
+        "notes": "Long-form `<csv>` with a header row (default).\n",
+      },
+      {
+        "source": "<csv -headers>\n1,2,3\n4,5,6\n</csv>\n",
+        "layer1_html": "<table>\n  <tbody>\n    <tr><td>1</td><td>2</td><td>3</td></tr>\n    <tr><td>4</td><td>5</td><td>6</td></tr>\n  </tbody>\n</table>\n",
+        "notes": "Suppress header-row treatment with -headers; every row becomes a\n`<tbody>` row.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/csv.js",
+    "handler_responsibilities": [
+      "Parse `node.content` (opaque CSV string) using RFC-4180-compatible parser.",
+      "Honor the `headers` boolean kwarg (default true).",
+      "Render as a hast `<table>` with `<thead>` / `<tbody>` per the parsed shape.",
+      "Apply id / classes / caption / numbering on the outer `<table>` element.",
+    ],
+    "_sourceFile": "csv.md",
   });
 
 const _data = Object.freeze({
@@ -3204,20 +3274,13 @@ const _library = Object.freeze({
         "layer1_html": "<library data-format=\"csl-json\">\n  [\n    {\n      \"id\": \"goodall2024\",\n      ...\n    }\n  ]\n</library>\n",
       },
     ],
-    "interpreter_strategy": "handler",
-    "handler_module": "./handlers/library.js",
-    "handler_responsibilities": [
-      "Read the format kwarg.",
-      "Dispatch to the appropriate format-specific parser (BibTeX, CSL-JSON, RIS, etc.).",
-      "Parse the opaque content into structured bibliography entries.",
-      "Register each entry in the citation registry under its id (bibtex key, csl id, etc.).",
-      "Produce no inline output (the element renders as empty after processing).",
-    ],
+    "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkLibraryParsing",
-        "runs_before": "acadamarkCitationResolution",
-        "purpose": "Phase 1 discovery — dispatches to format-specific parsers (BibTeX, CSL-JSON, etc.) and registers entries. See notes/specs/pipeline.md for the full pipeline.",
+        "name": "acadamarkLibraryLoad",
+        "location": "packages/acadamark-interpreter/src/plugins/library-load.js",
+        "runs_before": "acadamarkCiteResolution",
+        "purpose": "The actual library processing happens at PLUGIN time, not at handler\ntime. `acadamarkLibraryLoad` walks `<data>` root siblings, reads each\ncontained `<library>` node's opaque content, dispatches to the\nformat-specific parser (BibTeX via citation-js, etc.), and registers\nevery entry in the citation registry. By the time interpreter\nrendering runs, the library entries are already in the registry; the\n`<library>` element itself produces no inline output (the structural\npipeline routes `<data>` into `<article-back>` where the empty\n`<library>` element is filtered from the rendered HTML).\n\nThe interpreter_strategy is `schema` (not `handler`) because no\nhandler-time work is needed — the upstream plugin has already done\neverything. A handler module entry was previously declared\n(`handler_module: ./handlers/library.js`) but pointed at a file\nthat does not exist; the declaration was stale aspirational text\nand was removed by Phase 2 slice 2a (2026-05-27). If `<library>`\never needs handler-time work in the future (e.g. a render-mode\nthat shows library content inline), the entry can be re-elevated\nto handler strategy at that time.\n",
       },
     ],
     "_sourceFile": "library.md",
@@ -5242,6 +5305,63 @@ const _title = Object.freeze({
     "_sourceFile": "title.md",
   });
 
+const _tsv = Object.freeze({
+    "semantic_role": "tsv",
+    "html_output": {
+      "element": "tsv",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). `<tsv>` is a DSL — its content is tab-separated source\ndata, parsed by the TSV handler and rendered as a real HTML\n`<table>` element. The schema `html_output.element` field is ignored\nbecause `interpreter_strategy: handler` routes through the handler\ninstead; the handler builds the `<table>` shape directly. `<tsv>`\nitself does not appear in the rendered HTML.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption for the rendered table. When set, renders as\n`<caption>` inside the table. The numbering plugin (when\napplicable) prepends a \"Table N.\" label.\n",
+        },
+      },
+      "booleans": {
+        "headers": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether the first row is the header row. Default true (+headers\n/ headers=true). Use -headers to treat every row as data; no\n`<thead>` is generated.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "becomes": "parsed TSV rows (rendered as <table>)",
+      "notes": "Content is tab-separated source data, preserved verbatim and parsed\nby the handler. No acadamark interpretation. Same parser as\n`<table tsv>`.\n",
+    },
+    "content_handler": "tsv",
+    "jats_counterpart": {
+      "element": "table-wrap",
+      "notes": "JATS uses `<table-wrap>` for a tabular figure. The TSV handler's\noutput (an HTML `<table>` with rows and headers) corresponds to JATS\n`<table-wrap>/<table>`. The TSV source itself does not appear in JATS\noutput — only the parsed table structure.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<tsv>\nname\tage\tcity\nAlice\t30\tBoston\nBob\t25\tSeattle\n</tsv>\n",
+        "layer1_html": "<table>\n  <thead><tr><th>name</th><th>age</th><th>city</th></tr></thead>\n  <tbody>\n    <tr><td>Alice</td><td>30</td><td>Boston</td></tr>\n    <tr><td>Bob</td><td>25</td><td>Seattle</td></tr>\n  </tbody>\n</table>\n",
+        "notes": "Long-form `<tsv>` with a header row (default). Cells are separated\nby literal tab characters.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/tsv.js",
+    "handler_responsibilities": [
+      "Parse `node.content` (opaque TSV string) splitting on tab.",
+      "Honor the `headers` boolean kwarg (default true).",
+      "Render as a hast `<table>` with `<thead>` / `<tbody>` per the parsed shape.",
+      "Apply id / classes / caption / numbering on the outer `<table>` element.",
+    ],
+    "_sourceFile": "tsv.md",
+  });
+
 const _u = Object.freeze({
     "semantic_role": "u",
     "html_output": {
@@ -5473,6 +5593,7 @@ export const VOCABULARY = Object.freeze({
   "code": _code,
   "config": _config,
   "corollary": _corollary,
+  "csv": _csv,
   "data": _data,
   "date": _date,
   "dd": _dd,
@@ -5537,6 +5658,7 @@ export const VOCABULARY = Object.freeze({
   "term": _term,
   "theorem": _theorem,
   "title": _title,
+  "tsv": _tsv,
   "u": _u,
   "ul": _ul,
   "var": _var,

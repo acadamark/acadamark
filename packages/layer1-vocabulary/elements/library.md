@@ -103,18 +103,31 @@ shorthand_examples:
           }
         ]
       </library>
-interpreter_strategy: handler
-handler_module: ./handlers/library.js
-handler_responsibilities:
-  - Read the format kwarg.
-  - Dispatch to the appropriate format-specific parser (BibTeX, CSL-JSON, RIS, etc.).
-  - Parse the opaque content into structured bibliography entries.
-  - Register each entry in the citation registry under its id (bibtex key, csl id, etc.).
-  - Produce no inline output (the element renders as empty after processing).
+interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkLibraryParsing
-    runs_before: acadamarkCitationResolution
-    purpose: 'Phase 1 discovery — dispatches to format-specific parsers (BibTeX, CSL-JSON, etc.) and registers entries. See notes/specs/pipeline.md for the full pipeline.'
+  - name: acadamarkLibraryLoad
+    location: packages/acadamark-interpreter/src/plugins/library-load.js
+    runs_before: acadamarkCiteResolution
+    purpose: |
+      The actual library processing happens at PLUGIN time, not at handler
+      time. `acadamarkLibraryLoad` walks `<data>` root siblings, reads each
+      contained `<library>` node's opaque content, dispatches to the
+      format-specific parser (BibTeX via citation-js, etc.), and registers
+      every entry in the citation registry. By the time interpreter
+      rendering runs, the library entries are already in the registry; the
+      `<library>` element itself produces no inline output (the structural
+      pipeline routes `<data>` into `<article-back>` where the empty
+      `<library>` element is filtered from the rendered HTML).
+
+      The interpreter_strategy is `schema` (not `handler`) because no
+      handler-time work is needed — the upstream plugin has already done
+      everything. A handler module entry was previously declared
+      (`handler_module: ./handlers/library.js`) but pointed at a file
+      that does not exist; the declaration was stale aspirational text
+      and was removed by Phase 2 slice 2a (2026-05-27). If `<library>`
+      ever needs handler-time work in the future (e.g. a render-mode
+      that shows library content inline), the entry can be re-elevated
+      to handler strategy at that time.
 
 ---
 

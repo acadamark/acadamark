@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 98 primary + 1 'quote' alias = 99.
+// Entry count: 100 primary + 1 'quote' alias = 101.
 // Recent additions:
 // - 2026-Q2: 5 <meta> allowlist members (doi, license, lang, version,
 //   keywords) added by the apparatus-tag reconciliation follow-on.
@@ -44,9 +44,12 @@ function check(label, cond) {
 //   theorem family: theorem, lemma, corollary, proposition,
 //   definition, example, remark, proof. All map to JATS
 //   <statement content-type="X">. Brought count from 90 → 98 primary.
+// - 2026-Q2: 2 entries added by Phase 2 slice 2a — csv, tsv (the
+//   standalone CSV/TSV DSL handlers, parallel to <table>'s qualifying
+//   form). Brought count from 98 → 100 primary.
 check(
-  `VOCABULARY has 99 entries (98 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 99,
+  `VOCABULARY has 101 entries (100 primary + 'quote' alias)`,
+  Object.keys(VOCABULARY).length === 101,
 );
 
 // Build-time loader has nothing to report in normal state.
