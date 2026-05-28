@@ -1704,3 +1704,42 @@ that). One line gets added every few months, not every slice.
   (incl. new doc33 and doc34). Three existing snapshots updated
   per the audit above (doc5, doc6, doc12 — per-section list
   moves).
+- **2026-Q2 — Phase 3 Phase 0: frameable elements findings.**
+  Read-only investigation producing `notes/phase3-frameable-findings.md`
+  — the artifact the Phase 3 implementation slice(s) will build from
+  (same role `notes/phase2-handler-findings.md` played for Phase 2).
+  Covers Q1.1 (BACKLOG entries for the frameable-class item at L122-123
+  / L455-466 and the caption-as-content item at L119-121 quoted
+  verbatim); Q1.2 (vocab inventory across 107 entries — three settled
+  frameable members lack vocab entries today: `<fig>`, `<svg>`,
+  `<frame>` — with per-element caption/numbered/id/content.type/strategy
+  shape table); Q1.3 (existing infrastructure survey: the generic
+  per-type counter machinery in `acadamark-core/src/registry.js`,
+  the NUMBERED_TAGNAMES Map in `numbering.js` with three entries
+  today, the ref-resolution DEFAULT_PREFIXES dictionary, and the
+  mixed caption-handling shapes across figure/table/mermaid/abc/csv/
+  tsv handlers); Q1.4 (per-element shared-vs-specific analysis with
+  proposed shared frameable surface `id / title / caption / border /
+  numbered` + per-element body content + counter type + JATS
+  counterpart table); Q1.5 (caption-as-content design surfacing —
+  recommends Option A: `<caption>` as child-tag position with kwarg-
+  form lift at the normalize-to-canonical gate, mirroring the
+  `<meta>` and `<author>` precedent; JATS / LaTeX / HTML5 / Pandoc
+  all converge on child-tag); Q1.6 (Phase 3 backlog and roadmap
+  state — consistent across BACKLOG.md and ROADMAP.md views);
+  Q1.7 (intersections with deferred numbering work — theorem family
+  numbering and math-envs numbering are both extensions of
+  NUMBERED_TAGNAMES, bundleable into a precursor slice). Three
+  sibling cleanup items flagged for the implementation slices
+  (`<author>` `notes/handler_responsibilities` style mismatch; the
+  `<figure>` vs `<fig>` alias activation; theorem-family `name`
+  kwarg rendering). **Recommendation: SPLIT into three slices —
+  3a numbering-registry extension → 3b frameable-class build (with
+  the three new vocab entries + shared rendering capability) →
+  3c caption-as-content (Option A)** rather than bundle, on the
+  reasoning that each sub-slice has a coherent independent test
+  surface and the bundled version (~5-7 new vocab entries + handler
+  refactors across ~10 elements + numbering-extension + caption-as-
+  content) would make the snapshot audit intractable. No product
+  code, spec, or vocab changes in this slice — read-only as
+  specified.
