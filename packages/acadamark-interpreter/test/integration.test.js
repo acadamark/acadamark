@@ -1356,4 +1356,70 @@ export function run() {
     snapshotHast('document-31', hast);
     console.log('PASS: integration doc31 (Phase 2 slice 2b — math envs + <math> long-form)');
   }
+
+  // ── Document 32: Phase 2 slice 2c — external DSL handlers ────────────────
+  // Proves: <mermaid> emits <pre class="mermaid" data-acadamark-dsl="mermaid">
+  // with source preserved verbatim (CDN-compatible markup for Mermaid's DOM
+  // scanner). <abc> emits <div class="abc" data-acadamark-dsl="abc"> with
+  // source preserved (consumer initializes abcjs explicitly via the marker).
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-32-external-dsls.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // <mermaid>: wrapper is <pre class="mermaid" data-acadamark-dsl="mermaid">
+    assert.ok(
+      /<pre[^>]*class="mermaid"[^>]*data-acadamark-dsl="mermaid"|<pre[^>]*data-acadamark-dsl="mermaid"[^>]*class="mermaid"/.test(html),
+      'doc32: <mermaid> wrapper is <pre> with class="mermaid" and data-acadamark-dsl="mermaid"',
+    );
+    // First mermaid carries its id
+    assert.ok(
+      /<pre[^>]*id="diagram:simple-flow"[^>]*>/.test(html),
+      'doc32: <mermaid #diagram:simple-flow> renders with id preserved',
+    );
+    // Mermaid source is preserved verbatim — graph LR, sequenceDiagram, etc.
+    assert.ok(
+      html.includes('graph LR') && html.includes('Decision'),
+      'doc32: Mermaid flowchart source preserved verbatim in wrapper',
+    );
+    assert.ok(
+      html.includes('sequenceDiagram') && html.includes('Alice->>Bob: Hello Bob'),
+      'doc32: Mermaid sequence-diagram source preserved (handler does not assume diagram type)',
+    );
+
+    // <abc>: wrapper is <div class="abc" data-acadamark-dsl="abc">
+    assert.ok(
+      /<div[^>]*class="abc"[^>]*data-acadamark-dsl="abc"|<div[^>]*data-acadamark-dsl="abc"[^>]*class="abc"/.test(html),
+      'doc32: <abc> wrapper is <div> with class="abc" and data-acadamark-dsl="abc"',
+    );
+    assert.ok(
+      /<div[^>]*id="music:twinkle"[^>]*>/.test(html),
+      'doc32: <abc #music:twinkle> renders with id preserved',
+    );
+    // ABC source is preserved verbatim
+    assert.ok(
+      html.includes('T:Twinkle, Twinkle, Little Star') && html.includes('C C G G'),
+      'doc32: ABC notation source preserved verbatim in wrapper',
+    );
+
+    // No rendered SVG appears (the whole point of "external" — rendering
+    // happens downstream, not at acadamark time).
+    assert.ok(
+      !html.includes('<svg'),
+      'doc32: no <svg> elements in output (external rendering only)',
+    );
+
+    // No data-acadamark-unknown spans for either tag.
+    for (const tag of ['mermaid', 'abc']) {
+      assert.ok(
+        !html.includes(`data-acadamark-unknown="${tag}"`),
+        `doc32: <${tag}> renders as a real element (no unknown-span fallback)`,
+      );
+    }
+
+    snapshotHast('document-32', hast);
+    console.log('PASS: integration doc32 (Phase 2 slice 2c — external DSL handlers for <mermaid> and <abc>)');
+  }
 }

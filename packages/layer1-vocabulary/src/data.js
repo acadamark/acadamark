@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 105 vocabulary entries.
+// Source files: 107 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -133,6 +133,55 @@ const _abbr = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "abbr.md",
+  });
+
+const _abc = Object.freeze({
+    "semantic_role": "abc",
+    "html_output": {
+      "element": "abc",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<div class=\"abc\" data-acadamark-dsl=\"abc\">…</div>`); the schema\nfield is not consulted under `interpreter_strategy: handler`.\n\n`<abc>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Acadamark preserves the source as marked\nmarkup; rendering to SVG happens external to acadamark — at view\ntime in the browser (the consumer initializes abcjs with a small\nscript calling `ABCJS.renderAbc` on each marked block) or at\nbuild time via a headless pre-render pass.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption text. When present, the handler emits a\n`<figcaption>` sibling after the wrapper.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes ABC notation source verbatim. Acadamark preserves the\ncontent unmodified inside the wrapper element. abcjs's rendering\nlibrary (loaded from CDN at view time, or run at build time)\nparses the source.\n",
+    },
+    "content_handler": "abc",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; rendered as <graphic>/<inline-graphic> at export)",
+      "notes": "JATS has no ABC-notation counterpart. At JATS export the rendered\nnotation (SVG or staff image, produced by the consumer's tooling)\nis embedded as a `<graphic>` element. The acadamark source itself\nis preserved in the canonical Layer 1 form for round-trip; export\nemits the rendered notation instead of the source.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<abc>\nX:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |\n</abc>\n",
+        "layer1_html": "<div class=\"abc\" data-acadamark-dsl=\"abc\">X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |</div>\n",
+        "notes": "An ABC notation excerpt. The wrapper preserves the source verbatim\nfor the consumer's abcjs initialization to find and render.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/abc.js",
+    "handler_responsibilities": [
+      "Read the opaque content as ABC notation source.",
+      "Emit a `<div class=\"abc\" data-acadamark-dsl=\"abc\">…</div>` wrapper preserving the source verbatim.",
+      "Apply id / classes from the node (the `abc` class is added by the handler alongside any author-supplied classes; the `data-acadamark-dsl` attribute is always present).",
+      "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
+    ],
+    "_sourceFile": "abc.md",
   });
 
 const _abstract = Object.freeze({
@@ -3565,6 +3614,55 @@ const _matrix = Object.freeze({
     "_sourceFile": "matrix.md",
   });
 
+const _mermaid = Object.freeze({
+    "semantic_role": "mermaid",
+    "html_output": {
+      "element": "mermaid",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"mermaid\" data-acadamark-dsl=\"mermaid\">…</pre>`) so\nthe schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<mermaid>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Acadamark preserves the source as marked\nmarkup; rendering to SVG happens external to acadamark — at view\ntime in the browser (Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and renders in-place) or at build time via a\nheadless pre-render pass that finds blocks by their\n`data-acadamark-dsl=\"mermaid\"` attribute.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption text. When present, the handler emits a\n`<figcaption>` sibling after the rendered diagram. Diagrams that\nparticipate in figure numbering use the `<figure>` wrapping\npattern; the bare `caption` kwarg here is for simple unnumbered\ncaptions.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes Mermaid diagram source verbatim. Acadamark preserves\nthe content unmodified inside the wrapper element. Mermaid's\nrendering library (loaded from CDN at view time, or run at build\ntime) parses the source.\n",
+    },
+    "content_handler": "mermaid",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; rendered as <graphic>/<inline-graphic> at export)",
+      "notes": "JATS has no Mermaid-source counterpart. At JATS export the rendered\nSVG (produced by the consumer's view-time or build-time tooling) is\nembedded as a `<graphic>` element. The acadamark source itself\n(Mermaid notation) is preserved in the canonical Layer 1 form for\nround-trip; export emits the rendered SVG instead of the source.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<mermaid>\ngraph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]\n</mermaid>\n",
+        "layer1_html": "<pre class=\"mermaid\" data-acadamark-dsl=\"mermaid\">graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]</pre>\n",
+        "notes": "A simple flowchart. Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and replaces the `<pre>` content with rendered\nSVG. The `data-acadamark-dsl=\"mermaid\"` attribute lets build-time\ntooling find the same blocks unambiguously, independent of the\nCDN-specific class convention.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/mermaid.js",
+    "handler_responsibilities": [
+      "Read the opaque content as Mermaid source.",
+      "Emit a `<pre class=\"mermaid\" data-acadamark-dsl=\"mermaid\">…</pre>` wrapper preserving the source verbatim.",
+      "Apply id / classes from the node (the `mermaid` class is added by the handler in addition to any author-supplied classes; the `data-acadamark-dsl` attribute is always present).",
+      "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
+    ],
+    "_sourceFile": "mermaid.md",
+  });
+
 const _meta = Object.freeze({
     "semantic_role": "meta",
     "html_output": {
@@ -5794,6 +5892,7 @@ const _version = Object.freeze({
 export const VOCABULARY = Object.freeze({
   "a": _a,
   "abbr": _abbr,
+  "abc": _abc,
   "abstract": _abstract,
   "affiliation": _affiliation,
   "align": _align,
@@ -5856,6 +5955,7 @@ export const VOCABULARY = Object.freeze({
   "license": _license,
   "math": _math,
   "matrix": _matrix,
+  "mermaid": _mermaid,
   "meta": _meta,
   "name": _name,
   "note-list": _note_list,

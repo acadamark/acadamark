@@ -1516,3 +1516,96 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52 (count assertion updated 101 → 106);
   acadamark-core 33/33; remark-acadamark 128/128;
   acadamark-interpreter 24/24 suites (incl. new doc31).
+- **2026-Q2 — Phase 2 slice 2c: Mermaid/ABC external DSLs; DSL handler
+  bundle closed.** Third and final implementation slice of Phase 2's
+  handler bundle. Added handler coverage for two specialty DSL tags:
+  - `<mermaid>` — Mermaid diagram source (flowcharts, sequence
+    diagrams, etc.)
+  - `<abc>` — ABC music notation
+  Both are **external DSLs**: the handlers emit pass-through markup
+  preserving the source; rendering to SVG happens external to
+  acadamark — in the consumer's browser (CDN library scans the DOM
+  at view time) or at build time via a headless pre-render pass.
+  No npm dependencies added.
+
+  **DESIGN.md gained §"DSL handlers: included vs external"** (a new
+  subsection under §"Embedded DSLs: processor delegation") recording
+  the architectural distinction. Included DSLs render to final output
+  during interpretation (math, csv/tsv, code); external DSLs emit
+  marked markup for downstream tooling (mermaid, abc). The split
+  reflects an architectural reality — some rendering libraries are
+  browser-shaped (DOM-dependent, layout-aware) and awkward to run in
+  Node; external DSLs honestly delegate to those libraries in their
+  native environment.
+
+  **Markup contract.** Both handlers emit a wrapper element with the
+  upstream library's CDN-scanning class (`class="mermaid"` for
+  Mermaid; `class="abc"` for ABC by convention) **plus** a
+  `data-acadamark-dsl="<name>"` attribute. The class matches the CDN
+  scanner so view-time rendering works with no extra config; the
+  `data-acadamark-dsl` attribute is the acadamark-specific contract
+  for build-time tooling, independent of CDN-specific class
+  conventions that may change between library versions.
+
+  **`<mermaid>`** wrapper: `<pre class="mermaid"
+  data-acadamark-dsl="mermaid">`. Matches Mermaid's documented
+  `<pre>`-with-`class="mermaid"` convention (verified via the v10
+  docs).
+
+  **`<abc>`** wrapper: `<div class="abc" data-acadamark-dsl="abc">`.
+  abcjs has no DOM auto-scan (requires explicit
+  `ABCJS.renderAbc(target, source)` calls); a typical consumer init
+  script is sketched in `abc.md`. The abcjs convention was used from
+  prior knowledge of the abcjs API (the WebFetch tool was blocked
+  during this slice from the abcjs docs; if the convention has
+  changed materially the vocab entry's init script needs updating
+  but the handler markup is fine).
+
+  **Two thin handler modules.** Each ~50 LOC (smaller than the
+  pattern-matched `inline-code.js` because they don't language-class-
+  build). Wrapper element + caption sibling. Pattern of returning a
+  `root` node when caption is present, single element otherwise.
+  Both registered in `HANDLER_REGISTRY` at `interpret-plugin.js`
+  (8 → 10 entries).
+
+  **Two vocab entries.** Each declares `interpreter_strategy: handler`
+  + `handler_module`. The `html_output.element` notes-block carries
+  the slice-2a pattern + a note flagging the entry as an external
+  DSL with a pointer to the DESIGN.md section. `id` + `class` +
+  `caption` kwargs.
+
+  Vocab `data.js` regenerated (105 → 107 primary entries; 108 with
+  `quote` alias). Test count assertion bumped 106 → 108.
+
+  **Fixture** `document-32-external-dsls.acm` + `integration doc32`
+  exercises both tags end-to-end (Mermaid flowchart + sequence
+  diagram + ABC "Twinkle Twinkle" excerpt). Assertions confirm:
+  CDN-compatible class on each wrapper; `data-acadamark-dsl`
+  attribute present and correct; source preserved verbatim; ids
+  flow through; no `<svg>` in output (confirming external
+  rendering); no `data-acadamark-unknown` spans.
+
+  **Snapshot zero-diff confirmed** on all existing fixtures —
+  verified via `git diff --stat` on `test/fixtures/*.json` and
+  `*.html` returning empty before staging doc32's new files. Only
+  doc32 is new.
+
+  **DSL handler bundle closed.** `BACKLOG.md` and `ROADMAP.md` both
+  updated: the handler-bundle item (DF-8 + DF-9 + DF-10) is marked
+  done with cross-references to all three sub-slice commits
+  (`091d7c6`, `297e543`, this commit). The DF-11a `<theorem>`
+  handler retirement is recorded inline.
+
+  **Phase 2 itself is NOT fully closed by this slice** — the
+  ROADMAP Phase 2 entry lists three items (AUD-N verification
+  pre-build sweep; the handler bundle; per-section footnote
+  collection from PG-1). Only the handler bundle closes here. The
+  AUD-N verification and PG-1 footnote work remain open Phase 2
+  items. The slice prompt's "Phase 2 closure" framing was based on
+  an assumption that the handler bundle ≡ Phase 2; recorded
+  honestly here as a scope clarification rather than overreaching
+  the Phase 2 closure.
+
+  Tests: layer1-vocabulary 52/52 (count assertion updated
+  106 → 108); acadamark-core 33/33; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites (incl. new doc32).

@@ -87,9 +87,11 @@ A flat scannable index of every open item. Detailed entries below.
   coupled to multi-column display rendering *(formerly PG-2)*
 - [ ] **Make the bibliography heading a config kwarg instead of
   hardcoded** `[interpreter]` `[post-alpha]` *(formerly PG-10)*
-- [ ] **Implement DSL handlers** (`<csv>`/`<tsv>`, `<mermaid>`/`<abc>`,
+- [x] **Implement DSL handlers** (`<csv>`/`<tsv>`, `<mermaid>`/`<abc>`,
   math environments) `[interpreter — DSL surface]` `[alpha]`
-  *(→ roadmap: Phase 2)* *(formerly DF-8, DF-9, DF-10)*
+  *(→ roadmap: Phase 2)* *(formerly DF-8, DF-9, DF-10)* —
+  **done across slices 2a (`091d7c6`), 2b (`297e543`), 2c
+  (2026-05-27)**.
 - [ ] **Document the tag-form × tag matrix and reconcile
   inconsistencies** `[specs/docs]` `[post-alpha]` *(formerly AUD-15)*
 - [ ] **Add forward-pointers from governed specs to design directions
@@ -286,29 +288,35 @@ multi-column display rendering item (also `[post-alpha]`).
 Hardcoded bibliography heading — a config kwarg, very small.
 *(formerly PG-10)*
 
-### Implement DSL handlers
+### Implement DSL handlers — DONE
 `[interpreter — DSL surface]` `[alpha]` *(→ roadmap: Phase 2)*
 
-Three families: `<csv>`/`<tsv>` standalone (DF-8, AUD-07);
-`<mermaid>`/`<abc>` (DF-9); math environments
-`<matrix>`/`<cases>`/`<align>`/`<eqnarray>` (DF-10). **Treat as one body
-of work, not individual items** — each is "write a handler," all
-additive, none blocks anything. Note DF-10 (the math environments) is
-the "acadamark covers ground remark never covered" case from the
-lexer-supersession discussion in `notes/specs/idioms.md` — it is
-independent of the math-coverage investigation, which concerns
-delimiter-shaped math only.
+**Closed (2026-05-27).** Three families shipped across three sub-slices:
+
+- **Slice 2a** (`091d7c6`) — `<csv>` / `<tsv>` standalone DSL handlers
+  (DF-8). Thin wrappers around `table.js`'s reusable parsers, sharing
+  the new `renderParsedTable` helper. Plus the adjacent `<code>`
+  long-form bug fix and `<library>` vocab reconciliation surfaced by
+  Phase 0.
+- **Slice 2b** (`297e543`) — `<math>` long-form plus the four
+  math-environment tags `<matrix>`/`<cases>`/`<align>`/`<eqnarray>`
+  (DF-10) via the extended `math.js` handler (per-tagname dispatch in
+  `MATH_TAG_SPEC`; wrap-inside convention). KaTeX already installed,
+  no new deps.
+- **Slice 2c** (2026-05-27) — `<mermaid>` and `<abc>` external DSL
+  handlers (DF-9). Pass-through markup with CDN-compatible classes
+  plus `data-acadamark-dsl` markers for downstream tooling. The
+  included-vs-external distinction was recorded as a new section in
+  `DESIGN.md`. No npm deps added (rendering is external).
 
 The original DF-11a `<theorem>` handler was previously bundled here.
-**It is no longer in scope of this item** — the theorem family is
-regular Layer 1 vocabulary (recorded by deferred-vocab sub-slice 3 and
-confirmed by the 2026-05-27 DSL/long-form parser bug fix); it has no
-foreign-language interpretation and no handler-dispatch need. Any
-Layer-1 rendering enhancement (e.g. shared-counter wiring for the
-propositional theorem family, label rendering with the optional `name`
-kwarg) is regular-vocabulary work scheduled separately if and when it
-is taken up. *(formerly DF-8, DF-9, DF-10; the DF-11a theorem-handler
-membership was retired by the DSL/long-form parser bug fix)*
+**It was retired** from the bundle when the theorem family was confirmed
+as regular Layer 1 vocabulary (no foreign-language interpretation, no
+handler dispatch needed) by the 2026-05-27 DSL/long-form parser bug
+fix. Any Layer-1 rendering enhancement for theorem-family elements
+(shared-counter wiring, label rendering with the optional `name`
+kwarg) is regular-vocabulary work scheduled separately if and when
+taken up. *(formerly DF-8, DF-9, DF-10; DF-11a retired)*
 
 ### Document the tag-form × tag matrix and reconcile inconsistencies
 `[specs/docs]` `[post-alpha]`

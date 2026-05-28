@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 105 primary + 1 'quote' alias = 106.
+// Entry count: 107 primary + 1 'quote' alias = 108.
 // Recent additions:
 // - 2026-Q2: 5 <meta> allowlist members (doi, license, lang, version,
 //   keywords) added by the apparatus-tag reconciliation follow-on.
@@ -51,9 +51,13 @@ function check(label, cond) {
 //   block math) plus the four math-environment tags matrix, cases,
 //   align, eqnarray. All dispatch to handlers/math.js (extended for
 //   per-tagname dispatch). Brought count from 100 → 105 primary.
+// - 2026-Q2: 2 entries added by Phase 2 slice 2c — mermaid, abc
+//   (external DSLs; handlers emit pass-through markup with a
+//   `data-acadamark-dsl` marker for downstream tooling).
+//   Brought count from 105 → 107 primary.
 check(
-  `VOCABULARY has 106 entries (105 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 106,
+  `VOCABULARY has 108 entries (107 primary + 'quote' alias)`,
+  Object.keys(VOCABULARY).length === 108,
 );
 
 // Build-time loader has nothing to report in normal state.

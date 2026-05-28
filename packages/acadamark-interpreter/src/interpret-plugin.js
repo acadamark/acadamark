@@ -30,6 +30,8 @@ import { inlineCodeHandler } from './handlers/inline-code.js';
 import { tableHandler } from './handlers/table.js';
 import { csvHandler } from './handlers/csv.js';
 import { tsvHandler } from './handlers/tsv.js';
+import { mermaidHandler } from './handlers/mermaid.js';
+import { abcHandler } from './handlers/abc.js';
 import {
   noteMarkerHandler,
   noteListHandler,
@@ -78,6 +80,8 @@ const HANDLER_REGISTRY = new Map([
   ['./handlers/table.js', tableHandler],
   ['./handlers/csv.js', csvHandler],
   ['./handlers/tsv.js', tsvHandler],
+  ['./handlers/mermaid.js', mermaidHandler],
+  ['./handlers/abc.js', abcHandler],
 ]);
 
 /**

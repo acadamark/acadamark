@@ -122,13 +122,23 @@ that turn out to be already wired skip the build.
 
 - **Verify the remaining `(formerly AUD-N)` items against current
   code.** A pre-build scoping sweep. Cheap; saves later wasted scoping.
-- **Implement DSL handlers** *(formerly DF-8, DF-9, DF-10)*. Three
-  families: `<csv>`/`<tsv>`, `<mermaid>`/`<abc>`, and math environments
-  (`<matrix>`/`<cases>`/`<align>`/`<eqnarray>`). The original DF-11a
-  `<theorem>` handler was previously bundled here; it was retired by
-  the 2026-05-27 DSL/long-form parser bug fix when theorem family was
-  confirmed as regular Layer 1 vocabulary (no foreign-language
-  interpretation, no handler dispatch needed).
+- **Implement DSL handlers** *(formerly DF-8, DF-9, DF-10)* —
+  **done across three sub-slices (2026-05-27):**
+  - **Slice 2a** (`091d7c6`) — `<csv>` / `<tsv>` standalone handlers
+    (sharing parsers + `renderParsedTable` with `<table>`), plus the
+    `<code>` long-form bug fix and `<library>` vocab reconciliation.
+  - **Slice 2b** (`297e543`) — `<math>` long-form plus the four
+    math-environment tags (`<matrix>`, `<cases>`, `<align>`,
+    `<eqnarray>`) via the extended `math.js` handler.
+  - **Slice 2c** (this slice) — `<mermaid>` and `<abc>` external DSL
+    handlers; emit pass-through markup with a `data-acadamark-dsl`
+    marker; rendering is external (CDN at view time or build-time
+    pre-render pass). DESIGN.md gained §"DSL handlers: included vs
+    external" recording the architectural distinction.
+
+  The original DF-11a `<theorem>` handler was previously bundled here;
+  retired by the 2026-05-27 DSL/long-form parser bug fix when theorem
+  family was confirmed as regular Layer 1 vocabulary.
 - **Implement per-section footnote collection** *(formerly PG-1)*. The
   remaining piece of the notes-placement story; walks each section's
   subtree and injects a per-section note-list.

@@ -155,6 +155,18 @@ Source language and display target are fused in the current model: `<csv>` means
 
 The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/specs/idioms.md`. There, remark provides the lexer for markdown constructs and acadamark owns the node identity; here, a specialized processor provides the rendering for non-native content and acadamark owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
 
+### DSL handlers: included vs external
+
+Acadamark's DSL handlers fall into two categories, distinguished by where the source content is rendered:
+
+- **Included DSLs.** The handler renders source content to final output during interpretation, and that output is included in acadamark's HTML. Examples: `<math>` and the math environment tags (KaTeX-rendered MathML/HTML); `<csv>` and `<tsv>` (Layer-1 table structure); `<code>` and the code sigils (highlighted markup). Static HTML works without JavaScript; acadamark owns the rendering pipeline end-to-end.
+
+- **External DSLs.** The handler emits pass-through markup preserving source content; rendering happens *external* to acadamark, by downstream tooling. The consumer's browser may render at view time (by loading the rendering library from a CDN), or a build-time tooling pass may pre-render to static SVG before publication. Examples: `<mermaid>`, `<abc>`. Acadamark provides the markup contract; rendering is the publisher's choice of tool.
+
+The distinction reflects an architectural reality: some rendering libraries are designed for the browser (DOM-dependent, layout-aware, SVG-generating) and are awkward to run in Node. External DSLs honestly delegate to those libraries in their native environment rather than dragging heavyweight browser-shaped dependencies into the acadamark build.
+
+Both categories use `interpreter_strategy: handler` in their vocab entries; the category is a property of what the handler does (resolve to final output vs. wrap source in marked markup), not a separate schema field. External-DSL handlers emit a wrapper element with a `data-acadamark-dsl="<name>"` attribute — the contract for downstream build-time tooling that wants to find external-DSL blocks unambiguously, independent of CDN-specific class conventions. The wrapper's class also matches the upstream library's CDN scanning convention where one exists (e.g. `class="mermaid"` for Mermaid) so a consumer who drops in `<script src="cdn/mermaid">` gets working in-browser rendering with no extra wiring.
+
 ### Citation formatting is delegated to citation-js / CSL
 
 A specific application of the delegation pattern: **citation formatting, ordering, and style questions are delegated to citation-js / CSL — acadamark does not reimplement or override them.** Bibliography rendering, cluster ordering, author-name disambiguation, "ibid" suppression, locale-specific punctuation, and every other citation-presentation concern is the CSL style's job; acadamark hands the citation keys and the chosen style to citation-js and accepts the result. This is what makes "any CSL-compliant processor" interchangeable with citation-js in principle: acadamark holds only the citation keys and the user-chosen style name, both standard CSL inputs.
