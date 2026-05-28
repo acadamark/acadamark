@@ -2023,3 +2023,38 @@ that). One line gets added every few months, not every slice.
   numbering precursor) + 3b (`8982409`, frameable build) + 3c
   (this slice, caption-as-content + unified helper). The roadmap
   moves to Phase 4 next (document structuring).
+- **2026-Q2 — Phase 4 Phase 0: document structuring findings.**
+  Read-only investigation producing
+  `notes/phase4-structuring-findings.md` — the artifact Phase 4's
+  implementation slice(s) will build from (same role
+  `notes/phase3-frameable-findings.md` played for Phase 3). Covers
+  Q1.1 (BACKLOG / ROADMAP Phase 4 entries quoted verbatim with
+  line numbers; Phase 5 framing as Phase 4's downstream); Q1.2
+  (doc-9 fixture state — `.acm` + `.html` exist, no
+  `document-9-expected.json` snapshot, no `doc9` test block;
+  fixture is an *article*, not a book — confirming that "book
+  structuring" and "doc-9 snapshot" are two independent work
+  streams pairing in Phase 4); Q1.3 (current `<article>` pipeline
+  via `acadamarkArticleStructuring`, with the warn-and-skip
+  placeholder for `<meta type=book>` at L170-173); Q1.4 (JATS book
+  DTD target shape; mature vocab already declares the JATS
+  mapping cleanly); Q1.5 (six design questions surfaced — three
+  already settled in the vocab as design-recorded decisions,
+  three open: DD-Q4 counter scope (per-chapter resets vs. global),
+  DD-Q5 footnote scope (per-book-part / per-section / book-back),
+  DD-Q6 edited-volume chapter-author edge case); Q1.6
+  (intersections — note-placement hardcodes `<article>` /
+  `<article-body>` and won't fire on book documents; numbering
+  registry is conditionally affected by DD-Q4; frameable
+  cross-refs by DD-Q4; section-nesting needs minor adaptation);
+  Q1.7 (9 mature book vocab entries already in place — book.md,
+  book-part.md, book-front/body/back, book-title/subtitle,
+  book-part-title/subtitle — but `acadamarkBookStructuring`
+  plugin doesn't exist; vocab references it as a forward-reference);
+  Q1.8 (no BACKLOG ⇄ ROADMAP drift). Three sibling cleanup items
+  flagged. **Recommendation: SPLIT into two slices — 4a
+  (`acadamarkBookStructuring` plugin + book-shaped fixture) → 4b
+  (doc-9 snapshot + integration test).** 4b is independent of 4a
+  (doc-9 is an article); ship 4b after 4a so the doc-9 snapshot
+  pins the full alpha-complete pipeline. No product code, spec,
+  or vocab changes in this slice — read-only as specified.
