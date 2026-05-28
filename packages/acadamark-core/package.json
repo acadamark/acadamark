@@ -10,6 +10,7 @@
     "./dsl-registry": "./src/dsl-registry.js",
     "./structured-elements": "./src/structured-elements.js",
     "./frameable-elements": "./src/frameable-elements.js",
+    "./map-attributes": "./src/map-attributes.js",
     "./tagname-sigil-map": "./src/tagname-sigil-map.js",
     "./tag": "./src/tag.js",
     "./error-nodes": "./src/error-nodes.js",

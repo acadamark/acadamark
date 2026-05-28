@@ -103,18 +103,21 @@ The HTML attribute mapper (`acadamark-interpreter/src/lib/build-properties.js`)
 emits HTML attributes specifically. The forthcoming JATS export will have its
 own attribute mapper emitting JATS attributes. They are stage-specific.
 
-**The deferred open question** (the only architectural item the arc leaves
-open): the *iteration shape* of the attribute mapper is shared design (per
-Bin A.2's classification) — both HTML and JATS implementations will walk the
-vocabulary's `acadamark_attributes.kwargs` and apply each entry conditioned
-on its `handled_by` gate. When JATS export is built, the generic iteration
-may lift to `acadamark-core` as a `mapAttributes(node, vocab, emit)` callback
-API with a per-target emission callback. The Slice 4 Phase 0 explicitly
-deferred this lift because **a generic API written against zero real
-consumers would lock in the wrong shape**. Today's local interpreter
-consolidation (Slice 5 Step 1 — one shared function, two call sites, all
-within the interpreter) is the right intermediate state. The lift happens
-when JATS arrives, or not at all — there is no scheduled change here.
+**The deferred open question — RESOLVED 2026-05-29 in Phase 5 slice 5a.**
+The iteration shape lifted to `acadamark-core` as
+`mapAttributes(node, vocab, target, emit)`
+(`packages/acadamark-core/src/map-attributes.js`). The lift waited for a
+second output-target consumer; JATS export (Phase 5) is that second
+consumer. The HTML side (`acadamark-interpreter/src/lib/html-emit.js`)
+and the JATS side (`acadamark-jats-export/src/lib/jats-emit.js`) each
+pass `target = 'html'` or `target = 'jats'` plus their target-specific
+emit callback. The deferred `buildProperties` wrapper in the
+interpreter is gone; the five interpreter consumer sites (schema
+dispatch + figure/svg/frame/theorem handlers) call the lifted
+`mapAttributes` directly via the HTML emit. Vocab `maps_to` migrated
+from string to target-keyed object form (`{ html: "...", jats: "..." }`)
+at the same time — vocab YAMLs still author `maps_to: id` (the
+build-time generator normalizes to `{ html: "id" }`).
 
 ### Heavy or environment-specific dependencies
 

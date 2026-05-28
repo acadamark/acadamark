@@ -140,8 +140,13 @@ A flat scannable index of every open item. Detailed entries below.
 
 ### Architecture tier
 
-- [ ] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
-  `[alpha]` *(→ roadmap: Phase 5)* *(formerly DF-18)*
+- [~] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
+  `[alpha]` *(→ roadmap: Phase 5)* *(formerly DF-18)* —
+  **slice 5a landed 2026-05-29** (package `acadamark-jats-export` +
+  `mapAttributes` lift to `acadamark-core` + vocab `maps_to` target-
+  keyed migration + minimal article export: scaffolding + paragraphs
+  + inline text). Slices 5b–5d remain (body content; cross-refs +
+  notes + BITS book; bibliography + external DSLs).
 - [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
   *(→ roadmap: Phase 8)* *(formerly DF-19)*
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)

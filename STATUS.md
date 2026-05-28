@@ -2263,3 +2263,71 @@ that). One line gets added every few months, not every slice.
   recorded: 5e (MathML alternative emission); 5f (JATS 1.4 / BITS
   2.2 upgrade). No product code, spec, or vocab changes in this
   slice — read-only as specified.
+- **2026-Q2 — Phase 5 slice 5a: package + lift + minimal article
+  export.** The foundation slice of Phase 5. Three bundled pieces.
+
+  **(1) `acadamark-jats-export` package created.** New
+  `packages/acadamark-jats-export/` per Phase 0 Q1.4 Option A.
+  Standard monorepo shape; depends on `acadamark-core` +
+  `acadamark-interpreter` (for the structural plugins re-import per
+  Phase 0 Q1.5 option (i)) + `layer1-vocabulary`. Entry point
+  `acadamarkToJats(tree, opts)` takes a post-stage-3 mdast tree
+  and returns a JATS XML string.
+
+  **(2) `mapAttributes` lift to `acadamark-core` — the deferred
+  lift from `6ae6844` landed.** New module
+  `acadamark-core/src/map-attributes.js` exports
+  `mapAttributes(node, vocab, target, emit)`. Two emit callbacks
+  shipped: `acadamark-interpreter/src/lib/html-emit.js` (HTML
+  side; consumed by the five pre-lift `buildProperties` sites —
+  schema dispatch + figure/svg/frame/theorem handlers) and
+  `acadamark-jats-export/src/lib/jats-emit.js` (JATS side; classes
+  go to `specific-use` per the design call). The pre-lift
+  `buildProperties` wrapper is gone (Decision 3 B). Vocab
+  `maps_to` migrated to target-keyed object form via the
+  build-time generator — vocab YAMLs still author `maps_to: id`
+  shorthand; the generator normalizes to `{ html: "id" }`. 302
+  declarations migrated across 109 entries.
+  `notes/specs/acadamark-core.md` updated: the "deferred open
+  question" marked RESOLVED with a forward-pointer to this slice.
+
+  **(3) Minimal article export.** Article scaffolding (article
+  wrapper with `article-type` + `xml:lang` + `dtd-version`;
+  front/body/back regions; `<article-meta>` with `<title-group>`
+  wrapping article-title + subtitle; `<contrib-group>` wrapping
+  `<author>`; `<abstract>`), paragraphs, section nesting (named
+  sections all map to JATS `<sec>` recursively per Phase 0 Q1.6
+  Group D Option I), and inline text formatting (italic / bold /
+  underline / strike / sub / sup / monospace).
+
+  **New fixture: doc-39** (`document-39-jats-minimal-article.acm`).
+  JATS XML snapshot pinned with 14 spot-check assertions for the
+  most distinctive surface features (article-type, dtd-version,
+  title-group, contrib-group, string-name, abstract, body+sec+title,
+  inline italic/bold/monospace) plus 4 mapAttributes unit-tests
+  and 1 well-formedness validation (skipped with console note
+  when `xmllint` is unavailable; DTD bundling is a slice-5d
+  follow-up).
+
+  **Snapshot audit:**
+  - **All 24 existing interpreter fixtures: STRICT ZERO DIFF.**
+    The lift refactor is byte-preserving — HTML rendering output
+    unchanged. Article-behavior preservation per slice-prompt
+    constraint, verified.
+  - **`handlers/figure.test.js`** inline test vocab fixture
+    updated to the new target-keyed `maps_to` shape (4 attributes;
+    mechanical migration).
+  - **doc-39 (new):** JATS XML snapshot pinned.
+
+  **Known limitation flagged for 5b:** the abstract rendering
+  drops surrounding prose text when bare-markdown emphasis lifts
+  to inline acadamarkTags inside the abstract's content array.
+  Inline-vs-block content handling refinement; 5b will address as
+  part of frameable / list / block-content work.
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (zero-diff); acadamark-jats-export 19/19 checks.
+
+  **Phase 5 sub-progress:** slice 5a closes the package-creation
+  + lift + minimal-export work. Slices 5b/5c/5d remain.

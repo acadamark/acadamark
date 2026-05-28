@@ -45,6 +45,42 @@ function parseFrontmatter(source) {
   return yaml.load(m[1]);
 }
 
+/**
+ * Phase 5 slice 5a (2026-05-29): walk a vocab spec and normalize every
+ * `maps_to: <string>` into `maps_to: { html: <string> }`. Per-target
+ * forms (`maps_to: { html: ..., jats: ... }`) are preserved as-is. This
+ * lets vocab YAML keep the natural `maps_to: id` shorthand for the
+ * common case (HTML-only or HTML+JATS-same-name) while supporting the
+ * explicit target-keyed form when names differ across output targets.
+ *
+ * Touches `spec.acadamark_attributes.id.maps_to`,
+ * `.classes.maps_to`, and every entry of `.kwargs.*.maps_to`.
+ */
+function liftMapsToToTargetForm(spec) {
+  const attrs = spec?.acadamark_attributes;
+  if (!attrs) return;
+  liftField(attrs.id);
+  liftField(attrs.classes);
+  if (attrs.kwargs && typeof attrs.kwargs === 'object') {
+    for (const def of Object.values(attrs.kwargs)) {
+      liftField(def);
+    }
+  }
+  if (attrs.booleans && typeof attrs.booleans === 'object') {
+    for (const def of Object.values(attrs.booleans)) {
+      liftField(def);
+    }
+  }
+}
+
+function liftField(def) {
+  if (!def || typeof def !== 'object') return;
+  if (typeof def.maps_to === 'string') {
+    def.maps_to = { html: def.maps_to };
+  }
+  // If maps_to is already an object, leave as-is (per-target explicit form).
+}
+
 // Mirror the loader's logic. Returns:
 //   { entries: Map<key, spec>, aliases: Array<{shorthand, expands_to}>, errors: Array<{file, error}> }
 // `entries` holds the primary entries (keyed by html_output.element);
@@ -70,6 +106,16 @@ function loadVocabularySource(vocabDir) {
       );
     }
     if (!spec) continue; // tolerate frontmatter-less files (README/SPEC.md)
+    // Phase 5 slice 5a (2026-05-29): lift maps_to from string to target-
+    // keyed object form. Vocab YAMLs continue to author `maps_to: id`
+    // (the simple HTML case reads naturally) and the generator normalizes
+    // to `{ html: "id" }` at generation time. Vocab entries with a JATS
+    // counterpart different from HTML write the object form explicitly:
+    //   maps_to:
+    //     html: data-figure-type
+    //     jats: content-type
+    // The generator preserves object forms as-is.
+    liftMapsToToTargetForm(spec);
     const key = spec.html_output?.element;
     if (!key) continue;
     if (entries.has(key)) {

@@ -17,7 +17,8 @@
 // Schema-mapped attributes (align, width, type) flow through the same
 // `buildProperties` helper used by the schema dispatcher.
 
-import { buildProperties } from '../lib/build-properties.js';
+import { mapAttributes } from 'acadamark-core/map-attributes';
+import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractPlainText } from '../lib/ast-helpers.js';
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
@@ -97,7 +98,7 @@ export function figureHandler(state, node, vocab) {
   const border = node.booleans?.border === true;
 
   // Properties for the wrapper (id, classes, schema-mapped attributes).
-  const wrapperProps = buildProperties(node, vocab);
+  const wrapperProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
 
   return renderFrameable({
     kind: 'fig',

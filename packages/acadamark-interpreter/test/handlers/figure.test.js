@@ -18,17 +18,20 @@ function makeState() {
   };
 }
 
-// Minimal figure vocabulary entry.
+// Minimal figure vocabulary entry. Phase 5 slice 5a (2026-05-29):
+// maps_to migrated from string to target-keyed object form;
+// `mapAttributes` reads `def.maps_to[target]` per the lift.
 const figVocab = {
   html_output: { element: 'figure' },
   acadamark_attributes: {
-    id: { maps_to: 'id' },
+    id: { maps_to: { html: 'id' } },
+    classes: { maps_to: { html: 'class' } },
     kwargs: {
       src:   { handled_by: 'handler' },
       alt:   { handled_by: 'handler' },
-      align: { maps_to: 'data-align' },
-      width: { maps_to: 'data-width' },
-      type:  { maps_to: 'data-figure-type' },
+      align: { maps_to: { html: 'data-align' } },
+      width: { maps_to: { html: 'data-width' } },
+      type:  { maps_to: { html: 'data-figure-type' } },
     },
   },
 };

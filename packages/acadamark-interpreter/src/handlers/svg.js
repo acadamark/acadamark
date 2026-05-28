@@ -19,7 +19,8 @@
 // <figure> wrapper around the <svg>, with <figcaption> inside the
 // wrapper.
 
-import { buildProperties } from '../lib/build-properties.js';
+import { mapAttributes } from 'acadamark-core/map-attributes';
+import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
@@ -36,7 +37,7 @@ export function svgHandler(state, node, vocab) {
 
   // Build the inner <svg> element. Use buildProperties for schema-mapped
   // attributes (viewBox, width, height — all declared in svg.md).
-  const svgProps = buildProperties(node, vocab);
+  const svgProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   // The author-supplied SVG source goes into the <svg> as a `raw` hast
   // node (svg-as-XML pass-through). hast-to-html will emit it verbatim.
   const innerSvg = {

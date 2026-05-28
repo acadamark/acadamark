@@ -321,14 +321,26 @@ needs siting against the inward-pointing `acadamark-core`.
 
 **Items, in order:**
 
-- **JATS-export Phase 0.** Package siting; the export-stage attribute
-  mapper (whether it lifts to core's `mapAttributes(node, vocab,
-  emit)` shape now or later); the JATS section-model question recorded
-  as deferred in `DESIGN.md`.
+- **JATS-export Phase 0** *(done `f6bb311`, 2026-05-29)*.
+  `notes/phase5-jats-export-findings.md`: package siting (Option A —
+  new `acadamark-jats-export` package); attribute-mapper lift
+  recommendation (do it in slice 5a — JATS export is the second
+  consumer the deferral waited for); JATS section-model decision
+  (Option I — map named sections to `<sec>` per JATS convention);
+  vocabulary mapping inventory by JATS section; SPLIT-into-4-slices
+  recommendation (5a → 5b → 5c → 5d).
 - **Build JATS export (`rehypeAcadamarkToJats`)** *(formerly DF-18)*.
-  The mapping is mostly mechanical because Layer 1 is JATS-shaped; the
-  metadata-defaults policy and the few restructuring cases are the
-  real design work.
+  Per Phase 0 SPLIT recommendation:
+  - **Slice 5a — package + lift + minimal article export**
+    *(done 2026-05-29)*. New `acadamark-jats-export` package;
+    `mapAttributes` lift to `acadamark-core` (deferred lift from
+    `6ae6844` resolved); vocab `maps_to` migrated to target-keyed
+    form; article scaffolding + paragraphs + inline text export.
+    Existing snapshots zero-diff (HTML behavior preserved).
+  - **Slice 5b — body content** (frameables, lists, math, theorem
+    family).
+  - **Slice 5c — cross-references + footnotes + BITS book**.
+  - **Slice 5d — bibliography + external DSLs**.
 
 **Exits:** a Layer 1 document round-trips to JATS XML cleanly enough
 for journal submission.

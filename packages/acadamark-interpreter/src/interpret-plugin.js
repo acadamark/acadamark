@@ -19,8 +19,9 @@
 // Multi-paragraph content (content.length > 1) is never unwrapped.
 
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
+import { mapAttributes } from 'acadamark-core/map-attributes';
 import { VOCABULARY } from 'layer1-vocabulary';
-import { buildProperties } from './lib/build-properties.js';
+import { htmlEmit, aggregateHtmlProps } from './lib/html-emit.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';
 import { mathHandler } from './handlers/math.js';
@@ -142,7 +143,7 @@ export const acadamarkTagHandler = createAcadamarkTagHandler();
 
 function schemaDispatch(state, node, vocab) {
   const tagName = vocab.html_output?.element ?? node.tagname;
-  const properties = buildProperties(node, vocab);
+  const properties = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   const children = convertContent(state, node, vocab);
 
   return {
@@ -187,9 +188,14 @@ function convertContent(state, node, vocab) {
 }
 
 // ─── Attribute mapping ────────────────────────────────────────────────────────
-// The shared `buildProperties` helper lives in `lib/build-properties.js` and
-// is imported above; both the schema dispatcher here and the figure handler
-// call it. See that file for the deferred-lift-to-acadamark-core note.
+// Phase 5 slice 5a (2026-05-29): the attribute mapping is now done via the
+// `mapAttributes` lift in `acadamark-core` (the deferred lift from `6ae6844`
+// landed; JATS export is the second consumer the deferral waited for). The
+// HTML side calls `mapAttributes(node, vocab, 'html', htmlEmit)` and
+// aggregates emit's results via `aggregateHtmlProps`. The pre-lift
+// `buildProperties` wrapper is gone; the five consumer sites (this dispatcher
+// + the figure/svg/frame/theorem handlers) each do the
+// `aggregateHtmlProps(mapAttributes(...))` pair directly.
 
 // ─── Unknown-tag fallback ─────────────────────────────────────────────────────
 

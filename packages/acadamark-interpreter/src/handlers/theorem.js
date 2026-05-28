@@ -35,7 +35,8 @@
 // distinction — `<theorem>` vs `<lemma>` vs etc. in the Layer 1 output).
 
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
-import { buildProperties } from '../lib/build-properties.js';
+import { mapAttributes } from 'acadamark-core/map-attributes';
+import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { formatLabel } from '../lib/frameable.js';
 
 // Tagname → display-prefix mapping. Title-Cased per the amsthm
@@ -80,7 +81,7 @@ function buildBodyHast(state, node) {
  */
 export function theoremFamilyHandler(state, node, vocab) {
   const prefix = THEOREM_PREFIXES.get(node.tagname) ?? node.tagname;
-  const properties = buildProperties(node, vocab);
+  const properties = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
 
   // For numbered tags, prepend a label span; for unnumbered
   // (remark/proof), formatLabel returns null and no label appears.

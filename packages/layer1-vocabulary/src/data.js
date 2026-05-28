@@ -20,18 +20,26 @@ const _a = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "href": {
-          "maps_to": "href",
+          "maps_to": {
+            "html": "href",
+          },
           "notes": "The URL or fragment identifier the anchor points to. Required\nfor hyperlinks; optional for anchors used as link targets.\n",
         },
         "target": {
-          "maps_to": "target",
+          "maps_to": {
+            "html": "target",
+          },
           "values": [
             "_self",
             "_blank",
@@ -41,11 +49,15 @@ const _a = Object.freeze({
           "notes": "How the link opens. _blank opens in a new tab/window.\n",
         },
         "rel": {
-          "maps_to": "rel",
+          "maps_to": {
+            "html": "rel",
+          },
           "notes": "Relationship between the current document and the link target.\nCommon values: nofollow, noopener, noreferrer, external.\n",
         },
         "title": {
-          "maps_to": "title",
+          "maps_to": {
+            "html": "title",
+          },
           "notes": "Tooltip text shown on hover.\n",
         },
       },
@@ -97,14 +109,20 @@ const _abbr = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "title": {
-          "maps_to": "title",
+          "maps_to": {
+            "html": "title",
+          },
           "notes": "The abbreviation's expansion. Standard HTML <abbr title=\"...\"> —\nbrowsers display the expansion as a tooltip on hover. Strongly\nrecommended on first use of an abbreviation; optional on\nsubsequent uses if the expansion is already in scope.\n",
         },
       },
@@ -145,10 +163,14 @@ const _abc = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "caption": {
@@ -193,14 +215,20 @@ const _abstract = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-abstract-type",
+          "maps_to": {
+            "html": "data-abstract-type",
+          },
           "values": [
             "unstructured",
             "structured",
@@ -212,7 +240,9 @@ const _abstract = Object.freeze({
           "notes": "Distinguishes abstract types. Structured abstracts have explicit\nsub-section headings (Background, Methods, Results, Conclusion);\nunstructured abstracts are flowing prose.\n",
         },
         "word-limit": {
-          "maps_to": "data-word-limit",
+          "maps_to": {
+            "html": "data-word-limit",
+          },
           "notes": "Optional documentation of the journal's word limit for this\nabstract. Informational only; does not enforce.\n",
         },
       },
@@ -258,11 +288,15 @@ const _affiliation = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
         "notes": "Optional id, useful for cross-referencing the affiliation from\nmultiple <author> elements (e.g. <author><affiliation #aff1 | …>)\nand reusing the id with subsequent authors.\n",
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -301,10 +335,14 @@ const _align = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -346,10 +384,14 @@ const _article_back = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -377,10 +419,14 @@ const _article_body = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -406,10 +452,14 @@ const _article_front = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -440,10 +490,14 @@ const _article_subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -468,10 +522,14 @@ const _article_title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -496,14 +554,20 @@ const _article = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "numbering-style": {
-          "maps_to": "data-numbering-style",
+          "maps_to": {
+            "html": "data-numbering-style",
+          },
           "values": [
             "arabic",
             "roman",
@@ -512,7 +576,9 @@ const _article = Object.freeze({
           "default": "arabic",
         },
         "note-position": {
-          "maps_to": "data-note-position",
+          "maps_to": {
+            "html": "data-note-position",
+          },
           "values": [
             "foot",
             "end",
@@ -582,14 +648,20 @@ const _aside = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-aside-type",
+          "maps_to": {
+            "html": "data-aside-type",
+          },
           "values": [
             "note",
             "sidebar",
@@ -639,10 +711,14 @@ const _author = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
@@ -662,7 +738,9 @@ const _author = Object.freeze({
           "notes": "Author's contact email address. Lifts to <email>.\n",
         },
         "corresponding": {
-          "maps_to": "corresponding",
+          "maps_to": {
+            "html": "corresponding",
+          },
           "values": [
             "true",
             "false",
@@ -738,14 +816,20 @@ const _b = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-bold-type",
+          "maps_to": {
+            "html": "data-bold-type",
+          },
           "values": [
             "keyword",
             "product-name",
@@ -791,16 +875,22 @@ const _bib_entry = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
         "required": true,
         "notes": "The citation key. Must be unique across the document's citation\nregistry. Citations elsewhere use this id to reference the entry.\n",
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-bib-type",
+          "maps_to": {
+            "html": "data-bib-type",
+          },
           "values": [
             "article",
             "book",
@@ -912,18 +1002,26 @@ const _bibliography = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "source": {
-          "maps_to": "data-bibliography-source",
+          "maps_to": {
+            "html": "data-bibliography-source",
+          },
           "notes": "URL or path to an external bibliography file (BibTeX, CSL-JSON, etc.).\nWhen present, the build system reads the file to populate the citation\nregistry.\n",
         },
         "style": {
-          "maps_to": "data-bibliography-style",
+          "maps_to": {
+            "html": "data-bibliography-style",
+          },
           "values": [
             "author-year",
             "numbered",
@@ -933,7 +1031,9 @@ const _bibliography = Object.freeze({
           "notes": "How the bibliography is rendered. Typically inherits from the\ndocument-level citation-style; this kwarg overrides for the bibliography\nrendering specifically.\n",
         },
         "sort": {
-          "maps_to": "data-bibliography-sort",
+          "maps_to": {
+            "html": "data-bibliography-sort",
+          },
           "values": [
             "alpha",
             "citation-order",
@@ -944,7 +1044,9 @@ const _bibliography = Object.freeze({
           "notes": "How bibliography entries are sorted. \"alpha\" is alphabetical by author\nsurname (default for author-year styles); \"citation-order\" is the\norder in which entries are first cited (default for numbered styles).\n",
         },
         "type": {
-          "maps_to": "data-bibliography-type",
+          "maps_to": {
+            "html": "data-bibliography-type",
+          },
           "values": [
             "cited-only",
             "full",
@@ -1014,18 +1116,26 @@ const _blockquote = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "cite": {
-          "maps_to": "cite",
+          "maps_to": {
+            "html": "cite",
+          },
           "notes": "URL of the source being quoted. Maps to HTML's standard cite\nattribute on <blockquote>. For inline citation references\n(citing a bibliography entry), use a <cite> element inside the\nblockquote instead.\n",
         },
         "type": {
-          "maps_to": "data-blockquote-type",
+          "maps_to": {
+            "html": "data-blockquote-type",
+          },
           "values": [
             "verse",
             "dialogue",
@@ -1086,10 +1196,14 @@ const _book_back = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1118,10 +1232,14 @@ const _book_body = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1146,10 +1264,14 @@ const _book_front = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1181,10 +1303,14 @@ const _book_part_subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1209,10 +1335,14 @@ const _book_part_title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1237,14 +1367,20 @@ const _book_part = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "book-part-type": {
-          "maps_to": "book-part-type",
+          "maps_to": {
+            "html": "book-part-type",
+          },
           "values": [
             "chapter",
             "part",
@@ -1261,7 +1397,9 @@ const _book_part = Object.freeze({
           "notes": "Always present in Layer 1. The shorthand layer typically supplies\nthis via a shorthand element name (e.g., <chapter> sets it to \"chapter\").\n",
         },
         "numbering-style": {
-          "maps_to": "data-numbering-style",
+          "maps_to": {
+            "html": "data-numbering-style",
+          },
           "values": [
             "arabic",
             "roman",
@@ -1270,7 +1408,9 @@ const _book_part = Object.freeze({
           ],
         },
         "note-position": {
-          "maps_to": "data-note-position",
+          "maps_to": {
+            "html": "data-note-position",
+          },
           "values": [
             "foot",
             "end",
@@ -1399,10 +1539,14 @@ const _book_subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1427,10 +1571,14 @@ const _book_title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1455,14 +1603,20 @@ const _book = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "numbering-style": {
-          "maps_to": "data-numbering-style",
+          "maps_to": {
+            "html": "data-numbering-style",
+          },
           "values": [
             "arabic",
             "roman",
@@ -1471,7 +1625,9 @@ const _book = Object.freeze({
           "default": "arabic",
         },
         "note-position": {
-          "maps_to": "data-note-position",
+          "maps_to": {
+            "html": "data-note-position",
+          },
           "values": [
             "foot",
             "end",
@@ -1543,10 +1699,14 @@ const _cases = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -1589,10 +1749,14 @@ const _cite = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "keys": {
@@ -1620,7 +1784,9 @@ const _cite = Object.freeze({
           "notes": "Text to appear after the citation.\n",
         },
         "style": {
-          "maps_to": "data-citation-style",
+          "maps_to": {
+            "html": "data-citation-style",
+          },
           "values": [
             "author-year",
             "numbered",
@@ -1705,11 +1871,15 @@ const _code_block = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
         "notes": "Placed on <code>. Used as cross-reference target.\n",
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
         "notes": "Added to <code> alongside any language class.\n",
       },
     },
@@ -1735,14 +1905,20 @@ const _code = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "language": {
-          "maps_to": "class (as language-X)",
+          "maps_to": {
+            "html": "class (as language-X)",
+          },
           "notes": "The programming language of the code. Maps to a class like\n\"language-python\" for syntax highlighting via shiki/prism.\n",
         },
       },
@@ -1799,10 +1975,14 @@ const _config = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/acadamark-interpreter/src/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
@@ -1886,14 +2066,20 @@ const _corollary = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the corollary's label, parallel to\n<theorem>'s `name` kwarg.\n",
         },
       },
@@ -1942,10 +2128,14 @@ const _csv = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "caption": {
@@ -2004,10 +2194,14 @@ const _data = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2079,14 +2273,20 @@ const _date = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-date-type",
+          "maps_to": {
+            "html": "data-date-type",
+          },
           "values": [
             "publication",
             "submission",
@@ -2100,7 +2300,9 @@ const _date = Object.freeze({
           "notes": "Distinguishes different kinds of dates. The default (publication)\nis the date the document was published.\n",
         },
         "format": {
-          "maps_to": "data-date-format",
+          "maps_to": {
+            "html": "data-date-format",
+          },
           "values": [
             "iso",
             "ymd",
@@ -2157,10 +2359,14 @@ const _dd = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2198,14 +2404,20 @@ const _definition = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the definition's label.\n",
         },
       },
@@ -2253,14 +2465,20 @@ const _details = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "open": {
-          "maps_to": "open",
+          "maps_to": {
+            "html": "open",
+          },
           "values": [
             "true",
             "false",
@@ -2320,10 +2538,14 @@ const _display_math = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "booleans": {
         "numbered": {
@@ -2356,10 +2578,14 @@ const _dl = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2415,10 +2641,14 @@ const _doi = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2459,10 +2689,14 @@ const _dt = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2500,23 +2734,35 @@ const _editor = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "affiliation": {
-          "maps_to": "data-affiliation",
+          "maps_to": {
+            "html": "data-affiliation",
+          },
         },
         "orcid": {
-          "maps_to": "data-orcid",
+          "maps_to": {
+            "html": "data-orcid",
+          },
         },
         "email": {
-          "maps_to": "data-email",
+          "maps_to": {
+            "html": "data-email",
+          },
         },
         "role": {
-          "maps_to": "data-editor-role",
+          "maps_to": {
+            "html": "data-editor-role",
+          },
           "values": [
             "editor",
             "co-editor",
@@ -2561,10 +2807,14 @@ const _em = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2608,10 +2858,14 @@ const _email = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2645,10 +2899,14 @@ const _eqnarray = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -2690,14 +2948,20 @@ const _example = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the example's label.\n",
         },
       },
@@ -2746,10 +3010,14 @@ const _fig = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "src": {
@@ -2761,7 +3029,9 @@ const _fig = Object.freeze({
           "notes": "Alt text for the generated <img> when src is present. Recommended\nfor accessibility but not required: when alt is not specified, the\nhandler falls back to the figcaption text. Ignored when src is\nabsent.\n",
         },
         "align": {
-          "maps_to": "data-align",
+          "maps_to": {
+            "html": "data-align",
+          },
           "values": [
             "left",
             "right",
@@ -2771,11 +3041,15 @@ const _fig = Object.freeze({
           "notes": "How the figure is positioned in the document flow. Affects\nrendering only; not exported to JATS.\n",
         },
         "width": {
-          "maps_to": "data-width",
+          "maps_to": {
+            "html": "data-width",
+          },
           "notes": "Suggested rendered width. Can be a CSS length (e.g., \"300px\",\n\"50%\") or a relative value.\n",
         },
         "type": {
-          "maps_to": "data-figure-type",
+          "maps_to": {
+            "html": "data-figure-type",
+          },
           "values": [
             "image",
             "table",
@@ -2870,10 +3144,14 @@ const _frame = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "title": {
@@ -2885,7 +3163,9 @@ const _frame = Object.freeze({
           "notes": "Optional caption text rendered at the bottom of the frame\n(Phase 3 frameable caption-bottom convention). Phase 3 slice 3c\nwill lift this kwarg to a <caption> child tag at the gate.\n",
         },
         "type": {
-          "maps_to": "data-frame-type",
+          "maps_to": {
+            "html": "data-frame-type",
+          },
           "notes": "Optional classification of what the frame contains (note,\nwarning, tip, theorem-block, etc.). Authors can use this for\nCSS styling (.frame[data-frame-type=\"note\"] { … }).\n",
         },
       },
@@ -2951,10 +3231,14 @@ const _glossary_entry = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3004,10 +3288,14 @@ const _glossary = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3046,14 +3334,20 @@ const _hr = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-hr-type",
+          "maps_to": {
+            "html": "data-hr-type",
+          },
           "values": [
             "scene-break",
             "section-break",
@@ -3101,14 +3395,20 @@ const _i = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-italic-type",
+          "maps_to": {
+            "html": "data-italic-type",
+          },
           "values": [
             "foreign",
             "taxonomic",
@@ -3160,30 +3460,44 @@ const _img = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "src": {
-          "maps_to": "src",
+          "maps_to": {
+            "html": "src",
+          },
           "required": true,
           "notes": "URL of the image. Required.\n",
         },
         "alt": {
-          "maps_to": "alt",
+          "maps_to": {
+            "html": "alt",
+          },
           "required": true,
           "notes": "Alternative text for accessibility. Required for images that\nconvey meaning. Use empty alt=\"\" for purely decorative images.\n",
         },
         "width": {
-          "maps_to": "width",
+          "maps_to": {
+            "html": "width",
+          },
         },
         "height": {
-          "maps_to": "height",
+          "maps_to": {
+            "html": "height",
+          },
         },
         "title": {
-          "maps_to": "title",
+          "maps_to": {
+            "html": "title",
+          },
         },
       },
     },
@@ -3227,11 +3541,15 @@ const _inline_code = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
         "notes": "Placed on <code>. Used as cross-reference target.\n",
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
         "notes": "Added to <code> alongside any language class.\n",
       },
     },
@@ -3257,10 +3575,14 @@ const _inline_math = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3286,10 +3608,14 @@ const _kbd = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3327,10 +3653,14 @@ const _keywords = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3368,10 +3698,14 @@ const _lang = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3409,14 +3743,20 @@ const _lemma = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the lemma's label, parallel to\n<theorem>'s `name` kwarg. Honored by the Phase-2 handler.\n",
         },
       },
@@ -3465,14 +3805,20 @@ const _li = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "value": {
-          "maps_to": "value",
+          "maps_to": {
+            "html": "value",
+          },
           "notes": "For ordered lists, sets the explicit number for this item.\nSubsequent items are numbered relative to this value. Maps to\nHTML's standard value attribute on <li>.\n",
         },
       },
@@ -3525,14 +3871,20 @@ const _library = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "format": {
-          "maps_to": "data-format",
+          "maps_to": {
+            "html": "data-format",
+          },
           "values": [
             "bibtex",
             "csl-json",
@@ -3588,14 +3940,20 @@ const _license = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "href": {
-          "maps_to": "href",
+          "maps_to": {
+            "html": "href",
+          },
           "notes": "Optional URL of the license terms (e.g. https://creativecommons.org/licenses/by/4.0/).\n",
         },
       },
@@ -3639,10 +3997,14 @@ const _math = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3684,10 +4046,14 @@ const _matrix = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3730,10 +4096,14 @@ const _mermaid = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "caption": {
@@ -3779,14 +4149,20 @@ const _meta = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-document-type",
+          "maps_to": {
+            "html": "data-document-type",
+          },
           "values": [
             "article",
             "book",
@@ -3876,10 +4252,14 @@ const _name = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -3917,14 +4297,20 @@ const _note_list = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-note-list-type",
+          "maps_to": {
+            "html": "data-note-list-type",
+          },
           "values": [
             "end-notes",
             "chapter-notes",
@@ -3977,15 +4363,21 @@ const _note = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
         "notes": "Auto-generated when not specified. Used as the target for cross-references\nand as the basis for note numbering.\n",
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "placement": {
-          "maps_to": "data-note-placement",
+          "maps_to": {
+            "html": "data-note-placement",
+          },
           "values": [
             "end",
             "foot",
@@ -3995,7 +4387,9 @@ const _note = Object.freeze({
           "notes": "Determines where the note content is collected. \"end\" collects at\narticle-back; \"foot\" collects at article-back (distinguished from \"end\"\nby CSS class on the note-list); \"side\" renders the content\ninline-adjacent to the marker. Document-wide default is \"end\".\n",
         },
         "position": {
-          "maps_to": "data-note-position",
+          "maps_to": {
+            "html": "data-note-position",
+          },
           "values": [
             "foot",
             "end",
@@ -4006,7 +4400,9 @@ const _note = Object.freeze({
           "notes": "Legacy alias for \"placement\". Retained for backwards compatibility.\n\"placement\" is preferred for new documents.\n",
         },
         "type": {
-          "maps_to": "data-note-type",
+          "maps_to": {
+            "html": "data-note-type",
+          },
           "values": [
             "substantive",
             "technical",
@@ -4062,14 +4458,20 @@ const _ol = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-list-type",
+          "maps_to": {
+            "html": "data-list-type",
+          },
           "values": [
             "arabic",
             "alpha",
@@ -4082,11 +4484,15 @@ const _ol = Object.freeze({
           "notes": "The numbering style for ordered list items. Values match common\nlist-style-type CSS values, abbreviated for readability.\n",
         },
         "start": {
-          "maps_to": "start",
+          "maps_to": {
+            "html": "start",
+          },
           "notes": "The starting number for the list. Maps to HTML's standard start\nattribute on <ol>. Default is 1.\n",
         },
         "reversed": {
-          "maps_to": "reversed",
+          "maps_to": {
+            "html": "reversed",
+          },
           "notes": "If present, the list counts backward (5, 4, 3, 2, 1 instead of\n1, 2, 3, 4, 5). Maps to HTML's standard reversed attribute.\n",
         },
       },
@@ -4142,10 +4548,14 @@ const _orcid = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -4186,10 +4596,14 @@ const _output = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -4222,14 +4636,20 @@ const _p = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-paragraph-type",
+          "maps_to": {
+            "html": "data-paragraph-type",
+          },
           "values": [
             "normal",
             "lead",
@@ -4279,14 +4699,20 @@ const _proof = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix — e.g. \"Proof (of Theorem 1.2)\" or\n\"Proof (sketch)\". Honored by the Phase-2 handler.\n",
         },
       },
@@ -4337,14 +4763,20 @@ const _proposition = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the proposition's label.\n",
         },
       },
@@ -4392,14 +4824,20 @@ const _publication_date = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "format": {
-          "maps_to": "data-date-format",
+          "maps_to": {
+            "html": "data-date-format",
+          },
           "values": [
             "iso",
             "ymd",
@@ -4447,14 +4885,20 @@ const _q = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "cite": {
-          "maps_to": "cite",
+          "maps_to": {
+            "html": "cite",
+          },
           "notes": "URL of the source being quoted. Same as <blockquote>'s cite\nattribute but for inline quotations.\n",
         },
       },
@@ -4493,10 +4937,14 @@ const _ref = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "target": {
@@ -4504,7 +4952,9 @@ const _ref = Object.freeze({
           "notes": "The id of the element being referenced. The canonical form uses the\n#id prefix: <ref #eqn:model>. A kwarg form is also accepted as\nlegacy: <ref target=eqn:model>.\nIMPORTANT (current implementation): only colon-ids (ids containing\na colon, e.g., eqn:model, fig:scatter) are in the label index and\ncan be resolved. Non-colon ids produce an unresolved error marker.\nThis restriction may be relaxed in a future slice.\n",
         },
         "type": {
-          "maps_to": "data-ref-type",
+          "maps_to": {
+            "html": "data-ref-type",
+          },
           "values": [
             "auto",
             "figure",
@@ -4521,7 +4971,9 @@ const _ref = Object.freeze({
           "notes": "Author-supplied hint about the intended kind of target. Flows\nthrough to a data-ref-type attribute on the rendered anchor,\navailable for CSS/JS to use. The resolver-generated display text\nis still computed from the id prefix and the DEFAULT_PREFIXES\ndictionary; this kwarg does not currently override that text.\n",
         },
         "format": {
-          "maps_to": "data-ref-format",
+          "maps_to": {
+            "html": "data-ref-format",
+          },
           "values": [
             "number",
             "name",
@@ -4601,14 +5053,20 @@ const _remark = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the remark's label. Honored by the\nPhase-2 handler even though <remark> is unnumbered (a named\nremark may render as \"Remark (Name):\" without a number).\n",
         },
       },
@@ -4656,14 +5114,20 @@ const _s = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-strikethrough-type",
+          "maps_to": {
+            "html": "data-strikethrough-type",
+          },
           "values": [
             "outdated",
             "retracted",
@@ -4706,10 +5170,14 @@ const _samp = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -4747,10 +5215,14 @@ const _section_subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -4775,10 +5247,14 @@ const _section_title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -4803,14 +5279,20 @@ const _section = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "sec-type": {
-          "maps_to": "data-sec-type",
+          "maps_to": {
+            "html": "data-sec-type",
+          },
           "values": [
             "intro",
             "methods",
@@ -4825,7 +5307,9 @@ const _section = Object.freeze({
           "notes": "Optional classification of the section's role. Maps to JATS sec-type\nattribute. Values match common JATS conventions for IMRaD-style papers.\n",
         },
         "numbering-style": {
-          "maps_to": "data-numbering-style",
+          "maps_to": {
+            "html": "data-numbering-style",
+          },
           "values": [
             "arabic",
             "roman",
@@ -4906,18 +5390,26 @@ const _span = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "style": {
-          "maps_to": "style",
+          "maps_to": {
+            "html": "style",
+          },
           "notes": "Inline CSS styles. Use sparingly; classes are usually preferable.\n",
         },
         "title": {
-          "maps_to": "title",
+          "maps_to": {
+            "html": "title",
+          },
         },
       },
     },
@@ -4957,10 +5449,14 @@ const _strong = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5002,10 +5498,14 @@ const _sub_section_subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5030,10 +5530,14 @@ const _sub_section_title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5058,14 +5562,20 @@ const _sub_section = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "sec-type": {
-          "maps_to": "data-sec-type",
+          "maps_to": {
+            "html": "data-sec-type",
+          },
           "values": [
             "intro",
             "methods",
@@ -5080,7 +5590,9 @@ const _sub_section = Object.freeze({
           "notes": "Same values as <section>. Optional classification of the sub-section role.",
         },
         "numbering-style": {
-          "maps_to": "data-numbering-style",
+          "maps_to": {
+            "html": "data-numbering-style",
+          },
           "values": [
             "arabic",
             "roman",
@@ -5156,10 +5668,14 @@ const _sub_sub_section_subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5184,10 +5700,14 @@ const _sub_sub_section_title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5212,14 +5732,20 @@ const _sub_sub_section = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "sec-type": {
-          "maps_to": "data-sec-type",
+          "maps_to": {
+            "html": "data-sec-type",
+          },
           "values": [
             "intro",
             "methods",
@@ -5233,7 +5759,9 @@ const _sub_sub_section = Object.freeze({
           ],
         },
         "numbering-style": {
-          "maps_to": "data-numbering-style",
+          "maps_to": {
+            "html": "data-numbering-style",
+          },
           "values": [
             "arabic",
             "roman",
@@ -5309,10 +5837,14 @@ const _sub = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5346,14 +5878,20 @@ const _subject = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "scheme": {
-          "maps_to": "data-subject-scheme",
+          "maps_to": {
+            "html": "data-subject-scheme",
+          },
           "notes": "Optional classification scheme this subject belongs to (e.g.\n\"MSC2020\" for the AMS Mathematics Subject Classification, \"ACM\"\nfor ACM Computing Classification, \"MeSH\" for biomedical\nsubjects). Identifies the controlled vocabulary the subject\nvalue is drawn from.\n",
         },
       },
@@ -5393,10 +5931,14 @@ const _subtitle = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5427,10 +5969,14 @@ const _summary = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5468,10 +6014,14 @@ const _sup = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5509,22 +6059,32 @@ const _svg = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "width": {
-          "maps_to": "width",
+          "maps_to": {
+            "html": "width",
+          },
           "notes": "SVG width attribute. CSS length or unitless number. Maps directly\nto the rendered <svg> element's width attribute.\n",
         },
         "height": {
-          "maps_to": "height",
+          "maps_to": {
+            "html": "height",
+          },
           "notes": "SVG height attribute. Same shape as width.\n",
         },
         "viewBox": {
-          "maps_to": "viewBox",
+          "maps_to": {
+            "html": "viewBox",
+          },
           "notes": "SVG viewBox attribute. Defines the coordinate system. Passes\nthrough to the rendered <svg> element.\n",
         },
         "caption": {
@@ -5590,10 +6150,14 @@ const _table = Object.freeze({
     "handler_module": "./handlers/table.js",
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "positional": [
         {
@@ -5626,7 +6190,9 @@ const _table = Object.freeze({
           "notes": "Path to an external data file. Relative to the document's assets\ndirectory (configurable via the assetsDir interpreter option).\nThe content handler reads the file at interpretation time.\n",
         },
         "type": {
-          "maps_to": "data-table-type",
+          "maps_to": {
+            "html": "data-table-type",
+          },
           "values": [
             "data",
             "layout",
@@ -5680,11 +6246,15 @@ const _term = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
         "notes": "Optional id, useful for cross-referencing the term-introduction\nfrom later prose (e.g. <ref @term:eigenvector>).\n",
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5725,14 +6295,20 @@ const _theorem = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "name": {
-          "maps_to": "data-name",
+          "maps_to": {
+            "html": "data-name",
+          },
           "notes": "Optional name suffix for the theorem's label (the\n\"(Pythagoras)\" half of \"Theorem 1.2 (Pythagoras)\"). Honored\nby the Phase-2 theorem handler at label-rendering time;\nuntil that handler lands, the kwarg flows through to the\nrendered HTML as `data-name=\"...\"` via schema dispatch.\nLaTeX amsthm precedent: `\\begin{theorem}[Pythagoras]`.\n",
         },
       },
@@ -5784,10 +6360,14 @@ const _title = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -5831,10 +6411,14 @@ const _tsv = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "caption": {
@@ -5887,14 +6471,20 @@ const _u = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-underline-type",
+          "maps_to": {
+            "html": "data-underline-type",
+          },
           "values": [
             "misspelling",
             "proper-name",
@@ -5936,14 +6526,20 @@ const _ul = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
       "kwargs": {
         "type": {
-          "maps_to": "data-list-type",
+          "maps_to": {
+            "html": "data-list-type",
+          },
           "values": [
             "bullet",
             "checklist",
@@ -6005,10 +6601,14 @@ const _var = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {
@@ -6046,10 +6646,14 @@ const _version = Object.freeze({
     },
     "acadamark_attributes": {
       "id": {
-        "maps_to": "id",
+        "maps_to": {
+          "html": "id",
+        },
       },
       "classes": {
-        "maps_to": "class",
+        "maps_to": {
+          "html": "class",
+        },
       },
     },
     "content": {

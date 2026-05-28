@@ -1,0 +1,25 @@
+{
+  "name": "acadamark-jats-export",
+  "version": "0.0.1",
+  "private": true,
+  "description": "JATS XML export for acadamark — consumes the post-stage-3 mdast tree produced by acadamark-interpreter's structural plugins and emits JATS Archiving and Interchange Tag Set XML.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "acadamark-core": "*",
+    "acadamark-interpreter": "*",
+    "layer1-vocabulary": "*",
+    "remark-acadamark": "*",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5"
+  },
+  "keywords": [
+    "acadamark",
+    "jats",
+    "export"
+  ]
+}

@@ -21,7 +21,8 @@
 //
 // Phase 3 slice 3c (2026-05-28). Vocab entry declared in slice 3b.
 
-import { buildProperties } from '../lib/build-properties.js';
+import { mapAttributes } from 'acadamark-core/map-attributes';
+import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
@@ -57,7 +58,7 @@ export function frameHandler(state, node, vocab) {
     (typeof node.kwargs?.border === 'boolean' ? node.kwargs.border : null);
   const border = borderRaw === false ? false : true;
 
-  const wrapperProps = buildProperties(node, vocab);
+  const wrapperProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   // Add data-frame-type if the type kwarg passed through (schema mapping
   // sets it for us via buildProperties, since frame.md declares
   // `type: maps_to: data-frame-type`).
