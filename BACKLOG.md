@@ -141,8 +141,17 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 9)* *(formerly
   DF-4)*
-- [ ] **Build book / book-part document structuring**
-  `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly DF-12)*
+- [x] **Build book / book-part document structuring**
+  `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly DF-12)* —
+  **done in slice 4a (2026-05-29)** via the new
+  `acadamarkBookStructuring` plugin (forward-referenced from book.md
+  / book-part.md since vocab creation, now real); generalized
+  `note-placement.js` to handle book trees; per-chapter counter
+  resets with chapter-prefix cross-references ("Figure 1.3");
+  configurable `counter-reset-scope` (`none`/`chapter`/`section`)
+  and `note-scope` (`document`/`chapter`/`section`) via `<config>`
+  kwargs; per-book-part authorship for edited volumes. Article
+  behavior preserved (strict zero-diff on 22 existing fixtures).
 - [ ] **Build pagination and print formatting** `[cross-cutting]`
   `[post-alpha]` *(→ roadmap: Phase 8)*
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
@@ -542,11 +551,42 @@ makes future multi-file work cheaper without committing to any of
 the four MF-Q design questions. The multi-file feature itself is
 post-alpha.
 
-### Build book / book-part document structuring
+### Build book / book-part document structuring — DONE
 `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 4)*
 
-Vocabulary exists; `article-structuring.js` currently warns and
-skips non-article types. *(formerly DF-12)*
+**Closed 2026-05-29 in Phase 4 slice 4a.** Implemented the
+forward-referenced `acadamarkBookStructuring` plugin per the vocab
+declarations in book.md / book-part.md. The plugin runs before
+`acadamarkArticleStructuring`; for `<meta type=book>` documents it
+wraps the tree in `<book>`/`<book-front>`/`<book-body>`/`<book-back>`,
+routes book-parts by type (chapter/part/intro/conclusion → body;
+preface/foreword/dedication → front; appendix/glossary/colophon →
+back), absorbs sibling content into each book-part's body (the
+authoring pattern `<chapter | Title>\nbody...\n<chapter | Next>`),
+synthesizes a `<meta>` wrapper inside each book-part holding the
+promoted `<book-part-title>` and any chapter-level `<author>`, and
+handles recursive `<part>` containing `<chapter>` nesting.
+
+Companion changes shipped:
+- **`note-placement.js` generalization** — `findTopLevelSections`
+  rewritten as `findCollectionUnits(treeChildren, scope)` supporting
+  article + book trees uniformly. `note-scope` config (defaults
+  `chapter` for books, `section` for articles).
+- **Per-chapter counter resets** — new `walkWithScope` in
+  `numbering.js` tracks chapter and section indices during the walk,
+  stamps `entry.data.scope` for ref-resolution to consume.
+  `fillNumbering` renumbers per scope-group. `counter-reset-scope`
+  config (defaults `chapter` for books, `none` for articles).
+- **Chapter-prefix cross-references** — `ref-resolution.js`'s
+  `computeRefText` renders "Figure 1.3" when target's
+  `entry.data.scope.chapter > 0`; "Figure 1.2.3" for `section` scope.
+- **Book-part shorthand expansion** — `<chapter>`, `<part>`,
+  `<appendix>`, etc. expand to `<book-part book-part-type="...">` at
+  the normalize-to-canonical gate (only in book documents, to avoid
+  conflict with the standalone `<glossary>` vocab element).
+
+`pipeline.md` L284-285 "limitation" line gated for follow-up
+spec-sweep (this slice didn't update it; see follow-ups). *(formerly DF-12)*
 
 ### Build pagination and print formatting
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 8)*

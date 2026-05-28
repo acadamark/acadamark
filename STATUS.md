@@ -2058,3 +2058,120 @@ that). One line gets added every few months, not every slice.
   (doc-9 is an article); ship 4b after 4a so the doc-9 snapshot
   pins the full alpha-complete pipeline. No product code, spec,
   or vocab changes in this slice — read-only as specified.
+- **2026-Q2 — Phase 4 slice 4a: book structuring plugin landed.**
+  The major implementation slice of Phase 4. Six bundled pieces of
+  work in the document-structure neighborhood:
+
+  **(1) `acadamarkBookStructuring` plugin.** New file
+  `packages/acadamark-interpreter/src/plugins/book-structuring.js`,
+  realizing the forward-referenced plugin from `book.md:146` and
+  `book-part.md:142`. Runs BEFORE `acadamarkArticleStructuring` in
+  the pipeline. For `<meta type=book>` documents: wraps the tree in
+  `<book>` containing `<book-front>`/`<book-body>`/`<book-back>`;
+  routes book-parts by `book-part-type` (chapter/part/introduction/
+  conclusion → body; preface/foreword/dedication → front; appendix/
+  glossary/colophon → back); absorbs sibling content into each
+  book-part's body (the `<chapter | Title>\nbody...\n<chapter |
+  Next>` authoring pattern); synthesizes a `<meta>` wrapper inside
+  each book-part holding the promoted `<book-part-title>` and any
+  chapter-level `<author>`; handles recursive `<part>` containing
+  `<chapter>` nesting. Article-structuring updated with an early
+  no-op check when the tree is already book-wrapped (defensive +
+  preserves the warn-and-skip safety net for documents that
+  somehow bypassed book-structuring).
+
+  **(2) `note-placement.js` generalization (Q1.6 fix).** Phase 0
+  finding: the original `findTopLevelSections` hardcoded
+  `<article>` → `<article-body>` and silently dropped book
+  documents' per-section footnotes. Rewritten as
+  `findCollectionUnits(treeChildren, scope)` supporting article and
+  book trees uniformly. `findOrCreateBackMatter` similarly
+  generalized to handle book-back or article-back. The article
+  path preserves slice 7001aaa behavior exactly (zero-diff
+  verified).
+
+  **(3) Per-chapter counter resets.** New `walkWithScope` walker in
+  `numbering.js` tracks `chapterIndex` (incremented on entering each
+  outermost `<book-part>`) and `sectionIndex` (incremented on
+  entering each outermost `<section>` within the current chapter,
+  consulted only in `section` scope). The walker stamps
+  `node._scope = { chapter, section }` on every numbered node;
+  `fillNumbering` promotes these to `entry.data.scope` and
+  renumbers entries per (registry-type, scope-key) group. Articles
+  (scope = 'none') use the existing `discover` walk — zero behavior
+  change.
+
+  **(4) Configurable `counter-reset-scope`.** New live `<config>`
+  kwarg with values `none` / `chapter` / `section`. Defaults
+  `chapter` for books, `none` for articles. `ref-resolution.js`'s
+  `computeRefText` extended: when `entry.data.scope.chapter > 0`,
+  renders "Figure 1.3" (chapter-prefix path); "Figure 1.2.3" when
+  section scope is also non-zero.
+
+  **(5) Configurable `note-scope`.** New live `<config>` kwarg with
+  values `document` / `chapter` / `section`. Defaults `chapter` for
+  books, `section` for articles. The per-unit collection rule
+  scopes which placements collect: section scope collects only
+  `placement=foot` (preserving slice 7001aaa behavior); chapter
+  scope collects both `foot` and `end` (matching book.md's
+  `note-position: chapter-end` convention). The list class derives
+  from `listClassFor` over the actual placements in each bucket.
+
+  **(6) Per-book-part authorship.** `restructureBookPart` recognizes
+  `<author>` (and the title elements) at the top of a book-part's
+  content, gathers them into a synthesized `<meta>` wrapper. Vocab
+  declares this authoring pattern (book.md §"Edited volume"
+  example); the plugin implements the wrapping.
+
+  Two companion changes the implementation surfaced:
+
+  **Book-part shorthand expansion at the gate.** `<chapter>`,
+  `<part>`, `<appendix>`, etc. expand to `<book-part book-part-type=
+  "...">` at the normalize-to-canonical gate (new Group A1.7). The
+  build-time vocab generator skips these because their expansion
+  values contain spaces; the gate is the right place for them.
+  Conflict disambiguation: only fires when the document is a book
+  context (signaled by `<meta type=book>` at root) — preserves the
+  standalone `<glossary>` vocab element's meaning in articles.
+
+  **Article-structuring no-op when already book-wrapped.** The
+  existing warn-and-skip placeholder for `<meta type=book>` is
+  preserved as a defensive safety net; the new early check for
+  `<book>` / `<book-part>` at root makes the article path silently
+  no-op when book-structuring has already done its work.
+
+  **Open design questions (Q1.5 from Phase 0) — all settled in
+  this slice:**
+  - DD-Q4 (counter scope): per-chapter resets default for books;
+    `none` available via config for global-counter override.
+  - DD-Q5 (footnote scope): per-book-part collection default for
+    books; `section` and `document` available via config.
+  - DD-Q6 (chapter-author): handled by `restructureBookPart`'s
+    meta synthesis.
+
+  **New fixture: doc38** exercises all six bundled pieces:
+  `<meta type=book>` with multi-chapter authoring (preface,
+  two chapters, appendix); per-chapter figures + equations with
+  prefix-path cross-references ("figure 1.1", "figure 2.1"); a
+  chapter with its own `<author>` distinct from the book-level
+  author; per-book-part footnote collection.
+
+  **Snapshot audit:**
+  - **All 22 existing article fixtures: STRICT ZERO DIFF.** Article
+    behavior 100% preserved.
+  - **doc38 (new):** snapshot written on first run.
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc38).
+
+  **Phase 4 sub-progress:** slice 4a closes the book-structuring
+  item. Slice 4b (doc-9 snapshot + integration test) remains —
+  independent of 4a (doc-9 is an article); will pin the
+  alpha-complete pipeline.
+
+  **Spec follow-ups deferred:** `pipeline.md` L284-285 "Limitation:
+  book and book-part document types are not handled" line is now
+  stale; `interpreter.md` needs a new §3.X for the new plugin
+  paralleling §3.3's article-structuring documentation. Bundle
+  into the spec-sweep slice (or 4b's coverage).

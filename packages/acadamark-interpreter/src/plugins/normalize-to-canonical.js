@@ -64,6 +64,35 @@ import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 
+// Phase 4 slice 4a (2026-05-29): book-part shorthand tagnames that
+// expand at the gate to `<book-part book-part-type="...">`. The set
+// matches `book-part.md`'s `shorthand_expansions` block; the
+// build-time vocab generator skips these (they have spaces in their
+// expands_to values) so the expansion has to happen at the gate.
+const BOOK_PART_SHORTHANDS = new Set([
+  'chapter', 'part', 'appendix', 'preface', 'foreword',
+  'introduction', 'conclusion', 'glossary', 'dedication',
+]);
+
+// Per-document book-context flag. Set by the gate's transformer at the
+// start of each invocation (single-threaded; unified pipeline is
+// sequential). Read by the book-part shorthand expansion predicate
+// (Group A1.7 in NORMALIZATIONS below). The flag exists so the
+// expansion fires ONLY in book documents — `<glossary>` (which has
+// both standalone-vocab and book-part-shorthand meanings) keeps its
+// standalone meaning in articles.
+const _bookContextFlag = { isBook: false };
+
+function detectBookContext(treeChildren) {
+  for (const child of treeChildren ?? []) {
+    if (isAcadamarkTag(child) && child.tagname === 'meta') {
+      const type = child.kwargs?.type;
+      if (type === 'book' || type === 'book-part') return true;
+    }
+  }
+  return false;
+}
+
 // ─── Drift guards at module load ──────────────────────────────────────────────
 // Confirm contentHandler values. These are authoritative in dsl-registry.js;
 // if they change, these assertions catch the drift.
@@ -711,6 +740,42 @@ const NORMALIZATIONS = [
     },
   },
 
+  // ─── Group A1.7: book-part shorthand expansion ────────────────────────
+  //
+  // Phase 4 slice 4a (2026-05-29): `<chapter>`, `<part>`, `<appendix>`,
+  // `<preface>`, `<foreword>`, `<introduction>`, `<conclusion>`,
+  // `<glossary>`, `<dedication>` are authoring shorthands for
+  // `<book-part book-part-type="...">`. The build-time vocab generator
+  // skips these because their `shorthand_expansions.expands_to` value
+  // contains a space (`'book-part book-part-type="chapter"'`) — it only
+  // creates aliases for bare-key expansions. So the expansion has to
+  // happen at the gate.
+  //
+  // CONFLICT DISAMBIGUATION: `<glossary>` has two semantic meanings —
+  // a standalone vocab-glossary container (glossary.md, contains
+  // <glossary-entry> children) AND a book-part shorthand (book-part.md
+  // L68, an appendix-shaped book division). To resolve, only expand
+  // book-part shorthands when the document is a book context (signaled
+  // by `<meta type=book>` at root level). Article documents keep their
+  // standalone `<glossary>` and any other shorthand-named tag with its
+  // non-book-part meaning.
+  //
+  // The closure over `_isBookContext` is computed once per document at
+  // the normalize-to-canonical entry point — see acadamarkNormalizeToCanonical
+  // below where the predicate consults it.
+  {
+    predicate: (node) =>
+      isAcadamarkTag(node) &&
+      BOOK_PART_SHORTHANDS.has(node.tagname) &&
+      _bookContextFlag.isBook === true,
+    normalize: (node) => {
+      const shorthand = node.tagname;
+      node.tagname = 'book-part';
+      node.kwargs = { ...node.kwargs, 'book-part-type': shorthand };
+      return node;
+    },
+  },
+
   // ─── Group A2: structured-element + <config> kwarg lift ───────────────
   //
   // For any structured-element tag (today: <meta>, <author>; registered in
@@ -810,7 +875,16 @@ function normalizeNode(node, file) {
  */
 export function acadamarkNormalizeToCanonical() {
   return function normalizeToCanonical(tree, file) {
-    walkNormalize(tree.children ?? [], isNormalizable, (node) => normalizeNode(node, file));
+    // Phase 4 slice 4a (2026-05-29): set per-document book-context flag
+    // before the walk so the book-part shorthand expansion predicate
+    // (Group A1.7) fires only in book documents. Cleared in a finally
+    // so a thrown error doesn't leak the flag across documents.
+    _bookContextFlag.isBook = detectBookContext(tree.children);
+    try {
+      walkNormalize(tree.children ?? [], isNormalizable, (node) => normalizeNode(node, file));
+    } finally {
+      _bookContextFlag.isBook = false;
+    }
   };
 }
 

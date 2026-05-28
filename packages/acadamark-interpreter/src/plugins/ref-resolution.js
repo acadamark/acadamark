@@ -74,7 +74,24 @@ function computeRefText(id, entry, config) {
     (prefix && DEFAULT_PREFIXES[prefix]) ||
     null;
 
-  return prefixWord ? `${prefixWord} ${entry.number}` : `${entry.number}`;
+  // Phase 4 slice 4a (2026-05-29): chapter-prefix path rendering. When
+  // the target entry's data.scope is present (set by the numbering
+  // plugin's scope-tracking visitor for book documents in 'chapter' /
+  // 'section' scope), prefix the number with "C." or "C.S." per the
+  // resolved scope. Articles (or any document without scope data on
+  // the entry) render without a prefix path — current behavior.
+  const scope = entry.data?.scope;
+  let numberStr = `${entry.number}`;
+  if (scope && scope.chapter > 0) {
+    // 'section' scope: include section index if non-zero.
+    if (scope.section > 0) {
+      numberStr = `${scope.chapter}.${scope.section}.${entry.number}`;
+    } else {
+      numberStr = `${scope.chapter}.${entry.number}`;
+    }
+  }
+
+  return prefixWord ? `${prefixWord} ${numberStr}` : numberStr;
 }
 
 function makeRefMarker(targetId, entry, config, srcNode) {

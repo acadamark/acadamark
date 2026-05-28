@@ -79,6 +79,7 @@ import rehypeFormat from 'rehype-format';
 import { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown } from './plugins/normalize-to-canonical.js';
 import { acadamarkConfigDiscovery } from './plugins/config-discovery.js';
 import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
+import { acadamarkBookStructuring } from './plugins/book-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
 import { acadamarkNotes } from './plugins/notes.js';
 import { acadamarkNotePlacement } from './plugins/note-placement.js';
@@ -92,7 +93,7 @@ import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js'
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from 'acadamark-core/registry';
 
-export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
+export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.
@@ -369,6 +370,13 @@ export function acadamarkInterpreter(options = {}) {
 
   // 2–4. Structural transformation.
   this.use(acadamarkConfigDiscovery);
+  // Phase 4 slice 4a (2026-05-29): book-structuring runs BEFORE article-
+  // structuring. For documents with <meta type=book> or <meta type=book-part>,
+  // book-structuring wraps the tree in <book>/<book-part> and the
+  // subsequent article-structuring sees the wrapped tree (no root <meta>
+  // tag visible) and treats it as no-op-shaped. For articles,
+  // book-structuring is a no-op and article-structuring does its work.
+  this.use(acadamarkBookStructuring);
   this.use(acadamarkArticleStructuring);
   this.use(acadamarkSectionNesting);
 

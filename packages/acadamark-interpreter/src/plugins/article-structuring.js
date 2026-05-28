@@ -163,11 +163,25 @@ export function acadamarkArticleStructuring() {
     // misplaced tag gets routed anywhere coherent.
     warnMisplacedApparatus(children, file, null);
 
+    // Phase 4 slice 4a (2026-05-29): if acadamarkBookStructuring already
+    // wrapped the tree in <book> or <book-part>, the root will contain that
+    // wrapper instead of a flat list of meta + body. Detect and skip
+    // silently. Same disposition for the original warn-and-skip case
+    // (was: warn on <meta type=book> at root) — book-structuring now
+    // handles those upstream.
+    const bookRoot = findTag(children, 'book') || findTag(children, 'book-part');
+    if (bookRoot) {
+      return; // already structured by acadamarkBookStructuring
+    }
+
     // Detect document type from <meta> tag.
     const metaNode = findTag(children, 'meta');
     const docType = metaNode?.kwargs?.type ?? 'article';
 
     if (docType === 'book' || docType === 'book-part') {
+      // Defensive: should be unreachable post-book-structuring. Keep the
+      // warn-and-skip as a safety net for the case where book-structuring
+      // somehow didn't fire (e.g. a future test that disables it).
       warnSkippedDocType(docType);
       return; // out of scope for this plugin
     }

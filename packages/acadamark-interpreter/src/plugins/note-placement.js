@@ -48,26 +48,35 @@
 
 import { makeTag, makeInternalMarker, isAcadamarkTag } from 'acadamark-core/tag';
 import { walkReplace } from 'acadamark-core/walkers/walk-replace';
-import { ACADAMARK_NOTES_PENDING } from 'acadamark-core/file-data-keys';
+import { ACADAMARK_NOTES_PENDING, ACADAMARK_CONFIG } from 'acadamark-core/file-data-keys';
 import { findTag } from '../lib/ast-helpers.js';
 import { notePlacement } from './notes.js';
 
-// ─── Article-back helper ──────────────────────────────────────────────────────
+// ─── Back-matter container helpers ────────────────────────────────────────────
 
 /**
- * Find the article-back region inside the article node, creating it if absent.
+ * Find or create the document's back-matter container (article-back for
+ * articles; book-back for books). Returns null if no document root exists.
  *
- * Both lookups use findTag (top-level search), which suffices because:
- *   - article is a direct child of root.children after acadamarkArticleStructuring
- *   - article-back is a direct child of article.content
+ * Phase 4 slice 4a (2026-05-29): generalized from article-only to handle
+ * both article and book trees uniformly. The book branch is the new path;
+ * the article branch preserves slice 7001aaa behavior.
  *
- * @param {Array} treeChildren — root.children (should contain the article)
- * @returns {object|null} the article-back acadamarkTag, or null if no article
+ * @param {Array} treeChildren — root.children
+ * @returns {object|null} the back-matter container, or null
  */
-function findOrCreateArticleBack(treeChildren) {
+function findOrCreateBackMatter(treeChildren) {
+  const book = findTag(treeChildren, 'book');
+  if (book) {
+    let back = findTag(book.content ?? [], 'book-back');
+    if (!back) {
+      back = makeTag('book-back');
+      book.content.push(back);
+    }
+    return back;
+  }
   const article = findTag(treeChildren, 'article');
   if (!article) return null;
-
   let back = findTag(article.content ?? [], 'article-back');
   if (!back) {
     back = makeTag('article-back');
@@ -76,25 +85,114 @@ function findOrCreateArticleBack(treeChildren) {
   return back;
 }
 
-// ─── Section-membership helpers ───────────────────────────────────────────────
+// ─── Top-level collection-unit helpers ────────────────────────────────────────
 
 /**
- * Find the top-level sections in the article body, in authored order.
+ * Find the top-level structural collection units, in authored order. The unit
+ * is what per-scope footnote collection groups by. Two scopes today:
  *
- * Top-level = direct children of <article-body>. The structural pipeline
- * places sections there after acadamarkArticleStructuring runs (before
- * this plugin). A document without an <article-body> (e.g. one with no
- * sections) returns an empty array — all notes are residual in that case.
+ *   'section' (article default; slice 7001aaa behavior):
+ *      top-level units = sections (direct children of <article-body>).
+ *      Books in this scope: top-level units = sections inside each book-part's
+ *      content, flattened in document order.
+ *
+ *   'chapter' (book default; matches book.md's note-position: chapter-end):
+ *      top-level units = book-parts (direct children of <book-body> plus
+ *      those routed to book-front / book-back). Articles in this scope:
+ *      effectively no top-level units (no book-parts exist) — falls through
+ *      to the 'document' behavior.
+ *
+ *   'document':
+ *      top-level units = [] (everything is residual).
+ *
+ * Phase 4 slice 4a (2026-05-29): generalized from the article-only
+ * findTopLevelSections. The 'section' path preserves the slice-7001aaa
+ * behavior for articles (zero-diff).
  *
  * @param {Array} treeChildren — root.children
- * @returns {Array} top-level <section> nodes (acadamarkTag objects)
+ * @param {string} scope — 'document' | 'chapter' | 'section'
+ * @returns {Array} top-level structural-unit nodes (acadamarkTag objects)
  */
-function findTopLevelSections(treeChildren) {
+function findCollectionUnits(treeChildren, scope) {
+  if (scope === 'document') return [];
+
+  const book = findTag(treeChildren, 'book');
+  if (book) {
+    if (scope === 'chapter') {
+      // Per-book-part collection. Gather book-parts from front/body/back
+      // in document order. Nested book-parts (parts containing chapters)
+      // are NOT individually collected — the outermost book-part absorbs
+      // their notes (matches the "outermost-section" rule's parallel for
+      // books).
+      const units = [];
+      for (const region of book.content ?? []) {
+        if (!isAcadamarkTag(region)) continue;
+        if (region.tagname !== 'book-front' && region.tagname !== 'book-body' &&
+            region.tagname !== 'book-back') continue;
+        for (const child of region.content ?? []) {
+          if (isAcadamarkTag(child) && child.tagname === 'book-part') {
+            units.push(child);
+          }
+        }
+      }
+      return units;
+    }
+    // scope === 'section': sections inside each book-part's content,
+    // flattened. Recurse through nested book-parts.
+    const units = [];
+    function collectSectionsFromBookPart(bookPart) {
+      for (const child of bookPart.content ?? []) {
+        if (!isAcadamarkTag(child)) continue;
+        if (child.tagname === 'section') units.push(child);
+        else if (child.tagname === 'book-part') collectSectionsFromBookPart(child);
+      }
+    }
+    for (const region of book.content ?? []) {
+      if (!isAcadamarkTag(region)) continue;
+      if (region.tagname !== 'book-front' && region.tagname !== 'book-body' &&
+          region.tagname !== 'book-back') continue;
+      for (const child of region.content ?? []) {
+        if (isAcadamarkTag(child) && child.tagname === 'book-part') {
+          collectSectionsFromBookPart(child);
+        }
+      }
+    }
+    return units;
+  }
+
+  // Article tree. 'chapter' scope is meaningless for articles (no book-parts);
+  // fall through to no-units (everything becomes residual → article-back).
+  if (scope === 'chapter') return [];
+  // scope === 'section' — original behavior.
   const article = findTag(treeChildren, 'article');
   if (!article) return [];
   const body = findTag(article.content ?? [], 'article-body');
   if (!body) return [];
   return (body.content ?? []).filter(c => isAcadamarkTag(c, 'section'));
+}
+
+/**
+ * Determine the effective note-scope for a document, per Phase 4 slice 4a
+ * note-scope config knob.
+ *
+ * Defaults:
+ *   - article documents: 'section' (preserves slice 7001aaa behavior)
+ *   - book documents:    'chapter' (matches book.md's note-position: chapter-end)
+ *
+ * Overrides via <config note-scope="...">. Valid values:
+ * 'document' | 'chapter' | 'section'.
+ *
+ * @param {Array} treeChildren — root.children
+ * @param {Map|null} config
+ * @returns {string} 'document' | 'chapter' | 'section'
+ */
+function resolveNoteScope(treeChildren, config) {
+  const configValue = config?.get?.('note-scope');
+  if (configValue === 'document' || configValue === 'chapter' || configValue === 'section') {
+    return configValue;
+  }
+  const book = findTag(treeChildren, 'book');
+  return book ? 'chapter' : 'section';
 }
 
 /**
@@ -185,19 +283,27 @@ export function acadamarkNotePlacement() {
     const pending = file?.data?.[ACADAMARK_NOTES_PENDING];
     if (!pending || pending.length === 0) return;
 
-    // ─── Step 1: section-membership map ────────────────────────────────
+    // ─── Step 1: collection-unit-membership map ────────────────────────
     //
-    // BEFORE walkReplace mutates the tree. For each top-level section,
-    // walk its subtree to find which pending-note nodes live inside it.
-    // After this step we know, per note, which section (if any) collects
-    // it.
+    // BEFORE walkReplace mutates the tree. For each top-level collection
+    // unit (sections for the 'section' scope; book-parts for the
+    // 'chapter' scope; none for 'document' scope), walk its subtree to
+    // find which pending-note nodes live inside it. After this step we
+    // know, per note, which unit (if any) collects it.
+    //
+    // Phase 4 slice 4a (2026-05-29): generalized from article-only
+    // top-level <section> to support book documents with a
+    // <config note-scope> knob (defaulting to 'chapter' for books and
+    // 'section' for articles).
+    const config = file?.data?.[ACADAMARK_CONFIG] ?? null;
+    const scope = resolveNoteScope(tree.children, config);
     const pendingNoteSet = new Set(pending.map(p => p.node));
-    const topLevelSections = findTopLevelSections(tree.children);
-    const noteToSection = new Map(); // noteNode → top-level section
-    for (const section of topLevelSections) {
-      const containedNotes = collectMatchingNodes(section, pendingNoteSet);
+    const collectionUnits = findCollectionUnits(tree.children, scope);
+    const noteToUnit = new Map(); // noteNode → top-level collection unit
+    for (const unit of collectionUnits) {
+      const containedNotes = collectMatchingNodes(unit, pendingNoteSet);
       for (const noteNode of containedNotes) {
-        noteToSection.set(noteNode, section);
+        noteToUnit.set(noteNode, unit);
       }
     }
 
@@ -228,44 +334,64 @@ export function acadamarkNotePlacement() {
       })];
     });
 
-    // ─── Step 4: per-section foot-note collection (PG-1) ───────────────
+    // ─── Step 4: per-unit collection by scope ──────────────────────────
     //
-    // Split pending into per-section foot buckets + residual. Only
-    // placement=foot notes that live inside a top-level section go into
-    // a per-section bucket; everything else (end, side, foot-notes
-    // outside top-level sections) goes to residual.
-    const sectionBuckets = new Map(); // section → pending entries (in document order)
+    // Split pending into per-unit buckets + residual. Which placements
+    // collect per-unit depends on scope:
+    //   - 'section' scope (article default): only placement=foot collects
+    //     per-section; everything else (end / side / foot outside any
+    //     section) goes to residual. Preserves slice 7001aaa behavior.
+    //   - 'chapter' scope (book default): both placement=foot AND
+    //     placement=end collect per-book-part (the chapter-end convention
+    //     book.md L17-20 anticipated; per `note-position: chapter-end`).
+    //     placement=side still stays inline (it's a margin note, not a
+    //     list entry).
+    //   - 'document' scope: no per-unit collection — all collect to
+    //     back-matter as residual.
+    const unitBuckets = new Map(); // unit → pending entries (in document order)
     const residual = [];
     for (const p of pending) {
       const placement = notePlacement(p.node);
-      const containingSection = noteToSection.get(p.node) ?? null;
-      if (placement === 'foot' && containingSection !== null) {
-        if (!sectionBuckets.has(containingSection)) sectionBuckets.set(containingSection, []);
-        sectionBuckets.get(containingSection).push(p);
+      const containingUnit = noteToUnit.get(p.node) ?? null;
+      const collectsPerUnit =
+        containingUnit !== null && (
+          (scope === 'section' && placement === 'foot') ||
+          (scope === 'chapter' && (placement === 'foot' || placement === 'end'))
+        );
+      if (collectsPerUnit) {
+        if (!unitBuckets.has(containingUnit)) unitBuckets.set(containingUnit, []);
+        unitBuckets.get(containingUnit).push(p);
       } else {
         residual.push(p);
       }
     }
 
-    // Inject per-section lists. Iterate sections in authored order
-    // (sectionBuckets preserves insertion order; insertion happened in
-    // the topLevelSections loop above which is itself in authored order).
-    // Each per-section list is class="footnotes" (only foot notes by
-    // construction). Append to the end of the section's content so the
-    // list sits below the section's body. Empty buckets — sections with
-    // no foot-notes — produce no list (we never insert into
-    // sectionBuckets for them, so this branch doesn't fire).
-    for (const [section, sectionPending] of sectionBuckets) {
-      const items = sectionPending.map(makeNoteListItem);
+    // Inject per-unit lists. Iterate units in authored order
+    // (unitBuckets preserves insertion order from the collectionUnits
+    // loop above, which itself is in authored order). Each per-unit
+    // list is class="footnotes" (only foot notes by construction).
+    // Append to the end of the unit's content so the list sits below
+    // the unit's body. Empty buckets — units with no foot-notes —
+    // produce no list (we never insert into unitBuckets for them, so
+    // this branch doesn't fire).
+    for (const [unit, unitPending] of unitBuckets) {
+      const items = unitPending.map(makeNoteListItem);
+      // Class derived from the placements actually present in the
+      // bucket: 'footnotes' for foot-only, 'endnotes' for end-only,
+      // 'notes' for mixed. Phase 4 slice 4a (2026-05-29): chapter-scope
+      // buckets can contain both foot AND end notes (per the chapter-
+      // end convention book.md anticipates); listClassFor handles the
+      // mix.
+      const placements = new Set(unitPending.map(({ node }) => notePlacement(node)));
       const list = makeInternalMarker('__note-list', {
-        classes: ['footnotes'],
+        classes: listClassFor(placements),
         content: items,
       });
-      if (!Array.isArray(section.content)) section.content = [];
-      section.content.push(list);
+      if (!Array.isArray(unit.content)) unit.content = [];
+      unit.content.push(list);
     }
 
-    // ─── Step 5: residual __note-list (article-back) ───────────────────
+    // ─── Step 5: residual __note-list (article-back or book-back) ──────
     //
     // Build only if there are residual notes — don't emit an empty list.
     if (residual.length > 0) {
@@ -276,7 +402,7 @@ export function acadamarkNotePlacement() {
         content: items,
       });
 
-      const back = findOrCreateArticleBack(tree.children);
+      const back = findOrCreateBackMatter(tree.children);
       if (!back) return;
       back.content.unshift(noteList);
     }

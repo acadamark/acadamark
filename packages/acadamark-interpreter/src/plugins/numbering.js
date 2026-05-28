@@ -35,6 +35,7 @@ import { ensureRegistry } from 'acadamark-core/registry';
 import { discover } from 'acadamark-core/walkers/discover';
 import { ACADAMARK_CONFIG, ACADAMARK_NUMBERING_PENDING } from 'acadamark-core/file-data-keys';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
+import { isAcadamarkTag } from '../lib/ast-helpers.js';
 
 // Maps the canonical post-gate tagname to the registry type used for display
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
@@ -130,6 +131,44 @@ const CONFIG_KEY = {
 // Section tagnames registered for cross-reference lookup (AUD-09).
 const SECTION_TAGNAMES = ['section', 'sub-section', 'sub-sub-section'];
 
+// Phase 4 slice 4a (2026-05-29): tagnames whose registry-type counters
+// reset at <book-part> boundaries when counter-reset-scope is 'chapter'
+// (book default). Section-level reset adds outermost <section> boundaries
+// when scope is 'section'. The set defines WHICH counter types respect
+// the scope; types not in this set always count globally (today: all
+// numbered types respect scope when the document is a book).
+const SCOPED_COUNTER_TYPES = new Set([
+  'equation', 'figure', 'table',
+  'theorem', 'definition', 'example',
+]);
+
+/**
+ * Resolve the effective counter-reset-scope for a document, per Phase 4
+ * slice 4a config knob.
+ *
+ * Defaults:
+ *   - article documents: 'none' (global counters, current behavior)
+ *   - book documents:    'chapter' (per-book-part resets)
+ *
+ * Overrides via <config counter-reset-scope="...">. Valid values:
+ * 'none' | 'chapter' | 'section'.
+ *
+ * @param {Array} treeChildren — root.children
+ * @param {Map|null} config
+ * @returns {string} 'none' | 'chapter' | 'section'
+ */
+function resolveCounterResetScope(treeChildren, config) {
+  const configValue = config?.get?.('counter-reset-scope');
+  if (configValue === 'none' || configValue === 'chapter' || configValue === 'section') {
+    return configValue;
+  }
+  // Look for <book> at root; if present, default to chapter scope.
+  for (const child of treeChildren ?? []) {
+    if (isAcadamarkTag(child) && child.tagname === 'book') return 'chapter';
+  }
+  return 'none';
+}
+
 /**
  * Unified plugin. Registers display-math, figure, table, and section nodes in
  * the document registry and stores pending { node, entry } pairs in
@@ -201,12 +240,114 @@ export function acadamarkNumbering() {
       registry.assign('code', node.id || null, { numbered: false, data: {} });
     });
 
-    discover(tree, visitors);
+    // Phase 4 slice 4a (2026-05-29): for books / scoped documents, use a
+    // custom walker that tracks the current chapter index and section
+    // index, stamping each registered entry's `data.scope` with that
+    // context. For articles (scope === 'none'), use the existing
+    // discover() walk — no scope tracking, no behavior change.
+    const scope = resolveCounterResetScope(tree.children, config);
+    if (scope === 'none') {
+      discover(tree, visitors);
+    } else {
+      walkWithScope(tree.children ?? [], visitors, scope);
+    }
 
     if (file?.data) {
       file.data[ACADAMARK_NUMBERING_PENDING] = pending;
+      file.data.acadamarkCounterResetScope = scope;
     }
   };
+}
+
+/**
+ * Phase 4 slice 4a (2026-05-29): scope-aware tree walker. Like discover(),
+ * but tracks two contextual counters during the walk:
+ *
+ *   - chapterIndex: incremented on entering each top-level <book-part>
+ *                   (i.e. the outermost book-part being walked into; nested
+ *                   parts-containing-chapters use the outermost's index).
+ *   - sectionIndex: incremented on entering each outermost <section>
+ *                   within the current chapter (book-part), reset to 0
+ *                   on each chapter change. Only consulted when
+ *                   scope === 'section'.
+ *
+ * Visitors are called with the node only (matching discover()'s contract);
+ * the scope information is attached to the registered entry via the
+ * shared `currentScope` closure variable that the visitor closes over.
+ * We expose it on `walkWithScope.current` (a module-level reference)
+ * before each visitor call so visitors can grab it without changing
+ * their signature.
+ *
+ * @param {Array} nodes
+ * @param {Map<string, function>} visitors
+ * @param {string} scope — 'chapter' | 'section'
+ */
+function walkWithScope(nodes, visitors, scope) {
+  let chapterIndex = 0;
+  let sectionIndex = 0;
+  let insideBookPart = false;
+  let insideSection = false;
+
+  // Module-level "current scope" the visitor reads. Use the visitors Map's
+  // sentinel slot — visitors are functions that close over this enclosing
+  // scope through walkWithScope's outer `pending`/`registry`. Since the
+  // visitor closures are built in acadamarkNumbering(), we rebind them
+  // here to wrap them with scope-stamping behavior.
+  const wrappedVisitors = new Map();
+  for (const [tagname, fn] of visitors) {
+    wrappedVisitors.set(tagname, (node) => {
+      // Run the original visitor (which calls registry.assign and pushes
+      // a pending entry whose entry.data is shared with the registry
+      // entry). After the call, the most-recently-pushed entry's data
+      // gets the scope stamp.
+      fn(node);
+      // The visitor's registry.assign produces the entry that just got
+      // pushed to `pending`. We can't easily reach into pending here, but
+      // we can stash a scope marker on the node itself; the post-pass
+      // copies node._scope to entry.data.scope.
+      node._scope = { chapter: chapterIndex, section: sectionIndex };
+    });
+  }
+
+  function visit(node) {
+    if (node == null) return;
+
+    // Entering a top-level book-part: increment chapterIndex, reset
+    // sectionIndex. Nested book-parts (parts containing chapters) do NOT
+    // get their own chapter index — they use the outermost's index, so
+    // figures inside <part 1><chapter 1> count as chapter 1 figures.
+    let enteredBookPart = false;
+    let enteredSection = false;
+    if (isAcadamarkTag(node) && node.tagname === 'book-part' && !insideBookPart) {
+      chapterIndex += 1;
+      sectionIndex = 0;
+      insideBookPart = true;
+      enteredBookPart = true;
+    } else if (
+      isAcadamarkTag(node) && node.tagname === 'section' &&
+      !insideSection && scope === 'section'
+    ) {
+      sectionIndex += 1;
+      insideSection = true;
+      enteredSection = true;
+    }
+
+    if (isAcadamarkTag(node)) {
+      const visitor = wrappedVisitors.get(node.tagname);
+      if (visitor) visitor(node);
+      if (Array.isArray(node.content) && !node.isOpaqueContent) {
+        for (const child of node.content) visit(child);
+      }
+    }
+    if (Array.isArray(node.children)) {
+      for (const child of node.children) visit(child);
+    }
+
+    if (enteredBookPart) insideBookPart = false;
+    if (enteredSection) insideSection = false;
+  }
+
+  for (const root of nodes) visit(root);
 }
 
 /**
@@ -216,10 +357,68 @@ export function acadamarkNumbering() {
  * file.data.acadamarkNumberingPending and sets node.computedNumber = entry.number
  * (a positive integer for numbered entries, null for unnumbered).
  *
+ * Phase 4 slice 4a (2026-05-29): when the document's counter-reset-scope
+ * is 'chapter' or 'section', renumbers entries within each scope before
+ * filling. The visitor (walkWithScope) stamped each node with `_scope =
+ * { chapter, section }`; we group entries by (type, scope) and assign
+ * 1-based per-group numbers. The entry's data.scope is preserved so
+ * ref-resolution can render prefix paths ("Figure 1.3").
+ *
+ * For 'none' scope (default for articles), the original global numbering
+ * stands — no renumbering happens.
+ *
  * @param {import('vfile').VFile} file
  */
 export function fillNumbering(file) {
-  for (const { node, entry } of file?.data?.[ACADAMARK_NUMBERING_PENDING] ?? []) {
+  const pending = file?.data?.[ACADAMARK_NUMBERING_PENDING] ?? [];
+  const scope = file?.data?.acadamarkCounterResetScope ?? 'none';
+
+  if (scope === 'none') {
+    for (const { node, entry } of pending) {
+      node.computedNumber = entry.number;
+    }
+    return;
+  }
+
+  // Scoped: renumber per (registryType, scope-key) group.
+  // First, propagate node._scope onto entry.data.scope so ref-resolution
+  // can access it (entries are reachable from the registry's label
+  // index by colon-id).
+  for (const { node, entry } of pending) {
+    if (node._scope) {
+      entry.data = entry.data || {};
+      entry.data.scope = node._scope;
+    }
+  }
+
+  // Group pending entries by registry type, then by scope-key. Only
+  // scoped-counter types get renumbered; other types (sections, etc.)
+  // keep their global numbering.
+  const groups = new Map(); // `${type}|${chapter}|${section}` → entries[]
+  for (const p of pending) {
+    if (!p.entry.numbered) continue;
+    const type = p.entry.type;
+    if (!SCOPED_COUNTER_TYPES.has(type)) continue;
+    const sc = p.entry.data?.scope ?? { chapter: 0, section: 0 };
+    const scopeKey = scope === 'chapter'
+      ? `${type}|${sc.chapter}`
+      : `${type}|${sc.chapter}|${sc.section}`;
+    if (!groups.has(scopeKey)) groups.set(scopeKey, []);
+    groups.get(scopeKey).push(p);
+  }
+
+  // Renumber each group 1-based in document order (pending preserves
+  // document order).
+  for (const entries of groups.values()) {
+    let n = 0;
+    for (const p of entries) {
+      n += 1;
+      p.entry.number = n;
+    }
+  }
+
+  // Fill computedNumber on nodes from (now-renumbered) entries.
+  for (const { node, entry } of pending) {
     node.computedNumber = entry.number;
   }
 }

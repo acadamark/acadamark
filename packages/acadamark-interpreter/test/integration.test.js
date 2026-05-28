@@ -1725,4 +1725,81 @@ export function run() {
     snapshotHast('document-37', hast);
     console.log('PASS: integration doc37 (caption-as-content + unified helper: child-tag captions, kwarg lift, title wiring, frame opt-in numbering)');
   }
+
+  // ── Document 38: book structure (Phase 4 slice 4a) ───────────────────────
+  // Proves: acadamarkBookStructuring wraps the tree in <book>/book-front/
+  // book-body/book-back; book-parts route by type (preface→front,
+  // chapter→body, appendix→back); per-chapter counter resets with
+  // chapter-prefix cross-references; per-chapter footnote collection;
+  // per-book-part authorship for edited-volume case.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-38-book-structure.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Book wrapper exists.
+    assert.ok(
+      html.includes('<book>') || /<book[ >]/.test(html),
+      'doc38: <book> wrapper produced by acadamarkBookStructuring',
+    );
+
+    // Book-body, book-front, book-back all present.
+    assert.ok(html.includes('<book-front>'), 'doc38: <book-front> present (contains <meta> + preface)');
+    assert.ok(html.includes('<book-body>'), 'doc38: <book-body> present (contains chapters)');
+    assert.ok(html.includes('<book-back>'), 'doc38: <book-back> present (contains appendix)');
+
+    // Book-parts present with correct types.
+    assert.ok(
+      /<book-part[^>]+book-part-type="chapter"/.test(html),
+      'doc38: chapter book-parts have book-part-type="chapter"',
+    );
+    assert.ok(
+      /<book-part[^>]+book-part-type="preface"/.test(html),
+      'doc38: preface routed via book-part-type="preface"',
+    );
+    assert.ok(
+      /<book-part[^>]+book-part-type="appendix"/.test(html),
+      'doc38: appendix routed via book-part-type="appendix"',
+    );
+
+    // Per-chapter counter resets → chapter-prefix cross-references.
+    // First chapter's figure is "figure 1.1"; second chapter's figure
+    // is "figure 2.1" (chapter resets).
+    assert.ok(
+      html.includes('figure 1.1'),
+      'doc38: <ref @fig:intro> resolves to "figure 1.1" (chapter 1, figure 1)',
+    );
+    assert.ok(
+      html.includes('figure 2.1'),
+      'doc38: <ref @fig:method> resolves to "figure 2.1" (chapter 2, figure 1)',
+    );
+    assert.ok(
+      html.includes('equation 1.1'),
+      'doc38: <ref @eqn:intro> resolves to "equation 1.1"',
+    );
+
+    // Per-chapter footnote collection: each chapter / book-part with
+    // notes gets its own <note-list> at its end. With default note
+    // placement (`end`), the chapter-scope rule collects them as
+    // chapter-end notes — class derived from listClassFor (endnotes
+    // for end-only buckets, footnotes for foot-only, notes for mixed).
+    // The book has 5 default-placement notes spread across 4 book-parts.
+    const perChapterListMatches = html.match(/<note-list class="(footnotes|endnotes|notes)">/g) ?? [];
+    assert.ok(
+      perChapterListMatches.length >= 3,
+      `doc38: at least 3 per-book-part note lists; found ${perChapterListMatches.length}`,
+    );
+
+    // Per-book-part authorship: the methods chapter has a chapter-level
+    // <author>. Verify it appears in the chapter's <meta>.
+    assert.ok(
+      html.includes('Guest Author'),
+      'doc38: per-chapter <author> ("Guest Author") preserved in the methods chapter',
+    );
+
+    snapshotHast('document-38', hast);
+    console.log('PASS: integration doc38 (book structuring: book/front/body/back wrapping, chapter/preface/appendix routing, per-chapter counter resets, chapter-prefix cross-refs, per-chapter footnotes, per-book-part authorship)');
+  }
 }

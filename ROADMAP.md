@@ -272,9 +272,17 @@ alpha gap.
 
 **Items, in order:**
 
-- **Build book / book-part document structuring** *(formerly DF-12)*.
-  Multi-chapter document structure; book / book-part vocabulary is in
-  place, structural plugin needs to handle it.
+- **Build book / book-part document structuring** *(formerly DF-12)* —
+  **done in slice 4a (2026-05-29)**. Implemented the forward-
+  referenced `acadamarkBookStructuring` plugin per the book.md /
+  book-part.md vocab declarations. Generalized `note-placement.js`
+  for book trees (Q1.6 finding from Phase 0 — article-only
+  `findTopLevelSections` was silently dropping book footnotes).
+  Per-chapter counter resets with chapter-prefix cross-references
+  ("Figure 1.3"). Configurable `counter-reset-scope` and `note-scope`
+  via `<config>` kwargs. Per-book-part authorship for the edited-
+  volume case. Article behavior strict-zero-diff preserved across
+  all 22 existing fixtures.
 - **Add integration test and snapshot for `document-9-demo`**
   *(formerly GAP-9)*. The most complex fixture; the dark surface area
   this snapshot covers is high.

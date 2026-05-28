@@ -1,0 +1,43 @@
+<meta type=book>
+<title | A Short Book on Acadamark>
+<subtitle | Demonstrating Phase 4 Book Structuring>
+<author | The Acadamark Team>
+</meta>
+
+<preface | About this Book>
+This preface introduces the book.<note | A preface footnote.>
+
+<chapter | Introduction>
+This is the introduction chapter. It contains some figures, equations,
+and footnotes that should collect at the chapter's end.
+
+<fig #fig:intro src=intro.png | An introductory diagram.>
+
+<$$ #eqn:intro | E = mc^2 $$>
+
+A reference to <ref @fig:intro> should resolve to "figure 1.1"
+(chapter 1, figure 1).<note | An introduction footnote.>
+
+A second reference to <ref @eqn:intro> should resolve to
+"equation 1.1".<note | Another intro footnote.>
+
+<chapter | Methods>
+<author | Guest Author>
+This chapter has its own author distinct from the book-level author.
+The chapter contains its own figure and equation, which should be
+numbered starting from 1 in this chapter.
+
+<fig #fig:method src=method.png | The methodology diagram.>
+
+<$$ #eqn:method | F = ma $$>
+
+Cross-reference <ref @fig:method> resolves to "figure 2.1"
+(chapter 2, figure 1).<note | A methods footnote.>
+
+A cross-chapter reference: <ref @fig:intro> should still resolve
+correctly to "figure 1.1" from this chapter (the prefix path
+identifies the target's chapter, not the reference's location).
+
+<appendix | Notation>
+This appendix appears in book-back. Its footnotes also collect per-
+chapter (per-book-part, more precisely).<note | An appendix footnote.>

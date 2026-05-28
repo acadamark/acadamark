@@ -51,6 +51,21 @@ export const CONFIG_KWARGS = new Map([
   ['number-definitions',      'live'],   // numbering.js (<definition>)
   ['number-examples',         'live'],   // numbering.js (<example>)
 
+  // Phase 4 slice 4a (2026-05-29): two scope knobs for book documents.
+  // Articles default to none/section; books default to chapter/chapter.
+  // counter-reset-scope: 'none' | 'chapter' | 'section'
+  //   none    — global counters across the whole document
+  //   chapter — counters reset at each <book-part> boundary
+  //   section — counters reset at each <book-part> AND outermost
+  //             <section> boundary
+  // note-scope: 'document' | 'chapter' | 'section'
+  //   document — single back-matter <note-list> (article-back / book-back)
+  //   chapter  — per-book-part <note-list> at each chapter's end
+  //   section  — per-outermost-section <note-list> (article default;
+  //              slice 7001aaa behavior)
+  ['counter-reset-scope',     'live'],   // numbering.js + ref-resolution.js
+  ['note-scope',              'live'],   // note-placement.js
+
   // Reserved — the apparatus-tag reconciliation ruling enumerated these as
   // the intended <config> surface. The implementation per key is future
   // work; the allowlist accepts them so author input is not rejected
