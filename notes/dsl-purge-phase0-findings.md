@@ -210,3 +210,115 @@ Open (to address in the rewrite or in a follow-on Phase 0 if needed):
 
 These remain to do after the slice prompt is rewritten with Q1.3's finding as
 input.
+
+## Addendum (2026-05-27) — DSL/long-form parser bug fix Phase 0 follow-up
+
+A second slice prompt ("DSL/long-form parser bug fix") ran a follow-up Phase
+0 against this file's findings, with a different framing than A1/A2/A3 — the
+question was no longer "where does the eligibility list live" but "remove the
+gate entirely and let `<tag>…</tag>` parse for every tag." That framing's own
+Phase 0 surfaced a fork the original A1/A2/A3 menu didn't capture: removing
+the gate at `syntax.js:583` creates a grammar ambiguity between
+short-form-void/empty (`<hr>`, `<config attrs>`, etc.) and long-form opener
+(`<aside>…</aside>`). The registry gate currently masks this ambiguity by
+deciding via registry membership. Existing fixtures depend on the masking
+(e.g. `document-3-edge-cases.acm:28` `<hr>`; `document-18-config-edge-cases.acm:6`
+`<config ref-prefix-eqn="Eq.">`).
+
+Four disambiguators were considered:
+
+- **D1 — require `/>` for void/empty short-form** (grammar change). The
+  short-form-empty case is rewritten as `<tag attrs />`; `<tag attrs>\n` is
+  then unambiguously a long-form opener.
+- **D2 — speculative lookahead in the parser.**
+- **D3 — backtracking on EOF.**
+- **D4 — vocabulary-driven disambiguation** (option A2 reconsidered).
+
+**Chosen: D1.** The grammar change is a small, named, bounded modification
+to authoring; the parser change is small; the fixture migration is contained
+(only a handful of fixtures use bare short-form-void today — `<hr>`, the
+`<config attrs>` openers in doc18/doc19). D1 implementation has these parts,
+each verifiable independently with zero snapshot diff:
+
+1. Migrate fixtures' bare short-form-void / short-form-empty tags to
+   `<tag attrs />`. Purely additive (the parser already accepts `/>` for
+   these); zero rendered-output change.
+2. Remove the `registry.has(tagName)` gate at `syntax.js:583`.
+3. Prune regular-vocabulary entries from `DSL_REGISTRY` (the 21 displaced
+   entries from this findings file's Q1.1, plus the line-45 `<theorem>`
+   placeholder).
+4. Align specs / comments / backlog with the post-fix state.
+5. Verify zero snapshot diffs at each step.
+
+This addendum is the input for the implementation work that follows.
+
+## Addendum 2 (2026-05-27) — D1 implementation scope was understated; second stop-and-report
+
+After Addendum 1 chose D1 ("require `/>` for void/empty short-form"), I
+started the implementation: removed the registry gate at `syntax.js:583`,
+ran tests. The first failures came as expected (`<hr>`, `<config attrs>`,
+`<library src>` etc. needing `/>` — the cases I had named when surveying
+D1's authoring change). But the parser-test surface exposed a **broader
+D1 footprint** than the question I'd posed:
+
+**Inline tags at flow position also need `/>`.** Examples from
+`packages/remark-acadamark/test/test.js` (the parser test suite, line
+references against the pre-slice state):
+
+- `<cite @jones2001>` at line-start (no pipe, no slash) — under D1, this
+  becomes a long-form opener that scans for `</cite>` and EOF-fails. The
+  D1-correct form is `<cite @jones2001 />`.
+- `<figure\n  #fig1\n  caption="Elephant"\n>` (the multi-line opener
+  test) — same: becomes a long-form opener under D1. D1-correct form
+  uses `/>` on the last line.
+
+Inline tags that appear in TEXT position (e.g. `Smith says <cite @jones2001>
+in his paper`) are not affected — the text-position tokenizer doesn't run
+the long-form scan. The bug surface is specifically *inline tags at
+flow position* (a tag at column 0 of its own line, no body, no pipe).
+
+**Scope counts.** Quick survey of patterns matching
+`^<[a-z][a-z0-9-]*([[:space:]][^|/<>]*)?>$` (a tag at line-start with no
+pipe, no slash, ending its line at `>`):
+
+- **27 instances across integration fixtures** (`packages/acadamark-
+  interpreter/test/fixtures/document-*.acm`). Many are long-form openers
+  with a matching `</tag>` later — those stay bare. Some are short-form-
+  void/empty — those need `/>`. Per-line categorization is required
+  (each line: does `</tag>` exist later? if yes, leave bare; if no, add
+  `/>`).
+- **Several instances in parser test sources**
+  (`packages/remark-acadamark/test/test.js`). Same per-instance
+  categorization.
+
+The fixture migration is not 27 mechanical edits — it's 27 per-line
+human-judgement edits. Plus test source migration. Plus snapshot
+verification per edit (each edit should produce zero rendering change,
+since `<tag />` already parses today; the change is just authoring
+syntax).
+
+**Second stop-and-report.** Per the original slice prompt's stop-and-
+report criterion ("Q1.2 finds the parser-bug fix is meaningfully larger
+than expected"), and per the discipline of surfacing scope changes
+rather than absorbing them: the D1 implementation is real work, not the
+small fix the slice prompt's STEP 2 framed. Options:
+
+- **Proceed with full D1 migration as an arc** (multiple slices). This
+  slice: parser change + start of fixture migration. Follow-up slices:
+  complete fixture migration, prune `DSL_REGISTRY`, align specs/backlog.
+  Each slice is small; the arc has 3-4 commits.
+- **Re-scope D1**. Constrain the grammar change to a narrower set of
+  cases. Example: only the parser-time disambiguation changes; bare
+  `<tag attrs>` at flow position is allowed to be a long-form opener,
+  but the parser falls back to short-form via D3 (backtracking on
+  EOF). This isn't really D1 anymore — it's D1+D3.
+- **Pivot to a different disambiguator** (D2 / D3 / D4) given the
+  D1 migration cost picture.
+- **Abort and leave the conflation**. Honest option: the registry
+  conflation has costs, but rewriting every flow-position bare-tag
+  authoring across the corpus is a real cost too. Pick the cheaper.
+
+The parser change itself was reverted; the working tree state at the
+end of this second-stop-and-report is: pre-slice (the only diff is
+this findings file's new Addendum 2 section). The slice's implementation
+phase did not produce code or test commits.
