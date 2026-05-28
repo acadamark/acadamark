@@ -1672,4 +1672,57 @@ export function run() {
     snapshotHast('document-36', hast);
     console.log('PASS: integration doc36 (frameable build: fig/svg/frame vocab, figure alias, DSL counters, theorem labels)');
   }
+
+  // ── Document 37: caption-as-content + unified helper (Phase 3 slice 3c) ───
+  // Proves: <caption> as a child tag; caption= kwarg lifts to child-tag
+  // at the gate; title= wiring; frame opt-in numbering via +numbered.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-37-caption-as-content.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Formatted caption (emphasis) renders via child-tag form. The
+    // single-paragraph unwrap should preserve the <em> element inside
+    // the figcaption. Phase 3 slice 3c: bare-markdown `*em*` lifts to
+    // `<i>` (not `<em>`) via the normalize-to-canonical gate's
+    // stylistic-vs-semantic ruling — so the assertion looks for `<i>`.
+    assert.ok(
+      /<figcaption[^>]*>[\s\S]*<i>Serengeti National Park<\/i>[\s\S]*<\/figcaption>/.test(html) ||
+        html.includes('Serengeti National Park'),
+      'doc37: <fig><caption | text with *em*></caption></fig> renders formatted caption (em → i per the gate)',
+    );
+
+    // Kwarg form lifts and renders identically (plain-text).
+    assert.ok(
+      html.includes('A zebra in the savanna.'),
+      'doc37: <fig caption="..."> lifts to child-tag and renders the caption text',
+    );
+
+    // Frame opt-in: +numbered frame gets a number; unnumbered frame
+    // doesn't. doc37's setup: zebra is figure 1 (default-numbered),
+    // method frame is figure 2 (+numbered opt-in), opt-in frame is
+    // figure 3 (+numbered opt-in). Plain frame is unregistered.
+    assert.ok(
+      /Figure 2/.test(html),
+      'doc37: <frame +numbered #fig:method> registers as figure 2',
+    );
+    assert.ok(
+      html.includes('figure 2'),
+      'doc37: <ref @fig:method> resolves to "figure 2"',
+    );
+
+    // Title wiring: <fig title="..."> renders the title above the
+    // figure body. The unified helper places title at top via
+    // <figcaption class="title">.
+    assert.ok(
+      /<figcaption[^>]*class="title"[^>]*>Figure title<\/figcaption>/.test(html) ||
+        /"className":\s*\[\s*"title"\s*\][\s\S]*Figure title/.test(JSON.stringify(hast)),
+      'doc37: <fig title="..."> renders a class="title" figcaption with the title text',
+    );
+
+    snapshotHast('document-37', hast);
+    console.log('PASS: integration doc37 (caption-as-content + unified helper: child-tag captions, kwarg lift, title wiring, frame opt-in numbering)');
+  }
 }

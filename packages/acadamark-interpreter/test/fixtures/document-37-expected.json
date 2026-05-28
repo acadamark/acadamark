@@ -1,0 +1,1200 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Caption-as-content + unified frameable helper (Phase 3 slice 3c)"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "name",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Test"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Caption as child tag",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 22,
+                          "offset": 21
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Phase 3 slice 3c implements caption-as-content (Option A from the\nPhase 0 findings): ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 167
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 20,
+                          "offset": 252
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<caption>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is a child tag position on every\nframeable element, with the ",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 31,
+                          "offset": 263
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 29,
+                          "offset": 325
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "caption="
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " kwarg lifting to child-tag\nform at the normalize-to-canonical gate. Both authoring forms produce\nthe same Layer 1 AST.",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 39,
+                          "offset": 335
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 22,
+                          "offset": 454
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 167
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 22,
+                      "offset": 454
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A figure with the canonical child-tag caption form, exercising\nformatted content (emphasis, ",
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 1,
+                          "offset": 456
+                        },
+                        "end": {
+                          "line": 15,
+                          "column": 30,
+                          "offset": 548
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "b",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "bold",
+                          "position": {
+                            "start": {
+                              "line": 15,
+                              "column": 32,
+                              "offset": 550
+                            },
+                            "end": {
+                              "line": 15,
+                              "column": 36,
+                              "offset": 554
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ") — impossible with the\nkwarg-only shape:",
+                      "position": {
+                        "start": {
+                          "line": 15,
+                          "column": 38,
+                          "offset": 556
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 18,
+                          "offset": 597
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 14,
+                      "column": 1,
+                      "offset": 456
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 18,
+                      "offset": 597
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "elephant.jpg",
+                        "alt": "An African elephant, photographed in Serengeti National Park."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "An African elephant, photographed in ",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 39,
+                              "offset": 38
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "i",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Serengeti National Park",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 40,
+                                  "offset": 39
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 63,
+                                  "offset": 62
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ".",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 64,
+                              "offset": 63
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 65,
+                              "offset": 64
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The kwarg form (lifts to child-tag at the gate — produces identical\noutput for plain-text captions):",
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 1,
+                          "offset": 706
+                        },
+                        "end": {
+                          "line": 23,
+                          "column": 33,
+                          "offset": 806
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 22,
+                      "column": 1,
+                      "offset": 706
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 33,
+                      "offset": 806
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:zebra"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "zebra.jpg",
+                        "alt": "A zebra in the savanna."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 2."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A zebra in the savanna."
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A frame with a title and caption, both rendered at the right edges\nof the frame:",
+                      "position": {
+                        "start": {
+                          "line": 27,
+                          "column": 1,
+                          "offset": 876
+                        },
+                        "end": {
+                          "line": 28,
+                          "column": 14,
+                          "offset": 956
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 27,
+                      "column": 1,
+                      "offset": 876
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 14,
+                      "offset": 956
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:method",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {
+                        "className": [
+                          "title"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Methodology"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "We used a forest of 500 decision trees trained on the cleaned\ninput data, with leave-one-out cross-validation for hyperparameter\nsearch.",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 1,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 4,
+                              "column": 8,
+                              "offset": 137
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 2,
+                          "column": 1,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 4,
+                          "column": 8,
+                          "offset": 137
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 3."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A summary of our ",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 19,
+                              "offset": 18
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "b",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "methods",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 21,
+                                  "offset": 20
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 28,
+                                  "offset": 27
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " section.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 30,
+                              "offset": 29
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 39,
+                              "offset": 38
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Cross-reference resolves: ",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 1,
+                          "offset": 1205
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 27,
+                          "offset": 1231
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:zebra",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " → figure 1, ",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 43,
+                          "offset": 1247
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 56,
+                          "offset": 1260
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:method",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 3"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n→ figure 2 (the frame opted in via +numbered).",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 73,
+                          "offset": 1277
+                        },
+                        "end": {
+                          "line": 38,
+                          "column": 47,
+                          "offset": 1324
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 37,
+                      "column": 1,
+                      "offset": 1205
+                    },
+                    "end": {
+                      "line": 38,
+                      "column": 47,
+                      "offset": 1324
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Frame opt-in numbering",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 24,
+                          "offset": 23
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Frames default to unnumbered (per ",
+                      "position": {
+                        "start": {
+                          "line": 42,
+                          "column": 1,
+                          "offset": 1362
+                        },
+                        "end": {
+                          "line": 42,
+                          "column": 35,
+                          "offset": 1396
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "frame.md"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "'s vocab default). The\nfollowing frame has no ",
+                      "position": {
+                        "start": {
+                          "line": 42,
+                          "column": 45,
+                          "offset": 1406
+                        },
+                        "end": {
+                          "line": 43,
+                          "column": 24,
+                          "offset": 1452
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "+numbered"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " marker, so no number registers:",
+                      "position": {
+                        "start": {
+                          "line": 43,
+                          "column": 35,
+                          "offset": 1463
+                        },
+                        "end": {
+                          "line": 43,
+                          "column": 67,
+                          "offset": 1495
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 42,
+                      "column": 1,
+                      "offset": 1362
+                    },
+                    "end": {
+                      "line": 43,
+                      "column": 67,
+                      "offset": 1495
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A bordered callout that doesn't participate in the figure counter.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 68,
+                          "offset": 67
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This one explicitly opts in:",
+                      "position": {
+                        "start": {
+                          "line": 47,
+                          "column": 1,
+                          "offset": 1575
+                        },
+                        "end": {
+                          "line": 47,
+                          "column": 29,
+                          "offset": 1603
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 47,
+                      "column": 1,
+                      "offset": 1575
+                    },
+                    "end": {
+                      "line": 47,
+                      "column": 29,
+                      "offset": 1603
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:opt-in",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Body content here.",
+                      "position": {
+                        "start": {
+                          "line": 2,
+                          "column": 1,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 2,
+                          "column": 19,
+                          "offset": 19
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 4."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "Numbered frame"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The opt-in frame counts as figure 3.",
+                      "position": {
+                        "start": {
+                          "line": 53,
+                          "column": 1,
+                          "offset": 1689
+                        },
+                        "end": {
+                          "line": 53,
+                          "column": 37,
+                          "offset": 1725
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 53,
+                      "column": 1,
+                      "offset": 1689
+                    },
+                    "end": {
+                      "line": 53,
+                      "column": 37,
+                      "offset": 1725
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Title wiring",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 14,
+                          "offset": 13
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The slice-3b frameable surface declared ",
+                      "position": {
+                        "start": {
+                          "line": 57,
+                          "column": 1,
+                          "offset": 1753
+                        },
+                        "end": {
+                          "line": 57,
+                          "column": 41,
+                          "offset": 1793
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "title="
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " but didn't wire it.\nThis slice consumes it via the unified renderFrameable helper.",
+                      "position": {
+                        "start": {
+                          "line": 57,
+                          "column": 49,
+                          "offset": 1801
+                        },
+                        "end": {
+                          "line": 58,
+                          "column": 63,
+                          "offset": 1884
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 57,
+                      "column": 1,
+                      "offset": 1753
+                    },
+                    "end": {
+                      "line": 58,
+                      "column": 63,
+                      "offset": 1884
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {
+                        "className": [
+                          "title"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Figure title"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "plot.png",
+                        "alt": "A plot caption."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 5."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A plot caption.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 17,
+                              "offset": 16
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Title above; caption below; image in the middle.",
+                      "position": {
+                        "start": {
+                          "line": 62,
+                          "column": 1,
+                          "offset": 1945
+                        },
+                        "end": {
+                          "line": 62,
+                          "column": 49,
+                          "offset": 1993
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 62,
+                      "column": 1,
+                      "offset": 1945
+                    },
+                    "end": {
+                      "line": 62,
+                      "column": 49,
+                      "offset": 1993
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 63,
+      "column": 1,
+      "offset": 1994
+    }
+  }
+}

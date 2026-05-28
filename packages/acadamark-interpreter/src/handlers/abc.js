@@ -7,9 +7,10 @@
 // script calling `ABCJS.renderAbc` on each marked element) or at build
 // time via a headless pre-render pass.
 //
-// Emitted markup:
+// Emitted markup (sibling-figcaption layout):
+//   [<figcaption class="title">title</figcaption>]
 //   <div class="abc" data-acadamark-dsl="abc">…source…</div>
-//   <figcaption>optional caption</figcaption>   (only when caption is set)
+//   [<figcaption>Figure N. caption text</figcaption>]
 //
 // Unlike Mermaid, abcjs has no DOM-scanning initialization — the consumer
 // needs an init script that finds each `data-acadamark-dsl="abc"` element
@@ -18,54 +19,44 @@
 //
 // `<div>` is the container (vs `<pre>` for Mermaid): abcjs replaces the
 // element's content with rendered SVG, so a block-level container is
-// natural; `<pre>`'s preformatted styling would only matter while the
-// source is visible (briefly, before init runs).
+// natural.
 //
-// Phase 2 slice 2c (2026-05-27).
+// Phase 2 slice 2c (2026-05-27) — initial.
+// Phase 3 slice 3c (2026-05-28) — refactored to consume the unified
+// renderFrameable helper. Caption / title arrive as <caption> / <title>
+// child tags.
+
+import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
- * Handler for the `<abc>` external DSL tag. Emits pass-through markup;
- * rendering happens external to acadamark via an abcjs init script.
+ * Handler for the `<abc>` external DSL tag.
  *
- * @param {object} _state - mdast-util-to-hast state (unused — opaque content)
- * @param {object} node   - acadamarkTag with tagname "abc"
+ * @param {object} state - mdast-util-to-hast state
+ * @param {object} node  - acadamarkTag with tagname "abc"
  * @returns {import('hast').Element|{type:'root',children:Array}}
  */
-export function abcHandler(_state, node) {
+export function abcHandler(state, node) {
   const source = typeof node.content === 'string' ? node.content.trim() : '';
-  const caption = node.kwargs?.caption ?? null;
   const id = node.id ?? null;
 
-  // Class list: `abc` (the conventional marker) plus any author-supplied
-  // classes.
   const classes = ['abc'];
   if (node.classes?.length) classes.push(...node.classes);
 
-  const properties = {
+  const wrapperProps = {
     className: classes,
     'dataAcadamarkDsl': 'abc',
   };
-  if (id) properties.id = id;
+  if (id) wrapperProps.id = id;
 
-  const wrapper = {
-    type: 'element',
-    tagName: 'div',
-    properties,
-    children: [{ type: 'text', value: source }],
-  };
+  const { captionHast, titleHast } = extractFrameableChildren(state, node);
 
-  if (caption === null) return wrapper;
-
-  return {
-    type: 'root',
-    children: [
-      wrapper,
-      {
-        type: 'element',
-        tagName: 'figcaption',
-        properties: {},
-        children: [{ type: 'text', value: String(caption) }],
-      },
-    ],
-  };
+  return renderFrameable({
+    kind: 'abc',
+    bodyHast: [{ type: 'text', value: source }],
+    wrapperEl: 'div',
+    wrapperProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+  });
 }

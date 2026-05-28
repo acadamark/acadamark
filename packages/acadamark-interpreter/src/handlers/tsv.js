@@ -1,35 +1,32 @@
 // TSV handler — renders `<tsv>` standalone tags.
 //
-// Mirrors handlers/csv.js with TSV parsing instead of CSV. See that file's
-// header for the design rationale; the two handlers share parsing +
-// rendering helpers from table.js.
+// Mirrors handlers/csv.js with TSV parsing instead of CSV. See that
+// file's header for the design and the slice 3c refactor rationale.
 //
-// Phase 2 slice 2a (2026-05-27).
+// Phase 2 slice 2a (2026-05-27) initial; Phase 3 slice 3c refactor to
+// the unified renderFrameable shape.
 
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
-import { parseTsv, renderParsedTable } from './table.js';
+import { parseTsv, buildTableBodyHast } from './table.js';
+import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
  * Handler for the `<tsv>` standalone tag.
  *
- * Reads the opaque content string, parses as TSV (tab-separated values),
- * renders as a hast `<table>`. Accepts the `-headers` boolean kwarg to
- * suppress the header-row treatment.
- *
- * @param {object} _state  - mdast-util-to-hast state (unused — opaque content)
- * @param {object} node    - acadamarkTag with tagname "tsv"
+ * @param {object} state - mdast-util-to-hast state
+ * @param {object} node  - acadamarkTag with tagname "tsv"
  * @returns {import('hast').Element}
  */
-export function tsvHandler(_state, node) {
+export function tsvHandler(state, node) {
   const rawData = typeof node.content === 'string' ? node.content : '';
   const hasHeaders = readBoolKwarg(node, 'headers', null, null, true);
   const id = node.id ?? null;
-  const captionText = node.kwargs?.caption ?? null;
-  const computedNumber = node.computedNumber ?? null;
 
   const tableProps = {};
   if (id) tableProps.id = id;
   if (node.classes?.length) tableProps.className = node.classes;
+
+  const { captionHast, titleHast } = extractFrameableChildren(state, node);
 
   let parsed;
   try {
@@ -50,5 +47,13 @@ export function tsvHandler(_state, node) {
     };
   }
 
-  return renderParsedTable({ parsed, tableProps, captionText, computedNumber });
+  return renderFrameable({
+    kind: 'tsv',
+    bodyHast: buildTableBodyHast(parsed),
+    wrapperEl: 'table',
+    wrapperProps: tableProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+  });
 }

@@ -27,7 +27,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import yaml from 'js-yaml';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
-import { formatLabel } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 // ─── Format parsers ───────────────────────────────────────────────────────────
 
@@ -328,35 +328,12 @@ function makeTbody(rows) {
   };
 }
 
-/**
- * Build a <caption> element. When computedNumber is not null, prepend a
- * "Table N." label span before the caption text.
- *
- * @param {string} captionText
- * @param {number|null} computedNumber
- * @returns {import('hast').Element}
- */
-function makeCaption(captionText, computedNumber) {
-  const children = [];
-  // Phase 3 slice 3b: label span rendered via shared formatLabel
-  // primitive (lib/frameable.js). Byte-identical to the prior inline
-  // construction — the helper exists to dedupe this same shape across
-  // figure / table / future frameable handlers.
-  const labelSpan = formatLabel('Table', computedNumber);
-  if (labelSpan) {
-    children.push(labelSpan);
-    children.push(makeTextNode(' '));
-  }
-  if (captionText) {
-    children.push(makeTextNode(captionText));
-  }
-  return {
-    type: 'element',
-    tagName: 'caption',
-    properties: {},
-    children,
-  };
-}
+// Phase 3 slice 3c: caption construction moved into renderFrameable
+// (lib/frameable.js). The handlers below build the table BODY (thead +
+// tbody) via renderParsedTable and let renderFrameable produce the
+// wrapped <table> with title/caption placement. The slice-3b
+// makeCaption helper is gone — its job is renderFrameable's
+// `buildCaptionEl`, called per kind.
 
 /**
  * Build an error placeholder table when parsing fails.
@@ -413,11 +390,9 @@ function makeErrorTable(errorMsg, id) {
  *                             base directory for resolving src= paths
  * @returns {import('hast').Element} hast element
  */
-export function tableHandler(_state, node, _vocab, options) {
+export function tableHandler(state, node, _vocab, options) {
   const format = node.positional?.[0] ?? null;
   const id = node.id ?? null;
-  const captionText = node.kwargs?.caption ?? null;
-  const computedNumber = node.computedNumber ?? null;
   const hasHeaders = readBoolKwarg(node, 'headers', null, null, true);
 
   // Properties for the outer <table> element.
@@ -425,7 +400,19 @@ export function tableHandler(_state, node, _vocab, options) {
   if (id) tableProps.id = id;
   if (node.classes?.length) tableProps.className = node.classes;
 
+  // Extract caption / title child tags. The gate lifts `caption=` /
+  // `title=` kwargs to <caption> / <title> children before this handler
+  // runs (Phase 3 slice 3c). For the `<table format | data>` shape the
+  // content is the OPAQUE data string, so the caption / title can only
+  // arrive via lifted kwargs (the data-string content has no children
+  // to extract). For the no-format raw-HTML escape-hatch path the same
+  // applies — the body is raw HTML.
+  const { captionHast, titleHast } = extractFrameableChildren(state, node);
+
   // No format word → raw HTML pass-through (escape-hatch form).
+  // Caption/title not rendered in this escape-hatch path (author wrote
+  // raw HTML and controls the entire output). Preserves slice 2a's
+  // behavior.
   if (!format) {
     const rawContent = typeof node.content === 'string' ? node.content.trim() : '';
     return {
@@ -468,42 +455,67 @@ export function tableHandler(_state, node, _vocab, options) {
     return makeErrorTable(err.message, id);
   }
 
-  return renderParsedTable({ parsed, tableProps, captionText, computedNumber });
+  const bodyHast = buildTableBodyHast(parsed);
+
+  return renderFrameable({
+    kind: 'table',
+    bodyHast,
+    wrapperEl: 'table',
+    wrapperProps: tableProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+  });
 }
 
 /**
- * Build a hast <table> element from already-parsed {headers, rows} data.
+ * Build the body hast children for a table from parsed {headers, rows}
+ * data — the [thead?, tbody?] sequence that goes inside <table>
+ * alongside <caption>.
  *
  * Shared helper used by `tableHandler` and by the standalone `<csv>` /
- * `<tsv>` handlers (handlers/csv.js, handlers/tsv.js). Centralizing the
- * headers/rows-to-hast machinery here keeps the three handlers consistent.
+ * `<tsv>` handlers (via the `renderParsedTable` wrapper below for
+ * source-compat with slice 3b's signature).
+ *
+ * @param {{ headers: string[]|null, rows: any[][] }} parsed
+ * @returns {import('hast').Element[]}
+ */
+export function buildTableBodyHast(parsed) {
+  const children = [];
+  if (parsed.headers) children.push(makeThead(parsed.headers));
+  if (parsed.rows.length > 0) children.push(makeTbody(parsed.rows));
+  return children;
+}
+
+/**
+ * Backward-compat wrapper for the slice-3b `renderParsedTable` signature.
+ *
+ * Phase 3 slice 3c: csv.js and tsv.js no longer call this — they call
+ * `buildTableBodyHast` + `renderFrameable` directly to get caption-as-
+ * content support. This wrapper remains for any out-of-tree consumer
+ * still on the slice-3b API; it constructs the table by delegating to
+ * `renderFrameable` with a synthetic kwarg-derived caption (the old
+ * captionText input becomes a single-text-node hast).
  *
  * @param {object} args
  * @param {{ headers: string[]|null, rows: any[][] }} args.parsed
- * @param {object} args.tableProps         - hast properties for the outer <table>
- * @param {string|null} [args.captionText] - optional caption text
- * @param {number|null} [args.computedNumber] - optional sequence number
+ * @param {object} args.tableProps
+ * @param {string|null} [args.captionText]
+ * @param {number|null} [args.computedNumber]
  * @returns {import('hast').Element}
  */
 export function renderParsedTable({ parsed, tableProps, captionText = null, computedNumber = null }) {
-  const tableChildren = [];
-
-  if (captionText !== null || computedNumber !== null) {
-    tableChildren.push(makeCaption(captionText, computedNumber));
-  }
-
-  if (parsed.headers) {
-    tableChildren.push(makeThead(parsed.headers));
-  }
-
-  if (parsed.rows.length > 0) {
-    tableChildren.push(makeTbody(parsed.rows));
-  }
-
-  return {
-    type: 'element',
-    tagName: 'table',
-    properties: tableProps,
-    children: tableChildren,
-  };
+  const bodyHast = buildTableBodyHast(parsed);
+  const captionHast = captionText
+    ? [{ type: 'text', value: String(captionText) }]
+    : null;
+  return renderFrameable({
+    kind: 'table',
+    bodyHast,
+    wrapperEl: 'table',
+    wrapperProps: tableProps,
+    captionHast,
+    titleHast: null,
+    computedNumber,
+  });
 }

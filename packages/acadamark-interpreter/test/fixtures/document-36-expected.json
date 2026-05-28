@@ -1331,6 +1331,25 @@
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 3."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
                               "type": "text",
                               "value": "Compilation flow"
                             }

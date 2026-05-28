@@ -68,9 +68,18 @@ footnotes work for the doc33 + doc34 fixtures.
 
 The flat-line of completed work to date is recorded in `STATUS.md`.
 
-The roadmap moves to **Phase 3 next** — frameable elements (the
-shared capability across `<fig>`, `<table>`, `<code>`, etc.). The
-roadmap's near-term sequence is Phase 3 → Phase 4 → Phase 5, with
+**Phase 3 also CLOSED 2026-05-28** — frameable elements, shipped
+across Phase 0 (`cec620c`, findings) + slice 3a (`14b95b7`,
+numbering) + slice 3b (`8982409`, frameable build) + slice 3c
+(2026-05-28, caption-as-content + unified helper). Three new vocab
+entries (`<fig>`, `<svg>`, `<frame>`); the `<figure>` alias
+rewriting to `<fig>` at the gate; unified `renderFrameable` helper
+consumed by all 8 frameable handlers; caption-as-content via the
+gate's kwarg → child-tag lift; theorem-family label rendering as a
+parallel use of the shared `formatLabel` primitive.
+
+The roadmap moves to **Phase 4 next** — document structuring (books
+and book-parts). The near-term sequence is Phase 4 → Phase 5, with
 Phase 6 (the alpha integration check) closing the milestone. Phase 7
 onwards is post-alpha.
 
@@ -150,7 +159,7 @@ exits.
 
 ---
 
-## Phase 3 — Frameable elements *(alpha — supports lines 1 and 2)*
+## Phase 3 — Frameable elements *(alpha — supports lines 1 and 2)* *(CLOSED)*
 
 A capability shared by `<fig>`, `<table>`, `<code>`, `<svg>`,
 `<mermaid>`, other DSL-registry block elements, plus the generic
@@ -217,18 +226,40 @@ shapes this phase.
   prepend "Theorem N (Name)." / "Lemma N." / etc. to the body;
   remark/proof get the unnumbered amsthm-convention "Remark." /
   "Proof." form. New fixture doc36 exercises the build end-to-end.
-- **Slice 3c — Caption-as-content (DD-1 / DD-2 implementation,
-  formerly AUD-14)**. `<caption>` becomes a child-tag position on
-  every frameable element. The `caption=` kwarg form lifts to
-  `<caption>` child at the normalize-to-canonical gate. Each
-  frameable handler reads the child rather than the kwarg.
-  Recursive content parsing handles citations inside captions
-  naturally.
+- **Slice 3c — Caption-as-content + unified frameable helper**
+  *(done 2026-05-28)*. Implemented Option A: `<caption>` as a
+  child-tag position on every frameable element. New
+  `FRAMEABLE_LIFTABLE` registry in
+  `acadamark-core/frameable-elements.js` (companion to
+  STRUCTURED_ELEMENTS but distinct — frameables are body-content
+  tags, not structured-data containers) plus a
+  `liftFrameableKwargs` function in normalize-to-canonical that
+  lifts `caption=` / `title=` kwargs to `<caption>` / `<title>`
+  children at the gate. The lift skips opaque-content nodes
+  (tables, csv, tsv, mermaid, abc, svg — bodies are strings) to
+  preserve their data; the frameable handlers fall back to reading
+  the kwarg via `extractFrameableChildren`'s opaque-content
+  fallback. Replaced slice 3b's primitive-only `formatLabel`-alone
+  approach with a unified `renderFrameable(opts)` helper handling
+  three caption-rendering idioms via a `kind`-keyed branch (table-
+  family inside-caption; figure-family inside-figcaption;
+  mermaid/abc sibling-figcaption). All six existing frameable
+  handlers + two new ones (svg, frame) call the helper. Wired
+  `title=` consumption (declared in 3b vocab; consumed here via
+  the helper). Wired `<frame>` opt-in numbering via a
+  NUMBERED_DEFAULT_FALSE set in numbering.js — frames register
+  only when authored with `+numbered` (or when given a colon-id
+  to be findable by label). New fixture doc37. Snapshot audit:
+  doc32 (mermaid now renders "Figure N." labels — closes the 3b
+  gap where mermaid handler ignored its computedNumber) + doc36
+  (same mermaid block in slice 3b's fixture) + doc37 (new); 22
+  other existing fixtures unchanged.
 
-**Exits:** every alpha-tagged frameable element renders with the
-shared capability; captions accept rich content; deferred numbering
-work (theorem family, math envs) is registered and cross-
-referenceable.
+**Exits satisfied:** every alpha-tagged frameable element renders
+with the shared capability; captions accept rich content; deferred
+numbering work (theorem family, math envs) is registered and cross-
+referenceable. **Phase 3 closes 2026-05-28** parallel to Phases 1
+and 2.
 
 ---
 

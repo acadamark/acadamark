@@ -7,28 +7,34 @@
 // in-place) or at build time via a headless pre-render pass that finds
 // blocks by their `data-acadamark-dsl="mermaid"` attribute.
 //
-// Emitted markup:
+// Emitted markup (sibling-figcaption layout):
+//   [<figcaption class="title">title</figcaption>]      (optional title above)
 //   <pre class="mermaid" data-acadamark-dsl="mermaid">…source…</pre>
-//   <figcaption>optional caption</figcaption>   (only when caption is set)
+//   [<figcaption>Figure N. caption text</figcaption>]   (optional caption below)
 //
-// `<pre>` is Mermaid's documented container element. `class="mermaid"` is
-// the CDN scanning convention. `data-acadamark-dsl="mermaid"` is the
-// acadamark-specific contract for build-time tooling (independent of any
-// CDN-specific class convention that may change).
+// `<pre>` is Mermaid's documented container element. `class="mermaid"`
+// is the CDN scanning convention. `data-acadamark-dsl="mermaid"` is the
+// acadamark-specific contract for build-time tooling.
 //
-// Phase 2 slice 2c (2026-05-27).
+// Phase 2 slice 2c (2026-05-27) — initial implementation.
+// Phase 3 slice 3c (2026-05-28) — refactored to consume the unified
+// renderFrameable helper. Caption / title arrive as <caption> / <title>
+// child tags (lifted from kwargs at the gate, or author-written).
+// Mermaid joins the figure counter (slice 3b NUMBERED_TAGNAMES wiring)
+// and now gets a "Figure N." prefix in its caption when numbered.
+
+import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
  * Handler for the `<mermaid>` external DSL tag. Emits pass-through
  * markup; rendering happens external to acadamark.
  *
- * @param {object} _state - mdast-util-to-hast state (unused — opaque content)
- * @param {object} node   - acadamarkTag with tagname "mermaid"
+ * @param {object} state - mdast-util-to-hast state
+ * @param {object} node  - acadamarkTag with tagname "mermaid"
  * @returns {import('hast').Element|{type:'root',children:Array}}
  */
-export function mermaidHandler(_state, node) {
+export function mermaidHandler(state, node) {
   const source = typeof node.content === 'string' ? node.content.trim() : '';
-  const caption = node.kwargs?.caption ?? null;
   const id = node.id ?? null;
 
   // Class list: `mermaid` (the CDN scanning convention) plus any
@@ -36,34 +42,21 @@ export function mermaidHandler(_state, node) {
   const classes = ['mermaid'];
   if (node.classes?.length) classes.push(...node.classes);
 
-  const properties = {
+  const wrapperProps = {
     className: classes,
     'dataAcadamarkDsl': 'mermaid',
   };
-  if (id) properties.id = id;
+  if (id) wrapperProps.id = id;
 
-  const wrapper = {
-    type: 'element',
-    tagName: 'pre',
-    properties,
-    children: [{ type: 'text', value: source }],
-  };
+  const { captionHast, titleHast } = extractFrameableChildren(state, node);
 
-  if (caption === null) return wrapper;
-
-  // When a caption is set, return a root containing the wrapper plus a
-  // <figcaption>. The toHast pipeline accepts root-shaped returns from a
-  // handler and inlines their children at the call site.
-  return {
-    type: 'root',
-    children: [
-      wrapper,
-      {
-        type: 'element',
-        tagName: 'figcaption',
-        properties: {},
-        children: [{ type: 'text', value: String(caption) }],
-      },
-    ],
-  };
+  return renderFrameable({
+    kind: 'mermaid',
+    bodyHast: [{ type: 'text', value: source }],
+    wrapperEl: 'pre',
+    wrapperProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+  });
 }

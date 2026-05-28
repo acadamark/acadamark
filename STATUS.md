@@ -1937,3 +1937,89 @@ that). One line gets added every few months, not every slice.
   Authoring `+numbered` on a frame doesn't yet register it; bundle
   into 3c or a sibling slice. Vocab entry surfaces the limitation
   in its frame.md notes.
+- **2026-Q2 — Phase 3 CLOSED. Slice 3c: caption-as-content + unified
+  frameable helper landed.** The closing slice of Phase 3, bundling
+  four pieces of work in the frameable-rendering neighborhood.
+
+  **Caption-as-content (Option A, formerly AUD-14).** New
+  `FRAMEABLE_LIFTABLE` registry in
+  `acadamark-core/src/frameable-elements.js` — a small companion
+  to STRUCTURED_ELEMENTS that records which kwargs lift to which
+  child tags per frameable. Eight frameables register today (fig,
+  table, csv, tsv, mermaid, abc, svg, frame), each lifting
+  `caption` and `title` to `<caption>` and `<title>` children.
+  New `liftFrameableKwargs` function in normalize-to-canonical.js
+  consumes the registry at the gate.
+
+  **Q1 finding (real surprise mid-implementation):** opaque-
+  content frameables (those whose `node.content` is a string —
+  tables, csv, tsv, mermaid, abc, svg) cannot accept lifted
+  children without destroying their body data. The lift guards
+  against this case: `if (typeof node.content === 'string')
+  return node;` — the kwarg stays as a kwarg. The handler-side
+  `extractFrameableChildren` helper has a parallel opaque-content
+  fallback that synthesizes `captionHast` / `titleHast` from
+  `node.kwargs.caption` / `node.kwargs.title` when no child tag
+  exists. Net result: the authoring surface is uniform (kwarg
+  form works on every frameable; child-tag form works on the
+  non-opaque ones — fig, frame); the handler-side rendering is
+  uniform.
+
+  **Unified `renderFrameable` helper** replaces slice 3b's
+  primitive-only approach (formatLabel alone). The unified helper
+  in `lib/frameable.js` handles three structural caption-rendering
+  idioms via a `kind`-keyed branch:
+   * inside-table (kind ∈ {table, csv, tsv}) — `<caption>` as a
+     child of the `<table>` wrapper.
+   * inside-figure (kind ∈ {fig, svg, frame}) — `<figcaption>` as
+     a child of the `<figure>` wrapper.
+   * sibling (kind ∈ {mermaid, abc}) — `<figcaption>` as a sibling
+     of a custom wrapper (preserves slice 2c's external-DSL
+     convention: `<pre class="mermaid">` / `<div class="abc">`
+     stays a clean container for external rendering).
+
+  All six existing frameable handlers (figure.js, table.js, csv.js,
+  tsv.js, mermaid.js, abc.js) refactored to call the helper. Two
+  new handlers (svg.js, frame.js) created for the slice-3b vocab
+  entries that previously fell through to schema dispatch.
+
+  **Title wiring** — declared on frameable vocab in slice 3b but
+  unwired. The unified helper consumes it; per-element handlers
+  pass it through.
+
+  **`<frame>` opt-in numbering** — new `NUMBERED_DEFAULT_FALSE`
+  set in numbering.js + per-tagname default override in the
+  visitor. Frames default to `numbered=false` per frame.md; opt
+  in with `+numbered` or `numbered=true`. Without an id and
+  without +numbered, frames skip registration entirely (avoids
+  no-op registry entries that pollute sibling fixtures' counter
+  sequences). Resolves the slice 3b follow-up.
+
+  **New fixture: doc37** exercises the four 3c features: child-tag
+  caption form with formatted content; kwarg-form lifting to
+  child-tag; title wiring on `<fig>`; `<frame>` opt-in numbering
+  in both directions (with and without +numbered).
+
+  **Snapshot audit:**
+  - **doc32** (mermaid/abc fixture) — both mermaid blocks gained
+    `<figcaption>Figure N.</figcaption>` sibling elements. The
+    mermaid handler in slice 3b ignored its assigned
+    `computedNumber`; the unified helper now consumes it
+    uniformly. Closes the gap from 3b.
+  - **doc36** (slice 3b's own fixture) — the mermaid block there
+    similarly gained its "Figure N." label. Same fix.
+  - **doc37** (new) — slice 3c's own fixture.
+  - **All 22 other existing fixtures** — zero diff. The opaque-
+    content guard + extractFrameableChildren fallback path keeps
+    table/csv/tsv/mermaid/abc behavior byte-identical when no
+    new authoring form is in play.
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc37).
+
+  **Phase 3 CLOSED.** ROADMAP Phase 3 marked CLOSED parallel to
+  Phases 1 and 2. All three sub-slices done: 3a (`14b95b7`,
+  numbering precursor) + 3b (`8982409`, frameable build) + 3c
+  (this slice, caption-as-content + unified helper). The roadmap
+  moves to Phase 4 next (document structuring).

@@ -1,43 +1,44 @@
 // CSV handler — renders `<csv>` standalone tags.
 //
-// The DSL_REGISTRY entry `['csv', 'csv']` marks `<csv>` content opaque.
-// The parser passes the CSV source through as `node.content` (string).
-// This handler parses the CSV with the same `parseCsv` `table.js` uses for
-// the qualifying form `<table csv | data>`, then renders the headers/rows
-// into a hast `<table>` via the shared `renderParsedTable` helper.
+// Reads opaque CSV content from node.content (string), parses with the
+// shared `parseCsv` from table.js, and renders the headers/rows + an
+// optional caption/title through the unified `renderFrameable` helper.
 //
-// Sharing parsing + rendering keeps `<csv>` and `<table csv>` producing
-// equivalent output for the same data. The `<csv>` form is the natural
-// authoring shape for an unstyled CSV table; `<table csv>` is the
-// qualifying form that lets `<table>` take CSV (or TSV / JSON / etc.) as
-// its data format.
+// Phase 3 slice 3c (2026-05-28): refactored from the slice-3b
+// `renderParsedTable` call (which built the table + caption inline) to
+// a `buildTableBodyHast` + `renderFrameable` pair, matching the
+// uniform frameable-handler shape. Caption / title arrive as <caption>
+// / <title> child tags (lifted from `caption=` / `title=` kwargs at the
+// normalize-to-canonical gate; or author-written directly).
 //
-// Phase 2 slice 2a (2026-05-27).
+// Phase 2 slice 2a (2026-05-27) initial implementation.
 
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
-import { parseCsv, renderParsedTable } from './table.js';
+import { parseCsv, buildTableBodyHast } from './table.js';
+import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
  * Handler for the `<csv>` standalone tag.
  *
- * Reads the opaque content string, parses as CSV, renders as a hast
- * `<table>`. Accepts the `-headers` boolean kwarg to suppress the
- * header-row treatment (same convention `<table csv>` uses).
- *
- * @param {object} _state  - mdast-util-to-hast state (unused — opaque content)
- * @param {object} node    - acadamarkTag with tagname "csv"
+ * @param {object} state - mdast-util-to-hast state
+ * @param {object} node  - acadamarkTag with tagname "csv"
  * @returns {import('hast').Element}
  */
-export function csvHandler(_state, node) {
+export function csvHandler(state, node) {
   const rawData = typeof node.content === 'string' ? node.content : '';
   const hasHeaders = readBoolKwarg(node, 'headers', null, null, true);
   const id = node.id ?? null;
-  const captionText = node.kwargs?.caption ?? null;
-  const computedNumber = node.computedNumber ?? null;
 
   const tableProps = {};
   if (id) tableProps.id = id;
   if (node.classes?.length) tableProps.className = node.classes;
+
+  // Extract <caption> / <title> children. For <csv> the content is
+  // typically the opaque CSV string, but the gate lifts caption= / title=
+  // kwargs to child tags first, so the lifted children sit in
+  // node.content alongside the data. extractFrameableChildren handles
+  // both the child-tag and lifted-from-kwarg paths uniformly.
+  const { captionHast, titleHast } = extractFrameableChildren(state, node);
 
   let parsed;
   try {
@@ -58,5 +59,13 @@ export function csvHandler(_state, node) {
     };
   }
 
-  return renderParsedTable({ parsed, tableProps, captionText, computedNumber });
+  return renderFrameable({
+    kind: 'csv',
+    bodyHast: buildTableBodyHast(parsed),
+    wrapperEl: 'table',
+    wrapperProps: tableProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+  });
 }

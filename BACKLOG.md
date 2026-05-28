@@ -116,9 +116,15 @@ A flat scannable index of every open item. Detailed entries below.
   written first `[parser]` `[post-alpha]` *(formerly DF-3)*
 - [ ] **Implement multi-column display rendering** `[interpreter]`
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
-- [ ] **Support caption-as-content for `<table>`, `<figure>`, similar
+- [x] **Support caption-as-content for `<table>`, `<figure>`, similar
   (DD-1 / DD-2 implementation)** `[cross-cutting]` `[alpha]`
-  *(→ roadmap: Phase 3)* *(formerly AUD-14)*
+  *(→ roadmap: Phase 3)* *(formerly AUD-14)* —
+  **done in slice 3c (2026-05-28)** via Option A: `<caption>` as a
+  child-tag position on every frameable; `caption=` kwarg form
+  lifts to child-tag at the normalize-to-canonical gate (opaque-
+  content frameables — tables, csv, tsv, mermaid, abc, svg — keep
+  the kwarg as canonical to preserve their body data, with the
+  fallback path inside `extractFrameableChildren`).
 - [x] **Build the frameable-class capability** `[cross-cutting]`
   `[alpha]` *(→ roadmap: Phase 3)* *(filed by `1d100eb`)* —
   **done across Phase 0 (`cec620c`), slice 3a (`14b95b7`,
@@ -428,31 +434,29 @@ Gated by MC-Q1 through MC-Q4 (in the Discussions group).
 this work: the margin is another column, and the multi-column layout
 engine is the machinery a margin needs.
 
-### Support caption-as-content for `<table>`, `<figure>`, similar (DD-1 / DD-2 implementation)
+### Support caption-as-content for `<table>`, `<figure>`, similar — DONE
 `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 3)*
 
-Citations inside the `caption=` kwarg of `<table>`, `<figure>`, and
-similar elements are not parsed — the kwarg value is a string, cite
-tags inside it remain literal text in the rendered output. Affects
-any kwarg where rich content might be desirable (figure captions,
-alt text, etc.). Two architectural options identified at filing:
+**Closed 2026-05-28 in Phase 3 slice 3c.** Implemented Option A
+(the recommended-at-filing path): `<caption>` is a child-tag
+position on every frameable element. The `caption=` kwarg form
+remains accepted as a convenient short form for plain-text
+captions and lifts to a `<caption>` child tag at the
+normalize-to-canonical gate via the new `liftFrameableKwargs`
+function (acadamark-interpreter/src/plugins/normalize-to-canonical.js)
+backed by a new `FRAMEABLE_LIFTABLE` registry
+(acadamark-core/src/frameable-elements.js, companion to the
+existing STRUCTURED_ELEMENTS registry).
 
-- **Option A (recommended at filing):** captions become first-class
-  child tags rather than attribute values: `<table #tab:burnout csv |
-  ...> <caption | Risk and protective factors, adapted from
-  <cite Mantzalas2022>>`. Recursive content parsing handles citations
-  naturally. Matches Pandoc/Quarto conventions where captions are
-  markdown blocks.
-- **Option B:** attribute values get recursive parsing —
-  `caption="text <cite key>"` would parse the value as acadamark
-  content. More invasive parser change; affects all attribute
-  values, not just captions.
-
-Tied to design directions DD-1 ("content gets parsed; arguments
-don't") and DD-2 ("tags with caption-like content support two
-equivalent forms"). When scoped, follow the design-directions
-framing. Severity: medium-high — affects real authoring need
-(captions with citations). *(formerly AUD-14)*
+Opaque-content frameables (tables, csv, tsv, mermaid, abc, svg —
+whose body is a string) skip the lift to preserve their data; the
+handlers' `extractFrameableChildren` helper transparently falls
+back to reading from `node.kwargs.caption` / `node.kwargs.title`
+when no child tag exists. Caption-as-content with formatted
+content (citations, emphasis) works for `<fig>` and `<frame>`;
+opaque-content frameables keep the kwarg as their canonical
+authoring form. Recursive content parsing handles citations
+inside the child-tag form naturally. *(formerly AUD-14)*
 
 ### Build the frameable-class capability — DONE
 `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 3)*

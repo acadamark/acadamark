@@ -1,111 +1,129 @@
-// Figure handler — handler-strategy dispatch for <figure> elements.
+// Figure handler — renders `<fig>` (canonical) and the `<figure>` authoring
+// alias.
 //
-// The figure element uses handler strategy because its output structure depends
-// on the presence of the src kwarg: with src, it generates <img> + <figcaption>;
-// without src, it generates <figcaption> only (the author places inner content
-// directly in the pipe content, and the final paragraph is the caption by
-// convention — but for slice 1 we treat all pipe content as the figcaption).
+// Output: HTML5-native <figure> wrapper containing an optional <img>
+// (from the `src` kwarg) and an optional <figcaption> (from either the
+// new <caption> child tag — Phase 3 slice 3c canonical form — or the
+// legacy pipe-content-as-caption fallback when no <caption> child is
+// present).
 //
-// Schema-mapped attributes (align, width, type) are handled by the same
-// buildProperties logic used in the schema dispatcher.
+// Slice 3c refactor: this handler now extracts <caption> / <title>
+// child tags via the shared `extractFrameableChildren` helper, then
+// calls `renderFrameable` to build the wrapped output. Behavior-
+// preserving for the legacy pipe-as-caption authoring form (every
+// existing fixture); enables formatted captions and titles via the
+// new child-tag form.
+//
+// Schema-mapped attributes (align, width, type) flow through the same
+// `buildProperties` helper used by the schema dispatcher.
 
-import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { buildProperties } from '../lib/build-properties.js';
 import { extractPlainText } from '../lib/ast-helpers.js';
-import { formatLabel } from '../lib/frameable.js';
-
-// The figure handler uses the shared `buildProperties` helper from
-// `lib/build-properties.js` — see that file's comment for the deferred
-// lift-to-acadamark-core question coupled to JATS export.
+import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
+import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**
- * Convert the figure's pipe content to hast child nodes for use in
- * <figcaption>. Unwraps a single paragraph (the typical case for pipe text).
+ * Legacy pipe-content-as-caption fallback. When the author writes
+ * `<fig src=x.jpg | caption text>` without a `<caption>` child, the
+ * pipe content (the remaining body after caption/title extraction)
+ * becomes the figcaption. Returns hast children or null when the body
+ * is empty.
  */
-function buildCaptionHastNodes(state, node) {
-  // Figcaption pipe content is always prose-like, so unconditionally unwrap a
-  // single paragraph — this is the figure handler's per-call gate (vs the
-  // schema dispatcher's vocab-driven gate; the shared mechanic lives in
-  // acadamark-core/paragraph-unwrap).
-  const nodes = unwrapSingleParagraph(node.content ?? []);
-
-  return nodes.flatMap(child => {
+function buildPipeAsCaptionHast(state, node, bodyContent) {
+  if (!bodyContent || bodyContent.length === 0) return null;
+  const nodes = unwrapSingleParagraph(bodyContent);
+  const children = nodes.flatMap(child => {
     const h = state.one(child, node);
     if (h == null) return [];
     return Array.isArray(h) ? h : [h];
   });
+  return children.length > 0 ? children : null;
 }
 
 /**
- * Figure handler. Called by the interpret-plugin dispatcher when
- * interpreter_strategy === 'handler' and handler_module === './handlers/figure.js'.
+ * Figure handler. Called by the interpret-plugin dispatcher when the
+ * vocabulary's `interpreter_strategy === 'handler'` +
+ * `handler_module === './handlers/figure.js'`.
  *
  * @param {object} state - mdast-util-to-hast state
- * @param {object} node  - acadamarkTag node with tagname 'figure'
- * @param {object} vocab - vocabulary entry for <figure>
+ * @param {object} node  - acadamarkTag node with canonical tagname 'fig'
+ *                          (the gate rewrites authored '<figure>' to 'fig'
+ *                          before this handler runs).
+ * @param {object} vocab - vocabulary entry for `<fig>`
  * @returns {object} hast element
  */
 export function figureHandler(state, node, vocab) {
   const src = node.kwargs?.src ?? null;
   const altKwarg = node.kwargs?.alt ?? null;
 
-  const properties = buildProperties(node, vocab);
-  const captionHastNodes = buildCaptionHastNodes(state, node);
-  const children = [];
+  // Extract <caption> / <title> child tags first. These have priority
+  // over the pipe-content-as-caption fallback (Phase 3 slice 3c
+  // canonical form).
+  const { captionHast: childCaptionHast, titleHast, bodyContent } =
+    extractFrameableChildren(state, node);
 
+  // Fallback: pipe-content-as-caption when no <caption> child exists.
+  // Preserves the legacy figure-as-pipe-caption authoring form. The
+  // body content (post caption/title extraction) IS the caption in
+  // this fallback.
+  const captionHast =
+    childCaptionHast ?? buildPipeAsCaptionHast(state, node, bodyContent);
+
+  // Image body: when src is present, generate an <img> as the body.
+  // The alt text falls back to the caption (caption-as-content can be
+  // arbitrary hast, so we plain-text-ify the original mdast for alt
+  // when child <caption> isn't there).
+  const bodyHast = [];
   if (src) {
-    // Image figure: <img> alt defaults to the figcaption text if not supplied.
-    const captionText = altKwarg ?? extractPlainText(node.content ?? []);
-    children.push({
+    let altText = altKwarg;
+    if (altText == null) {
+      // Prefer child <caption>'s plain text if available; else legacy
+      // pipe content's plain text.
+      if (childCaptionHast) {
+        altText = extractHastPlainText(childCaptionHast);
+      } else {
+        altText = extractPlainText(bodyContent ?? []);
+      }
+    }
+    bodyHast.push({
       type: 'element',
       tagName: 'img',
-      properties: {
-        src,
-        alt: captionText,
-      },
+      properties: { src, alt: altText },
       children: [],
     });
   }
 
-  // Figcaption from pipe content. Present for both image figures and non-image
-  // figures (the pipe content is always the caption in slice 1).
-  // For numbered figures, prepend "Figure N." label span before the caption
-  // content (Phase 3 slice 3b: rendered via the shared formatLabel primitive
-  // — see lib/frameable.js for why a label-primitive is the right granularity
-  // for the shared helper).
-  // Note: only emit figcaption when there's caption content. A numbered
-  // figure with no pipe content would lose its "Figure N." label — but
-  // that's the pre-Phase-3 behavior and we preserve it here (no fixture
-  // hits this case). Adding the label-only figcaption is a deliberate
-  // follow-up if needed.
-  if (captionHastNodes.length > 0) {
-    const labelSpan = formatLabel('Figure', node.computedNumber);
-    const finalCaption = labelSpan
-      ? [labelSpan, { type: 'text', value: ' ' }, ...captionHastNodes]
-      : captionHastNodes;
-    children.push({
-      type: 'element',
-      tagName: 'figcaption',
-      properties: {},
-      children: finalCaption,
-    });
-  }
+  // Phase 3 frameable surface: +border opts in to the frameable-border class.
+  const border = node.booleans?.border === true;
 
-  // Phase 3 frameable surface: +border opts in to the frameable-border
-  // class (CSS-targetable per the frameable design). When the kwarg is
-  // present (parsed as a boolean kwarg via the +border / -border /
-  // border=true author syntax), add the class to the existing classList.
-  // The handler does this rather than relying on schema dispatch because
-  // `border` is declared `handled_by: handler` on fig.md.
-  if (node.booleans?.border === true) {
-    const existing = Array.isArray(properties.className) ? properties.className : [];
-    properties.className = [...existing, 'frameable-border'];
-  }
+  // Properties for the wrapper (id, classes, schema-mapped attributes).
+  const wrapperProps = buildProperties(node, vocab);
 
-  return {
-    type: 'element',
-    tagName: 'figure',
-    properties,
-    children,
-  };
+  return renderFrameable({
+    kind: 'fig',
+    bodyHast,
+    wrapperEl: 'figure',  // HTML5-native; the canonical Layer 1 name is <fig>
+                           // but the rendered HTML uses <figure>.
+    wrapperProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+    border,
+  });
+}
+
+/**
+ * Extract plain text from a hast children list (for image alt fallback
+ * when the caption came from a child <caption> tag, post-hast-conversion).
+ */
+function extractHastPlainText(children) {
+  let text = '';
+  for (const node of children ?? []) {
+    if (node.type === 'text') {
+      text += node.value ?? '';
+    } else if (node.children) {
+      text += extractHastPlainText(node.children);
+    }
+  }
+  return text;
 }

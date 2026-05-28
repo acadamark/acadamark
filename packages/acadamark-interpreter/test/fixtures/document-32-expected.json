@@ -210,19 +210,50 @@
                   }
                 },
                 {
-                  "type": "element",
-                  "tagName": "pre",
-                  "properties": {
-                    "className": [
-                      "mermaid"
-                    ],
-                    "dataAcadamarkDsl": "mermaid",
-                    "id": "diagram:simple-flow"
-                  },
+                  "type": "root",
                   "children": [
                     {
-                      "type": "text",
-                      "value": "graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]"
+                      "type": "element",
+                      "tagName": "pre",
+                      "properties": {
+                        "className": [
+                          "mermaid"
+                        ],
+                        "dataAcadamarkDsl": "mermaid",
+                        "id": "diagram:simple-flow"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
                     }
                   ]
                 }
@@ -292,18 +323,49 @@
                   }
                 },
                 {
-                  "type": "element",
-                  "tagName": "pre",
-                  "properties": {
-                    "className": [
-                      "mermaid"
-                    ],
-                    "dataAcadamarkDsl": "mermaid"
-                  },
+                  "type": "root",
                   "children": [
                     {
-                      "type": "text",
-                      "value": "sequenceDiagram\n  Alice->>Bob: Hello Bob\n  Bob-->>Alice: Hello Alice"
+                      "type": "element",
+                      "tagName": "pre",
+                      "properties": {
+                        "className": [
+                          "mermaid"
+                        ],
+                        "dataAcadamarkDsl": "mermaid"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "sequenceDiagram\n  Alice->>Bob: Hello Bob\n  Bob-->>Alice: Hello Alice"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 2."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
                     }
                   ]
                 }
@@ -427,19 +489,50 @@
                   }
                 },
                 {
-                  "type": "element",
-                  "tagName": "div",
-                  "properties": {
-                    "className": [
-                      "abc"
-                    ],
-                    "dataAcadamarkDsl": "abc",
-                    "id": "music:twinkle"
-                  },
+                  "type": "root",
                   "children": [
                     {
-                      "type": "text",
-                      "value": "X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |"
+                      "type": "element",
+                      "tagName": "div",
+                      "properties": {
+                        "className": [
+                          "abc"
+                        ],
+                        "dataAcadamarkDsl": "abc",
+                        "id": "music:twinkle"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 3."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
                     }
                   ]
                 },

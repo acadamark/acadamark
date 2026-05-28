@@ -93,17 +93,29 @@ const NUMBERED_TAGNAMES = new Map([
   ['abc',     'figure'],  // external DSL; figure counter (Ariel's ruling)
   ['csv',     'table'],   // standalone CSV → table counter (parallel to <table csv>)
   ['tsv',     'table'],   // standalone TSV → table counter (parallel to <table tsv>)
-  // <frame> is intentionally OMITTED here — frame.md declares
-  // `numbered: false` as the default (the generic-frame element is most
-  // often a callout, not a numbered float). Authors opt in per-instance
-  // with +numbered, but the visitor below would unconditionally register
-  // every <frame>. The opt-in semantics for frame need handler-level
-  // implementation (or a separate "numbered when +numbered" mechanism
-  // here). Bundle into 3c or a sibling slice; this slice's frame work
-  // is the vocab entry only. Documents authoring +numbered on a frame
-  // won't get a registered entry until that lands; the +border / title
-  // / caption features all work.
+  // <frame> joins NUMBERED_TAGNAMES in slice 3c with opt-in semantics:
+  // it only registers when the author writes +numbered (or
+  // numbered=true). The DEFAULT_NUMBERED set below lists tagnames
+  // whose `numbered` kwarg defaults to FALSE rather than TRUE
+  // (slice 3c addition); the visitor consults that set to flip
+  // the default. Frame stays unregistered when no +numbered marker
+  // is present.
+  ['frame',   'figure'],
 ]);
+
+// Phase 3 slice 3c (2026-05-28): tagnames whose `numbered` kwarg
+// defaults to FALSE rather than the universal TRUE. Today only
+// <frame> (per frame.md's vocab default: numbered: false). Other
+// frameables (<fig>, <table>, etc.) default to numbered=true; their
+// authors suppress with -numbered per-instance.
+//
+// Visitor logic: for tagnames in this set, an unset `numbered` kwarg
+// resolves to false → the entry registers as unnumbered (label-only
+// findability if the node has a colon-id) AND, additionally, frames
+// without any colon-id-derived label have no reason to be in the
+// registry. The visitor short-circuits and skips registration entirely
+// when the resolved numbered is false and the node has no id.
+const NUMBERED_DEFAULT_FALSE = new Set(['frame']);
 
 // Maps registry type to the document-level config key that can suppress numbering.
 const CONFIG_KEY = {
@@ -138,7 +150,22 @@ export function acadamarkNumbering() {
     for (const [tagname, registryType] of NUMBERED_TAGNAMES) {
       visitors.set(tagname, (node) => {
         const configKey = CONFIG_KEY[registryType];
-        const numbered = readBoolKwarg(node, 'numbered', config, configKey, true);
+        // Phase 3 slice 3c (2026-05-28): tagnames in NUMBERED_DEFAULT_FALSE
+        // (today: <frame>) default to numbered=false. Authors opt IN with
+        // +numbered / numbered=true. For those tags, also skip
+        // registration entirely when the resolved numbered is false AND
+        // the node has no id — without an id, an unnumbered registry
+        // entry has no findability use, and pollutes the registry's
+        // figure-type entry list with no-op entries that throw off
+        // sibling fixtures' counts.
+        const isDefaultFalse = NUMBERED_DEFAULT_FALSE.has(tagname);
+        const defaultNumbered = !isDefaultFalse;
+        const numbered = readBoolKwarg(
+          node, 'numbered', config, configKey, defaultNumbered,
+        );
+        if (isDefaultFalse && !numbered && !node.id) {
+          return;
+        }
         const entry = registry.assign(
           registryType,
           node.id || null,

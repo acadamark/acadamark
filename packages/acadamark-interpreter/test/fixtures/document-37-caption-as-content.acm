@@ -1,0 +1,62 @@
+<meta type=article title="Caption-as-content + unified frameable helper (Phase 3 slice 3c)">
+<author name="Test">
+</author>
+</meta>
+
+<section | Caption as child tag>
+
+Phase 3 slice 3c implements caption-as-content (Option A from the
+Phase 0 findings): `<caption>` is a child tag position on every
+frameable element, with the `caption=` kwarg lifting to child-tag
+form at the normalize-to-canonical gate. Both authoring forms produce
+the same Layer 1 AST.
+
+A figure with the canonical child-tag caption form, exercising
+formatted content (emphasis, **bold**) — impossible with the
+kwarg-only shape:
+
+<fig src=elephant.jpg>
+<caption | An African elephant, photographed in *Serengeti National Park*.>
+</fig>
+
+The kwarg form (lifts to child-tag at the gate — produces identical
+output for plain-text captions):
+
+<fig #fig:zebra src=zebra.jpg caption="A zebra in the savanna." />
+
+A frame with a title and caption, both rendered at the right edges
+of the frame:
+
+<frame +numbered #fig:method title="Methodology">
+We used a forest of 500 decision trees trained on the cleaned
+input data, with leave-one-out cross-validation for hyperparameter
+search.
+<caption | A summary of our **methods** section.>
+</frame>
+
+Cross-reference resolves: <ref @fig:zebra> → figure 1, <ref @fig:method>
+→ figure 2 (the frame opted in via +numbered).
+
+<section | Frame opt-in numbering>
+
+Frames default to unnumbered (per `frame.md`'s vocab default). The
+following frame has no `+numbered` marker, so no number registers:
+
+<frame | A bordered callout that doesn't participate in the figure counter.>
+
+This one explicitly opts in:
+
+<frame +numbered #fig:opt-in caption="Numbered frame">
+Body content here.
+</frame>
+
+The opt-in frame counts as figure 3.
+
+<section | Title wiring>
+
+The slice-3b frameable surface declared `title=` but didn't wire it.
+This slice consumes it via the unified renderFrameable helper.
+
+<fig title="Figure title" src=plot.png | A plot caption.>
+
+Title above; caption below; image in the middle.

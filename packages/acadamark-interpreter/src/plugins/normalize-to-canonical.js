@@ -57,6 +57,10 @@ import {
   getStructuredSpec,
 } from 'acadamark-core/structured-elements';
 import {
+  isFrameableLiftable,
+  getFrameableLiftSpec,
+} from 'acadamark-core/frameable-elements';
+import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 
@@ -513,6 +517,68 @@ function liftStructuredKwargs(node, file) {
   return node;
 }
 
+// ─── Group D2 helper: frameable kwarg → child-tag lift ──────────────────────
+//
+// Phase 3 slice 3c (2026-05-28). Companion to liftStructuredKwargs — same
+// mechanism, different conceptual home (see
+// acadamark-core/frameable-elements.js for the why-a-separate-registry note).
+//
+// For each frameable tag (fig / table / csv / tsv / mermaid / abc / svg /
+// frame), any kwarg in the spec's liftedKwargs (today: `caption`, `title`)
+// converts to a child tag of the same name carrying the kwarg's value as a
+// single text node. Other kwargs pass through unchanged — frameables don't
+// have a strict kwarg allowlist (per-element vocab schemas govern those via
+// schema dispatch's buildProperties); this lift only touches the lifted
+// subset.
+//
+// Author-written child-tag form (e.g. <fig><caption>...</caption></fig>)
+// passes through this function unchanged: the kwarg loop finds nothing to
+// lift, and the existing children stay intact.
+//
+// Lifted-children ordering: prepend to existing content so a kwarg-form
+// caption lands ahead of any pre-existing children. For frameables this
+// matters less than for structured-elements (the renderFrameable helper
+// extracts the caption/title child from anywhere in content), but the
+// prepend keeps ordering consistent across both lift flows.
+function liftFrameableKwargs(node, _file) {
+  const spec = getFrameableLiftSpec(node.tagname);
+  if (!spec) return node; // defensive; gate's predicate should filter
+
+  // OPAQUE-CONTENT GUARD (Phase 3 slice 3c finding).
+  // Some frameables hold opaque string content as node.content — the
+  // data string for tables (`<table csv | data>`), the diagram source
+  // for mermaid / abc / svg, the CSV / TSV bodies. Lifting caption / title
+  // kwargs INTO node.content would either replace or spread the opaque
+  // string, destroying the body. For those nodes, the kwarg form remains
+  // canonical and stays as kwargs; the handler reads them directly.
+  // `extractFrameableChildren` (lib/frameable.js) has a parallel fallback
+  // that synthesizes hast from kwargs when no child <caption> / <title>
+  // tag exists, so the handler-side code path is uniform regardless of
+  // whether the lift fired.
+  if (typeof node.content === 'string') {
+    return node;
+  }
+
+  const kwargs = node.kwargs ?? {};
+  const newKwargs = {};
+  const liftedChildren = [];
+
+  for (const [key, value] of Object.entries(kwargs)) {
+    if (spec.liftedKwargs.has(key)) {
+      liftedChildren.push(makeTag(key, [{ type: 'text', value: String(value) }]));
+    } else {
+      newKwargs[key] = value;
+    }
+  }
+
+  node.kwargs = newKwargs;
+  if (liftedChildren.length > 0) {
+    const existingContent = Array.isArray(node.content) ? node.content : [];
+    node.content = [...liftedChildren, ...existingContent];
+  }
+  return node;
+}
+
 function liftConfigKwargs(node, file) {
   const kwargs = node.kwargs ?? {};
   const newKwargs = {};
@@ -667,6 +733,26 @@ const NORMALIZATIONS = [
   {
     predicate: (node) => isAcadamarkTag(node) && node.tagname === 'config',
     normalize: (node, file) => liftConfigKwargs(node, file),
+  },
+
+  // ─── Group A2.5: frameable element kwarg → child-tag lift ─────────────
+  //
+  // Phase 3 slice 3c (2026-05-28). Implements caption-as-content
+  // (DD-1 / DD-2; formerly AUD-14). For each frameable element with
+  // a lift spec, `caption=` and `title=` kwargs lift to <caption> /
+  // <title> child tags. The rest of the kwargs pass through unchanged.
+  //
+  // The figure handler is upstream of this for one specific case:
+  // figure's "pipe content IS the caption" legacy convention. The
+  // gate-lift runs AFTER the parser produces the AST, so a
+  // `<fig caption="text" | other body>` would now get BOTH a lifted
+  // <caption>text</caption> child AND the pipe content. Per the slice
+  // 3c design, frameable handlers consume the child-tag <caption> as
+  // canonical; the pipe-as-caption fallback applies only when no
+  // <caption> child exists. See lib/frameable.js for the precedence.
+  {
+    predicate: (node) => isAcadamarkTag(node) && isFrameableLiftable(node.tagname),
+    normalize: (node, file) => liftFrameableKwargs(node, file),
   },
 
   // ─── Group B: bare markdown heading → section ─────────────────────────
