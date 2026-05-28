@@ -2227,3 +2227,39 @@ that). One line gets added every few months, not every slice.
   its own Phase 0 because the export is a large arc and the
   package boundary (`acadamark-jats-export`, not yet present)
   needs siting against `acadamark-core`.
+- **2026-Q2 — Phase 5 Phase 0: JATS export findings.** Read-only
+  investigation producing `notes/phase5-jats-export-findings.md`
+  — the artifact Phase 5's implementation slice(s) will build from
+  (same role earlier Phase 0 findings played for Phases 3 and 4).
+  Covers Q1.1 (Phase 5 + Phase 6 entries quoted with line numbers;
+  Phase 6's five-point verification will exercise JATS round-trip);
+  Q1.2 (no scaffolding exists — greenfield; 91 of 109 vocab entries
+  already declare `jats_counterpart`); Q1.3 (recommend target JATS
+  1.3 + BITS 2.0 + Archiving and Interchange Tag Set per the
+  widest validator support; few DTD constraints, no fundamental
+  conflicts with acadamark vocab); Q1.4 (package boundary —
+  Option A `packages/acadamark-jats-export/` recommended per
+  DESIGN.md's stated plan; attribute-mapper lift to
+  `acadamark-core` recommended in slice 5a since JATS export IS
+  the second consumer the deferred question was waiting for);
+  Q1.5 (intermediate representation — post-stage-3 mdast is the
+  right input; structural plugins re-imported from
+  `acadamark-interpreter`, lift-to-core deferred until render-mode
+  is the second consumer); Q1.6 (vocabulary mapping inventory
+  grouped by JATS section — Groups A–J: containers, regions,
+  titles, sections, metadata, frameables, inline, block, math,
+  internal; 5 entries flagged as needing design calls during
+  implementation slices); Q1.7 (features inventory — numbering /
+  footnotes / bibliography / math / frameables / DSLs / theorems
+  — most mechanical, bibliography is the biggest net-new work
+  because HTML rendering produces formatted strings while JATS
+  wants structured `<element-citation>` data); Q1.8 (testing
+  strategy — `validate-with-xmllint` + snapshot pattern; curated
+  fixture subset gets JATS snapshots). **Recommendation: SPLIT
+  into four sub-slices — 5a (package + scaffolding + minimal
+  article export) → 5b (body content: frameables, lists, math) →
+  5c (cross-refs + notes + BITS book structure) → 5d
+  (bibliography + external DSLs).** Conditional follow-ups
+  recorded: 5e (MathML alternative emission); 5f (JATS 1.4 / BITS
+  2.2 upgrade). No product code, spec, or vocab changes in this
+  slice — read-only as specified.
