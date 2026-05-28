@@ -2175,3 +2175,55 @@ that). One line gets added every few months, not every slice.
   stale; `interpreter.md` needs a new §3.X for the new plugin
   paralleling §3.3's article-structuring documentation. Bundle
   into the spec-sweep slice (or 4b's coverage).
+- **2026-Q2 — Phase 4 CLOSED. Slice 4b: doc-9 snapshot landed.** The
+  closing slice of Phase 4. Mechanical work per the BACKLOG entry's
+  fix path: rendered doc-9 through the current pipeline, generated
+  `document-9-expected.json` snapshot, added integration test block
+  in `test/integration.test.js` mirroring doc6/doc7/doc8.
+
+  Per Phase 0 Q1.2 finding, doc-9 is an article, not a book —
+  pairing with book-structuring in Phase 4 was convenient packaging,
+  not coupled work. doc-9 lands as Phase 4's closure piece because
+  it pins the full alpha-complete article pipeline against an
+  existing reference document.
+
+  The test block runs the pipeline with `assetsDir` set to the
+  fixtures' assets/ directory (per doc8's pattern, for the
+  references.bib library), asserts a few spot-checks for the most
+  distinctive surface features (article wrapping; equation-number
+  spans for numbered display math; table/figure cross-references
+  with prefix words; bibliography rendering; note-list emission for
+  inline `<note>`; code-block colon-id retention; tippy hover-
+  preview asset injection), and snapshots the full hast tree. The
+  snapshot is the regression-pinning artifact; the spot-check
+  assertions surface specific regressions with readable error
+  messages.
+
+  **Snapshot audit:**
+  - **All 23 existing fixtures: strict zero diff.** No pipeline-
+    behavior change surfaced through doc-9 — slice 4a's article-
+    behavior preservation holds for this complex fixture too.
+  - **doc-9 (new):** `document-9-expected.json` snapshot written
+    on first run; `document-9-demo.html` re-rendered byte-identical
+    (no diff against the existing on-disk HTML).
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc9 block).
+
+  **Phase 4 CLOSED.** ROADMAP Phase 4 marked CLOSED parallel to
+  Phases 1, 2, and 3. Both Phase 4 items done: book/book-part
+  structuring (slice 4a) + doc-9 snapshot (this slice). The
+  structural-tier alpha gap is closed; both article and book
+  documents render structurally end-to-end.
+
+  **Three documentation follow-ups from slice 4a remain open**
+  (separate spec-sweep slice): `pipeline.md` L284-285 "limitation"
+  line is now stale; `interpreter.md` needs a §3.X for the
+  `acadamarkBookStructuring` plugin; `DESIGN.md` may want a
+  §"Document structure: articles vs. books".
+
+  The roadmap moves to **Phase 5 next** (JATS export). Phase 5 has
+  its own Phase 0 because the export is a large arc and the
+  package boundary (`acadamark-jats-export`, not yet present)
+  needs siting against `acadamark-core`.

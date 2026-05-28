@@ -1802,4 +1802,82 @@ export function run() {
     snapshotHast('document-38', hast);
     console.log('PASS: integration doc38 (book structuring: book/front/body/back wrapping, chapter/preface/appendix routing, per-chapter counter resets, chapter-prefix cross-refs, per-chapter footnotes, per-book-part authorship)');
   }
+
+  // ── Document 9: full alpha-complete pipeline (Phase 4 slice 4b) ─────────
+  // Phase 4 closure piece (formerly GAP-9). doc-9 is the most complex
+  // fixture — exercises every interpreter stage in combination: bare
+  // markdown headings (lifted to canonical sections), <config>, <data>
+  // + external <library>, <cite> resolution with both single-key and
+  // resolved-cite paths, <table csv>, <$$> display math with #eqn:
+  // ids, <note> inline footnotes, <figure> with src, <blockquote>,
+  // <ref> cross-references, <code python> code blocks with #code: ids.
+  // The snapshot pins the alpha-complete pipeline's combined behavior
+  // against this reference document. Per Phase 0 Q1.2 finding, doc-9
+  // is an article, not a book — pairing with book structuring in
+  // Phase 4 was convenient packaging, not coupled work.
+  //
+  // Pattern mirrors doc6/doc7/doc8: read source, run pipeline, plus a
+  // few spot-check assertions for the most distinctive surface
+  // features (so regressions in those specific areas surface with a
+  // readable assert message, not just a snapshot diff).
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-9-demo.acm'), 'utf8');
+    const assetsDir = join(FIXTURES_DIR, 'assets');
+    const { html, hast } = runPipeline(src, { assetsDir });
+
+    // Article structure present.
+    assert.ok(html.includes('<article>'), 'doc9: <article> wrapper present');
+    assert.ok(html.includes('<article-body>'), 'doc9: <article-body> present');
+
+    // Display math with cross-reference ids resolves to numbered output.
+    // The fixture uses #eqn:priority and #eqn:alt.
+    assert.ok(
+      /<display-math[^>]+id="eqn:priority"/.test(html),
+      'doc9: <$$ #eqn:priority> renders with id intact',
+    );
+    assert.ok(
+      html.includes('equation-number'),
+      'doc9: equation-number spans rendered (numbered display math)',
+    );
+
+    // Cross-references resolve. doc-9 uses bare prose pronouns like
+    // `<ref @tab:scores>` and `<ref @fig:priority>` — both should
+    // resolve to prefix-word + number strings.
+    assert.ok(
+      html.includes('table 1') || html.includes('table 2'),
+      'doc9: <ref @tab:scores> resolves with table prefix',
+    );
+    assert.ok(
+      html.includes('figure 1'),
+      'doc9: <ref @fig:priority> resolves with figure prefix',
+    );
+
+    // Citations resolve via the .bib library (slice 8 + library-load).
+    assert.ok(html.includes('class="cite"'), 'doc9: resolved cites render with class="cite"');
+    assert.ok(
+      html.includes('<bibliography>'),
+      'doc9: <bibliography> rendered in article-back',
+    );
+
+    // Notes collect (per-outermost-section per slice 7001aaa article
+    // default). Each section with notes gets a <note-list> at its end.
+    assert.ok(
+      html.includes('<note-list'),
+      'doc9: <note-list> elements rendered (notes from inline <note>)',
+    );
+
+    // Code blocks with #code: ids — registered for cross-reference
+    // lookup even though unnumbered (G4 ruling).
+    assert.ok(
+      /id="code:[a-z]+"/.test(html),
+      'doc9: <``` python #code:...> renders with the colon-id intact',
+    );
+
+    // Hover-preview assets get injected because cite + ref markers are
+    // present.
+    assert.ok(html.includes('tippy'), 'doc9: hover-preview assets injected');
+
+    snapshotHast('document-9', hast);
+    console.log('PASS: integration doc9 (alpha-complete pipeline; formerly GAP-9)');
+  }
 }

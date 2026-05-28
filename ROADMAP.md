@@ -78,10 +78,20 @@ consumed by all 8 frameable handlers; caption-as-content via the
 gate's kwarg → child-tag lift; theorem-family label rendering as a
 parallel use of the shared `formatLabel` primitive.
 
-The roadmap moves to **Phase 4 next** — document structuring (books
-and book-parts). The near-term sequence is Phase 4 → Phase 5, with
-Phase 6 (the alpha integration check) closing the milestone. Phase 7
-onwards is post-alpha.
+**Phase 4 also CLOSED 2026-05-29** — document structuring, shipped
+across Phase 0 (`fa38253`, findings) + slice 4a (`c7b2b75`,
+acadamarkBookStructuring plugin + scope-configurable counters and
+notes + per-chapter prefix-path cross-references + per-book-part
+authorship) + slice 4b (2026-05-29, doc-9 snapshot + integration
+test). The structural-tier alpha gap is closed; both article and
+book documents render structurally.
+
+The roadmap moves to **Phase 5 next** — JATS export (the first half
+of the JATS bridge: Layer 1 → JATS XML). Phase 5 has its own
+Phase 0 because the export is a large arc and the package boundary
+(`acadamark-jats-export`, not yet present) needs siting. After
+Phase 5: Phase 6 is the alpha integration check, closing the
+milestone. Phase 7 onwards is post-alpha.
 
 ---
 
@@ -263,7 +273,7 @@ and 2.
 
 ---
 
-## Phase 4 — Document structuring *(alpha — supports line 1)*
+## Phase 4 — Document structuring *(alpha — supports line 1)* *(CLOSED)*
 
 Layer 1's structural reach must include both articles (current) and
 books (deferred). `article-structuring.js` currently warns and skips
@@ -284,11 +294,17 @@ alpha gap.
   volume case. Article behavior strict-zero-diff preserved across
   all 22 existing fixtures.
 - **Add integration test and snapshot for `document-9-demo`**
-  *(formerly GAP-9)*. The most complex fixture; the dark surface area
-  this snapshot covers is high.
+  *(formerly GAP-9)* — **done in slice 4b (2026-05-29)**.
+  `document-9-expected.json` snapshot generated; integration test
+  block added in `test/integration.test.js` mirroring doc6/doc7/doc8.
+  The snapshot pins the alpha-complete article pipeline against the
+  doc-9 reference document. doc-9 is an article, not a book
+  (per Phase 0 Q1.2); pairing with book-structuring in Phase 4 was
+  convenient packaging, not coupled work.
 
-**Exits:** book documents render structurally; the doc-9 dark surface
-is pinned by snapshot.
+**Exits satisfied:** book documents render structurally (slice 4a);
+the doc-9 dark surface is pinned by snapshot (slice 4b). **Phase 4
+closes 2026-05-29** parallel to Phases 1, 2, and 3.
 
 ---
 

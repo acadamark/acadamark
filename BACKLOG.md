@@ -103,8 +103,14 @@ A flat scannable index of every open item. Detailed entries below.
   inconsistencies** `[specs/docs]` `[post-alpha]` *(formerly AUD-15)*
 - [ ] **Add forward-pointers from governed specs to design directions
   DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(formerly AUD-25)*
-- [ ] **Add integration test and snapshot for `document-9-demo`**
-  `[tests/build]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly GAP-9)*
+- [x] **Add integration test and snapshot for `document-9-demo`**
+  `[tests/build]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly GAP-9)* —
+  **done in slice 4b (2026-05-29)**. `document-9-expected.json`
+  snapshot generated; integration test block added mirroring
+  doc6/doc7/doc8 pattern. Pins the alpha-complete article pipeline
+  (bare-heading lift, citations via .bib library, display math with
+  numbered cross-refs, notes, frameable figures/tables, blockquote,
+  code blocks). All existing snapshots zero-diff.
 - [ ] **Migrate `<data>` onto the structured-element infrastructure**
   `[interpreter]` `[post-alpha]` *(filed by `beb2fb3`)*
 
@@ -385,22 +391,20 @@ relevant to AUD-14 below). Fix path: add "See also: DD-N in DESIGN.md
 propagation slice; `DESIGN.md` remains the canonical owner.
 *(formerly AUD-25)*
 
-### Add integration test and snapshot for `document-9-demo`
+### Add integration test and snapshot for `document-9-demo` — DONE
 `[tests/build]` `[alpha]` *(→ roadmap: Phase 4)*
 
-`test/fixtures/document-9-demo.acm` and `document-9-demo.html` exist
-and are re-rendered by `render-fixtures.js`, but unlike documents 1–8
-there is no corresponding `document-9-expected.json` snapshot and no
-test case in `test/integration.test.js`. document-9 is the most
-complex fixture: multi-note forward-reference numbering, external
-`.bib` library, inline + display math with equation numbers,
-cross-refs — exactly the stages added or restructured in the R1 / R2
-/ R3 slices. Without a snapshot, regressions in combined-pipeline
-paths can go undetected. Fix path: run `render-fixtures.js`, generate
-`document-9-expected.json` from current output, add a test case in
-`integration.test.js` mirroring the existing doc6/doc7/doc8 pattern.
-Severity: medium — the dark surface area covers the full pipeline in
-combination. *(formerly GAP-9)*
+**Closed 2026-05-29 in Phase 4 slice 4b.** `document-9-expected.json`
+snapshot generated from current pipeline output; integration test
+block added in `test/integration.test.js` mirroring the existing
+doc6/doc7/doc8 pattern (snapshot match + a few spot-check assertions
+for the most distinctive surface features: article wrapping, display
+math with numbered equation-number spans, table/figure cross-
+references, bibliography rendering, note-list emission, code-block
+colon-ids). The snapshot pins the alpha-complete article pipeline
+against this reference document — regressions in any combined-
+pipeline path now surface as a diff. All other 23 existing fixtures
+zero-diff. *(formerly GAP-9)*
 
 ### Migrate `<data>` onto the structured-element infrastructure
 `[interpreter]` `[post-alpha]`
