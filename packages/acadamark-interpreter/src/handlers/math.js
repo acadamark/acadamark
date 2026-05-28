@@ -156,16 +156,19 @@ export function mathHandler(_state, node) {
   if (node.id) properties.id = node.id;
   if (node.classes?.length) properties.className = node.classes;
 
-  // For numbered display-math sigil, append an equation-number span after
-  // the KaTeX output: <span class="equation-number">(N)</span>. The
-  // numbering plugin only sets node.computedNumber for display-math today
-  // (per NUMBERED_TAGNAMES in numbering.js); the new env tags and the
-  // <math> long-form are not in that table yet — their integration is
-  // regular-vocabulary work, out of scope of slice 2b. This branch
-  // therefore fires only for display-math, preserving the existing
-  // sigil-numbering behavior exactly.
+  // For any numbered math-family node, append an equation-number span
+  // after the KaTeX output: <span class="equation-number">(N)</span>.
+  //
+  // Phase 3 slice 3a (2026-05-28): the branch now fires for every tag
+  // whose vocab entry maps to the 'equation' registry-type — display-math,
+  // long-form <math>, and the four math envs (matrix/cases/align/eqnarray).
+  // All five tags joined NUMBERED_TAGNAMES in the same slice, so
+  // node.computedNumber is now set for all of them. The dispatch is
+  // implicit: any node arriving here with computedNumber != null gets
+  // numbered, regardless of tagname. The inline-math sigil never gets
+  // computedNumber (not in NUMBERED_TAGNAMES) so it stays unaffected.
   const children =
-    node.tagname === 'display-math' && node.computedNumber != null
+    node.computedNumber != null
       ? [
           ...katexChildren,
           {

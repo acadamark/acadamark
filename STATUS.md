@@ -1743,3 +1743,80 @@ that). One line gets added every few months, not every slice.
   content) would make the snapshot audit intractable. No product
   code, spec, or vocab changes in this slice — read-only as
   specified.
+- **2026-Q2 — Phase 3 slice 3a: numbering-registry extended for
+  theorem family + math envs.** The first implementation slice of
+  Phase 3 (the precursor recommended by `cec620c`'s findings).
+  Extended `NUMBERED_TAGNAMES` in
+  `packages/acadamark-interpreter/src/plugins/numbering.js` with
+  eight new entries: six for the theorem family
+  (`theorem`/`lemma`/`corollary`/`proposition` all mapped to the
+  shared `theorem` registry-type per amsthm "plain" style;
+  `definition` and `example` on their own counters; `remark` and
+  `proof` deliberately omitted — they stay unnumbered); five for
+  the math envs (`math` long-form, `matrix`, `cases`, `align`,
+  `eqnarray` all join `display-math` on the shared `equation`
+  counter). Added the three new registry types to `CONFIG_KEY`
+  (`number-theorems` / `number-definitions` / `number-examples`)
+  and to `<config>`'s `CONFIG_KWARGS` allowlist in
+  `apparatus-allowlists.js`. Extended `DEFAULT_PREFIXES` in
+  `ref-resolution.js` with `cor: 'corollary'` and
+  `prop: 'proposition'` (the other theorem-family colon-prefixes
+  already existed). The `math.js` handler's equation-number branch
+  was generalized to fire for any node with `computedNumber != null`
+  rather than just `tagname === 'display-math'`, so all five math
+  env tags now render with their `(N)` equation-number span.
+  Verified the `<NUMBERED_TAGNAMES>` Map shape (`tagname →
+  registry-type-string`, one-to-one) and the registry's per-type
+  numbering implementation (`registry.js:129-136`) already supports
+  shared counters with no infrastructure changes — multiple tagnames
+  mapping to the same registry-type string land in one per-type
+  entries Map and `numberRegistry()` numbers them in document order.
+
+  **Code-listing numbering pulled from scope at Q2.** `<code-block>`
+  exists, is already registered, and `DEFAULT_PREFIXES` already maps
+  the `code:` colon-prefix to `'listing'` — but the entry is
+  `numbered: false` per a **deliberate G4 ruling**
+  (`numbering.js:106-110`) with the exact reversal recipe documented
+  in-place. Reversing the ruling needs a separate chat-level
+  decision; the precursor recipe stays as a future-reader pointer.
+
+  **Theorem-family visible label rendering ("Theorem 1.")** is NOT
+  part of this slice — theorems still render as the schema-dispatch
+  `<theorem id="..." data-name="...">body</theorem>` custom element
+  (no label prefix). The numbering registry IS populated for them,
+  so cross-references resolve correctly to "Theorem N" / "Lemma N"
+  / etc. — but the theorem's own rendered HTML doesn't show the
+  number. That visible label rendering is slice 3b's work (the
+  frameable-class build's title/label/caption rendering shape
+  naturally absorbs it). This is explicitly out-of-scope per the
+  slice prompt's "Out of scope" list.
+
+  **STEP 7 finding** — the deferred numbering items the slice
+  prompt expected to close were never filed as formal open BACKLOG
+  entries; the deferral language lives in CLOSED-item prose
+  (ROADMAP Phase 1 sub-slice 3 note; the closed "DSL handlers"
+  entry's mention of DF-11a retirement). Recording the closure as
+  cross-references from this milestone (and from ROADMAP Phase 3's
+  new slice 3a entry) rather than fictionally closing items that
+  weren't open. The frameable-class BACKLOG entry got its Status
+  paragraph updated to reflect Phase 0 done (cec620c) and 3a done
+  (this slice) with 3b/3c still pending.
+
+  New fixture: `document-35-numbering-extension.acm` exercises the
+  full theorem family with cross-references (theorem/lemma/
+  corollary/proposition resolve to "Theorem 1" through
+  "Proposition 4" — sharing one counter; definition/example each
+  start at 1; remark/proof unnumbered), plus two math envs
+  (`<align #eqn:pyth>` + `<eqnarray #eqn:funcs>`) exercising the
+  shared equation counter and the new equation-number span output.
+
+  Snapshot audit: only `document-31-expected.json` changed (the
+  pre-existing math-envs fixture from slice 2b). Diff is exactly
+  five additions of `<span class="equation-number">(N)</span>` —
+  one per math env tag (math/matrix/cases/align/eqnarray) — numbers
+  1-5 in document order. Every other existing fixture's snapshot
+  unchanged. No regressions surfaced.
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc35).

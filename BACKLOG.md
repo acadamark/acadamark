@@ -461,9 +461,17 @@ A capability shared by `<fig>`, `<table>`, `<code>`, `<svg>`,
 optional outline box, optional title (top), optional caption
 (bottom); numbering folded into caption/title rendering, not a
 separate field. `<figure>` is an accepted authoring alias for the
-canonical `<fig>`, normalized at the lift gate. The build needs a
-Phase 0 first to confirm exact frameable membership and per-member
-shape divergences. *(filed by `1d100eb`)*
+canonical `<fig>`, normalized at the lift gate.
+
+**Status:** Phase 0 done (`cec620c`, 2026-05-27,
+`notes/phase3-frameable-findings.md`). Phase 0 recommended SPLIT
+into three sub-slices over a bundled implementation; ROADMAP
+Phase 3 carries the slice list (3a → 3b → 3c). **Slice 3a — the
+numbering-registry extension precursor — landed 2026-05-28**
+(theorem-family + math-envs numbered; cross-references resolve).
+**Slices 3b (frameable build) and 3c (caption-as-content) remain
+open.** This item closes when 3b and 3c land. *(filed by
+`1d100eb`)*
 
 ### Build the lowering pass (Layer 1 → canonical acadamark)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*

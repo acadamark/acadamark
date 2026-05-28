@@ -40,8 +40,42 @@ import { readBoolKwarg } from '../lib/bool-kwarg.js';
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
 // are rewritten to canonical Layer 1 names before this plugin runs, so the
 // keys here are the canonical names ('display-math', not '$$').
+//
+// SHARED-COUNTER CONVENTION: when several tagnames map to the same
+// registry-type string, the registry's per-type `entries` Map collects them
+// into one sequence and `numberRegistry()` numbers them in document order.
+// Example: theorem/lemma/corollary/proposition all map to 'theorem' so they
+// share one counter (amsthm "plain" style); math envs (matrix/cases/align/
+// eqnarray) all map to 'equation' so they share the equation counter with
+// display-math (and with the long-form <math> tag, semantically equivalent).
 const NUMBERED_TAGNAMES = new Map([
+  // Math (Phase 3 slice 3a, 2026-05-28): five env tags + <math> long-form
+  // join the existing display-math entry, all on the shared 'equation'
+  // counter. Each env tag's handler-side equation-number rendering is
+  // extended in handlers/math.js by the same slice.
   ['display-math', 'equation'],
+  ['math',         'equation'],
+  ['matrix',       'equation'],
+  ['cases',        'equation'],
+  ['align',        'equation'],
+  ['eqnarray',     'equation'],
+  // Theorem family (Phase 3 slice 3a, 2026-05-28): four propositional
+  // tagnames share the 'theorem' counter (amsthm "plain" style);
+  // <definition> and <example> get their own counters; <remark> and
+  // <proof> stay unnumbered (no entries here). The theorem's own
+  // rendered HTML does NOT yet show a "Theorem N." label — the
+  // schema-dispatch path doesn't consume node.computedNumber for
+  // theorem-family tags. Cross-references DO resolve ("Theorem 3")
+  // because the registry entry exists. Visible label rendering on the
+  // theorem element itself is slice 3b's work (the frameable-class
+  // build will surface the title/label/caption rendering shape).
+  ['theorem',      'theorem'],
+  ['lemma',        'theorem'],
+  ['corollary',    'theorem'],
+  ['proposition',  'theorem'],
+  ['definition',   'definition'],
+  ['example',      'example'],
+  // Figures and tables — original Phase 1 entries.
   ['figure', 'figure'],
   ['table', 'table'],
 ]);
@@ -51,6 +85,9 @@ const CONFIG_KEY = {
   equation: 'number-equations',
   figure: 'number-figures',
   table: 'number-tables',
+  theorem: 'number-theorems',
+  definition: 'number-definitions',
+  example: 'number-examples',
 };
 
 // Section tagnames registered for cross-reference lookup (AUD-09).

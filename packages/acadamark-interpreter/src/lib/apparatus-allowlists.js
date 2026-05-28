@@ -43,6 +43,13 @@ export const CONFIG_KWARGS = new Map([
   ['number-equations',        'live'],   // numbering.js
   ['number-figures',          'live'],   // numbering.js
   ['number-tables',           'live'],   // numbering.js
+  // Phase 3 slice 3a (2026-05-28): the three new theorem-family counter
+  // suppressions. Same pattern as number-equations/figures/tables —
+  // setting any of these to false in a <config> block suppresses the
+  // entire counter for the document.
+  ['number-theorems',         'live'],   // numbering.js (theorem/lemma/corollary/proposition)
+  ['number-definitions',      'live'],   // numbering.js (<definition>)
+  ['number-examples',         'live'],   // numbering.js (<example>)
 
   // Reserved — the apparatus-tag reconciliation ruling enumerated these as
   // the intended <config> surface. The implementation per key is future

@@ -45,6 +45,8 @@ const DEFAULT_PREFIXES = {
   code: 'listing',   // G4: code-block sigil registration (PG-6)
   thm:  'theorem',
   lem:  'lemma',
+  cor:  'corollary',     // Phase 3 slice 3a (2026-05-28)
+  prop: 'proposition',   // Phase 3 slice 3a (2026-05-28)
   def:  'definition',
   ex:   'example',
 };

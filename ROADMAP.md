@@ -161,20 +161,58 @@ alias for the canonical `<fig>`, normalized at the lift gate.
 
 The phase runs a **Phase 0 first** to confirm the exact frameable
 membership list and any per-member shape divergences before building.
+Phase 0 (`cec620c`) recommended a **SPLIT into three sub-slices**
+(3a → 3b → 3c) over a single bundled slice; that recommendation
+shapes this phase.
 
 **Items, in order:**
 
-- **Frameable-class Phase 0** *(filed by `1d100eb`)*. Confirms the
-  member list and surfaces per-member shape questions.
-- **Frameable-class build.** The shared capability and the per-member
-  wiring.
-- **Caption-as-content for `<table>`, `<figure>`, similar (DD-1 / DD-2
-  implementation)** *(formerly AUD-14)*. Captions become first-class
-  child content rather than attribute strings; citations inside
-  captions then parse naturally.
+- **Frameable-class Phase 0** *(filed by `1d100eb`; closed by
+  `cec620c`, 2026-05-27)*. Findings recorded in
+  `notes/phase3-frameable-findings.md`: three missing vocab entries
+  (`<fig>`, `<svg>`, `<frame>`); proposed shared frameable surface
+  (`id`, `title`, `caption`, `border`, `numbered`); recommendation
+  for caption-as-content Option A (child-tag with kwarg-form lift);
+  bundle-vs-split: SPLIT.
+- **Slice 3a — Numbering-registry extension** *(done 2026-05-28)*.
+  Extended `NUMBERED_TAGNAMES` to cover the theorem family
+  (`<theorem>`/`<lemma>`/`<corollary>`/`<proposition>` on the shared
+  `theorem` counter per amsthm "plain" style; `<definition>` and
+  `<example>` on their own counters; `<remark>`/`<proof>` stay
+  unnumbered) and math envs (long-form `<math>`, `<matrix>`,
+  `<cases>`, `<align>`, `<eqnarray>` all join the existing
+  `equation` counter). Added the matching `CONFIG_KEY` entries
+  (`number-theorems`, `number-definitions`, `number-examples`) to
+  the `<config>` allowlist. `DEFAULT_PREFIXES` extended with `cor`
+  / `prop`. The math handler's equation-number branch generalized
+  to any node with `computedNumber != null`. Code-listing numbering
+  was pulled from scope at slice-prompt Q2: `<code-block>` is
+  deliberately unnumbered per a G4 ruling (`numbering.js:106-110`)
+  and reversing that decision requires its own chat-level ruling.
+  Cross-references resolve to "Theorem N" / "Lemma N" / "Eq. N"
+  etc.; visible label rendering on theorem-family elements
+  themselves ("Theorem 1.") is deferred to slice 3b (the frameable
+  build's title rendering naturally absorbs it).
+- **Slice 3b — Frameable-class build.** Create `<fig>`, `<svg>`,
+  `<frame>` vocab entries. Reconcile `<figure>` as authoring alias
+  for `<fig>` at the lift gate. Build the shared rendering
+  capability (title-top, caption-bottom, optional border,
+  number-folded-into-label). Per-element handlers consume the
+  shared helper. Also picks up: theorem-family `name` kwarg
+  rendering ("(Pythagoras)"); theorem-family label rendering
+  ("Theorem N (Name):"); the `<figure>` ⇄ `<fig>` alias activation.
+- **Slice 3c — Caption-as-content (DD-1 / DD-2 implementation,
+  formerly AUD-14)**. `<caption>` becomes a child-tag position on
+  every frameable element. The `caption=` kwarg form lifts to
+  `<caption>` child at the normalize-to-canonical gate. Each
+  frameable handler reads the child rather than the kwarg.
+  Recursive content parsing handles citations inside captions
+  naturally.
 
 **Exits:** every alpha-tagged frameable element renders with the
-shared capability; captions accept rich content.
+shared capability; captions accept rich content; deferred numbering
+work (theorem family, math envs) is registered and cross-
+referenceable.
 
 ---
 

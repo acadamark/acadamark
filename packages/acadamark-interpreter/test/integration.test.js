@@ -1523,4 +1523,64 @@ export function run() {
     snapshotHast('document-34', hast);
     console.log('PASS: integration doc34 (mixed footnote placement; article-back fallback for residual notes)');
   }
+
+  // ── Document 35: numbering-registry extension (Phase 3 slice 3a) ─────────
+  // Proves: theorem family counters (shared theorem counter for theorem/
+  // lemma/corollary/proposition; own counters for definition and example;
+  // remark/proof unnumbered); math envs share the equation counter with
+  // display-math; cross-references resolve with the right prefixes.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-35-numbering-extension.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Cross-references: the shared theorem counter assigns sequential
+    // numbers across the four propositional tagnames in document order.
+    // Slice 3a wires up the registry; ref-resolution renders the
+    // "Theorem N" / "Lemma N" / etc. text from DEFAULT_PREFIXES.
+    assert.ok(
+      html.includes('>theorem 1<') || html.includes('>Theorem 1<') || html.includes('theorem 1</a>'),
+      'doc35: <ref @thm:pyth> resolves to "theorem 1" (shared counter, position 1)',
+    );
+    assert.ok(
+      html.includes('lemma 2'),
+      'doc35: <ref @lem:zorn> resolves to "lemma 2" (shared counter, position 2)',
+    );
+    assert.ok(
+      html.includes('corollary 3'),
+      'doc35: <ref @cor:odd> resolves to "corollary 3" (shared counter, position 3)',
+    );
+    assert.ok(
+      html.includes('proposition 4'),
+      'doc35: <ref @prop:cs> resolves to "proposition 4" (shared counter, position 4)',
+    );
+    // Definition and example each have their own counters — both start at 1.
+    assert.ok(
+      html.includes('definition 1'),
+      'doc35: <ref @def:group> resolves to "definition 1" (own counter)',
+    );
+    assert.ok(
+      html.includes('example 1'),
+      'doc35: <ref @ex:integers> resolves to "example 1" (own counter)',
+    );
+
+    // Math envs share the equation counter; align is equation 1, eqnarray
+    // is equation 2. They get visible equation-number spans (handler-side)
+    // and the cross-reference resolves to "equation 1".
+    assert.ok(
+      html.includes('equation 1'),
+      'doc35: <ref @eqn:pyth> resolves to "equation 1"',
+    );
+    // The align tag itself renders an equation-number span. Look for the
+    // span class — at least one math env should show the (N) annotation.
+    assert.ok(
+      html.includes('equation-number'),
+      'doc35: math env tags render with class="equation-number" span',
+    );
+
+    snapshotHast('document-35', hast);
+    console.log('PASS: integration doc35 (numbering-registry extension: theorem-family + math-envs)');
+  }
 }
