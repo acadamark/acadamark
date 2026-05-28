@@ -24,7 +24,15 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 107 primary + 1 'quote' alias = 108.
+// Entry count: 109 primary + 2 aliases ('quote', 'figure') = 111.
+// Recent additions:
+// - 2026-Q2: Phase 3 slice 3b — `fig.md`, `svg.md`, `frame.md` added
+//   as the three settled frameable members that lacked vocab entries
+//   (per Phase 3 Phase 0 findings, `cec620c`); `figure.md` deleted in
+//   favor of `<figure>` as a shorthand alias declared on fig.md (the
+//   Phase 3 frameable design settled `<fig>` as the canonical name
+//   with `<figure>` as authoring alias). Net: 107 → 109 primary,
+//   1 → 2 aliases. Total: 108 → 111 entries.
 // Recent additions:
 // - 2026-Q2: 5 <meta> allowlist members (doi, license, lang, version,
 //   keywords) added by the apparatus-tag reconciliation follow-on.
@@ -56,8 +64,8 @@ function check(label, cond) {
 //   `data-acadamark-dsl` marker for downstream tooling).
 //   Brought count from 105 → 107 primary.
 check(
-  `VOCABULARY has 108 entries (107 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 108,
+  `VOCABULARY has 111 entries (109 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 111,
 );
 
 // Build-time loader has nothing to report in normal state.

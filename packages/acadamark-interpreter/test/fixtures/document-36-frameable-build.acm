@@ -1,0 +1,86 @@
+<meta type=article title="Frameable build fixture (Phase 3 slice 3b)">
+</meta>
+
+<section | The frameable class>
+
+Phase 3 slice 3b builds the frameable shared capability. Three new vocab
+entries (`<fig>`, `<svg>`, `<frame>`) join the existing handlers
+(`<table>`, `<csv>`, `<tsv>`, `<mermaid>`, `<abc>`) in the frameable
+class. They share a frameable surface (id, title, caption, border,
+numbered) and the same `formatLabel` primitive for their number-label
+rendering.
+
+<sub-section | The `<fig>` canonical form>
+
+`<fig>` is the canonical Layer 1 name; `<figure>` is an authoring alias
+that rewrites to `<fig>` at the normalize-to-canonical gate.
+
+<fig #fig:elephant src=elephant.jpg | An African elephant.>
+
+The alias form:
+
+<figure src=zebra.jpg | A zebra in the savanna.>
+
+Both render as HTML-native `<figure>` elements. The handler decides the
+output tagname; the vocab key (and the AST tagname after the gate
+rewrite) is `fig` regardless.
+
+<sub-section | DSL counter assignments>
+
+Slice 3a wired the math envs into the equation counter. Slice 3b
+extends NUMBERED_TAGNAMES with the DSL handlers' counter assignments:
+`<csv>` and `<tsv>` share the `table` counter with `<table>`; `<mermaid>`
+and `<abc>` share the `figure` counter with `<fig>`.
+
+A standalone CSV with a table cross-reference:
+
+<csv #tab:salaries caption="Software engineer salary by level">
+level,median,p90
+junior,90000,120000
+senior,160000,210000
+staff,260000,340000
+</csv>
+
+A mermaid diagram on the figure counter:
+
+<mermaid #fig:flow caption="Compilation flow">
+graph LR
+  A[Source] --> B[Parser]
+  B --> C[AST]
+  C --> D[HTML]
+</mermaid>
+
+Cross-references resolve with the right prefixes — <ref @tab:salaries>
+resolves to "table 3" (1: the `<fig src=elephant.jpg>` aliased above
+counts as a `<fig>` registration; 2: the zebra; ... actually wait,
+the table counter is independent — this is "table 1"). And
+<ref @fig:flow> resolves to "figure 3" (1: elephant, 2: zebra, 3: flow).
+
+<sub-section | Theorem-family label rendering>
+
+Slice 3b's theorem-family handler renders the "Theorem N (Name)." label
+spans that slice 3a left deferred (the registry-side numbering landed in
+3a; the visible labels in 3b).
+
+<theorem #thm:fundamental name="Fundamental Theorem of Arithmetic">
+Every integer greater than 1 either is prime itself or is the product
+of prime numbers, and that this product is unique up to ordering.
+</theorem>
+
+<lemma>
+Every nonempty subset of the natural numbers has a least element.
+</lemma>
+
+<proof | By induction on the size of the subset.>
+
+Cross-reference to <ref @thm:fundamental> resolves to "theorem 1".
+
+<sub-section | The +border frameable surface>
+
+The `+border` flag opts a `<fig>` into the frameable-border class. Off
+by default for `<fig>`.
+
+<fig +border src=plot.png | A plot with a frame around it.>
+
+The class flows through to the rendered `<figure>` so theme stylesheets
+can target it.

@@ -48,7 +48,8 @@ shorthand_examples:
       </lemma>
     layer1_html: |
       <lemma id="lem:zorn" data-name="Zorn">Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</lemma>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<lemma>`

@@ -43,7 +43,8 @@ shorthand_examples:
       </proposition>
     layer1_html: |
       <proposition data-name="Cauchy-Schwarz">For any vectors $u$, $v$ in an inner-product space, $|\langle u, v \rangle| \le \|u\| \, \|v\|$.</proposition>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<proposition>`

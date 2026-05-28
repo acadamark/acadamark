@@ -360,6 +360,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "theorem-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Theorem 1."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "If ",
                       "position": {
@@ -937,6 +956,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "lemma-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Lemma 2."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "Every nonempty partially ordered set in which every chain has an upper bound contains a maximal element.",
                       "position": {
@@ -962,6 +1000,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "corollary-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Corollary 3."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "Every prime greater than 2 is odd.",
                       "position": {
@@ -986,6 +1043,25 @@
                     "id": "prop:cs"
                   },
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "proposition-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Proposition 4."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
                     {
                       "type": "text",
                       "value": "For real ",
@@ -1566,6 +1642,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "definition-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Definition 1."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "A ",
                       "position": {
@@ -1714,6 +1809,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "example-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Example 1."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "The integers $",
                       "position": {
@@ -1768,6 +1882,25 @@
                   "properties": {},
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "remark-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Remark."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "This remark element is unnumbered by design.",
                       "position": {
@@ -1790,6 +1923,25 @@
                   "tagName": "proof",
                   "properties": {},
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "proof-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Proof."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
                     {
                       "type": "text",
                       "value": "By similar triangles. ∎",

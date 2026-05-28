@@ -75,6 +75,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "theorem-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Theorem 1 (Pythagoras)."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "If a^2 + b^2 = c^2, the triangle with sides a, b, c is right-angled.",
                       "position": {
@@ -97,6 +116,25 @@
                   "tagName": "proof",
                   "properties": {},
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "proof-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Proof."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
                     {
                       "type": "text",
                       "value": "By similar triangles and the converse of the right-triangle altitude theorem.",
@@ -124,6 +162,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "lemma-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Lemma 2 (Zorn)."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "Every non-empty partially-ordered set in which every chain has an upper\nbound contains a maximal element.",
                       "position": {
@@ -146,6 +203,25 @@
                   "tagName": "corollary",
                   "properties": {},
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "corollary-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Corollary 3."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
                     {
                       "type": "text",
                       "value": "Every prime greater than 2 is odd.",
@@ -171,6 +247,25 @@
                     "data-name": "Cauchy-Schwarz"
                   },
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "proposition-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Proposition 4 (Cauchy-Schwarz)."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
                     {
                       "type": "text",
                       "value": "For any vectors u, v in an inner-product space,\n|",
@@ -271,6 +366,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "definition-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Definition 1 (Group)."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "A ",
                       "position": {
@@ -335,6 +449,25 @@
                   },
                   "children": [
                     {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "example-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Example 1."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
                       "type": "text",
                       "value": "The integers under addition form a group: the operation is associative,\n0 is the identity, and every integer has an additive inverse.",
                       "position": {
@@ -357,6 +490,25 @@
                   "tagName": "remark",
                   "properties": {},
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "remark-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Remark."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
                     {
                       "type": "text",
                       "value": "The hypothesis of compactness is essential here; without it the\nconclusion fails.",

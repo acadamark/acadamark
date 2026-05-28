@@ -45,7 +45,8 @@ shorthand_examples:
       </definition>
     layer1_html: |
       <definition id="def:group" data-name="Group">A <em>group</em> is a set $G$ together with a binary operation $\cdot$ satisfying associativity, identity, and inverses.</definition>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<definition>`

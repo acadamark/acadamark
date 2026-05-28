@@ -46,7 +46,8 @@ shorthand_examples:
       </example>
     layer1_html: |
       <example id="ex:integers">The integers $\mathbb{Z}$ under addition form a group: the operation is associative, $0$ is the identity, and every integer has an additive inverse.</example>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<example>`

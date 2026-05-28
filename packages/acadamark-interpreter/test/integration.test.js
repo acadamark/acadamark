@@ -1142,11 +1142,12 @@ export function run() {
   }
 
   // ── Document 29: deferred-vocab sub-slice 3 (theorem family) ───────────────
-  // Proves the eight theorem-family elements render as real elements via
-  // schema dispatch: theorem, lemma, corollary, proposition, definition,
-  // example, remark, proof. The matching <theorem> handler — numbering,
-  // label rendering, QED, optional-name display — is Phase 2 work and
-  // not exercised here; the fixture only proves the vocabulary is wired.
+  // Proves the eight theorem-family elements render as real elements
+  // via the theorem-family handler. Phase 3 slice 3b (2026-05-28) added
+  // the handler that prepends "Theorem N (Name)." label spans;
+  // assertions updated to expect the label-then-body shape. Body-content
+  // assertions now use [\s\S]* between the opening tag and the body text
+  // because the label span sits between them.
   {
     const src = readFileSync(
       join(FIXTURES_DIR, 'document-29-deferred-vocab-sub3.acm'),
@@ -1155,21 +1156,16 @@ export function run() {
     const { html, hast } = runPipeline(src);
 
     // Each of the eight elements appears as a real tag in the output.
-    // <theorem>'s body now renders (the line-45 placeholder
-    // ['theorem', 'theorem'] in DSL_REGISTRY was removed by the
-    // DSL/long-form parser bug fix; <theorem> gets the default handler
-    // and its content is recursively parsed). Sub-slice 3 noted this as
-    // a Phase-2 limitation; the DSL purge fixed it as a side effect.
     assert.ok(
       /<theorem\b[^>]*id="thm:pyth"[^>]*>/.test(html),
       'doc29: <theorem> renders as a real element with its id intact',
     );
     assert.ok(
-      /<theorem\b[^>]*>If a\^2 \+ b\^2 = c\^2/.test(html),
-      'doc29: <theorem> body content renders (post-DSL-purge)',
+      /<theorem\b[^>]*>[\s\S]*If a\^2 \+ b\^2 = c\^2/.test(html),
+      'doc29: <theorem> body content renders after the label span',
     );
     assert.ok(
-      /<proof\b[^>]*>By similar triangles/.test(html),
+      /<proof\b[^>]*>[\s\S]*By similar triangles/.test(html),
       'doc29: <proof> renders with its body',
     );
     assert.ok(
@@ -1177,7 +1173,7 @@ export function run() {
       'doc29: <lemma> renders with its body',
     );
     assert.ok(
-      /<corollary\b[^>]*>Every prime greater than 2 is odd/.test(html),
+      /<corollary\b[^>]*>[\s\S]*Every prime greater than 2 is odd/.test(html),
       'doc29: <corollary> renders with its body',
     );
     assert.ok(
@@ -1195,6 +1191,28 @@ export function run() {
     assert.ok(
       /<remark\b[^>]*>[\s\S]*compactness/i.test(html),
       'doc29: <remark> renders with its body',
+    );
+
+    // Phase 3 slice 3b: the theorem-family handler renders a label span
+    // before each numbered element's body content. Verify the label
+    // shape on a few representative elements.
+    assert.ok(
+      html.includes('Theorem 1 (Pythagoras).'),
+      'doc29: <theorem name="Pythagoras"> renders "Theorem 1 (Pythagoras)." label',
+    );
+    assert.ok(
+      html.includes('Lemma 2 (Zorn).'),
+      'doc29: <lemma name="Zorn"> renders "Lemma 2 (Zorn)." label (shared theorem counter)',
+    );
+    // remark/proof are unnumbered — the handler renders a numberless
+    // "Remark." / "Proof." label (amsthm convention).
+    assert.ok(
+      html.includes('Proof.') && !html.includes('Proof 1'),
+      'doc29: <proof> renders unnumbered "Proof." label',
+    );
+    assert.ok(
+      html.includes('Remark.') && !html.includes('Remark 1'),
+      'doc29: <remark> renders unnumbered "Remark." label',
     );
 
     // The `name` kwarg flows through to data-name on at least one element.
@@ -1582,5 +1600,76 @@ export function run() {
 
     snapshotHast('document-35', hast);
     console.log('PASS: integration doc35 (numbering-registry extension: theorem-family + math-envs)');
+  }
+
+  // ── Document 36: frameable build (Phase 3 slice 3b) ──────────────────────
+  // Proves: three new vocab entries (fig/svg/frame); <figure> alias rewrite
+  // at the gate; DSL counter assignments (csv/tsv → table, mermaid/abc →
+  // figure); theorem-family label rendering ("Theorem N (Name)."); the
+  // +border frameable surface.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-36-frameable-build.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // <figure> alias rewrites to <fig> at the gate. The rendered HTML
+    // still says <figure> (HTML-native), and both authored forms
+    // produce the same rendered output.
+    assert.ok(
+      html.includes('<figure>') || html.includes('<figure '),
+      'doc36: aliased <figure> renders as HTML-native <figure>',
+    );
+    assert.ok(
+      html.includes('alt="An African elephant."'),
+      'doc36: <fig src=elephant.jpg> renders with img alt from caption',
+    );
+    assert.ok(
+      html.includes('alt="A zebra in the savanna."'),
+      'doc36: <figure src=zebra.jpg> alias form renders same as <fig>',
+    );
+
+    // DSL counter cross-references resolve.
+    assert.ok(
+      html.includes('table 1'),
+      'doc36: <ref @tab:salaries> resolves to "table 1" (csv on table counter)',
+    );
+    // Mermaid sits on the figure counter; elephant + zebra are figs 1 and 2;
+    // mermaid is figure 3.
+    assert.ok(
+      html.includes('figure 3'),
+      'doc36: <ref @fig:flow> resolves to "figure 3" (mermaid on figure counter)',
+    );
+
+    // Theorem-family handler renders label spans.
+    assert.ok(
+      html.includes('Theorem 1 (Fundamental Theorem of Arithmetic).'),
+      'doc36: <theorem name="..."> renders the parenthesized-name label',
+    );
+    assert.ok(
+      html.includes('Lemma 2.'),
+      'doc36: <lemma> (no name) renders "Lemma N." plain label, sharing theorem counter',
+    );
+    assert.ok(
+      html.includes('Proof.'),
+      'doc36: <proof> renders unnumbered "Proof." label',
+    );
+
+    // Cross-reference to theorem resolves to "theorem 1" (shared counter).
+    assert.ok(
+      html.includes('theorem 1'),
+      'doc36: <ref @thm:fundamental> resolves to "theorem 1"',
+    );
+
+    // +border flag adds frameable-border class.
+    assert.ok(
+      /class="[^"]*frameable-border[^"]*"/.test(html) ||
+        /className.*frameable-border/.test(html),
+      'doc36: <fig +border> adds frameable-border class',
+    );
+
+    snapshotHast('document-36', hast);
+    console.log('PASS: integration doc36 (frameable build: fig/svg/frame vocab, figure alias, DSL counters, theorem labels)');
   }
 }

@@ -620,6 +620,31 @@ const NORMALIZATIONS = [
     },
   },
 
+  // ─── Group A1.5: authoring-alias tagname rewrite ──────────────────────
+  //
+  // Phase 3 slice 3b (2026-05-28): `<figure>` is an accepted authoring
+  // alias for the canonical `<fig>` (per `DESIGN.md` §"Frameable
+  // elements: a shared capability"). Rewrite at the gate so all
+  // downstream tagname-keyed lookups (NUMBERED_TAGNAMES, the handler
+  // dispatch, ref-resolution prefixes) see the canonical name.
+  //
+  // The vocab also declares a `shorthand_expansions` alias for
+  // `figure → fig` (defensive: the alias key in VOCABULARY would catch
+  // a `figure`-named node that somehow bypassed this gate). Both the
+  // gate rewrite and the vocab alias coexist intentionally.
+  //
+  // This is a small alias table rather than a generic mechanism. The
+  // pattern of "specific tag-to-canonical-name rewrites at the gate"
+  // can lift to a shared map (TAGNAME_ALIASES) when a second alias
+  // family lands.
+  {
+    predicate: (node) => isAcadamarkTag(node) && node.tagname === 'figure',
+    normalize: (node) => {
+      node.tagname = 'fig';
+      return node;
+    },
+  },
+
   // ─── Group A2: structured-element + <config> kwarg lift ───────────────
   //
   // For any structured-element tag (today: <meta>, <author>; registered in

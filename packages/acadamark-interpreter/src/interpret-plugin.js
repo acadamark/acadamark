@@ -32,6 +32,7 @@ import { csvHandler } from './handlers/csv.js';
 import { tsvHandler } from './handlers/tsv.js';
 import { mermaidHandler } from './handlers/mermaid.js';
 import { abcHandler } from './handlers/abc.js';
+import { theoremFamilyHandler } from './handlers/theorem.js';
 import {
   noteMarkerHandler,
   noteListHandler,
@@ -82,6 +83,7 @@ const HANDLER_REGISTRY = new Map([
   ['./handlers/tsv.js', tsvHandler],
   ['./handlers/mermaid.js', mermaidHandler],
   ['./handlers/abc.js', abcHandler],
+  ['./handlers/theorem.js', theoremFamilyHandler],
 ]);
 
 /**

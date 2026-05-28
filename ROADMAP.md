@@ -193,14 +193,30 @@ shapes this phase.
   etc.; visible label rendering on theorem-family elements
   themselves ("Theorem 1.") is deferred to slice 3b (the frameable
   build's title rendering naturally absorbs it).
-- **Slice 3b — Frameable-class build.** Create `<fig>`, `<svg>`,
-  `<frame>` vocab entries. Reconcile `<figure>` as authoring alias
-  for `<fig>` at the lift gate. Build the shared rendering
-  capability (title-top, caption-bottom, optional border,
-  number-folded-into-label). Per-element handlers consume the
-  shared helper. Also picks up: theorem-family `name` kwarg
-  rendering ("(Pythagoras)"); theorem-family label rendering
-  ("Theorem N (Name):"); the `<figure>` ⇄ `<fig>` alias activation.
+- **Slice 3b — Frameable-class build** *(done 2026-05-28)*. Three
+  new vocab entries shipped: `<fig>`, `<svg>`, `<frame>`. `<figure>`
+  reconciled as an authoring alias rewriting to `<fig>` at the
+  normalize-to-canonical gate (cleanest path; the same gate that
+  rewrites sigil tagnames). Shared frameable rendering is implemented
+  as a small label-formatting primitive (`lib/frameable.js`'s
+  `formatLabel(prefix, number, name?)`) rather than a wrapper
+  helper — Q1's investigation found three structurally divergent
+  caption-rendering idioms across the existing handlers (inside-table
+  `<caption>`, inside-figure `<figcaption>`, sibling-figcaption); a
+  uniform wrapper helper would have been the wrong abstraction at
+  this granularity. Per-element handlers (figure, table, csv, tsv)
+  call the primitive at their existing label-construction sites.
+  DSL counter assignments wired into `NUMBERED_TAGNAMES`: csv/tsv
+  → table counter; mermaid/abc → figure counter; svg → figure
+  counter. `<frame>` deliberately omitted from NUMBERED_TAGNAMES
+  this slice (its vocab default is `numbered: false`; opt-in via
+  `+numbered` needs handler-level support — bundle into 3c or a
+  sibling slice). Theorem-family label rendering bundled into this
+  slice per Q3's recommendation: new `handlers/theorem.js` handles
+  all 8 family elements; uses the same `formatLabel` primitive to
+  prepend "Theorem N (Name)." / "Lemma N." / etc. to the body;
+  remark/proof get the unnumbered amsthm-convention "Remark." /
+  "Proof." form. New fixture doc36 exercises the build end-to-end.
 - **Slice 3c — Caption-as-content (DD-1 / DD-2 implementation,
   formerly AUD-14)**. `<caption>` becomes a child-tag position on
   every frameable element. The `caption=` kwarg form lifts to

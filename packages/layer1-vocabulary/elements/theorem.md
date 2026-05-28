@@ -71,7 +71,8 @@ shorthand_examples:
       "fig:", "eqn:", "sec:" elsewhere in acadamark). The name
       kwarg lifts to `data-name`; the Phase-2 handler will render
       it as the "(Pythagoras)" suffix to the label "Theorem N".
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<theorem>`

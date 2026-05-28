@@ -119,8 +119,10 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Support caption-as-content for `<table>`, `<figure>`, similar
   (DD-1 / DD-2 implementation)** `[cross-cutting]` `[alpha]`
   *(→ roadmap: Phase 3)* *(formerly AUD-14)*
-- [ ] **Build the frameable-class capability** `[cross-cutting]`
-  `[alpha]` *(→ roadmap: Phase 3)* *(filed by `1d100eb`)*
+- [x] **Build the frameable-class capability** `[cross-cutting]`
+  `[alpha]` *(→ roadmap: Phase 3)* *(filed by `1d100eb`)* —
+  **done across Phase 0 (`cec620c`), slice 3a (`14b95b7`,
+  numbering precursor), and slice 3b (2026-05-28, the build).**
 - [ ] **Build the lowering pass (Layer 1 → canonical acadamark)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
 
@@ -452,26 +454,38 @@ equivalent forms"). When scoped, follow the design-directions
 framing. Severity: medium-high — affects real authoring need
 (captions with citations). *(formerly AUD-14)*
 
-### Build the frameable-class capability
+### Build the frameable-class capability — DONE
 `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 3)*
 
-A capability shared by `<fig>`, `<table>`, `<code>`, `<svg>`,
-`<mermaid>`, other DSL-registry block elements, plus the generic
-`<frame>`. Settled design (recorded in `DESIGN.md` via `1d100eb`):
-optional outline box, optional title (top), optional caption
-(bottom); numbering folded into caption/title rendering, not a
-separate field. `<figure>` is an accepted authoring alias for the
+**Closed 2026-05-28.** A capability shared by `<fig>`, `<table>`,
+`<code>`, `<svg>`, `<mermaid>`, other DSL-registry block elements,
+plus the generic `<frame>`. Settled design (recorded in `DESIGN.md`
+via `1d100eb`): optional outline box, optional title (top), optional
+caption (bottom); numbering folded into caption/title rendering, not
+a separate field. `<figure>` is an accepted authoring alias for the
 canonical `<fig>`, normalized at the lift gate.
 
-**Status:** Phase 0 done (`cec620c`, 2026-05-27,
-`notes/phase3-frameable-findings.md`). Phase 0 recommended SPLIT
-into three sub-slices over a bundled implementation; ROADMAP
-Phase 3 carries the slice list (3a → 3b → 3c). **Slice 3a — the
-numbering-registry extension precursor — landed 2026-05-28**
-(theorem-family + math-envs numbered; cross-references resolve).
-**Slices 3b (frameable build) and 3c (caption-as-content) remain
-open.** This item closes when 3b and 3c land. *(filed by
-`1d100eb`)*
+Shipped across three sub-slices:
+- **Phase 0** (`cec620c`, 2026-05-27,
+  `notes/phase3-frameable-findings.md`) — inventory, per-member
+  shared-vs-specific analysis, SPLIT-vs-bundle recommendation.
+- **Slice 3a — numbering-registry extension** (`14b95b7`,
+  2026-05-28) — theorem-family + math-envs numbered;
+  cross-references resolve.
+- **Slice 3b — frameable build** (this slice, 2026-05-28) — three
+  new vocab entries (`<fig>`, `<svg>`, `<frame>`); `<figure>` alias
+  rewriting to `<fig>` at the gate; shared `formatLabel` primitive
+  in `lib/frameable.js` (the helper sits at the label-formatting
+  level after Q1 found three structurally divergent caption idioms
+  across the existing handlers — uniform wrapper helper was the
+  wrong abstraction); DSL counter assignments (csv/tsv → table,
+  mermaid/abc → figure, svg → figure); theorem-family label
+  rendering ("Theorem N (Name).") via new `handlers/theorem.js`;
+  fixture doc36.
+
+**Slice 3c — caption-as-content (DD-1 / DD-2 implementation)
+remains open** — that's the next Phase 3 item; see L119-121
+above for the open `[alpha]` entry. *(filed by `1d100eb`)*
 
 ### Build the lowering pass (Layer 1 → canonical acadamark)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*

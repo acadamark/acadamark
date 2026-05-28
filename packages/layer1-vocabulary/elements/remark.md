@@ -48,7 +48,8 @@ shorthand_examples:
       </remark>
     layer1_html: |
       <remark>The hypothesis of compactness is essential here; without it the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).</remark>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<remark>`

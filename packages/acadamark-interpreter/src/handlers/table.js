@@ -27,6 +27,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import yaml from 'js-yaml';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
+import { formatLabel } from '../lib/frameable.js';
 
 // ─── Format parsers ───────────────────────────────────────────────────────────
 
@@ -337,13 +338,13 @@ function makeTbody(rows) {
  */
 function makeCaption(captionText, computedNumber) {
   const children = [];
-  if (computedNumber != null) {
-    children.push({
-      type: 'element',
-      tagName: 'span',
-      properties: { className: ['table-label'] },
-      children: [makeTextNode(`Table ${computedNumber}.`)],
-    });
+  // Phase 3 slice 3b: label span rendered via shared formatLabel
+  // primitive (lib/frameable.js). Byte-identical to the prior inline
+  // construction — the helper exists to dedupe this same shape across
+  // figure / table / future frameable handlers.
+  const labelSpan = formatLabel('Table', computedNumber);
+  if (labelSpan) {
+    children.push(labelSpan);
     children.push(makeTextNode(' '));
   }
   if (captionText) {

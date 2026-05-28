@@ -299,6 +299,32 @@
                   "children": [
                     {
                       "type": "element",
+                      "tagName": "caption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "table-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Table 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
                       "tagName": "thead",
                       "properties": {},
                       "children": [
@@ -605,6 +631,32 @@
                   "tagName": "table",
                   "properties": {},
                   "children": [
+                    {
+                      "type": "element",
+                      "tagName": "caption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "table-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Table 2."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
+                    },
                     {
                       "type": "element",
                       "tagName": "thead",

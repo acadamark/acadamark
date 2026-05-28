@@ -12,6 +12,7 @@
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { buildProperties } from '../lib/build-properties.js';
 import { extractPlainText } from '../lib/ast-helpers.js';
+import { formatLabel } from '../lib/frameable.js';
 
 // The figure handler uses the shared `buildProperties` helper from
 // `lib/build-properties.js` — see that file's comment for the deferred
@@ -68,27 +69,37 @@ export function figureHandler(state, node, vocab) {
 
   // Figcaption from pipe content. Present for both image figures and non-image
   // figures (the pipe content is always the caption in slice 1).
-  // For numbered figures, prepend "Figure N." label before the caption text.
+  // For numbered figures, prepend "Figure N." label span before the caption
+  // content (Phase 3 slice 3b: rendered via the shared formatLabel primitive
+  // — see lib/frameable.js for why a label-primitive is the right granularity
+  // for the shared helper).
+  // Note: only emit figcaption when there's caption content. A numbered
+  // figure with no pipe content would lose its "Figure N." label — but
+  // that's the pre-Phase-3 behavior and we preserve it here (no fixture
+  // hits this case). Adding the label-only figcaption is a deliberate
+  // follow-up if needed.
   if (captionHastNodes.length > 0) {
-    const finalCaption =
-      node.computedNumber != null
-        ? [
-            {
-              type: 'element',
-              tagName: 'span',
-              properties: { className: ['figure-label'] },
-              children: [{ type: 'text', value: `Figure ${node.computedNumber}.` }],
-            },
-            { type: 'text', value: ' ' },
-            ...captionHastNodes,
-          ]
-        : captionHastNodes;
+    const labelSpan = formatLabel('Figure', node.computedNumber);
+    const finalCaption = labelSpan
+      ? [labelSpan, { type: 'text', value: ' ' }, ...captionHastNodes]
+      : captionHastNodes;
     children.push({
       type: 'element',
       tagName: 'figcaption',
       properties: {},
       children: finalCaption,
     });
+  }
+
+  // Phase 3 frameable surface: +border opts in to the frameable-border
+  // class (CSS-targetable per the frameable design). When the kwarg is
+  // present (parsed as a boolean kwarg via the +border / -border /
+  // border=true author syntax), add the class to the existing classList.
+  // The handler does this rather than relying on schema dispatch because
+  // `border` is declared `handled_by: handler` on fig.md.
+  if (node.booleans?.border === true) {
+    const existing = Array.isArray(properties.className) ? properties.className : [];
+    properties.className = [...existing, 'frameable-border'];
   }
 
   return {

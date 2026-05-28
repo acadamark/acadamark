@@ -76,8 +76,33 @@ const NUMBERED_TAGNAMES = new Map([
   ['definition',   'definition'],
   ['example',      'example'],
   // Figures and tables — original Phase 1 entries.
+  // 'figure' kept as a NUMBERED_TAGNAMES entry for the pre-gate-rewrite
+  // path: nodes reach this plugin AFTER normalize-to-canonical, where
+  // 'figure' has been rewritten to 'fig'. So in practice the 'figure'
+  // entry below is a defensive backstop, not the live path; the live
+  // path goes through 'fig'. Both map to the same 'figure' registry-
+  // type counter (Phase 3 slice 3b alias-rewrite design).
+  ['fig', 'figure'],
   ['figure', 'figure'],
   ['table', 'table'],
+  // Phase 3 slice 3b (2026-05-28): the three new frameable members
+  // and the four DSL frameable members all share counters with their
+  // closest existing peer.
+  ['svg',     'figure'],  // <svg> is a frameable, shares figure counter
+  ['mermaid', 'figure'],  // external DSL; figure counter (Ariel's ruling)
+  ['abc',     'figure'],  // external DSL; figure counter (Ariel's ruling)
+  ['csv',     'table'],   // standalone CSV → table counter (parallel to <table csv>)
+  ['tsv',     'table'],   // standalone TSV → table counter (parallel to <table tsv>)
+  // <frame> is intentionally OMITTED here — frame.md declares
+  // `numbered: false` as the default (the generic-frame element is most
+  // often a callout, not a numbered float). Authors opt in per-instance
+  // with +numbered, but the visitor below would unconditionally register
+  // every <frame>. The opt-in semantics for frame need handler-level
+  // implementation (or a separate "numbered when +numbered" mechanism
+  // here). Bundle into 3c or a sibling slice; this slice's frame work
+  // is the vocab entry only. Documents authoring +numbered on a frame
+  // won't get a registered entry until that lands; the +border / title
+  // / caption features all work.
 ]);
 
 // Maps registry type to the document-level config key that can suppress numbering.

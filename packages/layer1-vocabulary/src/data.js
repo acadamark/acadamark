@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 107 vocabulary entries.
+// Source files: 109 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -1927,7 +1927,8 @@ const _corollary = Object.freeze({
         "layer1_html": "<corollary id=\"cor:bounded\">Any continuous function on a closed interval is bounded.</corollary>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "corollary.md",
   });
 
@@ -2238,7 +2239,8 @@ const _definition = Object.freeze({
         "layer1_html": "<definition id=\"def:group\" data-name=\"Group\">A <em>group</em> is a set $G$ together with a binary operation $\\cdot$ satisfying associativity, identity, and inverses.</definition>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "definition.md",
   });
 
@@ -2729,16 +2731,18 @@ const _example = Object.freeze({
         "layer1_html": "<example id=\"ex:integers\">The integers $\\mathbb{Z}$ under addition form a group: the operation is associative, $0$ is the identity, and every integer has an additive inverse.</example>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "example.md",
   });
 
-const _figure = Object.freeze({
+const _fig = Object.freeze({
     "semantic_role": "figure",
     "html_output": {
-      "element": "figure",
-      "is_html_native": true,
+      "element": "fig",
+      "is_html_native": false,
       "default_attributes": {},
+      "notes": "The vocab key (the VOCABULARY map's key) is `fig` — the canonical\nLayer 1 tagname. The rendered HTML, however, uses the HTML5-native\n`<figure>` element: the figure handler (`handlers/figure.js`)\nhardcodes its output tagName to `'figure'`, so the value of\n`html_output.element` here is only the vocab keying signal, not the\nHTML output element. (Schema-strategy entries derive output\ntagName from this field; handler-strategy entries control output\ntagName in the handler. `<fig>` is handler-strategy, so this\nfield's value selects the vocab key only.)\n",
     },
     "acadamark_attributes": {
       "id": {
@@ -2783,12 +2787,21 @@ const _figure = Object.freeze({
           ],
           "notes": "Optional classification of the figure's content. Maps to JATS\nfig content-type or to wrapping element choices.\n",
         },
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption text. Phase 3 slice 3b accepts this as a kwarg\nonly as a sibling-shape convention; the figure handler today\nstill derives the caption from the pipe content (the legacy\nfigure-as-pipe-caption model). Slice 3c (caption-as-content,\nDD-1 / DD-2) will lift this kwarg to a `<caption>` child tag at\nthe normalize-to-canonical gate, the same way `<meta>` and\n`<author>` kwargs lift to their child tags.\n",
+        },
       },
       "booleans": {
         "numbered": {
           "handled_by": "handler",
           "default": true,
           "notes": "Whether this figure participates in the document-wide figure\nsequence. Use +numbered (default) to number, -numbered to suppress.\nCan also be written as numbered=true / numbered=false.\nThe config key number-figures=false suppresses all figures unless\noverridden per-element with +numbered.\n",
+        },
+        "border": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Phase 3 frameable surface. When +border is set, the rendered\n<figure> gains the `frameable-border` class so theme stylesheets\ncan draw the outline box per the frameable convention. Off by\ndefault.\n",
         },
       },
     },
@@ -2805,24 +2818,33 @@ const _figure = Object.freeze({
       },
       "notes": "JATS <fig> wraps <graphic> (the image) and <caption>. When src is\npresent, the exporter generates <graphic xlink:href=\"...\"> from the\nsrc kwarg. The figcaption becomes <caption>. The fig-type attribute\nmaps from acadamark's type kwarg.\n",
     },
+    "shorthand_expansions": [
+      {
+        "shorthand": "figure",
+        "expands_to": "fig",
+        "notes": "`<figure>` is an accepted authoring alias for the canonical\n`<fig>`, recorded in `DESIGN.md` §\"Frameable elements: a shared\ncapability\". The Phase 3 normalize-to-canonical gate rewrites\n`<figure>`-authored node tagnames to `fig` before downstream\nplugins run, so the entire pipeline below the gate sees the\ncanonical name. Both shorthand_expansions (this vocab-level\nalias) and the gate rewrite exist together because they serve\ndifferent needs: the vocab alias makes `<figure>` survive a\nbypass of the gate (defensive), and the gate rewrite ensures\ntagname-keyed downstream lookups (NUMBERED_TAGNAMES, handler\nrouting) see the single canonical name.\n",
+      },
+    ],
     "shorthand_examples": [
+      {
+        "source": "<fig src=elephant.jpg | An adult African elephant.>",
+        "layer1_html": "<figure>\n  <img src=\"elephant.jpg\" alt=\"An adult African elephant.\" />\n  <figcaption>An adult African elephant.</figcaption>\n</figure>\n",
+        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly. The Layer 1\nelement is HTML-native <figure> (not the custom-element <fig>)\nbecause the HTML rendering surface is the HTML5 native element\nwhile the acadamark canonical name follows JATS's shorter <fig>.\n",
+      },
       {
         "source": "<figure src=elephant.jpg | An adult African elephant.>",
         "layer1_html": "<figure>\n  <img src=\"elephant.jpg\" alt=\"An adult African elephant.\" />\n  <figcaption>An adult African elephant.</figcaption>\n</figure>\n",
-        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly.\n",
+        "notes": "`<figure>` is the authoring alias. The Phase 3 gate rewrites the\ntagname to `fig` early; the rendered output is the same.\n",
       },
       {
-        "source": "<figure #elephant src=elephant.jpg align=right alt=\"A photograph of an elephant\" | An adult African elephant photographed in Tanzania.>",
-        "layer1_html": "<figure id=\"elephant\" data-align=\"right\">\n  <img src=\"elephant.jpg\" alt=\"A photograph of an elephant\" />\n  <figcaption>An adult African elephant photographed in Tanzania.</figcaption>\n</figure>\n",
+        "source": "<fig #elephant src=elephant.jpg align=right alt=\"A photograph of an elephant\" | An adult African elephant photographed in Tanzania.>",
+        "layer1_html": "<figure id=\"elephant\" data-align=\"right\">\n  <img src=\"elephant.jpg\" alt=\"A photograph of an elephant\" />\n  <figcaption>Figure 1. An adult African elephant photographed in Tanzania.</figcaption>\n</figure>\n",
+        "notes": "The `id` enables cross-referencing with `<ref @elephant>` (or the\ncanonical `<ref @fig:elephant>` colon-prefix form). Numbered by\ndefault; the figcaption gets a \"Figure N.\" label span prepended.\n",
       },
       {
-        "source": "<figure #revenue-table type=table |\n<table>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\nQuarterly revenue for fiscal year 2024.\n>\n",
+        "source": "<fig #revenue-table type=table |\n<table>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\nQuarterly revenue for fiscal year 2024.\n>\n",
         "layer1_html": "<figure id=\"revenue-table\" data-figure-type=\"table\">\n  <table>\n    <tr><th>Quarter</th><th>Revenue</th></tr>\n    <tr><td>Q1</td><td>$100M</td></tr>\n    <tr><td>Q2</td><td>$120M</td></tr>\n  </table>\n  <figcaption>Quarterly revenue for fiscal year 2024.</figcaption>\n</figure>\n",
         "notes": "A figure without src. The content (a table) is preserved as-is;\nthe trailing line becomes the figcaption. Author convention is\nto put the caption text on its own line at the end of the content.\n",
-      },
-      {
-        "source": "<figure #algorithm type=code |\n<code python |\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n>\nA recursive implementation of the factorial function.\n>\n",
-        "layer1_html": "<figure id=\"algorithm\" data-figure-type=\"code\">\n  <pre><code class=\"language-python\">def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)</code></pre>\n  <figcaption>A recursive implementation of the factorial function.</figcaption>\n</figure>\n",
       },
     ],
     "interpreter_strategy": "handler",
@@ -2833,8 +2855,91 @@ const _figure = Object.freeze({
       "Wrap pipe content (or the trailing line of multi-content figures) as <figcaption>.",
       "Preserve any non-caption content (tables, code blocks, equations) as direct children before the figcaption.",
       "Handle the type kwarg by setting data-figure-type and potentially adjusting the wrapping.",
+      "When +border is set, add `frameable-border` to the rendered class list (Phase 3 frameable surface).",
+      "Prepend \"Figure N.\" label span to the figcaption when computedNumber is set (uses formatLabel helper).",
     ],
-    "_sourceFile": "figure.md",
+    "_sourceFile": "fig.md",
+  });
+
+const _frame = Object.freeze({
+    "semantic_role": "frame",
+    "html_output": {
+      "element": "frame",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "title": {
+          "handled_by": "handler",
+          "notes": "Optional title rendered at the top of the frame (Phase 3 frameable\ntitle-top convention). Plain text for now; slice 3c will allow\na <title> child tag.\n",
+        },
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption text rendered at the bottom of the frame\n(Phase 3 frameable caption-bottom convention). Phase 3 slice 3c\nwill lift this kwarg to a <caption> child tag at the gate.\n",
+        },
+        "type": {
+          "maps_to": "data-frame-type",
+          "notes": "Optional classification of what the frame contains (note,\nwarning, tip, theorem-block, etc.). Authors can use this for\nCSS styling (.frame[data-frame-type=\"note\"] { … }).\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Whether this frame participates in the document-wide figure\nsequence. **Off by default for frame** (unlike <fig>/<svg>/etc.)\nbecause a generic frame is typically a sidebar / callout /\nannotation, not a numbered float. Use +numbered to opt in.\n",
+        },
+        "border": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Phase 3 frameable surface. **On by default for frame** (unlike\n<fig>/<svg>/etc.) because the whole point of the generic\n<frame> element is the visual frame. Use -border to suppress\nthe outline and just use the frame as a semantic grouping\nwrapper.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+      "notes": "The pipe content is the frame's body. Prose (paragraphs, inline,\nembedded elements) — same content model as <aside> or <section>.\nRecursive content parsing applies.\n",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "boxed-text",
+      "attributes": {},
+      "notes": "JATS <boxed-text> is the closest counterpart — a generic boxed,\nset-apart content block. The `type` kwarg can map to JATS's\ncontent-type attribute. For numbered frames, wrap in <fig> at\nexport.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<frame | A short callout.>",
+        "layer1_html": "<frame class=\"frameable-border\">A short callout.</frame>\n",
+        "notes": "The simplest case. +border is default on for <frame>, so the\nclass appears automatically.\n",
+      },
+      {
+        "source": "<frame type=note title=\"Important\" |\nMake sure to read this carefully.\n>\n",
+        "layer1_html": "<frame class=\"frameable-border\" data-frame-type=\"note\">\n  <div class=\"frame-title\">Important</div>\n  Make sure to read this carefully.\n</frame>\n",
+        "notes": "With a title rendered at the top.\n",
+      },
+      {
+        "source": "<frame #fig:method-box +numbered caption=\"Workflow steps\" |\n1. Collect data.\n2. Clean.\n3. Model.\n>\n",
+        "layer1_html": "<frame class=\"frameable-border\" id=\"fig:method-box\">\n  1. Collect data.\n  2. Clean.\n  3. Model.\n  <figcaption>Figure 1. Workflow steps</figcaption>\n</frame>\n",
+        "notes": "Numbered frame, opted in via +numbered. Shares the figure\ncounter with <fig>/<svg>/<mermaid>/<abc>.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/frame.js",
+    "handler_responsibilities": [
+      "Emit the <frame> wrapper element (a custom element; not HTML-native).",
+      "Apply `frameable-border` class by default (border flag default true).",
+      "Render optional title at the top of the frame.",
+      "Render optional caption (with \"Figure N.\" label prefix if numbered) at the bottom.",
+      "Pass through type kwarg as data-frame-type.",
+    ],
+    "_sourceFile": "frame.md",
   });
 
 const _glossary_entry = Object.freeze({
@@ -3346,7 +3451,8 @@ const _lemma = Object.freeze({
         "layer1_html": "<lemma id=\"lem:zorn\" data-name=\"Zorn\">Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</lemma>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "lemma.md",
   });
 
@@ -4217,7 +4323,8 @@ const _proof = Object.freeze({
         "notes": "Optional `name` kwarg lets the proof identify what it proves\n(useful when the proof is separated from its theorem by\nintervening text).\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "proof.md",
   });
 
@@ -4271,7 +4378,8 @@ const _proposition = Object.freeze({
         "layer1_html": "<proposition data-name=\"Cauchy-Schwarz\">For any vectors $u$, $v$ in an inner-product space, $|\\langle u, v \\rangle| \\le \\|u\\| \\, \\|v\\|$.</proposition>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "proposition.md",
   });
 
@@ -4534,7 +4642,8 @@ const _remark = Object.freeze({
         "layer1_html": "<remark>The hypothesis of compactness is essential here; without it the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).</remark>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "remark.md",
   });
 
@@ -5391,6 +5500,85 @@ const _sup = Object.freeze({
     "_sourceFile": "sup.md",
   });
 
+const _svg = Object.freeze({
+    "semantic_role": "svg",
+    "html_output": {
+      "element": "svg",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+      "kwargs": {
+        "width": {
+          "maps_to": "width",
+          "notes": "SVG width attribute. CSS length or unitless number. Maps directly\nto the rendered <svg> element's width attribute.\n",
+        },
+        "height": {
+          "maps_to": "height",
+          "notes": "SVG height attribute. Same shape as width.\n",
+        },
+        "viewBox": {
+          "maps_to": "viewBox",
+          "notes": "SVG viewBox attribute. Defines the coordinate system. Passes\nthrough to the rendered <svg> element.\n",
+        },
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption text rendered in a sibling <figcaption>.\nPhase 3 slice 3c will lift this kwarg to a <caption> child tag\nat the normalize-to-canonical gate, matching the frameable\nconvention.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Whether this SVG participates in the document-wide figure\nsequence (shares the `figure` counter with <fig>, <mermaid>,\n<abc>). Use +numbered (default) to number, -numbered to\nsuppress.\n",
+        },
+        "border": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Phase 3 frameable surface. When +border is set, the rendered\n<svg> wrapper gains the `frameable-border` class.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "becomes": "raw-svg-source",
+      "notes": "The pipe content is the SVG source — pass-through to the rendered\n<svg> element. Treated as opaque (not re-parsed by the recursive\ncontent step) because SVG is its own XML language and the parser\nhas no business interpreting it.\n",
+    },
+    "content_handler": "opaque",
+    "jats_counterpart": {
+      "element": "graphic",
+      "attributes": {},
+      "notes": "JATS uses <graphic> for embedded images (raster or vector). Inline\nSVG in acadamark exports as <graphic xlink:href=\"#svg-N\"> with the\nSVG content placed in the article's resource bundle, or — when the\nexport target supports it — as <graphic> with the SVG inline.\nWrapping in <fig>...</fig> is the captioned form for JATS.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<svg viewBox=\"0 0 100 100\" width=200 height=200 |\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"blue\" />\n>\n",
+        "layer1_html": "<svg viewBox=\"0 0 100 100\" width=\"200\" height=\"200\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"blue\" />\n</svg>\n",
+        "notes": "Inline SVG with the source as opaque pipe content. The\nattributes pass through to the rendered <svg> element.\n",
+      },
+      {
+        "source": "<svg #fig:diagram viewBox=\"0 0 100 100\" caption=\"A simple circle\" |\n  <circle cx=\"50\" cy=\"50\" r=\"40\" />\n>\n",
+        "layer1_html": "<svg id=\"fig:diagram\" viewBox=\"0 0 100 100\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" />\n</svg>\n<figcaption>Figure 1. A simple circle</figcaption>\n",
+        "notes": "Captioned and numbered. Shares the figure counter with <fig>;\ncross-references via the colon-prefix `fig:` resolve to\n\"Figure N\".\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/svg.js",
+    "handler_responsibilities": [
+      "Emit the <svg> element with the standard SVG attributes (width, height, viewBox).",
+      "Preserve the pipe-content SVG source verbatim as the rendered <svg>'s inner content.",
+      "When +border is set, add `frameable-border` to the class list.",
+      "When numbered, emit a sibling <figcaption> with the \"Figure N.\" label prefix and any caption text.",
+    ],
+    "_sourceFile": "svg.md",
+  });
+
 const _table = Object.freeze({
     "semantic_role": "table",
     "html_output": {
@@ -5581,7 +5769,8 @@ const _theorem = Object.freeze({
         "notes": "Long-form with the optional name kwarg. Cross-referenceable\nvia id (the \"thm:\" colon-prefix convention is consistent with\n\"fig:\", \"eqn:\", \"sec:\" elsewhere in acadamark). The name\nkwarg lifts to `data-name`; the Phase-2 handler will render\nit as the \"(Pythagoras)\" suffix to the label \"Theorem N\".\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/theorem.js",
     "_sourceFile": "theorem.md",
   });
 
@@ -5938,7 +6127,8 @@ export const VOCABULARY = Object.freeze({
   "email": _email,
   "eqnarray": _eqnarray,
   "example": _example,
-  "figure": _figure,
+  "fig": _fig,
+  "frame": _frame,
   "glossary-entry": _glossary_entry,
   "glossary": _glossary,
   "hr": _hr,
@@ -5988,6 +6178,7 @@ export const VOCABULARY = Object.freeze({
   "subtitle": _subtitle,
   "summary": _summary,
   "sup": _sup,
+  "svg": _svg,
   "table": _table,
   "term": _term,
   "theorem": _theorem,
@@ -5998,6 +6189,7 @@ export const VOCABULARY = Object.freeze({
   "var": _var,
   "version": _version,
   "quote": _blockquote,  // alias
+  "figure": _fig,  // alias
 });
 
 export const VOCABULARY_ERRORS = Object.freeze([

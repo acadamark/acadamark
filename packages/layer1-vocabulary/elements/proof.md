@@ -64,7 +64,8 @@ shorthand_examples:
       Optional `name` kwarg lets the proof identify what it proves
       (useful when the proof is separated from its theorem by
       intervening text).
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<proof>`

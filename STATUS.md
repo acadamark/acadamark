@@ -1820,3 +1820,120 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
   remark-acadamark 128/128; acadamark-interpreter 24/24 suites
   (incl. new doc35).
+- **2026-Q2 — Phase 3 slice 3b: frameable class built.** The middle
+  implementation slice of Phase 3, bundling six pieces of work
+  in the frameable-rendering neighborhood plus theorem-family
+  label rendering (Q3-bundled).
+
+  **Three new vocab entries** (`fig.md`, `svg.md`, `frame.md`)
+  shipping the three settled frameable members the findings file
+  identified as missing. `<fig>` is the canonical name (matches
+  JATS's `<fig>`); the vocab key in VOCABULARY is `fig`; the
+  rendered HTML uses HTML5-native `<figure>` (handler-controlled,
+  not from `html_output.element`). `<svg>` and `<frame>` use
+  schema strategy for now (frame's handler-level features —
+  title rendering at top, caption at bottom — recorded as a
+  follow-up; the vocab entry declares the surface). 109 primary +
+  2 aliases (`quote`, `figure`) = 111 total; the previous figure.md
+  was deleted in favor of the alias on fig.md.
+
+  **`<figure>` → `<fig>` alias at the normalize-to-canonical gate.**
+  New entry in `NORMALIZATIONS` (between sigil-rewrite Group A
+  and structured-element lift Group A2) rewrites `node.tagname`
+  from `'figure'` to `'fig'`. Single source of truth downstream;
+  tagname-keyed lookups (NUMBERED_TAGNAMES, handler dispatch,
+  ref-resolution prefixes) only need the canonical `fig` entry.
+  The vocab also declares a `shorthand_expansions` alias for
+  `figure → fig` as defensive backup (a `figure`-named node that
+  somehow bypassed the gate still finds a vocab entry).
+
+  **Shared frameable rendering at the label-primitive level.**
+  Q1 of the slice's mini-investigation found three structurally
+  divergent caption-rendering idioms across the existing
+  frameable handlers — `<caption>` inside `<table>` (HTML-native);
+  `<figcaption>` inside `<figure>`; sibling `<figcaption>` after
+  custom `<pre>`/`<div>` wrapper (mermaid/abc). A uniform "frameable
+  wrapper helper" taking `{ id, title, caption, border,
+  computedNumber, body, kind }` would have switched between these
+  three idioms inside the helper — premature abstraction. The
+  shipping helper sits at a smaller granularity: `formatLabel(prefix,
+  number, name?)` in `acadamark-interpreter/src/lib/frameable.js`,
+  returning a single hast span (`<span class="<prefix>-label">Figure
+  3 (Pythagoras).</span>`). figure.js and table.js call it where
+  they were building the inline label span; behavior-preserving
+  refactor (zero diff for the 18 fixtures unchanged by 3b's
+  intended-output changes). The same primitive is consumed by the
+  new theorem-family handler.
+
+  **DSL counter assignments wired into NUMBERED_TAGNAMES.** csv +
+  tsv → table counter (sharing with `<table>`); mermaid + abc + svg
+  → figure counter (sharing with `<fig>`). `<frame>` deliberately
+  omitted: frame.md's `numbered` default is `false` (per the design
+  call for the generic-callout element), so unconditional
+  registration would register every authored frame. `+numbered` on
+  a frame needs handler-level support; recorded as a follow-up
+  in the slice report. doc30's snapshot legitimately changed
+  (CSV/TSV captions gained "Table N." labels — exactly the
+  intended new behavior).
+
+  **Theorem-family label rendering (Q3 bundled).** Slice 3a wired
+  NUMBERED_TAGNAMES for the theorem family (so cross-references
+  resolved to "Theorem N"); 3b adds the visible label on the
+  element itself. New `handlers/theorem.js` handles all 8 family
+  elements (theorem/lemma/corollary/proposition share the theorem
+  counter; definition + example have their own; remark + proof
+  unnumbered, rendered as `Remark.` / `Proof.` per amsthm
+  convention). All 8 vocab entries switched from `interpreter_strategy:
+  schema` to `handler`. doc29 + doc35 snapshots legitimately
+  changed (each theorem-family element gained its label span).
+
+  **Q3 decision rationale** — shared `formatLabel` primitive +
+  parallel renderers (the chosen option). Theorem rendering is
+  structurally different from frameable rendering (label-before-
+  body, no caption, no border) — a shared *wrapper* helper would
+  have been the wrong abstraction. The shared *label primitive*
+  is right: same span shape, different per-handler structural
+  use. Frameable handlers prepend the label to their figcaption
+  contents; theorem handler prepends to body content.
+
+  **eqn standardization sweep.** Slice 3a's drift finding turned
+  out to already be done — no `eq:`-prefixed references exist in
+  any fixture (slice 3a's spot-fix in doc35 had been the only
+  outlier).
+
+  **New fixture: doc36.** Exercises the alias rewrite (both `<fig>`
+  and `<figure>` rendering the same HTML); DSL counter resolution
+  ("table 1" from a csv on `tab:salaries`; "figure 3" from a
+  mermaid on `fig:flow`); theorem-family label spans with and
+  without the `name=` kwarg; the `+border` flag.
+
+  **Snapshot audit:**
+  - **doc29** (theorem family) — gained label spans for all 8
+    elements. Expected per Q3 bundling.
+  - **doc30** (csv/tsv) — two `<table>` elements gained `<caption>`
+    children with "Table 1." / "Table 2." labels. Expected per
+    DSL counter wiring.
+  - **doc35** (slice 3a fixture) — theorem-family elements there
+    gained label spans (Theorem 1, Lemma 2, ..., Definition 1,
+    Example 1, Remark., Proof.). Expected per Q3 bundling.
+  - **doc36** (new) — slice 3b's own fixture.
+  - **All 20 other existing fixtures** — zero diff. Figure-using
+    fixtures (doc2/3/5/6/9) unchanged because the alias rewrite
+    is behavior-preserving (the handler hardcodes `<figure>`
+    HTML output regardless of `node.tagname`).
+
+  Tests: layer1-vocabulary 52/52 (count assertion 108 → 111);
+  acadamark-core 33/33; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites (incl. new doc36).
+
+  **Slice 3c (caption-as-content, DD-1 / DD-2) remains open** as
+  the third and final Phase 3 sub-slice. The current slice's
+  `caption=` kwarg shape is the *input* shape that 3c will lift to
+  child-tag form at the gate (same kwarg-to-child-tag pattern
+  `<meta>` / `<author>` use).
+
+  **Frame numbering follow-up** — `<frame>` is out of
+  NUMBERED_TAGNAMES because its vocab default is `numbered:false`.
+  Authoring `+numbered` on a frame doesn't yet register it; bundle
+  into 3c or a sibling slice. Vocab entry surfaces the limitation
+  in its frame.md notes.

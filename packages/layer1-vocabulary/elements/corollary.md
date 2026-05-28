@@ -43,7 +43,8 @@ shorthand_examples:
       </corollary>
     layer1_html: |
       <corollary id="cor:bounded">Any continuous function on a closed interval is bounded.</corollary>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/theorem.js
 ---
 
 # `<corollary>`
