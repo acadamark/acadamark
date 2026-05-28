@@ -1357,3 +1357,37 @@ that). One line gets added every few months, not every slice.
   acadamark-interpreter 24/24 suites; layer1-vocabulary 52/52. The
   structured-element infrastructure (`beb2fb3`) is untouched and
   remains correct.
+- **2026-Q2 — Phase 2 handler bundle: Phase 0 findings recorded.** A
+  read-only Phase 0 inventoried the three handler families (CSV/TSV,
+  Mermaid/ABC, math environments), the two-stage handler dispatch
+  path, current handler state per family, Layer 1 vocab specs,
+  dependency footprint, and scope of the inherited DSL_REGISTRY
+  entries (`<code>`, `<table>`, `<library>`, math/code sigils). The
+  findings file at `notes/phase2-handler-findings.md` is the artifact
+  the implementation slice(s) will be built from — same role
+  `notes/dsl-purge-phase0-findings.md` played for the DSL purge.
+  **Dominant finding:** the vocab-entry gap is bigger than the
+  handler-code gap. 9 family tags (csv, tsv, mermaid, abc, math
+  long-form, matrix, cases, align, eqnarray) have no vocab entry,
+  meaning a handler implementation alone is insufficient — vocab
+  entries must be created first or alongside, or the interpreter's
+  vocab lookup misses and dispatch never fires.
+  **Two latent bugs surfaced** (not introduced by Phase 2):
+  - `<code>` long-form drops content (opaque content + schema
+    dispatch → empty `<code></code>`). Filed for the implementation
+    slice or a sibling cleanup.
+  - `<library>` vocab declares `handlers/library.js` which does not
+    exist; renders as empty `<library></library>` via the
+    handler-not-found fall-through with a warning. Filed similarly.
+  **Two stale references** in `ROADMAP.md` (L64 and L92-94) carry
+  the pre-`dfdb4f0` four-family scope (the theorem-family handler
+  that no longer exists in Phase 2). Flagged for a tiny drift-fix
+  commit per the Phase 0 read-only constraint; not edited here.
+  **Recommendation: SPLIT into three slices** (2a CSV/TSV smallest;
+  2b math envs medium extension of existing `math.js`; 2c
+  Mermaid/ABC largest — greenfield + heavyweight npm deps +
+  output-target design decision). Reasoning in the findings file's
+  "Bundle vs split" section. KaTeX is already installed;
+  mermaid/abcjs/papaparse are not (Family 2 has real dependency-
+  footprint impact). No product code, no specs, no vocab, no
+  backlog edits. Findings file + this STATUS line only.
