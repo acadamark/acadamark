@@ -1,16 +1,35 @@
-// Math handler — renders <$ ... $> and <$$ ... $$> through KaTeX.
+// Math handler — renders math sigils and the math-environment tag family
+// through KaTeX.
 //
-// The parser produces acadamarkTag nodes with:
-//   tagname: "$"  → inline math,  contentHandler: "math"
-//   tagname: "$$" → display math, contentHandler: "math-display"
-//   content: string (opaque LaTeX source), isOpaqueContent: true
+// Coverage:
+//   - inline-math (the `<$ ... $>` sigil's canonical name)
+//   - display-math (the `<$$ ... $$>` sigil's canonical name)
+//   - math (long-form `<math>...</math>` — semantically equivalent to
+//     display-math; block-level, no env wrap)
+//   - matrix, cases, align, eqnarray — math-environment tags
+//     (Phase 2 slice 2b, 2026-05-27)
 //
-// This handler calls KaTeX to render the LaTeX source, then wraps the result
-// in a <inline-math> or <display-math> element. KaTeX's output is an HTML
-// string; we parse it into hast with hast-util-from-html (fragment mode).
+// All six tags arrive here as acadamarkTag nodes with `node.content` as an
+// opaque LaTeX source string and `isOpaqueContent: true`. The dispatch
+// reads `node.tagname` to decide:
+//   - which KaTeX displayMode (inline-math → false, all others → true)
+//   - whether to wrap the body in a LaTeX environment (envs → yes; sigils
+//     and <math> long-form → no)
+//   - which wrapper element to emit (matches the source tagname, so each
+//     tag retains its source-intent in the Layer 1 output)
 //
-// Error handling: throwOnError: false makes KaTeX render a visible error span
-// rather than throwing. Documents always render to something.
+// Wrap-inside convention for the env tags (Phase 2 slice 2b, Q2): authors
+// write pure environment body (`<matrix>1 & 2 \\ 3 & 4</matrix>`); the
+// handler adds `\begin{<env>}...\end{<env>}` before passing to KaTeX. The
+// `<align>` and `<eqnarray>` tags both render via KaTeX's `aligned`
+// environment (the supported equivalent of LaTeX's `align` / `eqnarray`
+// top-level envs, which KaTeX does not implement standalone).
+//
+// KaTeX's output is an HTML string; we parse it into hast with
+// hast-util-from-html (fragment mode).
+//
+// Error handling: throwOnError: false makes KaTeX render a visible error
+// span rather than throwing. Documents always render to something.
 
 import katex from 'katex';
 import { fromHtml } from 'hast-util-from-html';
@@ -75,39 +94,78 @@ function stripPositions(nodes) {
   });
 }
 
+// ─── Per-tag dispatch spec ────────────────────────────────────────────────────
+//
+// Each entry tells the handler:
+//   - displayMode: KaTeX displayMode flag (true for block, false for inline)
+//   - envName:     LaTeX environment name to wrap the body in, or null for
+//                  no wrap (the body is passed to KaTeX as-is)
+//
+// The wrapper element emitted by the handler matches the source tagname
+// (not derived from this spec) — that's what keeps `<matrix>` distinct from
+// `<align>` in the rendered Layer 1 output.
+//
+// `<align>` and `<eqnarray>` both map to KaTeX's `aligned` environment
+// (KaTeX doesn't implement the top-level LaTeX `align` / `eqnarray` envs).
+const MATH_TAG_SPEC = new Map([
+  ['inline-math',  { displayMode: false, envName: null }],
+  ['display-math', { displayMode: true,  envName: null }],
+  ['math',         { displayMode: true,  envName: null }],
+  ['matrix',       { displayMode: true,  envName: 'matrix' }],
+  ['cases',        { displayMode: true,  envName: 'cases' }],
+  ['align',        { displayMode: true,  envName: 'aligned' }],
+  ['eqnarray',     { displayMode: true,  envName: 'aligned' }],
+]);
+
 /**
- * Math handler. Called by the interpret-plugin dispatcher when
- * the vocabulary entry for "inline-math" or "display-math" specifies
- * interpreter_strategy: handler with handler_module: ./handlers/math.js.
+ * Math handler. Called by the interpret-plugin dispatcher when the
+ * vocabulary entry for any of the six math-family tagnames specifies
+ * `interpreter_strategy: handler` + `handler_module: ./handlers/math.js`.
  *
- * The parser emits tag names "$" and "$$"; the normalize-to-canonical gate
- * (plugins/normalize-to-canonical.js) rewrites these to "inline-math" /
- * "display-math" via the tagname↔sigil map's lift direction before any
- * downstream stage runs. node.tagname is therefore the canonical vocabulary
- * key here ("inline-math" or "display-math"), which this handler reads to
- * determine inline vs display mode.
+ * The parser emits sigil tagnames `$` and `$$`; the normalize-to-canonical
+ * gate rewrites these to `inline-math` / `display-math` before downstream
+ * stages run. The long-form tags (`math`, `matrix`, `cases`, `align`,
+ * `eqnarray`) reach this handler with their authored tagname. The handler
+ * dispatches on `node.tagname` against `MATH_TAG_SPEC`.
+ *
+ * Wrap-inside convention for env tags: the author writes pure environment
+ * body (e.g. `<matrix>1 & 2 \\ 3 & 4</matrix>`); the handler wraps in
+ * `\begin{<envName>}…\end{<envName>}` before passing to KaTeX.
  *
  * @param {object} _state - mdast-util-to-hast state (unused — no child nodes)
- * @param {object} node   - acadamarkTag with canonical tagname "inline-math"
- *                           or "display-math" (the gate has rewritten the
- *                           parser-emitted "$" / "$$")
+ * @param {object} node   - acadamarkTag with one of the canonical math
+ *                           tagnames in MATH_TAG_SPEC
  * @returns {import('hast').Element} hast element
  */
 export function mathHandler(_state, node) {
-  const isDisplay = node.tagname === 'display-math';
-  const latex = extractLatex(node);
-  const katexChildren = renderToHast(latex, isDisplay);
+  const spec = MATH_TAG_SPEC.get(node.tagname);
+  if (!spec) {
+    // Defensive — should be unreachable given the vocab/registry wiring.
+    // Fall through to display-mode-no-wrap as a sensible default.
+    return mathHandler(_state, { ...node, tagname: 'display-math' });
+  }
+
+  const rawLatex = extractLatex(node);
+  const latex = spec.envName
+    ? `\\begin{${spec.envName}}\n${rawLatex}\n\\end{${spec.envName}}`
+    : rawLatex;
+  const katexChildren = renderToHast(latex, spec.displayMode);
 
   // Build properties: id and classes, if present on the node.
   const properties = {};
   if (node.id) properties.id = node.id;
   if (node.classes?.length) properties.className = node.classes;
 
-  // For numbered display-math, append an equation-number span after the
-  // KaTeX output: <span class="equation-number">(N)</span>.
-  // node.computedNumber is set by the numbering plugin; null means unnumbered.
+  // For numbered display-math sigil, append an equation-number span after
+  // the KaTeX output: <span class="equation-number">(N)</span>. The
+  // numbering plugin only sets node.computedNumber for display-math today
+  // (per NUMBERED_TAGNAMES in numbering.js); the new env tags and the
+  // <math> long-form are not in that table yet — their integration is
+  // regular-vocabulary work, out of scope of slice 2b. This branch
+  // therefore fires only for display-math, preserving the existing
+  // sigil-numbering behavior exactly.
   const children =
-    isDisplay && node.computedNumber != null
+    node.tagname === 'display-math' && node.computedNumber != null
       ? [
           ...katexChildren,
           {
@@ -121,7 +179,7 @@ export function mathHandler(_state, node) {
 
   return {
     type: 'element',
-    tagName: isDisplay ? 'display-math' : 'inline-math',
+    tagName: node.tagname,
     properties,
     children,
   };

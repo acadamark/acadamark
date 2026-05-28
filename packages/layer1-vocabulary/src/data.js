@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 100 vocabulary entries.
+// Source files: 105 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -240,6 +240,52 @@ const _affiliation = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "affiliation.md",
+  });
+
+const _align = Object.freeze({
+    "semantic_role": "align",
+    "html_output": {
+      "element": "align",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<align>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes pure environment body (each line `lhs & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. (KaTeX\nsupports the `aligned` environment for inline-into-disp-mode\ncontexts; the `align` LaTeX environment proper is a top-level\ndocument env that KaTeX does not support standalone. Using\n`aligned` inside KaTeX's displayMode produces the equivalent\nvisual output.)\n",
+    },
+    "content_handler": "align",
+    "jats_counterpart": {
+      "element": "disp-formula",
+      "notes": "JATS does not have a dedicated `<align>` element. The LaTeX math\nenvironment maps to JATS `<disp-formula>` with `<tex-math>`\ncarrying the wrapped LaTeX source.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<align>\nx^2 + y^2 &= z^2 \\\\\na + b &= c\n</align>\n",
+        "layer1_html": "<align>(KaTeX-rendered HTML of \\begin{aligned}...\\end{aligned})</align>\n",
+        "notes": "Two aligned equations. The `&` marks the alignment column (here,\nthe `=` sign). Handler wraps in `\\begin{aligned}...\\end{aligned}`\n(KaTeX-compatible variant of LaTeX's `align`).\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "handler_responsibilities": [
+      "Read the opaque content as LaTeX math-environment body.",
+      "Wrap in `\\begin{aligned}...\\end{aligned}` (KaTeX-supported variant).",
+      {
+        "Render via KaTeX with `displayMode": "true`.",
+      },
+      "Emit an `<align>` wrapper element containing KaTeX's HTML output.",
+      "Apply id / classes from the node.",
+    ],
+    "_sourceFile": "align.md",
   });
 
 const _article_back = Object.freeze({
@@ -1438,6 +1484,52 @@ const _book = Object.freeze({
     "_sourceFile": "book.md",
   });
 
+const _cases = Object.freeze({
+    "semantic_role": "cases",
+    "html_output": {
+      "element": "cases",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<cases>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes pure environment body (each case on its own line,\nterminated by `\\\\`, with `&` separating value from condition). The\nhandler wraps in `\\begin{cases}...\\end{cases}` before passing to\nKaTeX.\n",
+    },
+    "content_handler": "cases",
+    "jats_counterpart": {
+      "element": "disp-formula",
+      "notes": "JATS does not have a dedicated `<cases>` element. The LaTeX math\nenvironment maps to JATS `<disp-formula>` with `<tex-math>`\ncarrying the wrapped LaTeX source.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<cases>\nx^2 & \\text{if } x \\ge 0 \\\\\n-x^2 & \\text{if } x < 0\n</cases>\n",
+        "layer1_html": "<cases>(KaTeX-rendered HTML of \\begin{cases}...\\end{cases})</cases>\n",
+        "notes": "A two-case piecewise definition. Handler wraps in\n`\\begin{cases}...\\end{cases}`.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "handler_responsibilities": [
+      "Read the opaque content as LaTeX math-environment body.",
+      "Wrap in `\\begin{cases}...\\end{cases}`.",
+      {
+        "Render via KaTeX with `displayMode": "true`.",
+      },
+      "Emit a `<cases>` wrapper element containing KaTeX's HTML output.",
+      "Apply id / classes from the node.",
+    ],
+    "_sourceFile": "cases.md",
+  });
+
 const _cite = Object.freeze({
     "semantic_role": "cite",
     "html_output": {
@@ -2492,6 +2584,52 @@ const _email = Object.freeze({
     "_sourceFile": "email.md",
   });
 
+const _eqnarray = Object.freeze({
+    "semantic_role": "eqnarray",
+    "html_output": {
+      "element": "eqnarray",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<eqnarray>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes pure environment body (each line `lhs & op & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. KaTeX\ndoes not implement the LaTeX `eqnarray` environment standalone;\n`aligned` is the supported KaTeX equivalent and renders the same\nmulti-line-equation visual output. `<eqnarray>` exists alongside\n`<align>` for LaTeX-source compatibility: an author copying\n`\\begin{eqnarray}...\\end{eqnarray}` source from a LaTeX document\nhas a target acadamark tag whose name matches.\n",
+    },
+    "content_handler": "eqnarray",
+    "jats_counterpart": {
+      "element": "disp-formula",
+      "notes": "JATS does not have a dedicated `<eqnarray>` element. Maps to JATS\n`<disp-formula>` with `<tex-math>` carrying the wrapped LaTeX\nsource.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<eqnarray>\nf(x) &=& x^2 \\\\\ng(x) &=& 2x\n</eqnarray>\n",
+        "layer1_html": "<eqnarray>(KaTeX-rendered HTML of \\begin{aligned}...\\end{aligned})</eqnarray>\n",
+        "notes": "Two equations rendered via KaTeX's `aligned` env (the supported\nequivalent of LaTeX's `eqnarray`).\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "handler_responsibilities": [
+      "Read the opaque content as LaTeX math-environment body.",
+      "Wrap in `\\begin{aligned}...\\end{aligned}` (KaTeX-supported equivalent of `eqnarray`).",
+      {
+        "Render via KaTeX with `displayMode": "true`.",
+      },
+      "Emit an `<eqnarray>` wrapper element containing KaTeX's HTML output.",
+      "Apply id / classes from the node.",
+    ],
+    "_sourceFile": "eqnarray.md",
+  });
+
 const _example = Object.freeze({
     "semantic_role": "example",
     "html_output": {
@@ -3334,6 +3472,97 @@ const _license = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "license.md",
+  });
+
+const _math = Object.freeze({
+    "semantic_role": "math",
+    "html_output": {
+      "element": "math",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits a `<math>` wrapper element directly;\nthe schema field is not consulted under\n`interpreter_strategy: handler`. (Same pattern slice 2a's csv/tsv\nentries follow.)\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "The content is LaTeX math source. It is passed directly to KaTeX\n(displayMode: true) as a string; not parsed as prose. The author is\nresponsible for valid LaTeX math syntax.\n",
+    },
+    "content_handler": "math",
+    "jats_counterpart": {
+      "element": "disp-formula",
+      "notes": "JATS `<disp-formula>` wraps a displayed equation, same as the\ncounterpart for `<display-math>` (the `<$$>` sigil). The two surfaces\nare semantic synonyms in acadamark; both map to JATS\n`<disp-formula>`.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<math>\nE = mc^2\n</math>\n",
+        "layer1_html": "<math>(KaTeX-rendered HTML)</math>\n",
+        "notes": "Long-form `<math>` block. Semantically equivalent to the\n`<$$ E = mc^2 $$>` display-math sigil — both render block-level\nLaTeX math via KaTeX. Use the long-form when the source is\nmulti-line or when explicit tag bounds aid readability; use the\nsigil for brevity.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "handler_responsibilities": [
+      "Read the opaque content as LaTeX source.",
+      {
+        "Render via KaTeX with `displayMode": "true` (block-level).",
+      },
+      "Emit a `<math>` wrapper element containing KaTeX's HTML output.",
+      "Apply id / classes from the node.",
+    ],
+    "_sourceFile": "math.md",
+  });
+
+const _matrix = Object.freeze({
+    "semantic_role": "matrix",
+    "html_output": {
+      "element": "matrix",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<matrix>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
+    },
+    "acadamark_attributes": {
+      "id": {
+        "maps_to": "id",
+      },
+      "classes": {
+        "maps_to": "class",
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes pure environment body (rows separated by `\\\\`, cells\nseparated by `&`). The handler wraps in `\\begin{matrix}...\\end{matrix}`\nbefore passing to KaTeX (wrap-inside convention; see DESIGN.md and\nthe slice 2b STATUS milestone).\n",
+    },
+    "content_handler": "matrix",
+    "jats_counterpart": {
+      "element": "disp-formula",
+      "notes": "JATS does not have a dedicated `<matrix>` element. The LaTeX math\nenvironment (after the handler wraps it) maps to JATS\n`<disp-formula>` with `<tex-math>` carrying the wrapped LaTeX\nsource. The exporter decides whether to also emit MathML.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<matrix>\n1 & 2 \\\\\n3 & 4\n</matrix>\n",
+        "layer1_html": "<matrix>(KaTeX-rendered HTML of \\begin{matrix}1 & 2 \\\\ 3 & 4\\end{matrix})</matrix>\n",
+        "notes": "A 2×2 matrix. The handler wraps the body in\n`\\begin{matrix}...\\end{matrix}` before KaTeX renders.\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/math.js",
+    "handler_responsibilities": [
+      "Read the opaque content as LaTeX math-environment body.",
+      "Wrap in `\\begin{matrix}...\\end{matrix}`.",
+      {
+        "Render via KaTeX with `displayMode": "true`.",
+      },
+      "Emit a `<matrix>` wrapper element containing KaTeX's HTML output.",
+      "Apply id / classes from the node.",
+    ],
+    "_sourceFile": "matrix.md",
   });
 
 const _meta = Object.freeze({
@@ -5567,6 +5796,7 @@ export const VOCABULARY = Object.freeze({
   "abbr": _abbr,
   "abstract": _abstract,
   "affiliation": _affiliation,
+  "align": _align,
   "article-back": _article_back,
   "article-body": _article_body,
   "article-front": _article_front,
@@ -5588,6 +5818,7 @@ export const VOCABULARY = Object.freeze({
   "book-subtitle": _book_subtitle,
   "book-title": _book_title,
   "book": _book,
+  "cases": _cases,
   "cite": _cite,
   "code-block": _code_block,
   "code": _code,
@@ -5606,6 +5837,7 @@ export const VOCABULARY = Object.freeze({
   "editor": _editor,
   "em": _em,
   "email": _email,
+  "eqnarray": _eqnarray,
   "example": _example,
   "figure": _figure,
   "glossary-entry": _glossary_entry,
@@ -5622,6 +5854,8 @@ export const VOCABULARY = Object.freeze({
   "li": _li,
   "library": _library,
   "license": _license,
+  "math": _math,
+  "matrix": _matrix,
   "meta": _meta,
   "name": _name,
   "note-list": _note_list,

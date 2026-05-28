@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 100 primary + 1 'quote' alias = 101.
+// Entry count: 105 primary + 1 'quote' alias = 106.
 // Recent additions:
 // - 2026-Q2: 5 <meta> allowlist members (doi, license, lang, version,
 //   keywords) added by the apparatus-tag reconciliation follow-on.
@@ -47,9 +47,13 @@ function check(label, cond) {
 // - 2026-Q2: 2 entries added by Phase 2 slice 2a — csv, tsv (the
 //   standalone CSV/TSV DSL handlers, parallel to <table>'s qualifying
 //   form). Brought count from 98 → 100 primary.
+// - 2026-Q2: 5 entries added by Phase 2 slice 2b — math (long-form
+//   block math) plus the four math-environment tags matrix, cases,
+//   align, eqnarray. All dispatch to handlers/math.js (extended for
+//   per-tagname dispatch). Brought count from 100 → 105 primary.
 check(
-  `VOCABULARY has 101 entries (100 primary + 'quote' alias)`,
-  Object.keys(VOCABULARY).length === 101,
+  `VOCABULARY has 106 entries (105 primary + 'quote' alias)`,
+  Object.keys(VOCABULARY).length === 106,
 );
 
 // Build-time loader has nothing to report in normal state.

@@ -1308,4 +1308,52 @@ export function run() {
     snapshotHast('document-30', hast);
     console.log('PASS: integration doc30 (Phase 2 slice 2a — CSV/TSV handlers + <code> long-form fix)');
   }
+
+  // ── Document 31: Phase 2 slice 2b — math envs + <math> long-form ─────────
+  // Proves: <math> long-form + four math envs (matrix, cases, align, eqnarray)
+  // render via the extended math.js handler with the wrap-inside convention.
+  // Existing math sigils (<$> / <$$>) are unaffected — their snapshots must
+  // remain unchanged across this slice.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-31-math-envs.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Each of the five new tags appears as a real element wrapping the
+    // KaTeX-rendered HTML. The handler emits a wrapper matching the
+    // source tagname; KaTeX content goes inside.
+    for (const tag of ['math', 'matrix', 'cases', 'align', 'eqnarray']) {
+      assert.ok(
+        new RegExp(`<${tag}\\b[^>]*>[\\s\\S]*?<\\/${tag}>`).test(html),
+        `doc31: <${tag}> renders as a real wrapper element`,
+      );
+      assert.ok(
+        !html.includes(`data-acadamark-unknown="${tag}"`),
+        `doc31: <${tag}> renders as a real element (no unknown-span fallback)`,
+      );
+    }
+
+    // KaTeX-rendered content appears inside each wrapper. KaTeX emits a
+    // `class="katex"` span for every rendered formula; check it's present
+    // at least five times (one per wrapper).
+    const katexCount = (html.match(/class="katex"/g) ?? []).length;
+    assert.ok(
+      katexCount >= 5,
+      `doc31: KaTeX rendered into each of the five wrappers (found ${katexCount} 'class="katex"' occurrences; expected >= 5)`,
+    );
+
+    // Specific environment-rendering spot-checks. KaTeX's matrix output
+    // includes mtable/mtr/mtd elements in the MathML side. Confirm at
+    // least one mtable-related rendering token appears inside <matrix>.
+    const matrixBlock = html.match(/<matrix\b[^>]*>[\s\S]*?<\/matrix>/)?.[0] ?? '';
+    assert.ok(
+      matrixBlock.includes('mord') || matrixBlock.includes('katex'),
+      'doc31: <matrix> wrapper contains KaTeX-rendered output',
+    );
+
+    snapshotHast('document-31', hast);
+    console.log('PASS: integration doc31 (Phase 2 slice 2b — math envs + <math> long-form)');
+  }
 }

@@ -1458,3 +1458,61 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
   remark-acadamark 128/128; acadamark-interpreter 24/24 suites
   (incl. new doc30).
+- **2026-Q2 — Phase 2 slice 2b: math environments + `<math>` long-form.**
+  Second implementation slice of Phase 2 handler bundle. Added handler
+  coverage for five new tags in the math-environments family:
+  - `<math>` — long-form block-level math (semantic equivalent of the
+    `<$$>` display-math sigil).
+  - `<matrix>`, `<cases>`, `<align>`, `<eqnarray>` — math-environment
+    tags. The last two both render via KaTeX's `aligned` env (the
+    supported equivalent of LaTeX's top-level `align` / `eqnarray`).
+
+  **Q1 decision: extended `math.js` (path A)** rather than per-tag
+  modules. The existing handler was 130 lines and well-factored;
+  per-tag logic differs only by env-name and the
+  display-vs-inline KaTeX flag. Single shared handler with a
+  `MATH_TAG_SPEC` dispatch Map is the right shape.
+
+  **Q2 decision: wrap-inside convention.** Author writes pure
+  environment body (`<matrix>1 & 2 \\ 3 & 4</matrix>`); handler adds
+  `\begin{<env>}…\end{<env>}` before passing to KaTeX. No spec or
+  fixture evidence pointed at the other convention. Documented in
+  each env vocab entry and in `math.js` header.
+
+  Handler shape: `mathHandler` now reads `node.tagname` against
+  `MATH_TAG_SPEC` (7-entry Map covering all six math tagnames plus a
+  defensive default-fallback for unknown tags). The wrapper element
+  emitted matches the source tagname, so `<matrix>` stays distinct
+  from `<align>` in the Layer 1 output. **Sigil branches (`inline-math`
+  / `display-math`) preserved exactly** — no env wrap, same display-math
+  numbering integration. The doc4/doc5/doc11 sigil snapshots are
+  unchanged.
+
+  Vocab `data.js` regenerated (100 → 105 primary entries; 106 with
+  `quote` alias). Vocab test count assertion bumped 101 → 106.
+
+  Fixture `document-31-math-envs.acm` + `integration doc31` exercises
+  all five new tags end-to-end. Assertions: each tag renders as a real
+  wrapper element with KaTeX-rendered content inside; no
+  `data-acadamark-unknown` spans; KaTeX `class="katex"` markers appear
+  in at least 5 places (one per wrapper); the `<matrix>` wrapper
+  contains KaTeX-rendered output.
+
+  **Snapshot zero-diff confirmed** for all existing fixtures —
+  including doc4/doc5/doc11 (math sigil fixtures) — verified via
+  `git diff --stat` on `test/fixtures/*.json` and `*.html` returning
+  empty before staging doc31's new files. Only doc31's snapshot is
+  new. Per the slice prompt's stop-and-report criterion: sigil
+  snapshots zero-diff confirms the per-tagname dispatch preserves the
+  sigil branches exactly.
+
+  No npm dependencies added — KaTeX was already installed (and is
+  what slice 2b extended). `HANDLER_REGISTRY` unchanged: the five new
+  tags all dispatch through the existing `./handlers/math.js` entry.
+
+  Phase 2 handler-bundle item remains open — sub-slice 2c
+  (Mermaid/ABC) follows per the Phase 0 split recommendation.
+
+  Tests: layer1-vocabulary 52/52 (count assertion updated 101 → 106);
+  acadamark-core 33/33; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites (incl. new doc31).
