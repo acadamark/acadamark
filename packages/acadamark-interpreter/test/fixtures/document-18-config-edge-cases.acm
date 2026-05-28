@@ -3,7 +3,7 @@
   <author | Test Author>
 </meta>
 
-<config ref-prefix-eqn="Eq.">
+<config ref-prefix-eqn="Eq." />
 
 <section | Trailing whitespace after a sigil close>
 
@@ -36,4 +36,4 @@ inside this section, not at root; before the fix its `ref-prefix-fig`
 override would be silently ignored. With the fix, a figure ref following
 it should render with "Fig." instead of "figure".
 
-<config ref-prefix-fig="Fig.">
+<config ref-prefix-fig="Fig." />

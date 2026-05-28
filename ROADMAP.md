@@ -118,11 +118,13 @@ that turn out to be already wired skip the build.
 
 - **Verify the remaining `(formerly AUD-N)` items against current
   code.** A pre-build scoping sweep. Cheap; saves later wasted scoping.
-- **Implement DSL handlers** *(formerly DF-8, DF-9, DF-10, DF-11a)*.
-  `<csv>`/`<tsv>`, `<mermaid>`/`<abc>`, math environments, `<theorem>`.
-  The `<theorem>` handler couples with Phase 1's sub-slice 3 (the
-  theorem vocab) — the prompt for sub-slice 3 will name whether the
-  handler lands with it or in a follow-on slice.
+- **Implement DSL handlers** *(formerly DF-8, DF-9, DF-10)*. Three
+  families: `<csv>`/`<tsv>`, `<mermaid>`/`<abc>`, and math environments
+  (`<matrix>`/`<cases>`/`<align>`/`<eqnarray>`). The original DF-11a
+  `<theorem>` handler was previously bundled here; it was retired by
+  the 2026-05-27 DSL/long-form parser bug fix when theorem family was
+  confirmed as regular Layer 1 vocabulary (no foreign-language
+  interpretation, no handler dispatch needed).
 - **Implement per-section footnote collection** *(formerly PG-1)*. The
   remaining piece of the notes-placement story; walks each section's
   subtree and injects a per-section note-list.
@@ -323,7 +325,6 @@ audit, test rewires.
   `<author>` worked around for `+corresponding`.
 - **`<data>` migration onto structured-element infrastructure**
   *(filed by `beb2fb3`)*.
-- **`dslRegistry` parser-option rename** *(filed by `beb2fb3`)*.
 - **Replace `integration.test.js`'s hand-mirrored pipeline with a
   shared assembly** *(formerly AUD-17)*.
 - **Run a spec-completeness audit against the rebuild-from-docs

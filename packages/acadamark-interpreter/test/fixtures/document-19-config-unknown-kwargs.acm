@@ -3,7 +3,7 @@
   <author | Test Author>
 </meta>
 
-<config title="Title in the wrong place" foo-bar="some-value">
+<config title="Title in the wrong place" foo-bar="some-value" />
 
 <section | Introduction>
 

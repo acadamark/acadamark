@@ -12,22 +12,6 @@
           "properties": {},
           "children": [
             {
-              "type": "raw",
-              "value": "</config>",
-              "position": {
-                "start": {
-                  "line": 2,
-                  "column": 1,
-                  "offset": 160
-                },
-                "end": {
-                  "line": 2,
-                  "column": 10,
-                  "offset": 169
-                }
-              }
-            },
-            {
               "type": "element",
               "tagName": "sub-section",
               "properties": {},
@@ -611,22 +595,6 @@
                       "line": 29,
                       "column": 77,
                       "offset": 2277
-                    }
-                  }
-                },
-                {
-                  "type": "raw",
-                  "value": "</bibliography>",
-                  "position": {
-                    "start": {
-                      "line": 32,
-                      "column": 1,
-                      "offset": 2294
-                    },
-                    "end": {
-                      "line": 32,
-                      "column": 16,
-                      "offset": 2309
                     }
                   }
                 }

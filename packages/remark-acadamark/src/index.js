@@ -6,7 +6,11 @@
  *
  * Usage:
  *   unified().use(remarkParse).use(remarkAcadamark).parse(source)
- *   unified().use(remarkParse).use(remarkAcadamark, { dslRegistry: mySet }).parse(source)
+ *
+ * The plugin takes no options — `<tag>…</tag>` long-form parses for every
+ * named tag (the DSL/long-form parser bug fix removed the registry gate
+ * that previously required tag-list configuration). The historical
+ * `dslRegistry` option was removed in that fix; no caller passed it.
  */
 
 import { acadamarkSyntax } from './syntax.js'
@@ -16,15 +20,14 @@ export { acadamarkSyntax, acadamarkFromMarkdown }
 
 /**
  * @this {import('unified').Processor}
- * @param {{ dslRegistry?: Set<string> }} [options]
  * @returns {undefined}
  */
-export default function remarkAcadamark(options = {}) {
+export default function remarkAcadamark() {
   const data = this.data()
 
   if (!data.micromarkExtensions) data.micromarkExtensions = []
   if (!data.fromMarkdownExtensions) data.fromMarkdownExtensions = []
 
-  data.micromarkExtensions.push(acadamarkSyntax(options))
+  data.micromarkExtensions.push(acadamarkSyntax())
   data.fromMarkdownExtensions.push(acadamarkFromMarkdown())
 }

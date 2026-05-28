@@ -3,14 +3,6 @@
  */
 
 import { markdownLineEnding } from 'micromark-util-character'
-// Long-form-eligibility consults the union of DSL_REGISTRY (true DSLs +
-// historical structural-container tags like <aside>, <note>, <ul>, <data>)
-// and STRUCTURED_ELEMENTS (<meta>, <author>). The union is precomputed in
-// acadamark-core as LONG_FORM_TAGS and exposed for parser use; the parser
-// only needs `.has(tagname)` to decide whether `<tag>…</tag>` can open as
-// long-form. See acadamark-core/structured-elements.js for the rationale
-// for keeping the two registries separate.
-import { LONG_FORM_TAGS } from 'acadamark-core/structured-elements'
 
 const LT = 60         // <
 const GT = 62         // >
@@ -61,21 +53,18 @@ function isTagNameContinueCode(code) {
  * concatenates the chunks (inserting `\n`) to reconstruct the full source.
  * Single-line constructs produce a single chunk; no behaviour change.
  *
- * @param {{ dslRegistry?: Set<string> }} [options]
- *   `dslRegistry` is the historical option name; it now overrides the
- *   long-form-eligibility set (the union of DSL_REGISTRY and
- *   STRUCTURED_ELEMENTS via LONG_FORM_TAGS). The default is the union;
- *   callers that want the historical DSL_REGISTRY-only behavior pass it
- *   explicitly. The option name is preserved for back-compat with internal
- *   consumers; a rename is filed as a follow-up.
+ * Takes no options — the historical `dslRegistry` option was removed by
+ * the DSL/long-form parser bug fix. Every named tag is now long-form-
+ * eligible at the parser level; the three forms (pipe / slash / long)
+ * are disambiguated by local grammar, not by registry membership.
+ *
  * @returns {import('micromark-util-types').Extension}
  */
-export function acadamarkSyntax(options = {}) {
-  const registry = options.dslRegistry ?? LONG_FORM_TAGS
+export function acadamarkSyntax() {
   return {
     flow: {
       [LT]: [
-        { tokenize: makeLongFormTokenizer(registry), concrete: true },
+        { tokenize: makeLongFormTokenizer(), concrete: true },
         { tokenize: tokenizeSigilTagFlow, concrete: true },
         { tokenize: tokenizeNamedTagFlow, concrete: true },
       ],
@@ -517,27 +506,29 @@ function tokenizeShortcutTag(effects, ok, nok) {
  *
  * Returns a tokenizer for: <tagname attrs>\ncontent\n</tagname>
  *
- * Registry check: the tag name is read from the stream and checked against the
- * DSL registry. Only registered tags proceed as long-form; unregistered tags
- * call nok immediately so the flow hook falls through to tokenizeNamedTagFlow.
+ * Every named tag is long-form-eligible — no registry consultation. The
+ * three syntactic forms (`<tag attrs | content>` pipe, `<tag attrs />`
+ * slash, `<tag attrs>...</tag>` long-form) are disambiguated locally by
+ * `|` and `/` placement; a tag with neither is a long-form opener. See
+ * the comment in `consumeOpenTagName` below for the full disambiguation
+ * walk and `DESIGN.md` §"Tag forms" for the spec.
  *
- * The opener `<tagname attrs>` now supports multi-line attribute sections
- * (line endings between attributes are allowed). The closing `>` must appear
- * on the same line as or immediately after the last attribute.
+ * The opener `<tagname attrs>` supports multi-line attribute sections
+ * (line endings between attributes are allowed). The closing `>` must
+ * appear on the same line as or immediately after the last attribute.
  *
- * Emitted token structure (for registered tags):
+ * Emitted token structure:
  *   acadamarkLongFormTag        (outer container)
  *     acadamarkLongFormOpen     (the opening `<tagname attrs>`, may span lines)
  *     acadamarkLongFormContent  (verbatim content, may span multiple lines)
  *     acadamarkLongFormClose    (the `</tagname>` closing tag)
  *
- * Missing closer: if no `</tagname>` is found before EOF, the tokenizer calls
- * ok and from-markdown.js converts the node to acadamarkTagError.
+ * Missing closer: if no `</tagname>` is found before EOF, the tokenizer
+ * calls ok and from-markdown.js converts the node to acadamarkTagError.
  *
- * @param {Map<string, string>} registry
  * @returns {Tokenizer}
  */
-function makeLongFormTokenizer(registry) {
+function makeLongFormTokenizer() {
   return function tokenizeLongFormTag(effects, ok, nok) {
     /** @type {number[]} */
     const tagNameCodes = []
@@ -545,10 +536,10 @@ function makeLongFormTokenizer(registry) {
     // character was a `/`. When `>` arrives with this set, the construct is
     // a self-closing tag (`<tag ... />`) and the long-form tokenizer rejects
     // so the named-tag tokenizer can claim it (which routes the Peggy grammar
-    // to its SelfClosingNamedTag rule). Without this rejection, DSL-registered
-    // tags like `<csv />` are greedily claimed as long-form openers, their
-    // missing `</csv>` close turns them into acadamarkTagError nodes, and the
-    // self-closing form silently fails for the entire DSL-registry class.
+    // to its SelfClosingNamedTag rule). This is the slash-form branch of the
+    // three-form grammar (`<tag attrs />`); without it, every short-form-no-
+    // content authoring (`<csv />`, `<hr />`, `<cite @ref />`, etc.) would
+    // be greedily claimed as a long-form opener with no matching close.
     let prevWasSlash = false
 
     return start
@@ -578,9 +569,27 @@ function makeLongFormTokenizer(registry) {
         effects.consume(code)
         return consumeOpenTagName
       }
-      // Tag name complete — only registered tags are long-form eligible.
-      const tagName = String.fromCharCode(...tagNameCodes)
-      if (!registry.has(tagName)) return nok(code)
+      // Tag name complete. Long-form is eligible for every named tag; no
+      // registry is consulted. Previously this point checked
+      // `registry.has(tagName)` and rejected unregistered tags, which
+      // conflated long-form-authoring eligibility with handler-dispatch
+      // membership — `<aside>…</aside>` had to be listed in DSL_REGISTRY for
+      // the parser to admit it even though <aside> is not a DSL. That gate
+      // was removed.
+      //
+      // The grammar disambiguates the three syntactic forms locally,
+      // without lookahead or registry consultation, by the presence of
+      // `|` or `/` before `>`:
+      //
+      //   <tag attrs | content>  — short-form with body content (pipe form;
+      //                            rejected at the PIPE check in scanOpenAttrs)
+      //   <tag attrs />          — short-form, no body content (slash form;
+      //                            rejected at scanOpenAttrs's GT-with-
+      //                            prevWasSlash check)
+      //   <tag attrs>...</tag>   — long-form (opener + close)
+      //
+      // A tag with neither `|` nor `/` before `>` is unambiguously a
+      // long-form opener. See DESIGN.md for the durable spec.
       return scanOpenAttrs(code)
     }
 

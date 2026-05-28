@@ -216,11 +216,17 @@ The opening tag follows the same attribute syntax as short-form named tags (posi
 
 **Long-form tags are recognized in flow (block) position only.** They are not recognized inside paragraphs.
 
-**Disambiguation with short-form empty tags.** An opening tag `<tagname attrs>` at the end of a line is syntactically identical to a long-form opener. The finder resolves the ambiguity using the DSL registry, not lookahead: it reads the tag name, checks the registry, and proceeds as long-form only if the name is registered. If the name is not registered, the long-form tokenizer immediately calls `nok` so the flow hook falls through to `tokenizeNamedTag` (short-form). This means `<section #intro>` at block level is always short-form (section is not in the registry), while `<csv>` at block level is always long-form (csv is registered).
+**Three-form grammar; local disambiguation.** Updated 2026-05-27 by the DSL/long-form parser bug fix. An opening tag `<tagname attrs>` at the end of a line was previously syntactically identical to a long-form opener, and the finder used registry membership as a gate: registered tags became long-form openers, unregistered tags fell through to short-form. That conflated long-form-authoring with handler-dispatch eligibility, forced regular Layer 1 vocabulary tags like `<aside>` into the DSL registry as a workaround, and is now removed. The grammar has three locally-unambiguous syntactic forms:
 
-For registered tags, the finder consumes content until it encounters a matching `</tagname>`. If end-of-document is reached without a closer, the node is emitted as `acadamarkTagError` — there is no fallback to short-form. This is deliberate: true lookahead (scanning forward before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` with no `</csv>` is almost certainly an authoring mistake.
+| Form        | Shape                              | Disambiguator                                |
+|-------------|------------------------------------|----------------------------------------------|
+| Pipe form   | `<tag attrs | content>`            | The `|` rejects long-form at `scanOpenAttrs` |
+| Slash form  | `<tag attrs />`                    | The `/` before `>` (via `prevWasSlash`) rejects long-form |
+| Long form   | `<tag attrs>content</tag>`         | No `|` and no `/` — unambiguously long-form opener |
 
-Authors who want a short-form empty tag for a registered name (unusual) should use the `|` form: `<csv | >` is unambiguously short-form because the `|` character causes the long-form tokenizer to call `nok` before reaching `afterOpenGt`. Short-form named tags with attributes but no `|` and no content (`<aside .note>`) are also short-form when the tag is not registered; if the tag is registered, they become long-form openers and require a matching closer.
+The finder decides locally — no registry consultation, no vocabulary lookup, no lookahead. A tag with neither `|` nor `/` before `>` is a long-form opener, regardless of tag name. For every long-form opener, the finder consumes content until it encounters a matching `</tagname>`. If end-of-document is reached without a closer, the node is emitted as `acadamarkTagError` — there is no fallback to short-form. This is deliberate: lookahead (scanning forward before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` with no `</csv>` (or any `<tag>` with no `</tag>`) is almost certainly an authoring mistake.
+
+Authors who want a short-form empty tag (the slash form) write `<tag />` — covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`, `<config attrs />`).
 
 **Nested same-name tags.** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outermost `<tagname>`. Depth is not tracked inside long-form content at Slice 4 since content is opaque. For example, `<aside>outer<aside>inner</aside>more</aside>` produces one `<aside>` with content `outer<aside>inner`; the trailing `more</aside>` is not consumed and falls through to remark. When recursive content parsing lands, nodes with `contentHandler: "default"` will re-parse their content, at which point nested same-name tags are handled correctly by the inner pipeline.
 
@@ -245,53 +251,42 @@ This is what allows acadamark to embed CSV, TSV, LaTeX, code, mermaid, and other
 
 **Hash sigils are not opaque.** The `<#`, `<##`, `<###` heading sigils carry prose-bearing content (`contentHandler: "default"`, `isOpaqueContent: false`). Their content is recursively parsed via the same path as named-tag default content, so markdown idioms and nested acadamark constructs inside a heading body are processed normally. `<# *bold* heading #>` has its emphasis parsed; the result is the same as if the body appeared in any other prose-bearing context. The mirrored closer (`#>` / `##>` / `###>`) ends the sigil at the source level; opacity is a separate property and hash sigils do not have it.
 
-## DSL tag registry
+## DSL handler-dispatch registry
 
-The registry assigns a **content handler** to every named or sigil tag the parser knows about, and (for named tags only) declares **long-form eligibility**. The two roles cover different tag groups but share the same map.
+The DSL registry (`packages/acadamark-core/src/dsl-registry.js`) assigns a **content handler** to every DSL tag — a tag whose content is a foreign language interpreted by an external processor (LaTeX math via KaTeX, Mermaid source via Mermaid renderer, CSV via the table data parser, BibTeX via citation-js, etc.). The registry's role is **handler dispatch** for these foreign-language tags. It does not gate long-form parsing — every named tag is long-form-eligible at the parser level, regardless of registry membership (see the three-form grammar above).
 
-- **Content handler (all entries).** The `contentHandler` field on the resulting node names which handler the interpreter should dispatch to. DSL-handler entries (like `csv → "csv"`, `math → "math"`) name a specific embedded-language handler. Structural entries (like `aside → "default"`, `blockquote → "default"`) use the `"default"` handler, meaning content is re-parsed through the regular remark pipeline by the recursive-content plugin. Sigil entries set the per-sigil handler — `$ → "math"`, `# → "default"`, `` ` `` → `"code"`, etc. — and from-markdown.js derives `isOpaqueContent` from the same value (`isOpaqueContent = contentHandler !== "default"`), so the registry is the single source of truth for sigil opacity as well.
-- **Long-form eligibility (named-tag entries only).** Only named tags listed in the registry are recognized in long-form. The micromark boundary finder reads the tag name and calls `nok` immediately if the name is absent. This means the registry is the parser's mechanism for deciding which named tags can have multi-line block content. Sigil tags use mirrored closers, not `</tagname>` closers, and the long-form eligibility test does not apply to them.
+The `contentHandler` field on a node names which handler the interpreter should dispatch to. DSL-handler entries (`csv → "csv"`, `math → "math"`, `library → "library"`, etc.) name a specific embedded-language handler. The math and code sigils (`$ → "math"`, `$$ → "math-display"`, `` ` `` → `"code"`, ``` ``` ``` → `"code-block"`) are in the registry for the same content-handler lookup, even though sigils don't go through the long-form tokenizer.
 
-Named tags not in the registry cannot appear in long-form. Short-form named tags not in the registry still receive a `contentHandler` value — `getContentHandler()` returns `"default"` as the fallback for unregistered tag names. Only long-form eligibility requires a registry entry.
+For any tag *not* in the registry, `getContentHandler()` returns `"default"` (the fallback). The default handler means "recursively parse as acadamark" — content is re-fed through the regular remark pipeline by the recursive-content plugin. This is what regular Layer 1 vocabulary tags (`<aside>`, `<note>`, `<dl>`, the theorem family, etc.) use; they don't need to be in the registry because their default-handler value matches the fallback.
 
-Every long-form node carries a `contentHandler` string. There is no null/absent case.
+`from-markdown.js` derives `isOpaqueContent` from `contentHandler`: `isOpaqueContent = contentHandler !== "default"`. Non-default handlers receive verbatim content strings; default-handler tags have their content recursively parsed.
 
-Initial registry (interim hard-coded list; migrates to `packages/layer1-vocabulary/` when that package is set up). Sigil entries and long-form-tag entries live in the same map — sigils so their `contentHandler` (and hence `isOpaqueContent`) can be looked up by the same `getContentHandler()` path as named tags; long-form tags so long-form eligibility and content handling are decided together:
+Current registry contents (all are DSLs):
 
-| Tag name    | `contentHandler` value | Content type                |
-|-------------|------------------------|-----------------------------|
-| `#`         | `"default"`            | Section heading (prose, recursively parsed) |
-| `##`        | `"default"`            | Sub-section heading (prose, recursively parsed) |
-| `###`       | `"default"`            | Sub-sub-section heading (prose, recursively parsed) |
-| `$`         | `"math"`               | Inline math (opaque)        |
-| `$$`        | `"math-display"`       | Display math (opaque)       |
-| `` ` ``     | `"code"`               | Inline code (opaque)        |
-| `` ``` ``   | `"code-block"`         | Code block (opaque)         |
-| `csv`       | `"csv"`                | Comma-separated values      |
-| `tsv`       | `"tsv"`                | Tab-separated values        |
-| `math`      | `"math"`               | Math (default: TeX/KaTeX)   |
-| `code`      | `"code"`               | Source code                 |
-| `mermaid`   | `"mermaid"`            | Mermaid diagram source      |
-| `abc`       | `"abc"`                | ABC music notation          |
-| `theorem`   | `"theorem"`            | Theorem (LaTeX-like)        |
-| `matrix`    | `"matrix"`             | Matrix                      |
-| `cases`     | `"cases"`              | Piecewise function          |
-| `align`     | `"align"`               | Aligned equations          |
-| `eqnarray`  | `"eqnarray"`           | Equation array              |
-| `aside`     | `"default"`           | Aside (prose, recursively parsed) |
-| `blockquote`| `"default"`           | Blockquote                  |
-| `note`      | `"default"`           | Note/footnote               |
-| `table`     | `"table"`             | Table (dedicated handler)   |
-| `ul`        | `"default"`           | Unordered list              |
-| `ol`        | `"default"`           | Ordered list                |
-| `li`        | `"default"`           | List item                   |
-| `meta`      | `"default"`           | Document metadata container |
-| `data`      | `"default"`           | Citation data container (prose, recursively parsed) |
-| `library`   | `"library"`           | BibTeX/CSL-JSON source (opaque; citation-js parses) |
+| Entry            | `contentHandler` value | Role                                             |
+|------------------|------------------------|--------------------------------------------------|
+| `$`              | `"math"`               | Inline math sigil (KaTeX)                        |
+| `$$`             | `"math-display"`       | Display math sigil (KaTeX)                       |
+| `` ` ``          | `"code"`               | Inline code sigil (highlighter)                  |
+| `` ``` ``        | `"code-block"`         | Code-block sigil (highlighter)                   |
+| `csv`            | `"csv"`                | Comma-separated values (table.js)                |
+| `tsv`            | `"tsv"`                | Tab-separated values (table.js)                  |
+| `math`           | `"math"`               | LaTeX math (KaTeX)                               |
+| `code`           | `"code"`               | Source code (highlighter)                        |
+| `mermaid`        | `"mermaid"`            | Mermaid diagram source                           |
+| `abc`            | `"abc"`                | ABC music notation                               |
+| `matrix`         | `"matrix"`             | Math environment (LaTeX-like)                    |
+| `cases`          | `"cases"`              | Piecewise function (LaTeX-like)                  |
+| `align`          | `"align"`              | Aligned equations (LaTeX-like)                   |
+| `eqnarray`       | `"eqnarray"`           | Equation array (LaTeX-like)                      |
+| `table`          | `"table"`              | Table (data string in CSV/TSV/JSON/YAML/MD)      |
+| `library`        | `"library"`            | BibTeX/CSL-JSON source (citation-js)             |
 
-The map currently uses identity keys (tag name = handler name). A future `<equation>` tag could map to `"math"` without changing the handler implementation.
+Regular Layer 1 vocabulary tags (`<section>`, `<aside>`, `<note>`, `<blockquote>`, `<ul>`/`<ol>`/`<li>`, `<dl>`/`<dt>`/`<dd>`, `<glossary>`, `<details>`, the theorem family, `<meta>`, `<author>`, `<data>`, every other tag) are **not** in this registry — they don't need handler dispatch, their content is regular acadamark (recursively parsed via the default handler), and they reach the parser through the language's regular three-form grammar.
 
-**Implementation note.** The registry is a `Map<string, string>` exported from `packages/acadamark-core/src/dsl-registry.js`. The tokenizer uses `.has()` to gate long-form eligibility; `getContentHandler()` returns the mapped handler name, or `"default"` for unregistered tags (the fallback is never reached in practice since unregistered tags are rejected at the tokenizer level). When `packages/layer1-vocabulary/` is set up (Slice 5+), the map migrates there as a declared property of each long-form element spec; the parser imports it. Comments in `packages/acadamark-core/src/dsl-registry.js` note the intended migration.
+The map currently uses identity keys (tag name = handler name) for the DSL entries. A future `<equation>` tag could map to `"math"` without changing the handler implementation.
+
+**Historical note.** The registry previously also held regular-vocabulary tags (sections, `<aside>`, `<note>`, lists, definition lists, theorem family, `<meta>`, `<data>`) as a workaround for the parser's pre-2026-05-27 long-form gate, which required registry membership for `<tag>…</tag>` parsing. That conflation forced regular vocabulary into the DSL registry to be authorable in their natural long-form. The DSL/long-form parser bug fix (2026-05-27) removed the gate; the registry shrank to genuine DSLs only.
 
 The qualifying-tag pattern (`<category language | content>`) means a generic category tag can declare its content's language as the first positional. `<table csv | ...>` and `<table tsv | ...>` are valid, even though `table` itself is not necessarily a DSL tag.
 
@@ -377,7 +372,7 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 }
 ```
 
-`contentHandler` names which handler the interpreter should dispatch to for this node's content. `"default"` is a real registry entry — it applies to registered structural long-form tags (like `aside` and `blockquote`) whose content is prose that should be re-parsed through the regular remark pipeline when recursive content parsing is implemented. DSL-handler entries like `"math"` or `"csv"` name a specific embedded-language handler. Tags not in the registry cannot appear in long-form at all — the long-form tokenizer rejects them at the tag-name level. The field is never absent on long-form nodes.
+`contentHandler` names which handler the interpreter should dispatch to for this node's content. `"default"` is the fallback (returned by `getContentHandler()` for any tag not in the DSL registry) — it applies to every regular Layer 1 vocabulary tag (`<aside>`, `<note>`, `<blockquote>`, the theorem family, lists, sections, etc.) and means the content is recursively re-parsed through the regular remark pipeline by the recursive-content plugin. DSL-handler entries like `"math"` or `"csv"` name a specific embedded-language handler; non-default handlers keep content opaque. Every named tag is long-form-eligible at the parser level; the field is never absent on long-form nodes.
 
 `isOpaqueContent` is set at parse time by `from-markdown.js`. Prose-bearing nodes (`contentHandler: "default"`) get `false`; their `content` starts as a string and becomes `Node[]` after the recursive-content plugin runs. DSL-handler nodes remain `isOpaqueContent: true` permanently.
 
@@ -851,7 +846,7 @@ These were open questions that were settled during implementation.
 
 - **Attribute order.** Free, but if conflicting attributes are present (e.g., two `#id` attributes), the parser takes the last and may report a warning.
 
-- **DSL registry persistence.** The registry is a parser configuration. New DSL tags can be registered at parse time. The default registry is listed above; users or downstream packages can extend it.
+- **DSL registry purpose.** The registry is the handler-dispatch list for DSL tags (foreign-language tags interpreted by external processors). The default registry is listed above; users or downstream packages can extend it to add new DSL handlers. The registry does **not** gate parser-time long-form admission — every named tag is long-form-eligible at the parser level — so adding or removing a registry entry does not affect what authoring forms a tag supports; it only affects what handler the interpreter dispatches the tag's content to.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
 

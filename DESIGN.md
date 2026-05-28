@@ -186,6 +186,18 @@ Conventions:
 - `@key` is a reference: `<ref @fig:elephant>`, `<cite @smith2023>`. The `@` always means "refers to an id"; `#` always means "assigns an id."
 - Everything after `|` is the element's content, which may contain nested shorthand.
 
+### Tag forms
+
+Acadamark tags appear in three syntactic forms:
+
+1. **Pipe form** — `<tag attrs | content>` — short-form with body content. The pipe marks the start of body content; the closing `>` terminates the tag.
+2. **Slash form** — `<tag attrs />` — short-form with no body content. Covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`). The `/` before `>` marks the tag as self-closing.
+3. **Long form** — `<tag attrs>content</tag>` — content bounded by an explicit closing tag.
+
+The parser disambiguates short-form from long-form by the presence of `|` or `/` before the closing `>`. No registry consultation, no vocabulary lookup, no lookahead. A tag with neither `|` nor `/` is unambiguously a long-form opener.
+
+All three forms work for every tag where they make sense. Void tags (`<hr />`, `<br />`) are typically authored in slash form only — long form has no useful content to put inside. Attribute-only tags like `<cite>` and `<ref>` are typically slash form when no body content is needed. Container tags like `<aside>`, `<theorem>`, `<dl>` are typically long form when their body is multiple paragraphs or nested children, and pipe form when the body is short inline content. The choice is the author's; the parser accepts all three for any tag.
+
 ### Implicit closing
 
 Block-level tags don't require explicit closing. A new peer-level tag implicitly ends the previous one, mirroring LaTeX's `\section{}`. This is the single largest authoring affordance over raw HTML and the main reason the shorthand exists.
@@ -213,7 +225,7 @@ becomes (in semantic mode):
 </section>
 ```
 
-Inline tags (citations, references, inline math) do require explicit closing where ambiguity would otherwise arise, but the `| content` form typically resolves this.
+Inline tags (citations, references, inline math) are typically authored in pipe form (`<cite | @smith2023>`) or slash form (`<cite @smith2023 />`) when used at flow position; the three-form grammar is locally unambiguous regardless of the tag, so the author's choice depends on readability rather than parser constraint.
 
 ### Two-register coexistence
 
@@ -319,7 +331,7 @@ The interface for every structured-data container is uniform: the tag accepts kw
 
 ### Infrastructure
 
-The structured-data-container registry is **`STRUCTURED_ELEMENTS`** in `packages/acadamark-core/src/structured-elements.js`. Each entry is a per-tag spec recording its accepted kwargs, the subset that lifts to child tags, boolean-marker kwargs, the child allowlist, an opt-in child-tag-validation flag, and an optional misuse-feedback partner pointer. The registry is **separate from `DSL_REGISTRY`** by design — `DSL_REGISTRY` owns DSL content-handler dispatch; `STRUCTURED_ELEMENTS` owns the kwarg/child-tag interface. The parser's long-form-eligibility check (in `remark-acadamark/src/syntax.js`) consults the union of both registries via a derived `LONG_FORM_TAGS` set.
+The structured-data-container registry is **`STRUCTURED_ELEMENTS`** in `packages/acadamark-core/src/structured-elements.js`. Each entry is a per-tag spec recording its accepted kwargs, the subset that lifts to child tags, boolean-marker kwargs, the child allowlist, an opt-in child-tag-validation flag, and an optional misuse-feedback partner pointer. The registry is **separate from `DSL_REGISTRY`** by design — `DSL_REGISTRY` is the handler-dispatch list for DSLs (foreign-language tags like `<math>` / `<mermaid>` / `<csv>` interpreted by an external processor); `STRUCTURED_ELEMENTS` is the kwarg/child-tag interface registry. Neither registry gates parser-time long-form admission — every named tag is long-form-eligible (see §"Tag forms" above) — so the two registries are independent and serve unrelated downstream concerns.
 
 The lift gate consumes the spec generically in `normalize-to-canonical.js`'s `liftStructuredKwargs(node, file)`. Adding a new structured-data container is a registry-entry edit plus (when the tag is new) a vocabulary entry — no gate-code change.
 

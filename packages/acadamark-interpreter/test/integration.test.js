@@ -1155,17 +1155,18 @@ export function run() {
     const { html, hast } = runPipeline(src);
 
     // Each of the eight elements appears as a real tag in the output.
-    // <theorem>'s pre-existing 'theorem' content-handler entry (line 45
-    // of dsl-registry.js) marks every <theorem> node isOpaqueContent: true,
-    // which the schema dispatch then drops at convert-content time. So
-    // <theorem> renders as the real element with attributes intact but
-    // empty body. We assert the element renders and its attributes flow
-    // through; the body assertion is exercised via the other seven
-    // elements (which use the 'default' handler / recursive content
-    // parse). The opacity is the slice's recorded line-45 finding.
+    // <theorem>'s body now renders (the line-45 placeholder
+    // ['theorem', 'theorem'] in DSL_REGISTRY was removed by the
+    // DSL/long-form parser bug fix; <theorem> gets the default handler
+    // and its content is recursively parsed). Sub-slice 3 noted this as
+    // a Phase-2 limitation; the DSL purge fixed it as a side effect.
     assert.ok(
       /<theorem\b[^>]*id="thm:pyth"[^>]*>/.test(html),
       'doc29: <theorem> renders as a real element with its id intact',
+    );
+    assert.ok(
+      /<theorem\b[^>]*>If a\^2 \+ b\^2 = c\^2/.test(html),
+      'doc29: <theorem> body content renders (post-DSL-purge)',
     );
     assert.ok(
       /<proof\b[^>]*>By similar triangles/.test(html),

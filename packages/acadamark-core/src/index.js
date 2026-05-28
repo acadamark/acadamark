@@ -12,7 +12,6 @@ export {
   STRUCTURED_ELEMENTS,
   isStructuredElement,
   getStructuredSpec,
-  LONG_FORM_TAGS,
 } from './structured-elements.js';
 export { SIGIL_TO_TAGNAME, TAGNAME_TO_SIGIL, isSigilTagname } from './tagname-sigil-map.js';
 export { makeTag, makeOpaqueTag, makeInternalMarker, isAcadamarkTag } from './tag.js';

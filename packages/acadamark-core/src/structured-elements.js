@@ -25,9 +25,9 @@
 //     several non-DSL containers.
 //   - structured-elements.js owns the kwarg/child-tag interface, the per-tag
 //     allowlists, and the misuse-feedback partner pointers.
-//   - Both registries contribute to `LONG_FORM_TAGS` (the parser's combined
-//     long-form-eligibility view; see longFormTags() / LONG_FORM_TAGS below
-//     and the consult site in remark-acadamark/src/syntax.js).
+//   - The two registries are independent. Neither participates in parser-
+//     time long-form admission any more (the DSL/long-form parser bug fix
+//     removed that gate; every named tag is long-form-eligible).
 //
 // See DESIGN.md §"Structured-data-container tags" for the design.
 
@@ -164,23 +164,12 @@ export function getStructuredSpec(tagname) {
   return STRUCTURED_ELEMENTS.get(tagname) ?? null;
 }
 
-// ─── Combined long-form-eligibility view ─────────────────────────────────────
-//
-// The parser's micromark long-form tokenizer (remark-acadamark/src/syntax.js)
-// consults this set via `.has(tagname)` to decide whether `<tag>…</tag>` is
-// long-form-parseable. The set is the union of DSL_REGISTRY's tags and
-// STRUCTURED_ELEMENTS's tags. Computed at module load so the parser holds a
-// stable reference.
-//
-// A note on coupling: this view is the only point where DSL_REGISTRY and
-// STRUCTURED_ELEMENTS meet. Each registry is otherwise independent; only the
-// parser's long-form admission needs the union.
-
-function buildLongFormTags() {
-  const set = new Set();
-  for (const tag of DSL_REGISTRY.keys()) set.add(tag);
-  for (const tag of STRUCTURED_ELEMENTS.keys()) set.add(tag);
-  return set;
-}
-
-export const LONG_FORM_TAGS = buildLongFormTags();
+// ─── Historical note: LONG_FORM_TAGS removed by the DSL/long-form parser
+// bug fix (2026-05-27). It was previously computed here as the union of
+// DSL_REGISTRY and STRUCTURED_ELEMENTS to drive the parser's long-form
+// admission gate. The parser fix removed that gate — every named tag is
+// now long-form-eligible — so the union has no consumer. Neither registry
+// participates in long-form admission any more. DSL_REGISTRY is now a
+// pure handler-dispatch list for DSLs; STRUCTURED_ELEMENTS is the
+// kwarg/child-tag interface registry for structured-data-containers
+// (`<meta>`, `<author>`). The two registries are independent.

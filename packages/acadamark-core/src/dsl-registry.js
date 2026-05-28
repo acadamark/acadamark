@@ -1,170 +1,96 @@
 /**
- * DSL content-handler registry.
+ * DSL handler-dispatch registry.
  *
- * Maps long-form tag names to the content handler the interpreter dispatches
- * to. Tags not in this map get the handler "default", which causes the
- * recursive-content plugin to re-parse the content through the regular
- * remark pipeline.
+ * A **DSL** in acadamark is a tag whose content is a foreign language
+ * interpreted by an external processor into output. The processor is not
+ * acadamark's own parser/renderer; it is a different language with its own
+ * grammar that acadamark delegates to. Examples:
  *
- * Handler names currently use identity (tag name === handler name). The map
- * shape allows future divergence — e.g., an <equation> tag mapping to
- * "math" without touching the math handler itself.
+ *   - `<math>` / `<$ … $>` / `<$$ … $$>` — LaTeX math → KaTeX
+ *   - `<code>` / `` <` … `> `` / ` <``` … ```> ` — source code → highlighter
+ *   - `<csv>` / `<tsv>` — comma/tab-separated values → table parser
+ *   - `<mermaid>` / `<abc>` — Mermaid / ABC notation → renderer
+ *   - `<table>` — carries CSV/TSV/JSON/YAML data → table.js handler
+ *   - `<library>` — raw BibTeX / CSL-JSON → citation-js
+ *   - `<matrix>` / `<cases>` / `<align>` / `<eqnarray>` — LaTeX math envs
  *
- * This registry lives parser-side. A future migration to
- * packages/layer1-vocabulary/ is planned: each long-form element's vocabulary
- * entry would declare its contentHandler there, and the parser would import
- * the map from that package. See notes/specs/shorthand-syntax.md § "DSL tag
- * registry".
+ * This registry maps the DSL tag's name (or sigil token) to its handler
+ * module name. `getContentHandler(tagName)` consumed by the parser
+ * (`from-markdown.js`) sets `node.contentHandler` and the
+ * `isOpaqueContent = contentHandler !== 'default'` derivation, so non-DSL
+ * tags get `'default'` handler + `isOpaqueContent: false` (recursive parse)
+ * via the fallback in `getContentHandler`.
+ *
+ * **History:** this registry previously also held regular-vocabulary tags
+ * (sections, `<aside>`, lists, definition lists, theorem family, …) as a
+ * workaround for the parser's pre-2026-05-27 long-form gate, which required
+ * registry membership for `<tag>…</tag>` to parse. That conflation was
+ * removed in the DSL/long-form parser bug fix (2026-05-27): the parser now
+ * admits long-form for every tag (the three-form grammar disambiguates by
+ * `|` / `/` locally; see `DESIGN.md` §"Tag forms"). With the gate gone,
+ * regular-vocabulary tags don't need any registry — they reach the renderer
+ * via the default vocabulary path. The registry shrank to genuine DSLs only.
+ *
+ * Structured-data-container tags (`<meta>`, `<author>`) live in their own
+ * `STRUCTURED_ELEMENTS` registry (`./structured-elements.js`) for the
+ * kwarg/child-tag lift infrastructure built in `beb2fb3`.
  */
 export const DSL_REGISTRY = new Map([
-  // ── Sigil tags (prose-bearing, recursively parsed) ───────────────────────
-  // Hash sigils carry heading prose. "default" handler means content is
-  // recursively parsed through the inner remark pipeline.
-  ['#',   'default'],
-  ['##',  'default'],
-  ['###', 'default'],
-
-  // ── Sigil tags (opaque, embedded language) ───────────────────────────────
+  // ── Math and code sigils (opaque, embedded language) ─────────────────────
   // Math and code sigils carry source for an embedded language. Non-"default"
   // handlers mean isOpaqueContent stays true; the interpreter dispatches to
   // the named handler (KaTeX, syntax highlighter, etc.).
+  //
+  // These sigils don't go through the long-form tokenizer; the entries here
+  // exist for the `getContentHandler(sigil)` lookup. Drift guards in
+  // `normalize-to-canonical.js` assert the handler values
+  // (`$` → 'math', `$$` → 'math-display', `` ` `` → 'code', etc.); removing
+  // these would break those guards.
+  //
+  // Section sigils (#, ##, ###) were previously listed alongside these with
+  // the 'default' handler. They were regular vocabulary in sigil form (no
+  // foreign-language interpretation; the body is just heading prose); they
+  // were removed by the DSL/long-form parser bug fix because the default
+  // handler is the unregistered-tag fallback in `getContentHandler` — the
+  // explicit entry was redundant. They are not DSLs.
   ['$',   'math'],
   ['$$',  'math-display'],
   ['`',   'code'],
   ['```', 'code-block'],
 
-  // ── DSL content handlers ────────────────────────────────────────────────
-  // Tag name maps to a named content handler. The interpreter dispatches to
-  // that handler for content processing (CSV parsing, math rendering, etc.).
+  // ── DSL handlers ─────────────────────────────────────────────────────────
+  // Each entry maps a tag to its handler module. The interpreter dispatches
+  // to that handler for content processing. `'default'` (the unregistered-
+  // tag fallback) means "recursively parse as acadamark"; non-default
+  // handlers receive the verbatim content string and interpret it via the
+  // named processor.
   ['csv',      'csv'],
   ['tsv',      'tsv'],
   ['math',     'math'],
   ['code',     'code'],
   ['mermaid',  'mermaid'],
   ['abc',      'abc'],
-  ['theorem',  'theorem'],
   ['matrix',   'matrix'],
   ['cases',    'cases'],
   ['align',    'align'],
   ['eqnarray', 'eqnarray'],
-
-  // ── Structural long-form tags (default handler) ─────────────────────────
-  // These tags use long-form syntax for multi-line prose content. The
-  // "default" handler means content is re-parsed through remark by the
-  // recursive-content plugin.
-  //
-  // Tags NOT listed here are short-form only. Adding a tag here makes it
-  // long-form eligible — any block-level occurrence without a matching
-  // </tagname> will produce acadamarkTagError rather than a short-form node.
-  //
-  // NOTE: `figure` intentionally omitted — it has common short-form block-
-  // level uses (e.g. <figure src=x.jpg>) that would produce errors as long-form
-  // openers. Add figure here once the design for long-form figure is settled.
-  //
-  // NOTE: theorem-family elements (proof, lemma, corollary, proposition,
-  // definition, example, remark) shipped in deferred-vocabulary sub-slice 3
-  // (2026-05-27) — see the "Theorem family (sans <theorem>)" section below.
-  // <theorem> itself stays on its existing dedicated-handler entry above
-  // (placeholder pointing at a non-existent handler); reconciled when the
-  // Phase-2 theorem handler ships.
-  //
-  // Future migration to packages/layer1-vocabulary/ is planned. See
-  // notes/specs/shorthand-syntax.md § "DSL tag registry".
-  ['aside',      'default'],
-  ['blockquote', 'default'],
-  ['note',       'default'],
-  // 'table' uses a dedicated non-default handler so the recursive-content
-  // plugin does not re-parse data strings (CSV, JSON, etc.) as markdown.
+  // `<table>` is a DSL — its content is data in a foreign format (CSV, TSV,
+  // JSON, YAML, or markdown-table source) parsed by handlers/table.js. The
+  // 'table' handler value makes isOpaqueContent: true, which is what keeps
+  // the recursive-content plugin from re-parsing the data string as markdown.
   ['table',      'table'],
-
-  // ── List elements ────────────────────────────────────────────────────────
-  // <ul>, <ol>, and <li> are in-scope vocabulary elements. Adding them here
-  // makes long-form syntax (<ul>\n<li | item>\n</ul>) parse correctly, so
-  // authored long-form lists behave the same as authored long-form sections
-  // and asides. The markdown idiom `- item` continues to work as the
-  // idiomatic shorthand via idioms.md's delegation principle.
-  ['ul',         'default'],
-  ['ol',         'default'],
-  ['li',         'default'],
-
-  // Definition lists, glossaries, and disclosure containers — added in
-  // deferred-vocabulary sub-slice 2 (2026-05-27). These are structural
-  // long-form containers; their vocabulary entries live at
-  // `packages/layer1-vocabulary/elements/{dl,glossary,details}.md` and
-  // their child shapes (<dt>/<dd>, <glossary-entry>, <summary>+body)
-  // are declared via the entries' `content.shape`. Long-form-eligibility
-  // here lets authors write the natural `<dl>…</dl>`, `<glossary>…</glossary>`,
-  // and `<details>…</details>` forms; without these entries the parser
-  // would treat the open tags as void short-form. Same registration
-  // rationale `<ul>`/`<ol>`/`<aside>`/`<note>` follow.
-  ['dl',         'default'],
-  ['glossary',   'default'],
-  ['details',    'default'],
-
-  // Theorem family (sans <theorem>) — added in deferred-vocabulary
-  // sub-slice 3 (2026-05-27). Seven entries: lemma, corollary,
-  // proposition, definition, example, remark, proof. All are
-  // structural long-form containers (their natural authoring is
-  // `<lemma>…</lemma>` etc., body content placed directly with no
-  // internal wrapper element per the LaTeX amsthm and JATS prior
-  // art). Long-form-eligibility registration is the same pattern
-  // <aside>/<note>/<dl> follow; the 'default' handler means content
-  // is recursively re-parsed through remark.
-  //
-  // <theorem> is intentionally NOT registered here — it has a
-  // pre-existing entry above (line ~45, ['theorem', 'theorem']) that
-  // points at a non-existent dedicated handler. Sub-slice 3 left
-  // that entry alone per the slice prompt's "don't fix existing
-  // entries" rule and recorded the situation as a finding: with that
-  // registration <theorem>'s body content is opaque (no recursive
-  // parse), so authored markdown / nested tags inside <theorem> stay
-  // as raw text in the <theorem> element. When the Phase-2 theorem
-  // handler ships, the line-45 entry can either stay 'theorem' (and
-  // the handler will operate on opaque content) or migrate to
-  // 'default' (and the handler will operate on the parsed tree) —
-  // either decision aligns the seven sibling registrations with
-  // <theorem>'s.
-  //
-  // The matching <theorem>/<lemma>/etc. handler — numbering, label
-  // rendering, QED, optional-name display — is Phase 2 work; until
-  // it lands these tags render via schema dispatch as real custom
-  // HTML elements with the body content shape described above.
-  ['lemma',      'default'],
-  ['corollary',  'default'],
-  ['proposition','default'],
-  ['definition', 'default'],
-  ['example',    'default'],
-  ['remark',     'default'],
-  ['proof',      'default'],
-
-  // ── Metadata container ───────────────────────────────────────────────────
-  // <meta> was previously registered here as ['meta', 'default'] for its
-  // long-form eligibility. Migrated to the structured-element registry
-  // (acadamark-core/structured-elements.js) — <meta> is a structured-data-
-  // container, not a DSL. The parser's long-form admission consults
-  // `LONG_FORM_TAGS` (the union of DSL_REGISTRY's tags and
-  // STRUCTURED_ELEMENTS's tags), so <meta> stays long-form-eligible without
-  // its entry living here. `getContentHandler('meta')` falls back to
-  // 'default' (the unregistered-tag default), which is the same value the
-  // explicit entry returned — so opacity behavior is unchanged.
-
-  // ── Citation support (slice 6) ───────────────────────────────────────────
-  // <data> is a structural container whose content is recursively parsed
-  // as markdown/acadamark (default handler). Used to wrap citation data
-  // blocks that may contain nested long-form tags like <library>.
-  //
-  // <library> holds raw BibTeX/CSL-JSON source (opaque handler). Content is
-  // NOT recursively parsed as markdown — citation-js will parse it directly
-  // in the citation-resolution plugin. Because the handler name ('library')
-  // is not 'default', isOpaqueContent is automatically set to true in
-  // from-markdown.js (line: node.isOpaqueContent = node.contentHandler !== 'default').
-  ['data',       'default'],
+  // `<library>` holds raw BibTeX/CSL-JSON source, parsed by citation-js in
+  // the citation-resolution plugin. The 'library' handler value makes
+  // isOpaqueContent: true; the data string passes through unchanged.
   ['library',    'library'],
 ])
 
 /**
- * Look up the content handler for a long-form tag name.
- * Returns the registered handler name, or "default" for unregistered tags.
+ * Look up the content handler for a tag name.
+ * Returns the registered handler name for a DSL tag, or `'default'` for
+ * any other tag (regular vocabulary, structured-data-containers, or
+ * anything unregistered). The `'default'` fallback is what makes the
+ * non-DSL tags' content recursively parse through the regular pipeline.
  *
  * @param {string} tagName
  * @returns {string}

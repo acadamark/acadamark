@@ -88,9 +88,8 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Make the bibliography heading a config kwarg instead of
   hardcoded** `[interpreter]` `[post-alpha]` *(formerly PG-10)*
 - [ ] **Implement DSL handlers** (`<csv>`/`<tsv>`, `<mermaid>`/`<abc>`,
-  math environments, `<theorem>`) `[interpreter — DSL surface]`
-  `[alpha]` *(→ roadmap: Phase 2)* *(formerly DF-8, DF-9, DF-10,
-  DF-11a)*
+  math environments) `[interpreter — DSL surface]` `[alpha]`
+  *(→ roadmap: Phase 2)* *(formerly DF-8, DF-9, DF-10)*
 - [ ] **Document the tag-form × tag matrix and reconcile
   inconsistencies** `[specs/docs]` `[post-alpha]` *(formerly AUD-15)*
 - [ ] **Add forward-pointers from governed specs to design directions
@@ -99,8 +98,6 @@ A flat scannable index of every open item. Detailed entries below.
   `[tests/build]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly GAP-9)*
 - [ ] **Migrate `<data>` onto the structured-element infrastructure**
   `[interpreter]` `[post-alpha]` *(filed by `beb2fb3`)*
-- [ ] **Rename the `dslRegistry` parser option** `[parser]`
-  `[post-alpha]` *(filed by `beb2fb3`)*
 
 ### Planned work
 
@@ -292,36 +289,45 @@ Hardcoded bibliography heading — a config kwarg, very small.
 ### Implement DSL handlers
 `[interpreter — DSL surface]` `[alpha]` *(→ roadmap: Phase 2)*
 
-`<csv>`/`<tsv>` standalone (DF-8, AUD-07); `<mermaid>`/`<abc>` (DF-9);
-math environments `<matrix>`/`<cases>`/`<align>`/`<eqnarray>` (DF-10);
-`<theorem>` handler (DF-11a). **Treat as one body of work, not
-individual items** — each is "write a handler," all additive, none
-blocks anything. Note DF-10 (the math environments) is the "acadamark
-covers ground remark never covered" case from the lexer-supersession
-discussion in `notes/specs/idioms.md` — it is independent of the
-math-coverage investigation, which concerns delimiter-shaped math
-only. The `<theorem>` handler couples with the theorem-family
-vocabulary (the open vocab sub-slice 3) — these are likely to land
-together in a combined slice or as a paired sequence. *(formerly DF-8,
-DF-9, DF-10, DF-11a)*
+Three families: `<csv>`/`<tsv>` standalone (DF-8, AUD-07);
+`<mermaid>`/`<abc>` (DF-9); math environments
+`<matrix>`/`<cases>`/`<align>`/`<eqnarray>` (DF-10). **Treat as one body
+of work, not individual items** — each is "write a handler," all
+additive, none blocks anything. Note DF-10 (the math environments) is
+the "acadamark covers ground remark never covered" case from the
+lexer-supersession discussion in `notes/specs/idioms.md` — it is
+independent of the math-coverage investigation, which concerns
+delimiter-shaped math only.
+
+The original DF-11a `<theorem>` handler was previously bundled here.
+**It is no longer in scope of this item** — the theorem family is
+regular Layer 1 vocabulary (recorded by deferred-vocab sub-slice 3 and
+confirmed by the 2026-05-27 DSL/long-form parser bug fix); it has no
+foreign-language interpretation and no handler-dispatch need. Any
+Layer-1 rendering enhancement (e.g. shared-counter wiring for the
+propositional theorem family, label rendering with the optional `name`
+kwarg) is regular-vocabulary work scheduled separately if and when it
+is taken up. *(formerly DF-8, DF-9, DF-10; the DF-11a theorem-handler
+membership was retired by the DSL/long-form parser bug fix)*
 
 ### Document the tag-form × tag matrix and reconcile inconsistencies
 `[specs/docs]` `[post-alpha]`
 
-The grammar supports short-form (`<tag attrs>`), pipe-content (`<tag
-attrs | inline content>`), multi-line pipe-content, long-form (`<tag
-attrs>content</tag>` — only for DSL_REGISTRY tags), and self-closing
-(`<tag attrs />` — now works uniformly across all tag classes
-including DSL_REGISTRY tags as of the alpha Phase 2 slice 1,
-2026-05-25; was broken for DSL_REGISTRY per AUD-08 before that fix).
-Different tags support different combinations and the mapping is
-undocumented and inconsistent. Authors have no clear guide. Fix path:
-audit every vocabulary entry; create a unified
-`notes/specs/tag-forms-reference.md` showing the full matrix; identify
-and fix inconsistencies; establish a principle ("all tags should
-support all forms that semantically make sense, with the same
-output"). Severity: medium — not a runtime bug, but a real
-documentation and design-discoverability issue. *(formerly AUD-15)*
+The grammar accepts three syntactic forms for every named tag (per
+`DESIGN.md` §"Tag forms", recorded by the DSL/long-form parser bug fix,
+2026-05-27): **pipe form** (`<tag attrs | content>` — short-form with
+body content), **slash form** (`<tag attrs />` — short-form with no body
+content), and **long form** (`<tag attrs>content</tag>`). The parser
+disambiguates locally by `|` / `/` placement; no registry consultation.
+Per-vocabulary-entry documentation of which forms each tag semantically
+supports (e.g. `<hr>` is slash-only because it's void; `<aside>` admits
+all three but is typically long form for multi-paragraph content) is the
+real Authors-Guide-shaped output the original `AUD-15` work envisioned.
+Fix path: audit every vocabulary entry; create a unified
+`notes/specs/tag-forms-reference.md` showing the per-tag form table;
+identify and fix any inconsistencies with the established three-form
+grammar. Severity: medium — not a runtime bug, but a real documentation
+and design-discoverability issue. *(formerly AUD-15)*
 
 ### Add forward-pointers from governed specs to design directions DD-1..DD-5
 `[specs/docs]` `[post-alpha]`
@@ -371,16 +377,6 @@ does not map cleanly. Revisit when a real second list-shaped use
 case surfaces, or when the difference between field-record and
 resource-list containers becomes worth abstracting. *(filed by
 `beb2fb3`)*
-
-### Rename the `dslRegistry` parser option
-`[parser]` `[post-alpha]`
-
-The parser option historically named `dslRegistry` now carries the
-broader `LONG_FORM_TAGS` set (the union of `DSL_REGISTRY` and
-`STRUCTURED_ELEMENTS`) as its default. The option name has not
-followed the broadening. Rename to something accurate (e.g.
-`longFormRegistry` or `recognizedTags`); update the parser, the
-interpreter wiring, and the documentation. *(filed by `beb2fb3`)*
 
 ---
 

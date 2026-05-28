@@ -559,14 +559,22 @@ function parseLongFormTag(src) {
 }
 
 {
-  // Non-DSL long-form tag gets contentHandler "default"
+  // <theorem> is regular vocabulary — not a DSL. Its body content is prose
+  // (theorem statement), recursively parsed via the default handler.
+  // Updated 2026-05-27 by the DSL/long-form parser bug fix: the line-45
+  // placeholder ['theorem', 'theorem'] in DSL_REGISTRY (pointing at a
+  // non-existent dedicated handler) was removed. <theorem> now follows
+  // the unregistered-tag default-handler path like every other regular-
+  // vocabulary tag. The Phase-2 theorem-family handler (numbering, label
+  // rendering, QED, optional-name display) operates on the parsed tree;
+  // it does not own the content-handler dispatch.
   const node = parseLongFormTag('<theorem>\nAll primes greater than 2 are odd.\n</theorem>')
   assert.equal(node.type, 'acadamarkTag')
   assert.equal(node.form, 'long')
   assert.equal(node.tagname, 'theorem')
-  assert.equal(node.contentHandler, 'theorem')
+  assert.equal(node.contentHandler, 'default')
   assert.equal(node.content, '\nAll primes greater than 2 are odd.\n')
-  console.log('PASS: DSL long-form tag (theorem) gets its handler name')
+  console.log('PASS: <theorem> long-form gets default handler (regular vocab; post-DSL-purge)')
 }
 
 {
@@ -581,21 +589,40 @@ function parseLongFormTag(src) {
 }
 
 {
-  // Unregistered tag at block level falls through to short-form, with
-  // following content preserved as a separate paragraph.
-  // This is the regression test for the bug where tokenizeLongFormTag
-  // greedily consumed the entire document for any block-level named tag
-  // followed by a newline, before the registry check was added.
+  // DSL/long-form parser bug fix (2026-05-27): the long-form tokenizer no
+  // longer gates on registry membership. Every named tag is long-form-
+  // eligible. The grammar disambiguates the three forms locally:
+  //
+  //   <tag attrs | content>  — short-form with body content (pipe form)
+  //   <tag attrs />          — short-form with no body content (slash form)
+  //   <tag attrs>...</tag>   — long-form (opener + close)
+  //
+  // For an unregistered tag like <quux> at line-start with no pipe and no
+  // slash, the parser commits to long-form and scans for </quux>. If no
+  // close exists, the EOF-reached tokenizer marks the node as
+  // acadamarkTagError (the always-renders pattern).
   const src = '<quux>\n\nSome following content.'
   const tree = parse(src)
+  const errNode = tree.children.find((n) => n.type === 'acadamarkTagError')
+  assert.ok(errNode, 'bare <quux> with no </quux> produces acadamarkTagError (post-D1; empty short-form requires /)')
+  console.log('PASS: unregistered tag with no closing tag produces acadamarkTagError (post-D1 grammar)')
+}
+
+{
+  // Companion: the short-form-no-content path for the same tag is `<quux />`
+  // (slash form). The author who wants the old behavior — a bare `<quux>`
+  // with following content as a separate paragraph — writes `<quux />`
+  // instead. Demonstrates the D1 authoring shape.
+  const src = '<quux />\n\nSome following content.'
+  const tree = parse(src)
   const tagNode = tree.children.find((n) => n.type === 'acadamarkTag')
-  assert.ok(tagNode, 'unregistered tag parsed as short-form acadamarkTag')
+  assert.ok(tagNode, 'short-form-no-content <quux /> parses as acadamarkTag')
   assert.equal(tagNode.tagname, 'quux')
   assert.equal(tagNode.form, 'short')
+  assert.equal(tagNode.selfClosing, true)
   const para = tree.children.find((n) => n.type === 'paragraph')
-  assert.ok(para, 'following paragraph preserved, not eaten by long-form tokenizer')
-  assert.equal(tree.children.filter((n) => n.type === 'acadamarkTagError').length, 0, 'no error nodes')
-  console.log('PASS: unregistered tag at block level falls through to short-form, following content preserved')
+  assert.ok(para, 'following paragraph preserved')
+  console.log('PASS: short-form-no-content <quux /> parses correctly; following paragraph preserved (post-D1)')
 }
 
 {
@@ -916,9 +943,14 @@ console.log('\n86/86 tests passed.')
   console.log('PASS multi-line: escape sequences work in multi-line content')
 }
 
-// Test ML-10: Mixed single-line and multi-line tags in same document
+// Test ML-10: Mixed single-line and multi-line tags in same document.
+// Updated 2026-05-27 for the DSL/long-form parser bug fix (D1): short-form
+// without body content requires `/>` so the long-form tokenizer doesn't
+// claim the construct as an opener. `<cite @ref />` and the multi-line
+// `<figure ... />` use slash form; `<aside | short>` is pipe form
+// (unchanged).
 {
-  const src = '<cite @jones2001>\n\n<figure\n  #fig1\n  caption="Elephant"\n>\n\n<aside | short>'
+  const src = '<cite @jones2001 />\n\n<figure\n  #fig1\n  caption="Elephant"\n/>\n\n<aside | short>'
   const tree = parse(src)
   const tags = tree.children.filter((n) => n.type === 'acadamarkTag')
   assert.ok(tags.length >= 3, `expected ≥ 3 acadamarkTag nodes, got ${tags.length}`)

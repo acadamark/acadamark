@@ -1260,3 +1260,100 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
   remark-acadamark 128/128; acadamark-interpreter 24/24 suites
   (incl. new doc29).
+- **2026-Q2 — DSL/long-form parser bug fix: registry gate removed;
+  three-form grammar locally unambiguous; DSL_REGISTRY shrunk to
+  genuine DSLs only.** The parser previously gated `<tag>…</tag>`
+  long-form parsing on registry membership (`DSL_REGISTRY ∪
+  STRUCTURED_ELEMENTS` via `LONG_FORM_TAGS`), forcing regular
+  Layer 1 vocabulary tags into `DSL_REGISTRY` as a workaround for
+  the natural authoring of `<aside>…</aside>`,
+  `<theorem>…</theorem>`, `<dl>…</dl>` etc. The conflation cost real
+  time across multiple slices (sub-slice 2 / sub-slice 3 / `<author>`
+  reconciliation each ran into it). Two Phase-0 stop-and-reports
+  preceded this slice (commits `6ec5bcb` and `798fbf3`); the
+  findings file `notes/dsl-purge-phase0-findings.md` records the
+  full investigation.
+  The fix:
+  - **Parser change** at `packages/remark-acadamark/src/syntax.js`:
+    removed the `registry.has(tagName)` gate in
+    `makeLongFormTokenizer.consumeOpenTagName`. Every named tag is
+    now long-form-eligible. The three syntactic forms — pipe form
+    (`<tag attrs | content>`), slash form (`<tag attrs />`), long
+    form (`<tag attrs>content</tag>`) — are disambiguated locally
+    by `|` / `/` placement; no registry consultation, no
+    lookahead. A tag with neither `|` nor `/` before `>` is
+    unambiguously a long-form opener. (See `DESIGN.md` §"Tag forms"
+    for the durable spec statement.)
+  - **Fixture migration** (5 instances): `<hr>` → `<hr />` in doc3;
+    three `<config attrs>` openers in doc6/doc18/doc19 → `<config
+    attrs />` (slash form). A repo-wide categorization confirmed the
+    27 line-start bare-tag patterns surveyed during Phase 0 sorted
+    into 5 short-form-no-close (migrated) plus 22 long-form-openers
+    (already correct).
+  - **Test-source migration** (2 instances): the `<quux>` test in
+    `packages/remark-acadamark/test/test.js` updated to assert the
+    post-D1 behavior (bare unregistered tag produces
+    `acadamarkTagError`; `<quux />` is the short-form-no-content
+    path); the multi-line opener test updated to use
+    `<figure ... />` and `<cite @ref />` for the slash-form cases.
+  - **`DSL_REGISTRY` pruned** to 16 entries — only genuine DSLs
+    (math/code sigils, csv, tsv, math, code, mermaid, abc, matrix,
+    cases, align, eqnarray, table, library). 21 regular-vocab
+    entries removed, including the line-45 `['theorem', 'theorem']`
+    placeholder. The registry is now what its name claims: a
+    handler-dispatch list for foreign-language tags.
+  - **`dslRegistry` parser option removed** (Step 4 of the slice;
+    closed the `[post-alpha]` rename item filed by `beb2fb3`). The
+    option's purpose was overriding a long-form-eligibility list; no
+    such list exists any more, so the option is unnecessary. No
+    backward-compat alias.
+  - **`LONG_FORM_TAGS` removed** from `acadamark-core` exports. It
+    was the parser-time union of the two registries; with the gate
+    gone, nothing consumes it. `STRUCTURED_ELEMENTS` and
+    `DSL_REGISTRY` are now independent.
+  - **Spec / comment alignment**: `DESIGN.md` gained §"Tag forms"
+    with the three-form rule as the durable spec; `notes/specs/
+    shorthand-syntax.md` rewrote the disambiguation section and the
+    "DSL tag registry" section to describe the post-fix model;
+    `BACKLOG.md` and `ROADMAP.md` updated (Phase 2 handler-bundle
+    scope corrected to three families — `<theorem>` is regular
+    vocab, not a DSL handler — and the line-45 / `dslRegistry`-
+    rename items closed); parser-side comments aligned.
+  **Snapshot finding (recorded honestly).** The slice's "zero
+  rendered-output diff" rule was almost-honored. Two correctness
+  improvements landed as side effects of the parser fix:
+  - *doc8 + doc9*: previously, `<config attrs>` and `<bibliography>`
+    used as long-form openers (with explicit `</config>` /
+    `</bibliography>` closes in the source) parsed as short-form
+    openers (registry rejection path) with the explicit closes
+    emitted as orphan-text in the rendered HTML
+    (`<article-body></config>`, `<p>…</p></bibliography>`). The fix
+    correctly pairs them as long-form constructs; the orphan
+    closing-tag literals disappear from the rendered output. The
+    rendered HTML is now properly tag-balanced where it previously
+    had stray literal text.
+  - *doc29* (`<theorem>` body content): previously the line-45
+    placeholder `['theorem', 'theorem']` made every `<theorem>` node
+    `isOpaqueContent: true`, dropping body content at schema
+    dispatch. Sub-slice 3 (`fc09606`) recorded this as a known
+    limitation to be resolved by the Phase-2 theorem handler. With
+    the line-45 entry removed in this slice, `<theorem>` body
+    content now renders correctly via the default-handler /
+    recursive-content path. The doc29 integration test was updated
+    to assert the rendered body content (previously asserted only
+    attributes-intact).
+  All other snapshots were either position-offset shifts (the 2-byte
+  `<hr>` → `<hr />` migration shifts byte offsets in the position
+  metadata; per CLAUDE.md's syntax-migration correctness model,
+  these are syntax-migration zero-diff cases — content stable, raw
+  bytes shift) or unchanged.
+  Backlog: `[post-alpha]` `dslRegistry` rename item closed;
+  line-45 `<theorem>` placeholder reconciliation closed (handled in
+  this slice); Phase 2 handler-bundle scope corrected from four
+  families to three (DF-11a `<theorem>` handler retired —
+  theorem is regular vocab); `AUD-15` tag-form matrix item updated
+  to reflect the post-D1 three-form grammar.
+  Tests: acadamark-core 33/33; remark-acadamark 128/128;
+  acadamark-interpreter 24/24 suites; layer1-vocabulary 52/52. The
+  structured-element infrastructure (`beb2fb3`) is untouched and
+  remains correct.
