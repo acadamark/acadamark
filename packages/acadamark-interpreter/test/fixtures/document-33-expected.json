@@ -1,0 +1,949 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Per-section footnote collection (formerly PG-1)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "First section",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 15,
+                          "offset": 14
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This section has two footnotes.",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 112
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 32,
+                          "offset": 143
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-1",
+                        "dataNoteId": "note-1"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-1"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " The numbering is global across the document, so this is note 1.",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 104,
+                          "offset": 215
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 168,
+                          "offset": 279
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 112
+                    },
+                    "end": {
+                      "line": 6,
+                      "column": 168,
+                      "offset": 279
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A second sentence with another footnote.",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 281
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 41,
+                          "offset": 321
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-2",
+                        "dataNoteId": "note-2"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-2"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " This is note 2.",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 109,
+                          "offset": 389
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 125,
+                          "offset": 405
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 281
+                    },
+                    "end": {
+                      "line": 8,
+                      "column": 125,
+                      "offset": 405
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A nested sub-section",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 22,
+                              "offset": 21
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "This nested sub-section has its own footnote.",
+                          "position": {
+                            "start": {
+                              "line": 12,
+                              "column": 1,
+                              "offset": 445
+                            },
+                            "end": {
+                              "line": 12,
+                              "column": 46,
+                              "offset": 490
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "sup",
+                          "properties": {
+                            "id": "noteref-3",
+                            "dataNoteId": "note-3"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#note-3"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "3"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " This is note 3 — outermost-collection means it belongs to the first section's list.",
+                          "position": {
+                            "start": {
+                              "line": 12,
+                              "column": 246,
+                              "offset": 690
+                            },
+                            "end": {
+                              "line": 12,
+                              "column": 330,
+                              "offset": 774
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 12,
+                          "column": 1,
+                          "offset": 445
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 330,
+                          "offset": 774
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "footnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-1"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "First footnote — in the first top-level section.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 50,
+                                  "offset": 49
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-1",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-2"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Second footnote — also in the first section.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 46,
+                                  "offset": 45
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-2",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-3"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Third footnote — authored in a nested sub-section. Outermost-collection means it should appear in the FIRST SECTION's per-section note-list, not in any nested sub-section list.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 178,
+                                  "offset": 177
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-3",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Second section",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 16,
+                          "offset": 15
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A footnote in the second top-level section.",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 804
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 44,
+                          "offset": 847
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-4",
+                        "dataNoteId": "note-4"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-4"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " Note 4.",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 126,
+                          "offset": 929
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 134,
+                          "offset": 937
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 16,
+                      "column": 1,
+                      "offset": 804
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 134,
+                      "offset": 937
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "footnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-4"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "4"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Fourth footnote — in the second top-level section. Note 4.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 60,
+                                  "offset": 59
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-4",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Third section: no footnotes",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 29,
+                          "offset": 28
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This section has no footnotes; no per-section note-list should appear at its end.",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "offset": 980
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 82,
+                          "offset": 1061
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "offset": 980
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 82,
+                      "offset": 1061
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A regular endnote, though.",
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 1,
+                          "offset": 1063
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 27,
+                          "offset": 1089
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-5",
+                        "dataNoteId": "note-5"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-5"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "5"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " Note 5 is an endnote, which falls through to article-back per the residual-collection rule.",
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 90,
+                          "offset": 1152
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 182,
+                          "offset": 1244
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 22,
+                      "column": 1,
+                      "offset": 1063
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 182,
+                      "offset": 1244
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "note-list",
+              "properties": {
+                "className": [
+                  "endnotes"
+                ]
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "ol",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {
+                        "id": "note-5"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "sup",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "5"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "Fifth note — an endnote. Goes to article-back. Note 5.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 56,
+                              "offset": 55
+                            }
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#noteref-5",
+                            "className": [
+                              "note-backref"
+                            ],
+                            "ariaLabel": "back to text"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "↩"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 23,
+      "column": 1,
+      "offset": 1245
+    }
+  }
+}

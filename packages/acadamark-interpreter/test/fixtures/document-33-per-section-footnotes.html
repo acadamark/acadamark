@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>document-12-bare-table</title>
+<title>document-33-per-section-footnotes</title>
 <style>
 /* Acadamark default theme — Nature-inspired academic journal style.
  *
@@ -893,98 +893,48 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Bare pipe table normalization fixture</article-title>
-      <author>Test Author</author>
+      <article-title>Per-section footnote collection (formerly PG-1)</article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Top-level bare pipe table</section-title>
-      <p>A bare GFM pipe table in top-level prose, normalized to a canonical table node:</p>
-      <table>
-        <caption><span class="table-label">Table 1.</span></caption>
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Meaning</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>F</td>
-            <td>Force</td>
-          </tr>
-          <tr>
-            <td>m</td>
-            <td>Mass</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>Acceleration</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <section>
-      <section-title>Aligned columns</section-title>
-      <p>A table with explicit column alignment:</p>
-      <table>
-        <caption><span class="table-label">Table 2.</span></caption>
-        <thead>
-          <tr>
-            <th>Left</th>
-            <th>Right</th>
-            <th>Center</th>
-            <th>Default</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>A</td>
-            <td>B</td>
-            <td>C</td>
-            <td>D</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <section>
-      <section-title>Table inside named-tag content</section-title>
-      <p>A bare pipe table inside a named tag's pipe-content (inner processor path):</p><sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup></content>
+      <section-title>First section</section-title>
+      <p>This section has two footnotes.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> The numbering is global across the document, so this is note 1.</p>
+      <p>A second sentence with another footnote.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> This is note 2.</p>
+      <sub-section>
+        <sub-section-title>A nested sub-section</sub-section-title>
+        <p>This nested sub-section has its own footnote.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup> This is note 3 — outermost-collection means it belongs to the first section's list.</p>
+      </sub-section>
       <note-list class="footnotes">
         <ol>
-          <li id="note-1"><sup>1</sup>
-            <p>Here is a note with a table:</p>
-            <table>
-              <caption><span class="table-label">Table 3.</span></caption>
-              <thead>
-                <tr>
-                  <th>Key</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>x</td>
-                  <td>1</td>
-                </tr>
-                <tr>
-                  <td>y</td>
-                  <td>2</td>
-                </tr>
-              </tbody>
-            </table><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
-          </li>
+          <li id="note-1"><sup>1</sup> First footnote — in the first top-level section. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+          <li id="note-2"><sup>2</sup> Second footnote — also in the first section. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a></li>
+          <li id="note-3"><sup>3</sup> Third footnote — authored in a nested sub-section. Outermost-collection means it should appear in the FIRST SECTION's per-section note-list, not in any nested sub-section list. <a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a></li>
         </ol>
       </note-list>
     </section>
+    <section>
+      <section-title>Second section</section-title>
+      <p>A footnote in the second top-level section.<sup id="noteref-4" data-note-id="note-4"><a href="#note-4">4</a></sup> Note 4.</p>
+      <note-list class="footnotes">
+        <ol>
+          <li id="note-4"><sup>4</sup> Fourth footnote — in the second top-level section. Note 4. <a href="#noteref-4" class="note-backref" aria-label="back to text">↩</a></li>
+        </ol>
+      </note-list>
+    </section>
+    <section>
+      <section-title>Third section: no footnotes</section-title>
+      <p>This section has no footnotes; no per-section note-list should appear at its end.</p>
+      <p>A regular endnote, though.<sup id="noteref-5" data-note-id="note-5"><a href="#note-5">5</a></sup> Note 5 is an endnote, which falls through to article-back per the residual-collection rule.</p>
+    </section>
   </article-body>
+  <article-back>
+    <note-list class="endnotes">
+      <ol>
+        <li id="note-5"><sup>5</sup> Fifth note — an endnote. Goes to article-back. Note 5. <a href="#noteref-5" class="note-backref" aria-label="back to text">↩</a></li>
+      </ol>
+    </note-list>
+  </article-back>
 </article>
 
 </body>

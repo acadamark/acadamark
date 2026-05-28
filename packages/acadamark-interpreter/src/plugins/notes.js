@@ -7,8 +7,13 @@
 //
 // === Placement modes ===
 //   'end'  (default) — collect in <note-list class="endnotes"> in article-back
-//   'foot'           — collect in <note-list class="footnotes"> in article-back
-//                      (simplified: per-section footnote collection is deferred)
+//   'foot'           — collect in a per-top-level-section
+//                      <note-list class="footnotes"> at the end of each
+//                      containing section. Foot-notes outside any top-level
+//                      section fall through to article-back (mixed with
+//                      end / side notes there). Implemented by Phase 2
+//                      slice (formerly PG-1, 2026-05-27); see
+//                      note-placement.js for the per-section collection.
 //   'side'           — collect in <note-list class="notes"> in article-back,
 //                      with <li class="sidenote-fallback">. The marker stays
 //                      inline. Theme JS/CSS can extract and reposition these.

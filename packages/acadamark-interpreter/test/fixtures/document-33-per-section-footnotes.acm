@@ -1,0 +1,22 @@
+<meta type=article title="Per-section footnote collection (formerly PG-1)">
+</meta>
+
+<section | First section>
+
+This section has two footnotes.<note placement=foot | First footnote — in the first top-level section.> The numbering is global across the document, so this is note 1.
+
+A second sentence with another footnote.<note placement=foot | Second footnote — also in the first section.> This is note 2.
+
+<sub-section | A nested sub-section>
+
+This nested sub-section has its own footnote.<note placement=foot | Third footnote — authored in a nested sub-section. Outermost-collection means it should appear in the FIRST SECTION's per-section note-list, not in any nested sub-section list.> This is note 3 — outermost-collection means it belongs to the first section's list.
+
+<section | Second section>
+
+A footnote in the second top-level section.<note placement=foot | Fourth footnote — in the second top-level section. Note 4.> Note 4.
+
+<section | Third section: no footnotes>
+
+This section has no footnotes; no per-section note-list should appear at its end.
+
+A regular endnote, though.<note | Fifth note — an endnote. Goes to article-back. Note 5.> Note 5 is an endnote, which falls through to article-back per the residual-collection rule.

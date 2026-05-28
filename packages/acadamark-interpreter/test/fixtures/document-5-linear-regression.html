@@ -1001,6 +1001,15 @@ score = r2_score(y_true, y_pred)
         <a href="#eqn:r2" class="ref">equation 5</a>. A reference to an undefined target would look like <a href="#eqn:missing" class="ref-error">??ref: eqn:missing??</a> in
         the rendered output.
       </p>
+      <note-list class="footnotes">
+        <ol>
+          <li id="note-3">
+            <sup>3</sup>
+            <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0077em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> can be negative when the model
+            fits worse than a horizontal line, e.g., when evaluated on a held-out test set. <a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
+          </li>
+        </ol>
+      </note-list>
     </section>
   </article-body>
   <article-back>
@@ -1014,11 +1023,6 @@ score = r2_score(y_true, y_pred)
           <sup>2</sup> The error term is typically assumed i.i.d. with
           mean zero: 
           <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ε</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mord mathcal" style="margin-right:0.1474em;">N</span><span class="mopen">(</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">σ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></inline-math>. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
-        </li>
-        <li id="note-3">
-          <sup>3</sup>
-          <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0077em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> can be negative when the model
-          fits worse than a horizontal line, e.g., when evaluated on a held-out test set. <a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
         </li>
       </ol>
     </note-list>

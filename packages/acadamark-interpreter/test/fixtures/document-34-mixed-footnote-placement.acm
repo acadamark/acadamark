@@ -1,0 +1,14 @@
+<meta type=article title="Mixed footnote placement — article-back fallback for residual notes">
+</meta>
+
+Some prose before the first section. This carries a footnote.<note placement=foot | Pre-section footnote — authored before any section starts. The outermost-section collection rule doesn't apply (no containing top-level section), so this collects into the article-back residual list.> The pre-section footnote falls into the residual set and appears in the article-back list.
+
+<section | Body section>
+
+Inside the section, a regular footnote.<note placement=foot | In-section footnote — collects into the section's per-section list.> This one collects per-section.
+
+An endnote too.<note | An endnote. Goes to article-back.> Endnotes go to article-back.
+
+<section | A second body section>
+
+Another in-section footnote.<note placement=foot | Second in-section footnote. Per-section.>

@@ -57,19 +57,22 @@ pickable within the phase.
 
 ## Current position
 
-**Phase 1 (vocabulary completeness) is closed** as of the deferred-
-vocabulary sub-slice 3 commit (2026-05-27). The alpha-tagged
-vocabulary set has no remaining `[alpha]` gaps. The roadmap moves to
-Phase 2 next — output handlers and DSL surface for the three handler
-families (CSV/TSV, Mermaid/ABC, math environments). The theorem
-family was confirmed regular vocabulary (no handler dispatch needed)
-by the 2026-05-27 DSL/long-form parser bug fix.
+**Phases 1 and 2 are closed** as of 2026-05-27. Phase 1 (vocabulary
+completeness) closed with deferred-vocabulary sub-slice 3; Phase 2
+(output handlers and DSL surface) closed with the per-section
+footnote slice (Phase 2 had two sub-arcs: the DSL handler bundle
+across slices 2a/2b/2c, and per-section footnote collection — both
+done). The alpha-tagged vocabulary set has no remaining `[alpha]`
+gaps; every alpha-tagged DSL handler dispatches; per-section
+footnotes work for the doc33 + doc34 fixtures.
 
 The flat-line of completed work to date is recorded in `STATUS.md`.
 
-The roadmap's near-term sequence is Phase 2 → Phase 3 → Phase 4 →
-Phase 5, with Phase 6 (the alpha integration check) closing the
-milestone. Phase 7 onwards is post-alpha.
+The roadmap moves to **Phase 3 next** — frameable elements (the
+shared capability across `<fig>`, `<table>`, `<code>`, etc.). The
+roadmap's near-term sequence is Phase 3 → Phase 4 → Phase 5, with
+Phase 6 (the alpha integration check) closing the milestone. Phase 7
+onwards is post-alpha.
 
 ---
 
@@ -107,21 +110,15 @@ phase exits.
 
 ---
 
-## Phase 2 — Output handlers and DSL surface *(alpha — supports line 1)*
+## Phase 2 — Output handlers and DSL surface *(alpha — supports line 1)* *(CLOSED)*
 
-The Layer 1 vocabulary in Phase 1 fixes *what* renders; this phase
-fixes *how* each piece renders. DSL-surface handlers consume the
-deferred vocabulary's entries.
+**Closed 2026-05-27.** The Layer 1 vocabulary in Phase 1 fixed *what*
+renders; this phase fixed *how* each piece renders. DSL-surface
+handlers consumed the deferred vocabulary's entries; per-section
+footnote collection completed the notes-placement story.
 
-The phase runs a **scoping pass first**: the AUD-cohort verification
-re-reads each remaining `(formerly AUD-N)` item against current code,
-because the cohort's already-resolved rate has been high. Handlers
-that turn out to be already wired skip the build.
+**Items (all done):**
 
-**Items, in order:**
-
-- **Verify the remaining `(formerly AUD-N)` items against current
-  code.** A pre-build scoping sweep. Cheap; saves later wasted scoping.
 - **Implement DSL handlers** *(formerly DF-8, DF-9, DF-10)* —
   **done across three sub-slices (2026-05-27):**
   - **Slice 2a** (`091d7c6`) — `<csv>` / `<tsv>` standalone handlers
@@ -139,12 +136,17 @@ that turn out to be already wired skip the build.
   The original DF-11a `<theorem>` handler was previously bundled here;
   retired by the 2026-05-27 DSL/long-form parser bug fix when theorem
   family was confirmed as regular Layer 1 vocabulary.
-- **Implement per-section footnote collection** *(formerly PG-1)*. The
-  remaining piece of the notes-placement story; walks each section's
-  subtree and injects a per-section note-list.
+- **Implement per-section footnote collection** *(formerly PG-1)* —
+  **done 2026-05-27**. Outermost-section collection: for each top-level
+  `<section>` in `<article-body>`, foot-placed descendant notes
+  (regardless of nesting depth) collect into a `<note-list
+  class="footnotes">` at the section's end. Residual notes (end /
+  side / foot-notes outside top-level sections) fall through to the
+  article-back list. Global numbering preserved.
 
-**Exits:** every alpha-tagged DSL handler dispatches; per-section
-footnotes work for at least one fixture.
+**Exit satisfied:** every alpha-tagged DSL handler dispatches;
+per-section footnotes work for the doc33 + doc34 fixtures. Phase 2
+exits.
 
 ---
 

@@ -1422,4 +1422,105 @@ export function run() {
     snapshotHast('document-32', hast);
     console.log('PASS: integration doc32 (Phase 2 slice 2c — external DSL handlers for <mermaid> and <abc>)');
   }
+
+  // ── Document 33: per-section footnote collection (PG-1) ─────────────────
+  // Proves: foot-placed notes collect into per-top-level-section
+  // <note-list> at the end of each containing section; nested sub-section
+  // notes collect into the OUTERMOST containing section (not their own
+  // sub-section list); endnotes still go to article-back; numbering is
+  // global across the document; sections without foot-notes get no list.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-33-per-section-footnotes.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Each top-level section that has foot-notes has a <note-list class="footnotes">
+    // at its end. Sections in this fixture:
+    //   1. First section — has notes 1, 2, 3 (3 is nested but absorbed by section 1).
+    //   2. Second section — has note 4.
+    //   3. Third section (no footnotes) — no list.
+    //
+    // Total: 2 per-section footnote lists. Plus a article-back endnote list
+    // with note 5.
+    const footnoteListMatches = html.match(/<note-list class="footnotes">/g) ?? [];
+    assert.equal(
+      footnoteListMatches.length,
+      2,
+      `doc33: 2 per-section footnote lists (one per section that contains foot-notes); found ${footnoteListMatches.length}`,
+    );
+
+    // article-back endnote list (note 5)
+    assert.ok(
+      html.includes('<note-list class="endnotes">'),
+      'doc33: article-back endnote list present (note 5 is an endnote)',
+    );
+
+    // Numbering is global. Notes 1, 2, 3 in the first section's list;
+    // note 4 in the second section's list; note 5 in the endnote list.
+    // Verify all five numbers appear in the rendered output.
+    for (const num of [1, 2, 3, 4, 5]) {
+      assert.ok(
+        html.includes(`<sup>${num}</sup>`),
+        `doc33: note ${num} appears as <sup>${num}</sup>`,
+      );
+    }
+
+    // Nested-section outermost-collection: note 3 was authored in a
+    // sub-section but should appear in the FIRST section's footnote list
+    // (which has notes 1, 2, 3) — not in any sub-section list.
+    // Verify by counting notes before the second section's footnote list.
+    // A rough structural check: the third footnote's text contains the
+    // word "Outermost-collection"; it must appear in the first section's
+    // list block.
+    const firstSectionMatch = html.match(/<section[^>]*>[\s\S]*?<\/section>/);
+    assert.ok(
+      firstSectionMatch && firstSectionMatch[0].includes('Outermost-collection'),
+      'doc33: nested-section footnote (note 3) appears in OUTERMOST section list',
+    );
+
+    snapshotHast('document-33', hast);
+    console.log('PASS: integration doc33 (per-section footnote collection; outermost-section + global numbering)');
+  }
+
+  // ── Document 34: mixed footnote placement — article-back fallback ────────
+  // Proves: foot-notes outside any top-level section (front-matter / between
+  // sections) fall through to the article-back residual list; in-section
+  // foot-notes still collect per-section.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-34-mixed-footnote-placement.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // 2 per-section footnote lists (one for each body section).
+    const footnoteListMatches = html.match(/<note-list class="footnotes">/g) ?? [];
+    assert.equal(
+      footnoteListMatches.length,
+      2,
+      `doc34: 2 per-section footnote lists (one per body section); found ${footnoteListMatches.length}`,
+    );
+
+    // article-back has a residual list. It contains:
+    //   - pre-section foot-note (note 1) — fell through to residual
+    //   - endnote (note 3)
+    // Mixed placements → class="notes".
+    assert.ok(
+      html.includes('<note-list class="notes">'),
+      'doc34: article-back residual list has class="notes" (mixed end + pre-section foot)',
+    );
+
+    // All four notes appear in the output.
+    for (const num of [1, 2, 3, 4]) {
+      assert.ok(
+        html.includes(`<sup>${num}</sup>`),
+        `doc34: note ${num} appears as <sup>${num}</sup>`,
+      );
+    }
+
+    snapshotHast('document-34', hast);
+    console.log('PASS: integration doc34 (mixed footnote placement; article-back fallback for residual notes)');
+  }
 }

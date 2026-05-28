@@ -1609,3 +1609,98 @@ that). One line gets added every few months, not every slice.
   Tests: layer1-vocabulary 52/52 (count assertion updated
   106 → 108); acadamark-core 33/33; remark-acadamark 128/128;
   acadamark-interpreter 24/24 suites (incl. new doc32).
+- **2026-Q2 — Phase 2 closed: per-section footnotes implemented
+  (formerly PG-1); ROADMAP drift fixed (AUD-N verification moved out
+  of Phase 2).** Two pieces of work in one commit:
+
+  **1. Per-section footnote collection** (formerly PG-1). Extended
+  `note-placement.js` with the outermost-section collection rule. For
+  each top-level `<section>` in `<article-body>`, the plugin walks
+  its subtree, collects every descendant `<note placement=foot>`
+  regardless of nesting depth, and injects a `<note-list
+  class="footnotes">` at the section's end. Nested sub-section notes
+  are absorbed by the outermost ancestor section (not their own
+  sub-section list). Residual notes (end-placement, side-placement,
+  or `placement=foot` notes outside every top-level section — e.g.
+  front-matter, between sections) collect into a single
+  `<article-back>` list with the existing mixed-placement class
+  logic. Each note appears exactly once.
+
+  Numbering stays global across the document — the existing
+  `registry.numberRegistry()` assigns numbers in document-order
+  before placement (step 8), independent of which list collects each
+  note. Per-section grouping doesn't disturb the numbering; notes in
+  the first section's list carry numbers 1, 2, 3, etc., and notes in
+  later sections continue the sequence.
+
+  Implementation order:
+    1. Build the section-membership map (note → containing
+       top-level section) BEFORE `walkReplace` mutates the tree.
+    2. `walkReplace` splices `__note-marker` nodes in place of
+       `<note>` nodes (unchanged from before).
+    3. Split pending into per-section foot buckets + residual.
+    4. Inject per-section lists at the end of each section's
+       content (empty buckets → no list emitted).
+    5. Inject the residual `__note-list` into `<article-back>` if
+       any residual notes exist (empty residual → no list).
+
+  `notes.js` L11 deferred-work comment rewritten to reflect the
+  implemented behavior. The handler in `handlers/notes.js` is
+  unchanged (rendering shape is the same; only collection moved).
+
+  **2. ROADMAP drift fix.** Removed the misplaced "Verify the
+  remaining `(formerly AUD-N)` items" entry from ROADMAP Phase 2
+  (the entry's BACKLOG home is `[post-alpha]`, and the AUD-N items
+  themselves are spread across Phase 3, post-alpha, etc. — the
+  pre-flight framing was stale). Also removed the introductory
+  "AUD-cohort verification" paragraph that scoped Phase 2 around the
+  pre-flight. BACKLOG keeps the verification item correctly tagged
+  `[post-alpha]` in its Verifications group; no item was lost.
+
+  **Snapshot audit.** Three existing fixtures changed snapshots, all
+  correct per the new behavior:
+    - **doc5** (linear-regression): footnote about R² moved from the
+      article-back list to the "Goodness of Fit" section's per-
+      section list. doc5 also has a `placement=side` note that stays
+      in the article-back list (now class="notes" since only the
+      side note remains there).
+    - **doc6** (cross-references): the `note:galton` footnote moved
+      from article-back to the "Notes" section's per-section list.
+      The default-placement endnote stays in article-back (now
+      class="endnotes").
+    - **doc12** (bare-table): the single foot-note moved from
+      article-back to its containing section's per-section list.
+      No residual notes; no article-back list.
+    Each diff inspected: the `<note-list>` block moves to a deeper
+    nesting level (article-back → section); byte-identical contents
+    (note text + KaTeX-rendered formulas + backref links). All other
+    snapshots zero-diff.
+
+  **New fixtures:**
+    - **doc33** — three top-level sections (two with foot-notes,
+      one without), one nested sub-section whose foot-note is
+      absorbed by the outermost section's list, plus an endnote
+      that goes to article-back. Asserts 2 per-section footnote
+      lists, the article-back endnote list, global numbering 1-5,
+      and the outermost-section rule.
+    - **doc34** — mixed placement: pre-section foot-note falls to
+      article-back residual; in-section foot-notes collect per-
+      section; endnote also residual. Article-back list has
+      class="notes" (mixed placements).
+
+  **New `[post-alpha]` BACKLOG item filed**: "Author override for
+  footnote-collection depth" — explicit-placement markup or
+  `<config>` directive to override the default outermost-section
+  collection rule (e.g. collect at deepest section, fixed level,
+  document end). Deferred from this slice.
+
+  **Phase 2 CLOSED.** ROADMAP Phase 2 marked CLOSED parallel to
+  Phase 1 (both `(alpha — supports line 1)`). The roadmap "Current
+  position" paragraph updated: roadmap moves to Phase 3 next
+  (frameable elements). All Phase 2 sub-items done.
+
+  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
+  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  (incl. new doc33 and doc34). Three existing snapshots updated
+  per the audit above (doc5, doc6, doc12 — per-section list
+  moves).

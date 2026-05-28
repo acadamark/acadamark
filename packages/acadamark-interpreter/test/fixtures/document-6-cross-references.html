@@ -944,6 +944,11 @@ note-list li {
       <p>A labeled endnote<sup id="noteref-1" data-note-id="note:galton"><a href="#note:galton">1</a></sup> demonstrating a colon-id note.</p>
       <p>An unlabeled note<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> demonstrating auto-id behavior.</p>
       <p>Reference to labeled note (renders "note 1"): see <a href="#note:galton" class="ref">note 1</a>.</p>
+      <note-list class="footnotes">
+        <ol>
+          <li id="note:galton"><sup>1</sup> Galton coined the term "regression" in 1886 while studying the heights of parents and their adult children. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+        </ol>
+      </note-list>
     </section>
     <section>
       <section-title>Edge cases</section-title>
@@ -955,9 +960,8 @@ note-list li {
     </section>
   </article-body>
   <article-back>
-    <note-list class="notes">
+    <note-list class="endnotes">
       <ol>
-        <li id="note:galton"><sup>1</sup> Galton coined the term "regression" in 1886 while studying the heights of parents and their adult children. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
         <li id="note-2"><sup>2</sup> This note has no id and cannot be cross-referenced. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a></li>
       </ol>
     </note-list>

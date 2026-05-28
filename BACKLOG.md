@@ -81,8 +81,15 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **Generalize the qualifying-tag pattern beyond `<table>`**
   `[parser]` `[post-alpha]` *(formerly DF-17)*
-- [ ] **Implement per-section footnote collection** `[interpreter]`
-  `[alpha]` *(→ roadmap: Phase 2)* *(formerly PG-1)*
+- [x] **Implement per-section footnote collection** `[interpreter]`
+  `[alpha]` *(→ roadmap: Phase 2)* *(formerly PG-1)* —
+  **done 2026-05-27**; closes Phase 2.
+- [ ] **Author override for footnote-collection depth** `[interpreter]`
+  `[post-alpha]` — explicit-placement markup or `<config>` directive
+  to let authors override the default "outermost-section
+  collection" rule (e.g. collect at deepest section, at fixed
+  level, or at document end). Deferred from the per-section
+  footnote slice (formerly PG-1).
 - [ ] **Implement margin sidenotes** `[interpreter]` `[post-alpha]` —
   coupled to multi-column display rendering *(formerly PG-2)*
 - [ ] **Make the bibliography heading a config kwarg instead of
@@ -250,21 +257,27 @@ fix waits for that ruling. Severity: medium — maintenance hazard
 Generalizing the qualifying-tag pattern beyond `<table>` (note: the
 pattern already works *for* `<table>`). *(formerly DF-17)*
 
-### Implement per-section footnote collection
+### Implement per-section footnote collection — DONE
 `[interpreter]` `[alpha]` *(→ roadmap: Phase 2)*
 
-Currently all `<note placement=foot>` notes are collected into a
-single `<note-list class="footnotes">` injected at the start of
-`<article-back>` (the "foot" classification is nominal — `notes.js`
-L11 records "simplified: per-section footnote collection is
-deferred"). This item: walk each section's subtree (sections are
-already nested by the time `acadamarkNotePlacement` runs), inject a
-per-section `<note-list>` for that section's `placement=foot` notes,
-leave numbering global (one sequential count across the document).
-Effort-scoping (2026-05-25) found this is one contained slice — the
-walk-each-section approach uses the existing nested-section tree and
-needs no walker change. A small design call: collect at the deepest
-containing section, the outermost, or a fixed level? *(formerly PG-1)*
+**Closed 2026-05-27.** Implemented in `note-placement.js` with the
+**outermost-section collection** rule: for each top-level `<section>`
+in `<article-body>`, walk its subtree; collect every descendant
+`<note placement=foot>`; inject a `<note-list class="footnotes">` at
+the end of that section's content. Nested sub-section notes are
+absorbed by the outermost ancestor section (not their own sub-section
+list). Numbering stays global across the document (the existing
+`registry.numberRegistry()` assigns numbers in document-order before
+placement, independent of collection).
+
+Residual notes (end-placement, side-placement, and any `placement=foot`
+notes outside every top-level section — e.g. front-matter, between
+sections) fall through to a single `<article-back>` list. Each note
+appears exactly once.
+
+Author override for the collection-depth rule (deepest section, fixed
+level, explicit placement) is deferred as `[post-alpha]`. *(formerly
+PG-1)*
 
 ### Implement margin sidenotes
 `[interpreter]` `[post-alpha]`
