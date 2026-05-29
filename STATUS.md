@@ -96,10 +96,16 @@ two-mode design — **static** (build-time SVG, self-contained output) and
 **skip** default, all honoring DESIGN.md's "publisher chooses the tool"
 stance. The findings
 (`notes/dsl-rendering-architecture-findings.md`) recommend splitting the
-implementation into a live-mode slice then a static-mode slice, gated on
-the design decisions listed there (chiefly the static-Mermaid dependency
-choice — a young browserless library vs. ~280 MB Chromium — and a
-DESIGN.md wording clarification). The immediate next work is the rest of
+implementation into a live-mode slice then a static-mode slice. A Phase 0
+**amendment** (same file) then settled the open decisions with a
+**registry-based design (Path C)**: an internal DSL registry seeded by the
+two built-ins, with the public `registerDsl` API deferred to v0.2.0;
+**mermaid is live-only** and **abc is live + static**, so static-Mermaid —
+and its young-browserless-library-vs-~280 MB-Chromium choice — is
+**dropped**. `dslMode` is per-DSL over a global `skip` default; the
+demonstrative fixtures render **live-inline**. The amendment proposes (does
+not write) the DESIGN.md and `render-quality.md` revisions a follow-up
+slice will make. The immediate next work is the rest of
 the bug-fix arc: slice B (the book caption/label vs. cross-reference
 numbering mismatch) and slice C (the parser bug where inline math in
 pipe-form tag content is not opaque to escape processing). Nothing else
@@ -3433,3 +3439,39 @@ that). One line gets added every few months, not every slice.
   fixture enumeration corrected. No code, spec, DESIGN.md, fixture,
   snapshot, or test changes; the only edits are the new findings file, the
   BACKLOG correction, the "In flight / next" pointer, and this log entry.
+
+- **2026-05-29 — DSL rendering architecture Phase 0 amendment (registry
+  decision).** A read-only amendment to
+  `notes/dsl-rendering-architecture-findings.md` recording the architecture
+  decision reached in chat after the findings above, and resolving their six
+  escalated decisions. The decision is **Path C — an internal DSL registry**:
+  the interpreter is structured around a per-DSL registry (the same idiom as
+  the existing `HANDLER_REGISTRY` / `INTERNAL_REGISTRY` maps in
+  `interpret-plugin.js`, and the realization of the "DSL registry" DESIGN.md
+  already names at line 150), with mermaid and abc registered as the initial
+  built-ins; the public `registerDsl` API is **deferred to v0.2.0** (not added
+  to the package's `exports` in v0.1.0). The six decisions resolve as:
+  **mermaid live-only, abc live + static** — so **static-Mermaid is dropped**,
+  and with it the young-`isomorphic-mermaid`-vs-~280 MB-Chromium choice and the
+  async-compiler restructuring (the async path was Mermaid's alone; abcjs
+  `renderAbc` is synchronous), leaving **jsdom** as static mode's only new
+  dependency (abc); `dslMode` is **per-DSL over a global `skip` default** (value
+  space `skip`/`live-inline`/`live-link`/`static`), with a **fail-explicitly**
+  rule when a DSL is asked for `static` but has no static renderer; the
+  **demonstrative fixtures render live-inline** (they are mermaid-only, and
+  mermaid is live-only); the spec scheme becomes `RQ-DSL-<MODE>-<KIND><N>`
+  (MODE ∈ skip/live/static); and `RQ-DSL-M2` is fixed in Slice 1. The amendment
+  **proposes** (does not write) the DESIGN.md drop-in text — drawing the
+  included/external line at semantics-ownership and naming the registry as where
+  each external DSL declares its render modes — and the `render-quality.md`
+  revision, and gives a copy-ready **Slice 1 scope statement** (registry + live
+  mode + M2 fix + demo-fixture live-inline + spec RQ-DSL-LIVE predicates;
+  output-neutral at the default). **Coherence:** findings ⇄ code — the registry
+  shape cites the verified `HANDLER_REGISTRY` idiom and `opts`-threading at
+  `interpret-plugin.js` 54–134 and the single-entry `exports` at
+  `package.json` 8; findings ⇄ design — Path C extends DESIGN.md's existing
+  "DSL registry" sentence (line 150) rather than inventing a mechanism;
+  backlog ⇄ findings — no BACKLOG change (M2's per-mode interaction was
+  characterized in the prior entry and is unchanged). No code, spec, DESIGN.md,
+  fixture, snapshot, or test changes; the only edits are the findings amendment,
+  the "In flight / next" pointer, and this log entry.
