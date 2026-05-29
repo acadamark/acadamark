@@ -150,6 +150,88 @@ author + author::before {
 /* Wrap all authors in a block display. Achieved by making article-front a
  * flex column or by wrapping the author run with a display:block pseudo. */
 
+/* ─── Book structure ────────────────────────────────────────────────────────── */
+
+/*
+ * RQ-BOOK-S1. Book documents wrap their content in <book> with <book-front>,
+ * <book-body>, <book-back> regions, each holding <book-part> chapters/parts.
+ * Custom elements default to display:inline, so without these rules a whole
+ * book collapses into one inline run. These rules mirror the article-structure
+ * baseline: block regions, a prominent book-title, and a chapter-level
+ * book-part-title sized clearly between the book-title and section-title.
+ */
+book,
+book-front,
+book-body,
+book-back,
+book-part {
+  display: block;
+}
+
+book-front {
+  margin-bottom: var(--acm-space-8);
+  padding-bottom: var(--acm-space-6);
+  border-bottom: 2px solid var(--acm-border-strong);
+}
+
+book-back {
+  margin-top: var(--acm-space-8);
+  padding-top: var(--acm-space-6);
+  border-top: 1px solid var(--acm-border);
+}
+
+/* Each chapter/part is set off with generous top space. */
+book-part {
+  margin-top: var(--acm-space-12);
+}
+
+/* RQ-BOOK-S1: book-title is the most prominent heading on the page (block, at
+ * least --acm-h1-size). Reasonable default: 1.25× the article h1 token, so the
+ * book cover title sits clearly above every chapter and section heading while
+ * still scaling with the theme's heading token. */
+book-title {
+  display: block;
+  font-family: var(--acm-font-sans);
+  font-size: calc(var(--acm-h1-size) * 1.25);
+  font-weight: 700;
+  line-height: var(--acm-line-height-heading);
+  color: var(--acm-text-primary);
+  margin-bottom: var(--acm-space-2);
+}
+
+book-subtitle {
+  display: block;
+  font-family: var(--acm-font-sans);
+  font-size: var(--acm-h2-size);
+  font-weight: 400;
+  line-height: var(--acm-line-height-heading);
+  color: var(--acm-text-secondary);
+  margin-bottom: var(--acm-space-4);
+}
+
+/* RQ-BOOK-S1: book-part-title is a chapter-level heading — block, prominent,
+ * and clearly above section-title scale (--acm-h2-size). Uses --acm-h1-size so
+ * a chapter heading sits between the book-title and section headings. */
+book-part-title {
+  display: block;
+  font-family: var(--acm-font-sans);
+  font-size: var(--acm-h1-size);
+  font-weight: 700;
+  line-height: var(--acm-line-height-heading);
+  color: var(--acm-text-primary);
+  margin-bottom: var(--acm-space-4);
+}
+
+book-part-subtitle {
+  display: block;
+  font-family: var(--acm-font-sans);
+  font-size: var(--acm-h3-size);
+  font-weight: 400;
+  line-height: var(--acm-line-height-heading);
+  color: var(--acm-text-secondary);
+  margin-bottom: var(--acm-space-4);
+}
+
 /* ─── Section hierarchy ─────────────────────────────────────────────────────── */
 
 section,
@@ -307,8 +389,21 @@ cite.cite-error {
  *
  * For unnumbered equations (no .equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
+ *
+ * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
+ * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
+ * .katex-display child) and may carry a single .equation-number, so grouping
+ * them with display-math makes them render as display blocks with vertical
+ * margin and presents any equation number flush-right, consistently with the
+ * display-math case. (Per-line align numbering is out of spec — a single
+ * number for the whole block is the documented baseline.)
  */
-display-math {
+display-math,
+math,
+align,
+cases,
+matrix,
+eqnarray {
   display: flex;
   align-items: center;
   margin: var(--acm-space-6) 0;
@@ -317,14 +412,24 @@ display-math {
 }
 
 /* KaTeX display block: grows to fill available space; equation centered within. */
-display-math > .katex-display {
+display-math > .katex-display,
+math > .katex-display,
+align > .katex-display,
+cases > .katex-display,
+matrix > .katex-display,
+eqnarray > .katex-display {
   flex: 1;
   margin: 0;            /* override KaTeX's default 1em top/bottom margin */
   overflow-x: auto;
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number {
+display-math > .equation-number,
+math > .equation-number,
+align > .equation-number,
+cases > .equation-number,
+matrix > .equation-number,
+eqnarray > .equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -337,6 +442,45 @@ display-math > .equation-number {
 
 inline-math {
   display: inline;
+}
+
+/* ─── Theorem family ────────────────────────────────────────────────────────── */
+
+/*
+ * RQ-THM-S1: each theorem-family element renders display:block with vertical
+ * margin. Custom elements default to display:inline, so without this the
+ * theorem statement collapses into the surrounding paragraph. The vertical
+ * margin matches the display-math block rhythm (--acm-space-6).
+ */
+theorem,
+lemma,
+corollary,
+proposition,
+definition,
+example,
+remark,
+proof {
+  display: block;
+  margin: var(--acm-space-6) 0;
+}
+
+/*
+ * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * "Proof.") renders with prominence (font-weight: 700). Matches the
+ * weight-only convention of .figure-label / .table-label; the label already
+ * carries a trailing space from the handler, so no extra margin is needed.
+ * Italicised statement bodies (an amsthm convention) are out of spec for S2
+ * and left to a later theme.
+ */
+.theorem-label,
+.lemma-label,
+.corollary-label,
+.proposition-label,
+.definition-label,
+.example-label,
+.remark-label,
+.proof-label {
+  font-weight: 700;
 }
 
 /* ─── Code ──────────────────────────────────────────────────────────────────── */
@@ -402,6 +546,17 @@ figcaption {
 .figure-label {
   font-weight: 700;
   margin-right: var(--acm-space-1);
+}
+
+/* RQ-FRM-S4: a frame renders <figure class="frameable-border">. The border
+ * class draws a visible outline box around the frameable, setting the bordered
+ * callout off from the body text. Reasonable baseline: a 1px solid rule in the
+ * theme's strong border color, a subtle 4px radius (matching <pre>), and
+ * padding so content does not touch the rule. */
+.frameable-border {
+  border: 1px solid var(--acm-border-strong);
+  border-radius: 4px;
+  padding: var(--acm-space-4);
 }
 
 /* Tables */

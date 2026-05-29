@@ -118,10 +118,13 @@ The **render-quality spec** is now written
 and Phase 14 work is verified against. The slice that wrote it built
 demonstrative fixtures against it (a methods-paper article and an
 edited-volume book) and filed the render-quality deviations it surfaced
-as bugs (filed, not fixed — the spec slice touched no product code). The
-next active work is those render-quality fixes — additive `default.css`
-theme rules plus one book-numbering correction — after which the
-demonstrative fixtures render to spec. The comprehensive demonstrative
+as bugs (filed, not fixed — the spec slice touched no product code). A
+render-quality bug-fix arc is now closing those deviations: slice A (the
+additive `default.css` theme rules for the theorem family, book
+structure, `.frameable-border`, and the math-environment wrappers) has
+landed; a book-numbering correction and a pipe-form inline-math parser
+fix remain, after which the demonstrative fixtures render to spec. The
+comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain
 open, and carry an unresolved design question — one comprehensive
 document, or the small believable set the spec slice started (see
@@ -461,8 +464,11 @@ both are release-blocking.
   retires or folds in the accumulated fixture corpus, and the design
   question of whether the demonstrative role is one comprehensive
   document or the small believable set the slice started. It is also
-  gated on the render-quality deviation bugs, since the affected
-  features render unstyled until those land. See `BACKLOG.md`.
+  gated on the remaining render-quality deviation bugs — the stylesheet
+  gaps that left the theorem family, book structure, `.frameable-border`,
+  and math environments unstyled are now closed (the bug-fix arc's
+  slice A); the book caption/cross-reference numbering mismatch remains.
+  See `BACKLOG.md`.
 - **Release housekeeping.** Version-stamping at `0.1.0`, repository
   tidying, and the doc-hygiene already filed under Standing (e.g. the
   stale-cross-reference reconciliation) folded in as release prep where

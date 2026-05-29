@@ -83,19 +83,30 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
-- [ ] **Theorem-family elements render unstyled (inline, body size)**
+- [x] **Theorem-family elements render unstyled (inline, body size)**
   `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
-  RQ-THM-S1/S2; filed by the render-quality slice)*
-- [ ] **Book structural elements render unstyled (inline, body size)**
+  RQ-THM-S1/S2; filed by the render-quality slice)* — **CLOSED
+  2026-05-29** by the render-quality bug-fix arc, slice A (stylesheet
+  gaps): `default.css` now renders the theorem family as blocks with
+  vertical margin and the `.{kind}-label` spans at `font-weight: 700`.
+- [x] **Book structural elements render unstyled (inline, body size)**
   `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
-  RQ-BOOK-S1; filed by the render-quality slice)*
-- [ ] **`.frameable-border` draws no border box** `[interpreter]`
+  RQ-BOOK-S1; filed by the render-quality slice)* — **CLOSED
+  2026-05-29** by the render-quality bug-fix arc, slice A: `default.css`
+  now renders the book regions as blocks with a prominent `book-title`
+  and a chapter-level `book-part-title`.
+- [x] **`.frameable-border` draws no border box** `[interpreter]`
   `[release]` *(→ roadmap: Phase 14; render-quality RQ-FRM-S4; filed by
-  the render-quality slice)*
-- [ ] **Math-environment wrappers unstyled; equation number not
+  the render-quality slice)* — **CLOSED 2026-05-29** by the
+  render-quality bug-fix arc, slice A: `default.css` now draws a 1px
+  solid border (with padding) on `.frameable-border`.
+- [x] **Math-environment wrappers unstyled; equation number not
   flush-right outside `display-math`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 14; render-quality RQ-MATH-S3; filed by the
-  render-quality slice)*
+  render-quality slice)* — **CLOSED 2026-05-29** by the render-quality
+  bug-fix arc, slice A: the `display-math` flex layout (block + flush-right
+  `.equation-number`) now also covers `math`, `align`, `cases`,
+  `matrix`, and `eqnarray`.
 - [ ] **Book caption/label numbers are bare per-chapter while
   cross-references are chapter-prefixed (they disagree)** `[interpreter]`
   `[release]` *(→ roadmap: Phase 14; render-quality RQ-BOOK-M4; filed by
@@ -244,6 +255,11 @@ Filed by sub-slice 2 of the deferred-vocab work.
 ### Theorem-family elements render unstyled (inline, body size)
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
 
+**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
+gaps).** `default.css` now renders the theorem-family elements as
+`display: block` with vertical margin (`RQ-THM-S1`) and the
+`.{kind}-label` spans at `font-weight: 700` (`RQ-THM-S2`).
+
 The interpreter emits the theorem family as custom elements —
 `<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`,
 `<example>`, `<remark>`, `<proof>` — each opening with a label span
@@ -256,9 +272,9 @@ class="proof-label">Proof.</span>` exactly as the render-quality spec's
 any of these elements or their label spans**. A custom element with no
 CSS rule defaults to `display: inline` at body size, so a theorem reads
 as an unbroken inline run with a non-bold label — violating the
-stylesheet predicates `RQ-THM-S1` (label prominence, `font-weight: 700`)
-and `RQ-THM-S2` (the block sets off from body text with vertical
-margin).
+stylesheet predicates `RQ-THM-S1` (the block sets off from body text
+with vertical margin) and `RQ-THM-S2` (label prominence,
+`font-weight: 700`).
 
 The fix is purely additive theme work: add `default.css` rules for the
 theorem-family elements (`display: block`, vertical margin) and the
@@ -270,6 +286,12 @@ Filed by the render-quality slice; see `notes/specs/render-quality.md`
 
 ### Book structural elements render unstyled (inline, body size)
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
+gaps).** `default.css` now renders `book` / `book-front` / `book-body` /
+`book-back` / `book-part` as block regions, `book-title` as the most
+prominent heading on the page, and `book-part-title` as a chapter-level
+heading clearly above section-title scale (`RQ-BOOK-S1`).
 
 Book structuring emits `<book>`, `<book-front>`, `<book-body>`,
 `<book-back>`, `<book-part>`, `<book-title>`, `<book-subtitle>`, and
@@ -293,6 +315,10 @@ Filed by the render-quality slice; see `notes/specs/render-quality.md`
 ### `.frameable-border` draws no border box
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
 
+**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
+gaps).** `default.css` now draws a 1px solid border (with a 4px radius
+and padding) on `.frameable-border` (`RQ-FRM-S4`).
+
 The `+border` flag (and `<frame>`, whose border defaults on) adds the
 `frameable-border` class to the frameable's wrapping element — the
 demonstrative article's `<frame>` renders `<figure
@@ -311,6 +337,12 @@ Filed by the render-quality slice; see `notes/specs/render-quality.md`
 
 ### Math-environment wrappers unstyled; equation number not flush-right outside `display-math`
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
+gaps).** `default.css` now applies the `display-math` flex layout —
+block display with vertical margin and a flush-right `.equation-number`
+— to `math`, `align`, `cases`, `matrix`, and `eqnarray` as well
+(`RQ-MATH-S3`).
 
 Display math written with the `<$$ … $$>` sigil renders inside
 `<display-math>`, which `default.css` styles as a flex row with the

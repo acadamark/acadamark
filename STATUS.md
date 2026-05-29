@@ -77,13 +77,18 @@ post-alpha), and the new Phase 14 (packaging — client-side rendering
 library, render-quality spec, comprehensive demonstrative fixture).
 Phases 7, 9, 10, 11, and 12 are post-release.
 
-The **render-quality spec** is now written
+The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
 demonstrative fixtures against it and filed the render-quality
 deviations it surfaced as bugs (`BACKLOG.md` Bugs; `ROADMAP.md`
-Phase 14). The immediate next work is those render-quality fixes —
-additive `default.css` theme rules plus one book-numbering correction.
-Nothing else is in flight.
+Phase 14), and a bug-fix arc is now closing them. **Slice A
+(stylesheet gaps) is done** — the additive `default.css` theme rules
+for the theorem family, the book structural elements,
+`.frameable-border`, and the math-environment wrappers. The immediate
+next work is the rest of the arc: slice B (the book caption/label vs.
+cross-reference numbering mismatch) and slice C (the parser bug where
+inline math in pipe-form tag content is not opaque to escape
+processing). Nothing else is in flight.
 
 ## Milestones
 
@@ -3291,3 +3296,34 @@ that). One line gets added every few months, not every slice.
   decided here; `ROADMAP.md` Phase 14 and Current position updated to
   match. The existing fixture corpus was left in place (consolidation
   deferred). No product code; no spec falsehoods to correct.
+- **2026-05-29 — render-quality bug-fix arc, slice A: stylesheet gaps.**
+  The first of the bug-fix slices that close the render-quality
+  deviations filed the same day. Closed the four `[release]`
+  stylesheet-gap bugs, all rooted in one cause — a custom element with no
+  `default.css` rule defaults to `display: inline`: the theorem family
+  (`RQ-THM-S1`/`-S2` — blocks with vertical margin; `.{kind}-label` spans
+  at `font-weight: 700`), the book structural elements (`RQ-BOOK-S1` —
+  `book` / `book-front` / `book-body` / `book-back` / `book-part` as block
+  regions, `book-title` the most prominent heading, `book-part-title` a
+  chapter-level heading clearly above section scale), `.frameable-border`
+  (`RQ-FRM-S4` — a 1px solid border box), and the math-environment
+  wrappers (`RQ-MATH-S3` — `math` / `align` / `cases` / `matrix` /
+  `eqnarray` joined the `display-math` flex layout, so each is a centered
+  display block whose `.equation-number` sits flush-right). CSS-only:
+  `default.css` was the single code-change target, every new rule reusing
+  the theme's design tokens and carrying a comment naming the spec
+  predicate it satisfies; the rules become the baseline theme that later
+  themes (Phase 8) extend. Verification: all suites pass; hast and JATS
+  XML snapshots strict zero-diff; the rendered fixture HTML changed only
+  inside its inlined `<style>` block (a style-stripped diff against HEAD
+  is empty across every fixture), so structural markup is byte-stable.
+  The demonstrative fixtures `document-45` (article) and `document-46`
+  (book) now render the theorem family, book structure, frame borders, and
+  math environments as the spec describes. **Coherence:** the four bug
+  entries closed in `BACKLOG.md` (checklist + detail), each naming the
+  predicate it satisfies; a swapped `RQ-THM-S1`/`-S2` parenthetical in the
+  theorem entry was corrected to match the spec. Two slices remain in the
+  arc — slice B (the book caption/label vs. cross-reference numbering
+  mismatch, `RQ-BOOK-M4`) and slice C (the `[post-alpha]` parser bug where
+  inline math in pipe-form tag content is not opaque to escape
+  processing).
