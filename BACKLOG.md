@@ -73,9 +73,6 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
-- [ ] **Replace `integration.test.js`'s hand-mirrored pipeline with a
-  shared assembly imported from `index.js`** `[tests/build]`
-  `[post-alpha]` *(formerly AUD-17)*
 
 ### Enhancements
 
@@ -120,7 +117,7 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build pagination and print formatting** `[cross-cutting]`
   `[post-alpha]` *(→ roadmap: Phase 8)*
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
-  `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 10)*
+  `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 - [ ] **Build JATS import** `[interpreter]` `[post-alpha]`
   *(→ roadmap: Phase 13)*
 
@@ -132,6 +129,8 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Decide whether `<data>` / `<library>` nodes need a cleanup
   pass after `buildCitationIndex` reads them** `[interpreter]`
   `[post-alpha]` *(formerly AUD-18)*
+- [ ] **Decide whether books should support per-chapter (scoped)
+  bibliographies** `[interpreter]` `[post-alpha]`
 - [ ] **Discuss whether the cross-reference resolver should warn on
   type-prefix mismatch** `[interpreter]` `[post-alpha]`
 - [ ] **Discuss compact external-reference syntax** (`wiki:`, `doi:`,
@@ -166,6 +165,9 @@ A flat scannable index of every open item. Detailed entries below.
   passes will be ordinary per-slice coherence checks
 - [ ] **Write a print-requirements spec** `[specs/docs]`
   `[post-alpha]` — companion to the pagination work in Phase 8
+- [ ] **Reconcile stale doc cross-references** (`BACKLOG-ROADMAP.md`
+  → `BACKLOG.md` / `ROADMAP.md`; `rehypeAcadamarkToJats` →
+  `acadamarkToJats`) `[specs/docs]` `[post-alpha]`
 
 ### Deferred — explicitly parked
 
@@ -195,33 +197,6 @@ A root-cause fix would have `buildProperties` also walk
 can be reverted.
 
 Filed by sub-slice 2 of the deferred-vocab work.
-
-### Replace `integration.test.js`'s hand-mirrored pipeline with a shared assembly imported from `index.js`
-`[tests/build]` `[post-alpha]`
-
-The test maintains a separate hand-written copy of the plugin pipeline
-assembled in `src/index.js`. The original concern was that the two
-would drift — documented recurrence record (paid four times:
-R3a/R3b/R4/G1b). The mechanical-batch verification (2026-Q2)
-confirmed: **the hand-mirror is currently identical to the real
-pipeline — no drift today.** The fix is therefore not "stop the drift"
-but "stop allowing it." Making the rewire is **not mechanical**: the
-test maintains a manual mirror specifically so it can capture the
-intermediate hast tree for snapshot inspection (the `runIntegration`
-helper returns `{ html, hast }`), which the real-pipeline assembly
-does not expose through unified's standard API. Replacing the mirror
-requires a design choice from one of:
-
-(a) extend `acadamarkInterpreter` to expose the intermediate hast via
-`file.data`;
-(b) refactor the interpreter's compile step into a separately-
-importable function the test can call directly;
-(c) drop hast-snapshot inspection and assert only on HTML.
-
-Each has different consequences for the test's diagnostic power. The
-fix waits for that ruling. Severity: medium — maintenance hazard
-(zero drift today but the pattern remains the structural risk).
-*(formerly AUD-17)*
 
 ---
 
@@ -358,17 +333,20 @@ machinery shared across articles and books. Gated on the
 print-requirements spec being written (see Standing).
 
 ### Build executable code blocks (JS / Arquero / Vega-Lite)
-`[cross-cutting]` `[alpha]` *(→ roadmap: Phase 10)*
+`[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 
 Authors annotate a code block to mark it for execution; the build
-runs the code and embeds the result. Promoted from a Discussions
-item once the user ruled it alpha. The alpha scope is in-browser
+runs the code and embeds the result. Ruled post-alpha in the Phase 6
+alpha integration check: the alpha milestone is the five-line
+acceptance definition (rich-document rendering, canonical authoring,
+idiom reduction, JATS export, acadamark ⇄ Layer 1), and executable
+code is orthogonal to all five — it adds a build-time runtime, not a
+markup or conversion capability. The first-target scope is in-browser
 JavaScript execution, with Arquero as the dataframe library and
-Vega-Lite as the plotting library — a concrete first-target stack
-chosen because it runs entirely in the browser substrate, sidesteps
-the kernel / sandboxing / Python install dependencies that a
-Jupyter-style design would entail, and is small enough to fit the
-alpha. Established convention via RMarkdown / Quarto / Jupyter, the
+Vega-Lite as the plotting library — a concrete stack chosen because
+it runs entirely in the browser substrate and sidesteps the kernel /
+sandboxing / Python install dependencies that a Jupyter-style design
+would entail. Established convention via RMarkdown / Quarto / Jupyter, the
 DSL-processor model in `DESIGN.md`, and the execution-control
 attribute convention (`+eval`, `+echo`, `+output`, `+error`,
 `cache`, `dependencies`) are technique-mining sources — relevant
@@ -416,6 +394,21 @@ that removes them after their content is consumed has not been
 decided. Low priority; observation, not malfunction. Potential
 candidate for a follow-on `indexInputs` consolidation slice.
 *(formerly AUD-18)*
+
+### Decide whether books should support per-chapter (scoped) bibliographies
+`[interpreter]` `[post-alpha]`
+
+The Phase 6 book-bibliography work settled on **one document-wide
+reference list placed in `book-back`** (`bibliography.js`
+`findOrCreateBackMatter`, book branch). That is the right alpha
+default and the only placement a book needs to be valid. But a long
+edited volume might prefer each chapter to carry its own reference
+list, scoped the way footnotes already are under
+`note-scope=chapter`. This entry exists so that option is visible
+and not mistaken for an oversight: the document-wide list is a
+decision, not a limitation of the citation machinery. Deferred —
+revisit only if a real document wants it. The header comment in
+`bibliography.js` points here.
 
 ### Discuss whether the cross-reference resolver should warn on type-prefix mismatch
 `[interpreter]` `[post-alpha]`
@@ -748,6 +741,34 @@ body), how cross-references render when target page numbers are
 knowable. The spec is the authoring-requirements companion to the
 pagination implementation; the implementation arc is gated on this
 spec being written.
+
+### Reconcile stale doc cross-references
+`[specs/docs]` `[post-alpha]`
+
+Two cross-reference drifts run through the live doc surface, both
+artifacts of a rename that did not sweep its references:
+
+- **`BACKLOG-ROADMAP.md` → `BACKLOG.md` / `ROADMAP.md`.** The
+  combined backlog/roadmap file was split into two. The split
+  milestone fixed the STATUS.md body references but left the STATUS
+  header pointer (since corrected in the Phase 6 slice) and a number
+  of other live docs still naming the old combined file —
+  `CLAUDE.md`, `DESIGN.md`, several `notes/specs/*.md`,
+  `packages/acadamark-interpreter/README.md`,
+  `packages/layer1-vocabulary/SPEC.md` and some of its
+  `elements/*.md`, and the root `ghc-prompt-file-and-push.md`.
+- **`rehypeAcadamarkToJats` → `acadamarkToJats`.** JATS export was
+  planned as a rehype plugin named `rehypeAcadamarkToJats` but
+  implemented in Phase 5 as a tree function `acadamarkToJats`
+  (`packages/acadamark-jats-export/src/index.js`). The planned name
+  survives in `ROADMAP.md`, this file's closed JATS-export entry, and
+  `packages/layer1-vocabulary/SPEC.md`. The Phase 5 Phase 0 findings
+  noted the inconsistency but did not reconcile it.
+
+A mechanical sweep, not a design question. `notes/archive/` is frozen
+and excluded — its references correctly record what was true on their
+date. Could be folded into the spec-completeness audit Standing item
+rather than run on its own.
 
 ---
 

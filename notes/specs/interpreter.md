@@ -328,8 +328,10 @@ is emitted; the pipe-supplied title is discarded.
 | body | everything else | `<article-body>` |
 
 `<data>` nodes hold citation data (read by `buildCitationIndex`). They
-are not document content; they live at root level outside `<article>` so that
-`buildCitationIndex` can find them by walking `tree.children` directly.
+are not document content; in an article they stay at root level, outside
+`<article>`. `buildCitationIndex` does not depend on that placement — it
+deep-collects `<data>` wherever it lands (a book nests it inside
+`<book-body>`) — but article-structuring keeps the article case flat.
 
 Empty regions are suppressed. A document with no `<meta>` will have no
 `<article-front>`; a document with no back-matter tags will have no
@@ -508,8 +510,9 @@ plugin wrapper (`acadamarkCitationIndex`) at step 5 — not through
 `this.use(acadamarkLibraryLoad)`. The exported `acadamarkLibraryLoad` plugin wrapper
 is kept for external callers and the test suite.
 
-**Input structure:** `<data>` nodes at root level. Each `<data>` may contain
-one or more `<library>` nodes.
+**Input structure:** `<data>` nodes, deep-collected wherever they sit in the
+tree — at root level in an article, nested inside `<book-body>` in a book.
+Each `<data>` may contain one or more `<library>` nodes.
 
 **Content sources (checked in order):**
 
@@ -534,9 +537,9 @@ instance is built from the combined CSL-JSON.
 }
 ```
 
-**No-library case:** If no `<data>` nodes exist at root, the plugin returns
-immediately. `file.data.acadamarkCitations` is not set. Downstream citation
-plugins check for its presence before proceeding.
+**No-library case:** If no `<data>` nodes exist anywhere in the tree, the
+plugin returns immediately. `file.data.acadamarkCitations` is not set.
+Downstream citation plugins check for its presence before proceeding.
 
 ---
 
@@ -828,21 +831,31 @@ falls back to `notes` (neutral).
 
 **Source:** `packages/acadamark-interpreter/src/plugins/bibliography.js`
 
-**Purpose:** Render the bibliography HTML and inject it into `<article-back>`.
+**Purpose:** Render the bibliography HTML and inject it into the back-matter
+region — `<article-back>` for an article, `<book-back>` for a book.
 
 **When it runs:** After `acadamarkCiteResolution` (`citations.order` is populated).
 
 **Empty case:** If `citations.order.length === 0` (no resolved citations), any
-author-placed `<bibliography>` tag is removed from article-back. No bibliography
-is injected.
+author-placed `<bibliography>` tag is removed from the back-matter region. No
+bibliography is injected.
 
 **Placement:**
 
 - If the author placed an explicit `<bibliography>` tag in the document
-  (which article-structuring puts in article-back), it is found and replaced
+  (which structuring puts in the back-matter region), it is found and replaced
   in-place with a `__bibliography` internal node.
-- Otherwise: `article-back` is found (or created), and `__bibliography` is
-  appended (`push`) to its content — after notes (which used `unshift`).
+- Otherwise: the back-matter region is found or created — `<article-back>` for
+  an article, `<book-back>` for a book — and `__bibliography` is appended
+  (`push`) to its content, after notes (which used `unshift`).
+
+**Book placement (design decision, 2026-05-29):** a book gets a **single
+document-wide bibliography** placed at the end of `<book-back>`, mirroring the
+article path. book-structuring creates `<book-back>` only when there is
+back-matter (appendix/glossary); if none exists, bibliography creates one and
+appends it to the `<book>`. Per-chapter (chapter-scoped) bibliographies —
+scoped the way `note-scope=chapter` scopes footnotes — are a deferred
+post-alpha option (filed in `BACKLOG.md`).
 
 **HTML generation:** citation-js `format('bibliography', ...)` with
 `template: style`, `format: 'html'`, `lang: 'en-US'`. Each `.csl-entry` div

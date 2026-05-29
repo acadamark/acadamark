@@ -5,12 +5,14 @@
 // before hast conversion (the __bibliography internal node it produces is
 // rendered by the cite handler).
 //
-// Placement strategy:
+// Placement strategy (article → article-back; book → book-back):
 //   - If the author placed an explicit <bibliography> tag in the document, it
-//     will be inside article-back.content (since bibliography is in BACK_MATTER_TAGS).
-//     Find it there and replace it with the __bibliography internal node.
-//   - Otherwise: find/create article-back and push __bibliography to its end
-//     (after the note-list, which uses unshift).
+//     will be inside the back-matter region's content (bibliography is in
+//     BACK_MATTER_TAGS / a book's back-matter). Find it there and replace it
+//     with the __bibliography internal node.
+//   - Otherwise: find/create the back-matter region (article-back or
+//     book-back) and push __bibliography to its end (after the note-list,
+//     which uses unshift).
 //
 // Empty case: if no citations were resolved (order is empty), remove any
 // author-placed <bibliography> and do nothing else.
@@ -40,16 +42,41 @@ function findDeep(nodes, tagname) {
   return null;
 }
 
-function findOrCreateArticleBack(treeChildren) {
+/**
+ * Find (or create) the back-matter region that holds the bibliography:
+ * <article-back> for an article, <book-back> for a book. Returns null if
+ * the tree has neither root (nothing to attach to).
+ *
+ * Book case (Phase 6, 2026-05-29): a book's bibliography is a single
+ * document-wide <ref-list> placed at the end of <book-back>, mirroring the
+ * article path. Per-chapter bibliographies (scoped like note-scope=chapter)
+ * are a deferred post-alpha option — see BACKLOG. book-structuring creates
+ * <book-back> only when there is back-matter (appendix/glossary); if none
+ * exists we create one and append it to the <book>.
+ */
+function findOrCreateBackMatter(treeChildren) {
   const article = findDeep(treeChildren, 'article');
-  if (!article) return null;
-
-  let back = findDeep(article.content ?? [], 'article-back');
-  if (!back) {
-    back = makeTag('article-back');
-    article.content.push(back);
+  if (article) {
+    let back = findDeep(article.content ?? [], 'article-back');
+    if (!back) {
+      back = makeTag('article-back');
+      article.content.push(back);
+    }
+    return back;
   }
-  return back;
+
+  const book = findDeep(treeChildren, 'book');
+  if (book) {
+    let back = findDeep(book.content ?? [], 'book-back');
+    if (!back) {
+      back = makeTag('book-back');
+      book.content = book.content ?? [];
+      book.content.push(back);
+    }
+    return back;
+  }
+
+  return null;
 }
 
 // ─── Internal node factory ────────────────────────────────────────────────────
@@ -108,14 +135,17 @@ function formatBibliography(cite, style) {
 // ─── Author-placement helpers ─────────────────────────────────────────────────
 
 /**
- * Find the first <bibliography> tag node inside article-back.
- * Returns { backNode, index } or null.
+ * Find the first author-placed <bibliography> tag node inside the
+ * back-matter region (<article-back> for an article, <book-back> for a
+ * book). Returns { backNode, index } or null.
  */
 function findAuthorPlacedBibliography(treeChildren) {
   const article = findDeep(treeChildren, 'article');
-  if (!article) return null;
+  const root = article ?? findDeep(treeChildren, 'book');
+  if (!root) return null;
 
-  const back = findDeep(article.content ?? [], 'article-back');
+  const backName = article ? 'article-back' : 'book-back';
+  const back = findDeep(root.content ?? [], backName);
   if (!back || !Array.isArray(back.content)) return null;
 
   const idx = back.content.findIndex(n => isAcadamarkTag(n, 'bibliography'));
@@ -161,8 +191,9 @@ export function acadamarkBibliography() {
       // Replace the author-placed <bibliography> node in-place.
       authorPlaced.backNode.content.splice(authorPlaced.index, 1, bibNode);
     } else {
-      // Auto-place: append to article-back (after notes, which used unshift).
-      const back = findOrCreateArticleBack(tree.children);
+      // Auto-place: append to the back-matter region (article-back or
+      // book-back) after notes, which used unshift.
+      const back = findOrCreateBackMatter(tree.children);
       if (back) {
         back.content.push(bibNode);
       }

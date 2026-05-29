@@ -1,9 +1,11 @@
-// library-load plugin — walk <data>/<library> nodes at document root, parse
+// library-load plugin — collect every <data>/<library> node in the tree, parse
 // their BibTeX or CSL-JSON content via citation-js, and store the result in
 // file.data.acadamarkCitations for use by cite-resolution and bibliography.
 //
-// Runs after acadamarkArticleStructuring (which extracts <data> to root level)
-// and before acadamarkCiteResolution (which needs the loaded citations).
+// Runs after document structuring (article- or book-structuring) and before
+// acadamarkCiteResolution (which needs the loaded citations). <data> is
+// deep-collected wherever it lands — at root in an article, nested inside
+// <book-body> in a book — so the structuring step's placement does not affect it.
 //
 // <library> content sources:
 //   1. kwargs.src is set → read external file from resolve(assetsDir, src).
@@ -29,12 +31,44 @@ import { ACADAMARK_CONFIG, ACADAMARK_CITATIONS } from 'acadamark-core/file-data-
 import { isAcadamarkTag } from '../lib/ast-helpers.js';
 
 /**
- * Build the citation index from <library> content in <data> root siblings.
+ * Recursively collect every <data> tag node, in document order.
+ *
+ * Walks both acadamark-tag content arrays and mdast children so a <data>
+ * block is found wherever it lands in the tree. In an article it sits at
+ * root level after article-structuring; in a book, book-structuring nests
+ * it inside <book-body> (a loose <data> block is body content, not a
+ * book-part), so a flat root-level scan would miss it. A <data> never
+ * nests inside another <data>, so we do not descend into one.
+ *
+ * @param {Array} nodes
+ * @returns {Array} the <data> tag nodes found
+ */
+function collectDataNodes(nodes) {
+  const out = [];
+  for (const node of nodes) {
+    if (isAcadamarkTag(node, 'data')) {
+      out.push(node);
+      continue;
+    }
+    if (isAcadamarkTag(node) && Array.isArray(node.content)) {
+      out.push(...collectDataNodes(node.content));
+    }
+    if (Array.isArray(node.children)) {
+      out.push(...collectDataNodes(node.children));
+    }
+  }
+  return out;
+}
+
+/**
+ * Build the citation index from <library> content inside <data> nodes,
+ * collected wherever they sit in the tree (see collectDataNodes).
  * Writes file.data.acadamarkCitations. Does not modify the tree.
  *
  * Called as an explicit index-build step in index.js — not registered via
- * this.use(). Requires acadamarkArticleStructuring (<data> at root level) and
- * acadamarkConfigDiscovery (citation-style from config) to have run first.
+ * this.use(). Requires acadamarkConfigDiscovery (citation-style from config)
+ * to have run first. Does not depend on a structuring step having relocated
+ * <data>: deep-collect finds it at root (article) or in <book-body> (book).
  *
  * @param {{ children: Array }} tree
  * @param {import('vfile').VFile} file
@@ -44,8 +78,11 @@ import { isAcadamarkTag } from '../lib/ast-helpers.js';
 export function buildCitationIndex(tree, file, options = {}) {
   const { assetsDir = null } = options;
 
-  // <data> nodes are at root level after article-structuring.
-  const dataNodes = (tree.children ?? []).filter(n => isAcadamarkTag(n, 'data'));
+  // <data> nodes sit at root level in an article (after article-structuring)
+  // but are nested inside <book-body> in a book (book-structuring relocates
+  // loose body content). Collect them wherever they landed; articles are
+  // unaffected (their single root-level <data> is found identically).
+  const dataNodes = collectDataNodes(tree.children ?? []);
   if (dataNodes.length === 0) return;
 
   // Collect all library content strings.

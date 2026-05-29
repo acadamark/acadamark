@@ -57,15 +57,17 @@ pickable within the phase.
 
 ## Current position
 
-Alpha phases 1–5 are closed; the milestone record is in
-`STATUS.md`. **Phase 5 (JATS export) closed 2026-05-28** — slices
-5a (package + lift + minimal article), 5b (body content), 5c
-(cross-refs + footnotes + BITS book + table rows), and 5d
-(bibliography `<element-citation>` + mermaid/abc DSLs + DTD
-bundling for offline xmllint validation) have all landed. The
-active phase is now **Phase 6 (Alpha integration check)** —
-the five-point verification that closes the alpha milestone.
-Phase 7 onward is post-alpha.
+**Alpha phases 1–6 are all closed — the alpha milestone is reached.**
+The milestone record is in `STATUS.md`; the per-line acceptance
+mapping is in `notes/alpha-acceptance-mapping.md`. **Phase 6 (Alpha
+integration check) closed 2026-05-29**: the five-line definition was
+verified against existing fixtures, a cross-feature stress fixture
+(`doc-44`) was added to both the interpreter and JATS corpora, and
+the closing cleanup landed with it — the integration test now builds
+its pipeline from the shared assembly in `index.js`, and executable
+code blocks (Phase 10) were ruled post-alpha. Phase 5 (JATS export)
+closed 2026-05-28. The roadmap is now entirely post-alpha — Phase 7
+(lift-and-lower completeness) onward.
 
 ---
 
@@ -195,7 +197,14 @@ the acceptance criteria.
 - **Resolve any gaps surfaced by the five-point verification.** Filed
   on the spot if found.
 
-**Exits:** alpha milestone reached.
+**Exits:** Phase 6 **CLOSED 2026-05-29**. All five alpha-acceptance
+lines verified against existing fixtures; the per-line verification
+mapping is recorded in `notes/alpha-acceptance-mapping.md`. A
+cross-feature stress fixture (`doc-44`) exercises the surface no
+single fixture combined — books, bibliography, external DSLs, the
+theorem family, per-chapter footnotes, math in all three forms, and
+frameables — in one monograph, in both the interpreter and JATS
+corpora. **Alpha milestone reached.**
 
 ---
 
@@ -257,18 +266,15 @@ project-wide registries.
 
 ---
 
-## Phase 10 — Executable code blocks *(alpha or post-alpha — scoped)*
+## Phase 10 — Executable code blocks *(post-alpha)*
 
 In-browser JavaScript execution with Arquero (data) and Vega-Lite
-(plots). Promoted from the Discussions group to an explicit
-implementation phase with the user's alpha-line ruling: the alpha
-scope is the browser-resident stack only. Other languages,
-kernel-based execution, server-side sandboxing are post-alpha.
-
-**Note:** the user's alpha-line ruling places this work in alpha
-scope, but its position in the roadmap reflects size — it is a
-sizeable arc and is sequenced after the structural arcs (Phases 2-5)
-because those produce the rendering foundation it builds on.
+(plots). Ruled post-alpha in the Phase 6 alpha integration check:
+the alpha milestone is the five-line acceptance definition, and
+executable code is orthogonal to all five — it adds a build-time
+runtime, not a markup or conversion capability. The first-target
+scope is the browser-resident stack only; other languages,
+kernel-based execution, and server-side sandboxing are further out.
 
 **Items:**
 
@@ -277,8 +283,8 @@ because those produce the rendering foundation it builds on.
   convention from RMarkdown/Quarto), processor integration (how the
   DSL-processor model in `DESIGN.md` extends), security posture for
   in-browser execution.
-- **Build executable code blocks.** The build itself; alpha scope
-  per the ruling.
+- **Build executable code blocks.** The build itself; the
+  browser-resident stack per the Phase 0 surface design.
 
 ---
 
@@ -294,8 +300,6 @@ audit, test rewires.
   `<author>` worked around for `+corresponding`.
 - **`<data>` migration onto structured-element infrastructure**
   *(filed by `beb2fb3`)*.
-- **Replace `integration.test.js`'s hand-mirrored pipeline with a
-  shared assembly** *(formerly AUD-17)*.
 - **Run a spec-completeness audit against the rebuild-from-docs
   standard.** One-time large pass; future passes will be ordinary
   per-slice coherence checks.

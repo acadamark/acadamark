@@ -16,28 +16,10 @@ import process from 'node:process';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkAcadamark from 'remark-acadamark';
-import remarkMath from 'remark-math';
-import remarkGfm from 'remark-gfm';
 import { toHast } from 'mdast-util-to-hast';
-import { toHtml } from 'hast-util-to-html';
 
-import { acadamarkInterpreter, acadamarkNormalizeMarkdown, acadamarkTagHandler, createAcadamarkTagHandler } from '../src/index.js';
+import { buildAcadamarkPipeline, createAcadamarkTagHandler } from '../src/index.js';
 import { parseErrorHandler, tagErrorHandler } from '../src/handlers/parser-errors.js';
-import remarkRecursiveContent from 'remark-acadamark/recursive-content';
-import { acadamarkConfigDiscovery } from '../src/plugins/config-discovery.js';
-import { acadamarkArticleStructuring } from '../src/plugins/article-structuring.js';
-import { acadamarkSectionNesting } from '../src/plugins/section-nesting.js';
-import { acadamarkNotes } from '../src/plugins/notes.js';
-import { acadamarkNotePlacement } from '../src/plugins/note-placement.js';
-import { buildCitationIndex } from '../src/plugins/library-load.js';
-import { acadamarkNumbering, fillNumbering } from '../src/plugins/numbering.js';
-import { acadamarkRefResolution } from '../src/plugins/ref-resolution.js';
-import { acadamarkCiteResolution } from '../src/plugins/cite-resolution.js';
-import { acadamarkBibliography } from '../src/plugins/bibliography.js';
-import { ensureRegistry } from 'acadamark-core/registry';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -47,46 +29,24 @@ const UPDATE = process.env.ACADAMARK_UPDATE_SNAPSHOTS === '1';
  * Run the full pipeline on a source string and return the hast tree and HTML.
  */
 function runPipeline(source, opts = {}) {
-  // AUD-17: this mirror must match the pipeline registered in index.js.
-  // G3: remarkMath added to both inner processors; normalization pass added.
-  // NORM-tables: remarkGfm added to all inner processors.
-  const innerProcessor = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+  // AUD-17: build the pipeline from the single shared assembly exported by
+  // index.js rather than hand-mirroring it here. The former mirror omitted
+  // acadamarkBookStructuring (added to index.js in slice 4a), so book fixtures
+  // captured a pre-book-structuring hast tree.
+  const processor = buildAcadamarkPipeline(opts);
 
-  const processor = unified()
-    .use(remarkParse)
-    .use(remarkAcadamark)
-    .use(acadamarkInterpreter, opts);
+  // HTML from the real pipeline's compile step.
+  const html = String(processor.processSync(source));
 
-  const result = processor.processSync(source);
-  const html = String(result);
-
-  // Also capture the hast by running the structural transforms separately and
-  // calling toHast directly (so we can store the tree for snapshot comparison).
-  const innerProc2 = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
-  const mdast = unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm).parse(source);
-  const file = { data: {} };
-  // Apply transforms manually for hast capture.
-  remarkRecursiveContent({ processor: innerProc2 })(mdast);
-  acadamarkNormalizeMarkdown()(mdast);
-  acadamarkConfigDiscovery()(mdast, file);
-  acadamarkArticleStructuring()(mdast);
-  acadamarkSectionNesting()(mdast);
-  buildCitationIndex(mdast, file, { assetsDir: opts.assetsDir ?? null });
-  acadamarkNotes()(mdast, file);
-  acadamarkNumbering()(mdast, file);
-  // Apply numbers: mirror the acadamarkApplyNumbers stage from the full pipeline.
-  const registry = ensureRegistry(file);
-  registry.numberRegistry();
-  fillNumbering(file);
-  acadamarkRefResolution()(mdast, file);
-  acadamarkCiteResolution()(mdast, file);
-  acadamarkNotePlacement()(mdast, file);
-  acadamarkBibliography()(mdast, file);
-
-  const tagHandler = createAcadamarkTagHandler(opts);
-  const hast = toHast(mdast, {
+  // Intermediate hast for snapshot inspection: re-run parse + the structural
+  // transforms (runSync stops before the compiler) to get the fully-transformed
+  // mdast — the same tree the compiler's toHast consumes — then convert it with
+  // the same handlers. This captures the pre-asset-injection hast (no font /
+  // KaTeX / hover-preview nodes, no rehype-format), matching the prior snapshot.
+  const transformed = processor.runSync(processor.parse(source));
+  const hast = toHast(transformed, {
     handlers: {
-      acadamarkTag: tagHandler,
+      acadamarkTag: createAcadamarkTagHandler(opts),
       acadamarkParseError: parseErrorHandler,
       acadamarkTagError: tagErrorHandler,
     },
@@ -1879,5 +1839,98 @@ export function run() {
 
     snapshotHast('document-9', hast);
     console.log('PASS: integration doc9 (alpha-complete pipeline; formerly GAP-9)');
+  }
+
+  // ── Document 44: alpha cross-feature stress monograph (Phase 6) ──────────
+  // The alpha integration check's single cross-feature artifact. Combines, in
+  // one short book, the surface no other fixture exercises together: book
+  // structure (preface / chapters / appendix + edited-volume per-chapter
+  // author), a <library> bibliography with <cite> cross-refs resolving INSIDE
+  // a book (the Phase 6 book-bibliography fix — buildCitationIndex now finds
+  // <data> nested in book-body, and bibliography.js places the reference list
+  // into book-back), external DSLs (mermaid + abc), the theorem family
+  // (theorem / proof / definition), math in all three forms (display sigil,
+  // inline, align env), frameables (fig + CSV table), and per-chapter
+  // footnotes honoring the book default note-scope=chapter.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-44-cross-feature-monograph.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // Book wrapping + region routing (same surface as doc-38).
+    assert.ok(/<book[ >]/.test(html), 'doc44: <book> wrapper');
+    assert.ok(html.includes('<book-front>'), 'doc44: <book-front> present');
+    assert.ok(html.includes('<book-body>'), 'doc44: <book-body> present');
+    assert.ok(html.includes('<book-back>'), 'doc44: <book-back> present');
+    assert.ok(/book-part-type="preface"/.test(html), 'doc44: preface → book-front');
+    assert.ok(/book-part-type="chapter"/.test(html), 'doc44: chapters → book-body');
+    assert.ok(/book-part-type="appendix"/.test(html), 'doc44: appendix → book-back');
+
+    // Edited-volume: chapter 2 carries its own <author>.
+    assert.ok(html.includes('Guest Author'), 'doc44: per-chapter <author> (edited-volume)');
+
+    // Bibliography INSIDE a book (Phase 6 fix). The <library> lives in <data>
+    // nested in book-body; cites must resolve, and the reference list must
+    // land in book-back. Before the fix the cite rendered as an empty
+    // <cite></cite> and no <bibliography> was emitted.
+    assert.ok(
+      html.includes('<cite class="cite" data-keys="Benson2007">'),
+      'doc44: <cite @Benson2007> resolves in a book (empty <cite></cite> before the fix)',
+    );
+    assert.ok(
+      html.includes('data-keys="Sethares1993"'),
+      'doc44: <cite @Sethares1993> resolves',
+    );
+    assert.ok(html.includes('<bibliography>'), 'doc44: <bibliography> rendered');
+    assert.ok(html.includes('id="ref-Benson2007"'), 'doc44: bib entry id for Benson2007');
+    assert.ok(html.includes('id="ref-Sethares1993"'), 'doc44: bib entry id for Sethares1993');
+    // The reference list is placed in book-back, after the appendix book-part.
+    const backIdx = html.indexOf('<book-back>');
+    const appendixIdx = html.indexOf('Notation and Sources');
+    const bibIdx = html.indexOf('<bibliography>');
+    assert.ok(backIdx >= 0 && bibIdx > backIdx, 'doc44: <bibliography> sits inside book-back');
+    assert.ok(appendixIdx >= 0 && bibIdx > appendixIdx, 'doc44: bibliography follows the appendix');
+
+    // Theorem family.
+    assert.ok(/<theorem[ >]/.test(html), 'doc44: <theorem> rendered');
+    assert.ok(/<proof[ >]/.test(html), 'doc44: <proof> rendered');
+    assert.ok(/<definition[ >]/.test(html), 'doc44: <definition> rendered');
+
+    // Math: KaTeX for inline + display; equation numbering for the display
+    // sigil and the align env.
+    assert.ok(html.includes('katex'), 'doc44: KaTeX output present');
+    assert.ok(html.includes('equation'), 'doc44: equation numbering present');
+
+    // Frameables: a <fig> and a CSV table.
+    assert.ok(html.includes('<figure'), 'doc44: <fig> renders as <figure>');
+    assert.ok(/<table[ >]/.test(html), 'doc44: <csv> renders a <table>');
+
+    // External DSLs.
+    assert.ok(html.includes('mermaid'), 'doc44: <mermaid> DSL present');
+    assert.ok(html.includes('abc'), 'doc44: <abc> DSL present');
+
+    // Chapter-prefixed cross-references (per-chapter counter resets): the
+    // figures in chapter 3 are "figure 3.N"; the CSV table in chapter 2 is
+    // "table 2.N".
+    assert.ok(/figure 3\.\d+/.test(html), 'doc44: chapter-prefixed figure cross-ref (figure 3.N)');
+    assert.ok(/table 2\.\d+/.test(html), 'doc44: chapter-prefixed table cross-ref (table 2.N)');
+
+    // Per-chapter footnotes (book default note-scope=chapter): one note-list
+    // per book-part that has notes (preface + 3 chapters + appendix = 5).
+    const noteListMatches = html.match(/<note-list class="(footnotes|endnotes|notes)">/g) ?? [];
+    assert.ok(
+      noteListMatches.length >= 5,
+      `doc44: per-book-part note lists (expected >= 5, found ${noteListMatches.length})`,
+    );
+
+    // No parser / cite / tag errors leaked into the output.
+    assert.ok(!html.includes('??parse'), 'doc44: no parse-error markers');
+    assert.ok(!html.includes('??cite'), 'doc44: no unresolved-cite markers');
+    assert.ok(!html.includes('??tag'), 'doc44: no tag-error markers');
+
+    snapshotHast('document-44', hast);
+    console.log('PASS: integration doc44 (alpha cross-feature stress: book + bibliography + DSLs + theorem family + math + frameables + per-chapter notes)');
   }
 }

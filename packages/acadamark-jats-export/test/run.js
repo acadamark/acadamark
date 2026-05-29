@@ -638,6 +638,128 @@ function validateWithXmllint(fixtureName, jatsXml) {
   validateWithXmllint('doc43', jats);
 }
 
+// ─── Integration: doc-44 alpha cross-feature stress monograph (Phase 6) ───
+//
+// The alpha integration check's cross-feature artifact, exported via the BITS
+// book path. In one book it combines the surface no other fixture exercises
+// together: BITS book structure (preface / chapters / appendix + edited-volume
+// per-book-part author), a <library> bibliography with <cite> cross-refs
+// resolving INSIDE a book (Phase 6 book-bibliography fix — buildCitationIndex
+// finds <data> nested in book-body, and the <ref-list> is emitted in
+// <book-back>), external DSLs (mermaid + abc), the theorem family, math,
+// frameables (fig + CSV table), and per-chapter footnotes (note-scope=chapter
+// → per-book-part <fn-group>).
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-44-cross-feature-monograph.acm'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(acadamarkNormalizeToCanonical)
+    .use(acadamarkConfigDiscovery)
+    .use(acadamarkBookStructuring)
+    .use(acadamarkArticleStructuring)
+    .use(acadamarkSectionNesting)
+    .use(function loadLibrary() {
+      return (t, f) => buildCitationIndex(t, f, { assetsDir: FIXTURES_DIR });
+    })
+    .use(acadamarkNotes)
+    .use(acadamarkNumbering)
+    .use(function applyNumbers() {
+      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+    })
+    .use(acadamarkRefResolution)
+    .use(acadamarkCiteResolution)
+    .use(acadamarkNotePlacement)
+    .use(acadamarkBibliography)
+    .runSync(tree, file);
+
+  const jats = acadamarkToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-44-cross-feature-monograph.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-44-cross-feature-monograph.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc44: JATS snapshot matches', jats === expected);
+  }
+
+  // BITS book structure (same surface as doc-42).
+  check('doc44: BITS doctype declaration', jats.includes('BITS-book2.dtd'));
+  check('doc44: <book ... dtd-version="2.0">',
+    /<book book-type="book"[^>]*dtd-version="2\.0">/.test(jats));
+  check('doc44: <front-matter> region for preface', jats.includes('<front-matter>'));
+  check('doc44: <book-part book-part-type="preface">',
+    /<book-part book-part-type="preface"/.test(jats));
+  check('doc44: <book-part book-part-type="chapter">',
+    /<book-part book-part-type="chapter"/.test(jats));
+  check('doc44: <book-back> region for appendix', jats.includes('<book-back>'));
+  check('doc44: <book-part book-part-type="appendix">',
+    /<book-part book-part-type="appendix"/.test(jats));
+  check('doc44: edited-volume per-book-part <contrib-group> (Guest Author)',
+    /<contrib-group>[\s\S]*<string-name>Guest Author/.test(jats));
+  check('doc44: <book-part-title> from <chapter | Foundations>',
+    jats.includes('<title>Foundations</title>'));
+
+  // Bibliography INSIDE a book (Phase 6 fix): <ref-list> emitted in <book-back>.
+  check('doc44: <ref-list> emitted', jats.includes('<ref-list>'));
+  check('doc44: <ref-list> sits inside <book-back>',
+    /<book-back>[\s\S]*<ref-list>[\s\S]*<\/ref-list>[\s\S]*<\/book-back>/.test(jats));
+  check('doc44: <ref id="ref-Benson2007"> emitted', /<ref id="ref-Benson2007">/.test(jats));
+  check('doc44: <element-citation publication-type="book"> for Benson2007',
+    /<element-citation publication-type="book">/.test(jats));
+  check('doc44: <element-citation publication-type="journal"> for Sethares1993',
+    /<element-citation publication-type="journal">/.test(jats));
+  check('doc44: <xref ref-type="bibr" rid="ref-Benson2007"> in body',
+    /<xref ref-type="bibr" rid="ref-Benson2007">/.test(jats));
+  check('doc44: <xref ref-type="bibr" rid="ref-Sethares1993"> in body',
+    /<xref ref-type="bibr" rid="ref-Sethares1993">/.test(jats));
+
+  // Theorem family: definition (own counter) + theorem + proof (unnumbered).
+  check('doc44: theorem → <statement content-type="theorem">',
+    /<statement content-type="theorem"/.test(jats));
+  check('doc44: definition → <statement content-type="definition">',
+    /<statement content-type="definition"/.test(jats));
+  check('doc44: proof → <statement content-type="proof">',
+    /<statement content-type="proof"/.test(jats));
+
+  // Frameable CSV table → <table-wrap><table>.
+  check('doc44: CSV table → <table-wrap>', /<table-wrap/.test(jats));
+  check('doc44: CSV table → <table> with rows', /<table>[\s\S]*?<tr>/.test(jats));
+
+  // External DSLs (same surface as doc-43).
+  check('doc44: <fig specific-use="acadamark-dsl-mermaid">',
+    /<fig[^>]*specific-use="acadamark-dsl-mermaid"/.test(jats));
+  check('doc44: <fig specific-use="acadamark-dsl-abc">',
+    /<fig[^>]*specific-use="acadamark-dsl-abc"/.test(jats));
+  check('doc44: mermaid <preformat content-type="mermaid-source">',
+    /<preformat content-type="mermaid-source">/.test(jats));
+  check('doc44: abc <preformat content-type="abc-source">',
+    /<preformat content-type="abc-source">/.test(jats));
+
+  // Chapter-prefixed cross-references (per-chapter counter resets).
+  check('doc44: chapter-prefixed figure cross-ref (figure N.M)',
+    /<xref[^>]*rid="fig:circle">figure \d+\.\d+<\/xref>/.test(jats));
+  check('doc44: chapter-prefixed table cross-ref (table N.M)',
+    /<xref[^>]*rid="tab:ratios">table \d+\.\d+<\/xref>/.test(jats));
+
+  // Per-chapter footnotes: chapter-scope notes collected per book-part.
+  check('doc44: per-book-part footnotes (<book-part> ... <back> <fn-group>)',
+    /<book-part[\s\S]*?<back>\s*<fn-group/.test(jats));
+
+  // DTD validation (BITS 2.0 path).
+  validateWithXmllint('doc44', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

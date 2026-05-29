@@ -389,9 +389,10 @@ export function acadamarkInterpreter(options = {}) {
   this.use(acadamarkSectionNesting);
 
   // 5. Citation index (index-build, not a tree transformation): parse <library>
-  //    content from <data> root siblings, build file.data.acadamarkCitations.
-  //    Requires acadamarkArticleStructuring (<data> at root) and
-  //    acadamarkConfigDiscovery (citation-style) to have run first.
+  //    content from <data> nodes (deep-collected wherever they land — at root
+  //    in an article, nested in <book-body> in a book), build
+  //    file.data.acadamarkCitations. Requires acadamarkConfigDiscovery
+  //    (citation-style) to have run first.
   this.use(function acadamarkCitationIndex() {
     return (tree, file) => buildCitationIndex(tree, file, { assetsDir });
   });
@@ -483,4 +484,26 @@ export function acadamarkInterpreter(options = {}) {
 
     return toHtml(hast, { allowDangerousHtml: true });
   };
+}
+
+/**
+ * Build a unified processor carrying the full acadamark pipeline:
+ * remark-parse → remark-acadamark → acadamarkInterpreter. This is the single
+ * shared assembly; consumers and the test suite call it instead of
+ * hand-assembling the chain (AUD-17 — a hand-mirror previously drifted from
+ * this assembly by omitting acadamarkBookStructuring).
+ *
+ * Two ways to drive the returned processor:
+ *   - HTML:           processor.processSync(source) → VFile (String(file) is HTML).
+ *   - Intermediate hast (for snapshot inspection): processor.runSync(
+ *     processor.parse(source)) returns the fully-transformed mdast (all
+ *     structural plugins, including book-structuring, but not the compiler),
+ *     which the caller can pass to toHast directly.
+ *
+ * @param {object} [options] Forwarded to acadamarkInterpreter (katexCss,
+ *   hoverPreviewMode, assetsDir).
+ * @returns {import('unified').Processor}
+ */
+export function buildAcadamarkPipeline(options = {}) {
+  return unified().use(remarkParse).use(remarkAcadamark).use(acadamarkInterpreter, options);
 }

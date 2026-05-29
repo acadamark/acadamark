@@ -3,7 +3,7 @@
 What acadamark can do today, what is in progress, and what is still aspirational.
 For *why* the project exists, read `README.md` and `DESIGN.md`. For the
 architecture, read `notes/specs/pipeline.md` and `notes/specs/interpreter.md`. For the open
-backlog, read `BACKLOG-ROADMAP.md`.
+backlog, read `BACKLOG.md`; for the build sequence and phase plan, `ROADMAP.md`.
 
 This file is deliberately thin. It records *state*, not *explanation* — and
 state-descriptions go stale, so there is as little of it here as possible. When
@@ -31,7 +31,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [x] Bare markdown forms normalized to canonical acadamark nodes (`$x$`, GFM tables)
 - [~] Self-closing form `<tag />` — works for plain tags, broken for DSL-registry tags (AUD-08)
 - [ ] Caption-as-content — citations / rich content inside `caption="..."` (AUD-14)
-- [ ] Theorem family — `<theorem>`, `<proof>`, `<lemma>`, `<definition>`
+- [x] Theorem family — `<theorem>`, `<proof>`, `<lemma>`, `<definition>` (shared / own / unnumbered counters)
 
 ### Output — what processing produces
 
@@ -39,7 +39,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [x] Conditionally-injected hover previews (notes / refs / citations)
 - [x] Bundled subsetted fonts (Inter, Source Code Pro) and patched KaTeX fonts
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
-- [ ] JATS XML export (`rehypeAcadamarkToJats`) — the journal-submission bridge
+- [x] JATS XML export (`acadamarkToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
 - [ ] Client-side rendering — `.acm` rendered in-browser with no build step
 
@@ -48,8 +48,8 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [x] `acadamark-core` — the inward-pointing shared foundation (`fs`-free, browser-safe)
 - [x] `remark-acadamark` — the shorthand parser (Peggy + micromark hybrid)
 - [x] `acadamark-interpreter` — the full mdast→HTML interpreter pipeline
-- [x] `layer1-vocabulary` — 66 per-element vocabulary entries (build-time-generated `data.js` ships)
-- [x] Example documents — 13 fixture `.acm` files exercising the system end to end
+- [x] `layer1-vocabulary` — per-element vocabulary entries (build-time-generated `data.js` ships)
+- [x] Example documents — fixture `.acm` files exercising the system end to end
 
 For the current test status, run `npm run verify` in `packages/acadamark-interpreter`.
 (STATUS.md deliberately states no test count — a number is the fastest thing to
@@ -63,13 +63,18 @@ design findings live in `BACKLOG.md` (the active-work index) and
 
 ## In flight / next
 
-**Phase 5 (JATS export) CLOSED 2026-05-28.** All four slices landed:
-5a (package + `mapAttributes` lift + minimal article), 5b (body
-content), 5c (cross-refs + footnotes + BITS book + table rows), 5d
-(bibliography `<element-citation>` + mermaid/abc DSLs + DTD bundling
-for offline xmllint validation). **Phase 6 (Alpha integration check)
-is now the active phase** — the closing five-point verification that
-closes the alpha milestone.
+**The alpha milestone is reached. Phase 6 (Alpha integration check)
+CLOSED 2026-05-29.** The five-line alpha definition was verified
+against the existing fixture corpus; the per-line acceptance mapping
+is recorded in `notes/alpha-acceptance-mapping.md`. A cross-feature
+stress fixture (`doc-44`, a short monograph) was added to both the
+interpreter and JATS corpora; the integration test was rewired to
+build its pipeline from the shared assembly in `index.js`; and
+executable code blocks (Phase 10) were ruled post-alpha.
+
+**Next: the post-alpha roadmap** — Phase 7 (lift-and-lower
+completeness) onward. Nothing is in flight; the next phase is picked
+from `ROADMAP.md`.
 
 ## Milestones
 
@@ -3112,3 +3117,99 @@ that). One line gets added every few months, not every slice.
   annotation + small documentation-correctness adjustments;
   fits comfortably in one commit). No stop-and-report; no
   blocking drift.
+- **2026-05-29 — Phase 6 + ALPHA MILESTONE REACHED: alpha
+  integration check.** The closing slice of the alpha milestone.
+  Not new capability — a verification that the five-line alpha
+  definition (`ROADMAP.md`) demonstrably holds, plus the cleanup
+  that closing the milestone surfaced. Five pieces:
+
+  **(1) Alpha-acceptance mapping.** `notes/alpha-acceptance-
+  mapping.md` records, per alpha line, the fixture that demonstrates
+  it and what that fixture shows: line 1 (rich document) → doc-9,
+  companion doc-44; line 2 (canonical authoring) → doc-1, supplement
+  doc-14; line 3 (idioms reduce to canonical) → doc-16, supporting
+  doc-11/12/14/15; line 4 (JATS export) → doc-43 article + doc-42
+  book, companion doc-44; line 5 (acadamark ⇔ Layer 1, Reading B) →
+  doc-16 + corpus-wide snapshot pinning. Export-only for line 4
+  (JATS import is Phase 13, post-alpha); the Layer 1 → acadamark
+  lowering direction for line 5 is Phase 7 (post-alpha). The
+  document is the durable acceptance record; this milestone line
+  records only that alpha was reached.
+
+  **(2) Cross-feature stress fixture doc-44.** A short monograph
+  ("A Short Monograph on the Mathematics of Music") combining, in
+  one believable artifact, the surface no single prior fixture
+  exercised together: book structure (preface / chapters / appendix,
+  one chapter carrying its own `<author>` — the edited-volume case),
+  a bibliography inside a book, external DSLs (mermaid + abc), the
+  theorem family (theorem + proof + definition), math in all three
+  forms (inline / display sigil / align env), frameables (figure +
+  CSV table), and per-chapter footnotes under the book default
+  note-scope=chapter. Lives in both corpora (interpreter HTML render
+  + JATS BITS export).
+
+  **(3) Book + bibliography gap fixed.** doc-44 surfaced a real gap:
+  the citation index was built only from root-level `<data>`, which a
+  book nests inside its body, and the bibliography had no book
+  placement. `library-load.js`'s collector now deep-collects `<data>`
+  wherever it lands; `bibliography.js`'s `findOrCreateBackMatter`
+  places the reference list into `book-back` for books. Design
+  decision recorded (in the mapping doc and the `bibliography.js`
+  header): one document-wide reference list in `book-back`; per-
+  chapter scoped bibliographies are a deferred post-alpha option,
+  filed as a `BACKLOG.md` discussion item.
+
+  **(4) AUD-17: integration-test pipeline de-duplicated.**
+  `integration.test.js` built its pipeline by hand-mirroring
+  `index.js`; the mirror predated `acadamarkBookStructuring` (slice
+  4a) and so omitted it, meaning book fixtures captured a pre-book-
+  structuring hast tree. `index.js` now exports a shared
+  `buildAcadamarkPipeline(opts)` factory + `createAcadamarkTagHandler`,
+  and the test builds from it. doc-38's hast snapshot regenerated to
+  the correct post-book-structuring tree (HTML byte-identical;
+  audited — the entire diff is the book wrapper the old mirror
+  skipped). The BACKLOG AUD-17 entry's "no drift today" note was
+  itself stale — the book-structuring drift existed and had been
+  missed by the 2026-Q2 mechanical-batch verification. Both the
+  checklist line and the detailed entry were removed (and the
+  corresponding Phase 11 bullet in `ROADMAP.md`).
+
+  **(5) Phase 10 (executable code blocks) ruled post-alpha.** The
+  alpha milestone is the five-line definition; executable code is
+  orthogonal to all five (a build-time runtime, not a markup or
+  conversion capability). Retagged `[alpha]` → `[post-alpha]` in
+  `BACKLOG.md` and `ROADMAP.md`; Phase 10 stays in the roadmap as a
+  post-alpha phase (its prose and the Phase 6 / Current-position
+  prose were corrected to match).
+
+  **Snapshot audit:**
+  - **All article HTML + book HTML snapshots: STRICT ZERO DIFF**
+    except `doc-44.html` (new).
+  - **doc-38 interpreter hast snapshot regenerated** to the post-
+    book-structuring tree (the AUD-17 fix); HTML byte-identical.
+    Audited — the diff is exactly the book-structuring transform.
+  - **JATS doc-39..43 snapshots: STRICT ZERO DIFF.** The doc-44
+    JATS snapshot is new.
+
+  **Tests (point-in-time, this commit):**
+  - layer1-vocabulary:     52/52
+  - acadamark-core:        50/50 (colon-id 17 + tagname-sigil-map 33)
+  - remark-acadamark:     128/128
+  - acadamark-interpreter:  24/24 (HTML snapshots zero-diff)
+  - acadamark-jats-export: 133/133 (doc-44 checks added; DTD
+    validation skipped — no xmllint on PATH in this env)
+
+  **Phase 6 CLOSED 2026-05-29. Alpha milestone reached.** The roadmap
+  is now entirely post-alpha (Phase 7 onward). Drift fixed in the same
+  slice: the STATUS checklist (theorem family + JATS export flipped to
+  working; stale fixture/vocabulary counts removed per Rule 2; the
+  stale `BACKLOG-ROADMAP.md` pointer in this file's header); and the
+  interpreter/pipeline specs reconciled to the two design changes the
+  slice made — `<data>` is now deep-collected (not root-only) and a
+  book's bibliography is placed in `<book-back>` — in interpreter.md
+  §3.5/§3.12, pipeline.md §4.4/§4.10, plus the library-load.js and
+  index.js header comments. Drift
+  filed, not fixed (out of slice scope): the widespread stale
+  `BACKLOG-ROADMAP.md` and `rehypeAcadamarkToJats` references across
+  the live doc surface, filed as a post-alpha doc cross-reference
+  hygiene item in `BACKLOG.md`.

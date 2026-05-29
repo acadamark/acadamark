@@ -377,8 +377,9 @@ article-body
 
 #### 4.4 buildCitationIndex
 
-**What it does:** Finds `<data>` nodes at root level (outside `<article>`),
-walks their `<library>` children, reads citation data (BibTeX or CSL-JSON)
+**What it does:** Collects `<data>` nodes wherever they sit in the tree —
+at root level in an article, nested inside `<book-body>` in a book — walks
+their `<library>` children, reads citation data (BibTeX or CSL-JSON)
 from inline content or `src=` files, and stores a citation-js `Cite` instance
 in `file.data.acadamarkCitations`. Called as an explicit index-build step in
 `index.js` via an anonymous plugin wrapper (`acadamarkCitationIndex`), not as
@@ -394,8 +395,9 @@ file.data.acadamarkCitations = {
 }
 ```
 
-**Dependencies:** `acadamarkArticleStructuring` (needs `<data>` at root level).
-`acadamarkConfigDiscovery` (reads `citation-style` from config).
+**Dependencies:** `acadamarkConfigDiscovery` (reads `citation-style` from
+config). It does **not** require a structuring step to have relocated `<data>`:
+the deep-collect finds `<data>` at root (article) or in `<book-body>` (book).
 
 **No-op case:** If there are no `<data>` nodes, `file.data.acadamarkCitations`
 is not set. Cite resolution and bibliography will be no-ops.
@@ -528,9 +530,12 @@ resolved), `acadamarkApplyNumbers` (step 4.6.5; `entry.number` must be set).
 #### 4.10 acadamarkBibliography
 
 **What it does:** Renders the full bibliography via citation-js and injects
-a `__bibliography` node into `<article-back>`. If the author placed an explicit
+a `__bibliography` node into the back-matter region — `<article-back>` for an
+article, `<book-back>` for a book. If the author placed an explicit
 `<bibliography>` tag, it is replaced in-place. Otherwise, the bibliography is
-appended (pushed) to article-back.
+appended (pushed) to the back-matter region. A book gets a single
+document-wide bibliography in `<book-back>`; per-chapter bibliographies are a
+deferred post-alpha option (see `BACKLOG.md`).
 
 **Dependency:** `acadamarkCiteResolution` (needs `citations.order` to be
 populated with the first-cited key list).
@@ -643,7 +648,7 @@ to have run before it.
 | `acadamarkConfigDiscovery` | `acadamarkNormalizeMarkdown` | `file.data.acadamarkConfig` |
 | `acadamarkArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `acadamarkSectionNesting` | `acadamarkArticleStructuring` | nested section tree |
-| `buildCitationIndex` | `acadamarkArticleStructuring`, `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
+| `buildCitationIndex` | `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
 | `acadamarkNotes` | `remarkRecursiveContent`, `acadamarkSectionNesting` | `file.data.acadamarkNotesPending`; registry note slots |
 | `acadamarkNumbering` | `acadamarkNotes` | `file.data.acadamarkNumberingPending`; `node.registryType` |
 | `acadamarkApplyNumbers` | `acadamarkNotes`, `acadamarkNumbering` | `node.computedNumber`; label index entries |
@@ -675,8 +680,6 @@ to have run before it.
   to article-back.
 - `buildCitationIndex` must precede `acadamarkCiteResolution`. Cite resolution
   needs the citation-js instance.
-- `acadamarkArticleStructuring` must precede `buildCitationIndex`. Citation index
-  build finds `<data>` by walking `tree.children` — the `<data>` nodes must be there.
 
 ---
 
