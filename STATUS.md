@@ -2358,3 +2358,30 @@ that). One line gets added every few months, not every slice.
   entry but no checklist line. Both unrelated to the closed-item
   cleanup. No product code, spec, or test changes — pure backlog
   cleanup.
+- **2026-Q2 — ROADMAP closure-prose cleanup.** Reduced Phases 1–4
+  in `ROADMAP.md` to brief summary-pointers (heading +
+  `(CLOSED)` marker + one-paragraph framing + exit-condition
+  statement + "Closure record: see `STATUS.md`."). Per-slice
+  closure prose, commit hashes, sub-slice details, and
+  shipped-item descriptions removed from ROADMAP since STATUS
+  milestones already carry that record. ROADMAP is now
+  forward-looking for the four closed phases: what each phase
+  was for and what closure looked like — not a re-statement of
+  the closure record itself. Phase 5 (open) untouched, including
+  slice 5a closure prose which will be cleaned when Phase 5
+  itself closes. Phase counts: Phase 1 went 32 lines → 8 lines;
+  Phase 2 went 37 → 8; Phase 3 went 101 → 13; Phase 4 went 28
+  → 8 — net ROADMAP reduction of ~155 lines without losing
+  history (everything removed exists in STATUS milestones).
+  STATUS.md untouched except for this new milestone. BACKLOG
+  unaffected; cross-references from BACKLOG to ROADMAP phase
+  numbers continue to resolve. **Drift finding (out of slice
+  scope; surfaced for follow-up):** the "Current position"
+  section at ROADMAP L58-94 carries similar closure prose with
+  commit hashes and slice-by-slice details for Phases 1–4 that
+  duplicates the same STATUS content the per-phase cleanup
+  removed. Per the same principle (ROADMAP forward-looking,
+  STATUS historical), it could be trimmed too. The slice's
+  explicit scope was "Phases 1, 2, 3, 4 — their per-item
+  closure prose", not the orientation section; left as-is per
+  the scope discipline.

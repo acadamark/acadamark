@@ -102,70 +102,24 @@ output-producing arc on top of it (handlers, JATS export, render-mode
 lowering) can be meaningfully built. The deferred-vocabulary item was
 the last gap.
 
-**Items (all done):**
+**Exits:** the alpha-tagged vocabulary set has no remaining `[alpha]`
+gaps.
 
-- **Add deferred vocabulary elements** *(formerly DF-13, DF-14, DF-15,
-  DF-11b)*. Three sub-slices, all shipped:
-  - Sub-slice 1 (scalar/inline) — `13cac93`.
-  - Sub-slice 2 (structural blocks: `<dl>`/`<dt>`/`<dd>`,
-    `<glossary>`/`<glossary-entry>`, `<details>`/`<summary>`) —
-    `c1adfb7`.
-  - Sub-slice 3 (theorem family: `<theorem>`, `<lemma>`, `<corollary>`,
-    `<proposition>`, `<definition>`, `<example>`, `<remark>`, `<proof>`)
-    — 2026-05-27. The theorem family is regular Layer 1 vocabulary; no
-    handler dispatch is needed (confirmed by the DSL/long-form parser
-    bug fix the same day). Any future enhancement to theorem-family
-    rendering (numbering, label rendering, QED, optional-name display)
-    is regular-vocabulary work scheduled separately if and when taken
-    up — it is not part of Phase 2's handler bundle.
-- **Add vocabulary entries for `<meta>` allowlist members and
-  `<abstract>`** — done, `b3c8a2c`. Listed here for the roadmap
-  reader; not an open item.
-
-**Exit satisfied:** all three deferred-vocabulary sub-slices are in;
-`data.js` regenerated and committed at each sub-slice; the
-alpha-tagged vocabulary set has no remaining `[alpha]` gaps. The
-phase exits.
+Closure record: see `STATUS.md`.
 
 ---
 
 ## Phase 2 — Output handlers and DSL surface *(alpha — supports line 1)* *(CLOSED)*
 
-**Closed 2026-05-27.** The Layer 1 vocabulary in Phase 1 fixed *what*
-renders; this phase fixed *how* each piece renders. DSL-surface
-handlers consumed the deferred vocabulary's entries; per-section
-footnote collection completed the notes-placement story.
+The Layer 1 vocabulary in Phase 1 fixed *what* renders; this phase
+fixed *how* each piece renders. DSL-surface handlers consumed the
+deferred vocabulary's entries; per-section footnote collection
+completed the notes-placement story.
 
-**Items (all done):**
+**Exits:** every alpha-tagged DSL handler dispatches; per-section
+footnotes work.
 
-- **Implement DSL handlers** *(formerly DF-8, DF-9, DF-10)* —
-  **done across three sub-slices (2026-05-27):**
-  - **Slice 2a** (`091d7c6`) — `<csv>` / `<tsv>` standalone handlers
-    (sharing parsers + `renderParsedTable` with `<table>`), plus the
-    `<code>` long-form bug fix and `<library>` vocab reconciliation.
-  - **Slice 2b** (`297e543`) — `<math>` long-form plus the four
-    math-environment tags (`<matrix>`, `<cases>`, `<align>`,
-    `<eqnarray>`) via the extended `math.js` handler.
-  - **Slice 2c** (this slice) — `<mermaid>` and `<abc>` external DSL
-    handlers; emit pass-through markup with a `data-acadamark-dsl`
-    marker; rendering is external (CDN at view time or build-time
-    pre-render pass). DESIGN.md gained §"DSL handlers: included vs
-    external" recording the architectural distinction.
-
-  The original DF-11a `<theorem>` handler was previously bundled here;
-  retired by the 2026-05-27 DSL/long-form parser bug fix when theorem
-  family was confirmed as regular Layer 1 vocabulary.
-- **Implement per-section footnote collection** *(formerly PG-1)* —
-  **done 2026-05-27**. Outermost-section collection: for each top-level
-  `<section>` in `<article-body>`, foot-placed descendant notes
-  (regardless of nesting depth) collect into a `<note-list
-  class="footnotes">` at the section's end. Residual notes (end /
-  side / foot-notes outside top-level sections) fall through to the
-  article-back list. Global numbering preserved.
-
-**Exit satisfied:** every alpha-tagged DSL handler dispatches;
-per-section footnotes work for the doc33 + doc34 fixtures. Phase 2
-exits.
+Closure record: see `STATUS.md`.
 
 ---
 
@@ -178,133 +132,27 @@ optional caption (bottom); numbering folded into the caption/title
 rendering, not a separate field. `<figure>` is an accepted authoring
 alias for the canonical `<fig>`, normalized at the lift gate.
 
-The phase runs a **Phase 0 first** to confirm the exact frameable
+The phase ran a **Phase 0 first** to confirm the exact frameable
 membership list and any per-member shape divergences before building.
-Phase 0 (`cec620c`) recommended a **SPLIT into three sub-slices**
-(3a → 3b → 3c) over a single bundled slice; that recommendation
-shapes this phase.
 
-**Items, in order:**
+**Exits:** every alpha-tagged frameable element renders with the
+shared capability; captions accept rich content.
 
-- **Frameable-class Phase 0** *(filed by `1d100eb`; closed by
-  `cec620c`, 2026-05-27)*. Findings recorded in
-  `notes/phase3-frameable-findings.md`: three missing vocab entries
-  (`<fig>`, `<svg>`, `<frame>`); proposed shared frameable surface
-  (`id`, `title`, `caption`, `border`, `numbered`); recommendation
-  for caption-as-content Option A (child-tag with kwarg-form lift);
-  bundle-vs-split: SPLIT.
-- **Slice 3a — Numbering-registry extension** *(done 2026-05-28)*.
-  Extended `NUMBERED_TAGNAMES` to cover the theorem family
-  (`<theorem>`/`<lemma>`/`<corollary>`/`<proposition>` on the shared
-  `theorem` counter per amsthm "plain" style; `<definition>` and
-  `<example>` on their own counters; `<remark>`/`<proof>` stay
-  unnumbered) and math envs (long-form `<math>`, `<matrix>`,
-  `<cases>`, `<align>`, `<eqnarray>` all join the existing
-  `equation` counter). Added the matching `CONFIG_KEY` entries
-  (`number-theorems`, `number-definitions`, `number-examples`) to
-  the `<config>` allowlist. `DEFAULT_PREFIXES` extended with `cor`
-  / `prop`. The math handler's equation-number branch generalized
-  to any node with `computedNumber != null`. Code-listing numbering
-  was pulled from scope at slice-prompt Q2: `<code-block>` is
-  deliberately unnumbered per a G4 ruling (`numbering.js:106-110`)
-  and reversing that decision requires its own chat-level ruling.
-  Cross-references resolve to "Theorem N" / "Lemma N" / "Eq. N"
-  etc.; visible label rendering on theorem-family elements
-  themselves ("Theorem 1.") is deferred to slice 3b (the frameable
-  build's title rendering naturally absorbs it).
-- **Slice 3b — Frameable-class build** *(done 2026-05-28)*. Three
-  new vocab entries shipped: `<fig>`, `<svg>`, `<frame>`. `<figure>`
-  reconciled as an authoring alias rewriting to `<fig>` at the
-  normalize-to-canonical gate (cleanest path; the same gate that
-  rewrites sigil tagnames). Shared frameable rendering is implemented
-  as a small label-formatting primitive (`lib/frameable.js`'s
-  `formatLabel(prefix, number, name?)`) rather than a wrapper
-  helper — Q1's investigation found three structurally divergent
-  caption-rendering idioms across the existing handlers (inside-table
-  `<caption>`, inside-figure `<figcaption>`, sibling-figcaption); a
-  uniform wrapper helper would have been the wrong abstraction at
-  this granularity. Per-element handlers (figure, table, csv, tsv)
-  call the primitive at their existing label-construction sites.
-  DSL counter assignments wired into `NUMBERED_TAGNAMES`: csv/tsv
-  → table counter; mermaid/abc → figure counter; svg → figure
-  counter. `<frame>` deliberately omitted from NUMBERED_TAGNAMES
-  this slice (its vocab default is `numbered: false`; opt-in via
-  `+numbered` needs handler-level support — bundle into 3c or a
-  sibling slice). Theorem-family label rendering bundled into this
-  slice per Q3's recommendation: new `handlers/theorem.js` handles
-  all 8 family elements; uses the same `formatLabel` primitive to
-  prepend "Theorem N (Name)." / "Lemma N." / etc. to the body;
-  remark/proof get the unnumbered amsthm-convention "Remark." /
-  "Proof." form. New fixture doc36 exercises the build end-to-end.
-- **Slice 3c — Caption-as-content + unified frameable helper**
-  *(done 2026-05-28)*. Implemented Option A: `<caption>` as a
-  child-tag position on every frameable element. New
-  `FRAMEABLE_LIFTABLE` registry in
-  `acadamark-core/frameable-elements.js` (companion to
-  STRUCTURED_ELEMENTS but distinct — frameables are body-content
-  tags, not structured-data containers) plus a
-  `liftFrameableKwargs` function in normalize-to-canonical that
-  lifts `caption=` / `title=` kwargs to `<caption>` / `<title>`
-  children at the gate. The lift skips opaque-content nodes
-  (tables, csv, tsv, mermaid, abc, svg — bodies are strings) to
-  preserve their data; the frameable handlers fall back to reading
-  the kwarg via `extractFrameableChildren`'s opaque-content
-  fallback. Replaced slice 3b's primitive-only `formatLabel`-alone
-  approach with a unified `renderFrameable(opts)` helper handling
-  three caption-rendering idioms via a `kind`-keyed branch (table-
-  family inside-caption; figure-family inside-figcaption;
-  mermaid/abc sibling-figcaption). All six existing frameable
-  handlers + two new ones (svg, frame) call the helper. Wired
-  `title=` consumption (declared in 3b vocab; consumed here via
-  the helper). Wired `<frame>` opt-in numbering via a
-  NUMBERED_DEFAULT_FALSE set in numbering.js — frames register
-  only when authored with `+numbered` (or when given a colon-id
-  to be findable by label). New fixture doc37. Snapshot audit:
-  doc32 (mermaid now renders "Figure N." labels — closes the 3b
-  gap where mermaid handler ignored its computedNumber) + doc36
-  (same mermaid block in slice 3b's fixture) + doc37 (new); 22
-  other existing fixtures unchanged.
-
-**Exits satisfied:** every alpha-tagged frameable element renders
-with the shared capability; captions accept rich content; deferred
-numbering work (theorem family, math envs) is registered and cross-
-referenceable. **Phase 3 closes 2026-05-28** parallel to Phases 1
-and 2.
+Closure record: see `STATUS.md`.
 
 ---
 
 ## Phase 4 — Document structuring *(alpha — supports line 1)* *(CLOSED)*
 
 Layer 1's structural reach must include both articles (current) and
-books (deferred). `article-structuring.js` currently warns and skips
-non-article document types; closing this is the last structural-tier
-alpha gap.
+books (deferred). `article-structuring.js` previously warned and
+skipped non-article document types; closing this was the last
+structural-tier alpha gap.
 
-**Items, in order:**
+**Exits:** book documents render structurally; the doc-9 dark surface
+is pinned by snapshot.
 
-- **Build book / book-part document structuring** *(formerly DF-12)* —
-  **done in slice 4a (2026-05-29)**. Implemented the forward-
-  referenced `acadamarkBookStructuring` plugin per the book.md /
-  book-part.md vocab declarations. Generalized `note-placement.js`
-  for book trees (Q1.6 finding from Phase 0 — article-only
-  `findTopLevelSections` was silently dropping book footnotes).
-  Per-chapter counter resets with chapter-prefix cross-references
-  ("Figure 1.3"). Configurable `counter-reset-scope` and `note-scope`
-  via `<config>` kwargs. Per-book-part authorship for the edited-
-  volume case. Article behavior strict-zero-diff preserved across
-  all 22 existing fixtures.
-- **Add integration test and snapshot for `document-9-demo`**
-  *(formerly GAP-9)* — **done in slice 4b (2026-05-29)**.
-  `document-9-expected.json` snapshot generated; integration test
-  block added in `test/integration.test.js` mirroring doc6/doc7/doc8.
-  The snapshot pins the alpha-complete article pipeline against the
-  doc-9 reference document. doc-9 is an article, not a book
-  (per Phase 0 Q1.2); pairing with book-structuring in Phase 4 was
-  convenient packaging, not coupled work.
-
-**Exits satisfied:** book documents render structurally (slice 4a);
-the doc-9 dark surface is pinned by snapshot (slice 4b). **Phase 4
-closes 2026-05-29** parallel to Phases 1, 2, and 3.
+Closure record: see `STATUS.md`.
 
 ---
 
