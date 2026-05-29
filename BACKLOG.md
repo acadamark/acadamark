@@ -456,9 +456,9 @@ regardless of tag, so the `<div>`-vs-`<pre>` choice changes source
 fidelity, not rendered output).
 
 Surfaced by the render-quality bug-fix arc's DSL verification slice while
-verifying `RQ-DSL` against the existing corpus — doc-32 is the only
-fixture exercising `<abc>`; the demonstrative fixtures (and the doc-44
-stress fixture) exercise `<mermaid>` only. Filed, not fixed, per the
+verifying `RQ-DSL` against the existing corpus — `<abc>` is exercised
+in doc-32, doc-36, and doc-44; the demonstrative fixtures (doc-45,
+doc-46) exercise `<mermaid>` only. Filed, not fixed, per the
 slice's scope. See `notes/specs/render-quality.md` §9 (`RQ-DSL-M2`).
 
 ---

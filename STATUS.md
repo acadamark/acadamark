@@ -89,10 +89,21 @@ verification slice** then audited the `RQ-DSL` (mermaid / abc)
 predicates against the existing corpus — finding the demonstrative
 fixtures already exercise `<mermaid>` — and filed a deviation: the
 abc `<div>` source is not preserved verbatim in the rendered HTML
-(`RQ-DSL-M2`). The immediate next work is the rest of the arc: slice B
-(the book caption/label vs. cross-reference numbering mismatch) and
-slice C (the parser bug where inline math in pipe-form tag content is
-not opaque to escape processing). Nothing else is in flight.
+(`RQ-DSL-M2`). A **DSL rendering architecture Phase 0** then settled how
+acadamark should render mermaid / abc beyond the markup contract: a
+two-mode design — **static** (build-time SVG, self-contained output) and
+**live** (ships the library, renders in-browser) — plus the existing
+**skip** default, all honoring DESIGN.md's "publisher chooses the tool"
+stance. The findings
+(`notes/dsl-rendering-architecture-findings.md`) recommend splitting the
+implementation into a live-mode slice then a static-mode slice, gated on
+the design decisions listed there (chiefly the static-Mermaid dependency
+choice — a young browserless library vs. ~280 MB Chromium — and a
+DESIGN.md wording clarification). The immediate next work is the rest of
+the bug-fix arc: slice B (the book caption/label vs. cross-reference
+numbering mismatch) and slice C (the parser bug where inline math in
+pipe-form tag content is not opaque to escape processing). Nothing else
+is in flight.
 
 ## Milestones
 
@@ -3369,3 +3380,56 @@ that). One line gets added every few months, not every slice.
   disagreement as the book's other figures (caption "Figure 1." vs
   reference "figure 3.1"), confirming the book numbering bug reaches DSL
   figures too. The arc continues with slice B and slice C.
+
+- **2026-05-29 — DSL rendering architecture Phase 0 (findings).**
+  A read-only investigation settling how acadamark should render its two
+  external DSLs (`<mermaid>`, `<abc>`) beyond the markup contract, before
+  any implementation. Deliverable:
+  `notes/dsl-rendering-architecture-findings.md`. The architecture (locked
+  in chat) is **two modes — static and live — plus the existing skip
+  default**, all honoring DESIGN.md's "rendering is the publisher's choice
+  of tool" stance: the publisher chooses the mode; acadamark never decides
+  to render on its own. *Static* pre-renders to inline SVG in Node at build
+  time (self-contained, no client JS); *live* emits the library (inlined or
+  CDN-linked) plus an init call and lets the browser render the contract
+  markup at view time; *skip* (default, unchanged) emits only the contract.
+  The central finding is that the two modes are **asymmetric in shape and
+  cost**: live is *additive* (prepends asset nodes, leaves the contract
+  intact — structurally identical to the existing hover-preview / KaTeX
+  injection path) and *synchronous*; static is a *mutation* (replaces each
+  DSL element with SVG), needs a server-side DOM, and for Mermaid is
+  *asynchronous* (`mermaid.render()` returns a Promise — the current
+  synchronous `processSync` compiler cannot host it as written). On
+  dependencies: abc static-renders cleanly in Node with a jsdom shim and no
+  headless browser (abcjs has no runtime deps); Mermaid has **no mature
+  browserless static path** — the only no-browser option is the young
+  `isomorphic-mermaid` (jsdom + svgdom, v0.1.x), and the mature path is
+  Puppeteer/Chromium (~170–282 MB). Live bundles: Mermaid ~628 KB,
+  abcjs ~492 KB. Recommendations: **split implementation** into Slice 1
+  (mode infrastructure + skip default + live mode — low-risk, precedent-
+  matching, low/zero new deps) and Slice 2 (static mode — heavy deps, async
+  restructuring, node mutation, isolated); the **demonstrative fixtures**
+  (doc-45, doc-46 — both flowchart `<mermaid>`) target static, gated on the
+  Mermaid-dependency decision; `dslMode` takes a global default plus
+  optional per-DSL overrides (the abc/mermaid asymmetry warrants per-DSL
+  control); `RQ-DSL-M2` stays a real bug regardless of mode (static routes
+  around it, live mitigates via an init-time whitespace strip, skip is most
+  exposed) and should be fixed in the live-mode slice. The findings also
+  propose mode-aware render-quality predicates (skip/live/static + an
+  observable, visual-verification class) and DESIGN.md drop-in text that
+  draws the included/external line at **semantics-ownership** rather than
+  render-timing, so static mode stays "external" — a wording clarification,
+  not a design reversal. Six decisions are escalated to chat (DESIGN.md
+  axis + text; static-Mermaid dependency; `dslMode` shape; spec ID scheme;
+  M2 fix timing; the slice split). **Drift corrected in-slice:** the
+  `RQ-DSL-M2` BACKLOG entry's fixture enumeration was wrong — `<abc>` is
+  exercised in doc-32, doc-36, and doc-44 (not doc-32 alone), and doc-44
+  carries both DSLs; the BACKLOG parenthetical was fixed. **Coherence:**
+  findings ⇄ code — every emit-path, handler, dependency, and asset claim
+  cites a file:line read this slice; findings ⇄ design — the two-mode
+  framing extends DESIGN.md's external-DSL paragraph rather than reversing
+  it, with the one classification-wording tension flagged for chat; backlog
+  ⇄ findings — M2's per-mode interaction is characterized and the stale
+  fixture enumeration corrected. No code, spec, DESIGN.md, fixture,
+  snapshot, or test changes; the only edits are the new findings file, the
+  BACKLOG correction, the "In flight / next" pointer, and this log entry.
