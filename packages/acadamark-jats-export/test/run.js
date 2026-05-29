@@ -29,7 +29,11 @@ import {
   acadamarkBookStructuring,
   acadamarkArticleStructuring,
   acadamarkSectionNesting,
+  acadamarkNumbering,
+  fillNumbering,
+  acadamarkRefResolution,
 } from 'acadamark-interpreter';
+import { ensureRegistry } from 'acadamark-core/registry';
 import { mapAttributes } from 'acadamark-core/map-attributes';
 import { jatsEmit, aggregateJatsAttrs } from '../src/lib/jats-emit.js';
 import { acadamarkToJats } from '../src/index.js';
@@ -183,6 +187,96 @@ function check(name, condition) {
   } catch {
     console.log('  (skipping xmllint validation — xmllint not available)');
   }
+}
+
+// ─── Integration: doc-40 body content (Phase 5 slice 5b) ──────────────────
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-40-jats-body-content.acm'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  // Run the same transform pipeline as doc-39 but also include
+  // numbering + apply-numbers + ref-resolution so display-math and
+  // frameables get computedNumber populated (required for <label>
+  // emission per slice 5b).
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(acadamarkNormalizeToCanonical)
+    .use(acadamarkConfigDiscovery)
+    .use(acadamarkBookStructuring)
+    .use(acadamarkArticleStructuring)
+    .use(acadamarkSectionNesting)
+    .use(acadamarkNumbering)
+    .use(function applyNumbers() {
+      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+    })
+    .use(acadamarkRefResolution)
+    .runSync(tree, file);
+
+  const jats = acadamarkToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-40-jats-body-content.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-40-jats-body-content.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc40: JATS snapshot matches', jats === expected);
+  }
+
+  // Spot-checks per slice 5b's added surface.
+
+  // Lists.
+  check('doc40: <list list-type="bullet">', jats.includes('<list list-type="bullet">'));
+  check('doc40: <list list-type="order">', jats.includes('<list list-type="order">'));
+  check('doc40: <list-item> emitted', jats.includes('<list-item>'));
+  check('doc40: <def-list> for <dl>', jats.includes('<def-list>'));
+  check('doc40: <def-item> + <term> + <def>',
+    jats.includes('<def-item>') && jats.includes('<term>') && jats.includes('<def>'));
+
+  // Math.
+  check('doc40: <inline-formula><tex-math>',
+    /<inline-formula><tex-math><!\[CDATA\[E = mc\^2\]\]><\/tex-math><\/inline-formula>/.test(jats));
+  check('doc40: <disp-formula> with <tex-math> CDATA',
+    /<disp-formula[^>]*>[\s\S]*<tex-math><!\[CDATA\[/.test(jats));
+  check('doc40: <disp-formula> has <label>',
+    /<disp-formula[^>]*>\s*<label>/.test(jats));
+  check('doc40: align env wrapped in \\begin{aligned}',
+    jats.includes('\\begin{aligned}'));
+
+  // Theorem family.
+  check('doc40: <statement content-type="theorem">',
+    jats.includes('<statement content-type="theorem"'));
+  check('doc40: <statement content-type="proof">',
+    jats.includes('<statement content-type="proof"'));
+  check('doc40: theorem <label>',
+    jats.includes('<label>Theorem 1.</label>'));
+  check('doc40: theorem <title> from name kwarg',
+    jats.includes('<title>Pythagoras</title>'));
+  check('doc40: unnumbered <proof> <label>',
+    jats.includes('<label>Proof.</label>'));
+
+  // Frameables.
+  check('doc40: <fig> emitted', jats.includes('<fig'));
+  check('doc40: <fig> <graphic xlink:href>',
+    /<graphic xlink:href="elephant\.jpg"/.test(jats));
+  check('doc40: <fig> <caption><p>',
+    /<fig[^>]*>[\s\S]*<caption>[\s\S]*<p>An elephant\.<\/p>/.test(jats));
+  check('doc40: <table-wrap> emitted', jats.includes('<table-wrap'));
+  check('doc40: <table-wrap> <caption>',
+    /<table-wrap[^>]*>[\s\S]*<caption>[\s\S]*<p>A small CSV table\.<\/p>/.test(jats));
+
+  // Abstract limitation fix (Q1).
+  check('doc40: abstract prose text retained (slice 5b Q1 fix)',
+    /<abstract>\s*<p>[\s\S]*This abstract has[\s\S]*<i>italic<\/i>[\s\S]*<b>bold<\/b>/.test(jats) ||
+    /<abstract>\s*<p>[\s\S]*This abstract has[\s\S]*<italic>italic<\/italic>[\s\S]*<bold>bold<\/bold>/.test(jats));
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────

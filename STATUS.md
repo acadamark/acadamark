@@ -2532,3 +2532,111 @@ that). One line gets added every few months, not every slice.
 
   No product code, schema field, or handler changes — pure
   documentation hygiene.
+- **2026-Q2 — Phase 5 slice 5b: JATS export body content.** The
+  second slice of Phase 5. Five bundled pieces, all in the
+  body-content neighborhood; HTML pipeline untouched.
+
+  **(1) Abstract limitation fix (Q1 root cause).** Slice 5a's
+  `emitBlock` dropped mdast `text` nodes at top level and treated
+  inline acadamarkTags as separate blocks via the default-case
+  `extractText` path. New `groupInlineRuns` pre-pass in
+  `emitBodyChildren` wraps consecutive inline-shaped nodes (text
+  + INLINE_MAP tags + inline-math) into synthetic mdast
+  paragraphs before block dispatch. The fix is local to the
+  emitter's pre-processing; no traversal-model changes. doc-39's
+  abstract snapshot updated as expected: the prose text "This
+  abstract demonstrates ..." (previously dropped, leaving only
+  separated `<p>italic</p>` / `<p>bold</p>`) now retained as a
+  single paragraph with inline `<italic>` / `<bold>` in place.
+
+  **(2) Frameables.** `<fig>` / `<svg>` / `<frame>` →
+  `<fig>`; `<table>` / `<csv>` / `<tsv>` → `<table-wrap>`.
+  Each carries `<label>` (when numbered), `<caption><title>...
+  </title><p>...</p></caption>` (when title and/or caption
+  present), and the body shape per element (image
+  `<graphic xlink:href>` for fig with src; placeholder
+  `<graphic specific-use="inline-svg"/>` for svg; body content
+  paragraphs for frame; table placeholder comment for table-wrap
+  — full row emission is depth-of-implementation work for a
+  follow-up).
+  - `extractFrameableParts` mirrors the HTML side's
+    `extractFrameableChildren` (caption/title from child tags
+    with opaque-content kwarg fallback).
+  - Legacy `<fig src=x | caption>` form: when src is present and
+    no explicit caption child/kwarg, pipe content treated as
+    caption (matches HTML side's figure-as-pipe-caption
+    convention).
+  - Mermaid / ABC deferred to slice 5d per Q2's recommendation
+    (the external-DSL JATS shape involves design choices best
+    bundled with the bibliography work).
+
+  **(3) Lists.** `<ul>` → `<list list-type="bullet">`; `<ol>` →
+  `<list list-type="order">`; `<li>` → `<list-item>` wrapping
+  body via `emitBodyChildren` (so nested lists work). `<dl>` →
+  `<def-list>` with `<dt>` + `<dd>` pairs synthesized into
+  `<def-item><term>...</term><def>...</def></def-item>`.
+  `<glossary>` → `<def-list content-type="glossary">` consuming
+  `<glossary-entry>` children.
+
+  **(4) Math.** `<inline-math>` →
+  `<inline-formula><tex-math><![CDATA[...]]></tex-math></inline-formula>`
+  via the existing inline emission path. Display math, long-form
+  `<math>`, and env tags (matrix / cases / align / eqnarray) →
+  `<disp-formula>` with `<label>(N)</label>` (when numbered) and
+  CDATA-wrapped `<tex-math>`. Env tags wrap the body in
+  `\begin{<env>}…\end{<env>}` per the HTML-side KaTeX
+  wrap-inside convention (matrix → matrix; cases → cases; align /
+  eqnarray → aligned). `]]>` defensively escaped inside CDATA
+  with the standard `]]]]><![CDATA[>` trick.
+
+  **(5) Theorem family.** Eight elements (theorem / lemma /
+  corollary / proposition / definition / example / remark /
+  proof) → `<statement content-type="...">` with `<label>` +
+  optional `<title>` (from `name` kwarg) + body paragraphs. The
+  label string is rebuilt from `node.computedNumber` (numbered
+  case) or the prose convention "Remark." / "Proof." (unnumbered
+  case). The HTML-side `formatLabel` primitive isn't reused
+  because JATS expects structured children, not a concatenated
+  span — same source data, different output shape.
+
+  **Companion changes:**
+  - `<blockquote>` → `<disp-quote>`; `<aside>` →
+    `<boxed-text content-type="aside">` (small additions
+    surfaced while writing the dispatch switch).
+  - `inline-math` added to `isInlineShaped` so its presence
+    inside a paragraph doesn't fragment the paragraph at the
+    pre-pass step (theorem-body bug surfaced during doc-40
+    verification).
+  - `fillNumbering` added to `acadamark-interpreter`'s
+    `index.js` exports so the JATS test pipeline can replicate
+    the numbering step. The function existed but wasn't
+    surfaced.
+
+  **New fixture: doc-40** (`document-40-jats-body-content.acm`)
+  exercises all five pieces end-to-end. 39/39 spot-check
+  assertions + snapshot pinning. xmllint validation skipped
+  (xmllint not in test environment; DTD bundling is a 5d
+  follow-up).
+
+  **Snapshot audit:**
+  - **All 24 acadamark-interpreter HTML snapshots: STRICT ZERO
+    DIFF.** Slice 5b adds JATS-side work only; HTML pipeline
+    untouched.
+  - **doc-39 JATS snapshot updated:** abstract section moved
+    from dropped-prose state (`<p>italic</p><p>bold</p>`) to
+    full-prose state (single `<p>` with inline `<italic>` /
+    `<bold>` / `<monospace>`). Audited diff confirms only the
+    abstract section changed.
+  - **doc-40 JATS snapshot:** new, written on first run.
+
+  Tests:
+  - layer1-vocabulary:    52/52
+  - acadamark-core:       33/33
+  - remark-acadamark:    128/128
+  - acadamark-interpreter: 24/24 (HTML snapshots zero-diff)
+  - acadamark-jats-export: 39/39 (4 unit + 14 doc-39 + 21 doc-40)
+
+  **Phase 5 sub-progress:** slice 5b closes the body-content
+  scope. Slices 5c (cross-references + footnotes + BITS book)
+  and 5d (bibliography + external DSLs + DTD bundling for
+  offline validation) remain.

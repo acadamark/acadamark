@@ -103,11 +103,14 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [~] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
   `[alpha]` *(→ roadmap: Phase 5)* *(formerly DF-18)* —
-  **slice 5a landed 2026-05-29** (package `acadamark-jats-export` +
-  `mapAttributes` lift to `acadamark-core` + vocab `maps_to` target-
-  keyed migration + minimal article export: scaffolding + paragraphs
-  + inline text). Slices 5b–5d remain (body content; cross-refs +
-  notes + BITS book; bibliography + external DSLs).
+  **slice 5a (`98f2d7f`)** landed package + `mapAttributes` lift +
+  vocab `maps_to` migration + minimal article export.
+  **Slice 5b (2026-05-29)** added body content: frameables →
+  `<fig>` / `<table-wrap>`; lists → `<list>` / `<def-list>`; math
+  → `<tex-math>` inside `<inline-formula>` / `<disp-formula>`;
+  theorem family → `<statement content-type="...">`; abstract
+  inline-vs-block limitation fixed. Slices 5c (cross-refs + notes
+  + BITS book) and 5d (bibliography + external DSLs) remain.
 - [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
   *(→ roadmap: Phase 8)* *(formerly DF-19)*
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)

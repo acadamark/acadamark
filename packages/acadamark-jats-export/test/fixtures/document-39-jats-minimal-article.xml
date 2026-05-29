@@ -13,8 +13,8 @@
         </contrib>
       </contrib-group>
       <abstract>
-        <p>italic</p>
-        <p>bold</p>
+        <p>This abstract demonstrates the minimal article scaffolding exported
+to JATS XML. It exercises paragraphs and inline <italic>italic</italic> and <bold>bold</bold>.</p>
       </abstract>
     </article-meta>
   </front>

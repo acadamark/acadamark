@@ -97,8 +97,23 @@ needs siting against the inward-pointing `acadamark-core`.
     `6ae6844` resolved); vocab `maps_to` migrated to target-keyed
     form; article scaffolding + paragraphs + inline text export.
     Existing snapshots zero-diff (HTML behavior preserved).
-  - **Slice 5b — body content** (frameables, lists, math, theorem
-    family).
+  - **Slice 5b — body content** *(done 2026-05-29)*. Frameables
+    (`<fig>` / `<svg>` / `<frame>` → `<fig>`; `<table>` / `<csv>`
+    / `<tsv>` → `<table-wrap>`) with `<label>` + `<caption>` +
+    `<title>` children. Lists (`<ul>` / `<ol>` → `<list
+    list-type="...">`; `<dl>` / `<glossary>` → `<def-list>`).
+    Math (`<inline-math>` → `<inline-formula><tex-math>`;
+    display-math + math + envs → `<disp-formula>` with `<label>`
+    and CDATA-wrapped TeX source; env tags wrap in
+    `\begin{<env>}…\end{<env>}` per the KaTeX wrap-inside
+    convention). Theorem family (all eight elements →
+    `<statement content-type="...">` with `<label>` + optional
+    `<title>` from `name` kwarg + body `<p>`s). Inline-vs-block
+    abstract limitation from 5a fixed (synthetic-paragraph
+    pre-pass `groupInlineRuns` wraps loose inline runs into
+    paragraphs before block dispatch). New fixture doc-40.
+    `fillNumbering` added to `acadamark-interpreter`'s exports
+    so the JATS test pipeline can replicate numbering.
   - **Slice 5c — cross-references + footnotes + BITS book**.
   - **Slice 5d — bibliography + external DSLs**.
 

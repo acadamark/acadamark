@@ -1,0 +1,63 @@
+<meta>
+<title | A Body-Content Article for JATS Export>
+<author | Test Author>
+<abstract |
+This abstract has *italic* and **bold** and `inline code` interleaved
+with prose to verify the slice 5b paragraph-grouping fix.
+>
+</meta>
+
+<section | Lists>
+
+An unordered list:
+
+<ul>
+<li | First item with *emphasis*.>
+<li | Second item.>
+</ul>
+
+An ordered list:
+
+<ol>
+<li | One>
+<li | Two>
+</ol>
+
+A definition list:
+
+<dl>
+<dt | term-A>
+<dd | Definition A with prose.>
+<dt | term-B>
+<dd | Definition B.>
+</dl>
+
+<section | Math>
+
+Inline math <$ E = mc^2 $> in a paragraph.
+
+A numbered display equation:
+
+<$$ #eqn:euler | e^{i\pi} + 1 = 0 $$>
+
+An align environment with two lines:
+
+<align>
+a^2 + b^2 &= c^2 \\
+x + y &= z
+</align>
+
+<section | Theorem family>
+
+<theorem name="Pythagoras" #thm:pyth | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+
+<proof | By similar triangles. ∎>
+
+<section | Frameables>
+
+<fig #fig:elephant src=elephant.jpg | An elephant.>
+
+<table #tab:demo csv caption="A small CSV table.">
+a,b,c
+1,2,3
+</table>

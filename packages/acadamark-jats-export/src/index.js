@@ -161,11 +161,62 @@ function emitBack(backNode) {
 }
 
 function emitBodyChildren(children, indent) {
+  // Phase 5 slice 5b (2026-05-29): pre-process to wrap loose inline-
+  // shaped content (mdast text nodes, inline acadamarkTags) into
+  // synthetic paragraphs. Without this, the slice-5a-known abstract
+  // limitation drops surrounding prose around bare-markdown-lifted
+  // inline tags — emitBlock's default-case path treated each inline
+  // acadamarkTag as a separate block-context `<p>` and dropped text
+  // nodes entirely.
+  const grouped = groupInlineRuns(children ?? []);
   let out = '';
-  for (const child of children ?? []) {
+  for (const child of grouped) {
     out += emitBlock(child, indent);
   }
   return out;
+}
+
+/**
+ * Walk a content array and group consecutive inline-shaped nodes (mdast
+ * text, inline acadamarkTags from the INLINE_MAP set) into synthetic
+ * mdast `paragraph` nodes. Block-shaped nodes (sections, headings, p,
+ * frameables, lists, math, theorems, etc.) pass through unchanged.
+ *
+ * The fix for the abstract limitation: bare prose between
+ * inline-acadamarkTag children becomes paragraph-wrapped rather than
+ * dropped, so the JATS emitter's block-context handlers see uniform
+ * `<p>`-shaped children at top level.
+ */
+function groupInlineRuns(children) {
+  const out = [];
+  let buf = null;
+  for (const child of children) {
+    if (isInlineShaped(child)) {
+      if (!buf) buf = { type: 'paragraph', children: [] };
+      buf.children.push(child);
+    } else {
+      if (buf) { out.push(buf); buf = null; }
+      out.push(child);
+    }
+  }
+  if (buf) out.push(buf);
+  return out;
+}
+
+function isInlineShaped(node) {
+  if (node == null) return false;
+  if (node.type === 'text') return true;
+  if (node.type === 'inlineCode') return true;
+  if (!isAcadamarkTagNode(node)) return false;
+  // Inline acadamarkTags from the INLINE_MAP plus inline-math
+  // (handled separately by emitInlineFormulaJats but inline-shaped
+  // for grouping purposes — its presence in a paragraph shouldn't
+  // fragment the paragraph into separate <p>s). Block-level
+  // acadamarkTags (sections, p, frameables, lists, math envs,
+  // theorems) are NOT inline-shaped.
+  if (INLINE_MAP[node.tagname]) return true;
+  if (node.tagname === 'inline-math') return true;
+  return false;
 }
 
 function emitBlock(node, indent) {
@@ -185,15 +236,402 @@ function emitBlock(node, indent) {
       return emitSection(node, indent);
     case 'p':
       return `${pad}<p>${emitInlines(node.content)}</p>\n`;
+    // Phase 5 slice 5b — frameables: <fig> / <svg> / <frame> → <fig>
+    // (figure-family); <table> / <csv> / <tsv> → <table-wrap>.
+    case 'fig':
+    case 'svg':
+    case 'frame':
+      return emitFigureJats(node, indent);
+    case 'table':
+    case 'csv':
+    case 'tsv':
+      return emitTableWrapJats(node, indent);
+    // Phase 5 slice 5b — lists
+    case 'ul':
+      return emitListJats(node, indent, 'bullet');
+    case 'ol':
+      return emitListJats(node, indent, 'order');
+    case 'dl':
+      return emitDefListJats(node, indent);
+    case 'glossary':
+      return emitDefListJats(node, indent, 'glossary');
+    // Phase 5 slice 5b — math
+    case 'display-math':
+    case 'math':
+    case 'matrix':
+    case 'cases':
+    case 'align':
+    case 'eqnarray':
+      return emitDispFormulaJats(node, indent);
+    // Phase 5 slice 5b — theorem family
+    case 'theorem':
+    case 'lemma':
+    case 'corollary':
+    case 'proposition':
+    case 'definition':
+    case 'example':
+    case 'remark':
+    case 'proof':
+      return emitStatementJats(node, indent);
+    case 'blockquote':
+      return emitBlockquoteJats(node, indent);
+    case 'aside':
+      return emitAsideJats(node, indent);
     default: {
-      // Unknown / out-of-scope-for-5a block — emit as <p> with the
-      // node's text so the document still renders something. Slices
-      // 5b–5d cover frameables, lists, math, etc.
+      // Unknown / out-of-scope-for-5b block — emit as <p> with the
+      // node's text so the document still renders something.
       const text = extractText(node.content);
       if (text) return `${pad}<p>${escapeXml(text)}</p>\n`;
       return '';
     }
   }
+}
+
+// ─── Frameable emission (Phase 5 slice 5b) ────────────────────────────────
+
+/**
+ * Extract <caption> / <title> child tags from a frameable's content,
+ * mirroring the HTML-side `extractFrameableChildren` in
+ * `acadamark-interpreter/src/lib/frameable.js`. Falls back to reading
+ * caption / title from kwargs when no child tag exists (the same
+ * opaque-content fallback the HTML side uses; in JATS export the
+ * fallback is uniformly applied since table/csv/tsv/svg etc. all have
+ * opaque or mixed content).
+ *
+ * Returns { caption, title, body } where caption + title are arrays of
+ * mdast inline nodes (or null) and body is the remaining content
+ * children (mdast nodes, may be empty for opaque-content nodes whose
+ * body is a string).
+ */
+function extractFrameableParts(node) {
+  const content = Array.isArray(node.content) ? node.content : [];
+  let caption = null;
+  let title = null;
+  const body = [];
+  for (const child of content) {
+    if (isAcadamarkTag(child, 'caption') && caption == null) {
+      caption = Array.isArray(child.content) ? child.content : [];
+    } else if (isAcadamarkTag(child, 'title') && title == null) {
+      title = Array.isArray(child.content) ? child.content : [];
+    } else {
+      body.push(child);
+    }
+  }
+  // Opaque-content fallback: read from kwargs if no child tag was found.
+  if (caption == null && typeof node.kwargs?.caption === 'string') {
+    caption = [{ type: 'text', value: node.kwargs.caption }];
+  }
+  if (title == null && typeof node.kwargs?.title === 'string') {
+    title = [{ type: 'text', value: node.kwargs.title }];
+  }
+  return { caption, title, body };
+}
+
+/**
+ * Emit a JATS `<fig>` for figure-family frameables (fig / svg / frame).
+ * Per JATS Archiving 1.3: `<fig>` contains optional `<label>` (for
+ * numbering), optional `<caption>` (with `<title>` and `<p>`s),
+ * and the body content (`<graphic>` for image figures; arbitrary
+ * structural content for frame).
+ */
+function emitFigureJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  let { caption, title, body } = extractFrameableParts(node);
+  const number = node.computedNumber ?? null;
+  const src = node.kwargs?.src ?? null;
+
+  // Legacy `<fig src=x | caption-text>` form: when src is present
+  // and no explicit <caption> child / caption= kwarg supplied a
+  // caption, the pipe content IS the caption (HTML side's
+  // figure-as-pipe-caption convention). Treat the body content as
+  // the caption for JATS too. The body becomes empty since the
+  // <graphic> emission below stands in for the figure's content.
+  if (src && !caption && body.length > 0) {
+    caption = body;
+    body = [];
+  }
+
+  let out = `${pad}<fig${id}>\n`;
+  if (number != null) {
+    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+  }
+  if (caption || title) {
+    out += `${pad}  <caption>\n`;
+    if (title) {
+      out += `${pad}    <title>${emitInlines(title)}</title>\n`;
+    }
+    if (caption) {
+      out += `${pad}    <p>${emitInlines(caption)}</p>\n`;
+    }
+    out += `${pad}  </caption>\n`;
+  }
+  // Body: for figures with src, emit <graphic xlink:href="..."/>; for
+  // svg, emit <graphic> with the SVG content as a comment (full SVG
+  // embedding is slice 5e or 5f territory); for frame and other
+  // non-image figures, emit body content as paragraphs.
+  if (src) {
+    out += `${pad}  <graphic xlink:href="${escapeXmlAttr(src)}"/>\n`;
+  } else if (node.tagname === 'svg' && typeof node.content === 'string') {
+    // SVG source — JATS allows inline graphics via <graphic> with
+    // alternative content; for slice 5b we emit a placeholder
+    // <graphic> with the source preserved as an attribute comment.
+    out += `${pad}  <graphic specific-use="inline-svg"/>\n`;
+  } else if (body.length > 0) {
+    out += emitBodyChildren(body, indent + 2);
+  }
+  out += `${pad}</fig>\n`;
+  return out;
+}
+
+/**
+ * Emit a JATS `<table-wrap>` for table-family frameables (table / csv /
+ * tsv). The wrapper carries the caption + label; the inner `<table>`
+ * carries the parsed rows.
+ */
+function emitTableWrapJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const { caption, title } = extractFrameableParts(node);
+  const number = node.computedNumber ?? null;
+
+  let out = `${pad}<table-wrap${id}>\n`;
+  if (number != null) {
+    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+  }
+  if (caption || title) {
+    out += `${pad}  <caption>\n`;
+    if (title) {
+      out += `${pad}    <title>${emitInlines(title)}</title>\n`;
+    }
+    if (caption) {
+      out += `${pad}    <p>${emitInlines(caption)}</p>\n`;
+    }
+    out += `${pad}  </caption>\n`;
+  }
+  // Inner <table>. For slice 5b, emit a minimal placeholder — the
+  // table data is stored as opaque CSV/TSV/etc. source in
+  // node.content. Slice 5b's scope ends at the structural wrapper;
+  // parsing the data and emitting `<thead>`/`<tbody>` from it
+  // (mirroring the HTML side's `renderParsedTable`) is a depth-of-
+  // implementation choice. For now: emit the table with a comment.
+  const fmt = node.tagname === 'table' ? (node.positional?.[0] ?? 'raw')
+            : node.tagname;
+  out += `${pad}  <table>\n`;
+  out += `${pad}    <!-- table data parsed at HTML stage; format=${fmt} -->\n`;
+  out += `${pad}  </table>\n`;
+  out += `${pad}</table-wrap>\n`;
+  return out;
+}
+
+// ─── List emission (Phase 5 slice 5b) ─────────────────────────────────────
+
+/**
+ * Emit JATS `<list list-type="bullet|order">` for `<ul>` / `<ol>`.
+ * Iterates `<li>` children and emits `<list-item><p>...</p></list-item>`.
+ */
+function emitListJats(node, indent, listType) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const children = Array.isArray(node.content) ? node.content : [];
+  let out = `${pad}<list list-type="${listType}"${id}>\n`;
+  for (const child of children) {
+    if (!isAcadamarkTag(child, 'li')) continue;
+    out += `${pad}  <list-item>\n`;
+    // li content can be inline (single paragraph) or block (nested
+    // lists, multi-paragraph). Use emitBodyChildren so the
+    // groupInlineRuns pre-pass wraps loose inlines into paragraphs.
+    out += emitBodyChildren(child.content, indent + 4);
+    out += `${pad}  </list-item>\n`;
+  }
+  out += `${pad}</list>\n`;
+  return out;
+}
+
+/**
+ * Emit JATS `<def-list>` for `<dl>` (definition list) or `<glossary>`.
+ * Pairs consecutive `<dt>` + `<dd>` into `<def-item>`s with `<term>`
+ * + `<def>` children. Glossary uses `<def-list content-type="glossary">`.
+ */
+function emitDefListJats(node, indent, contentType = null) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const ct = contentType ? ` content-type="${contentType}"` : '';
+  const children = Array.isArray(node.content) ? node.content : [];
+  let out = `${pad}<def-list${ct}${id}>\n`;
+  // For <dl>: iterate dt/dd pairs. For <glossary>: iterate
+  // <glossary-entry> children (each wraps a term + def pair).
+  if (node.tagname === 'glossary') {
+    for (const entry of children) {
+      if (!isAcadamarkTag(entry, 'glossary-entry')) continue;
+      out += emitDefItemFromGlossaryEntry(entry, indent + 2);
+    }
+  } else {
+    // <dl>: pair consecutive dt + dd.
+    let i = 0;
+    while (i < children.length) {
+      if (isAcadamarkTag(children[i], 'dt')) {
+        const term = children[i];
+        const def = (i + 1 < children.length && isAcadamarkTag(children[i + 1], 'dd'))
+          ? children[i + 1] : null;
+        out += `${pad}  <def-item>\n`;
+        out += `${pad}    <term>${emitInlines(term.content)}</term>\n`;
+        if (def) {
+          out += `${pad}    <def>\n`;
+          out += emitBodyChildren(def.content, indent + 6);
+          out += `${pad}    </def>\n`;
+        }
+        out += `${pad}  </def-item>\n`;
+        i += def ? 2 : 1;
+      } else {
+        i += 1;
+      }
+    }
+  }
+  out += `${pad}</def-list>\n`;
+  return out;
+}
+
+function emitDefItemFromGlossaryEntry(entry, indent) {
+  const pad = ' '.repeat(indent);
+  const children = Array.isArray(entry.content) ? entry.content : [];
+  // Glossary entries typically wrap a term + a definition.
+  const termNode = children.find(c => isAcadamarkTag(c, 'term') || isAcadamarkTag(c, 'dt'));
+  const defChildren = children.filter(c => c !== termNode);
+  let out = `${pad}<def-item>\n`;
+  if (termNode) {
+    out += `${pad}  <term>${emitInlines(termNode.content)}</term>\n`;
+  }
+  if (defChildren.length > 0) {
+    out += `${pad}  <def>\n`;
+    out += emitBodyChildren(defChildren, indent + 4);
+    out += `${pad}  </def>\n`;
+  }
+  out += `${pad}</def-item>\n`;
+  return out;
+}
+
+// ─── Math emission (Phase 5 slice 5b) ─────────────────────────────────────
+
+/**
+ * Emit a JATS `<disp-formula>` for display-math, long-form <math>, and
+ * the math-environment tags (matrix / cases / align / eqnarray). The
+ * TeX source goes verbatim into `<tex-math>`; equation numbers go into
+ * `<label>`.
+ *
+ * For env tags: the handler's wrap-inside convention (HTML side wraps
+ * body in `\begin{<env>}…\end{<env>}` before passing to KaTeX) is
+ * mirrored here — we emit the same wrapped LaTeX into `<tex-math>`
+ * so JATS consumers see standalone LaTeX rather than env-body
+ * fragments.
+ */
+function emitDispFormulaJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const rawSource = typeof node.content === 'string' ? node.content.trim() : '';
+  // Apply env wrap for math-env tags (matrix/cases/align/eqnarray).
+  const envWrap = MATH_ENV_NAMES[node.tagname];
+  const texSource = envWrap
+    ? `\\begin{${envWrap}}\n${rawSource}\n\\end{${envWrap}}`
+    : rawSource;
+  const number = node.computedNumber ?? null;
+
+  let out = `${pad}<disp-formula${id}>\n`;
+  if (number != null) {
+    out += `${pad}  <label>(${escapeXml(String(number))})</label>\n`;
+  }
+  // Use <![CDATA[...]]> wrapping for the TeX source so LaTeX
+  // backslash escapes don't need XML-escaping. CDATA can't contain
+  // ']]>'; escape it defensively.
+  const safeTex = texSource.replace(/]]>/g, ']]]]><![CDATA[>');
+  out += `${pad}  <tex-math><![CDATA[${safeTex}]]></tex-math>\n`;
+  out += `${pad}</disp-formula>\n`;
+  return out;
+}
+
+/**
+ * Emit a JATS `<inline-formula>` for inline-math. Same TeX-source-in-
+ * <tex-math> shape, but inline.
+ */
+function emitInlineFormulaJats(node) {
+  const rawSource = typeof node.content === 'string' ? node.content.trim() : '';
+  const safeTex = rawSource.replace(/]]>/g, ']]]]><![CDATA[>');
+  return `<inline-formula><tex-math><![CDATA[${safeTex}]]></tex-math></inline-formula>`;
+}
+
+const MATH_ENV_NAMES = {
+  matrix: 'matrix',
+  cases: 'cases',
+  align: 'aligned',
+  eqnarray: 'aligned',
+};
+
+// ─── Theorem family emission (Phase 5 slice 5b) ───────────────────────────
+
+const THEOREM_CONTENT_TYPES = {
+  theorem: 'theorem', lemma: 'lemma', corollary: 'corollary',
+  proposition: 'proposition', definition: 'definition',
+  example: 'example', remark: 'remark', proof: 'proof',
+};
+
+const THEOREM_LABEL_PREFIXES = {
+  theorem: 'Theorem', lemma: 'Lemma', corollary: 'Corollary',
+  proposition: 'Proposition', definition: 'Definition',
+  example: 'Example', remark: 'Remark', proof: 'Proof',
+};
+
+/**
+ * Emit a JATS `<statement content-type="...">` for theorem-family
+ * elements. Contains:
+ *   - <label>Theorem 1.</label> (or just "Theorem." for unnumbered)
+ *   - <title>Pythagoras</title> (optional, from name kwarg)
+ *   - body content as <p>s
+ */
+function emitStatementJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const contentType = THEOREM_CONTENT_TYPES[node.tagname] ?? 'other';
+  const labelPrefix = THEOREM_LABEL_PREFIXES[node.tagname] ?? node.tagname;
+  const number = node.computedNumber ?? null;
+  const name = node.kwargs?.name ?? null;
+
+  let out = `${pad}<statement content-type="${contentType}"${id}>\n`;
+  // Label: "Theorem N." for numbered, "Remark." / "Proof." for
+  // unnumbered (per amsthm convention). Same shape as the HTML
+  // formatLabel primitive produces.
+  if (number != null) {
+    out += `${pad}  <label>${escapeXml(`${labelPrefix} ${number}.`)}</label>\n`;
+  } else if (contentType === 'remark' || contentType === 'proof') {
+    out += `${pad}  <label>${escapeXml(`${labelPrefix}.`)}</label>\n`;
+  }
+  if (name) {
+    out += `${pad}  <title>${escapeXml(String(name))}</title>\n`;
+  }
+  // Body — uses emitBodyChildren for paragraph-aware emission.
+  const body = Array.isArray(node.content) ? node.content : [];
+  out += emitBodyChildren(body, indent + 2);
+  out += `${pad}</statement>\n`;
+  return out;
+}
+
+// ─── Blockquote + aside (small additions) ─────────────────────────────────
+
+function emitBlockquoteJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  let out = `${pad}<disp-quote${id}>\n`;
+  out += emitBodyChildren(node.content, indent + 2);
+  out += `${pad}</disp-quote>\n`;
+  return out;
+}
+
+function emitAsideJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  let out = `${pad}<boxed-text content-type="aside"${id}>\n`;
+  out += emitBodyChildren(node.content, indent + 2);
+  out += `${pad}</boxed-text>\n`;
+  return out;
 }
 
 function emitSection(secNode, indent) {
@@ -242,12 +680,19 @@ function emitInlines(children) {
     if (child.type === 'text') {
       out += escapeXml(child.value ?? '');
     } else if (isAcadamarkTagNode(child)) {
+      // Phase 5 slice 5b: inline-math gets its own JATS shape
+      // (`<inline-formula>` containing `<tex-math>`). Other math
+      // tags are block-shaped and shouldn't appear in inline
+      // context, but handle defensively.
+      if (child.tagname === 'inline-math') {
+        out += emitInlineFormulaJats(child);
+        continue;
+      }
       const jatsTag = INLINE_MAP[child.tagname];
       if (jatsTag) {
         out += `<${jatsTag}>${emitInlines(child.content)}</${jatsTag}>`;
       } else {
-        // Unknown inline — emit text content only for slice 5a's scope.
-        // (Slice 5b will add more inline elements.)
+        // Unknown inline — emit text content only.
         out += emitInlines(child.content);
       }
     } else if (child.type === 'paragraph') {
@@ -304,4 +749,15 @@ function escapeXml(s) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+/**
+ * Escape XML attribute values (used in raw id="..." strings emitted
+ * outside the mapAttributes/jatsEmit pathway).
+ */
+function escapeXmlAttr(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/"/g, '&quot;');
 }

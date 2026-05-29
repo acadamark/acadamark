@@ -93,7 +93,7 @@ import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js'
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from 'acadamark-core/registry';
 
-export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
+export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, fillNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.
