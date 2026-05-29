@@ -101,28 +101,17 @@ A flat scannable index of every open item. Detailed entries below.
 
 ### Architecture tier
 
-- [~] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
-  `[alpha]` *(→ roadmap: Phase 5)* *(formerly DF-18)* —
-  **slice 5a (`98f2d7f`)** landed package + `mapAttributes` lift +
-  vocab `maps_to` migration + minimal article export.
-  **Slice 5b (2026-05-29)** added body content: frameables →
-  `<fig>` / `<table-wrap>`; lists → `<list>` / `<def-list>`; math
-  → `<tex-math>` inside `<inline-formula>` / `<disp-formula>`;
-  theorem family → `<statement content-type="...">`; abstract
-  inline-vs-block limitation fixed.
-  **Slice 5c (2026-05-28)** added cross-references → `<xref
-  ref-type="..." rid="...">` (per-prefix discriminator: fig /
-  table / disp-formula / sec / statement / fn / bibr); footnotes →
-  `<xref ref-type="fn">` inline + `<fn-group>`/`<fn>` collection
-  honoring `<config note-scope>`; BITS 2.0 book export path
-  (`<book>` dispatch + `<book-meta>` + `<front-matter>` + `<body>`
-  + `<book-back>` + per-`<book-part>` `<book-part-meta>` with
-  edited-volume per-chapter authorship + chapter-end `<back>`
-  `<fn-group>`); table-row emission (`<thead>`/`<tbody>`/`<tr>`/
-  `<th>`/`<td>` for CSV/TSV inside `<table-wrap>`'s inner
-  `<table>`). Slice 5d (bibliography + external DSLs +
-  Mermaid/ABC + DTD bundling for offline xmllint validation)
-  remains.
+- [x] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
+  `[alpha]` *(→ roadmap: Phase 5 — CLOSED)* *(formerly DF-18)* —
+  **Phase 5 CLOSED 2026-05-28.** Slices 5a (`98f2d7f`) package
+  + `mapAttributes` lift + minimal article export; 5b (`0ea915e`)
+  body content (frameables/lists/math/theorem family + abstract
+  fix); 5c (`2f96715`) cross-refs + footnotes + BITS book +
+  table rows; 5d structured bibliography `<element-citation>` +
+  mermaid/abc as `<fig>` with `<preformat>` source + DTD bundling
+  for offline xmllint validation (JATS 1.3 + BITS 2.0).
+  Full Layer 1 → JATS XML export across articles and books;
+  DTD-validated output when xmllint is on PATH.
 - [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
   *(→ roadmap: Phase 8)* *(formerly DF-19)*
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)

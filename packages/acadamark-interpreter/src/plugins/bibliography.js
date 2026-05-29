@@ -58,12 +58,19 @@ function findOrCreateArticleBack(treeChildren) {
  * Build a __bibliography internal node.
  * kwargs.html contains the full rendered bibliography HTML (no outer wrapper;
  * the handler provides the <bibliography> element).
+ *
+ * Phase 5 slice 5d (2026-05-28): also carry the structured CSL-JSON
+ * entries in document-citation order so the JATS exporter can emit
+ * `<element-citation>` with per-field structured data (vs. the HTML
+ * side's formatted-string `bibBodyHtml`). The JATS path reads
+ * `kwargs.cslEntries`; the HTML path ignores it.
  */
-function makeBibliographyNode(headingHtml, bibBodyHtml) {
+function makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries) {
   return makeInternalMarker('__bibliography', {
     kwargs: {
       headingHtml, // "References" heading HTML (may be overridden later)
       bibBodyHtml, // citation-js output with id= injected
+      cslEntries,  // Phase 5 slice 5d: structured CSL-JSON entries (JATS path)
     },
   });
 }
@@ -138,11 +145,17 @@ export function acadamarkBibliography() {
       return;
     }
 
-    const { cite, style } = citations;
+    const { cite, style, order } = citations;
 
-    // Render and inject ids.
+    // Render HTML (the existing path; for HTML output).
     const bibBodyHtml = formatBibliography(cite, style);
-    const bibNode = makeBibliographyNode('<h2>References</h2>', bibBodyHtml);
+    // Phase 5 slice 5d: also gather the structured CSL-JSON entries in
+    // document-citation order (the same order the HTML bibliography
+    // renders in). The JATS exporter uses this to emit
+    // `<element-citation>` with per-field structured data.
+    const cslById = new Map((cite?.data ?? []).map(e => [e.id, e]));
+    const cslEntries = order.map(key => cslById.get(key)).filter(Boolean);
+    const bibNode = makeBibliographyNode('<h2>References</h2>', bibBodyHtml, cslEntries);
 
     if (authorPlaced) {
       // Replace the author-placed <bibliography> node in-place.

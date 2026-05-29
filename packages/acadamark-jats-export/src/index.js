@@ -47,10 +47,15 @@ const JATS_ARTICLE_DOCTYPE_DECL =
 // documents carry the BITS doctype rather than the article doctype.
 // We pin to BITS 2.0 (the most widely supported version in
 // validators; 2.1 exists but tooling coverage is thinner).
+//
+// Phase 5 slice 5d (2026-05-28): SYSTEM identifier corrected from
+// `BITS-book2-0.dtd` to `BITS-book2.dtd` (the actual NLM filename;
+// the public identifier is unchanged). Confirmed by HEAD-checking
+// the URL — `BITS-book2-0.dtd` 404s, `BITS-book2.dtd` 200s.
 const BITS_BOOK_DOCTYPE_DECL =
   '<?xml version="1.0" encoding="UTF-8"?>\n' +
   '<!DOCTYPE book PUBLIC "-//NLM//DTD BITS Book Interchange DTD v2.0 20151225//EN" ' +
-  '"https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2-0.dtd">\n';
+  '"https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2.dtd">\n';
 
 /**
  * Export the post-stage-3 mdast tree to JATS XML.
@@ -563,6 +568,12 @@ function emitBlock(node, indent) {
     case 'csv':
     case 'tsv':
       return emitTableWrapJats(node, indent);
+    // Phase 5 slice 5d — external DSLs (mermaid, abc): <fig> with
+    // <alt-text> + <preformat> carrying the verbatim source. See
+    // emitDslFigureJats for the per-Q3 shape rationale.
+    case 'mermaid':
+    case 'abc':
+      return emitDslFigureJats(node, indent);
     // Phase 5 slice 5b — lists
     case 'ul':
       return emitListJats(node, indent, 'bullet');
@@ -604,6 +615,11 @@ function emitBlock(node, indent) {
       // (where emitFnGroupJats handles it). Standalone emission is a
       // best-effort <fn>.
       return emitFnJats(node, indent);
+    // Phase 5 slice 5d: bibliography → JATS <ref-list> with structured
+    // <element-citation> children built from the CSL-JSON entries
+    // threaded through by `bibliography.js`.
+    case '__bibliography':
+      return emitRefListJats(node, indent);
     default: {
       // Unknown / out-of-scope-for-5b block — emit as <p> with the
       // node's text so the document still renders something.
@@ -706,6 +722,60 @@ function emitFigureJats(node, indent) {
     out += `${pad}  <graphic specific-use="inline-svg"/>\n`;
   } else if (body.length > 0) {
     out += emitBodyChildren(body, indent + 2);
+  }
+  out += `${pad}</fig>\n`;
+  return out;
+}
+
+/**
+ * Phase 5 slice 5d (2026-05-28): emit a JATS `<fig>` for external-DSL
+ * frameables (`<mermaid>`, `<abc>`). The DSL source is preserved
+ * verbatim in a `<preformat>` element inside `<fig>`; an `<alt-text>`
+ * provides JATS-conventional accessibility text; the figure is marked
+ * with `specific-use="acadamark-dsl-{type}"` so downstream tooling
+ * (pre-render passes) can identify the source DSL.
+ *
+ * Per Q3's design recommendation: this is shape "A" enhanced with
+ * `<preformat>` for the source (rather than putting source in
+ * `<alt-text>`, which is conventionally for accessibility prose).
+ * No `<graphic>` placeholder — the source is enough; downstream
+ * pre-render passes can replace `<preformat>` with `<graphic>` /
+ * `<alternatives>` once the diagram is rendered to an image.
+ *
+ * JATS 1.3 `<fig>` content model allows `<preformat>` as a permitted
+ * block-level child alongside `<label>` / `<caption>`.
+ */
+function emitDslFigureJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const dslType = node.tagname; // 'mermaid' | 'abc'
+  const { caption, title } = extractFrameableParts(node);
+  const number = node.computedNumber ?? null;
+  const source = typeof node.content === 'string' ? node.content.trim() : '';
+
+  let out = `${pad}<fig${id} specific-use="acadamark-dsl-${dslType}">\n`;
+  if (number != null) {
+    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+  }
+  if (caption || title) {
+    out += `${pad}  <caption>\n`;
+    if (title) {
+      out += `${pad}    <title>${emitInlines(title)}</title>\n`;
+    }
+    if (caption) {
+      out += `${pad}    <p>${emitInlines(caption)}</p>\n`;
+    }
+    out += `${pad}  </caption>\n`;
+  }
+  // JATS-conventional alt-text — short accessibility prose, not the
+  // source itself. The source goes into <preformat> below.
+  out += `${pad}  <alt-text>${escapeXml(`${dslType[0].toUpperCase()}${dslType.slice(1)} diagram source preserved as preformatted text.`)}</alt-text>\n`;
+  // <preformat> carries the verbatim DSL source. `content-type`
+  // attribute identifies the DSL so downstream tooling can find and
+  // render these blocks (matching `data-acadamark-dsl="mermaid"`
+  // identification on the HTML side).
+  if (source) {
+    out += `${pad}  <preformat content-type="${dslType}-source">${escapeXml(source)}</preformat>\n`;
   }
   out += `${pad}</fig>\n`;
   return out;
@@ -1200,6 +1270,215 @@ function emitInlines(children) {
       out += emitInlines(child.children);
     }
   }
+  return out;
+}
+
+// ─── Bibliography emission (Phase 5 slice 5d) ─────────────────────────────
+
+/**
+ * Map a CSL-JSON entry `type` to the JATS `publication-type`
+ * attribute value on `<element-citation>`. Both vocabularies agree
+ * on most types, with a few renames (paper-conference → confproc;
+ * thesis variants → thesis; webpage → webpage).
+ *
+ * Unknown types fall back to `'other'` (JATS allows arbitrary
+ * publication-type values; using 'other' for unmapped CSL types
+ * keeps the attribute present without claiming a specific kind).
+ */
+const CSL_TYPE_TO_JATS_PUB_TYPE = {
+  'article-journal':   'journal',
+  'article-magazine':  'magazine',
+  'article-newspaper': 'newspaper',
+  'article':           'journal',
+  'book':              'book',
+  'chapter':           'book',
+  'paper-conference':  'confproc',
+  'thesis':            'thesis',
+  'report':            'report',
+  'webpage':           'webpage',
+  'manuscript':        'preprint',
+  'patent':            'patent',
+  'software':          'software',
+  'dataset':           'data',
+};
+
+/**
+ * Emit a JATS `<ref-list>` for the `__bibliography` internal node
+ * built by `acadamark-interpreter`'s `bibliography.js`. Iterates the
+ * structured CSL-JSON entries (`kwargs.cslEntries`, threaded through
+ * by slice 5d's bibliography.js change) in document-citation order
+ * and emits one `<ref id="ref-KEY"><element-citation>...</element-
+ * citation></ref>` per entry.
+ *
+ * The `<ref>` ids match the `rid="ref-KEY"` cite cross-references
+ * produced by `emitCiteMarker` in slice 5c — so JATS readers can
+ * follow inline citations to the bibliography.
+ *
+ * If no CSL entries are present (legacy code path, or no library
+ * loaded), emit an empty `<ref-list>`. The HTML-side `bibBodyHtml`
+ * isn't passed through because JATS expects structured fields, not
+ * HTML-formatted strings.
+ */
+function emitRefListJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const entries = Array.isArray(node.kwargs?.cslEntries) ? node.kwargs.cslEntries : [];
+  let out = `${pad}<ref-list>\n`;
+  out += `${pad}  <title>References</title>\n`;
+  for (const entry of entries) {
+    out += emitRefJats(entry, indent + 2);
+  }
+  out += `${pad}</ref-list>\n`;
+  return out;
+}
+
+/**
+ * Emit a single JATS `<ref>` containing an `<element-citation>` for
+ * one CSL-JSON entry. The id matches the `ref-KEY` convention used
+ * by the cite-xref emission in slice 5c.
+ *
+ * Field mapping per Q2 of the slice 5d investigation:
+ *   id        → <ref id="ref-{id}">
+ *   type      → publication-type attribute (via CSL_TYPE_TO_JATS_PUB_TYPE)
+ *   author    → <person-group person-group-type="author"> with <name>s
+ *   editor    → <person-group person-group-type="editor"> with <name>s
+ *   title     → <article-title> (journal/conference/chapter) or
+ *               <source> (book — title IS the source)
+ *   container-title → <source> (journal/proceedings name; for books
+ *               with a container-title, it's the series name — also
+ *               <source>)
+ *   issued    → <year>YYYY</year>[<month>MM</month>[<day>DD</day>]]
+ *   volume    → <volume>
+ *   issue     → <issue>
+ *   page      → "1-10" splits to <fpage>1</fpage><lpage>10</lpage>;
+ *               single-page "5" emits <fpage>5</fpage> only
+ *   DOI       → <pub-id pub-id-type="doi">
+ *   publisher → <publisher-name> (inside <publisher>)
+ *   publisher-place → <publisher-loc> (inside <publisher>)
+ *   URL       → <ext-link ext-link-type="uri" xlink:href="...">URL</ext-link>
+ */
+function emitRefJats(entry, indent) {
+  const pad = ' '.repeat(indent);
+  const id = entry.id ?? entry['citation-key'] ?? null;
+  const pubType = CSL_TYPE_TO_JATS_PUB_TYPE[entry.type] ?? 'other';
+  const isBook  = entry.type === 'book' || entry.type === 'chapter';
+
+  let out = `${pad}<ref id="ref-${escapeXmlAttr(String(id ?? ''))}">\n`;
+  out += `${pad}  <element-citation publication-type="${pubType}">\n`;
+
+  // Person groups: authors first, then editors (JATS convention).
+  if (Array.isArray(entry.author) && entry.author.length > 0) {
+    out += emitPersonGroupJats(entry.author, 'author', indent + 4);
+  }
+  if (Array.isArray(entry.editor) && entry.editor.length > 0) {
+    out += emitPersonGroupJats(entry.editor, 'editor', indent + 4);
+  }
+
+  // Title element depends on type:
+  //   - For book (no container-title) → title IS the source.
+  //   - For chapter (with container-title) → <chapter-title> + container as <source>.
+  //   - For everything else → <article-title>.
+  if (entry.title) {
+    if (entry.type === 'book' && !entry['container-title']) {
+      out += `${pad}    <source>${escapeXml(String(entry.title))}</source>\n`;
+    } else if (entry.type === 'chapter') {
+      out += `${pad}    <chapter-title>${escapeXml(String(entry.title))}</chapter-title>\n`;
+    } else {
+      out += `${pad}    <article-title>${escapeXml(String(entry.title))}</article-title>\n`;
+    }
+  }
+
+  // <source> from container-title (skip if already emitted as <source> above).
+  if (entry['container-title'] && !(entry.type === 'book' && !entry['container-title'])) {
+    out += `${pad}    <source>${escapeXml(String(entry['container-title']))}</source>\n`;
+  }
+
+  // Date — from issued.date-parts[0]; emit only the parts present.
+  const dateParts = entry.issued?.['date-parts']?.[0];
+  if (Array.isArray(dateParts) && dateParts.length > 0) {
+    const [year, month, day] = dateParts;
+    if (year != null)  out += `${pad}    <year>${escapeXml(String(year))}</year>\n`;
+    if (month != null) out += `${pad}    <month>${escapeXml(String(month).padStart(2, '0'))}</month>\n`;
+    if (day != null)   out += `${pad}    <day>${escapeXml(String(day).padStart(2, '0'))}</day>\n`;
+  }
+
+  // Volume / issue.
+  if (entry.volume != null) out += `${pad}    <volume>${escapeXml(String(entry.volume))}</volume>\n`;
+  if (entry.issue  != null) out += `${pad}    <issue>${escapeXml(String(entry.issue))}</issue>\n`;
+
+  // Pages — split "first-last" into <fpage>/<lpage>; single page → <fpage> only.
+  if (entry.page != null) {
+    const pageStr = String(entry.page);
+    // Citation-js normalizes "45--67" to "45-67"; split on first hyphen
+    // (or en-dash if present).
+    const m = pageStr.match(/^(\S+?)\s*[-–]\s*(\S+)$/);
+    if (m) {
+      out += `${pad}    <fpage>${escapeXml(m[1])}</fpage>\n`;
+      out += `${pad}    <lpage>${escapeXml(m[2])}</lpage>\n`;
+    } else {
+      out += `${pad}    <fpage>${escapeXml(pageStr)}</fpage>\n`;
+    }
+  }
+
+  // Publisher group — name + location. JATS allows them as siblings
+  // (no wrapper required); the element-citation content model accepts
+  // either order.
+  if (entry.publisher != null) {
+    out += `${pad}    <publisher-name>${escapeXml(String(entry.publisher))}</publisher-name>\n`;
+  }
+  if (entry['publisher-place'] != null) {
+    out += `${pad}    <publisher-loc>${escapeXml(String(entry['publisher-place']))}</publisher-loc>\n`;
+  }
+
+  // DOI.
+  if (entry.DOI != null) {
+    out += `${pad}    <pub-id pub-id-type="doi">${escapeXml(String(entry.DOI))}</pub-id>\n`;
+  }
+
+  // URL (when no DOI; if both present, DOI is the canonical id and URL is supplementary).
+  if (entry.URL != null) {
+    const u = escapeXmlAttr(String(entry.URL));
+    out += `${pad}    <ext-link ext-link-type="uri" xlink:href="${u}">${escapeXml(String(entry.URL))}</ext-link>\n`;
+  }
+
+  // Suppress unused-variable lint warning for isBook; reserved for
+  // future chapter-vs-book-title differentiation refinement.
+  void isBook;
+
+  out += `${pad}  </element-citation>\n`;
+  out += `${pad}</ref>\n`;
+  return out;
+}
+
+/**
+ * Emit a JATS `<person-group>` containing one `<name>` per CSL-JSON
+ * person object (`{family, given}` shape). Falls back to
+ * `<string-name>` for entries that have neither family nor given
+ * (e.g. CSL's `literal` form for organization names like "World
+ * Health Organization").
+ */
+function emitPersonGroupJats(persons, groupType, indent) {
+  const pad = ' '.repeat(indent);
+  let out = `${pad}<person-group person-group-type="${groupType}">\n`;
+  for (const p of persons) {
+    if (p == null) continue;
+    if (typeof p === 'string') {
+      out += `${pad}  <string-name>${escapeXml(p)}</string-name>\n`;
+      continue;
+    }
+    if (p.literal) {
+      out += `${pad}  <string-name>${escapeXml(String(p.literal))}</string-name>\n`;
+      continue;
+    }
+    const family = p.family != null ? String(p.family) : null;
+    const given  = p.given  != null ? String(p.given)  : null;
+    if (family || given) {
+      out += `${pad}  <name>\n`;
+      if (family) out += `${pad}    <surname>${escapeXml(family)}</surname>\n`;
+      if (given)  out += `${pad}    <given-names>${escapeXml(given)}</given-names>\n`;
+      out += `${pad}  </name>\n`;
+    }
+  }
+  out += `${pad}</person-group>\n`;
   return out;
 }
 

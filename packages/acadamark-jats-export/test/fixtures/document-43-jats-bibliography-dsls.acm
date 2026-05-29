@@ -1,0 +1,68 @@
+<meta>
+<title | Bibliography and external DSLs>
+<author | Test Author>
+<abstract |
+This fixture exercises slice 5d: structured bibliography emission as
+JATS `<element-citation>` (per-field author/title/source/volume/etc.)
+plus external-DSL JATS treatment (mermaid/abc as `<fig>` with
+`<preformat>` source preservation).
+>
+</meta>
+
+<data>
+<library |
+@article{Smith2020,
+  author = {Smith, Jane and Doe, John},
+  title  = {On the Behavior of Elephants},
+  journal = {Journal of Pachyderm Studies},
+  year   = 2020,
+  volume = 12,
+  number = 3,
+  pages  = {45--67},
+  doi    = {10.1234/jps.2020.45}
+}
+@book{Jones2018,
+  author = {Jones, Alice},
+  title  = {Methods in Field Research},
+  publisher = {Academic Press},
+  year   = 2018,
+  address = {New York}
+}
+@inproceedings{Brown2021,
+  author = {Brown, Bob and Green, Carol},
+  title  = {New Algorithms for Diagram Layout},
+  booktitle = {Proceedings of the 2021 Symposium on Layout},
+  year   = 2021,
+  pages  = {100--110}
+}
+>
+</data>
+
+<section | Introduction>
+
+This section cites Smith and Doe <cite @Smith2020> and the Jones
+field-research textbook <cite @Jones2018>. A third citation points
+to the diagram-layout paper <cite @Brown2021>.
+
+<section | Diagrams>
+
+A Mermaid flowchart with a caption (cross-referenced as <ref @fig:flow>):
+
+<mermaid #fig:flow caption="A simple Mermaid flowchart.">
+graph TD;
+  A[Start] --> B{Decision};
+  B -->|yes| C[Do thing];
+  B -->|no|  D[Skip];
+</mermaid>
+
+An ABC music notation snippet with a caption (cross-referenced as
+<ref @fig:tune>):
+
+<abc #fig:tune caption="A short ABC tune.">
+X:1
+T:Twinkle Twinkle
+M:4/4
+L:1/4
+K:C
+C C G G | A A G2 | F F E E | D D C2 |
+</abc>

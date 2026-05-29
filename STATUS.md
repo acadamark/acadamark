@@ -63,13 +63,13 @@ design findings live in `BACKLOG.md` (the active-work index) and
 
 ## In flight / next
 
-**Phase 5 (JATS export) is the active phase.** Slices 5a (2026-05-29
-— package + lift + minimal article export), 5b (2026-05-29 — body
-content), and 5c (2026-05-28 — cross-refs + footnotes + BITS book +
-table rows) have landed. Slice 5d (bibliography + external DSLs +
-Mermaid/ABC + DTD bundling for offline xmllint validation) remains.
-See `ROADMAP.md` Phase 5 for the sub-slice list and
-`notes/phase5-jats-export-findings.md` for the design context.
+**Phase 5 (JATS export) CLOSED 2026-05-28.** All four slices landed:
+5a (package + `mapAttributes` lift + minimal article), 5b (body
+content), 5c (cross-refs + footnotes + BITS book + table rows), 5d
+(bibliography `<element-citation>` + mermaid/abc DSLs + DTD bundling
+for offline xmllint validation). **Phase 6 (Alpha integration check)
+is now the active phase** — the closing five-point verification that
+closes the alpha milestone.
 
 ## Milestones
 
@@ -2935,3 +2935,158 @@ that). One line gets added every few months, not every slice.
   **Phase 5 sub-progress unchanged:** slice 5d remains the
   next Phase 5 piece (bibliography + external DSLs + DTD
   tooling).
+
+- **2026-Q2 — Phase 5 slice 5d + Phase 5 CLOSURE: bibliography
+  + external DSLs + DTD bundling.** Three pieces; closes Phase 5.
+
+  **(1) Bibliography → JATS `<element-citation>`.** The biggest
+  net-new piece per Phase 0 Q1.7. Slice 5d's investigation
+  established that `citation-js` already produces structured
+  CSL-JSON in `file.data.acadamarkCitations.cite.data` (no
+  bibliography-pipeline refactor needed). `bibliography.js`
+  threads the structured entries through the `__bibliography`
+  marker's new `kwargs.cslEntries` field (the HTML side ignores
+  it; the JATS path consumes it).
+
+  JATS emitter: `emitRefListJats` produces `<ref-list><title>
+  References</title>` containing one `<ref id="ref-KEY">` per
+  cited entry; `emitRefJats` builds `<element-citation
+  publication-type="...">` from the CSL fields. The
+  CSL→JATS field mapping:
+  - `id`/`citation-key` → `<ref id="ref-{key}">`
+  - `type` → `publication-type` attribute via
+    `CSL_TYPE_TO_JATS_PUB_TYPE` (article-journal → journal;
+    book → book; paper-conference → confproc; chapter → book;
+    thesis/report/webpage/preprint/patent/software/data direct)
+  - `author`/`editor` arrays → `<person-group person-group-
+    type="author|editor">` containing one `<name><surname>/given-
+    names></name>` per person (literal/string fallbacks for org
+    names)
+  - `title` → `<article-title>` (journal/conference/chapter) or
+    `<source>` (book — book title IS the source) or `<chapter-
+    title>` (chapter)
+  - `container-title` → `<source>` (journal/proceedings name)
+  - `issued.date-parts[0]` → `<year>` + optional `<month>` +
+    `<day>` (only parts present in the source emit)
+  - `volume` → `<volume>`; `issue` → `<issue>`
+  - `page` (e.g. "45-67" — citation-js normalizes "--" to "-")
+    → `<fpage>` + `<lpage>`; single-page input → `<fpage>` only
+  - `publisher` → `<publisher-name>`; `publisher-place` →
+    `<publisher-loc>`
+  - `DOI` → `<pub-id pub-id-type="doi">`
+  - `URL` → `<ext-link ext-link-type="uri" xlink:href="...">`
+
+  Cross-ref resolution: slice 5c's `__cite-marker` → `<xref
+  ref-type="bibr" rid="ref-KEY">` already produces the right
+  rid; slice 5d's `<ref id="ref-KEY">` matches it. Inline
+  citations and bibliography entries link cleanly.
+
+  **(2) External DSLs (mermaid, abc) → JATS `<fig>`.** Per Q3's
+  chosen shape (slight enhancement of the slice prompt's
+  recommendation A): `<fig specific-use="acadamark-dsl-{type}">`
+  containing `<label>` + `<caption>` + `<alt-text>` (JATS-
+  conventional accessibility prose) + `<preformat content-type=
+  "{type}-source">` carrying the verbatim DSL source. The
+  `<preformat>` choice over `<alt-text>` for the source itself
+  is intentional: `<alt-text>` is JATS-conventionally for
+  accessibility prose, not raw code; `<preformat>` is the
+  proper structural carrier for opaque verbatim text. JATS 1.3
+  `<fig>` content model allows `<preformat>` as a block-level
+  child. No `<graphic>` placeholder — the source is enough;
+  downstream pre-render passes can replace `<preformat>` with
+  `<graphic>`/`<alternatives>` once the diagram is rendered.
+
+  Mermaid/abc inherit the figure counter (slice 3b
+  NUMBERED_TAGNAMES wiring), so `<ref @fig:flow>` cross-refs
+  render with the same numbering as `<fig>` siblings. doc-43
+  exercises both.
+
+  **(3) DTD bundling for offline xmllint validation.** Phase 0
+  Q1.8's recommendation: bundle the JATS Archiving 1.3 + BITS
+  2.0 DTDs (plus dependencies) in the package so xmllint can
+  validate without network access. Distribution turned out
+  more complex than anticipated:
+  - JATS 1.3 main DTD pulls in ~30 module .ent/.dtd files at
+    `jats.nlm.nih.gov/archiving/1.3/`
+  - BITS 2.0 main DTD pulls in its own ~20-module set at
+    `extensions/bits/2.0/` (different versions of some shared
+    modules — e.g. `JATS-modules1.ent` for BITS vs
+    `JATS-modules1-3.ent` for JATS)
+  - MathML 3 DTD references ISO entity sets that NLM only
+    partially mirrors (MathML-specific ones at `iso9573-13/`
+    subdirectory; the rest only exist at W3C
+    `www.w3.org/2003/entities/2007/`)
+  - `mathml3-qname.mod` only exists at W3C
+    (`www.w3.org/Math/DTD/mathml3/`)
+
+  `scripts/fetch-dtds.mjs` is a one-shot maintenance script
+  that handles all three source URLs with subdirectory and
+  external fallbacks. Bundle: 129 files, ~3.6 MB (within Q4's
+  "a few MB" budget). Committed to git per the slice prompt's
+  recommendation. Two remaining dead references
+  (`JATS-xsi-schema-namespace1-3.ent`,
+  `JATS-mathmlsetup1.ent`) sit inside conditional INCLUDE
+  sections the typical JATS article doesn't activate;
+  documented in `dtd/README.md`.
+
+  Test runner: `validateWithXmllint(fixtureName, jatsXml)`
+  invokes `xmllint --noout --valid --nonet --path
+  "dtd:dtd/iso9573-13" {fixture.xml}`. When xmllint isn't on
+  PATH, validation is skipped with a single log message; the
+  snapshot pinning remains the binding regression check. In
+  the current WSL test environment xmllint isn't installed
+  (`libxml2-utils` package absent); CI environments with
+  xmllint installed will run validation as a hard requirement.
+
+  **Side fix: BITS doctype URL.** Slice 5c emitted
+  `BITS-book2-0.dtd` as the SYSTEM identifier, but the actual
+  NLM filename is `BITS-book2.dtd` (no `-0`; the public
+  identifier was correct). Surfaced while writing the DTD
+  fetch script. doc-42 snapshot updated (1-line diff).
+
+  **New fixture: doc-43** (`document-43-jats-bibliography-
+  dsls.acm`). Three-entry bibliography (article/book/
+  conference paper covering all major CSL types) with body
+  cross-refs to each via `<cite @key>`; Mermaid flowchart and
+  ABC tune snippet with captions and cross-refs to both.
+  29 spot-check assertions over the new surface + snapshot
+  pinning.
+
+  **Snapshot audit:**
+  - **All 23 article HTML + 1 book HTML snapshots: STRICT
+    ZERO DIFF.** Slice 5d adds JATS-side work only; HTML
+    pipeline untouched.
+  - **doc-39 / doc-40 / doc-41 JATS snapshots: STRICT ZERO
+    DIFF.** Bibliography emission only kicks in when
+    `<library>` is present; mermaid/abc emission only when
+    those tags are present; none of those fixtures exercise
+    the new surface.
+  - **doc-42 JATS snapshot changed** (1-line BITS doctype
+    URL fix). Audited.
+  - **doc-43 JATS snapshot: new.**
+
+  **Tests:**
+  - layer1-vocabulary:    52/52
+  - acadamark-core:       33/33
+  - remark-acadamark:    128/128
+  - acadamark-interpreter: 24/24 (HTML snapshots zero-diff)
+  - acadamark-jats-export: 104/104 (4 mapAttributes-unit +
+    5 snapshot-match + 15 doc-39 + 20 doc-40 + 13 doc-41 +
+    18 doc-42 + 29 doc-43); DTD validation skipped in this
+    env (no xmllint on PATH)
+
+  **Phase 5 CLOSED 2026-05-28.** Full Layer 1 → JATS XML
+  export pipeline working across articles and books with
+  bundled-DTD-validated output (when xmllint is available).
+  Phase 6 (Alpha integration check) is now the active phase.
+
+  **Follow-ups filed as `[post-alpha]`:**
+  - MathML alternative emission (conditional slice 5e); JATS
+    allows `<math>` MathML inside `<inline-formula>` /
+    `<disp-formula>` alongside the current `<tex-math>` carrier
+    for round-trippability with MathML-native tooling.
+  - JATS 1.4 / BITS 2.2 upgrade (conditional slice 5f) — newer
+    revisions exist; tooling coverage is the gating factor.
+  - Install `libxml2-utils` in the dev/CI environment so the
+    DTD-validation hard requirement runs (currently bundled
+    DTDs sit unused locally). Trivial operational follow-up.

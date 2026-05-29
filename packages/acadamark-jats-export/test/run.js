@@ -36,6 +36,7 @@ import {
   acadamarkRefResolution,
   acadamarkCiteResolution,
   acadamarkBibliography,
+  buildCitationIndex,
 } from 'acadamark-interpreter';
 import { ensureRegistry } from 'acadamark-core/registry';
 import { mapAttributes } from 'acadamark-core/map-attributes';
@@ -44,6 +45,7 @@ import { acadamarkToJats } from '../src/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
+const DTD_DIR = join(__dirname, '..', 'dtd');
 const UPDATE_SNAPSHOTS = process.env.ACADAMARK_UPDATE_SNAPSHOTS === '1';
 
 let pass = 0;
@@ -56,6 +58,66 @@ function check(name, condition) {
   } else {
     console.log('FAIL:', name);
     fail++;
+  }
+}
+
+// ─── DTD validation (Phase 5 slice 5d) ────────────────────────────────────
+//
+// Detect xmllint availability ONCE; cache the result so the per-fixture
+// validation call doesn't re-spawn xmllint to probe its presence each
+// time. Validation invocation:
+//
+//   xmllint --noout --valid --nonet --path <DTD_DIR>:<DTD_DIR>/iso9573-13
+//           <fixture.xml>
+//
+// Flags:
+//   --noout   suppress reformatted XML output (we only want exit code)
+//   --valid   enforce DTD validation (not just well-formedness)
+//   --nonet   forbid network fetches — bundled DTDs are the only source
+//   --path    where to look for SYSTEM-referenced files. Lists both the
+//             dtd/ root and dtd/iso9573-13/ so MathML's bare-name ISO
+//             entity references resolve.
+//
+// When xmllint is NOT on PATH, validation is skipped with a log message
+// (matches slice 5a behavior — snapshot pinning is the binding
+// regression check; validation is the extra-strict check available when
+// xmllint is installed).
+let _xmllintAvailable = null;
+function isXmllintAvailable() {
+  if (_xmllintAvailable !== null) return _xmllintAvailable;
+  try {
+    execSync('xmllint --version', { stdio: 'pipe' });
+    _xmllintAvailable = true;
+  } catch {
+    _xmllintAvailable = false;
+  }
+  return _xmllintAvailable;
+}
+
+let _xmllintNotedAbsence = false;
+function validateWithXmllint(fixtureName, jatsXml) {
+  if (!isXmllintAvailable()) {
+    if (!_xmllintNotedAbsence) {
+      console.log('  (xmllint not on PATH — DTD validation skipped for all fixtures)');
+      _xmllintNotedAbsence = true;
+    }
+    return;
+  }
+  const tmpPath = join(FIXTURES_DIR, `.tmp-validate-${fixtureName}.xml`);
+  writeFileSync(tmpPath, jatsXml, 'utf8');
+  try {
+    execSync(
+      `xmllint --noout --valid --nonet --path "${DTD_DIR}:${DTD_DIR}/iso9573-13" "${tmpPath}"`,
+      { stdio: 'pipe' },
+    );
+    check(`${fixtureName}: DTD-valid (xmllint --valid against bundled DTDs)`, true);
+  } catch (err) {
+    check(`${fixtureName}: DTD-valid (xmllint --valid against bundled DTDs)`, false);
+    const stderr = err.stderr?.toString() ?? err.message;
+    // Print the first ~10 lines of xmllint's diagnostic so failures
+    // are debuggable from the test output without re-running.
+    const lines = stderr.split('\n').slice(0, 12).join('\n');
+    console.log('  xmllint:', lines);
   }
 }
 
@@ -167,30 +229,9 @@ function check(name, condition) {
   check('doc39: inline <monospace> from inline-code',
     jats.includes('<monospace>inline code</monospace>'));
 
-  // DTD validation. Try to invoke xmllint; if it's unavailable, log
-  // and skip (slice 5a's correctness is pinned by the snapshot; DTD
-  // validation is the extra-strict check available when xmllint is).
-  try {
-    execSync('xmllint --version', { stdio: 'pipe' });
-    // Use --noout to suppress XML output; we only care about exit code.
-    // --nonet prevents network DTD fetch (we don't bundle the DTD in
-    // slice 5a; without a local copy xmllint would try to fetch).
-    // For slice 5a, accept the well-formedness check (--noout alone
-    // catches malformed XML) and document DTD-local-validation as a
-    // follow-up (bundling the DTD into the package is mechanical but
-    // requires the DTD file + a few related entity files).
-    try {
-      const tmpPath = join(FIXTURES_DIR, '.tmp-validate.xml');
-      writeFileSync(tmpPath, jats, 'utf8');
-      execSync(`xmllint --noout ${tmpPath}`, { stdio: 'pipe' });
-      check('doc39: JATS XML is well-formed (xmllint --noout)', true);
-    } catch (err) {
-      check('doc39: JATS XML is well-formed (xmllint --noout)', false);
-      console.log('  xmllint output:', err.stderr?.toString() ?? err.message);
-    }
-  } catch {
-    console.log('  (skipping xmllint validation — xmllint not available)');
-  }
+  // Phase 5 slice 5d: DTD validation against bundled JATS 1.3
+  // Archiving DTD. Skip-with-log when xmllint isn't on PATH.
+  validateWithXmllint('doc39', jats);
 }
 
 // ─── Integration: doc-40 body content (Phase 5 slice 5b) ──────────────────
@@ -281,6 +322,9 @@ function check(name, condition) {
   check('doc40: abstract prose text retained (slice 5b Q1 fix)',
     /<abstract>\s*<p>[\s\S]*This abstract has[\s\S]*<i>italic<\/i>[\s\S]*<b>bold<\/b>/.test(jats) ||
     /<abstract>\s*<p>[\s\S]*This abstract has[\s\S]*<italic>italic<\/italic>[\s\S]*<bold>bold<\/bold>/.test(jats));
+
+  // Phase 5 slice 5d: DTD validation.
+  validateWithXmllint('doc40', jats);
 }
 
 // ─── Integration: doc-41 cross-refs + footnotes + table rows (slice 5c) ──
@@ -368,6 +412,9 @@ function check(name, condition) {
   // sections that contain foot-notes get a <fn-group> at section end).
   check('doc41: at least one <fn-group> sits inside a <sec>',
     /<sec[^>]*>[\s\S]*<fn-group[\s\S]*?<\/fn-group>[\s\S]*<\/sec>/.test(jats));
+
+  // Phase 5 slice 5d: DTD validation.
+  validateWithXmllint('doc41', jats);
 }
 
 // ─── Integration: doc-42 BITS book export (slice 5c) ──────────────────────
@@ -415,7 +462,7 @@ function check(name, condition) {
   // Spot-checks for the BITS book path.
 
   check('doc42: BITS doctype declaration',
-    jats.includes('BITS-book2-0.dtd'));
+    jats.includes('BITS-book2.dtd'));
   check('doc42: <book book-type="book" xml:lang="en" dtd-version="2.0">',
     /<book book-type="book" xml:lang="en" dtd-version="2\.0">/.test(jats));
   check('doc42: <book-meta> with <book-title-group>',
@@ -456,6 +503,139 @@ function check(name, condition) {
     jats.includes('<title>About this Book</title>'));
   check('doc42: <book-part-title> from <appendix | Notation>',
     jats.includes('<title>Notation</title>'));
+
+  // Phase 5 slice 5d: DTD validation (BITS 2.0 path).
+  validateWithXmllint('doc42', jats);
+}
+
+// ─── Integration: doc-43 bibliography + external DSLs (slice 5d) ─────────
+//
+// Article fixture exercising the slice 5d added surface:
+//   - <library> with BibTeX content → structured CSL-JSON intermediate
+//   - <cite @key> → <xref ref-type="bibr" rid="ref-key">
+//   - __bibliography → <ref-list><ref><element-citation> per-field
+//     structured citation (author/title/source/year/volume/page/doi)
+//   - <mermaid> / <abc> → <fig specific-use="acadamark-dsl-*"> with
+//     <alt-text> + <preformat> source preservation
+//   - cross-refs to mermaid/abc figures resolve through the figure
+//     numbering counter shared with other frameables.
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-43-jats-bibliography-dsls.acm'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(acadamarkNormalizeToCanonical)
+    .use(acadamarkConfigDiscovery)
+    .use(acadamarkBookStructuring)
+    .use(acadamarkArticleStructuring)
+    .use(acadamarkSectionNesting)
+    .use(function loadLibrary() {
+      return (t, f) => buildCitationIndex(t, f, { assetsDir: FIXTURES_DIR });
+    })
+    .use(acadamarkNotes)
+    .use(acadamarkNumbering)
+    .use(function applyNumbers() {
+      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+    })
+    .use(acadamarkRefResolution)
+    .use(acadamarkCiteResolution)
+    .use(acadamarkNotePlacement)
+    .use(acadamarkBibliography)
+    .runSync(tree, file);
+
+  const jats = acadamarkToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-43-jats-bibliography-dsls.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-43-jats-bibliography-dsls.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc43: JATS snapshot matches', jats === expected);
+  }
+
+  // Bibliography: <ref-list> + per-entry <element-citation>.
+  check('doc43: <ref-list> emitted in <back>',
+    /<back>[\s\S]*<ref-list>[\s\S]*<\/ref-list>[\s\S]*<\/back>/.test(jats));
+  check('doc43: <ref-list> has <title>References</title>',
+    /<ref-list>\s*<title>References<\/title>/.test(jats));
+  check('doc43: <ref id="ref-Smith2020"> emitted',
+    /<ref id="ref-Smith2020">/.test(jats));
+  check('doc43: <element-citation publication-type="journal"> for article-journal',
+    /<element-citation publication-type="journal">/.test(jats));
+  check('doc43: <element-citation publication-type="book"> for book',
+    /<element-citation publication-type="book">/.test(jats));
+  check('doc43: <element-citation publication-type="confproc"> for paper-conference',
+    /<element-citation publication-type="confproc">/.test(jats));
+
+  // Person groups + name structure.
+  check('doc43: <person-group person-group-type="author"> for authors',
+    /<person-group person-group-type="author">/.test(jats));
+  check('doc43: <name><surname>Smith</surname><given-names>Jane</given-names>',
+    /<name>\s*<surname>Smith<\/surname>\s*<given-names>Jane<\/given-names>\s*<\/name>/.test(jats));
+  check('doc43: second author <name>Doe</name>',
+    /<surname>Doe<\/surname>\s*<given-names>John<\/given-names>/.test(jats));
+
+  // Title + source.
+  check('doc43: <article-title> for journal article',
+    /<article-title>On the Behavior of Elephants<\/article-title>/.test(jats));
+  check('doc43: <source> for journal name',
+    /<source>Journal of Pachyderm Studies<\/source>/.test(jats));
+  check('doc43: book title as <source>',
+    /<source>Methods in Field Research<\/source>/.test(jats));
+
+  // Year + volume + issue + pages + DOI + publisher.
+  check('doc43: <year> emitted', /<year>2020<\/year>/.test(jats));
+  check('doc43: <volume> emitted', /<volume>12<\/volume>/.test(jats));
+  check('doc43: <issue> emitted', /<issue>3<\/issue>/.test(jats));
+  check('doc43: <fpage> + <lpage> from "45-67"',
+    /<fpage>45<\/fpage>\s*<lpage>67<\/lpage>/.test(jats));
+  check('doc43: <pub-id pub-id-type="doi"> emitted',
+    /<pub-id pub-id-type="doi">10\.1234\/jps\.2020\.45<\/pub-id>/.test(jats));
+  check('doc43: <publisher-name> emitted',
+    /<publisher-name>Academic Press<\/publisher-name>/.test(jats));
+  check('doc43: <publisher-loc> emitted',
+    /<publisher-loc>New York<\/publisher-loc>/.test(jats));
+
+  // Citation cross-refs from body resolve to bibliography entry ids.
+  check('doc43: <xref ref-type="bibr" rid="ref-Smith2020"> in body',
+    /<xref ref-type="bibr" rid="ref-Smith2020">/.test(jats));
+  check('doc43: <xref ref-type="bibr" rid="ref-Brown2021"> in body',
+    /<xref ref-type="bibr" rid="ref-Brown2021">/.test(jats));
+
+  // External DSL emission (mermaid).
+  check('doc43: <fig specific-use="acadamark-dsl-mermaid"> for mermaid',
+    /<fig[^>]*specific-use="acadamark-dsl-mermaid"/.test(jats));
+  check('doc43: mermaid <preformat content-type="mermaid-source">',
+    /<preformat content-type="mermaid-source">[\s\S]*graph TD[\s\S]*<\/preformat>/.test(jats));
+  check('doc43: mermaid <alt-text> emitted',
+    /<alt-text>Mermaid diagram source/.test(jats));
+  check('doc43: mermaid <caption> emitted',
+    /<fig[^>]*specific-use="acadamark-dsl-mermaid"[\s\S]*<caption>[\s\S]*<p>A simple Mermaid flowchart/.test(jats));
+
+  // External DSL emission (abc).
+  check('doc43: <fig specific-use="acadamark-dsl-abc"> for abc',
+    /<fig[^>]*specific-use="acadamark-dsl-abc"/.test(jats));
+  check('doc43: abc <preformat content-type="abc-source">',
+    /<preformat content-type="abc-source">[\s\S]*Twinkle[\s\S]*<\/preformat>/.test(jats));
+
+  // Cross-refs to DSL figures resolve through the figure counter.
+  check('doc43: <xref ref-type="fig" rid="fig:flow"> resolves',
+    /<xref ref-type="fig" rid="fig:flow">/.test(jats));
+  check('doc43: <xref ref-type="fig" rid="fig:tune"> resolves',
+    /<xref ref-type="fig" rid="fig:tune">/.test(jats));
+
+  // Phase 5 slice 5d: DTD validation against bundled JATS 1.3 DTD.
+  validateWithXmllint('doc43', jats);
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────

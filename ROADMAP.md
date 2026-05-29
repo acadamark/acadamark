@@ -57,15 +57,15 @@ pickable within the phase.
 
 ## Current position
 
-Alpha phases 1–4 are closed; the milestone record is in
-`STATUS.md`. The active phase is **Phase 5 (JATS export)**: slices
-5a (2026-05-29 — package + lift + minimal article export), 5b
-(2026-05-29 — body content), and 5c (2026-05-28 — cross-refs +
-notes + BITS book + table rows) have landed; slice 5d remains
-(bibliography + external DSLs + Mermaid/ABC + DTD bundling for
-offline xmllint validation). After Phase 5: Phase 6 (alpha
-integration check) closes the alpha milestone. Phase 7 onward is
-post-alpha.
+Alpha phases 1–5 are closed; the milestone record is in
+`STATUS.md`. **Phase 5 (JATS export) closed 2026-05-28** — slices
+5a (package + lift + minimal article), 5b (body content), 5c
+(cross-refs + footnotes + BITS book + table rows), and 5d
+(bibliography `<element-citation>` + mermaid/abc DSLs + DTD
+bundling for offline xmllint validation) have all landed. The
+active phase is now **Phase 6 (Alpha integration check)** —
+the five-point verification that closes the alpha milestone.
+Phase 7 onward is post-alpha.
 
 ---
 
@@ -150,10 +150,32 @@ needs siting against the inward-pointing `acadamark-core`.
     `__ref-error` / `__cite-error` added to `isInlineShaped` so
     they don't fragment paragraphs at the `groupInlineRuns`
     pre-pass (same shape as slice 5b's `inline-math` fix).
-  - **Slice 5d — bibliography + external DSLs**.
+  - **Slice 5d — bibliography + external DSLs + DTD bundling**
+    *(done 2026-05-28)*. Bibliography → JATS `<ref-list>` with
+    structured `<element-citation>` per entry (per-field
+    `<person-group>`/`<article-title>`/`<source>`/`<year>`/
+    `<volume>`/`<issue>`/`<fpage>`/`<lpage>`/`<pub-id>`/
+    `<publisher-name>`/`<publisher-loc>`/`<ext-link>`). CSL-JSON
+    from citation-js is the structured intermediate (already in
+    `file.data.acadamarkCitations`); slice 5d threads it through
+    `__bibliography` markers so the JATS emitter consumes it
+    directly without re-parsing. External DSLs (`<mermaid>` /
+    `<abc>`) → `<fig specific-use="acadamark-dsl-{type}">` with
+    `<alt-text>` + `<preformat content-type="{type}-source">`
+    preserving the verbatim DSL source. DTD bundling: JATS 1.3
+    Archiving + BITS 2.0 + W3C ISO/MathML dependencies fetched
+    via `scripts/fetch-dtds.mjs` and bundled in
+    `packages/acadamark-jats-export/dtd/` (~3.6 MB, 129 files);
+    test runner validates fixtures with `xmllint --noout
+    --valid --nonet` when xmllint is on PATH (skips with log
+    message otherwise). BITS doctype URL bug fixed (was
+    `BITS-book2-0.dtd`, should be `BITS-book2.dtd`). New fixture
+    doc-43 exercises bibliography + mermaid + abc end-to-end.
 
-**Exits:** a Layer 1 document round-trips to JATS XML cleanly enough
-for journal submission.
+**Exits:** Phase 5 **CLOSED 2026-05-28**. Full Layer 1 → JATS XML
+export pipeline working with DTD-validated output across articles
+and books — a Layer 1 document round-trips to JATS XML cleanly
+enough for journal submission.
 
 ---
 
