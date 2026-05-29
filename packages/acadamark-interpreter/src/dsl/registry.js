@@ -101,6 +101,88 @@ const ABCJS_INIT = `(function () {
   }
 })();`;
 
+// ─── Static (build-time) renderer: abc → inline SVG ─────────────────────────────
+// abc is the one DSL with a clean browserless build-time path: abcjs renders SVG
+// in Node with only a jsdom DOM shim — no headless browser, because abcjs
+// computes its own glyph-based layout and so does not need a layout engine /
+// getBBox for the default render (the getBBox uses in abcjs are gated behind the
+// per-line-split and click-selection features, which the default render does not
+// invoke). `ABCJS.renderAbc(el, source)` is SYNCHRONOUS and mutates `el` in place
+// (it returns tune metadata, not markup), so the renderer reads back
+// `el.innerHTML`. Being synchronous, it runs inside the synchronous compiler —
+// unlike mermaid, whose only no-browser path is async and young (findings §Q2),
+// which is why mermaid stays live-only and its staticRenderer is permanently null.
+//
+// jsdom version pin (^25). jsdom is held at v25 — the last major requireable
+// under CommonJS `require()`. jsdom 26+ pulls in @asamuzakjp/css-color, which
+// eagerly `require()`s the ESM-only @csstools/css-calc; under Node's CommonJS
+// loader (before require(esm) is unflagged) that throws ERR_REQUIRE_ESM at load.
+// A synchronous renderer needs a synchronous `require`, so v25 is the pin.
+// Revisit when the toolchain's Node makes require(esm) the default.
+//
+// jsdom scoping. One jsdom window + one abcjs module are created lazily and
+// memoized (the cost is paid once, on first static render — skip / live never
+// touch jsdom). abcjs resolves the GLOBAL `document` at call time
+// (document.createElementNS, not element.ownerDocument), so each render installs
+// the jsdom window's document/window on globalThis for the duration of the
+// synchronous renderAbc call and restores them in `finally`. Because renderAbc is
+// synchronous and single-threaded, the global shim is never observable outside
+// the call.
+
+let _abcStaticEnv = null;
+function getAbcStaticEnv() {
+  if (_abcStaticEnv === null) {
+    const { JSDOM } = require('jsdom');
+    const abcjs = require('abcjs');
+    const { window } = new JSDOM('<!DOCTYPE html><body></body>');
+    _abcStaticEnv = { window, abcjs };
+  }
+  return _abcStaticEnv;
+}
+
+/**
+ * Render abc notation source to an SVG markup string at build time, via abcjs
+ * under a jsdom shim. Synchronous. Returns abcjs's `<svg>` markup verbatim (with
+ * no acadamark class / id — the emit path in src/index.js decorates it).
+ *
+ * Fails explicitly (throws, naming the source) rather than degrading silently —
+ * there is no fallback to skip mode:
+ *  - if abcjs / jsdom throws (e.g. a non-string source), the error is re-thrown
+ *    wrapped with the offending source;
+ *  - if the render yields no `<svg>` (e.g. an `undefined` source produces empty
+ *    output), that is also a thrown error.
+ * Note: abcjs is lenient with malformed *notation* — it renders something rather
+ * than failing — so these guards catch renderer/argument faults, not bad music.
+ *
+ * @param {string} source  abc notation text
+ * @returns {string} SVG markup
+ */
+function renderAbcStatic(source) {
+  const { window, abcjs } = getAbcStaticEnv();
+  const prevDocument = globalThis.document;
+  const prevWindow = globalThis.window;
+  globalThis.document = window.document;
+  globalThis.window = window;
+  let html;
+  try {
+    const el = window.document.createElement('div');
+    abcjs.renderAbc(el, source);
+    html = el.innerHTML;
+  } catch (err) {
+    throw new Error(
+      `abc static render failed for source:\n${String(source)}\n\n` +
+        `abcjs/jsdom error: ${err.message}`,
+    );
+  } finally {
+    globalThis.document = prevDocument;
+    globalThis.window = prevWindow;
+  }
+  if (!/<svg[\s>]/i.test(html)) {
+    throw new Error(`abc static render produced no SVG for source:\n${String(source)}`);
+  }
+  return html;
+}
+
 // ─── Registration records ─────────────────────────────────────────────────────
 // Per-DSL record (see findings §Q1 table):
 //   name           — the data-acadamark-dsl value and the registry key.
@@ -110,6 +192,8 @@ const ABCJS_INIT = `(function () {
 //   staticRenderer  — (source) => svgString, or null when the DSL has no
 //                     build-time renderer. `null` is the single source of truth
 //                     the mode resolver checks to fail-explicitly on `static`.
+//   staticClass     — class the emit path adds to the inlined <svg> in static
+//                     mode (present only on a DSL that has a staticRenderer).
 //   detector        — optional (hastNode) => boolean; omitted here, so the
 //                     consumer's default detector (keys off `name`) applies.
 
@@ -138,11 +222,13 @@ const abcRegistration = {
     cdnUrl: ABCJS_CDN_URL,
     initScript: ABCJS_INIT,
   },
-  // SPECULATIVE LIFESPAN (Slice 2): abc HAS a build-time renderer (abcjs via
-  // jsdom, synchronous), but it is out of scope for Slice 1. `null` here is
-  // temporary — Slice 2 replaces it with the jsdom static renderer. Until then,
-  // requesting `static` for a document containing abc fails explicitly.
-  staticRenderer: null,
+  // Static mode (Slice 2): abc renders to inline SVG at build time via abcjs +
+  // jsdom (renderAbcStatic above) — synchronous, so it runs inside the
+  // synchronous compiler. This realizes the build-time path the M2 fix and the
+  // live-mode work set up.
+  staticRenderer: renderAbcStatic,
+  // Class the emit path adds to the inlined <svg> for styling / hooking.
+  staticClass: 'acadamark-abc-rendered',
 };
 
 const DSL_REGISTRY = new Map([

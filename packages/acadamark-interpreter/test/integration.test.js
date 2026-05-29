@@ -2175,4 +2175,85 @@ export function run() {
     snapshotHast('document-46', hast);
     console.log('PASS: integration doc46 (render-quality book: edited volume + region routing + per-chapter authors + scoped numbering + single bibliography + per-chapter notes)');
   }
+
+  // ── Document 47: abc static mode (DSL Slice 2) ─────────────────────────────
+  // The one fixture compiled with abcMode:'static'. It proves the build-time
+  // path end-to-end: each <abc> contract element is REPLACED (not wrapped) by
+  // inline SVG rendered at compile time via abcjs + jsdom, with no client-side
+  // abcjs dependency at view time. Predicates RQ-DSL-STATIC-M1/M2/O1 in
+  // notes/specs/render-quality.md §9.
+  //
+  // The SNAPSHOT is pre-compile (it captures the <pre> contract, like every
+  // other fixture) — the static replacement happens in the compiler and is
+  // asserted on the compiled `html` below, not in the hast snapshot.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-47-abc-static.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src, { abcMode: 'static' });
+
+    // M1: the abc contract is GONE — no <pre class="abc"> wrapper and no
+    // data-acadamark-dsl="abc" marker survive into the static output.
+    assert.ok(
+      !/<pre[^>]*class="abc"/.test(html),
+      'doc47: no <pre class="abc"> contract remains (replaced by SVG)',
+    );
+    assert.ok(
+      !html.includes('data-acadamark-dsl="abc"'),
+      'doc47: no data-acadamark-dsl="abc" marker remains (contract fully replaced)',
+    );
+
+    // M1: each abc block is replaced by an inline <svg> carrying the static
+    // class. The fixture has two abc blocks → exactly two such <svg> elements.
+    const renderedSvgs = html.match(/<svg class="acadamark-abc-rendered"/g) ?? [];
+    assert.equal(
+      renderedSvgs.length,
+      2,
+      `doc47: two <svg class="acadamark-abc-rendered"> (one per abc block); got ${renderedSvgs.length}`,
+    );
+
+    // Rendering actually happened (not an empty placeholder): abcjs draws the
+    // tune title (T: field) as <text> inside the SVG. "C Major Scale" can only
+    // appear in the output if the contract source was rendered — the verbatim
+    // source line "T:C Major Scale" is gone with the replaced contract.
+    assert.ok(
+      html.includes('C Major Scale'),
+      'doc47: rendered SVG contains the tune title (abcjs drew the T: field)',
+    );
+
+    // M2: the id-bearing abc block (#music:c-scale) carries its id onto the
+    // <svg>; the anonymous block does not. So exactly one rendered SVG has an id.
+    assert.ok(
+      /<svg class="acadamark-abc-rendered" id="music:c-scale"/.test(html),
+      'doc47: id-bearing abc block preserves its id on the <svg> (cross-ref survives)',
+    );
+    const idBearingSvgs = html.match(/<svg class="acadamark-abc-rendered" id=/g) ?? [];
+    assert.equal(
+      idBearingSvgs.length,
+      1,
+      `doc47: only the id-bearing block carries an id on its <svg>; got ${idBearingSvgs.length}`,
+    );
+
+    // O1: static output is self-contained — no client-side JS. abc static mode
+    // injects neither the abcjs bundle/CDN nor an init script, and this document
+    // has no math / notes / refs / cites, so there is no <script> at all.
+    assert.ok(
+      !html.includes('ABCJS.renderAbc'),
+      'doc47: no abcjs init script (static mode needs no view-time JS)',
+    );
+    assert.ok(
+      !html.includes('<script'),
+      'doc47: no <script> elements at all (static notation works offline)',
+    );
+
+    // Surrounding prose is untouched by the replacement pass.
+    assert.ok(
+      html.includes('Surrounding prose continues to render normally'),
+      'doc47: prose around the abc blocks renders normally',
+    );
+
+    snapshotHast('document-47', hast);
+    console.log('PASS: integration doc47 (abc static mode — build-time SVG, no view-time JS)');
+  }
 }

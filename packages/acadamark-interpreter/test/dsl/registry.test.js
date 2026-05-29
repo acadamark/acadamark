@@ -42,6 +42,11 @@ K:C
 C D E F |
 </abc>`;
 
+// Raw abc notation — the inner content of ABC_SRC without the <abc> wrapper.
+// This is what the static renderer (getDsl('abc').staticRenderer) consumes
+// directly; ABC_SRC is the authoring form the pipeline parses.
+const ABC_NOTATION = 'X:1\nT:Test Tune\nK:C\nC D E F |\n';
+
 const NO_DSL_SRC = 'Just a paragraph, no DSL blocks at all.';
 
 const MERMAID_INIT = 'mermaid.initialize({ startOnLoad: true })';
@@ -54,13 +59,18 @@ export function run() {
     assert.deepEqual(dsls.map((d) => d.name), ['mermaid', 'abc'], 'registry holds mermaid then abc');
     for (const d of dsls) {
       assert.equal(d.containerTag, 'pre', `${d.name} containerTag is 'pre'`);
-      assert.equal(d.staticRenderer, null, `${d.name} has no static renderer in Slice 1`);
       assert.equal(typeof d.liveAssets.bundleLoader, 'function', `${d.name} has a bundleLoader fn`);
     }
+    // Static renderers diverge by DSL (Slice 2): mermaid is live-only — its
+    // staticRenderer is null and permanently so; abc gained a build-time
+    // renderer (function) plus the staticClass the emit path adds to the <svg>.
+    assert.equal(getDsl('mermaid').staticRenderer, null, 'mermaid has no static renderer (live-only, permanent)');
+    assert.equal(typeof getDsl('abc').staticRenderer, 'function', 'abc has a static renderer (Slice 2)');
+    assert.equal(getDsl('abc').staticClass, 'acadamark-abc-rendered', 'abc carries its emit staticClass');
     assert.equal(getDsl('mermaid').contractClass, 'mermaid', 'mermaid contractClass');
     assert.equal(getDsl('abc').contractClass, 'abc', 'abc contractClass');
     assert.equal(getDsl('nope'), null, 'unregistered name → null');
-    console.log('PASS: registry: getRegisteredDsls / getDsl reads (mermaid, abc; pre; static=null)');
+    console.log('PASS: registry: getRegisteredDsls / getDsl reads (mermaid, abc; pre; mermaid static=null, abc static=fn)');
   }
 
   // ── Pinned CDN URLs ───────────────────────────────────────────────────────────
@@ -164,7 +174,7 @@ export function run() {
     console.log('PASS: registry: assets are gated on DSL presence (detector)');
   }
 
-  // ── fail-explicitly on static for a DSL with no static renderer ───────────────
+  // ── fail-explicitly on static for a DSL with NO static renderer (mermaid) ─────
   {
     assert.throws(
       () => processHtml(MERMAID_SRC, { dslMode: 'static' }),
@@ -176,16 +186,41 @@ export function run() {
       /not available for 'mermaid'/,
       'mermaidMode static throws',
     );
-    assert.throws(
-      () => processHtml(ABC_SRC, { abcMode: 'static' }),
-      /not available for 'abc'/,
-      'abcMode static throws in Slice 1 (abc static deferred)',
-    );
     // The guard is gated on PRESENCE: a document with no such DSL is fine.
     assert.doesNotThrow(
       () => processHtml(NO_DSL_SRC, { dslMode: 'static' }),
       'global static on a DSL-free document does not throw',
     );
-    console.log('PASS: registry: static without a static renderer fails explicitly, but only when the DSL is present');
+    console.log('PASS: registry: static without a static renderer (mermaid) fails explicitly, but only when present');
+  }
+
+  // ── abc static mode: succeeds at the pipeline level + renderer contract ───────
+  {
+    // Pipeline (Slice 2): abcMode 'static' on an abc document no longer throws —
+    // the <pre> contract is REPLACED by an inline <svg> carrying the static
+    // class, and no abcjs init script is emitted (the render happened at build).
+    const html = processHtml(ABC_SRC, { abcMode: 'static' });
+    assert.ok(html.includes('<svg class="acadamark-abc-rendered"'), 'abc static: contract replaced by classed <svg>');
+    assert.ok(!/<pre[^>]*data-acadamark-dsl="abc"/.test(html), 'abc static: <pre> contract no longer present');
+    assert.ok(!html.includes(ABC_INIT), 'abc static: no abcjs init script (build-time render needs none)');
+
+    // Renderer contract (exercised directly via the registration). Determinism:
+    // the same source renders byte-identically — abcjs's default SVG writer uses
+    // no Math.random / Date / cross-render id counter — so static output is
+    // reproducible and snapshot-safe.
+    const render = getDsl('abc').staticRenderer;
+    const svg1 = render(ABC_NOTATION);
+    const svg2 = render(ABC_NOTATION);
+    assert.ok(/<svg[\s>]/.test(svg1), 'abc static renderer produces an <svg>');
+    assert.equal(svg1, svg2, 'abc static renderer is deterministic (byte-identical on repeat)');
+
+    // Fails loudly, no silent fallback: a non-string source makes abcjs throw;
+    // the renderer re-throws an error that names the offending source.
+    assert.throws(
+      () => render(null),
+      /abc static render failed for source/,
+      'abc static renderer rethrows on a non-string (null) source',
+    );
+    console.log('PASS: registry: abc static mode renders inline SVG (deterministic) and fails loudly on bad source');
   }
 }

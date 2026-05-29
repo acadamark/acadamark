@@ -1,0 +1,34 @@
+<meta type=article title="Static ABC rendering (DSL Slice 2)">
+</meta>
+
+<section | Build-time notation>
+
+In static mode the abc handler's contract markup is replaced, at compile
+time, by inline SVG. The page that opens this document needs no abcjs
+bundle and no init script: the notation is already drawn. This is the
+build-time path that live mode and the `<pre>` contract (RQ-DSL-M2) set up.
+
+<abc #music:c-scale>
+X:1
+T:C Major Scale
+M:4/4
+L:1/4
+K:C
+C D E F | G A B c |
+</abc>
+
+A second excerpt with no id confirms the emit path handles both the
+id-bearing and the anonymous contract: the renderer runs on each marked
+block, and only the id-bearing one carries an id onto its `<svg>`.
+
+<abc>
+X:1
+T:Short Phrase
+M:3/4
+L:1/4
+K:G
+G2 A | B2 c | d3 |
+</abc>
+
+Surrounding prose continues to render normally — the replacement is scoped
+to the abc contract elements and leaves everything else untouched.

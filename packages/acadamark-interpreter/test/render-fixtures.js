@@ -59,6 +59,19 @@ const LIVE_INLINE_FIXTURES = new Set([
 ]);
 
 /**
+ * abc static-mode fixtures (DSL Slice 2).
+ *
+ * Static mode is abc-only: the abc contract markup is replaced at compile time
+ * by inline SVG (abcjs + jsdom), so opening the `.html` shows the notation with
+ * no abcjs bundle and no init script at view time. Set per fixture here (via
+ * `abcMode: 'static'`, the abc-only override) rather than by changing the
+ * interpreter default, which stays `skip`.
+ */
+const ABC_STATIC_FIXTURES = new Set([
+  'document-47-abc-static',
+]);
+
+/**
  * Wrap an interpreter fragment in a full HTML document shell.
  *
  * @param {string} fragment - Raw HTML fragment from the interpreter.
@@ -95,6 +108,9 @@ function renderFixture(acmPath) {
   const interpreterOptions = { assetsDir: join(FIXTURES_DIR, 'assets') };
   if (LIVE_INLINE_FIXTURES.has(name)) {
     interpreterOptions.dslMode = 'live-inline';
+  }
+  if (ABC_STATIC_FIXTURES.has(name)) {
+    interpreterOptions.abcMode = 'static';
   }
 
   const processor = unified()

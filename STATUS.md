@@ -115,11 +115,16 @@ leaves the line-oriented source verbatim; the canonical vocab entry
 (`abc.md` → generated `data.js`) was synced in the same slice. The
 DESIGN.md and `render-quality.md` revisions the amendment proposed are now
 written, and doc-45 / doc-46 render their mermaid diagrams live-inline.
-**Next:** DSL Slice 2 (abc static mode — build-time SVG via a jsdom shim;
-mermaid stays live-only), plus the rest of the bug-fix arc — slice B (the
-book caption/label vs. cross-reference numbering mismatch) and slice C (the
-parser bug where inline math in pipe-form tag content is not opaque to
-escape processing). Nothing else is in flight.
+**DSL Slice 2 (abc static mode) is now done**: with `abcMode: 'static'` each
+`<abc>` contract is replaced at build time by inline SVG — abcjs rendered
+under a jsdom shim, synchronously, inside the compiler — so the output needs
+no view-time JS (`RQ-DSL-STATIC-*`). mermaid stays live-only; asking for
+static mermaid is still the fail-explicitly build error. New fixture
+`document-47-abc-static.acm` exercises the path. This closes the
+DSL-rendering arc. **Next:** the rest of the render-quality bug-fix arc —
+slice B (the book caption/label vs. cross-reference numbering mismatch) and
+slice C (the parser bug where inline math in pipe-form tag content is not
+opaque to escape processing). Nothing else is in flight.
 
 ## Milestones
 
@@ -3552,3 +3557,69 @@ that). One line gets added every few months, not every slice.
   the doc-36 provenance correction) and ROADMAP's current-position /
   Phase-14 gating updated to record the fix; STATUS "In flight / next"
   advanced to name Slice 2 and the remaining bug-fix slices.
+
+- **2026-05-29 — DSL Implementation Slice 2 (abc static mode).**
+  The closing slice of the DSL-rendering arc, realizing the abc-only static
+  path Slice 1 had declared-but-stubbed (`staticRenderer: null`). Added
+  `renderAbcStatic(source)` to `src/dsl/registry.js`: a **synchronous** abc
+  source → SVG-string renderer. It runs abcjs's `renderAbc` against a
+  lazily-built, memoized jsdom window (`getAbcStaticEnv` — one DOM, reused
+  across blocks and across documents in a process), installing that window's
+  `document`/`window` on `globalThis` only for the duration of the call and
+  restoring the prior globals in a `finally`, then reading the target
+  element's `innerHTML`. Two **fail-loud** guards, no silent fallback: a
+  catch-rethrow that names the offending source, and a no-`<svg>`-produced
+  throw. abc's registration now carries `staticRenderer: renderAbcStatic` and
+  `staticClass: 'acadamark-abc-rendered'`; **mermaid's `staticRenderer` stays
+  `null` — permanently** (static mermaid was dropped in the Phase 0
+  amendment), so asking for static mermaid remains the Slice 1
+  fail-explicitly build error. Wired the static emit into the compiler
+  (`src/index.js`): the DSL loop **collects** static-resolved DSLs rather than
+  unshifting assets, and a replacement pass (`replaceDslContractsWithSvg`)
+  runs **after `rehypeFormat`** — deliberately, so the formatter's
+  whitespace reflow never touches the generated SVG — swapping each `<abc>`
+  `<pre>` contract for a `{type: 'raw'}` node holding the rendered SVG. The
+  DSL's `id` (when the source block had one) is spliced onto the root `<svg>`
+  along with `staticClass` via a case-sensitive string replace
+  (`decorateStaticSvg`), because abcjs emits a classless, idless root element.
+  Pinned **jsdom to `^25`** (25.0.1, last CJS-`require`-able major): jsdom 26+
+  pulls `@asamuzakjp/css-color`, which eagerly `require`s the ESM-only
+  `@csstools/css-calc` and throws `ERR_REQUIRE_ESM` under Node's CommonJS
+  loader — fatal for a synchronous renderer that must `require` abcjs/jsdom
+  synchronously. New fixture **doc-47** (`document-47-abc-static.acm` — two
+  `<abc>` blocks, one `#music:c-scale`-identified and one anonymous, plus
+  surrounding prose) exercises the path; it renders static via an
+  `ABC_STATIC_FIXTURES` set in `render-fixtures.js` (`abcMode: 'static'`),
+  *not* by moving the interpreter default, which stays `skip`. Spec:
+  `render-quality.md` §9's static block flipped from **deferred** to
+  **realized for abc** — `RQ-DSL-STATIC-M1` (contract replaced by inline
+  `<svg class="acadamark-abc-rendered">`; no `<pre class="abc">`,
+  `data-acadamark-dsl`, or `<script>` survives), `RQ-DSL-STATIC-M2` (id
+  carried onto the `<svg>`; anonymous block carries none), `RQ-DSL-STATIC-O1`
+  (observable: the notation renders in a browser offline / with JS disabled) —
+  with the "no `RQ-DSL-STATIC-*` predicate exists for mermaid; asking is a
+  build error" note kept. Tests: the `dsl/registry` suite gained the static
+  surface (its all-DSLs `staticRenderer === null` loop assertion split into
+  per-DSL `mermaid === null` / `abc === function` + `staticClass` checks, plus
+  a direct renderer block asserting `<svg>` output, **byte-identical
+  determinism** on repeat — abcjs's default SVG writer uses no
+  `Math.random`/`Date`/cross-render id counter — and the null-source
+  fail-loud throw), and `integration.test.js` gained a doc-47 block (no
+  `<pre>`/`data-acadamark-dsl`/`<script>`/init; exactly two classed `<svg>`,
+  one id-bearing; "C Major Scale" title present as proof abcjs actually
+  rendered). **25/25 suites pass** from a clean run. The new doc-47 snapshot
+  was written on first existence; **every pre-existing snapshot held strict
+  zero-diff**, and re-rendering changed no existing `.html` — only the
+  `document-47-abc-static.{acm,html}` pair was added. **Deferred:** static
+  mermaid (permanently dropped, not deferred); the public `registerDsl` API
+  and the live/static dependency *category* (peer/optional) stay for v0.2.0;
+  exposing abcjs render options is out of scope. **Coherence:** spec ⇄ code —
+  the static renderer, the post-rehype replacement pass, and the
+  fail-explicitly-mermaid guard match `render-quality.md` §9's realized
+  predicates and DESIGN.md's who-owns-rendering axis; vocab ⇄ code —
+  unchanged this slice (the `<pre>` abc contract from Slice 1 is the static
+  path's input and still matches `abc.md`/`data.js`); backlog ⇄ roadmap —
+  ROADMAP's DSL arc narrative records Slice 2 closing the arc and BACKLOG
+  needs no edit (the static deferral lived in the spec and the Slice 1
+  milestone, never as an open `[ ]` item); STATUS "In flight / next" advanced
+  past the DSL arc to bug-fix slices B and C.

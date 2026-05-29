@@ -128,7 +128,12 @@ source-fidelity deviation (the abc `<div>` was reformatted by the HTML
 serializer). That deviation has since been fixed by **DSL Slice 1** — the
 DSL render registry plus live mode (inline or pinned-CDN library) over the
 unchanged `skip` default — which switched the abc wrapper to `<pre>`
-(`RQ-DSL-M2`). A book-numbering correction and a pipe-form inline-math
+(`RQ-DSL-M2`). **DSL Slice 2** then added the abc-only static path: with
+`abcMode: 'static'` each `<abc>` contract is replaced at build time by inline
+SVG (abcjs under a jsdom shim — synchronous, so it runs inside the compiler),
+needing no view-time JS (`RQ-DSL-STATIC-*`); mermaid stays live-only, so static
+mermaid remains a fail-explicitly build error. That closes the DSL-rendering
+arc. A book-numbering correction and a pipe-form inline-math
 parser fix remain, after which the corpus renders to spec. The
 comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain

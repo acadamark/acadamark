@@ -501,16 +501,23 @@ T:Tune
 
 **Static-mode predicates (abc only):**
 
-Static mode is **deferred**: no DSL has a wired static renderer yet, so
-requesting `static` for either DSL currently raises the fail-explicitly build
-error below. The predicates here define the abc-static *target* contract a later
-slice realizes (abc renders headlessly); mermaid is permanently live-only.
+Static mode is **realized for `abc`**: abc renders headlessly at build time
+(abcjs under a jsdom shim — synchronous, so it runs inside the synchronous
+compiler), so the view-time page needs no abcjs bundle. mermaid is permanently
+live-only (its only browserless render path needs a headless browser);
+requesting `static` for mermaid raises the fail-explicitly build error below.
 
-- **`RQ-DSL-STATIC-M1`** — the `abc` element's source is **replaced** by an
-  inline `<svg>` of the rendered notation.
-- **`RQ-DSL-STATIC-M2`** — no client-side library or init call is emitted.
-- **`RQ-DSL-STATIC-O2`** *(observable, visual-only)* — opened offline with
-  JavaScript disabled, the notation still displays.
+- **`RQ-DSL-STATIC-M1`** — in abc-static mode each `abc` contract element is
+  **replaced** (not wrapped) by an inline `<svg class="acadamark-abc-rendered">`
+  of the rendered notation: no `<pre class="abc">` / `data-acadamark-dsl="abc"`
+  wrapper survives, and no client-side abcjs library or init `<script>` is
+  emitted (the render already happened at build time).
+- **`RQ-DSL-STATIC-M2`** — an `id` on the `abc` element is carried onto the
+  rendered `<svg>` (so cross-references to the block still resolve); an anonymous
+  block's `<svg>` carries no id.
+- **`RQ-DSL-STATIC-O1`** *(observable, visual-only)* — opened in a browser,
+  including offline with JavaScript disabled, the `<svg>` shows the rendered
+  notation (it is in the markup, not produced by a script at view time).
 - **No `RQ-DSL-STATIC-*` predicate exists for `mermaid`** — mermaid is live-only
   (its only browserless render path needs a headless browser). Asking for static
   mermaid is a **build error**, not a silent skip: the interpreter throws when a

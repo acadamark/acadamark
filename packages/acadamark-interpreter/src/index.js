@@ -72,11 +72,12 @@
 //                     renders at view time with no external request.
 //     'live-link'   — same, but load the library from its pinned CDN via
 //                     <script src> instead of inlining it.
-//     'static'      — render at build time and inline the result. Not every
-//                     DSL has a static renderer: mermaid is live-only, so
-//                     requesting 'static' for a document containing mermaid is
-//                     an error (abc's static renderer is not yet implemented,
-//                     so it errors too for now).
+//     'static'      — render at build time and inline the result: an inline
+//                     <svg> replaces the contract markup, with no client-side
+//                     library or init emitted. Not every DSL has a static
+//                     renderer: abc does (abcjs + jsdom), but mermaid is
+//                     live-only, so requesting 'static' for a document
+//                     containing mermaid is an error.
 //   mermaidMode / abcMode: same value space (mermaidMode excludes 'static'),
 //     overriding dslMode for that one DSL; resolved as ‹dsl›Mode ?? dslMode ??
 //     'skip'. Assets are only emitted when the document contains that DSL's
@@ -397,6 +398,75 @@ function buildDslAssets(dsl, mode) {
 }
 
 /**
+ * Extract the verbatim source text of a DSL contract element: the text-node
+ * children concatenated. The handler emits the DSL source as a single text node
+ * inside the <pre> container; this reads it back for the static renderer.
+ *
+ * @param {import('hast').Element} el
+ * @returns {string}
+ */
+function extractDslSource(el) {
+  return (el.children ?? [])
+    .filter((c) => c.type === 'text')
+    .map((c) => c.value)
+    .join('');
+}
+
+/**
+ * Splice acadamark's static-render class (and the contract element's id, when
+ * present) into the rendered <svg>'s opening tag. abcjs's root <svg> carries no
+ * class or id of its own (verified), so this adds attributes rather than merging.
+ * A string splice on the first `<svg` keeps the SVG bytes otherwise verbatim —
+ * avoiding a hast round-trip that could alter case-sensitive SVG attributes
+ * (viewBox, preserveAspectRatio, …).
+ *
+ * @param {string} svg        SVG markup from the static renderer
+ * @param {string|undefined} id   id to preserve on the rendered <svg>, or undefined
+ * @param {string} className  the static-render class (registration.staticClass)
+ * @returns {string}
+ */
+function decorateStaticSvg(svg, id, className) {
+  const attrs =
+    ` class="${className}"` +
+    (id != null ? ` id="${String(id).replace(/"/g, '&quot;')}"` : '');
+  return svg.replace(/<svg\b/, `<svg${attrs}`);
+}
+
+/**
+ * Static-mode emit: walk the hast tree and replace each of this DSL's contract
+ * elements with a raw node carrying the build-time-rendered SVG (decorated with
+ * the static class + preserved id). This is a *mutation* — not the additive
+ * prepend of live/skip — because static replaces the source with its rendering.
+ *
+ * Must run AFTER rehype-format: the formatter reflows whitespace inside non-
+ * whitespace-sensitive containers, which would corrupt the inlined SVG's
+ * <text>/<tspan> runs (the RQ-DSL-M2 class of bug). Emitting the SVG as a raw
+ * node after formatting means hast-util-to-html (allowDangerousHtml) serializes
+ * it verbatim. The contract element's id moves onto the <svg> (so cross-refs
+ * survive); its sibling <figcaption>s are untouched (they are siblings, not
+ * children, of the contract element).
+ *
+ * @param {object} node  hast node (root or element)
+ * @param {object} dsl   DSL registration (its staticRenderer + staticClass)
+ */
+function replaceDslContractsWithSvg(node, dsl) {
+  if (!node || !Array.isArray(node.children)) return;
+  for (let i = 0; i < node.children.length; i++) {
+    const child = node.children[i];
+    if (
+      child.type === 'element' &&
+      child.properties?.dataAcadamarkDsl === dsl.name
+    ) {
+      const svg = dsl.staticRenderer(extractDslSource(child));
+      const decorated = decorateStaticSvg(svg, child.properties.id, dsl.staticClass);
+      node.children[i] = { type: 'raw', value: decorated };
+    } else {
+      replaceDslContractsWithSvg(child, dsl);
+    }
+  }
+}
+
+/**
  * Unified plugin. Applies the full acadamark pipeline: recursive content
  * parsing, structural plugins, and mdast-to-HTML compilation.
  *
@@ -549,14 +619,18 @@ export function acadamarkInterpreter(options = {}) {
       hast.children.unshift(...assets);
     }
 
-    // Inject external-DSL (mermaid, abc) live-mode assets. Iterating the
-    // registry — rather than naming each DSL here — keeps this loop open to
-    // new DSLs without edits. For each DSL that (a) appears in the document and
-    // (b) resolves to a live mode, prepend its library + init. Skip mode (the
-    // default) emits nothing; static is rejected here for DSLs without a static
-    // renderer (the presence check above means a global dslMode:'static' is
-    // only an error for documents that actually contain such a DSL).
+    // Inject external-DSL (mermaid, abc) render assets. Iterating the registry —
+    // rather than naming each DSL here — keeps this open to new DSLs without
+    // edits. For each DSL present in the document, its resolved mode decides the
+    // shape:
+    //   - skip (default): emit nothing (the contract markup already stands);
+    //   - live-inline / live-link: prepend the library + init (additive);
+    //   - static: defer to a post-format replacement pass (collected here).
+    // A DSL resolving to 'static' with no staticRenderer (mermaid) fails
+    // explicitly — the presence check means a global dslMode:'static' is only an
+    // error for documents that actually contain such a DSL.
     // See src/dsl/registry.js and notes/specs/render-quality.md §9.
+    const staticDsls = [];
     for (const dsl of getRegisteredDsls()) {
       if (!documentUsesDsl(hast, dsl)) continue;
       const mode = resolveDslMode(dsl.name, options);
@@ -569,10 +643,10 @@ export function acadamarkInterpreter(options = {}) {
               `(or leave dslMode at the default 'skip').`,
           );
         }
-        // A registered staticRenderer's SVG-inlining branch belongs here. None
-        // exists in v0.1.0 (both staticRenderers are null), so static + present
-        // always throws above; this `continue` is the forward hook that keeps
-        // the static path from falling through to the live unshift below.
+        // Static is a tree mutation that must run after rehype-format (running
+        // before it would let the formatter reflow the inlined SVG); collect the
+        // DSL now and apply the replacement below.
+        staticDsls.push(dsl);
         continue;
       }
       // live-inline / live-link
@@ -583,6 +657,13 @@ export function acadamarkInterpreter(options = {}) {
     // indentation and line breaks; inline content is preserved as-is.
     // rehype-format leaves <style> and <script> contents untouched.
     rehypeFormat()(hast);
+
+    // Static-mode DSL emit, AFTER formatting: replace each collected DSL's
+    // contract elements with their build-time SVG (see replaceDslContractsWithSvg
+    // for why this runs post-format).
+    for (const dsl of staticDsls) {
+      replaceDslContractsWithSvg(hast, dsl);
+    }
 
     return toHtml(hast, { allowDangerousHtml: true });
   };
