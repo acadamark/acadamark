@@ -465,6 +465,7 @@ export function tableHandler(state, node, _vocab, options) {
     captionHast,
     titleHast,
     computedNumber: node.computedNumber ?? null,
+    scope: node._scope ?? null,
   });
 }
 
@@ -502,9 +503,12 @@ export function buildTableBodyHast(parsed) {
  * @param {object} args.tableProps
  * @param {string|null} [args.captionText]
  * @param {number|null} [args.computedNumber]
+ * @param {{chapter:number, section:number}|null} [args.scope] - node._scope
+ *        for chapter-prefixed labels in books (slice B / RQ-BOOK-M4);
+ *        defaults to null → bare number (article behavior).
  * @returns {import('hast').Element}
  */
-export function renderParsedTable({ parsed, tableProps, captionText = null, computedNumber = null }) {
+export function renderParsedTable({ parsed, tableProps, captionText = null, computedNumber = null, scope = null }) {
   const bodyHast = buildTableBodyHast(parsed);
   const captionHast = captionText
     ? [{ type: 'text', value: String(captionText) }]
@@ -517,5 +521,6 @@ export function renderParsedTable({ parsed, tableProps, captionText = null, comp
     captionHast,
     titleHast: null,
     computedNumber,
+    scope,
   });
 }

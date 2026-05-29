@@ -67,5 +67,6 @@ export function csvHandler(state, node) {
     captionHast,
     titleHast,
     computedNumber: node.computedNumber ?? null,
+    scope: node._scope ?? null,
   });
 }

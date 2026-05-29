@@ -121,8 +121,14 @@ under a jsdom shim, synchronously, inside the compiler — so the output needs
 no view-time JS (`RQ-DSL-STATIC-*`). mermaid stays live-only; asking for
 static mermaid is still the fail-explicitly build error. New fixture
 `document-47-abc-static.acm` exercises the path. This closes the
-DSL-rendering arc. **Next:** the rest of the render-quality bug-fix arc —
-slice B (the book caption/label vs. cross-reference numbering mismatch) and
+DSL-rendering arc. **Slice B (book caption/cross-reference numbering) is now
+done** (`RQ-BOOK-M4`): a chapter-scoped book's captions / labels / equation
+numbers now carry the same chapter prefix as the cross-references resolving
+to them (a caption `Figure 2.1.` matches the reference `figure 2.1`), via a
+shared `formatScopedNumber` helper used by both the render path and the
+cross-reference resolver. The fix is HTML-only — `node.computedNumber` stays
+the bare per-scope integer, so the JATS exporter (which reads it) is
+unaffected. **Next:** the last step of the render-quality bug-fix arc —
 slice C (the parser bug where inline math in pipe-form tag content is not
 opaque to escape processing). Nothing else is in flight.
 
@@ -3623,3 +3629,65 @@ that). One line gets added every few months, not every slice.
   needs no edit (the static deferral lived in the spec and the Slice 1
   milestone, never as an open `[ ]` item); STATUS "In flight / next" advanced
   past the DSL arc to bug-fix slices B and C.
+
+- **2026-05-29 — render-quality bug-fix arc, slice B: book caption/cross-reference
+  numbering (`RQ-BOOK-M4`).** Closes the book-numbering mismatch. In a
+  chapter-scoped book, a cross-reference resolved to a chapter-prefixed number
+  ("figure 2.1") but the caption / label / equation-number on the *target*
+  rendered the bare per-chapter ordinal ("Figure 1.", "(1)") — so a figure
+  captioned "Figure 1." was referred to in prose as "figure 2.1" and the two
+  disagreed. **Root cause:** the chapter prefix was derived in exactly one place,
+  `computeRefText` (`plugins/ref-resolution.js`); the render path (`formatLabel`
+  via `renderFrameable`, the theorem handler, the math handler) read the bare
+  `node.computedNumber` and never applied the scope — two independent
+  derivations of "the display number," only one of them prefixing. **Fix
+  (render-path derivation):** new `src/lib/scoped-number.js` exports
+  `formatScopedNumber(number, scope)` — the canonical scoped-number format
+  ("N" / "C.N" / "C.S.N"), lifted verbatim from `computeRefText`'s inline logic.
+  `renderFrameable` now takes a `scope` opt and formats its label number through
+  the helper; the eight frameable handlers (figure / svg / frame / table / csv /
+  tsv / mermaid / abc) and the `renderParsedTable` wrapper thread
+  `node._scope`; `handlers/theorem.js` and `handlers/math.js` format through the
+  helper directly. `computeRefText` was refactored to call the *same* helper — a
+  no-op extraction (its output is byte-identical) — so the target's label and
+  every reference to it now derive the number from one definition and agree **by
+  construction**. **HTML-only by design** (the decisive constraint):
+  `node.computedNumber` stays the bare per-scope integer and the chapter prefix
+  is applied only at HTML render time, because the JATS exporter reads
+  `node.computedNumber` for its `<label>` text — leaving it bare keeps the JATS
+  `.xml` byte-identical. **Locus rationale:** writing the prefix onto
+  `computedNumber` in the numbering machinery (`fillNumbering`) was ruled out —
+  it is shared with JATS, so it would change doc-42 / doc-44 `.xml`; a late
+  downstream pass mutating `computedNumber` to a string was rejected (it would
+  make the field string-in-HTML / int-in-JATS, JATS-safe only by
+  pipeline-accident — the BACKLOG's "last resort"). The render-path derivation
+  keeps `computedNumber` single-meaning and JATS-safe by nature. **Articles
+  zero-diff by construction:** article mode walks via `discover()`, which does
+  no scope stamping, so `node._scope` is `undefined` → `formatScopedNumber`
+  returns the bare number → identical output. **Verification:** 25/25 interpreter
+  suites pass (snapshots regenerated); the only snapshots that changed are
+  doc-38, doc-44, doc-46 — the three book fixtures, exactly the predicted set —
+  and every changed value is a label / equation-number gaining its chapter
+  prefix, no structural change; the captions now match the cross-references
+  (doc-46's "figure 2.1" / "definition 3.1" / "table 3.1" / "equation 2.1"
+  references each have a matching "Figure 2.1." / "Definition 3.1." /
+  "Table 3.1." / "(2.1)" caption); every article fixture held strict zero-diff;
+  the three book `.html` re-rendered with correct label markup. JATS:
+  **133/133 checks pass and the `acadamark-jats-export` package is byte-identical**
+  (no file changed), the empirical proof the fix is HTML-only. **Finding
+  (surfaced, not fixed):** the JATS export has the *analogous* inconsistency,
+  still open — its `<label>`s are bare ("1", "Theorem 1.", "Definition 1.")
+  while its cross-refs are chapter-prefixed ("figure 3.1", "table 2.1",
+  "theorem 1.1"), because `computeRefText` is shared but the JATS `<label>`
+  emitter reads the bare `computedNumber`. This HTML-only slice does not touch it
+  (a fix would change JATS `.xml`); it is left for a future JATS-side slice and
+  is recommended for filing. **Coherence:** spec ⇄ code — `render-quality.md`
+  §15's `RQ-BOOK-M4` ("a caption reading `Figure 1.3.` is referred to as
+  `figure 1.3`, never as a bare `Figure 3.`") already specified the now-realized
+  behavior, so no spec change was needed (code was brought to spec); backlog ⇄
+  code — `RQ-BOOK-M4` flipped to `[x]` CLOSED in BACKLOG (checklist entry +
+  in-place detailed-section annotation); roadmap ⇄ backlog — ROADMAP's bug-fix
+  arc narrative and Phase-14 gating updated to record slice B closing the
+  caption mismatch, leaving only slice C; STATUS "In flight / next" advanced to
+  slice C as the last bug-fix step; Rule 2 — no computable facts added to living
+  surfaces (the counts and fixture list live only in this frozen entry).

@@ -60,6 +60,7 @@
 // not a frameable consumer).
 
 import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
+import { formatScopedNumber } from './scoped-number.js';
 
 // ─── Internal primitive: label span ────────────────────────────────────────
 
@@ -260,6 +261,14 @@ function buildTitleEl(captionEl, titleHast) {
  * @param {number|null} [opts.computedNumber] - the registry-assigned number,
  *                                              or null/undefined for
  *                                              unnumbered.
+ * @param {{chapter:number, section:number}|null} [opts.scope] - the node's
+ *                                     `_scope` stamp (numbering.js, book /
+ *                                     scoped documents). When present with
+ *                                     chapter > 0 the label number is
+ *                                     chapter-prefixed ("Figure 1.3.") to
+ *                                     match cross-references (RQ-BOOK-M4);
+ *                                     null/absent for articles → bare
+ *                                     number, current behavior.
  * @param {boolean} [opts.border]    - whether to add the frameable-border
  *                                     class to the wrapper.
  * @returns {import('hast').Element|{type:'root', children:object[]}}
@@ -273,6 +282,7 @@ export function renderFrameable(opts) {
     captionHast = null,
     titleHast = null,
     computedNumber = null,
+    scope = null,
     border = false,
   } = opts;
 
@@ -294,7 +304,11 @@ export function renderFrameable(opts) {
     finalWrapperProps.className = [...existing, 'frameable-border'];
   }
 
-  const labelSpan = formatLabel(meta.prefix, computedNumber);
+  // Slice B (RQ-BOOK-M4): derive the chapter-prefixed display number via
+  // the shared helper so the caption label matches the cross-reference
+  // text. formatScopedNumber returns the bare number when scope is absent
+  // (articles), so this is zero-diff for unscoped documents.
+  const labelSpan = formatLabel(meta.prefix, formatScopedNumber(computedNumber, scope));
   const captionEl = buildCaptionEl(meta.captionEl, labelSpan, captionHast);
   const titleEl = buildTitleEl(meta.captionEl, titleHast);
 

@@ -73,6 +73,7 @@ export function svgHandler(state, node, vocab) {
     captionHast,
     titleHast,
     computedNumber: node.computedNumber ?? null,
+    scope: node._scope ?? null,
     border,
   });
 }

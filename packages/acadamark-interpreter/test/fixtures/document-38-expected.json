@@ -352,7 +352,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "Figure 1."
+                              "value": "Figure 1.1."
                             }
                           ]
                         },
@@ -668,7 +668,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "(1)"
+                          "value": "(1.1)"
                         }
                       ]
                     }
@@ -1111,7 +1111,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "Figure 1."
+                              "value": "Figure 2.1."
                             }
                           ]
                         },
@@ -1305,7 +1305,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "(1)"
+                          "value": "(2.1)"
                         }
                       ]
                     }

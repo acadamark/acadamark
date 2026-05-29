@@ -133,8 +133,13 @@ unchanged `skip` default — which switched the abc wrapper to `<pre>`
 SVG (abcjs under a jsdom shim — synchronous, so it runs inside the compiler),
 needing no view-time JS (`RQ-DSL-STATIC-*`); mermaid stays live-only, so static
 mermaid remains a fail-explicitly build error. That closes the DSL-rendering
-arc. A book-numbering correction and a pipe-form inline-math
-parser fix remain, after which the corpus renders to spec. The
+arc. **Slice B** then corrected the book-numbering mismatch: a chapter-scoped
+book's captions / labels / equation numbers now carry the same chapter prefix
+as the cross-references resolving to them (`RQ-BOOK-M4`), derived through a
+scoped-number helper shared by the render and resolver paths (HTML-only — the
+JATS exporter reads the unchanged bare number, so its output is byte-identical).
+Only a pipe-form inline-math parser fix (slice C) remains, after which the
+corpus renders to spec. The
 comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain
 open, and carry an unresolved design question — one comprehensive
@@ -479,8 +484,10 @@ both are release-blocking.
   gaps that left the theorem family, book structure, `.frameable-border`,
   and math environments unstyled are now closed (the bug-fix arc's
   slice A), as is the abc source-fidelity deviation (`RQ-DSL-M2`, closed by
-  DSL Slice 1's `<div>`→`<pre>` wrapper fix); the book
-  caption/cross-reference numbering mismatch remains. See `BACKLOG.md`.
+  DSL Slice 1's `<div>`→`<pre>` wrapper fix) and the book
+  caption/cross-reference numbering mismatch (`RQ-BOOK-M4`, closed by the
+  bug-fix arc's slice B). The pipe-form inline-math escape deviation
+  remains (slice C). See `BACKLOG.md`.
 - **Release housekeeping.** Version-stamping at `0.1.0`, repository
   tidying, and the doc-hygiene already filed under Standing (e.g. the
   stale-cross-reference reconciliation) folded in as release prep where

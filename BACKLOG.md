@@ -107,10 +107,15 @@ A flat scannable index of every open item. Detailed entries below.
   bug-fix arc, slice A: the `display-math` flex layout (block + flush-right
   `.equation-number`) now also covers `math`, `align`, `cases`,
   `matrix`, and `eqnarray`.
-- [ ] **Book caption/label numbers are bare per-chapter while
+- [x] **Book caption/label numbers are bare per-chapter while
   cross-references are chapter-prefixed (they disagree)** `[interpreter]`
   `[release]` *(→ roadmap: Phase 14; render-quality RQ-BOOK-M4; filed by
-  the render-quality slice)*
+  the render-quality slice)* — **CLOSED 2026-05-29** by the render-quality
+  bug-fix arc, slice B: the caption / label / equation-number render path
+  now derives its display number through the shared `formatScopedNumber`
+  helper that the cross-reference resolver also uses, so a chapter-scoped
+  book's labels carry the same chapter prefix as the references resolving
+  to them (`Figure 2.1.` matches `figure 2.1`).
 - [ ] **Inline math in pipe-form named-tag content is not protected from
   escape processing** `[parser]` `[post-alpha]` *(filed by the
   render-quality slice)*
@@ -378,6 +383,19 @@ Filed by the render-quality slice; see `notes/specs/render-quality.md`
 
 ### Book caption/label numbers are bare per-chapter while cross-references are chapter-prefixed
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+**CLOSED 2026-05-29 — render-quality bug-fix arc, slice B.** The caption /
+label / equation-number render path now formats its display number through
+a shared helper, `formatScopedNumber` (`src/lib/scoped-number.js`), which
+the cross-reference resolver (`computeRefText`) was refactored to share.
+Because the target's label and every reference to it now derive the number
+from one definition, a chapter-scoped book renders matching pairs —
+`Figure 2.1.` / `figure 2.1`, `Definition 3.1.` / `definition 3.1`,
+`Table 3.1.` / `table 3.1`, `(2.1)` / `equation 2.1`. The fix is HTML-only:
+`node.computedNumber` stays the bare per-scope integer (the JATS exporter
+reads it for `<label>` text and is unaffected — its `.xml` output is
+byte-identical), and the chapter prefix is applied only at HTML render
+time. Articles never carry scope, so their labels are unchanged.
 
 In a book with the default `counter-reset-scope=chapter`,
 cross-references resolve to chapter-prefixed numbers — the demonstrative

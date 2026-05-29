@@ -3115,7 +3115,7 @@ note-list li {
       </p>
       <figure id="fig:vcs-graph">
         <img src="commit-graph.png" alt="A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.">
-        <figcaption><span class="figure-label">Figure 1.</span> A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.</figcaption>
+        <figcaption><span class="figure-label">Figure 1.1.</span> A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.</figcaption>
       </figure>
       <p>
         The discipline that matters is not the tool but the granularity: small, frequent,
@@ -3150,11 +3150,11 @@ note-list li {
         to require that the notebook restart-and-run-all cleanly, so the stored state
         satisfies
       </p>
-      <display-math id="eqn:nb-invariant"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">stored output</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord text"><span class="mord">inputs</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">cells top to bottom</span></span><span class="mclose">)</span></span></span></span></span><span class="equation-number">(1)</span></display-math>
+      <display-math id="eqn:nb-invariant"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">stored output</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord text"><span class="mord">inputs</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">cells top to bottom</span></span><span class="mclose">)</span></span></span></span></span><span class="equation-number">(2.1)</span></display-math>
       <p>before it is committed.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup></p>
       <figure id="fig:nb-pipeline">
         <img src="notebook-ci.png" alt="A notebook passing a restart-and-run-all check in continuous integration before being archived.">
-        <figcaption><span class="figure-label">Figure 1.</span> A notebook passing a restart-and-run-all check in continuous integration before being archived.</figcaption>
+        <figcaption><span class="figure-label">Figure 2.1.</span> A notebook passing a restart-and-run-all check in continuous integration before being archived.</figcaption>
       </figure>
       <p>
         Cross-reference <a href="#fig:nb-pipeline" class="ref">figure 2.1</a> resolves with a chapter prefix — it is the
@@ -3178,7 +3178,7 @@ note-list li {
         <book-part-title>Data Provenance and Lineage</book-part-title>
         <author>Sofia Marchetti</author>
       </meta>
-      <definition id="def:provenance"><span class="definition-label">Definition 1.</span> The <i>provenance</i> of a data artifact is the complete record of the inputs and transformations that produced it — enough to recreate the artifact from its raw sources.</definition>
+      <definition id="def:provenance"><span class="definition-label">Definition 3.1.</span> The <i>provenance</i> of a data artifact is the complete record of the inputs and transformations that produced it — enough to recreate the artifact from its raw sources.</definition>
       <p>
         Provenance turns a result into a reproducible one by making its derivation explicit.
         <a href="#def:provenance" class="ref">definition 3.1</a> is deliberately strong: a partial record that omits a
@@ -3192,14 +3192,14 @@ note-list li {
   C --> M[Merge with registry]
   M --> A[Analysis table]
   A --> P[Published figure]</pre>
-        <figcaption><span class="figure-label">Figure 1.</span> A data-lineage graph: raw sources flow through named transformations to derived artifacts.</figcaption>
+        <figcaption><span class="figure-label">Figure 3.1.</span> A data-lineage graph: raw sources flow through named transformations to derived artifacts.</figcaption>
       
       <p>
         A minimal provenance record need capture only three fields per artifact, summarised
         in <a href="#tab:provenance" class="ref">table 3.1</a>.
       </p>
       <table id="tab:provenance">
-        <caption><span class="table-label">Table 1.</span> The minimal provenance record for a derived artifact.</caption>
+        <caption><span class="table-label">Table 3.1.</span> The minimal provenance record for a derived artifact.</caption>
         <thead>
           <tr>
             <th>field</th>

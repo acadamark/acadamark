@@ -30,6 +30,7 @@ import { ensureRegistry } from 'acadamark-core/registry';
 import { walkReplace } from 'acadamark-core/walkers/walk-replace';
 import { parseColonId } from 'acadamark-core/colon-id';
 import { ACADAMARK_CONFIG } from 'acadamark-core/file-data-keys';
+import { formatScopedNumber } from '../lib/scoped-number.js';
 
 /**
  * Built-in prefix → display-word dictionary.
@@ -80,16 +81,13 @@ function computeRefText(id, entry, config) {
   // 'section' scope), prefix the number with "C." or "C.S." per the
   // resolved scope. Articles (or any document without scope data on
   // the entry) render without a prefix path — current behavior.
-  const scope = entry.data?.scope;
-  let numberStr = `${entry.number}`;
-  if (scope && scope.chapter > 0) {
-    // 'section' scope: include section index if non-zero.
-    if (scope.section > 0) {
-      numberStr = `${scope.chapter}.${scope.section}.${entry.number}`;
-    } else {
-      numberStr = `${scope.chapter}.${entry.number}`;
-    }
-  }
+  //
+  // Phase 4 bug-fix arc, slice B (2026-05-29): the prefix derivation
+  // moved verbatim into the shared `formatScopedNumber` helper so the
+  // caption / label render path can apply the *same* format (RQ-BOOK-M4).
+  // entry.number is non-null here (guarded above), so the helper always
+  // returns a string. This is a no-op extraction — output is unchanged.
+  const numberStr = formatScopedNumber(entry.number, entry.data?.scope);
 
   return prefixWord ? `${prefixWord} ${numberStr}` : numberStr;
 }

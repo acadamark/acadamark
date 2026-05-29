@@ -33,6 +33,7 @@
 
 import katex from 'katex';
 import { fromHtml } from 'hast-util-from-html';
+import { formatScopedNumber } from '../lib/scoped-number.js';
 
 /**
  * Extract the LaTeX source string from the node.
@@ -175,7 +176,10 @@ export function mathHandler(_state, node) {
             type: 'element',
             tagName: 'span',
             properties: { className: ['equation-number'] },
-            children: [{ type: 'text', value: `(${node.computedNumber})` }],
+            // Slice B (RQ-BOOK-M4): chapter-prefix the equation number in
+            // books ("(2.1)") to match cross-references ("equation 2.1").
+            // Bare number for articles (node._scope absent).
+            children: [{ type: 'text', value: `(${formatScopedNumber(node.computedNumber, node._scope)})` }],
           },
         ]
       : katexChildren;

@@ -38,6 +38,7 @@ import { unwrapSingleParagraph } from 'acadamark-core/paragraph-unwrap';
 import { mapAttributes } from 'acadamark-core/map-attributes';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { formatLabel } from '../lib/frameable.js';
+import { formatScopedNumber } from '../lib/scoped-number.js';
 
 // Tagname → display-prefix mapping. Title-Cased per the amsthm
 // convention ("Theorem 1.", "Lemma 2.", etc.).
@@ -86,7 +87,13 @@ export function theoremFamilyHandler(state, node, vocab) {
   // For numbered tags, prepend a label span; for unnumbered
   // (remark/proof), formatLabel returns null and no label appears.
   const name = node.kwargs?.name ?? null;
-  const labelSpan = formatLabel(prefix, node.computedNumber, name);
+  // Slice B (RQ-BOOK-M4): chapter-prefix the theorem number in books so
+  // the label ("Theorem 2.1.") matches cross-references ("theorem 2.1").
+  // formatScopedNumber returns the bare number when node._scope is absent
+  // (articles) and null when computedNumber is null (unnumbered
+  // remark/proof), so formatLabel's null-guard and the fallbackLabel path
+  // below are both preserved unchanged.
+  const labelSpan = formatLabel(prefix, formatScopedNumber(node.computedNumber, node._scope), name);
 
   // For unnumbered remark/proof, still render the unboxed-label form
   // common in academic typography: "Remark." / "Proof." (no number).

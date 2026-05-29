@@ -437,7 +437,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "Figure 1."
+                              "value": "Figure 1.1."
                             }
                           ]
                         },
@@ -1121,7 +1121,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "(1)"
+                          "value": "(2.1)"
                         }
                       ]
                     }
@@ -1217,7 +1217,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "Figure 1."
+                              "value": "Figure 2.1."
                             }
                           ]
                         },
@@ -1523,7 +1523,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "Definition 1."
+                          "value": "Definition 3.1."
                         }
                       ]
                     },
@@ -1723,7 +1723,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "Figure 1."
+                              "value": "Figure 3.1."
                             }
                           ]
                         },
@@ -1829,7 +1829,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "value": "Table 1."
+                              "value": "Table 3.1."
                             }
                           ]
                         },
