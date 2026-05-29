@@ -317,33 +317,20 @@ function emitBookPart(bookPart, indent) {
   const id = bookPart.id ? ` id="${escapeXmlAttr(bookPart.id)}"` : '';
   const content = Array.isArray(bookPart.content) ? bookPart.content : [];
 
-  // Lift the leading pipe-content title (per book-part.md L72-80:
-  // `<chapter | Origins>` → the pipe content becomes the
-  // <book-part-title>). The shorthand expansion leaves it as a
-  // bare leading text node at the top of the book-part's content
-  // — the JATS path lifts that to a structured
-  // <book-part-title>. Lift only the FIRST text node — subsequent
-  // text/inline content is body prose.
-  let titleText = null;
-  let consumeFirstText = false;
-  if (content.length > 0 && content[0]?.type === 'text' &&
-      typeof content[0].value === 'string' && content[0].value.trim() !== '') {
-    titleText = content[0].value.trim();
-    consumeFirstText = true;
-  }
-
+  // Slice 5c emitted a local title-lift compensator here (extracting
+  // a leading bare-text node into <book-part-title>) because
+  // book-structuring.js didn't honor book-part.md L72-80's pipe-
+  // content title contract. The book-side bugfix slice
+  // (2026-05-28) closed that drift in book-structuring.js itself,
+  // so the meta now arrives with a `<book-part-title>` child
+  // pre-lifted. The JATS path just reads it.
   const meta = content.find(c => isAcadamarkTag(c, 'meta'));
-  // Body = everything except meta, the consumed leading title text,
-  // and per-part note-lists (which move to <back> below).
+  // Body = everything except meta and per-part note-lists (which
+  // move to <back> below).
   const bodyContent = [];
   const backNoteLists = [];
-  let firstTextConsumed = !consumeFirstText;
   for (const child of content) {
     if (child === meta) continue;
-    if (!firstTextConsumed && child === content[0]) {
-      firstTextConsumed = true;
-      continue;
-    }
     if (isAcadamarkTag(child, '__note-list')) {
       backNoteLists.push(child);
     } else {
@@ -351,16 +338,14 @@ function emitBookPart(bookPart, indent) {
     }
   }
 
-  // <book-part-meta> emission: combine the lifted title with any
-  // existing meta (e.g. per-chapter <author> for edited volumes).
-  // When neither title nor meta exists, skip the meta region —
+  // <book-part-meta> emission: only when meta has content.
   // BITS allows an empty meta but it's noisier than necessary.
-  const hasMetaContent = titleText != null || (meta && Array.isArray(meta.content) && meta.content.length > 0);
+  const hasMetaContent = meta && Array.isArray(meta.content) && meta.content.length > 0;
 
   let out = `${pad}<book-part book-part-type="${partType}"${id}>\n`;
   if (hasMetaContent) {
     out += `${pad}  <book-part-meta>\n`;
-    out += emitBookPartMetaChildren(meta, indent + 4, titleText);
+    out += emitBookPartMetaChildren(meta, indent + 4);
     out += `${pad}  </book-part-meta>\n`;
   }
   out += `${pad}  <body>\n`;
@@ -437,12 +422,13 @@ function emitBookMetaChildren(metaNode, indent) {
  * L287-302) is the main reason this differs from the book-level meta:
  * each chapter can carry its own `<author>`s.
  *
- * `liftedTitle` is the pipe-content title from `<chapter | Title>`
- * shorthand (extracted by `emitBookPart` from a leading text node).
- * Used as the `<book-part-title>` content when no explicit
- * `<book-part-title>` exists in the meta.
+ * The pipe-content title from `<chapter | Origins>` shorthand arrives
+ * as a `<book-part-title>` child of `<meta>` already lifted by
+ * `book-structuring.js`'s `restructureBookPart` (slice book-side
+ * bugfix, 2026-05-28). Slice 5c had a local lift compensator here;
+ * removed once the upstream fix landed.
  */
-function emitBookPartMetaChildren(metaNode, indent, liftedTitle = null) {
+function emitBookPartMetaChildren(metaNode, indent) {
   const pad = ' '.repeat(indent);
   const content = (metaNode && Array.isArray(metaNode.content)) ? metaNode.content : [];
 
@@ -451,12 +437,10 @@ function emitBookPartMetaChildren(metaNode, indent, liftedTitle = null) {
   const authorNodes  = content.filter(c => isAcadamarkTag(c, 'author'));
 
   let out = '';
-  if (titleNode || subtitleNode || liftedTitle) {
+  if (titleNode || subtitleNode) {
     out += `${pad}<title-group>\n`;
     if (titleNode) {
       out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
-    } else if (liftedTitle) {
-      out += `${pad}  <title>${escapeXml(liftedTitle)}</title>\n`;
     }
     if (subtitleNode) {
       out += `${pad}  <subtitle>${emitInlines(subtitleNode.content)}</subtitle>\n`;

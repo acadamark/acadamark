@@ -53,7 +53,7 @@ scope numbering renders cross-references with the chapter prefix.</p>
           <label>(1)</label>
           <tex-math><![CDATA[E = mc^2]]></tex-math>
         </disp-formula>
-        <p>A reference to <xref ref-type="fig" rid="fig:intro">figure 2.1</xref> renders chapter-prefixed (the
+        <p>A reference to <xref ref-type="fig" rid="fig:intro">figure 1.1</xref> renders chapter-prefixed (the
 exact prefix depends on book-part numbering — preface counts as
 chapter 1 in current behavior).<xref ref-type="fn" id="noteref-2" rid="note-2">2</xref></p>
       </body>
@@ -68,6 +68,9 @@ chapter 1 in current behavior).<xref ref-type="fn" id="noteref-2" rid="note-2">2
     </book-part>
     <book-part book-part-type="chapter">
       <book-part-meta>
+        <title-group>
+          <title>Methods</title>
+        </title-group>
         <contrib-group>
           <contrib contrib-type="author">
             <string-name>Guest Author</string-name>
@@ -75,7 +78,6 @@ chapter 1 in current behavior).<xref ref-type="fn" id="noteref-2" rid="note-2">2
         </contrib-group>
       </book-part-meta>
       <body>
-        <p>Methods</p>
         <p>The edited-volume case — this chapter has its own author distinct from
 the book-level author. The per-book-part <monospace>&lt;contrib-group&gt;</monospace> carries that.</p>
         <fig id="fig:method">
@@ -85,7 +87,7 @@ the book-level author. The per-book-part <monospace>&lt;contrib-group&gt;</monos
           </caption>
           <graphic xlink:href="method.png"/>
         </fig>
-        <p>Cross-reference <xref ref-type="fig" rid="fig:method">figure 3.1</xref> resolves with the chapter prefix.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
+        <p>Cross-reference <xref ref-type="fig" rid="fig:method">figure 2.1</xref> resolves with the chapter prefix.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
       </body>
       <back>
         <fn-group content-type="footnotes">

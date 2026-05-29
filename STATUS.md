@@ -2749,7 +2749,8 @@ that). One line gets added every few months, not every slice.
     (book-back). Pipe-content titles lifted to
     `<book-part-title>`.
 
-  **Drift findings:**
+  **Drift findings:** ***Both CLOSED by the book-side bugfix
+  slice (2026-05-28); see the milestone below.***
   - **Book-part pipe-content title not lifted by
     `book-structuring.js`.** Per `book-part.md` L72-80, the
     pipe content of `<chapter | Origins>` should become
@@ -2804,3 +2805,133 @@ that). One line gets added every few months, not every slice.
   (bibliography + external DSLs including Mermaid / ABC +
   DTD bundling for offline xmllint validation) remains; it
   is the final Phase 5 slice.
+
+- **2026-Q2 — Book-side bugfixes (slice 4a omission + slice
+  5c-surfaced numbering bug).** Two pre-existing bugs surfaced
+  by slice 5c's BITS book JATS path; both close drift findings
+  from slice 5c.
+
+  **(1) Book-part title lift, in `book-structuring.js`.** Per
+  `book-part.md` L72-80, the pipe content of `<chapter |
+  Origins>` should become children of `<book-part-title>`
+  inside `<meta>`. Slice 4a's `restructureBookPart` only
+  detected title-shaped *tags* at the top of the book-part's
+  content; it didn't detect the bare leading *text node* that
+  the shorthand expansion produces, so titles silently
+  rendered as unstructured text inside `<book-part>` divs
+  (visible in pre-fix doc-38 HTML: `<book-part
+  book-part-type="chapter">Introduction\n      <p>This is
+  the introduction chapter...`).
+
+  The fix is a pre-process pass: if `content[0]` is a non-
+  empty text node, lift it to a synthesized
+  `<book-part-title>` tag at the same position. The
+  downstream meta-synthesis logic then picks it up uniformly
+  with any other title-shaped tag. Refactor extracted two
+  small predicates (`isMetaBearing`, `isTitleish`) and added
+  an "existing-meta + late-arriving title" branch (for the
+  edited-volume case where a `<meta>` already exists with an
+  `<author>`, and the lifted title needs to be unshifted into
+  it). Title-first ordering inside meta (title before author)
+  so rendered HTML reads top-to-bottom.
+
+  Known limitation: only a bare text node at `content[0]` is
+  lifted. Rich inline titles (`<chapter | *Origins*>`) parse
+  to a leading emphasis node and aren't lifted here. The
+  shorthand spec doesn't forbid them but the canonical
+  authoring form is plain text; formatted titles are an
+  authoring-spec follow-up if they surface.
+
+  **(2) Front-matter book-part numbering, in `numbering.js`.**
+  Slice 4a's `walkWithScope` incremented `chapterIndex` for
+  any `<book-part>` regardless of `book-part-type`, so a
+  preface counted as chapter 1 and pushed the actual first
+  chapter to chapter 2 — visible in pre-fix doc-38 HTML where
+  `<ref @fig:intro>` rendered as "figure 2.1" despite the
+  source comment specifying "figure 1.1".
+
+  The fix introduces `BODY_BOOK_PART_TYPES = {chapter, part,
+  introduction, conclusion, other}` mirroring
+  `book-structuring.js`'s region-routing classification.
+  Only body-type book-parts increment `chapterIndex`;
+  front-matter (preface/foreword/dedication) and back-matter
+  (appendix/glossary/colophon) book-parts don't — their
+  content lands at `scope.chapter=0`. The `insideBookPart`
+  guard still flips regardless of type so nested book-parts
+  don't double-increment.
+
+  Front-matter and back-matter content at `scope.chapter=0`
+  shares a global per-type counter via `fillNumbering`'s
+  group key `${type}|0`. `ref-resolution.js`'s
+  `computeRefText` already handles `scope.chapter === 0` by
+  emitting an unprefixed number (just "figure 1" not "figure
+  0.1") — no ref-side change needed.
+
+  **(3) JATS-side title-lift compensator removed.** Slice 5c
+  added a local lift in `acadamark-jats-export`'s
+  `emitBookPart` because book-structuring didn't honor the
+  contract. With the upstream fix landed, the compensator
+  is unnecessary; `emitBookPart` now just reads the
+  pre-lifted `<book-part-title>` from `<meta>`. Net result:
+  ~25 lines simpler in the JATS emitter; the
+  `emitBookPartMetaChildren` `liftedTitle` parameter dropped.
+
+  Notably the slice 5c compensator was incomplete: it only
+  lifted when `content[0]` was a text node, missing the
+  Methods chapter case (where `content[0]` is the existing
+  meta carrying `<author>`, and the title text sits at
+  `content[1]`). The upstream fix handles both cases
+  uniformly. **doc-42's JATS XML therefore changes** in
+  three places rather than being strictly zero-diff (as the
+  slice prompt's expectation assumed compensator-
+  equivalence): Methods chapter now correctly gets
+  `<title-group><title>Methods</title></title-group>` inside
+  `<book-part-meta>` and drops a stray `<p>Methods</p>` from
+  body; fig:intro / fig:method cross-ref text updates per
+  the numbering fix.
+
+  **Snapshot audit:**
+  - **All 23 article HTML snapshots: STRICT ZERO DIFF.**
+    Neither bug affects article rendering.
+  - **doc-38 HTML snapshot changed** (7 edits): 4 chapters/
+    book-parts now emit `<meta><book-part-title>...</book-
+    part-title></meta>` instead of bare leading text; 3
+    cross-ref renderings update (fig:intro 2.1→1.1;
+    eqn:intro 2.1→1.1; fig:method 3.1→2.1; cross-chapter
+    ref to fig:intro 2.1→1.1). Every line change traces to
+    one of the two intended fixes.
+  - **doc-38 hast `.json` snapshot: STRICT ZERO DIFF.** The
+    integration-test mirror (`runPipeline` in
+    integration.test.js) doesn't include
+    `acadamarkBookStructuring` in its hast capture — a
+    separate stale-mirror drift item (AUD-17-shaped) filed
+    earlier in slice 4a coherence checks; this slice
+    doesn't address it. The HTML-rendering path
+    (`acadamarkInterpreter` plugin) is the live path and
+    does reflect the fix.
+  - **doc-39 / doc-40 / doc-41 JATS snapshots: STRICT ZERO
+    DIFF.** Article-shaped fixtures; neither bug applies.
+  - **doc-42 JATS snapshot changed** as analyzed above —
+    three improvements rather than zero-diff; the slice
+    prompt's zero-diff expectation was a mild miscalibration
+    based on assuming the slice 5c compensator was complete.
+
+  Tests:
+  - layer1-vocabulary:    52/52
+  - acadamark-core:       33/33
+  - remark-acadamark:    128/128
+  - acadamark-interpreter: 24/24 (HTML zero-diff for
+    articles; doc-38 HTML re-rendered; hast snapshot zero-
+    diff)
+  - acadamark-jats-export: 74/74 (doc-42 JATS XML
+    intentionally updated per the title-lift completeness
+    improvement)
+
+  **Drift findings closed:** both slice 5c drift items
+  (book-part title lift; front-matter numbering) marked
+  CLOSED inline in slice 5c's milestone. No new drift items
+  filed by this slice.
+
+  **Phase 5 sub-progress unchanged:** slice 5d remains the
+  next Phase 5 piece (bibliography + external DSLs + DTD
+  tooling).

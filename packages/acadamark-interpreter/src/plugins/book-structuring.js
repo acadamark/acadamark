@@ -131,17 +131,66 @@ function promoteTitles(metaNode, scope) {
 }
 
 /**
+ * Predicate: true iff the tag is one of the meta-bearing tags that this
+ * function moves into the book-part's `<meta>` (title-shaped tags +
+ * `<author>`).
+ */
+function isMetaBearing(node) {
+  if (!isAcadamarkTag(node)) return false;
+  return node.tagname === 'title' || node.tagname === 'book-part-title' ||
+         node.tagname === 'subtitle' || node.tagname === 'book-part-subtitle' ||
+         node.tagname === 'author';
+}
+
+/**
+ * Predicate: true iff the tag is title-shaped (vs `<author>`). Used to
+ * decide insertion position in an existing `<meta>` (titles to the front,
+ * authors to the back).
+ */
+function isTitleish(node) {
+  if (!isAcadamarkTag(node)) return false;
+  return node.tagname === 'title' || node.tagname === 'book-part-title' ||
+         node.tagname === 'subtitle' || node.tagname === 'book-part-subtitle';
+}
+
+/**
  * Restructure a <book-part>'s content: ensure it has a <meta> child holding
  * the book-part's metadata (title, subtitle, author) and that title/subtitle
- * are promoted to book-part-scoped names. Per book-part.md, book-parts do
- * NOT have nested book-part-front/body/back wrappers; <meta> and body sit
- * directly inside <book-part>.
+ * are promoted to book-part-scoped names. Per book-part.md L72-80, the
+ * pipe-content shorthand form `<chapter | Origins>` puts the title in the
+ * book-part's content as a bare leading text node — this function lifts
+ * that to a `<book-part-title>` child of `<meta>`.
+ *
+ * Per book-part.md, book-parts do NOT have nested book-part-front/body/back
+ * wrappers; <meta> and body sit directly inside <book-part>.
  *
  * Also recursively restructures any nested <book-part>s (the "<part>
  * containing <chapter>s" pattern).
  */
 function restructureBookPart(bookPartNode) {
-  const content = Array.isArray(bookPartNode.content) ? bookPartNode.content : [];
+  let content = Array.isArray(bookPartNode.content) ? bookPartNode.content : [];
+
+  // Pre-process: lift the leading bare-text title (the pipe-content of
+  // `<chapter | Origins>` shorthand) into a synthesized
+  // `<book-part-title>` tag at the same position. The downstream
+  // synthesis / meta-merge logic then handles it identically to any
+  // other title-shaped tag. Closes the book-part.md L72-80 contract
+  // that slice 4a left unimplemented (drift finding from slice 5c).
+  //
+  // KNOWN LIMITATION: only a bare text node at content[0] is lifted.
+  // Rich inline titles (`<chapter | *Origins*>`) parse to a leading
+  // emphasis node and aren't lifted here. The shorthand spec doesn't
+  // forbid them but the canonical authoring form is plain text;
+  // formatted titles are an authoring-spec follow-up if they surface.
+  if (content.length > 0 && content[0]?.type === 'text' &&
+      typeof content[0].value === 'string' && content[0].value.trim() !== '') {
+    const titleText = content[0].value.trim();
+    const titleTag = makeTag('book-part-title', [
+      { type: 'text', value: titleText },
+    ]);
+    bookPartNode.content = [titleTag, ...content.slice(1)];
+    content = bookPartNode.content;
+  }
 
   // Find or extract the existing <meta>. The vocab's shorthand_expansion
   // path (<chapter | Title>) doesn't directly create a meta — the title
@@ -149,28 +198,18 @@ function restructureBookPart(bookPartNode) {
   // <meta> already in content.
   let metaNode = findTag(content, 'meta');
 
-  // The shorthand_expansion lifts <chapter | Title> to
-  // <book-part book-part-type="chapter">Title-content</book-part>.
-  // If the first content children are a <book-part-title> or <title>
-  // sitting at top level (not inside a <meta>), wrap them into a <meta>.
   if (!metaNode) {
-    // Look for title-shaped tags at top level OR for an <author> tag at
-    // top level (edited-volume per-book-part authorship).
-    const titleishAtTop = content.find(c =>
-      isAcadamarkTag(c) && (c.tagname === 'title' || c.tagname === 'book-part-title' ||
-                            c.tagname === 'subtitle' || c.tagname === 'book-part-subtitle' ||
-                            c.tagname === 'author'));
+    // No existing meta. If there's a title-shaped or author tag at top
+    // level, synthesize a meta wrapping all of them. The pre-process
+    // above guarantees a leading bare-text title is already a
+    // `<book-part-title>` tag, so it triggers this branch in the
+    // shorthand-only case.
+    const titleishAtTop = content.find(isMetaBearing);
     if (titleishAtTop) {
-      // Gather all consecutive title/author tags at the top of content into
-      // a synthesized <meta>. The remaining content stays as body.
       const metaContent = [];
       const bodyContent = [];
       for (const child of content) {
-        if (isAcadamarkTag(child) && (
-          child.tagname === 'title' || child.tagname === 'book-part-title' ||
-          child.tagname === 'subtitle' || child.tagname === 'book-part-subtitle' ||
-          child.tagname === 'author'
-        )) {
+        if (isMetaBearing(child)) {
           metaContent.push(child);
         } else {
           bodyContent.push(child);
@@ -179,6 +218,33 @@ function restructureBookPart(bookPartNode) {
       metaNode = makeTag('meta', metaContent);
       bookPartNode.content = [metaNode, ...bodyContent];
     }
+  } else {
+    // Existing meta. Move any title-shaped or author tags still at top
+    // level into it (this is the edited-volume case: `<chapter |
+    // Methods>` + `<author | Guest Author>` — the author tag was
+    // gathered into a meta by an earlier walk, but the lifted title
+    // tag sits at top level after our pre-process).
+    const stillContent = [];
+    for (const child of content) {
+      if (child === metaNode) {
+        stillContent.push(child);
+        continue;
+      }
+      if (isMetaBearing(child)) {
+        metaNode.content = metaNode.content ?? [];
+        if (isTitleish(child)) {
+          // Titles to the front of meta (so the rendered HTML reads
+          // title-then-author).
+          metaNode.content.unshift(child);
+        } else {
+          // Authors append.
+          metaNode.content.push(child);
+        }
+      } else {
+        stillContent.push(child);
+      }
+    }
+    bookPartNode.content = stillContent;
   }
 
   // Promote titles inside <meta> (if present) to book-part-scoped names.
