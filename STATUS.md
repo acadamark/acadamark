@@ -84,11 +84,15 @@ deviations it surfaced as bugs (`BACKLOG.md` Bugs; `ROADMAP.md`
 Phase 14), and a bug-fix arc is now closing them. **Slice A
 (stylesheet gaps) is done** — the additive `default.css` theme rules
 for the theorem family, the book structural elements,
-`.frameable-border`, and the math-environment wrappers. The immediate
-next work is the rest of the arc: slice B (the book caption/label vs.
-cross-reference numbering mismatch) and slice C (the parser bug where
-inline math in pipe-form tag content is not opaque to escape
-processing). Nothing else is in flight.
+`.frameable-border`, and the math-environment wrappers. A **DSL
+verification slice** then audited the `RQ-DSL` (mermaid / abc)
+predicates against the existing corpus — finding the demonstrative
+fixtures already exercise `<mermaid>` — and filed a deviation: the
+abc `<div>` source is not preserved verbatim in the rendered HTML
+(`RQ-DSL-M2`). The immediate next work is the rest of the arc: slice B
+(the book caption/label vs. cross-reference numbering mismatch) and
+slice C (the parser bug where inline math in pipe-form tag content is
+not opaque to escape processing). Nothing else is in flight.
 
 ## Milestones
 
@@ -3327,3 +3331,41 @@ that). One line gets added every few months, not every slice.
   mismatch, `RQ-BOOK-M4`) and slice C (the `[post-alpha]` parser bug where
   inline math in pipe-form tag content is not opaque to escape
   processing).
+- **2026-05-29 — render-quality bug-fix arc, DSL verification slice.**
+  A targeted audit slice between slice A and slice B, to close the gap
+  that the `RQ-DSL` predicates (mermaid, abc) had never been verified
+  against rendered output. The slice premise — that the demonstrative
+  fixtures lacked mermaid/abc examples — proved wrong on contact:
+  `document-45` (the calibration workflow, `#fig:workflow`) and
+  `document-46` (the data-lineage graph, `#fig:lineage`) have carried
+  `<mermaid>` blocks since `1ca94d7`, the same commit that wrote the
+  spec, and the doc-32 catalog and doc-44 stress fixtures exercise both
+  DSLs. So no fixture was extended — adding more mermaid would be a
+  redundant feature-catalog bolt-on, and `<abc>` (music notation) fits
+  neither the calibration nor the reproducible-research topic naturally,
+  so its demonstrative coverage stays deferred (Q1 option C) while its
+  predicate is verified against doc-32, the existing abc fixture.
+  Verification against the rendered corpus: `RQ-DSL-M1` (mermaid `<pre
+  class="mermaid" data-acadamark-dsl="mermaid">`, source byte-verbatim
+  because `<pre>` is whitespace-preserving) passes; `RQ-DSL-M3` (shared
+  figure counter; sibling `<figcaption>` with `figure-label`) passes —
+  doc-32 numbers two mermaids then the abc as Figure 1 / 2 / 3;
+  `RQ-DSL-S1` (the mermaid `<pre>` styled as a code block, so an
+  un-rendered diagram degrades to readable source) passes via the bare
+  `pre` rule. One predicate fails: `RQ-DSL-M2` — the abc `<div>` carries
+  the right class / `data-acadamark-dsl` marker / id, but its source is
+  not verbatim in the rendered HTML: the hast→HTML serializer
+  pretty-prints the `<div>` (not a whitespace-preserving element),
+  prefixing every ABC line with indentation. The hast snapshot holds the
+  source verbatim, so the defect is serialization-only — and the
+  `<mermaid>`/`<abc>` asymmetry (`<pre>` vs `<div>`) is the tell. Filed
+  as one `[release]` bug (`RQ-DSL-M2`; `BACKLOG.md` checklist + detail),
+  not fixed, per the slice's files-not-fixes scope. No fixture or
+  snapshot changed — all suites pass, snapshots strict zero-diff; the
+  only edits are the bug filing and this log. **Coherence:** spec ⇄ code
+  reconciled — the `RQ-DSL` predicates are now verified against actual
+  rendered output, with the one deviation filed. A data point for slice
+  B (`RQ-BOOK-M4`): the doc-46 mermaid figure shows the same caption/ref
+  disagreement as the book's other figures (caption "Figure 1." vs
+  reference "figure 3.1"), confirming the book numbering bug reaches DSL
+  figures too. The arc continues with slice B and slice C.

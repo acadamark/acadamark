@@ -114,6 +114,10 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Inline math in pipe-form named-tag content is not protected from
   escape processing** `[parser]` `[post-alpha]` *(filed by the
   render-quality slice)*
+- [ ] **ABC `<div>` source is not preserved verbatim; the HTML
+  serializer adds indentation** `[interpreter]` `[release]`
+  *(→ roadmap: Phase 14; render-quality RQ-DSL-M2; filed by the
+  render-quality bug-fix arc, DSL verification slice)*
 
 ### Enhancements
 
@@ -420,6 +424,42 @@ rewritten to use block form for the affected proof and backslash-free
 inline math in the pipe-form definition, so it renders cleanly. Filed,
 not fixed, per the render-quality slice's scope. Author workaround: use
 block form, or keep backslash LaTeX out of pipe-form inline math.
+
+### ABC `<div>` source is not preserved verbatim — the HTML serializer adds indentation
+`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+`RQ-DSL-M2` requires an `<abc>` block to render `<div class="abc"
+data-acadamark-dsl="abc">` with the ABC source **preserved verbatim**, so
+a consumer-side renderer (abcjs, reading `element.textContent`) sees the
+source the author wrote. The class, the `data-acadamark-dsl` marker, and
+the `id` are all correct, but the source is **not** verbatim in the
+rendered HTML: the hast→HTML serializer pretty-prints the `<div>`'s text
+child, prefixing every line with the element's indentation — the abc block
+in doc-32 renders with ~10 leading spaces on each of `X:1`, `T:…`, `K:C`,
+and the tune body — plus a leading and trailing newline. This matters
+because ABC information fields (`X:`, `T:`, `M:`, `L:`, `K:`)
+conventionally begin at column 0; leading whitespace can cause abcjs to
+misparse them, so the fidelity break can defeat the very consumer-side
+rendering the markup contract exists to enable.
+
+The defect is **serialization-only**: the hast text node holds the source
+verbatim — the snapshot records `"X:1\nT:Twinkle…"` with no indentation —
+so nothing upstream of stringify is wrong. The asymmetry with `<mermaid>`
+is the tell: Mermaid's wrapper is `<pre>`, which the serializer treats as
+whitespace-sensitive and never reformats (so `RQ-DSL-M1` passes
+byte-for-byte), whereas `<abc>`'s `<div>` is not whitespace-sensitive and
+gets reformatted. The fix is a design call, not decided here — candidates:
+mark the abc text node so rehype-stringify preserves its whitespace; wrap
+the source in a whitespace-preserving inner element; or switch the abc
+wrapper to `<pre>` (abcjs replaces the element's content on render
+regardless of tag, so the `<div>`-vs-`<pre>` choice changes source
+fidelity, not rendered output).
+
+Surfaced by the render-quality bug-fix arc's DSL verification slice while
+verifying `RQ-DSL` against the existing corpus — doc-32 is the only
+fixture exercising `<abc>`; the demonstrative fixtures (and the doc-44
+stress fixture) exercise `<mermaid>` only. Filed, not fixed, per the
+slice's scope. See `notes/specs/render-quality.md` §9 (`RQ-DSL-M2`).
 
 ---
 

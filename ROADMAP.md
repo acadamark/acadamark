@@ -122,8 +122,11 @@ as bugs (filed, not fixed — the spec slice touched no product code). A
 render-quality bug-fix arc is now closing those deviations: slice A (the
 additive `default.css` theme rules for the theorem family, book
 structure, `.frameable-border`, and the math-environment wrappers) has
-landed; a book-numbering correction and a pipe-form inline-math parser
-fix remain, after which the demonstrative fixtures render to spec. The
+landed, and a DSL verification slice has confirmed the demonstrative
+fixtures' `<mermaid>` blocks render to spec while surfacing an abc
+source-fidelity deviation (the abc `<div>` is reformatted by the HTML
+serializer). A book-numbering correction, a pipe-form inline-math parser
+fix, and the abc fix remain, after which the corpus renders to spec. The
 comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain
 open, and carry an unresolved design question — one comprehensive
@@ -467,8 +470,8 @@ both are release-blocking.
   gated on the remaining render-quality deviation bugs — the stylesheet
   gaps that left the theorem family, book structure, `.frameable-border`,
   and math environments unstyled are now closed (the bug-fix arc's
-  slice A); the book caption/cross-reference numbering mismatch remains.
-  See `BACKLOG.md`.
+  slice A); the book caption/cross-reference numbering mismatch and the
+  abc source-fidelity deviation (`RQ-DSL-M2`) remain. See `BACKLOG.md`.
 - **Release housekeeping.** Version-stamping at `0.1.0`, repository
   tidying, and the doc-hygiene already filed under Standing (e.g. the
   stale-cross-reference reconciliation) folded in as release prep where
