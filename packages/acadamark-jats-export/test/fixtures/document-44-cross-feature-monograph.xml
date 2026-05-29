@@ -45,11 +45,11 @@ to point at.<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref></p>
         <p>The pitch of a note is its fundamental frequency, measured in hertz. Concert A
 is <inline-formula><tex-math><![CDATA[440]]></tex-math></inline-formula> Hz, and the perfect fifth above it stands in the ratio <inline-formula><tex-math><![CDATA[3/2]]></tex-math></inline-formula>.</p>
         <statement content-type="definition" id="def:interval">
-          <label>Definition 1.</label>
+          <label>Definition 1.1.</label>
           <p>An <italic>interval</italic> is the ratio <inline-formula><tex-math><![CDATA[f_2/f_1]]></tex-math></inline-formula> of the frequencies of two pitches.</p>
         </statement>
         <statement content-type="theorem" id="thm:octave">
-          <label>Theorem 1.</label>
+          <label>Theorem 1.1.</label>
           <p>Doubling a frequency raises a pitch by exactly one octave.</p>
         </statement>
         <statement content-type="proof">
@@ -58,13 +58,13 @@ is <inline-formula><tex-math><![CDATA[440]]></tex-math></inline-formula> Hz, and
         </statement>
         <p>The equal-tempered scale divides the octave into twelve equal ratios:</p>
         <disp-formula id="eqn:equal">
-          <label>(1)</label>
+          <label>(1.1)</label>
           <tex-math><![CDATA[f_n = f_0 \cdot 2^{n/12}]]></tex-math>
         </disp-formula>
         <p>Benson's treatment <xref ref-type="bibr" rid="ref-Benson2007">Benson2007</xref> develops this from first principles. A
 reference to <xref ref-type="statement" rid="thm:octave">theorem 1.1</xref> resolves to the theorem above.<xref ref-type="fn" id="noteref-2" rid="note-2">2</xref></p>
         <fig id="fig:keyboard">
-          <label>1</label>
+          <label>1.1</label>
           <caption>
             <p>One octave of a piano keyboard.</p>
           </caption>
@@ -97,7 +97,7 @@ book-level author.</p>
         <p>Small whole-number ratios sound consonant. The just-intonation intervals are
 collected in <xref ref-type="table" rid="tab:ratios">table 2.1</xref>.</p>
         <table-wrap id="tab:ratios">
-          <label>1</label>
+          <label>2.1</label>
           <caption>
             <p>Just-intonation interval ratios.</p>
           </caption>
@@ -135,7 +135,7 @@ collected in <xref ref-type="table" rid="tab:ratios">table 2.1</xref>.</p>
         </table-wrap>
         <p>The fifth and the fourth are the two principal consonances:</p>
         <disp-formula id="eqn:ratios">
-          <label>(1)</label>
+          <label>(2.1)</label>
           <tex-math><![CDATA[\begin{aligned}
 r_{fifth} &= 3/2 \\
 r_{fourth} &= 4/3
@@ -162,7 +162,7 @@ alone.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
       <body>
         <p>Two external notations close the body. A flow of the analysis pipeline:</p>
         <fig id="fig:circle" specific-use="acadamark-dsl-mermaid">
-          <label>1</label>
+          <label>3.1</label>
           <caption>
             <p>From pitch to perceived interval.</p>
           </caption>
@@ -174,7 +174,7 @@ alone.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
         </fig>
         <p>And a short tune in ABC notation:</p>
         <fig id="fig:tune" specific-use="acadamark-dsl-abc">
-          <label>2</label>
+          <label>3.2</label>
           <caption>
             <p>Twinkle, Twinkle, Little Star.</p>
           </caption>

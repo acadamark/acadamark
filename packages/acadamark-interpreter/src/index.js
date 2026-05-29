@@ -126,8 +126,15 @@ import { ensureRegistry } from 'acadamark-core/registry';
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
 // pattern as fillNumbering (slice 5b).
 import { parseCsv, parseTsv } from './handlers/table.js';
+// Render-quality bug-fix arc, JATS analog of slice B (2026-05-29):
+// re-export the scoped-number formatter so acadamark-jats-export derives
+// its <label> display numbers through the same helper the HTML render
+// path and the cross-reference resolver use — keeping JATS <label>s and
+// <xref>s in agreement (RQ-BOOK-M4, JATS side). Same re-export pattern as
+// parseCsv above.
+import { formatScopedNumber } from './lib/scoped-number.js';
 
-export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkNotePlacement, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, fillNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler, parseCsv, parseTsv };
+export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkNotePlacement, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, fillNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.

@@ -138,8 +138,13 @@ book's captions / labels / equation numbers now carry the same chapter prefix
 as the cross-references resolving to them (`RQ-BOOK-M4`), derived through a
 scoped-number helper shared by the render and resolver paths (HTML-only — the
 JATS exporter reads the unchanged bare number, so its output is byte-identical).
-Only a pipe-form inline-math parser fix (slice C) remains, after which the
-corpus renders to spec. The
+A follow-on **JATS slice** then completed that correction on the JATS export
+side: the JATS `<label>` emitter derives its number through the same shared
+helper (re-exported from `acadamark-interpreter`), so a book's `<label>` and the
+`<xref>` resolving to it agree — `RQ-BOOK-M4` now holds across both the HTML and
+JATS targets, with the book JATS fixtures gaining the prefix and articles
+holding zero-diff. Only a pipe-form inline-math parser fix (slice C) remains,
+after which the corpus renders to spec. The
 comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain
 open, and carry an unresolved design question — one comprehensive
@@ -485,9 +490,10 @@ both are release-blocking.
   and math environments unstyled are now closed (the bug-fix arc's
   slice A), as is the abc source-fidelity deviation (`RQ-DSL-M2`, closed by
   DSL Slice 1's `<div>`→`<pre>` wrapper fix) and the book
-  caption/cross-reference numbering mismatch (`RQ-BOOK-M4`, closed by the
-  bug-fix arc's slice B). The pipe-form inline-math escape deviation
-  remains (slice C). See `BACKLOG.md`.
+  caption/cross-reference numbering mismatch (`RQ-BOOK-M4`, closed across
+  both output targets — the HTML side by the bug-fix arc's slice B, the
+  JATS export side by the follow-on JATS slice). The pipe-form inline-math
+  escape deviation remains (slice C). See `BACKLOG.md`.
 - **Release housekeeping.** Version-stamping at `0.1.0`, repository
   tidying, and the doc-hygiene already filed under Standing (e.g. the
   stale-cross-reference reconciliation) folded in as release prep where

@@ -43,14 +43,14 @@
         <p>The introduction chapter. It contains a figure and an equation; chapter-
 scope numbering renders cross-references with the chapter prefix.</p>
         <fig id="fig:intro">
-          <label>1</label>
+          <label>1.1</label>
           <caption>
             <p>An introductory diagram.</p>
           </caption>
           <graphic xlink:href="intro.png"/>
         </fig>
         <disp-formula id="eqn:intro">
-          <label>(1)</label>
+          <label>(1.1)</label>
           <tex-math><![CDATA[E = mc^2]]></tex-math>
         </disp-formula>
         <p>A reference to <xref ref-type="fig" rid="fig:intro">figure 1.1</xref> renders chapter-prefixed (the
@@ -81,7 +81,7 @@ chapter 1 in current behavior).<xref ref-type="fn" id="noteref-2" rid="note-2">2
         <p>The edited-volume case — this chapter has its own author distinct from
 the book-level author. The per-book-part <monospace>&lt;contrib-group&gt;</monospace> carries that.</p>
         <fig id="fig:method">
-          <label>1</label>
+          <label>2.1</label>
           <caption>
             <p>The methodology diagram.</p>
           </caption>

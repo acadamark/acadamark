@@ -826,7 +826,12 @@ cross-references, and edited-volume (per-chapter) authorship.
   caption label on the target carries the *same* chapter-prefixed number as the
   cross-reference resolving to it — a caption reading `Figure 1.3.` is referred
   to as `figure 1.3`, never as a bare `Figure 3.` — so captions and references
-  agree.
+  agree. This agreement is output-target-independent: it holds both in the HTML
+  rendering (the caption/label and the `<a class="ref">` cross-reference both
+  carry the chapter-prefixed number) and in the JATS export (the `<label>` on
+  the `<fig>` / `<table-wrap>` / `<disp-formula>` / `<statement>` and the
+  `<xref>` resolving to it both carry it). In no output target does a target's
+  label show a bare `Figure 3.` while a reference to it shows `figure 1.3`.
 - **`RQ-BOOK-M5`** (note scope) — with the book default `note-scope=chapter`,
   footnotes are collected per chapter rather than once for the whole document.
 - **`RQ-BOOK-M6`** (bibliography) — a book gets a single document-wide

@@ -116,6 +116,15 @@ A flat scannable index of every open item. Detailed entries below.
   helper that the cross-reference resolver also uses, so a chapter-scoped
   book's labels carry the same chapter prefix as the references resolving
   to them (`Figure 2.1.` matches `figure 2.1`).
+- [x] **Same caption/cross-reference numbering mismatch on the JATS export
+  side — `<label>`s bare while `<xref>`s are chapter-prefixed**
+  `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
+  RQ-BOOK-M4; surfaced by slice B)* — **CLOSED 2026-05-29** by the
+  render-quality bug-fix arc, JATS slice (analog of slice B): the JATS
+  `<label>` emitter now derives its display number through the same
+  `formatScopedNumber` helper the `<xref>` text uses, so a chapter-scoped
+  book's `<label>`s carry the chapter prefix matching the references
+  resolving to them (`<label>3.1</label>` matches `figure 3.1`).
 - [ ] **Inline math in pipe-form named-tag content is not protected from
   escape processing** `[parser]` `[post-alpha]` *(filed by the
   render-quality slice)*
@@ -396,6 +405,22 @@ from one definition, a chapter-scoped book renders matching pairs —
 reads it for `<label>` text and is unaffected — its `.xml` output is
 byte-identical), and the chapter prefix is applied only at HTML render
 time. Articles never carry scope, so their labels are unchanged.
+
+**JATS analog CLOSED 2026-05-29 — render-quality bug-fix arc, JATS slice.**
+The JATS export carried the same mismatch on its own output: its `<label>`s
+rendered the bare per-chapter ordinal (`<label>1</label>` on a `<fig>`,
+`<label>(1)</label>` on a `<disp-formula>`, `<label>Theorem 1.</label>` on a
+`<statement>`) while its `<xref>`s were chapter-prefixed (`figure 3.1`,
+`theorem 1.1`), because the `<label>` emitters read the bare
+`node.computedNumber` directly. The JATS slice routes them through the same
+`formatScopedNumber` helper (re-exported from `acadamark-interpreter`), so a
+chapter-scoped book's `<label>` and the `<xref>` resolving to it now agree by
+construction (`<label>3.1</label>` / `<xref … >figure 3.1</xref>`). This
+intentionally changes the book JATS fixtures — slice B's "the JATS `.xml` is
+byte-identical" held only for that HTML-only slice; this slice is the
+JATS-side completion. Article fixtures carry no `_scope`, so their `<label>`s
+stay bare and held zero-diff. The `RQ-BOOK-M4` predicate is now
+output-target-agnostic (see `notes/specs/render-quality.md` §15).
 
 In a book with the default `counter-reset-scope=chapter`,
 cross-references resolve to chapter-prefixed numbers — the demonstrative

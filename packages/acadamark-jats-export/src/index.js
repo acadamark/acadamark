@@ -34,7 +34,13 @@
 import { VOCABULARY } from 'layer1-vocabulary';
 import { mapAttributes } from 'acadamark-core/map-attributes';
 import { parseColonId } from 'acadamark-core/colon-id';
-import { parseCsv, parseTsv } from 'acadamark-interpreter';
+// `formatScopedNumber` (render-quality bug-fix arc, JATS analog of slice
+// B, 2026-05-29): the shared scoped-number formatter. The `<label>`
+// emitters below derive their display number through it so JATS labels
+// carry the same chapter prefix as the `<xref>` cross-references that
+// resolve to them (RQ-BOOK-M4). It is the SAME helper computeRefText uses
+// for the xref text, so the two agree by construction.
+import { parseCsv, parseTsv, formatScopedNumber } from 'acadamark-interpreter';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
 const JATS_ARTICLE_DOCTYPE_DECL =
@@ -697,7 +703,8 @@ function emitFigureJats(node, indent) {
 
   let out = `${pad}<fig${id}>\n`;
   if (number != null) {
-    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+    // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
+    out += `${pad}  <label>${escapeXml(formatScopedNumber(number, node._scope))}</label>\n`;
   }
   if (caption || title) {
     out += `${pad}  <caption>\n`;
@@ -755,7 +762,8 @@ function emitDslFigureJats(node, indent) {
 
   let out = `${pad}<fig${id} specific-use="acadamark-dsl-${dslType}">\n`;
   if (number != null) {
-    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+    // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
+    out += `${pad}  <label>${escapeXml(formatScopedNumber(number, node._scope))}</label>\n`;
   }
   if (caption || title) {
     out += `${pad}  <caption>\n`;
@@ -794,7 +802,8 @@ function emitTableWrapJats(node, indent) {
 
   let out = `${pad}<table-wrap${id}>\n`;
   if (number != null) {
-    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+    // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
+    out += `${pad}  <label>${escapeXml(formatScopedNumber(number, node._scope))}</label>\n`;
   }
   if (caption || title) {
     out += `${pad}  <caption>\n`;
@@ -1002,7 +1011,8 @@ function emitDispFormulaJats(node, indent) {
 
   let out = `${pad}<disp-formula${id}>\n`;
   if (number != null) {
-    out += `${pad}  <label>(${escapeXml(String(number))})</label>\n`;
+    // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
+    out += `${pad}  <label>(${escapeXml(formatScopedNumber(number, node._scope))})</label>\n`;
   }
   // Use <![CDATA[...]]> wrapping for the TeX source so LaTeX
   // backslash escapes don't need XML-escaping. CDATA can't contain
@@ -1064,7 +1074,8 @@ function emitStatementJats(node, indent) {
   // unnumbered (per amsthm convention). Same shape as the HTML
   // formatLabel primitive produces.
   if (number != null) {
-    out += `${pad}  <label>${escapeXml(`${labelPrefix} ${number}.`)}</label>\n`;
+    // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
+    out += `${pad}  <label>${escapeXml(`${labelPrefix} ${formatScopedNumber(number, node._scope)}.`)}</label>\n`;
   } else if (contentType === 'remark' || contentType === 'proof') {
     out += `${pad}  <label>${escapeXml(`${labelPrefix}.`)}</label>\n`;
   }

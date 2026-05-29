@@ -126,11 +126,17 @@ done** (`RQ-BOOK-M4`): a chapter-scoped book's captions / labels / equation
 numbers now carry the same chapter prefix as the cross-references resolving
 to them (a caption `Figure 2.1.` matches the reference `figure 2.1`), via a
 shared `formatScopedNumber` helper used by both the render path and the
-cross-reference resolver. The fix is HTML-only — `node.computedNumber` stays
-the bare per-scope integer, so the JATS exporter (which reads it) is
-unaffected. **Next:** the last step of the render-quality bug-fix arc —
-slice C (the parser bug where inline math in pipe-form tag content is not
-opaque to escape processing). Nothing else is in flight.
+cross-reference resolver. Slice B was HTML-only — `node.computedNumber`
+stayed the bare per-scope integer, so the JATS exporter (which reads it) was
+left untouched. **The JATS analog is now done too**: the JATS `<label>`
+emitter derives its display number through the same `formatScopedNumber`
+helper (re-exported from `acadamark-interpreter`), so in a book the `<label>`
+and the `<xref>` resolving to it agree (`<label>3.1</label>` / `figure 3.1`);
+the book JATS fixtures gained the chapter prefix on their labels, articles
+held zero-diff. `RQ-BOOK-M4` now holds across both output targets. **Next:**
+the last step of the render-quality bug-fix arc — slice C (the parser bug
+where inline math in pipe-form tag content is not opaque to escape
+processing). Nothing else is in flight.
 
 ## Milestones
 
@@ -3691,3 +3697,62 @@ that). One line gets added every few months, not every slice.
   caption mismatch, leaving only slice C; STATUS "In flight / next" advanced to
   slice C as the last bug-fix step; Rule 2 — no computable facts added to living
   surfaces (the counts and fixture list live only in this frozen entry).
+
+- **2026-05-29 — render-quality bug-fix arc, JATS slice: caption/cross-reference
+  numbering on the JATS export side (`RQ-BOOK-M4`, analog of slice B).** Closes
+  the JATS-side analog of the book-numbering mismatch slice B closed for HTML.
+  The JATS export rendered `<label>`s as bare per-chapter ordinals
+  (`<label>1</label>` on a `<fig>`, `<label>(1)</label>` on a `<disp-formula>`,
+  `<label>Theorem 1.</label>` on a `<statement>`) while its `<xref>`s were
+  chapter-prefixed (`figure 3.1`, `table 2.1`, `theorem 1.1`) — so in a
+  chapter-scoped book the same figure was labelled "1" but referred to as
+  "figure 3.1," exactly the divergence slice B fixed for HTML, on the other
+  output target. Surfaced (not fixed) by slice B (commit 7127b5d), whose
+  HTML-only discipline kept the JATS `.xml` byte-identical there and left this
+  for a dedicated JATS slice. **Root cause:** five `<label>` emitters in
+  `acadamark-jats-export/src/index.js` — `emitFigureJats`, `emitDslFigureJats`,
+  `emitTableWrapJats`, `emitDispFormulaJats`, `emitStatementJats` — read the
+  bare `node.computedNumber` directly, while the `<xref>` text (`emitXrefMarker`)
+  used `node.kwargs.text`, pre-computed by the interpreter's `computeRefText`
+  and therefore already chapter-prefixed. **Fix:** `formatScopedNumber` is now
+  re-exported from `acadamark-interpreter` (a single re-export added to its
+  `src/index.js`, the same pattern as `parseCsv` / `parseTsv`), and the five
+  `<label>` emitters derive their display number through it —
+  `formatScopedNumber(number, node._scope)` in place of `String(number)` —
+  preserving each site's wrapping (`(…)` for `<disp-formula>`, `${labelPrefix}
+  ….` for `<statement>`). Because the `<label>` and the `<xref>` resolving to it
+  now derive the number from the *same* helper that `computeRefText` already
+  uses, the two agree by construction — the JATS analog of slice B's HTML fix.
+  `emitFnJats` (footnote `<label>`, reads `kwargs.number`) and `emitXrefMarker`
+  (already prefixed) are correctly untouched. **Articles zero-diff by
+  construction:** the JATS test harness numbers the same tree object it emits,
+  and book numbering stamps `node._scope` via `walkWithScope` while article
+  numbering uses `discover()` (no scope stamp) → `_scope` is `undefined` →
+  `formatScopedNumber` returns the bare number → identical article output.
+  **Verification:** the interpreter suite is unchanged (25/25 — the re-export is
+  additive, HTML untouched); the JATS suite first failed only the doc-42 and
+  doc-44 snapshot-matches (131/133, every other check including the
+  already-prefixed `figure N.M` / `table N.M` xref text and the doc-40 /
+  doc-41 article-and-footnote `<label>` checks passing), the empirical proof
+  the change is books-only; after regenerating snapshots the diff is confined to
+  doc-42 and doc-44 with eleven removed / eleven added lines, every one a
+  `<label>` text gaining its chapter prefix (`<label>1</label>` → `1.1` / `2.1` /
+  `3.1`, `<label>2</label>` → `3.2`, `<label>(1)</label>` → `(1.1)` / `(2.1)`,
+  `<label>Definition 1.</label>` → `Definition 1.1.`, `<label>Theorem 1.</label>`
+  → `Theorem 1.1.`), with no structural or `<xref>` change; doc-39 / doc-40 /
+  doc-41 / doc-43 held strict zero-diff; post-regeneration the JATS suite is
+  133/133. Empirical agreement confirmed in doc-44: `<fig id="fig:circle">`
+  carries `<label>3.1</label>` matching `<xref … rid="fig:circle">figure
+  3.1</xref>`, and `<table-wrap id="tab:ratios">` carries `<label>2.1</label>`
+  matching `<xref … rid="tab:ratios">table 2.1</xref>`. **Coherence:** spec ⇄
+  code — `render-quality.md` §15's `RQ-BOOK-M4` was extended (Q4 option A) to
+  state the agreement is output-target-independent, holding in both the HTML
+  rendering and the JATS export, rather than minting a sibling JATS predicate;
+  backlog ⇄ code — a JATS-analog entry was filed-and-closed in one move in
+  BACKLOG (flat-index `[x]` + a detailed JATS coda under the `RQ-BOOK-M4`
+  entry), referencing this commit and the now-output-target-agnostic predicate;
+  roadmap ⇄ backlog — ROADMAP's bug-fix-arc narrative and Phase-14 gating
+  updated to record the JATS analog closing, leaving only slice C; STATUS "In
+  flight / next" still points to slice C as the last bug-fix step; Rule 2 — no
+  computable facts added to living surfaces (the counts, fixture list, and
+  emitter names live only in this frozen entry).
