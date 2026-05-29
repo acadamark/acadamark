@@ -60,6 +60,27 @@
 //     'link'   — emit <link>/<script src> elements pointing to the CDN.
 //     'skip'   — emit no hover preview assets; consumer handles JS/CSS.
 //   Assets are only emitted when the document contains note markers.
+//
+//   dslMode: 'skip' (default) | 'live-inline' | 'live-link' | 'static'
+//     How external DSLs (mermaid, abc) are rendered. Applies to every
+//     registered DSL unless overridden per DSL.
+//     'skip'        — emit only the pass-through contract markup; no library.
+//                     The publisher wires up rendering. (The default — the
+//                     engine pulls in no DSL library unless asked to.)
+//     'live-inline' — also emit the DSL's library inline (a <script> carrying
+//                     the bundled source) plus its init call, so the browser
+//                     renders at view time with no external request.
+//     'live-link'   — same, but load the library from its pinned CDN via
+//                     <script src> instead of inlining it.
+//     'static'      — render at build time and inline the result. Not every
+//                     DSL has a static renderer: mermaid is live-only, so
+//                     requesting 'static' for a document containing mermaid is
+//                     an error (abc's static renderer is not yet implemented,
+//                     so it errors too for now).
+//   mermaidMode / abcMode: same value space (mermaidMode excludes 'static'),
+//     overriding dslMode for that one DSL; resolved as ‹dsl›Mode ?? dslMode ??
+//     'skip'. Assets are only emitted when the document contains that DSL's
+//     elements. See src/dsl/registry.js and notes/specs/render-quality.md §9.
 
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -94,6 +115,10 @@ import { acadamarkBibliography } from './plugins/bibliography.js';
 import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plugin.js';
 import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js';
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
+// DSL render registry (internal): drives live-mode asset emission for external
+// DSLs (mermaid, abc). Distinct concern from acadamark-core's vocabulary
+// registry imported immediately below.
+import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from 'acadamark-core/registry';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // acadamark-jats-export can replicate the HTML pipeline's
@@ -327,6 +352,50 @@ function buildHoverPreviewAssets(mode) {
   ];
 }
 
+// ─── External-DSL assets ──────────────────────────────────────────────────────
+
+/**
+ * Walk a hast tree; return true if it contains a container carrying the given
+ * DSL's contract marker (data-acadamark-dsl === name). Same detector shape as
+ * hasMathElements / hasNoteMarkers above.
+ */
+function hasDslMarker(node, name) {
+  if (node.type === 'element' && node.properties?.dataAcadamarkDsl === name) {
+    return true;
+  }
+  return (node.children ?? []).some((child) => hasDslMarker(child, name));
+}
+
+/**
+ * Does the document use this DSL? Defaults to the contract-marker walk above; a
+ * registration MAY override it via its optional `detector` field. No built-in
+ * registration overrides it in v0.1.0 — this is the forward hook for custom
+ * DSLs registered through the planned v0.2.0 public API.
+ */
+function documentUsesDsl(root, dsl) {
+  return dsl.detector ? dsl.detector(root) : hasDslMarker(root, dsl.name);
+}
+
+/**
+ * Build the asset nodes for one DSL in a live mode. Mirrors
+ * buildHoverPreviewAssets: 'live-link' emits a <script src> to the pinned CDN
+ * plus an inline init <script>; 'live-inline' emits one inline <script> with
+ * the bundled library source followed by its init (the bundle is read lazily,
+ * only here, via the registration's bundleLoader).
+ *
+ * @param {object} dsl  a DSL registration record (src/dsl/registry.js)
+ * @param {'live-inline'|'live-link'} mode
+ * @returns {import('hast').Element[]}
+ */
+function buildDslAssets(dsl, mode) {
+  const { bundleLoader, cdnUrl, initScript } = dsl.liveAssets;
+  if (mode === 'live-link') {
+    return [makeScriptSrcElement(cdnUrl), makeScriptElement(initScript)];
+  }
+  // 'live-inline': bundled library source + init in a single inline <script>.
+  return [makeScriptElement(bundleLoader() + '\n' + initScript)];
+}
+
 /**
  * Unified plugin. Applies the full acadamark pipeline: recursive content
  * parsing, structural plugins, and mdast-to-HTML compilation.
@@ -335,6 +404,9 @@ function buildHoverPreviewAssets(mode) {
  * @param {object} [options]
  * @param {'inline'|'link'|'skip'} [options.katexCss='inline'] CSS handling mode.
  * @param {'inline'|'link'|'skip'} [options.hoverPreviewMode='inline'] Hover preview mode.
+ * @param {'skip'|'live-inline'|'live-link'|'static'} [options.dslMode='skip'] External-DSL render mode (all DSLs).
+ * @param {'skip'|'live-inline'|'live-link'} [options.mermaidMode] Override dslMode for mermaid (live-only; no 'static').
+ * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
  */
 export function acadamarkInterpreter(options = {}) {
   const cssMode = options.katexCss ?? 'inline';
@@ -475,6 +547,36 @@ export function acadamarkInterpreter(options = {}) {
       // In practice: CSS <style>/<link> first, then JS <script> last.
       // We prepend all assets and let CSS-first ordering handle the rest.
       hast.children.unshift(...assets);
+    }
+
+    // Inject external-DSL (mermaid, abc) live-mode assets. Iterating the
+    // registry — rather than naming each DSL here — keeps this loop open to
+    // new DSLs without edits. For each DSL that (a) appears in the document and
+    // (b) resolves to a live mode, prepend its library + init. Skip mode (the
+    // default) emits nothing; static is rejected here for DSLs without a static
+    // renderer (the presence check above means a global dslMode:'static' is
+    // only an error for documents that actually contain such a DSL).
+    // See src/dsl/registry.js and notes/specs/render-quality.md §9.
+    for (const dsl of getRegisteredDsls()) {
+      if (!documentUsesDsl(hast, dsl)) continue;
+      const mode = resolveDslMode(dsl.name, options);
+      if (mode === 'skip') continue;
+      if (mode === 'static') {
+        if (!dsl.staticRenderer) {
+          throw new Error(
+            `dslMode 'static' is not available for '${dsl.name}': it has no static renderer.\n` +
+              `Use ${dsl.name}Mode 'live-inline', 'live-link', or 'skip' ` +
+              `(or leave dslMode at the default 'skip').`,
+          );
+        }
+        // A registered staticRenderer's SVG-inlining branch belongs here. None
+        // exists in v0.1.0 (both staticRenderers are null), so static + present
+        // always throws above; this `continue` is the forward hook that keeps
+        // the static path from falling through to the live unshift below.
+        continue;
+      }
+      // live-inline / live-link
+      hast.children.unshift(...buildDslAssets(dsl, mode));
     }
 
     // Format the hast tree for readable HTML output: block elements get

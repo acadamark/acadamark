@@ -814,20 +814,18 @@ bibliography h2 {
       <section-title>ABC music notation</section-title>
       <p>
         A short ABC notation excerpt. The handler emits a
-        <code>&#x3C;div class="abc" data-acadamark-dsl="abc"></code> wrapper preserving the
-        source. abcjs has no DOM auto-scan; the consumer's page needs a small
-        init script (sample in the vocab entry) that finds each marked element
-        and calls <code>ABCJS.renderAbc</code>.
+        <code>&#x3C;pre class="abc" data-acadamark-dsl="abc"></code> wrapper preserving the
+        source verbatim. abcjs has no DOM auto-scan; the consumer's page needs
+        a small init script (sample in the vocab entry) that finds each marked
+        element and calls <code>ABCJS.renderAbc</code>.
       </p>
       
-        <div class="abc" data-acadamark-dsl="abc" id="music:twinkle">
-          X:1
-          T:Twinkle, Twinkle, Little Star
-          M:4/4
-          L:1/4
-          K:C
-          C C G G | A A G2 | F F E E | D D C2 |
-        </div>
+        <pre class="abc" data-acadamark-dsl="abc" id="music:twinkle">X:1
+T:Twinkle, Twinkle, Little Star
+M:4/4
+L:1/4
+K:C
+C C G G | A A G2 | F F E E | D D C2 |</pre>
         <figcaption><span class="figure-label">Figure 3.</span></figcaption>
       
       <p>

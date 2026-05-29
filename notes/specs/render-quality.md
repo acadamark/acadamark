@@ -56,8 +56,11 @@ the vocabulary that `default.css` defines.
   are conformant if they satisfy the same *structural* predicates (§1.2) and
   provide *some* rule for each semantic class, not necessarily the same values.
 - **External-DSL rendered fidelity.** For `<mermaid>` and `<abc>`, acadamark
-  guarantees the *markup contract* (§8), not the rendered diagram or notation —
-  that is produced by tooling external to acadamark.
+  guarantees the *markup contract* (§9) in every mode; the rendered diagram or
+  notation is produced by the external library, not by acadamark. In live mode
+  acadamark may emit that library (opt-in); in static mode it may inline the
+  library's SVG output (opt-in, abc only) — but the rendering itself is always
+  the library's, so its fidelity is out of acadamark's spec.
 
 ### 0.3 Relationship to fixtures and to bug-filing
 
@@ -162,7 +165,7 @@ explicit deferrals.
 > no `figure.md` vocabulary file; `fig.md` is canonical). Several elements
 > render to a tag other than their own name — `inline-code`→`<code>`,
 > `code-block`→`<pre><code>`, `csv`/`tsv`→`<table>`, `mermaid`→`<pre>`,
-> `abc`→`<div>`, `frame`→`<figure>`, `ref`→`<a>` — so the predicates below key
+> `abc`→`<pre>`, `frame`→`<figure>`, `ref`→`<a>` — so the predicates below key
 > off the *rendered* tag, not the authored element name.
 
 ---
@@ -435,44 +438,98 @@ contract.
 ## 9. External DSLs — `RQ-DSL`
 
 **What it is.** `<mermaid>` and `<abc>` are *external* DSLs (`DESIGN.md`,
-included-vs-external distinction): the handler emits pass-through markup
-preserving the source verbatim, and rendering to a diagram or notation happens
-*external* to acadamark — at view time via a CDN library, or at build time via a
-pre-render pass. Acadamark guarantees the **markup contract**, not the rendered
-graphic.
+included-vs-external distinction): acadamark never parses the DSL's semantics
+into the core. The handler always emits the pass-through **markup contract** — a
+wrapper preserving the source verbatim, carrying `class` and
+`data-acadamark-dsl`. How that contract reaches a rendered diagram or notation is
+a per-DSL **mode** the publisher selects (`DESIGN.md`, registry-based
+external-DSL modes); the default is **skip**:
 
-**Expected markup:**
+- **skip** (default) — emit only the contract; the publisher wires rendering.
+- **live** — also emit the external library (inlined, or `<script src>` to the
+  pinned CDN) plus an init call, so the browser renders the contract markup at
+  view time.
+- **static** (abc only) — invoke the external library at build time and inline
+  the resulting SVG; no client library is shipped.
+
+Predicate IDs are **mode-aware**: `RQ-DSL-<MODE>-<KIND><N>`, MODE ∈ {`SKIP`,
+`LIVE`, `STATIC`}, KIND ∈ {`M` markup, `S` stylesheet, `O` observable}. The
+mode-independent contract predicates keep the bare `RQ-DSL-M<N>` form. The
+inline-vs-CDN split inside live mode is one observable contract (library present
++ init + markup preserved; only the asset *source* differs), so it lives inside
+the `RQ-DSL-LIVE-*` prose rather than in a separate MODE token.
+
+**Expected markup (the contract, mode-independent):**
 
 ```html
 <pre class="mermaid" data-acadamark-dsl="mermaid">graph LR
   A --> B</pre>
 
-<div class="abc" data-acadamark-dsl="abc">X:1
+<pre class="abc" data-acadamark-dsl="abc">X:1
 T:Tune
-…</div>
+…</pre>
 ```
 
-**Markup predicates:**
+**Contract predicates (mode-independent):**
 
 - **`RQ-DSL-M1`** — a `mermaid` block renders `<pre class="mermaid"
   data-acadamark-dsl="mermaid">` with the Mermaid source preserved verbatim as
   text content.
-- **`RQ-DSL-M2`** — an `abc` block renders `<div class="abc"
-  data-acadamark-dsl="abc">` with the ABC source preserved verbatim.
+- **`RQ-DSL-M2`** — an `abc` block renders `<pre class="abc"
+  data-acadamark-dsl="abc">` with the ABC source preserved verbatim. The wrapper
+  is `<pre>` (matching Mermaid): the HTML formatter leaves `<pre>` content
+  untouched, so the line-oriented ABC source survives serialization without
+  reflow or indentation.
 - **`RQ-DSL-M3`** — both share the figure counter; when captioned/numbered, a
   sibling `<figcaption>` carries the `figure-label` (`Figure N.`).
+
+**Skip-mode predicate (the default):**
+
+- **`RQ-DSL-SKIP-M1`** — in skip mode the rendered HTML is the contract markup
+  only: no library asset nodes, no init call, no inline SVG.
+
+**Live-mode predicates:**
+
+- **`RQ-DSL-LIVE-M1`** — a present DSL conditionally gets its library — an inline
+  `<script>` carrying the bundled source, **or** a `<script src>` to the pinned
+  CDN — plus an init call. An absent DSL gets nothing; a mermaid-only document
+  gets only mermaid assets (assets are gated on DSL presence).
+- **`RQ-DSL-LIVE-M2`** — the contract markup (per `RQ-DSL-M1`/`M2`) is preserved
+  unchanged alongside the emitted assets.
+- **`RQ-DSL-LIVE-O1`** *(observable, visual-only)* — opened in a browser with
+  library access, the sources render to SVG (diagram, notation).
+
+**Static-mode predicates (abc only):**
+
+Static mode is **deferred**: no DSL has a wired static renderer yet, so
+requesting `static` for either DSL currently raises the fail-explicitly build
+error below. The predicates here define the abc-static *target* contract a later
+slice realizes (abc renders headlessly); mermaid is permanently live-only.
+
+- **`RQ-DSL-STATIC-M1`** — the `abc` element's source is **replaced** by an
+  inline `<svg>` of the rendered notation.
+- **`RQ-DSL-STATIC-M2`** — no client-side library or init call is emitted.
+- **`RQ-DSL-STATIC-O2`** *(observable, visual-only)* — opened offline with
+  JavaScript disabled, the notation still displays.
+- **No `RQ-DSL-STATIC-*` predicate exists for `mermaid`** — mermaid is live-only
+  (its only browserless render path needs a headless browser). Asking for static
+  mermaid is a **build error**, not a silent skip: the interpreter throws when a
+  `static` mode is requested for a DSL with no static renderer, and only when
+  that DSL is actually present in the document (the fail-explicitly guard).
 
 **Stylesheet predicates:**
 
 - **`RQ-DSL-S1`** — the `<pre>` carrying Mermaid source is styled as a code
   block (so an un-rendered diagram degrades to readable source, not invisible
-  text). No dedicated rule for `.abc`/`.mermaid` *rendered* output is required
-  of the default theme.
+  text) — graceful degradation in skip mode and in live mode before the library
+  runs. No dedicated rule for `.abc`/`.mermaid` *rendered* output is required of
+  the default theme.
 
-**Out of spec.** The rendered diagram/notation fidelity; the presence of a CDN
-`<script>` or build-time pre-render — these are the publisher's choice of tool
-and are explicitly *not* emitted or enforced by acadamark (`DESIGN.md`,
-external-DSL paragraph). A consumer wires Mermaid (scans `class="mermaid"`) and
+**Out of spec.** Rendered diagram/notation fidelity — that is the external
+library's job, not acadamark's. Skip (the default) emits only the contract; live
+and static are opt-in and emit assets / inline SVG per the `RQ-DSL-LIVE-*` /
+`RQ-DSL-STATIC-*` predicates above (`DESIGN.md`, registry-based external-DSL
+modes). In skip mode a consumer wires Mermaid (scans `class="mermaid"`) and
 abcjs (keys on `data-acadamark-dsl="abc"`) themselves.
 
 ---

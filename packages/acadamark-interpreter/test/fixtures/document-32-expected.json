@@ -427,13 +427,13 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "<div class=\"abc\" data-acadamark-dsl=\"abc\">"
+                          "value": "<pre class=\"abc\" data-acadamark-dsl=\"abc\">"
                         }
                       ]
                     },
                     {
                       "type": "text",
-                      "value": " wrapper preserving the\nsource. abcjs has no DOM auto-scan; the consumer's page needs a small\ninit script (sample in the vocab entry) that finds each marked element\nand calls ",
+                      "value": " wrapper preserving the\nsource verbatim. abcjs has no DOM auto-scan; the consumer's page needs\na small init script (sample in the vocab entry) that finds each marked\nelement and calls ",
                       "position": {
                         "start": {
                           "line": 35,
@@ -442,8 +442,8 @@
                         },
                         "end": {
                           "line": 38,
-                          "column": 11,
-                          "offset": 1192
+                          "column": 19,
+                          "offset": 1201
                         }
                       }
                     },
@@ -464,13 +464,13 @@
                       "position": {
                         "start": {
                           "line": 38,
-                          "column": 28,
-                          "offset": 1209
+                          "column": 36,
+                          "offset": 1218
                         },
                         "end": {
                           "line": 38,
-                          "column": 29,
-                          "offset": 1210
+                          "column": 37,
+                          "offset": 1219
                         }
                       }
                     }
@@ -483,8 +483,8 @@
                     },
                     "end": {
                       "line": 38,
-                      "column": 29,
-                      "offset": 1210
+                      "column": 37,
+                      "offset": 1219
                     }
                   }
                 },
@@ -493,7 +493,7 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "div",
+                      "tagName": "pre",
                       "properties": {
                         "className": [
                           "abc"
@@ -548,12 +548,12 @@
                         "start": {
                           "line": 49,
                           "column": 1,
-                          "offset": 1331
+                          "offset": 1340
                         },
                         "end": {
                           "line": 51,
                           "column": 20,
-                          "offset": 1484
+                          "offset": 1493
                         }
                       }
                     },
@@ -575,12 +575,12 @@
                         "start": {
                           "line": 51,
                           "column": 40,
-                          "offset": 1504
+                          "offset": 1513
                         },
                         "end": {
                           "line": 52,
                           "column": 58,
-                          "offset": 1591
+                          "offset": 1600
                         }
                       }
                     }
@@ -589,12 +589,12 @@
                     "start": {
                       "line": 49,
                       "column": 1,
-                      "offset": 1331
+                      "offset": 1340
                     },
                     "end": {
                       "line": 52,
                       "column": 58,
-                      "offset": 1591
+                      "offset": 1600
                     }
                   }
                 }
@@ -614,7 +614,7 @@
     "end": {
       "line": 53,
       "column": 1,
-      "offset": 1592
+      "offset": 1601
     }
   }
 }

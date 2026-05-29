@@ -3867,7 +3867,7 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "div",
+                      "tagName": "pre",
                       "properties": {
                         "className": [
                           "abc"

@@ -114,10 +114,16 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Inline math in pipe-form named-tag content is not protected from
   escape processing** `[parser]` `[post-alpha]` *(filed by the
   render-quality slice)*
-- [ ] **ABC `<div>` source is not preserved verbatim; the HTML
+- [x] **ABC `<div>` source is not preserved verbatim; the HTML
   serializer adds indentation** `[interpreter]` `[release]`
   *(→ roadmap: Phase 14; render-quality RQ-DSL-M2; filed by the
-  render-quality bug-fix arc, DSL verification slice)*
+  render-quality bug-fix arc, DSL verification slice)* — **CLOSED
+  2026-05-29** by DSL Slice 1 (registry + live mode): the `<abc>` handler
+  now emits `<pre class="abc" data-acadamark-dsl="abc">` (matching
+  `<mermaid>`) instead of `<div>`; `<pre>` is whitespace-preserving, so the
+  HTML formatter leaves the line-oriented ABC source verbatim. The
+  canonical vocab entry (`abc.md` → generated `data.js`) was synced in the
+  same slice.
 
 ### Enhancements
 
@@ -428,6 +434,20 @@ block form, or keep backslash LaTeX out of pipe-form inline math.
 ### ABC `<div>` source is not preserved verbatim — the HTML serializer adds indentation
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
 
+**CLOSED 2026-05-29 — DSL Slice 1 (registry + live mode).** Fixed via
+candidate three below: the `<abc>` handler now emits `<pre class="abc"
+data-acadamark-dsl="abc">` instead of `<div>`. `<pre>` is one of the
+serializer's whitespace-sensitive elements (like `<mermaid>`'s wrapper), so
+the line-oriented ABC source survives verbatim — no per-line indentation,
+no inserted leading/trailing newline (`RQ-DSL-M2`). abcjs replaces the
+element's content on render regardless of tag, so the change affects source
+fidelity, not rendered output. The canonical vocab entry was synced in the
+same slice (`abc.md` now documents the `<pre>` wrapper and its rationale;
+`data.js` regenerated from it), and the abc-bearing fixtures' hast
+snapshots (doc-32, doc-44) were regenerated for the `<div>`→`<pre>`
+change (doc-36 is mermaid-only — its snapshot was unchanged, as noted
+below).
+
 `RQ-DSL-M2` requires an `<abc>` block to render `<div class="abc"
 data-acadamark-dsl="abc">` with the ABC source **preserved verbatim**, so
 a consumer-side renderer (abcjs, reading `element.textContent`) sees the
@@ -457,7 +477,9 @@ fidelity, not rendered output).
 
 Surfaced by the render-quality bug-fix arc's DSL verification slice while
 verifying `RQ-DSL` against the existing corpus — `<abc>` is exercised
-in doc-32, doc-36, and doc-44; the demonstrative fixtures (doc-45,
+in doc-32 and doc-44 (doc-36 names `<abc>` only in prose; its single DSL
+block is `<mermaid>`, confirmed when the `<div>`→`<pre>` fix left doc-36's
+snapshot unchanged); the demonstrative fixtures (doc-45,
 doc-46) exercise `<mermaid>` only. Filed, not fixed, per the
 slice's scope. See `notes/specs/render-quality.md` §9 (`RQ-DSL-M2`).
 

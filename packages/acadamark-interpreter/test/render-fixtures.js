@@ -41,6 +41,24 @@ const DEFAULT_CSS_PATH = resolve(__dirname, '..', 'src', 'assets', 'default.css'
 const SHELL_CSS = readFileSync(DEFAULT_CSS_PATH, 'utf8');
 
 /**
+ * DSL render mode per fixture (DSL Slice 1).
+ *
+ * The interpreter's default DSL mode is `skip`: external-DSL blocks (`<mermaid>`,
+ * `<abc>`) emit only their markup contract, with no rendering library. These two
+ * demonstrative fixtures are rendered `live-inline` instead, so that opening
+ * their `.html` in a browser shows the Mermaid diagram actually rendered — the
+ * library bundle is inlined (~3.3MB each) and runs at view time. This exercises
+ * live mode end-to-end for the demonstrative documents.
+ *
+ * The mode is set here, per fixture, in the renderer — NOT by changing the
+ * interpreter default (which stays `skip`). Every other fixture renders `skip`.
+ */
+const LIVE_INLINE_FIXTURES = new Set([
+  'document-45-calibration',
+  'document-46-reproducible-research',
+]);
+
+/**
  * Wrap an interpreter fragment in a full HTML document shell.
  *
  * @param {string} fragment - Raw HTML fragment from the interpreter.
@@ -74,10 +92,15 @@ function renderFixture(acmPath) {
   const src = readFileSync(acmPath, 'utf8');
   const name = basename(acmPath, '.acm');
 
+  const interpreterOptions = { assetsDir: join(FIXTURES_DIR, 'assets') };
+  if (LIVE_INLINE_FIXTURES.has(name)) {
+    interpreterOptions.dslMode = 'live-inline';
+  }
+
   const processor = unified()
     .use(remarkParse)
     .use(remarkAcadamark)
-    .use(acadamarkInterpreter, { assetsDir: join(FIXTURES_DIR, 'assets') });
+    .use(acadamarkInterpreter, interpreterOptions);
 
   const fragment = String(processor.processSync(src));
   const html = wrapInHtmlShell(fragment, name);

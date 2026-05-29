@@ -9,7 +9,7 @@
 //
 // Emitted markup (sibling-figcaption layout):
 //   [<figcaption class="title">title</figcaption>]
-//   <div class="abc" data-acadamark-dsl="abc">…source…</div>
+//   <pre class="abc" data-acadamark-dsl="abc">…source…</pre>
 //   [<figcaption>Figure N. caption text</figcaption>]
 //
 // Unlike Mermaid, abcjs has no DOM-scanning initialization — the consumer
@@ -17,14 +17,23 @@
 // and calls `ABCJS.renderAbc` on its content. The vocab entry abc.md
 // shows a typical init script.
 //
-// `<div>` is the container (vs `<pre>` for Mermaid): abcjs replaces the
-// element's content with rendered SVG, so a block-level container is
-// natural.
+// `<pre>` is the container (matching Mermaid). It was `<div>` until the
+// RQ-DSL-M2 fix: the HTML formatter (hast-util-format, via rehype-format)
+// reflows and re-indents text inside non-whitespace-sensitive containers,
+// which collapsed the newlines of the line-oriented abc source — corrupting
+// the verbatim-source contract (RQ-DSL-M2). `<pre>` is in the formatter's
+// whitespace-sensitive set, so the source survives serialization unchanged.
+// This is also a prerequisite for live mode: the abc init script renders
+// from `el.textContent`, which must be the unmodified notation. abcjs
+// replaces the container's content with rendered SVG and accepts any
+// element as the render target, so `<pre>` works there too.
 //
 // Phase 2 slice 2c (2026-05-27) — initial.
 // Phase 3 slice 3c (2026-05-28) — refactored to consume the unified
 // renderFrameable helper. Caption / title arrive as <caption> / <title>
 // child tags.
+// DSL Slice 1 (2026-05-29) — RQ-DSL-M2 fix: wrapperEl <div> → <pre> so the
+// source survives serialization verbatim.
 
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
@@ -53,7 +62,7 @@ export function abcHandler(state, node) {
   return renderFrameable({
     kind: 'abc',
     bodyHast: [{ type: 'text', value: source }],
-    wrapperEl: 'div',
+    wrapperEl: 'pre',
     wrapperProps,
     captionHast,
     titleHast,

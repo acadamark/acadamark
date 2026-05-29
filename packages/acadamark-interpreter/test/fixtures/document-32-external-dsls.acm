@@ -32,10 +32,10 @@ sequenceDiagram
 <section | ABC music notation>
 
 A short ABC notation excerpt. The handler emits a
-`<div class="abc" data-acadamark-dsl="abc">` wrapper preserving the
-source. abcjs has no DOM auto-scan; the consumer's page needs a small
-init script (sample in the vocab entry) that finds each marked element
-and calls `ABCJS.renderAbc`.
+`<pre class="abc" data-acadamark-dsl="abc">` wrapper preserving the
+source verbatim. abcjs has no DOM auto-scan; the consumer's page needs
+a small init script (sample in the vocab entry) that finds each marked
+element and calls `ABCJS.renderAbc`.
 
 <abc #music:twinkle>
 X:1

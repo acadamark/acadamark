@@ -1338,8 +1338,9 @@ export function run() {
   // ── Document 32: Phase 2 slice 2c — external DSL handlers ────────────────
   // Proves: <mermaid> emits <pre class="mermaid" data-acadamark-dsl="mermaid">
   // with source preserved verbatim (CDN-compatible markup for Mermaid's DOM
-  // scanner). <abc> emits <div class="abc" data-acadamark-dsl="abc"> with
-  // source preserved (consumer initializes abcjs explicitly via the marker).
+  // scanner). <abc> emits <pre class="abc" data-acadamark-dsl="abc"> with
+  // source preserved verbatim (RQ-DSL-M2 fix — <pre> survives the formatter;
+  // the consumer initializes abcjs explicitly via the marker).
   {
     const src = readFileSync(
       join(FIXTURES_DIR, 'document-32-external-dsls.acm'),
@@ -1367,13 +1368,14 @@ export function run() {
       'doc32: Mermaid sequence-diagram source preserved (handler does not assume diagram type)',
     );
 
-    // <abc>: wrapper is <div class="abc" data-acadamark-dsl="abc">
+    // <abc>: wrapper is <pre class="abc" data-acadamark-dsl="abc"> (RQ-DSL-M2
+    // fix — was <div>; <pre> keeps the line-oriented source verbatim).
     assert.ok(
-      /<div[^>]*class="abc"[^>]*data-acadamark-dsl="abc"|<div[^>]*data-acadamark-dsl="abc"[^>]*class="abc"/.test(html),
-      'doc32: <abc> wrapper is <div> with class="abc" and data-acadamark-dsl="abc"',
+      /<pre[^>]*class="abc"[^>]*data-acadamark-dsl="abc"|<pre[^>]*data-acadamark-dsl="abc"[^>]*class="abc"/.test(html),
+      'doc32: <abc> wrapper is <pre> with class="abc" and data-acadamark-dsl="abc"',
     );
     assert.ok(
-      /<div[^>]*id="music:twinkle"[^>]*>/.test(html),
+      /<pre[^>]*id="music:twinkle"[^>]*>/.test(html),
       'doc32: <abc #music:twinkle> renders with id preserved',
     );
     // ABC source is preserved verbatim

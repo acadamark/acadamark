@@ -103,13 +103,23 @@ two built-ins, with the public `registerDsl` API deferred to v0.2.0;
 **mermaid is live-only** and **abc is live + static**, so static-Mermaid —
 and its young-browserless-library-vs-~280 MB-Chromium choice — is
 **dropped**. `dslMode` is per-DSL over a global `skip` default; the
-demonstrative fixtures render **live-inline**. The amendment proposes (does
-not write) the DESIGN.md and `render-quality.md` revisions a follow-up
-slice will make. The immediate next work is the rest of
-the bug-fix arc: slice B (the book caption/label vs. cross-reference
-numbering mismatch) and slice C (the parser bug where inline math in
-pipe-form tag content is not opaque to escape processing). Nothing else
-is in flight.
+demonstrative fixtures render **live-inline**. **DSL Slice 1 (registry +
+live mode) is now done**: `src/dsl/registry.js` holds the two built-ins
+behind `getRegisteredDsls()` / `getDsl()` / `resolveDslMode()`; the
+compiler emits live-mode assets (an inlined library bundle, or a pinned-CDN
+`<script src>`, plus an init call — gated on DSL presence) for any non-skip
+DSL, and throws the fail-explicitly error when `static` is asked of a DSL
+with no static renderer. **`RQ-DSL-M2` is fixed** — the `<abc>` handler now
+emits `<pre class="abc" …>` (matching mermaid), so the HTML formatter
+leaves the line-oriented source verbatim; the canonical vocab entry
+(`abc.md` → generated `data.js`) was synced in the same slice. The
+DESIGN.md and `render-quality.md` revisions the amendment proposed are now
+written, and doc-45 / doc-46 render their mermaid diagrams live-inline.
+**Next:** DSL Slice 2 (abc static mode — build-time SVG via a jsdom shim;
+mermaid stays live-only), plus the rest of the bug-fix arc — slice B (the
+book caption/label vs. cross-reference numbering mismatch) and slice C (the
+parser bug where inline math in pipe-form tag content is not opaque to
+escape processing). Nothing else is in flight.
 
 ## Milestones
 
@@ -3475,3 +3485,70 @@ that). One line gets added every few months, not every slice.
   characterized in the prior entry and is unchanged). No code, spec, DESIGN.md,
   fixture, snapshot, or test changes; the only edits are the findings amendment,
   the "In flight / next" pointer, and this log entry.
+
+- **2026-05-29 — DSL Implementation Slice 1 (registry + live mode).**
+  The first implementation slice of the DSL-rendering arc, executing the
+  Phase 0 amendment's Path C. Built the per-DSL render registry
+  (`src/dsl/registry.js`): `getRegisteredDsls()` / `getDsl(name)` read the
+  built-in entries — **mermaid** (live-only) and **abc** (live; static
+  declared but `staticRenderer: null`) — each carrying its `class`/`pre`
+  contract, a lazy `bundleLoader`, a version-pinned `cdnUrl`, and an
+  `initScript`; `resolveDslMode(name, opts)` applies the precedence
+  `‹dsl›Mode ?? dslMode ?? 'skip'` and throws on an invalid value. Wired
+  **live mode** into the interpreter (`src/index.js`): a presence-gated asset
+  prepend that iterates the registry (rather than naming each DSL), and for
+  every DSL that both appears in the document (`data-acadamark-dsl` marker
+  walk, overridable per registration via an optional `detector`) and resolves
+  to a live mode, unshifts the library + init ahead of the document —
+  `live-inline` inlines the bundle via the lazy `bundleLoader` (read only on
+  that path, so skip-mode builds never touch it), `live-link` emits a
+  `<script src>` to the pinned CDN plus a separate init `<script>`. This is
+  the same additive shape as the existing KaTeX / hover-preview injection; the
+  `skip` default is unchanged, so the slice is output-neutral at the default.
+  `static` raises a **fail-explicitly** build error (only when such a DSL is
+  actually present), since no DSL has a wired static renderer until Slice 2.
+  Added `mermaid@^10.9.6` and `abcjs@^6.6.3` to the interpreter's
+  `dependencies` (lockfile updated) so the bundles are resolvable for
+  live-inline. Closed **`RQ-DSL-M2`**: the `<abc>` handler now emits `<pre
+  class="abc" data-acadamark-dsl="abc">` instead of `<div>`, so the hast→HTML
+  formatter (which reflows only non-whitespace-sensitive containers, and
+  `<pre>` is not one) preserves the line-oriented ABC source byte-verbatim;
+  this also makes the source safe for the live init, which renders from
+  `el.textContent`. The fix surfaced spec⇄code drift in the
+  `layer1-vocabulary` package, folded into this slice (user-confirmed scope):
+  `elements/abc.md`'s `html_output.element` wrapper changed `<div>`→`<pre>`
+  with rationale, and the generated `src/data.js` regenerated to match. The
+  demonstrative fixtures **doc-45** (`#fig:workflow`) and **doc-46**
+  (`#fig:lineage`) now render `live-inline` — set per-fixture in
+  `render-fixtures.js` (a `LIVE_INLINE_FIXTURES` set), *not* by moving the
+  interpreter default — so opening their `.html` shows the mermaid diagrams
+  actually drawn: each inlines the ~3.3 MB mermaid UMD bundle plus a
+  `startOnLoad` init (~4.08 MB / ~4.06 MB on disk), with the contract markup
+  and no CDN link. Spec/design written this slice: DESIGN.md's included-vs-
+  external section gained the registry, three-mode, and optional-dependency
+  drop-ins and its opening axis was redrawn from render-timing to
+  **who owns the rendering**; `render-quality.md` §9 was restructured to the
+  mode-aware `RQ-DSL-<MODE>-<KIND><N>` scheme (M1/M2/M3 kept as
+  mode-independent contract predicates with M2 now `<pre>`, plus
+  SKIP/LIVE/STATIC families, STATIC marked deferred), with the §8→§9 xref and
+  the abc→`<pre>` completeness note corrected. Tests: a new `dsl/registry`
+  suite (10 assertions) was added and `test/run.js` registers it — **25/25
+  suites pass** from a clean run. Snapshots for doc-32 and doc-44 (the real
+  `<abc>` fixtures) were regenerated for the `<div>`→`<pre>` change; all
+  other snapshots hold strict zero-diff, including doc-36 — which exercises
+  **only `<mermaid>`**, not `<abc>` (its two `<abc>` mentions are prose in
+  backtick spans). That corrected a stale BACKLOG provenance claim ("doc-36
+  exercises abc"). Only four `.html` files changed (doc-32, doc-44 for
+  div→pre; doc-45, doc-46 for the inlined live bundle); M2 byte-verbatim was
+  confirmed by inspecting the rendered abc at column 0. **Deferred:** Slice 2
+  (abc static mode — build-time SVG via a jsdom shim; mermaid stays
+  live-only); the public `registerDsl` API stays out of `exports` until
+  v0.2.0; the live/static dependency *category* (peer/optional vs. the current
+  `dependencies`) is left for the v0.2.0 public-API slice. **Coherence:**
+  spec ⇄ code — registry, live emit-path, M2 fix, and the resolveDslMode
+  precedence all match the revised DESIGN.md and render-quality.md §9;
+  vocab ⇄ code — abc.md and the generated data.js are synced to the `<pre>`
+  wrapper; backlog ⇄ roadmap — `RQ-DSL-M2` flipped closed in BACKLOG (with
+  the doc-36 provenance correction) and ROADMAP's current-position /
+  Phase-14 gating updated to record the fix; STATUS "In flight / next"
+  advanced to name Slice 2 and the remaining bug-fix slices.

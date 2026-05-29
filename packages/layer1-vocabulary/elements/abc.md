@@ -7,8 +7,10 @@ html_output:
   notes: |
     `html_output.element` here is the vocabulary lookup key (must match
     the tagname). The handler emits the wrapper element shape directly
-    (a `<div class="abc" data-acadamark-dsl="abc">…</div>`); the schema
-    field is not consulted under `interpreter_strategy: handler`.
+    (a `<pre class="abc" data-acadamark-dsl="abc">…</pre>` — `<pre>`,
+    matching Mermaid, so the line-oriented ABC source survives HTML
+    serialization verbatim); the schema field is not consulted under
+    `interpreter_strategy: handler`.
 
     `<abc>` is an **external DSL** per `DESIGN.md` §"DSL handlers:
     included vs external". Acadamark preserves the source as marked
@@ -54,12 +56,12 @@ shorthand_examples:
       C C G G | A A G2 | F F E E | D D C2 |
       </abc>
     layer1_html: |
-      <div class="abc" data-acadamark-dsl="abc">X:1
+      <pre class="abc" data-acadamark-dsl="abc">X:1
       T:Twinkle, Twinkle, Little Star
       M:4/4
       L:1/4
       K:C
-      C C G G | A A G2 | F F E E | D D C2 |</div>
+      C C G G | A A G2 | F F E E | D D C2 |</pre>
     notes: |
       An ABC notation excerpt. The wrapper preserves the source verbatim
       for the consumer's abcjs initialization to find and render.
@@ -67,7 +69,7 @@ interpreter_strategy: handler
 handler_module: ./handlers/abc.js
 handler_responsibilities:
   - Read the opaque content as ABC notation source.
-  - Emit a `<div class="abc" data-acadamark-dsl="abc">…</div>` wrapper
+  - Emit a `<pre class="abc" data-acadamark-dsl="abc">…</pre>` wrapper
     preserving the source verbatim.
   - Apply id / classes from the node (the `abc` class is added by the
     handler alongside any author-supplied classes; the
@@ -82,7 +84,7 @@ An ABC music notation block. External DSL — source preserved as marked markup;
 
 ## Semantic intent
 
-`<abc>` is acadamark's tag for ABC notation source. The handler emits a `<div class="abc" data-acadamark-dsl="abc">…</div>` wrapper preserving the source.
+`<abc>` is acadamark's tag for ABC notation source. The handler emits a `<pre class="abc" data-acadamark-dsl="abc">…</pre>` wrapper preserving the source.
 
 Unlike Mermaid (which has a documented DOM-scanning initialization), abcjs requires explicit `ABCJS.renderAbc(target, source)` calls. The consumer's page needs a small initialization script that finds each `data-acadamark-dsl="abc"` element and calls abcjs on its content. A typical consumer script:
 
@@ -97,7 +99,7 @@ Unlike Mermaid (which has a documented DOM-scanning initialization), abcjs requi
 </script>
 ```
 
-A build-time pre-render pass can do the same via a headless browser, replacing the `<div>` content with rendered SVG before publication.
+A build-time pre-render pass can do the same via a headless browser, replacing the `<pre>` content with rendered SVG before publication.
 
 See `DESIGN.md` §"DSL handlers: included vs external" for the architectural framing.
 

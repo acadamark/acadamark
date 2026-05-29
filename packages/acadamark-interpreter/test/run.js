@@ -25,6 +25,7 @@ import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
 import { run as runBibliography } from './plugins/bibliography.test.js';
 import { run as runCiteHandler } from './handlers/cite.test.js';
 import { run as runNormalizeToCanonical } from './plugins/normalize-to-canonical.test.js';
+import { run as runRegistryDsl } from './dsl/registry.test.js';
 import { run as runIntegration } from './integration.test.js';
 
 const suites = [
@@ -51,6 +52,7 @@ const suites = [
   ['plugins/bibliography',         runBibliography],
   ['handlers/cite',                runCiteHandler],
   ['plugins/normalize-to-canonical', runNormalizeToCanonical],
+  ['dsl/registry',                 runRegistryDsl],
   ['integration',                  runIntegration],
 ];
 

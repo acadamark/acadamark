@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "abcjs": "^6.6.3",
     "acadamark-core": "*",
     "citation-js": "^0.7.22",
     "hast-util-from-html": "^2.0.3",
@@ -20,6 +21,7 @@
     "katex": "^0.16.45",
     "layer1-vocabulary": "*",
     "mdast-util-to-hast": "^13.0.0",
+    "mermaid": "^10.9.6",
     "rehype-format": "^5.0.1",
     "remark-acadamark": "*",
     "remark-gfm": "^4.0.1",

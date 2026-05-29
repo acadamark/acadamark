@@ -159,7 +159,7 @@ const _abc = Object.freeze({
       "element": "abc",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<div class=\"abc\" data-acadamark-dsl=\"abc\">…</div>`); the schema\nfield is not consulted under `interpreter_strategy: handler`.\n\n`<abc>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Acadamark preserves the source as marked\nmarkup; rendering to SVG happens external to acadamark — at view\ntime in the browser (the consumer initializes abcjs with a small\nscript calling `ABCJS.renderAbc` on each marked block) or at\nbuild time via a headless pre-render pass.\n",
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"abc\" data-acadamark-dsl=\"abc\">…</pre>` — `<pre>`,\nmatching Mermaid, so the line-oriented ABC source survives HTML\nserialization verbatim); the schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<abc>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Acadamark preserves the source as marked\nmarkup; rendering to SVG happens external to acadamark — at view\ntime in the browser (the consumer initializes abcjs with a small\nscript calling `ABCJS.renderAbc` on each marked block) or at\nbuild time via a headless pre-render pass.\n",
     },
     "acadamark_attributes": {
       "id": {
@@ -191,7 +191,7 @@ const _abc = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<abc>\nX:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |\n</abc>\n",
-        "layer1_html": "<div class=\"abc\" data-acadamark-dsl=\"abc\">X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |</div>\n",
+        "layer1_html": "<pre class=\"abc\" data-acadamark-dsl=\"abc\">X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |</pre>\n",
         "notes": "An ABC notation excerpt. The wrapper preserves the source verbatim\nfor the consumer's abcjs initialization to find and render.\n",
       },
     ],
@@ -199,7 +199,7 @@ const _abc = Object.freeze({
     "handler_module": "./handlers/abc.js",
     "handler_responsibilities": [
       "Read the opaque content as ABC notation source.",
-      "Emit a `<div class=\"abc\" data-acadamark-dsl=\"abc\">…</div>` wrapper preserving the source verbatim.",
+      "Emit a `<pre class=\"abc\" data-acadamark-dsl=\"abc\">…</pre>` wrapper preserving the source verbatim.",
       "Apply id / classes from the node (the `abc` class is added by the handler alongside any author-supplied classes; the `data-acadamark-dsl` attribute is always present).",
       "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
     ],
