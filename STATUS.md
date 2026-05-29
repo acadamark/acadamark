@@ -2331,3 +2331,30 @@ that). One line gets added every few months, not every slice.
 
   **Phase 5 sub-progress:** slice 5a closes the package-creation
   + lift + minimal-export work. Slices 5b/5c/5d remain.
+- **2026-Q2 — backlog and roadmap reconciliation.** Cleanup pass.
+  Deleted six closed items from `BACKLOG.md` (both the checklist
+  line and the corresponding `### ... — DONE` detailed entry for
+  each): *Implement per-section footnote collection* (closed in
+  `7001aaa`), *Implement DSL handlers* (closed across slices 2a/
+  2b/2c), *Add integration test and snapshot for `document-9-demo`*
+  (closed in `0bcd008`), *Support caption-as-content for `<table>`/
+  `<figure>`, similar* (closed in `a90a0d2`), *Build the
+  frameable-class capability* (closed via Phase 3 sub-slices),
+  *Build book / book-part document structuring* (closed in
+  `c7b2b75`). Per the documented contract at
+  ROADMAP.md L528-534 ("A slice that closes an alpha item ...
+  removes the entry from `BACKLOG.md`"), BACKLOG is the active-work
+  document; the historical record stays in STATUS milestones and
+  commit messages. **Slice 5a (JATS export) stays in flight**
+  marked `[~]` in BACKLOG — not touched. Counts: checklist items
+  42 → 36; detailed entries 42 → 36 (still in 1:1 correspondence
+  modulo the two pre-existing orphans flagged below). ROADMAP not
+  reordered (Q1.2 stop-and-report fired: phases were already in
+  numerical sequence 1→13; user confirmed skip the reorder).
+  Pre-existing orphans surfaced and recorded for a future
+  housekeeping pass (not touched in this cleanup): *Author override
+  for footnote-collection depth* has a checklist line but no
+  detailed entry; *The unbraced-inline `@` form* has a detailed
+  entry but no checklist line. Both unrelated to the closed-item
+  cleanup. No product code, spec, or test changes — pure backlog
+  cleanup.

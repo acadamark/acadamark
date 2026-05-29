@@ -81,9 +81,6 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **Generalize the qualifying-tag pattern beyond `<table>`**
   `[parser]` `[post-alpha]` *(formerly DF-17)*
-- [x] **Implement per-section footnote collection** `[interpreter]`
-  `[alpha]` *(→ roadmap: Phase 2)* *(formerly PG-1)* —
-  **done 2026-05-27**; closes Phase 2.
 - [ ] **Author override for footnote-collection depth** `[interpreter]`
   `[post-alpha]` — explicit-placement markup or `<config>` directive
   to let authors override the default "outermost-section
@@ -94,23 +91,10 @@ A flat scannable index of every open item. Detailed entries below.
   coupled to multi-column display rendering *(formerly PG-2)*
 - [ ] **Make the bibliography heading a config kwarg instead of
   hardcoded** `[interpreter]` `[post-alpha]` *(formerly PG-10)*
-- [x] **Implement DSL handlers** (`<csv>`/`<tsv>`, `<mermaid>`/`<abc>`,
-  math environments) `[interpreter — DSL surface]` `[alpha]`
-  *(→ roadmap: Phase 2)* *(formerly DF-8, DF-9, DF-10)* —
-  **done across slices 2a (`091d7c6`), 2b (`297e543`), 2c
-  (2026-05-27)**.
 - [ ] **Document the tag-form × tag matrix and reconcile
   inconsistencies** `[specs/docs]` `[post-alpha]` *(formerly AUD-15)*
 - [ ] **Add forward-pointers from governed specs to design directions
   DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(formerly AUD-25)*
-- [x] **Add integration test and snapshot for `document-9-demo`**
-  `[tests/build]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly GAP-9)* —
-  **done in slice 4b (2026-05-29)**. `document-9-expected.json`
-  snapshot generated; integration test block added mirroring
-  doc6/doc7/doc8 pattern. Pins the alpha-complete article pipeline
-  (bare-heading lift, citations via .bib library, display math with
-  numbered cross-refs, notes, frameable figures/tables, blockquote,
-  code blocks). All existing snapshots zero-diff.
 - [ ] **Migrate `<data>` onto the structured-element infrastructure**
   `[interpreter]` `[post-alpha]` *(filed by `beb2fb3`)*
 
@@ -122,19 +106,6 @@ A flat scannable index of every open item. Detailed entries below.
   written first `[parser]` `[post-alpha]` *(formerly DF-3)*
 - [ ] **Implement multi-column display rendering** `[interpreter]`
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
-- [x] **Support caption-as-content for `<table>`, `<figure>`, similar
-  (DD-1 / DD-2 implementation)** `[cross-cutting]` `[alpha]`
-  *(→ roadmap: Phase 3)* *(formerly AUD-14)* —
-  **done in slice 3c (2026-05-28)** via Option A: `<caption>` as a
-  child-tag position on every frameable; `caption=` kwarg form
-  lifts to child-tag at the normalize-to-canonical gate (opaque-
-  content frameables — tables, csv, tsv, mermaid, abc, svg — keep
-  the kwarg as canonical to preserve their body data, with the
-  fallback path inside `extractFrameableChildren`).
-- [x] **Build the frameable-class capability** `[cross-cutting]`
-  `[alpha]` *(→ roadmap: Phase 3)* *(filed by `1d100eb`)* —
-  **done across Phase 0 (`cec620c`), slice 3a (`14b95b7`,
-  numbering precursor), and slice 3b (2026-05-28, the build).**
 - [ ] **Build the lowering pass (Layer 1 → canonical acadamark)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
 
@@ -152,17 +123,6 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 9)* *(formerly
   DF-4)*
-- [x] **Build book / book-part document structuring**
-  `[cross-cutting]` `[alpha]` *(→ roadmap: Phase 4)* *(formerly DF-12)* —
-  **done in slice 4a (2026-05-29)** via the new
-  `acadamarkBookStructuring` plugin (forward-referenced from book.md
-  / book-part.md since vocab creation, now real); generalized
-  `note-placement.js` to handle book trees; per-chapter counter
-  resets with chapter-prefix cross-references ("Figure 1.3");
-  configurable `counter-reset-scope` (`none`/`chapter`/`section`)
-  and `note-scope` (`document`/`chapter`/`section`) via `<config>`
-  kwargs; per-book-part authorship for edited volumes. Article
-  behavior preserved (strict zero-diff on 22 existing fixtures).
 - [ ] **Build pagination and print formatting** `[cross-cutting]`
   `[post-alpha]` *(→ roadmap: Phase 8)*
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
@@ -285,28 +245,6 @@ fix waits for that ruling. Severity: medium — maintenance hazard
 Generalizing the qualifying-tag pattern beyond `<table>` (note: the
 pattern already works *for* `<table>`). *(formerly DF-17)*
 
-### Implement per-section footnote collection — DONE
-`[interpreter]` `[alpha]` *(→ roadmap: Phase 2)*
-
-**Closed 2026-05-27.** Implemented in `note-placement.js` with the
-**outermost-section collection** rule: for each top-level `<section>`
-in `<article-body>`, walk its subtree; collect every descendant
-`<note placement=foot>`; inject a `<note-list class="footnotes">` at
-the end of that section's content. Nested sub-section notes are
-absorbed by the outermost ancestor section (not their own sub-section
-list). Numbering stays global across the document (the existing
-`registry.numberRegistry()` assigns numbers in document-order before
-placement, independent of collection).
-
-Residual notes (end-placement, side-placement, and any `placement=foot`
-notes outside every top-level section — e.g. front-matter, between
-sections) fall through to a single `<article-back>` list. Each note
-appears exactly once.
-
-Author override for the collection-depth rule (deepest section, fixed
-level, explicit placement) is deferred as `[post-alpha]`. *(formerly
-PG-1)*
-
 ### Implement margin sidenotes
 `[interpreter]` `[post-alpha]`
 
@@ -328,36 +266,6 @@ multi-column display rendering item (also `[post-alpha]`).
 
 Hardcoded bibliography heading — a config kwarg, very small.
 *(formerly PG-10)*
-
-### Implement DSL handlers — DONE
-`[interpreter — DSL surface]` `[alpha]` *(→ roadmap: Phase 2)*
-
-**Closed (2026-05-27).** Three families shipped across three sub-slices:
-
-- **Slice 2a** (`091d7c6`) — `<csv>` / `<tsv>` standalone DSL handlers
-  (DF-8). Thin wrappers around `table.js`'s reusable parsers, sharing
-  the new `renderParsedTable` helper. Plus the adjacent `<code>`
-  long-form bug fix and `<library>` vocab reconciliation surfaced by
-  Phase 0.
-- **Slice 2b** (`297e543`) — `<math>` long-form plus the four
-  math-environment tags `<matrix>`/`<cases>`/`<align>`/`<eqnarray>`
-  (DF-10) via the extended `math.js` handler (per-tagname dispatch in
-  `MATH_TAG_SPEC`; wrap-inside convention). KaTeX already installed,
-  no new deps.
-- **Slice 2c** (2026-05-27) — `<mermaid>` and `<abc>` external DSL
-  handlers (DF-9). Pass-through markup with CDN-compatible classes
-  plus `data-acadamark-dsl` markers for downstream tooling. The
-  included-vs-external distinction was recorded as a new section in
-  `DESIGN.md`. No npm deps added (rendering is external).
-
-The original DF-11a `<theorem>` handler was previously bundled here.
-**It was retired** from the bundle when the theorem family was confirmed
-as regular Layer 1 vocabulary (no foreign-language interpretation, no
-handler dispatch needed) by the 2026-05-27 DSL/long-form parser bug
-fix. Any Layer-1 rendering enhancement for theorem-family elements
-(shared-counter wiring, label rendering with the optional `name`
-kwarg) is regular-vocabulary work scheduled separately if and when
-taken up. *(formerly DF-8, DF-9, DF-10; DF-11a retired)*
 
 ### Document the tag-form × tag matrix and reconcile inconsistencies
 `[specs/docs]` `[post-alpha]`
@@ -395,21 +303,6 @@ relevant to AUD-14 below). Fix path: add "See also: DD-N in DESIGN.md
 §Design directions" forward-pointer lines to the governed entries. A
 propagation slice; `DESIGN.md` remains the canonical owner.
 *(formerly AUD-25)*
-
-### Add integration test and snapshot for `document-9-demo` — DONE
-`[tests/build]` `[alpha]` *(→ roadmap: Phase 4)*
-
-**Closed 2026-05-29 in Phase 4 slice 4b.** `document-9-expected.json`
-snapshot generated from current pipeline output; integration test
-block added in `test/integration.test.js` mirroring the existing
-doc6/doc7/doc8 pattern (snapshot match + a few spot-check assertions
-for the most distinctive surface features: article wrapping, display
-math with numbered equation-number spans, table/figure cross-
-references, bibliography rendering, note-list emission, code-block
-colon-ids). The snapshot pins the alpha-complete article pipeline
-against this reference document — regressions in any combined-
-pipeline path now surface as a diff. All other 23 existing fixtures
-zero-diff. *(formerly GAP-9)*
 
 ### Migrate `<data>` onto the structured-element infrastructure
 `[interpreter]` `[post-alpha]`
@@ -451,63 +344,6 @@ Gated by MC-Q1 through MC-Q4 (in the Discussions group).
 *(formerly DF-5)* — Margin sidenotes (see that item) are coupled to
 this work: the margin is another column, and the multi-column layout
 engine is the machinery a margin needs.
-
-### Support caption-as-content for `<table>`, `<figure>`, similar — DONE
-`[cross-cutting]` `[alpha]` *(→ roadmap: Phase 3)*
-
-**Closed 2026-05-28 in Phase 3 slice 3c.** Implemented Option A
-(the recommended-at-filing path): `<caption>` is a child-tag
-position on every frameable element. The `caption=` kwarg form
-remains accepted as a convenient short form for plain-text
-captions and lifts to a `<caption>` child tag at the
-normalize-to-canonical gate via the new `liftFrameableKwargs`
-function (acadamark-interpreter/src/plugins/normalize-to-canonical.js)
-backed by a new `FRAMEABLE_LIFTABLE` registry
-(acadamark-core/src/frameable-elements.js, companion to the
-existing STRUCTURED_ELEMENTS registry).
-
-Opaque-content frameables (tables, csv, tsv, mermaid, abc, svg —
-whose body is a string) skip the lift to preserve their data; the
-handlers' `extractFrameableChildren` helper transparently falls
-back to reading from `node.kwargs.caption` / `node.kwargs.title`
-when no child tag exists. Caption-as-content with formatted
-content (citations, emphasis) works for `<fig>` and `<frame>`;
-opaque-content frameables keep the kwarg as their canonical
-authoring form. Recursive content parsing handles citations
-inside the child-tag form naturally. *(formerly AUD-14)*
-
-### Build the frameable-class capability — DONE
-`[cross-cutting]` `[alpha]` *(→ roadmap: Phase 3)*
-
-**Closed 2026-05-28.** A capability shared by `<fig>`, `<table>`,
-`<code>`, `<svg>`, `<mermaid>`, other DSL-registry block elements,
-plus the generic `<frame>`. Settled design (recorded in `DESIGN.md`
-via `1d100eb`): optional outline box, optional title (top), optional
-caption (bottom); numbering folded into caption/title rendering, not
-a separate field. `<figure>` is an accepted authoring alias for the
-canonical `<fig>`, normalized at the lift gate.
-
-Shipped across three sub-slices:
-- **Phase 0** (`cec620c`, 2026-05-27,
-  `notes/phase3-frameable-findings.md`) — inventory, per-member
-  shared-vs-specific analysis, SPLIT-vs-bundle recommendation.
-- **Slice 3a — numbering-registry extension** (`14b95b7`,
-  2026-05-28) — theorem-family + math-envs numbered;
-  cross-references resolve.
-- **Slice 3b — frameable build** (this slice, 2026-05-28) — three
-  new vocab entries (`<fig>`, `<svg>`, `<frame>`); `<figure>` alias
-  rewriting to `<fig>` at the gate; shared `formatLabel` primitive
-  in `lib/frameable.js` (the helper sits at the label-formatting
-  level after Q1 found three structurally divergent caption idioms
-  across the existing handlers — uniform wrapper helper was the
-  wrong abstraction); DSL counter assignments (csv/tsv → table,
-  mermaid/abc → figure, svg → figure); theorem-family label
-  rendering ("Theorem N (Name).") via new `handlers/theorem.js`;
-  fixture doc36.
-
-**Slice 3c — caption-as-content (DD-1 / DD-2 implementation)
-remains open** — that's the next Phase 3 item; see L119-121
-above for the open `[alpha]` entry. *(filed by `1d100eb`)*
 
 ### Build the lowering pass (Layer 1 → canonical acadamark)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
@@ -559,43 +395,6 @@ path-agnostic interpreter — could be done early if convenient. It
 makes future multi-file work cheaper without committing to any of
 the four MF-Q design questions. The multi-file feature itself is
 post-alpha.
-
-### Build book / book-part document structuring — DONE
-`[cross-cutting]` `[alpha]` *(→ roadmap: Phase 4)*
-
-**Closed 2026-05-29 in Phase 4 slice 4a.** Implemented the
-forward-referenced `acadamarkBookStructuring` plugin per the vocab
-declarations in book.md / book-part.md. The plugin runs before
-`acadamarkArticleStructuring`; for `<meta type=book>` documents it
-wraps the tree in `<book>`/`<book-front>`/`<book-body>`/`<book-back>`,
-routes book-parts by type (chapter/part/intro/conclusion → body;
-preface/foreword/dedication → front; appendix/glossary/colophon →
-back), absorbs sibling content into each book-part's body (the
-authoring pattern `<chapter | Title>\nbody...\n<chapter | Next>`),
-synthesizes a `<meta>` wrapper inside each book-part holding the
-promoted `<book-part-title>` and any chapter-level `<author>`, and
-handles recursive `<part>` containing `<chapter>` nesting.
-
-Companion changes shipped:
-- **`note-placement.js` generalization** — `findTopLevelSections`
-  rewritten as `findCollectionUnits(treeChildren, scope)` supporting
-  article + book trees uniformly. `note-scope` config (defaults
-  `chapter` for books, `section` for articles).
-- **Per-chapter counter resets** — new `walkWithScope` in
-  `numbering.js` tracks chapter and section indices during the walk,
-  stamps `entry.data.scope` for ref-resolution to consume.
-  `fillNumbering` renumbers per scope-group. `counter-reset-scope`
-  config (defaults `chapter` for books, `none` for articles).
-- **Chapter-prefix cross-references** — `ref-resolution.js`'s
-  `computeRefText` renders "Figure 1.3" when target's
-  `entry.data.scope.chapter > 0`; "Figure 1.2.3" for `section` scope.
-- **Book-part shorthand expansion** — `<chapter>`, `<part>`,
-  `<appendix>`, etc. expand to `<book-part book-part-type="...">` at
-  the normalize-to-canonical gate (only in book documents, to avoid
-  conflict with the standalone `<glossary>` vocab element).
-
-`pipeline.md` L284-285 "limitation" line gated for follow-up
-spec-sweep (this slice didn't update it; see follow-ups). *(formerly DF-12)*
 
 ### Build pagination and print formatting
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 8)*
