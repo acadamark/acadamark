@@ -371,6 +371,23 @@ Switching the volume from article to book is a single kwarg edit on `<meta>` —
 
 The book has an editor; each chapter has its own author.
 
+## Design context
+
+This element's role is governed by two `DESIGN.md` directions
+(§"Design directions (discovered through implementation)"):
+
+- **"`<meta>` is for metadata; `<config>` is for options"** —
+  `<meta>` holds metadata that appears in or shapes the rendered
+  document (title, author, date, affiliations, abstract). Blurring
+  with `<config>` would produce silent failure (a title placed in
+  `<config>` would simply vanish).
+- The kwarg-form ↔ child-tag-form equivalence (`title="X"` versus
+  `<title>X</title>`) is the **"Caption-bearing elements support
+  two equivalent forms"** direction generalized to structured-data
+  containers. The normalize-to-canonical gate's `liftStructuredKwargs`
+  is the implementation; `<meta>` is one of the two registered
+  structured elements (with `<author>`).
+
 ## See also
 
 - [`<data>`](data.md) — for resources referenced by the document but not displayed inline.

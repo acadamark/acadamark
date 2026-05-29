@@ -246,6 +246,19 @@ The container kwargs handle simple settings; `<config>` handles bibliography sou
 
 A second `<config>` block changes the citation style for citations declared after it. (This is a contrived example; most documents have one config and don't need overrides.)
 
+## Design context
+
+This element's role is governed by the `DESIGN.md` direction
+**"`<meta>` is for metadata; `<config>` is for options"**
+(§"Design directions (discovered through implementation)"). The
+two are distinct concerns and shouldn't blur: `<meta>` holds
+metadata that appears in or shapes the rendered document;
+`<config>` holds processing options that never render. Each should
+validate the attributes it accepts rather than silently absorbing
+the other's. The misuse-feedback hint between `<meta>` and
+`<config>` (per the apparatus-tag reconciliation, `578d6f0`) is
+the runtime enforcement.
+
 ## See also
 
 - [`<meta>`](meta.md) — for descriptive document metadata.

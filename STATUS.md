@@ -2385,3 +2385,66 @@ that). One line gets added every few months, not every slice.
   explicit scope was "Phases 1, 2, 3, 4 — their per-item
   closure prose", not the orientation section; left as-is per
   the scope discipline.
+- **2026-Q2 — backlog partial-item wrap-up.** Closed three items
+  via documentation work.
+
+  **Item 2 — Author override for footnote-collection depth**
+  closed as DONE-via-`c7b2b75` (Phase 4 slice 4a). The
+  `note-scope` `<config>` kwarg with values `document` /
+  `chapter` / `section` is the override mechanism the item asked
+  for. The original BACKLOG entry's "e.g. collect at deepest
+  section, at fixed level, or at document end" examples read as
+  illustrative ("e.g.") rather than exhaustive; the three values
+  shipped satisfy the override-mechanism intent.
+
+  **Item 4 — tag-form × tag matrix reference table** closed via
+  new `notes/specs/tag-forms-reference.md` — a per-tag matrix of
+  pipe/slash/long form support across all 109 Layer 1 vocabulary
+  entries, grouped by category (document containers / structural
+  regions / section ladder / block prose / frameables / math /
+  code / inline formatting / citations + cross-refs / structured-
+  data containers / metadata sub-elements / theorem family). Each
+  cell uses ✓ (supported and idiomatic), · (supported but
+  uncommon), or — (unsupported or generated-only). Generated
+  wrappers (article-front / article-body / article-back / section-
+  title / etc., 16 entries) are marked — for all three forms with
+  the "not authored directly" note. The general three-form
+  grammar was already documented in `DESIGN.md` §"Tag forms" via
+  `dfdb4f0`; this slice adds the per-vocab reference table that
+  the original AUD-15 entry called for. Schema sufficiency check
+  passed — no entries needed an "ambiguous" flag (the
+  content.type field + the apparent-form precedents from each
+  vocab's shorthand_examples were enough to classify
+  unambiguously).
+
+  **Item 5 — DD-1..DD-5 forward-pointers + framing fix** closed
+  via "Design context" sections added to four governed vocab
+  specs: `config.md` (the "<meta> for metadata; <config> for
+  options" direction), `meta.md` (same direction + the
+  "Caption-bearing elements support two equivalent forms"
+  direction generalized to structured-data containers),
+  `table.md` (the "Content gets parsed; arguments don't" and
+  "Caption-bearing elements support two equivalent forms"
+  directions), and `fig.md` (same two directions + the Phase 3
+  frameable shared-capability design). Framing-fix incorporated:
+  the new forward-pointers reference DESIGN.md's prose-named
+  direction headings rather than the archived DD-N codes (per
+  the verification report's drift-finding observation that
+  DESIGN.md migrated from DD-N to prose names; the DD-N
+  numbering survives only in
+  `notes/archive/design-directions-2026-05.md`). Four candidate
+  specs matched the BACKLOG entry's original list exactly; no
+  scope shift needed.
+
+  Tests: layer1-vocabulary 52/52 (count assertion unchanged —
+  vocab YAML edits don't affect the entry count); acadamark-
+  interpreter 24/24 (no code changes; verified zero-diff on all
+  snapshots).
+
+  No product code changes — pure documentation slice. BACKLOG
+  checklist items 36 → 33 (deleted three closed items: Author
+  override, tag-form matrix, DD forward-pointers); detailed
+  entries 36 → 34 (deleted two detailed entries for items 4
+  and 5; Item 2 had no detailed entry — confirmed as one of
+  the pre-existing orphans flagged in the backlog reconciliation
+  slice).

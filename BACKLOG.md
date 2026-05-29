@@ -81,20 +81,10 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **Generalize the qualifying-tag pattern beyond `<table>`**
   `[parser]` `[post-alpha]` *(formerly DF-17)*
-- [ ] **Author override for footnote-collection depth** `[interpreter]`
-  `[post-alpha]` — explicit-placement markup or `<config>` directive
-  to let authors override the default "outermost-section
-  collection" rule (e.g. collect at deepest section, at fixed
-  level, or at document end). Deferred from the per-section
-  footnote slice (formerly PG-1).
 - [ ] **Implement margin sidenotes** `[interpreter]` `[post-alpha]` —
   coupled to multi-column display rendering *(formerly PG-2)*
 - [ ] **Make the bibliography heading a config kwarg instead of
   hardcoded** `[interpreter]` `[post-alpha]` *(formerly PG-10)*
-- [ ] **Document the tag-form × tag matrix and reconcile
-  inconsistencies** `[specs/docs]` `[post-alpha]` *(formerly AUD-15)*
-- [ ] **Add forward-pointers from governed specs to design directions
-  DD-1..DD-5** `[specs/docs]` `[post-alpha]` *(formerly AUD-25)*
 - [ ] **Migrate `<data>` onto the structured-element infrastructure**
   `[interpreter]` `[post-alpha]` *(filed by `beb2fb3`)*
 
@@ -266,43 +256,6 @@ multi-column display rendering item (also `[post-alpha]`).
 
 Hardcoded bibliography heading — a config kwarg, very small.
 *(formerly PG-10)*
-
-### Document the tag-form × tag matrix and reconcile inconsistencies
-`[specs/docs]` `[post-alpha]`
-
-The grammar accepts three syntactic forms for every named tag (per
-`DESIGN.md` §"Tag forms", recorded by the DSL/long-form parser bug fix,
-2026-05-27): **pipe form** (`<tag attrs | content>` — short-form with
-body content), **slash form** (`<tag attrs />` — short-form with no body
-content), and **long form** (`<tag attrs>content</tag>`). The parser
-disambiguates locally by `|` / `/` placement; no registry consultation.
-Per-vocabulary-entry documentation of which forms each tag semantically
-supports (e.g. `<hr>` is slash-only because it's void; `<aside>` admits
-all three but is typically long form for multi-paragraph content) is the
-real Authors-Guide-shaped output the original `AUD-15` work envisioned.
-Fix path: audit every vocabulary entry; create a unified
-`notes/specs/tag-forms-reference.md` showing the per-tag form table;
-identify and fix any inconsistencies with the established three-form
-grammar. Severity: medium — not a runtime bug, but a real documentation
-and design-discoverability issue. *(formerly AUD-15)*
-
-### Add forward-pointers from governed specs to design directions DD-1..DD-5
-`[specs/docs]` `[post-alpha]`
-
-`DESIGN.md`'s "Design directions (discovered through implementation)"
-section defines five cross-cutting directions (DD-1: content gets
-parsed, arguments don't; DD-2: caption-like content supports two
-equivalent forms; DD-3: `<meta>` vs `<config>` boundary; DD-4: all
-tag forms work for all tags where semantically meaningful; DD-5:
-standalone HTML is the build target, client-side is the future). The
-directions govern specific vocabulary entries and spec docs, but no
-forward-pointer from the governed spec to the relevant direction
-exists (`config.md` / `meta.md` do not reference DD-3 — which AUD-13
-violates; `figure.md` / `table.md` do not reference DD-1 — directly
-relevant to AUD-14 below). Fix path: add "See also: DD-N in DESIGN.md
-§Design directions" forward-pointer lines to the governed entries. A
-propagation slice; `DESIGN.md` remains the canonical owner.
-*(formerly AUD-25)*
 
 ### Migrate `<data>` onto the structured-element infrastructure
 `[interpreter]` `[post-alpha]`

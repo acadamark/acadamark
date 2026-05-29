@@ -269,6 +269,25 @@ The exporter handles the wrapping mechanically.
 
 `<table>` and its child elements (`<tr>`, `<th>`, `<td>`, `<caption>`, etc.) are HTML-native and don't need lowering. Attributes are preserved.
 
+## Design context
+
+The kwarg-vs-child-tag decision for captions follows two `DESIGN.md`
+directions (§"Design directions (discovered through implementation)"):
+
+- **"Content gets parsed; arguments don't"** — the trap is content-
+  shaped values that happen to be written as keyword arguments. A
+  `caption="..."` containing rich content (citations, math) is
+  content wearing an argument's clothing and must be parsed as
+  such.
+- **"Caption-bearing elements support two equivalent forms"** — both
+  the compact form (`caption="..."` kwarg) and the explicit form
+  (`<caption>...</caption>` child) produce identical output. Phase
+  3 slice 3c implemented the kwarg-form lift to child-tag at the
+  normalize-to-canonical gate (`a90a0d2`). For `<table>` (opaque-
+  content frameable), the lift is skipped to preserve the body
+  data string; the handler reads the caption kwarg directly via
+  `extractFrameableChildren`'s opaque-content fallback.
+
 ## See also
 
 - [`<csv>`](csv.md), [`<tsv>`](tsv.md) — DSL engines for tabular data.

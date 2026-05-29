@@ -319,6 +319,27 @@ figure.frameable-border {
 }
 ```
 
+## Design context
+
+The kwarg-vs-child-tag decision for captions follows two `DESIGN.md`
+directions (§"Design directions (discovered through implementation)"):
+
+- **"Content gets parsed; arguments don't"** — a `caption="..."`
+  containing rich content (citations, math) is content wearing an
+  argument's clothing and must be parsed as such.
+- **"Caption-bearing elements support two equivalent forms"** — both
+  the compact form (`caption="..."` kwarg) and the explicit form
+  (`<caption>...</caption>` child) produce identical output. Phase
+  3 slice 3c implemented the kwarg-form lift to child-tag at the
+  normalize-to-canonical gate via `liftFrameableKwargs` backed by
+  the `FRAMEABLE_LIFTABLE` registry. For `<fig>` (non-opaque-content
+  frameable), the lift fires fully; the handler reads the lifted
+  `<caption>` child via `extractFrameableChildren`.
+
+The frameable shared surface itself (id, title, caption, border,
+numbered) is the Phase 3 design recorded in `DESIGN.md`
+§"Frameable elements: a shared capability".
+
 ## See also
 
 - [`<svg>`](svg.md) — inline SVG, also frameable.
