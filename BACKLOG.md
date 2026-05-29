@@ -1,9 +1,9 @@
 # acadamark — backlog
 
 The backlog is the project's **unordered pool of open work** — every
-open item, queryable by tag, with full detail. Sequence and the alpha
-milestone live in `ROADMAP.md`; this document does not order items, it
-holds them.
+open item, queryable by tag, with full detail. Sequence and milestones
+live in `ROADMAP.md`; this document does not order items, it holds
+them.
 
 The flat checklist and the detailed entries are two views of the same
 set. The flat list is the scannable index; the detailed entries below
@@ -12,8 +12,9 @@ one detailed entry; deleting a checkbox without resolving the entry —
 or vice versa — is drift, caught by the coherence check in
 `CONTRIBUTING.md`.
 
-For the sequencing of `[alpha]` items, see `ROADMAP.md`. Each
-`[alpha]` entry in this document names the roadmap phase it belongs to.
+For the sequencing of milestone work, see `ROADMAP.md`. Each
+milestone-tagged entry here — `[alpha]` while alpha was open,
+`[release]` now — names the roadmap phase it belongs to.
 
 ---
 
@@ -42,10 +43,19 @@ the start of its detailed entry. The tag travels *with the item*, so a
 reader can still scan for "all the parser work" without subsystem
 defining the section structure.
 
-**Every item carries an alpha-line tag** — `[alpha]` or `[post-alpha]`
-— answering "is this required to ship the alpha release?" `[alpha]`
-items additionally carry a `→ roadmap: Phase N` cross-reference
-naming where they sit in `ROADMAP.md`'s build sequence.
+**Every item carries a milestone tag** — `[alpha]`, `[post-alpha]`, or
+`[release]` — recording which milestone the item belongs to. `[alpha]`
+items were required to ship the now-closed alpha release. With alpha
+closed, the live milestone is the **v0.1.0 release**: `[release]` marks
+an item required to ship it — every `[release]` item is post-alpha (it
+was not part of alpha) and release-blocking. A `[post-alpha]` item that
+has *not* been promoted to `[release]` is **post-release**. This mirrors
+the roadmap, where the release is an overlay on the phase sequence and a
+phase is annotated `*(release-blocking)*` or `*(post-alpha)*` rather
+than renumbered; the backlog tag and the roadmap annotation say the
+same thing. Every `[alpha]` and `[release]` item additionally carries a
+`→ roadmap: Phase N` cross-reference naming where it sits in
+`ROADMAP.md`'s build sequence.
 
 ## Item identifiers
 
@@ -95,6 +105,14 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
 - [ ] **Build the lowering pass (Layer 1 → canonical acadamark)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
+- [ ] **Table-of-contents sidebar** `[interpreter]` `[release]`
+  *(→ roadmap: Phase 8)*
+- [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
+  `[release]` *(→ roadmap: Phase 8)*
+- [ ] **Additional display themes** `[interpreter]` `[release]`
+  *(→ roadmap: Phase 8)*
+- [ ] **Build the comprehensive demonstrative fixture**
+  `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
 
 ### Architecture tier
 
@@ -118,8 +136,10 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]` *(→ roadmap: Phase 8)*
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
-- [ ] **Build JATS import** `[interpreter]` `[post-alpha]`
+- [ ] **Build JATS import** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)*
+- [ ] **Build the client-side rendering library** `[cross-cutting]`
+  `[release]` *(→ roadmap: Phase 14)*
 
 ### Discussions
 
@@ -165,6 +185,9 @@ A flat scannable index of every open item. Detailed entries below.
   passes will be ordinary per-slice coherence checks
 - [ ] **Write a print-requirements spec** `[specs/docs]`
   `[post-alpha]` — companion to the pagination work in Phase 8
+- [ ] **Write the render-quality spec** `[specs/docs]` `[release]`
+  *(→ roadmap: Phase 14)* — companion to the Phase 8 display features
+  and the Phase 14 demonstrative fixture
 - [ ] **Reconcile stale doc cross-references** (`BACKLOG-ROADMAP.md`
   → `BACKLOG.md` / `ROADMAP.md`; `rehypeAcadamarkToJats` →
   `acadamarkToJats`) `[specs/docs]` `[post-alpha]`
@@ -281,6 +304,51 @@ lookup direction is already present in
 `packages/acadamark-core/src/tagname-sigil-map.js` (reserved for
 this work); the lowering pass itself is the missing piece.
 
+### Table-of-contents sidebar
+`[interpreter]` `[release]` *(→ roadmap: Phase 8)*
+
+A navigation sidebar listing the document's sections — and, for books,
+its chapters — letting a reader jump to any heading. Net-new render
+output: no current fixture produces a sidebar. UI-shaped — a rendered
+reading affordance, not a markup or conversion capability — and likely
+shares machinery with the Phase 14 client-side rendering library (the
+DOM the library renders is the DOM a sidebar navigates). Release-
+blocking for v0.1.0; gets a Phase 0 to site it against the render
+pipeline and the client-side library before any code.
+
+### Single-chapter-at-a-time book navigation
+`[interpreter]` `[release]` *(→ roadmap: Phase 8)*
+
+For book-structured documents, a reading mode that shows one chapter at
+a time with next/previous navigation, instead of rendering the whole
+book as one long scroll. Net-new render output and UI-shaped, like the
+table-of-contents sidebar; the two are companion navigation features
+and likely share the Phase 14 client-side-library machinery.
+Release-blocking for v0.1.0; gets a Phase 0.
+
+### Additional display themes
+`[interpreter]` `[release]` *(→ roadmap: Phase 8)*
+
+A wider set of visual themes for rendered output, beyond the current
+default — the release should ship more than one look. Lower-risk than
+the navigation features (themes are CSS, not interactive machinery) but
+still net-new; gets a Phase 0 to decide the theme mechanism: how a theme
+is selected, what a theme may vary, and how theme CSS relates to the
+structural CSS the interpreter emits. Release-blocking for v0.1.0.
+
+### Build the comprehensive demonstrative fixture
+`[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
+
+A single high-quality demonstration document exercising the full Layer 1
+vocabulary and authoring surface, serving two roles at once: the
+project's worked-example manual, and a render-regression fixture that
+the Phase 8 display work and Phase 14 packaging are verified against. It
+takes over the demonstrative role the accumulated fixture corpus has
+carried — instead of many small fixtures each probing one feature, one
+comprehensive document shows the system whole. Built against the
+render-quality spec (see Standing), which is written first and defines
+what "renders correctly" means. Release-blocking for v0.1.0.
+
 ---
 
 ## Detailed entries — Architecture tier
@@ -357,13 +425,32 @@ in scope here. Source archived at
 `notes/archive/authoring-features-survey-2026-05.md`.
 
 ### Build JATS import
-`[interpreter]` `[post-alpha]` *(→ roadmap: Phase 13)*
+`[interpreter]` `[release]` *(→ roadmap: Phase 13)*
 
-The reverse direction of the JATS bridge. Deliberately lossy: JATS's
-vocabulary is far larger than Layer 1's; constructs with no Layer 1
-equivalent are reduced rather than faithfully preserved. A useful
-on-ramp from the existing scholarly corpus, not a round-trip
-guarantee. Not yet scoped; waits.
+The reverse direction of the JATS bridge, and the second half of the
+bidirectional JATS conversion the v0.1.0 release demonstrably includes
+(export shipped in Phase 5). Deliberately lossy: JATS's vocabulary is
+far larger than Layer 1's; constructs with no Layer 1 equivalent are
+reduced rather than faithfully preserved. A useful on-ramp from the
+existing scholarly corpus, not a round-trip guarantee. Promoted from
+post-alpha to release-blocking — first-class now rather than deferred.
+Gets its own Phase 0 to scope the mapping and the lossy-reduction
+policy before any code.
+
+### Build the client-side rendering library
+`[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
+
+Layer 1 rendering packaged for browser use — `.acm` and Layer 1 HTML
+rendered in-browser with no build step. **Carries no JATS capability:**
+the JATS bridge (export in Phase 5, import in Phase 13) stays Node-side;
+the browser library renders only. The acadamark-core build/run-time seam
+was drawn as a browser-safety boundary specifically to enable this build
+— core carries no Node-only dependencies, so it can ship to the browser.
+An **in-browser editor/viewer** — CodeMirror source on the left,
+rendered output on the right — falls out of this library as an example
+application: it ships as a library demo documented in the library's
+README, **not as a standalone roadmap phase**. A multi-slice arc
+(packaging, the browser entry point, the demo app); gets a Phase 0.
 
 ---
 
@@ -741,6 +828,19 @@ body), how cross-references render when target page numbers are
 knowable. The spec is the authoring-requirements companion to the
 pagination implementation; the implementation arc is gated on this
 spec being written.
+
+### Write the render-quality spec
+`[specs/docs]` `[release]` *(→ roadmap: Phase 14)*
+
+A spec defining what high-quality rendered output is — the standard the
+Phase 8 display features and the Phase 14 comprehensive demonstrative
+fixture are verified against. Parallel in shape to the print-
+requirements spec above (also Standing): an output-requirements
+companion written before the implementation it governs. Its own
+document and its own slice — `ROADMAP.md`'s Current position names it
+the next active slice — and the slice that writes it also produces the
+comprehensive demonstrative fixture built against it. Release-blocking
+for v0.1.0.
 
 ### Reconcile stale doc cross-references
 `[specs/docs]` `[post-alpha]`

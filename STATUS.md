@@ -63,18 +63,23 @@ design findings live in `BACKLOG.md` (the active-work index) and
 
 ## In flight / next
 
-**The alpha milestone is reached. Phase 6 (Alpha integration check)
-CLOSED 2026-05-29.** The five-line alpha definition was verified
-against the existing fixture corpus; the per-line acceptance mapping
-is recorded in `notes/alpha-acceptance-mapping.md`. A cross-feature
-stress fixture (`doc-44`, a short monograph) was added to both the
-interpreter and JATS corpora; the integration test was rewired to
-build its pipeline from the shared assembly in `index.js`; and
-executable code blocks (Phase 10) were ruled post-alpha.
+**The alpha milestone is reached** (`4633445`; Phase 6, Alpha
+integration check, closed 2026-05-29). The five-line alpha definition
+was verified against the existing fixture corpus; the per-line
+acceptance mapping is recorded in `notes/alpha-acceptance-mapping.md`.
 
-**Next: the post-alpha roadmap** — Phase 7 (lift-and-lower
-completeness) onward. Nothing is in flight; the next phase is picked
-from `ROADMAP.md`.
+**Next: the v0.1.0 public release.** The live milestone is now the
+release — an overlay on the existing phase sequence, not a renumbering,
+as alpha was (see `ROADMAP.md`). Release-blocking work is Phase 8's
+display-features subset (table-of-contents sidebar, single-chapter book
+navigation, more themes), Phase 13 (JATS import, promoted from
+post-alpha), and the new Phase 14 (packaging — client-side rendering
+library, render-quality spec, comprehensive demonstrative fixture).
+Phases 7, 9, 10, 11, and 12 are post-release.
+
+The immediate next slice is the **render-quality spec + comprehensive
+demonstrative fixture** (filed in `BACKLOG.md`; `ROADMAP.md` Phase 14).
+Nothing else is in flight.
 
 ## Milestones
 
@@ -3213,3 +3218,27 @@ that). One line gets added every few months, not every slice.
   `BACKLOG-ROADMAP.md` and `rehypeAcadamarkToJats` references across
   the live doc surface, filed as a post-alpha doc cross-reference
   hygiene item in `BACKLOG.md`.
+- **2026-05-29 — v0.1.0 release goals set; roadmap restructured.**
+  A docs-only slice (no code). With alpha closed, the **v0.1.0 public
+  release** becomes the next organizing milestone — an overlay on the
+  phase sequence, not a renumbering, as alpha was. `ROADMAP.md` gained
+  a "v0.1.0 release" section naming the four things the release
+  demonstrably includes: bidirectional JATS conversion, end-reader
+  display features, a client-side rendering library, and a
+  comprehensive demonstrative fixture. Phase 8 became *partly
+  release-blocking* — table-of-contents sidebar, single-chapter book
+  navigation, and additional themes are the release-blocking display
+  subset; render-mode / multi-column / sidenote / pagination work stays
+  post-release. Phase 13 (JATS import) was promoted to release-blocking,
+  making JATS bidirectional for the release. A new **Phase 14
+  (Packaging and release artifacts)** collects the client-side library
+  (rendering only — JATS stays Node-side; the in-browser CodeMirror
+  editor/viewer is a library demo, not a phase), the render-quality
+  spec, the demonstrative fixture, and release housekeeping (version-
+  stamp 0.1.0). Phases 7, 9, 10, 11, 12 are confirmed post-release.
+  `BACKLOG.md` gained `[release]` entries for the previously-unfiled
+  release-blocking work and retagged JATS import `[post-alpha]` →
+  `[release]`; its milestone-tag legend now defines `[release]` as the
+  overlay marking v0.1.0-blocking items. The immediate next slice is
+  the **render-quality spec + comprehensive demonstrative fixture**. No
+  code, fixtures, or tests were touched.

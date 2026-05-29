@@ -7,9 +7,10 @@ roadmap, not the only horizon** — the phases continue past it.
 
 The roadmap is deliberately small. Item detail (rationale, history, file
 paths, design tensions) lives in `BACKLOG.md`. Each roadmap item
-cross-references its backlog entry; each `[alpha]` backlog entry
-cross-references its roadmap phase. The two documents agree on what is in
-alpha and where each item sits in the sequence.
+cross-references its backlog entry; each milestone-tagged backlog entry
+(`[alpha]`, `[release]`) cross-references its roadmap phase. The two
+documents agree on which items a milestone needs and where each item
+sits in the sequence.
 
 For the slice-completion rule that keeps the roadmap and the backlog
 agreeing, see the coherence check in `CONTRIBUTING.md`.
@@ -37,14 +38,57 @@ terminology."
 
 ---
 
+## The v0.1.0 release — what we are aiming at
+
+With the alpha milestone closed (`4633445`, 2026-05-29), the next
+organizing milestone is the **v0.1.0 public release**. The version is
+SemVer with a patch component, so a `0.1.1` bugfix release can follow
+without disturbing the `0.1` minor line.
+
+The release demonstrably includes four things:
+
+1. **Bidirectional JATS conversion.** Layer 1 → JATS XML shipped in
+   Phase 5 (alpha line 4); the release adds the reverse direction —
+   JATS → Layer 1 import (Phase 13, promoted from post-alpha to
+   release-blocking).
+2. **Display features for end-readers:** a table-of-contents sidebar,
+   single-chapter-at-a-time book navigation, and a wider set of themes
+   (the release-blocking subset of Phase 8).
+3. **A client-side rendering library:** Layer 1 rendering packaged for
+   browser use, carrying no JATS capability (the JATS work stays
+   Node-side). An in-browser editor/viewer — CodeMirror source on the
+   left, rendered output on the right — falls out of this library as an
+   example application; it ships as a library demo documented in the
+   library's README, not as a standalone roadmap phase.
+4. **A comprehensive demonstrative fixture:** a single high-quality
+   demo document, built against a forthcoming render-quality spec,
+   serving as both the project's manual and a render-regression
+   fixture. It takes over the demonstrative role the accumulated
+   fixture corpus has carried.
+
+The **release-blocking phases** are Phase 8 (the display-features
+subset above), Phase 13 (JATS import), and the new Phase 14
+(packaging — the client-side library, the render-quality spec, and the
+demonstrative fixture). The other post-alpha phases — 7 (lift-and-
+lower), 9 (multi-file authoring), 10 (executable code blocks), 11
+(hardening), 12 (vocabulary expansion) — are **post-release**.
+
+Like alpha, the release is an **overlay** on the phase sequence, not a
+renumbering: phase numbers are identity references across the project's
+commits, specs, and backlog, so release-blocking phases keep their
+numbers and are marked release-blocking in place.
+
+---
+
 ## How the roadmap is organized
 
 Phases are ordered by dependency where dependencies exist, and by
 natural sequencing where they do not. Each phase carries:
 
-- A short statement of **what the phase is** and **which line of the
-  alpha definition it serves** (or "post-alpha" / "standing" if it does
-  not).
+- A short statement of **what the phase is** and **which milestone it
+  serves** — a line of the alpha definition (alpha is now closed), or
+  whether it is **release-blocking** for v0.1.0, **post-release**, or a
+  **standing** item.
 - The **items in the phase**, each a cross-reference to a `BACKLOG.md`
   entry.
 - Any **dependencies** on earlier phases or on resolved discussions.
@@ -57,17 +101,23 @@ pickable within the phase.
 
 ## Current position
 
-**Alpha phases 1–6 are all closed — the alpha milestone is reached.**
-The milestone record is in `STATUS.md`; the per-line acceptance
-mapping is in `notes/alpha-acceptance-mapping.md`. **Phase 6 (Alpha
-integration check) closed 2026-05-29**: the five-line definition was
-verified against existing fixtures, a cross-feature stress fixture
-(`doc-44`) was added to both the interpreter and JATS corpora, and
-the closing cleanup landed with it — the integration test now builds
-its pipeline from the shared assembly in `index.js`, and executable
-code blocks (Phase 10) were ruled post-alpha. Phase 5 (JATS export)
-closed 2026-05-28. The roadmap is now entirely post-alpha — Phase 7
-(lift-and-lower completeness) onward.
+The **alpha milestone** closed 2026-05-29 (`4633445`); the per-line
+acceptance evidence is in `notes/alpha-acceptance-mapping.md` and the
+milestone record is in `STATUS.md`. The project is now between
+milestones — alpha is closed, and **v0.1.0 release** work is beginning
+(see "The v0.1.0 release — what we are aiming at" above).
+
+**Release-blocking work:** Phase 8 display features (table-of-contents
+sidebar, single-chapter book navigation, themes), Phase 13 JATS import,
+and Phase 14 packaging (client-side library + render-quality spec +
+comprehensive demonstrative fixture). Phases 7, 9, 10, 11, and 12 are
+**post-release**.
+
+The next active slice is the **render-quality spec + comprehensive
+demonstrative fixture** — a separate, forthcoming slice. It produces
+the spec the Phase 8 and Phase 14 work is verified against, and the
+demonstrative fixture that takes over the role the accumulated fixture
+corpus has carried. Nothing else is in flight.
 
 ---
 
@@ -212,7 +262,7 @@ corpora. **Alpha milestone reached.**
 
 The lift gate at `packages/acadamark-interpreter/src/plugins/normalize-to-canonical.js`
 is the single home for normalizing all authored forms to canonical.
-Alpha covers what is authored; this phase fills in the lowering
+Alpha covered the authoring direction; this phase fills in the lowering
 direction (Layer 1 → canonical-named or canonical-sigil) for
 round-trip and authoring tooling that emits acadamark from Layer 1.
 
@@ -227,11 +277,29 @@ round-trip and authoring tooling that emits acadamark from Layer 1.
 
 ---
 
-## Phase 8 — Display targets *(post-alpha)*
+## Phase 8 — Display targets *(partly release-blocking)*
 
-The display ladder beyond the default Layer 1 + CSS target.
+The display ladder beyond the default Layer 1 + CSS target. Three
+display features are **release-blocking** for v0.1.0; the rest of the
+phase is post-release.
 
-**Items:**
+**Release-blocking display features (v0.1.0):**
+
+- **Table-of-contents sidebar.** A navigable ToC rendered alongside the
+  document body, generated from the section / chapter structure.
+- **Single-chapter-at-a-time book view.** A book reading mode showing
+  one chapter at a time with chapter-to-chapter navigation, rather than
+  the whole book as a single scroll.
+- **Additional themes.** A wider set of display themes beyond the
+  current default.
+
+These three are net-new — not previously on the roadmap — and are
+UI-shaped in a way the project has not built before. They are likely to
+share machinery with the Phase 14 client-side library (where display /
+interaction code naturally lives), so a **Phase 0** will scope where
+the UI code sits and how themes are structured before the build.
+
+**Post-release display work:**
 
 - **Render-mode lowering** *(formerly DF-19)*. Lossy lowering of
   Layer 1 to plain HTML headings for consumers that can't accept
@@ -333,14 +401,57 @@ parser surface.
 
 ---
 
-## Phase 13 — JATS import *(post-alpha)*
+## Phase 13 — JATS import *(release-blocking)*
 
-The other direction of the JATS bridge. Deliberately lossy (JATS's
-vocabulary is far larger than Layer 1's); a useful on-ramp from the
+The other direction of the JATS bridge, and a **release-blocking** goal
+for v0.1.0: together with the Phase 5 export it makes JATS conversion
+bidirectional. Deliberately lossy — JATS's vocabulary is far larger
+than Layer 1's, so constructs with no Layer 1 counterpart are reduced
+rather than faithfully preserved; it is a useful on-ramp from the
 existing scholarly corpus, not a round-trip guarantee.
 
-Not yet scoped. Filed here as a phase because the project's overall
-direction includes it; the work is post-alpha and waits.
+First-class work now, not a someday-phase. It has substantial design
+questions to settle — which JATS features map to Layer 1, where the
+lossy boundary sits, how the importer handles JATS content with no
+acadamark counterpart — so it will get its own **Phase 0** before the
+build begins.
+
+---
+
+## Phase 14 — Packaging and release artifacts *(release-blocking)*
+
+The packaging work that turns the engine into a shippable v0.1.0 — a
+coherent arc of its own, sequenced after JATS import (Phase 13) since
+both are release-blocking.
+
+**Items:**
+
+- **Client-side rendering library.** Layer 1 rendering packaged for
+  browser use — a document rendered in-browser with no Node build step.
+  The `acadamark-core` extraction already drew the build/run-time seam
+  as a browser-safety boundary for exactly this. The library carries
+  **no JATS capability** — JATS export and import stay Node-side. An
+  in-browser editor/viewer (CodeMirror source left, rendered output
+  right) is an example application of this library, shipped as a demo
+  and documented in the library's README; it is deliberately **not** a
+  standalone roadmap phase.
+- **Render-quality spec.** A spec defining what "rendered correctly"
+  means for the visible output — the standard the display work (Phase 8)
+  and the demonstrative fixture are verified against. Filed in
+  `BACKLOG.md` (Standing); written by the forthcoming render-quality
+  slice, which is the next active slice.
+- **Comprehensive demonstrative fixture.** A single high-quality demo
+  document built against the render-quality spec, serving as both the
+  project's manual and a render-regression fixture — taking over the
+  demonstrative role the accumulated fixture corpus has carried.
+- **Release housekeeping.** Version-stamping at `0.1.0`, repository
+  tidying, and the doc-hygiene already filed under Standing (e.g. the
+  stale-cross-reference reconciliation) folded in as release prep where
+  it fits.
+
+**Dependencies:** the render-quality spec precedes the display
+(Phase 8) and demonstrative-fixture work — it is the standard they are
+checked against — and is the immediate next slice.
 
 ---
 
@@ -358,10 +469,11 @@ direction includes it; the work is post-alpha and waits.
 
 ## Cross-document agreement
 
-Every `[alpha]` backlog item names its roadmap phase. Every roadmap
-item names its backlog entry. A slice that closes an alpha item
-updates this roadmap (the item moves out of "in flight" if it was
-there, or the phase exits if the item was the last in the phase) and
-removes the entry from `BACKLOG.md`. A slice that adds an alpha item
-files it in `BACKLOG.md` and lists it in the appropriate phase here.
-The contract is enforced by the coherence check in `CONTRIBUTING.md`.
+Every milestone-tagged backlog item — `[alpha]` while alpha was open,
+`[release]` now — names its roadmap phase, and every roadmap item names
+its backlog entry. A slice that closes such an item updates this
+roadmap (the item moves out of "in flight" if it was there, or the
+phase exits if the item was the last in the phase) and removes the
+entry from `BACKLOG.md`. A slice that adds one files it in `BACKLOG.md`
+and lists it in the appropriate phase here. The contract is enforced by
+the coherence check in `CONTRIBUTING.md`.
