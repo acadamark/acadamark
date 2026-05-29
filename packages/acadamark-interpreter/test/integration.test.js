@@ -1933,4 +1933,244 @@ export function run() {
     snapshotHast('document-44', hast);
     console.log('PASS: integration doc44 (alpha cross-feature stress: book + bibliography + DSLs + theorem family + math + frameables + per-chapter notes)');
   }
+
+  // Demonstrative article fixture for the render-quality spec
+  // (notes/specs/render-quality.md). A believable computational-statistics
+  // methods paper that exercises every article-side feature the spec pins:
+  // article skeleton (front/body/back), structured + plain authors, abstract,
+  // sections / sub-sections, the theorem family (definition / theorem / proof),
+  // display + inline + align math with equation numbering, a frame callout, a
+  // mermaid figure, a fenced code block, a CSV table, an <img> figure, a
+  // blockquote, an ordered list, single- and multi-key cites, cross-references
+  // (linked + the -link unlinked variant), and inline notes. The assertions
+  // below pin the markup ("M") predicates that VERIFY TRUE against rendered
+  // output; the failing stylesheet ("S") predicates are filed as bugs in
+  // BACKLOG.md by predicate ID, not asserted here. The hast snapshot pins
+  // current behavior (including the filed deviations), so a later fix surfaces
+  // as a reviewable snapshot diff.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-45-calibration.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // RQ-DOC: article skeleton + three-region routing.
+    assert.ok(/<article[ >]/.test(html), 'doc45: <article> wrapper');
+    assert.ok(html.includes('<article-front>'), 'doc45: <article-front> present');
+    assert.ok(html.includes('<article-body>'), 'doc45: <article-body> present');
+    assert.ok(html.includes('<article-back>'), 'doc45: <article-back> present');
+
+    // RQ-META: title / subtitle, structured + plain authors, abstract.
+    assert.ok(
+      html.includes('<meta data-document-type="article">'),
+      'doc45: meta carries data-document-type="article"',
+    );
+    assert.ok(
+      html.includes('<article-title>Calibrating Predicted Probabilities</article-title>'),
+      'doc45: <article-title>',
+    );
+    assert.ok(
+      html.includes('<article-subtitle>A Reproducible Workflow for Post-hoc Calibration</article-subtitle>'),
+      'doc45: <article-subtitle>',
+    );
+    // RQ-META-M2: a per-author +corresponding flag normalises to a bare boolean
+    // attribute (<author corresponding>), the idiomatic HTML boolean form.
+    assert.ok(html.includes('<author corresponding>'), 'doc45: +corresponding -> bare boolean attr');
+    assert.ok(html.includes('<name>Dana Okonkwo</name>'), 'doc45: structured author name');
+    assert.ok(
+      html.includes('<affiliation>Department of Statistics, Western University</affiliation>'),
+      'doc45: structured author affiliation',
+    );
+    assert.ok(html.includes('<orcid>0000-0002-1825-0097</orcid>'), 'doc45: structured author orcid');
+    assert.ok(html.includes('<author>Priya Raman</author>'), 'doc45: plain author');
+    assert.ok(/<abstract>/.test(html), 'doc45: <abstract> present');
+
+    // RQ-THM: theorem family labels, exact label text (the name folds into the
+    // theorem label).
+    assert.ok(
+      html.includes('<span class="definition-label">Definition 1.</span>'),
+      'doc45: definition label',
+    );
+    assert.ok(
+      html.includes('<span class="theorem-label">Theorem 1 (Propriety of the Brier score).</span>'),
+      'doc45: theorem label carries the name',
+    );
+    assert.ok(html.includes('<span class="proof-label">Proof.</span>'), 'doc45: proof label');
+
+    // RQ-MATH: numbered display math + a numbered align environment, KaTeX.
+    assert.ok(html.includes('<span class="equation-number">(1)</span>'), 'doc45: display-math number (1)');
+    assert.ok(html.includes('<span class="equation-number">(2)</span>'), 'doc45: align env numbered (2)');
+    assert.ok(html.includes('katex'), 'doc45: KaTeX output present');
+
+    // RQ-FRM: frame -> <figure class="frameable-border"> with a title
+    // figcaption; mermaid figure; CSV table; an <img> figure.
+    assert.ok(
+      html.includes('<figure class="frameable-border">'),
+      'doc45: frame -> <figure class="frameable-border">',
+    );
+    assert.ok(/<figcaption class="title">/.test(html), 'doc45: frame title -> <figcaption class="title">');
+    assert.ok(html.includes('class="mermaid"'), 'doc45: mermaid figure');
+    assert.ok(/<table[ >]/.test(html), 'doc45: csv -> <table>');
+    assert.ok(html.includes('<span class="table-label">Table 1.</span>'), 'doc45: table label');
+    assert.ok(html.includes('reliability-diagram.png'), 'doc45: <fig src> image');
+    assert.ok(
+      html.includes('<span class="figure-label">Figure 2.</span>'),
+      'doc45: figure label (the <img> figure is figure 2; the mermaid is figure 1)',
+    );
+
+    // RQ-INL / RQ-BLK: blockquote, fenced code block.
+    assert.ok(html.includes('<blockquote>'), 'doc45: blockquote');
+    assert.ok(/<pre[ >]/.test(html), 'doc45: code block -> <pre>');
+
+    // RQ-XREF: cross-references resolve flat (no chapter prefix) in an article.
+    assert.ok(html.includes('<a href="#eqn:ece" class="ref">equation 1</a>'), 'doc45: ref -> equation 1');
+    assert.ok(
+      html.includes('<a href="#eqn:brier-decomp" class="ref">equation 2</a>'),
+      'doc45: ref -> align equation 2',
+    );
+    assert.ok(html.includes('<a href="#fig:workflow" class="ref">figure 1</a>'), 'doc45: ref -> mermaid figure 1');
+    assert.ok(html.includes('<a href="#tab:metrics" class="ref">table 1</a>'), 'doc45: ref -> table 1');
+    assert.ok(html.includes('<a href="#fig:reliability" class="ref">figure 2</a>'), 'doc45: ref -> img figure 2');
+    // The -link flag suppresses the anchor, rendering a bare <span class="ref">.
+    assert.ok(
+      html.includes('<span class="ref">equation 1</span>'),
+      'doc45: -link ref -> unlinked <span class="ref">',
+    );
+
+    // RQ-BIB: single- and multi-key cites resolve; one document-wide bibliography.
+    assert.ok(html.includes('<cite class="cite" data-keys="Guo2017">'), 'doc45: single-key cite');
+    assert.ok(
+      html.includes('<cite class="cite" data-keys="Brier1950,Dawid1982">'),
+      'doc45: multi-key cite (comma-joined keys)',
+    );
+    assert.ok(html.includes('<bibliography><h2>References</h2>'), 'doc45: bibliography heading');
+    assert.ok(html.includes('id="ref-Brier1950"'), 'doc45: bib entry id');
+
+    // RQ-NOTE: inline notes collected into a note-list (endnotes for an article).
+    assert.ok(html.includes('<note-list class="endnotes">'), 'doc45: note-list rendered');
+
+    // No parser / cite / tag / ref errors leaked into the output.
+    assert.ok(!html.includes('??parse'), 'doc45: no parse-error markers');
+    assert.ok(!html.includes('??cite'), 'doc45: no unresolved-cite markers');
+    assert.ok(!html.includes('??tag'), 'doc45: no tag-error markers');
+    assert.ok(!html.includes('class="ref-error"'), 'doc45: no ref-error markers');
+
+    snapshotHast('document-45', hast);
+    console.log('PASS: integration doc45 (render-quality article: meta + authors + theorem family + math + frameables + xref + bibliography + notes)');
+  }
+
+  // Demonstrative book fixture for the render-quality spec
+  // (notes/specs/render-quality.md). A believable short edited volume that
+  // exercises every book-side feature the spec pins: book skeleton with region
+  // routing (preface -> book-front, chapters -> book-body, appendix ->
+  // book-back), edited-volume authorship (a book-level editor with NO
+  // book-level author; each chapter carries its own guest author), per-chapter
+  // figures / equation / definition / table, scoped numbering with
+  // chapter-prefixed cross-references (including a cross-chapter back-reference),
+  // per-chapter note scope, and a single document-wide bibliography in
+  // book-back. As with doc45, assertions pin the verified-true M predicates and
+  // the snapshot pins current behavior; the caption-label vs cross-reference
+  // number disagreement (captions read "Figure 1." while refs read "figure
+  // 2.1") is a filed deviation -- the assertions check the chapter-prefixed
+  // REFERENCES (which are correct), not the bare caption labels (which are not).
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-46-reproducible-research.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    // RQ-BOOK / RQ-DOC: book skeleton + region routing.
+    assert.ok(/<book[ >]/.test(html), 'doc46: <book> wrapper');
+    assert.ok(html.includes('<book-front>'), 'doc46: <book-front> present');
+    assert.ok(html.includes('<book-body>'), 'doc46: <book-body> present');
+    assert.ok(html.includes('<book-back>'), 'doc46: <book-back> present');
+    assert.ok(/book-part-type="preface"/.test(html), 'doc46: preface -> book-front');
+    assert.ok(/book-part-type="chapter"/.test(html), 'doc46: chapters -> book-body');
+    assert.ok(/book-part-type="appendix"/.test(html), 'doc46: appendix -> book-back');
+
+    // RQ-BOOK-M2: book title / subtitle and per-part titles in synthesised meta.
+    assert.ok(
+      html.includes('<book-title>Foundations of Reproducible Research'),
+      'doc46: <book-title>',
+    );
+    assert.ok(html.includes('<book-subtitle>A Short Edited Volume'), 'doc46: <book-subtitle>');
+    assert.ok(html.includes('<book-part-title>Version Control for Scientific Work'), 'doc46: chapter 1 title');
+    assert.ok(html.includes('<book-part-title>Data Provenance and Lineage'), 'doc46: chapter 3 title');
+    assert.ok(html.includes('<book-part-title>A Reproducibility Checklist'), 'doc46: appendix title');
+
+    // RQ-BOOK-M3 (edited-volume authorship): a book-level <editor> and NO
+    // book-level <author> -- the only authors are the three per-chapter guests.
+    assert.ok(html.includes('<editor>Dana Reed'), 'doc46: book-level editor');
+    assert.ok(html.includes('<author>Priya Raman</author>'), 'doc46: chapter 1 guest author');
+    assert.ok(html.includes('<author>Marcus Feld</author>'), 'doc46: chapter 2 guest author');
+    assert.ok(html.includes('<author>Sofia Marchetti</author>'), 'doc46: chapter 3 guest author');
+    const authorOpens = html.match(/<author[ >]/g) ?? [];
+    assert.ok(
+      authorOpens.length === 3,
+      `doc46: exactly three authors, all per-chapter (edited volume, no book-level author); found ${authorOpens.length}`,
+    );
+
+    // RQ-BOOK-M4 (scoped numbering): cross-references render CHAPTER-PREFIXED.
+    // A figure in chapter 1 is "figure 1.1", in chapter 2 "figure 2.1", etc.;
+    // an equation in chapter 2 is "equation 2.1"; a definition / table in
+    // chapter 3 are "definition 3.1" / "table 3.1".
+    assert.ok(
+      html.includes('<a href="#fig:vcs-graph" class="ref">figure 1.1</a>'),
+      'doc46: chapter-1 figure cross-ref (figure 1.1)',
+    );
+    assert.ok(
+      html.includes('<a href="#fig:nb-pipeline" class="ref">figure 2.1</a>'),
+      'doc46: chapter-2 figure cross-ref (figure 2.1)',
+    );
+    assert.ok(
+      html.includes('<a href="#eqn:nb-invariant" class="ref">equation 2.1</a>'),
+      'doc46: chapter-2 equation cross-ref (equation 2.1)',
+    );
+    assert.ok(
+      html.includes('<a href="#def:provenance" class="ref">definition 3.1</a>'),
+      'doc46: chapter-3 definition cross-ref (definition 3.1)',
+    );
+    assert.ok(
+      html.includes('<a href="#tab:provenance" class="ref">table 3.1</a>'),
+      'doc46: chapter-3 table cross-ref (table 3.1)',
+    );
+    assert.ok(
+      html.includes('<a href="#fig:lineage" class="ref">figure 3.1</a>'),
+      'doc46: chapter-3 figure cross-ref (figure 3.1)',
+    );
+    // A reference in chapter 2 back to chapter 1's figure still resolves to the
+    // TARGET's chapter (figure 1.1), not the citing chapter's.
+    const ch1RefCount = (html.match(/<a href="#fig:vcs-graph" class="ref">figure 1\.1<\/a>/g) ?? []).length;
+    assert.ok(ch1RefCount >= 2, `doc46: cross-chapter back-ref keeps the target's prefix (figure 1.1 x${ch1RefCount})`);
+
+    // RQ-BOOK-M5 (note scope=chapter): one note-list per book-part with notes
+    // (preface + 3 chapters + appendix = 5).
+    const noteListMatches = html.match(/<note-list class="(footnotes|endnotes|notes)">/g) ?? [];
+    assert.ok(
+      noteListMatches.length >= 5,
+      `doc46: per-book-part note lists (expected >= 5, found ${noteListMatches.length})`,
+    );
+
+    // RQ-BOOK-M6 (bibliography): exactly one document-wide bibliography, in
+    // book-back, with all three entries.
+    const bibOpens = html.match(/<bibliography>/g) ?? [];
+    assert.ok(bibOpens.length === 1, `doc46: exactly one bibliography; found ${bibOpens.length}`);
+    const backIdx = html.indexOf('<book-back>');
+    const bibIdx = html.indexOf('<bibliography>');
+    assert.ok(backIdx >= 0 && bibIdx > backIdx, 'doc46: bibliography sits inside book-back');
+    assert.ok(html.includes('id="ref-Knuth1984"'), 'doc46: bib entry Knuth1984');
+    assert.ok(html.includes('id="ref-Wilson2014"'), 'doc46: bib entry Wilson2014');
+    assert.ok(html.includes('id="ref-Sandve2013"'), 'doc46: bib entry Sandve2013');
+
+    // No parser / cite / tag / ref errors leaked into the output.
+    assert.ok(!html.includes('??parse'), 'doc46: no parse-error markers');
+    assert.ok(!html.includes('??cite'), 'doc46: no unresolved-cite markers');
+    assert.ok(!html.includes('??tag'), 'doc46: no tag-error markers');
+    assert.ok(!html.includes('class="ref-error"'), 'doc46: no ref-error markers');
+
+    snapshotHast('document-46', hast);
+    console.log('PASS: integration doc46 (render-quality book: edited volume + region routing + per-chapter authors + scoped numbering + single bibliography + per-chapter notes)');
+  }
 }

@@ -61,7 +61,7 @@ The release demonstrably includes four things:
    example application; it ships as a library demo documented in the
    library's README, not as a standalone roadmap phase.
 4. **A comprehensive demonstrative fixture:** a single high-quality
-   demo document, built against a forthcoming render-quality spec,
+   demo document, built against the render-quality spec (now written),
    serving as both the project's manual and a render-regression
    fixture. It takes over the demonstrative role the accumulated
    fixture corpus has carried.
@@ -113,11 +113,19 @@ and Phase 14 packaging (client-side library + render-quality spec +
 comprehensive demonstrative fixture). Phases 7, 9, 10, 11, and 12 are
 **post-release**.
 
-The next active slice is the **render-quality spec + comprehensive
-demonstrative fixture** — a separate, forthcoming slice. It produces
-the spec the Phase 8 and Phase 14 work is verified against, and the
-demonstrative fixture that takes over the role the accumulated fixture
-corpus has carried. Nothing else is in flight.
+The **render-quality spec** is now written
+(`notes/specs/render-quality.md`) — it produces the standard the Phase 8
+and Phase 14 work is verified against. The slice that wrote it built
+demonstrative fixtures against it (a methods-paper article and an
+edited-volume book) and filed the render-quality deviations it surfaced
+as bugs (filed, not fixed — the spec slice touched no product code). The
+next active work is those render-quality fixes — additive `default.css`
+theme rules plus one book-numbering correction — after which the
+demonstrative fixtures render to spec. The comprehensive demonstrative
+fixture and the consolidation of the accumulated fixture corpus remain
+open, and carry an unresolved design question — one comprehensive
+document, or the small believable set the spec slice started (see
+`BACKLOG.md`). Nothing else is in flight.
 
 ---
 
@@ -435,15 +443,26 @@ both are release-blocking.
   right) is an example application of this library, shipped as a demo
   and documented in the library's README; it is deliberately **not** a
   standalone roadmap phase.
-- **Render-quality spec.** A spec defining what "rendered correctly"
-  means for the visible output — the standard the display work (Phase 8)
-  and the demonstrative fixture are verified against. Filed in
-  `BACKLOG.md` (Standing); written by the forthcoming render-quality
-  slice, which is the next active slice.
-- **Comprehensive demonstrative fixture.** A single high-quality demo
-  document built against the render-quality spec, serving as both the
-  project's manual and a render-regression fixture — taking over the
-  demonstrative role the accumulated fixture corpus has carried.
+- **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
+  spec defining what "rendered correctly" means for the visible output —
+  the standard the display work (Phase 8) and the demonstrative fixture
+  are verified against. Written by the render-quality slice as tight,
+  mechanically-checkable predicates per feature category — markup
+  predicates against the rendered HTML, stylesheet predicates against
+  `default.css`. The same slice built demonstrative fixtures against it
+  and filed the render-quality deviations the predicates surfaced (see
+  `BACKLOG.md` Bugs).
+- **Comprehensive demonstrative fixture.** A high-quality demonstration
+  surface built against the render-quality spec, serving as both the
+  project's manual and a render-regression fixture. The render-quality
+  slice made a down-payment — believable demonstrative fixtures (a
+  methods-paper article and an edited-volume book) that validate the
+  spec's predicates — but left two things open: the consolidation that
+  retires or folds in the accumulated fixture corpus, and the design
+  question of whether the demonstrative role is one comprehensive
+  document or the small believable set the slice started. It is also
+  gated on the render-quality deviation bugs, since the affected
+  features render unstyled until those land. See `BACKLOG.md`.
 - **Release housekeeping.** Version-stamping at `0.1.0`, repository
   tidying, and the doc-hygiene already filed under Standing (e.g. the
   stale-cross-reference reconciliation) folded in as release prep where
@@ -451,7 +470,8 @@ both are release-blocking.
 
 **Dependencies:** the render-quality spec precedes the display
 (Phase 8) and demonstrative-fixture work — it is the standard they are
-checked against — and is the immediate next slice.
+checked against. With the spec now written, the next work is the
+render-quality deviation fixes it surfaced (see `BACKLOG.md` Bugs).
 
 ---
 

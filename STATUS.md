@@ -77,8 +77,12 @@ post-alpha), and the new Phase 14 (packaging — client-side rendering
 library, render-quality spec, comprehensive demonstrative fixture).
 Phases 7, 9, 10, 11, and 12 are post-release.
 
-The immediate next slice is the **render-quality spec + comprehensive
-demonstrative fixture** (filed in `BACKLOG.md`; `ROADMAP.md` Phase 14).
+The **render-quality spec** is now written
+(`notes/specs/render-quality.md`); the slice that wrote it built
+demonstrative fixtures against it and filed the render-quality
+deviations it surfaced as bugs (`BACKLOG.md` Bugs; `ROADMAP.md`
+Phase 14). The immediate next work is those render-quality fixes —
+additive `default.css` theme rules plus one book-numbering correction.
 Nothing else is in flight.
 
 ## Milestones
@@ -3242,3 +3246,48 @@ that). One line gets added every few months, not every slice.
   overlay marking v0.1.0-blocking items. The immediate next slice is
   the **render-quality spec + comprehensive demonstrative fixture**. No
   code, fixtures, or tests were touched.
+- **2026-05-29 — render-quality spec written; demonstrative fixtures
+  built; render-quality deviations filed.** The render-quality slice —
+  the first Phase 14 work. Wrote `notes/specs/render-quality.md`: a
+  tight, mechanically-checkable definition of what well-rendered
+  acadamark HTML is, organized per feature category (`RQ-DOC` …
+  `RQ-BOOK`), each feature carrying two predicate families — **markup
+  predicates** (`M`, checked against the rendered HTML/hast: class
+  names, structural elements, label text) and **stylesheet predicates**
+  (`S`, the rules `default.css` must contain). The `RQ-<AREA>-<M|S><n>`
+  ids are stable anchors the backlog references. The spec covers display
+  targets 1 (Layer 1 + CSS, no JS) and 2 (conditional hover-preview JS);
+  render-mode target 3 stays post-release. Built two believable
+  demonstrative fixtures against the spec rather than feature-catalog
+  stress tests — a methods-paper article (`document-45`, post-hoc
+  probability calibration) for the article-side features and an
+  edited-volume book (`document-46`, reproducible-research foundations)
+  for the book-side ones (per-chapter numbering, edited-volume
+  authorship, chapter-prefixed cross-references); snapshots written and
+  fixture HTML re-rendered. **Deviations the predicates surfaced were
+  filed, not fixed** — the slice's scope was spec + fixtures + filings,
+  no product code. The markup predicates pass (the interpreter emits the
+  right classes and structure); the stylesheet predicates expose that
+  `default.css` carries **no rule** for the theorem family, the book
+  structural elements, `.frameable-border`, or the math-environment
+  wrappers, so each renders inline at body size (a custom element with
+  no CSS rule defaults to `display: inline`) — four `[release]`
+  theme-gap bugs. A fifth, markup-level: in a chapter-scoped book the
+  caption/label on a numbered target carries the bare per-chapter
+  ordinal (`Figure 1.`) while every cross-reference resolves
+  chapter-prefixed (`figure 2.1`), so caption and reference disagree —
+  the label formatter does not apply the chapter prefix the resolver
+  already computes. A sixth, incidental `[post-alpha]` parser bug
+  surfaced while authoring: inline math in pipe-form named-tag content
+  is not opaque to escape processing, so LaTeX backslashes read as
+  unknown escapes and `$…$` delimiters misalign (block form is
+  unaffected — it flows through the markdown math extension); the
+  fixture was authored around it. **Coherence:** the "Write the
+  render-quality spec" backlog item closed (removed from both views);
+  the "Build the comprehensive demonstrative fixture" item reshaped to
+  record the spec-written / fixtures-built state and to surface the
+  now-open design question — one comprehensive document, or the small
+  believable set this slice started — left as a ruling for the chat, not
+  decided here; `ROADMAP.md` Phase 14 and Current position updated to
+  match. The existing fixture corpus was left in place (consolidation
+  deferred). No product code; no spec falsehoods to correct.

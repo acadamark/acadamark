@@ -1,0 +1,131 @@
+<meta type=book>
+<title | Foundations of Reproducible Research>
+<subtitle | A Short Edited Volume>
+<editor | Dana Reed>
+</meta>
+
+<data>
+<library |
+@article{Knuth1984,
+  author  = {Knuth, Donald E.},
+  title   = {Literate Programming},
+  journal = {The Computer Journal},
+  year    = 1984,
+  volume  = 27,
+  number  = 2,
+  pages   = {97--111}
+}
+@article{Wilson2014,
+  author  = {Wilson, Greg and Aruliah, D. A. and Brown, C. Titus and Chue Hong, Neil P.},
+  title   = {Best Practices for Scientific Computing},
+  journal = {PLoS Biology},
+  year    = 2014,
+  volume  = 12,
+  number  = 1,
+  pages   = {e1001745}
+}
+@article{Sandve2013,
+  author  = {Sandve, Geir Kjetil and Nekrutenko, Anton and Taylor, James and Hovig, Eivind},
+  title   = {Ten Simple Rules for Reproducible Computational Research},
+  journal = {PLoS Computational Biology},
+  year    = 2013,
+  volume  = 9,
+  number  = 10,
+  pages   = {e1003285}
+}
+>
+</data>
+
+<preface | About This Volume>
+Reproducibility is less a technique than a habit: a set of small, unglamorous
+practices that, taken together, let someone else — including your future self —
+rebuild a result from its inputs. This short volume collects three such habits, one
+per chapter, each written by a different contributor.<note | The chapters were
+commissioned independently; the editor has imposed only a common notation and the
+shared checklist reproduced in the appendix.>
+
+<chapter | Version Control for Scientific Work>
+<author | Priya Raman>
+A version-control system records the history of a project as a sequence of
+*commits*, each a complete snapshot tied to its parent. The result is a directed
+graph of states that can be branched, merged, and — crucially for reproducibility —
+referred to by an immutable identifier.<note | Distributed systems such as Git give
+every clone the full history, so the record does not depend on a central server
+staying alive.>
+
+<fig #fig:vcs-graph src=commit-graph.png | A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.>
+
+The discipline that matters is not the tool but the granularity: small, frequent,
+well-described commits, as <cite @Wilson2014> argue. <ref @fig:vcs-graph> shows the
+shape such a history takes.
+
+<chapter | Literate Programming and Notebooks>
+<author | Marcus Feld>
+Literate programming, introduced by <cite @Knuth1984>, inverts the usual relation
+between code and documentation: the program is written as an essay for human
+readers, with the machine-executable fragments extracted from it. Computational
+notebooks are its modern, interactive descendant.
+
+The reproducibility payoff is that narrative, code, and output live in one artifact.
+The cost is *execution-order fragility*: a notebook's stored output reflects whatever
+order its cells were last run in, which need not be top to bottom. A simple guard is
+to require that the notebook restart-and-run-all cleanly, so the stored state
+satisfies
+
+<$$ #eqn:nb-invariant | \text{stored output} = f(\text{inputs}, \text{cells top to bottom}) $$>
+
+before it is committed.<note | Many notebook platforms can enforce this in
+continuous integration: a notebook that fails restart-and-run-all is rejected the
+same way a failing test is.>
+
+<fig #fig:nb-pipeline src=notebook-ci.png | A notebook passing a restart-and-run-all check in continuous integration before being archived.>
+
+Cross-reference <ref @fig:nb-pipeline> resolves with a chapter prefix — it is the
+first figure of the second chapter — while a reference back to <ref @fig:vcs-graph>
+still resolves to the first chapter's figure: the prefix identifies the target's
+chapter, not the citing one. The invariant <ref @eqn:nb-invariant> carries the same
+chapter prefix.
+
+<chapter | Data Provenance and Lineage>
+<author | Sofia Marchetti>
+<definition #def:provenance | The *provenance* of a data artifact is the complete record of the inputs and transformations that produced it — enough to recreate the artifact from its raw sources.>
+
+Provenance turns a result into a reproducible one by making its derivation explicit.
+<ref @def:provenance> is deliberately strong: a partial record that omits a
+transformation is not provenance, because the artifact cannot be rebuilt from it. The
+recommended practice, following <cite @Sandve2013>, is to capture provenance
+automatically rather than by hand.
+
+<mermaid #fig:lineage caption="A data-lineage graph: raw sources flow through named transformations to derived artifacts.">
+graph LR
+  R[Raw survey] --> C[Clean]
+  C --> M[Merge with registry]
+  M --> A[Analysis table]
+  A --> P[Published figure]
+</mermaid>
+
+A minimal provenance record need capture only three fields per artifact, summarised
+in <ref @tab:provenance>.
+
+<csv #tab:provenance caption="The minimal provenance record for a derived artifact.">
+field,meaning,example
+inputs,identifiers of the source artifacts,raw-survey@a1b2c3
+transform,the named and versioned step,clean.py@v2
+output,identifier of the produced artifact,analysis-table@d4e5f6
+</csv>
+
+The lineage graph in <ref @fig:lineage> is the transitive closure of these
+records.<note | In practice the record is emitted by the pipeline tool itself, so
+that provenance cannot drift out of sync with the computation it describes.>
+
+<appendix | A Reproducibility Checklist>
+The contributors agreed on a short checklist, applicable regardless of tooling:
+
+1. every result traces to a version-controlled commit;
+2. every figure regenerates from a script, not by hand;
+3. every notebook passes restart-and-run-all in CI;
+4. every derived artifact carries a provenance record.
+
+A result that satisfies all four can be rebuilt by a stranger.<note | The checklist
+is intentionally tool-agnostic; the chapters give one concrete realisation of each
+item, but others are possible.>

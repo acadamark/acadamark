@@ -83,6 +83,26 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
+- [ ] **Theorem-family elements render unstyled (inline, body size)**
+  `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
+  RQ-THM-S1/S2; filed by the render-quality slice)*
+- [ ] **Book structural elements render unstyled (inline, body size)**
+  `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
+  RQ-BOOK-S1; filed by the render-quality slice)*
+- [ ] **`.frameable-border` draws no border box** `[interpreter]`
+  `[release]` *(→ roadmap: Phase 14; render-quality RQ-FRM-S4; filed by
+  the render-quality slice)*
+- [ ] **Math-environment wrappers unstyled; equation number not
+  flush-right outside `display-math`** `[interpreter]` `[release]`
+  *(→ roadmap: Phase 14; render-quality RQ-MATH-S3; filed by the
+  render-quality slice)*
+- [ ] **Book caption/label numbers are bare per-chapter while
+  cross-references are chapter-prefixed (they disagree)** `[interpreter]`
+  `[release]` *(→ roadmap: Phase 14; render-quality RQ-BOOK-M4; filed by
+  the render-quality slice)*
+- [ ] **Inline math in pipe-form named-tag content is not protected from
+  escape processing** `[parser]` `[post-alpha]` *(filed by the
+  render-quality slice)*
 
 ### Enhancements
 
@@ -112,7 +132,10 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Additional display themes** `[interpreter]` `[release]`
   *(→ roadmap: Phase 8)*
 - [ ] **Build the comprehensive demonstrative fixture**
-  `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
+  `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)* — spec written
+  and demonstrative fixtures (`document-45`/`document-46`) built against
+  it; corpus consolidation, the render-quality deviation fixes, and the
+  one-document-vs-small-set ruling remain open
 
 ### Architecture tier
 
@@ -185,9 +208,6 @@ A flat scannable index of every open item. Detailed entries below.
   passes will be ordinary per-slice coherence checks
 - [ ] **Write a print-requirements spec** `[specs/docs]`
   `[post-alpha]` — companion to the pagination work in Phase 8
-- [ ] **Write the render-quality spec** `[specs/docs]` `[release]`
-  *(→ roadmap: Phase 14)* — companion to the Phase 8 display features
-  and the Phase 14 demonstrative fixture
 - [ ] **Reconcile stale doc cross-references** (`BACKLOG-ROADMAP.md`
   → `BACKLOG.md` / `ROADMAP.md`; `rehypeAcadamarkToJats` →
   `acadamarkToJats`) `[specs/docs]` `[post-alpha]`
@@ -220,6 +240,154 @@ A root-cause fix would have `buildProperties` also walk
 can be reverted.
 
 Filed by sub-slice 2 of the deferred-vocab work.
+
+### Theorem-family elements render unstyled (inline, body size)
+`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+The interpreter emits the theorem family as custom elements —
+`<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`,
+`<example>`, `<remark>`, `<proof>` — each opening with a label span
+(`<span class="theorem-label">`, `<span class="definition-label">`,
+`<span class="proof-label">`, and so on). The markup is correct: the
+demonstrative article renders `<span class="theorem-label">Theorem 1
+(Propriety of the Brier score).</span>` and `<span
+class="proof-label">Proof.</span>` exactly as the render-quality spec's
+`RQ-THM` markup predicates require. But `default.css` has **no rule for
+any of these elements or their label spans**. A custom element with no
+CSS rule defaults to `display: inline` at body size, so a theorem reads
+as an unbroken inline run with a non-bold label — violating the
+stylesheet predicates `RQ-THM-S1` (label prominence, `font-weight: 700`)
+and `RQ-THM-S2` (the block sets off from body text with vertical
+margin).
+
+The fix is purely additive theme work: add `default.css` rules for the
+theorem-family elements (`display: block`, vertical margin) and the
+`.{kind}-label` spans (`font-weight: 700`). No interpreter change is
+needed — the markup already carries the hooks.
+
+Filed by the render-quality slice; see `notes/specs/render-quality.md`
+§11 (`RQ-THM`).
+
+### Book structural elements render unstyled (inline, body size)
+`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+Book structuring emits `<book>`, `<book-front>`, `<book-body>`,
+`<book-back>`, `<book-part>`, `<book-title>`, `<book-subtitle>`, and
+`<book-part-title>` — the demonstrative book renders all of them, and
+the markup satisfies the render-quality spec's `RQ-BOOK` markup
+predicates. But `default.css` has **no rule for any book element**. As
+with the theorem family, an unstyled custom element renders inline at
+body size: the book title renders as inline body text rather than the
+most prominent text on the page, and the front / body / back regions are
+not set off from one another. This violates `RQ-BOOK-S1`.
+
+The fix is additive theme work in `default.css`, parallel to the
+existing `article-title` / `article-front` rules: `book-title` block at
+the largest heading size with `font-weight: 700`, `book-part-title` as a
+chapter heading, and region-separation rules on `book-front` /
+`book-back`. No interpreter change is needed.
+
+Filed by the render-quality slice; see `notes/specs/render-quality.md`
+§15 (`RQ-BOOK`).
+
+### `.frameable-border` draws no border box
+`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+The `+border` flag (and `<frame>`, whose border defaults on) adds the
+`frameable-border` class to the frameable's wrapping element — the
+demonstrative article's `<frame>` renders `<figure
+class="frameable-border">`. But `default.css` has **no
+`.frameable-border` rule**, so the class is inert and no outline is
+drawn; the callout is indistinguishable from an ordinary figure. This
+violates `RQ-FRM-S4` (the class draws a visible border that sets the
+callout off from body text).
+
+The fix is a one-rule addition to `default.css`: a `border` (and likely
+padding) on `.frameable-border`. No interpreter change is needed — the
+class is already emitted.
+
+Filed by the render-quality slice; see `notes/specs/render-quality.md`
+§8 (`RQ-FRM-S4`).
+
+### Math-environment wrappers unstyled; equation number not flush-right outside `display-math`
+`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+Display math written with the `<$$ … $$>` sigil renders inside
+`<display-math>`, which `default.css` styles as a flex row with the
+equation centered and the `.equation-number` flush right (the
+`display-math > .equation-number` rule). But the multi-line math
+environments — `<align>`, `<cases>`, `<matrix>`, `<eqnarray>`, and the
+generic `<math>` — render to their own custom-element wrappers, for
+which `default.css` has **no rule**. Two consequences, both observed in
+the demonstrative article's numbered `<align>`: the environment renders
+inline at body size rather than as a centered display block, and its
+`.equation-number` is not flush-right, because the only positioning rule
+is scoped to a direct child of `display-math`. This violates
+`RQ-MATH-S3`.
+
+The fix is additive theme work in `default.css`: give the
+math-environment wrappers display-block / centering treatment comparable
+to `display-math`, and broaden (or duplicate) the `.equation-number`
+flush-right rule so it applies inside the environment wrappers too. No
+interpreter change is needed.
+
+Filed by the render-quality slice; see `notes/specs/render-quality.md`
+§10 (`RQ-MATH`).
+
+### Book caption/label numbers are bare per-chapter while cross-references are chapter-prefixed
+`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+
+In a book with the default `counter-reset-scope=chapter`,
+cross-references resolve to chapter-prefixed numbers — the demonstrative
+book renders `<a … class="ref">figure 2.1</a>`, `definition 3.1`,
+`table 3.1`, `equation 2.1`. But the **caption / label on the target
+carries only the bare per-chapter ordinal**: every chapter's figure
+caption reads `<span class="figure-label">Figure 1.</span>`, the
+chapter-3 definition reads `Definition 1.`, the chapter-3 table reads
+`Table 1.`, and the chapter-2 numbered equation reads `(1)`. So a figure
+whose caption says "Figure 1." is referred to in prose as "figure 2.1" —
+the caption and every reference to it **disagree**. This violates
+`RQ-BOOK-M4`, which requires the target's label to carry the same
+chapter-prefixed number as the references resolving to it.
+
+The cross-reference resolver already computes the chapter prefix; the
+label formatter that renders the caption / equation number does not
+apply it. The fix is in the label-rendering / numbering path (not the
+resolver, and not CSS): the displayed number on a numbered target in a
+chapter-scoped book must include the chapter prefix, matching what the
+resolver emits. Unlike the four theme-gap bugs above, this is a
+markup-level (`M`) correctness bug, not a stylesheet gap.
+
+Filed by the render-quality slice; see `notes/specs/render-quality.md`
+§15 (`RQ-BOOK-M4`).
+
+### Inline math in pipe-form named-tag content is not protected from escape processing
+`[parser]` `[post-alpha]`
+
+When a named tag carries its content in pipe form — `<definition | … $p
+\in [0,1]$ …>`, `<proof | … $\mathbb{E}[…]$ …>` — the content is
+recursively parsed, and the inner parser processes backslash escape
+sequences (per `notes/specs/recursive-content-spec.md`). Inline math
+spans are **not** carved out as opaque during this pass, so a LaTeX
+backslash command inside `$…$` is read as an escape: `\in` becomes
+unknown-escape `\i`, `\mathbb` becomes `\m`, and the parser emits
+`??parse: unknown-escape-sequence`. Worse, the broken escape misaligns
+the `$…$` delimiters, so prose following the math is swallowed into a
+KaTeX span and rendered as run-together math — a cascading mis-render,
+not just a dropped command.
+
+The same math in **block form** (`<theorem>…$Y \sim
+\mathrm{Bernoulli}(q)$…</theorem>`) renders correctly, because
+block-form content flows through the markdown math extension, which
+makes `$…$` opaque before escape processing. The asymmetry is the bug:
+inline math should be opaque to escape processing in pipe-form content
+too, as it already is in block-form and top-level content.
+
+Surfaced while authoring the demonstrative article — the fixture was
+rewritten to use block form for the affected proof and backslash-free
+inline math in the pipe-form definition, so it renders cleanly. Filed,
+not fixed, per the render-quality slice's scope. Author workaround: use
+block form, or keep backslash LaTeX out of pipe-form inline math.
 
 ---
 
@@ -339,15 +507,43 @@ structural CSS the interpreter emits. Release-blocking for v0.1.0.
 ### Build the comprehensive demonstrative fixture
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
 
-A single high-quality demonstration document exercising the full Layer 1
+A high-quality demonstration surface exercising the full Layer 1
 vocabulary and authoring surface, serving two roles at once: the
 project's worked-example manual, and a render-regression fixture that
-the Phase 8 display work and Phase 14 packaging are verified against. It
-takes over the demonstrative role the accumulated fixture corpus has
-carried — instead of many small fixtures each probing one feature, one
-comprehensive document shows the system whole. Built against the
-render-quality spec (see Standing), which is written first and defines
-what "renders correctly" means. Release-blocking for v0.1.0.
+the Phase 8 display work and Phase 14 packaging are verified against.
+
+The render-quality spec this is built against is now written
+(`notes/specs/render-quality.md`), and the render-quality slice made a
+down-payment on the demonstrative role: believable demonstrative
+fixtures built against the spec — a methods-paper article
+(`document-45`) exercising the article-side spec'd features, and an
+edited-volume book (`document-46`) exercising the book-side ones. They
+validate the spec's predicates against documents a reader would believe,
+not feature-catalog stress tests.
+
+What remains open, and is release-blocking:
+
+- **The demonstrative role's final shape is an open design question.**
+  The roadmap's original vision was a *single* comprehensive document
+  taking over from the accumulated fixture corpus; the render-quality
+  slice instead built a small set of believable, role-specific
+  demonstrative fixtures and left the corpus in place. Whether the
+  demonstrative role is ultimately served by one comprehensive document,
+  by the small believable set the slice started, or by both alongside
+  the corpus is a ruling for the chat, not a Claude Code decision.
+- **Corpus consolidation is deferred.** Retiring or folding the
+  accumulated fixture corpus into the demonstrative surface was
+  explicitly out of the render-quality slice's scope; the corpus stays
+  as-is pending that ruling.
+- **The render-quality deviation bugs gate "well-rendered."** The slice
+  filed the render-quality deviations as bugs — `default.css` theme gaps
+  (theorem family, book elements, `.frameable-border`, math-environment
+  wrappers) plus a book caption/reference numbering disagreement (see
+  the Bugs section). Until they are fixed, the demonstrative fixtures
+  render their affected features unstyled, so a demonstrative surface
+  cannot yet show the system rendering *correctly*.
+
+Release-blocking for v0.1.0.
 
 ---
 
@@ -828,19 +1024,6 @@ body), how cross-references render when target page numbers are
 knowable. The spec is the authoring-requirements companion to the
 pagination implementation; the implementation arc is gated on this
 spec being written.
-
-### Write the render-quality spec
-`[specs/docs]` `[release]` *(→ roadmap: Phase 14)*
-
-A spec defining what high-quality rendered output is — the standard the
-Phase 8 display features and the Phase 14 comprehensive demonstrative
-fixture are verified against. Parallel in shape to the print-
-requirements spec above (also Standing): an output-requirements
-companion written before the implementation it governs. Its own
-document and its own slice — `ROADMAP.md`'s Current position names it
-the next active slice — and the slice that writes it also produces the
-comprehensive demonstrative fixture built against it. Release-blocking
-for v0.1.0.
 
 ### Reconcile stale doc cross-references
 `[specs/docs]` `[post-alpha]`
