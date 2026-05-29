@@ -1,0 +1,32 @@
+<meta type=book>
+<title | A BITS Book for JATS Export>
+<subtitle | Demonstrating Phase 5 slice 5c book path>
+<author | The Acadamark Team>
+</meta>
+
+<preface | About this Book>
+This preface sits in `<front-matter>` per BITS convention.<note | A preface footnote.>
+
+<chapter | Introduction>
+The introduction chapter. It contains a figure and an equation; chapter-
+scope numbering renders cross-references with the chapter prefix.
+
+<fig #fig:intro src=intro.png | An introductory diagram.>
+
+<$$ #eqn:intro | E = mc^2 $$>
+
+A reference to <ref @fig:intro> renders chapter-prefixed (the
+exact prefix depends on book-part numbering — preface counts as
+chapter 1 in current behavior).<note placement=foot |A chapter-1 foot-placed footnote that collects per-book-part.>
+
+<chapter | Methods>
+<author | Guest Author>
+The edited-volume case — this chapter has its own author distinct from
+the book-level author. The per-book-part `<contrib-group>` carries that.
+
+<fig #fig:method src=method.png | The methodology diagram.>
+
+Cross-reference <ref @fig:method> resolves with the chapter prefix.<note placement=foot |A chapter-2 foot-placed footnote.>
+
+<appendix | Notation>
+This appendix lives in `<book-back>` per BITS convention.<note | An appendix footnote.>

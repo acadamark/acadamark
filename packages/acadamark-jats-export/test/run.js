@@ -29,9 +29,13 @@ import {
   acadamarkBookStructuring,
   acadamarkArticleStructuring,
   acadamarkSectionNesting,
+  acadamarkNotes,
+  acadamarkNotePlacement,
   acadamarkNumbering,
   fillNumbering,
   acadamarkRefResolution,
+  acadamarkCiteResolution,
+  acadamarkBibliography,
 } from 'acadamark-interpreter';
 import { ensureRegistry } from 'acadamark-core/registry';
 import { mapAttributes } from 'acadamark-core/map-attributes';
@@ -277,6 +281,181 @@ function check(name, condition) {
   check('doc40: abstract prose text retained (slice 5b Q1 fix)',
     /<abstract>\s*<p>[\s\S]*This abstract has[\s\S]*<i>italic<\/i>[\s\S]*<b>bold<\/b>/.test(jats) ||
     /<abstract>\s*<p>[\s\S]*This abstract has[\s\S]*<italic>italic<\/italic>[\s\S]*<bold>bold<\/bold>/.test(jats));
+}
+
+// ─── Integration: doc-41 cross-refs + footnotes + table rows (slice 5c) ──
+//
+// Article-shaped fixture exercising the slice 5c added surface:
+//   - <ref @id> resolves to <xref ref-type="..." rid="...">text</xref>
+//   - <note> resolves to <xref ref-type="fn"> inline + collects into
+//     a per-section / article-back <fn-group>
+//   - <table csv | data> renders inner <thead>/<tbody> rows
+//   - Theorem / equation / figure refs round-trip through their
+//     respective ref-types.
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-41-jats-refs-notes-tables.acm'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(acadamarkNormalizeToCanonical)
+    .use(acadamarkConfigDiscovery)
+    .use(acadamarkBookStructuring)
+    .use(acadamarkArticleStructuring)
+    .use(acadamarkSectionNesting)
+    .use(acadamarkNotes)
+    .use(acadamarkNumbering)
+    .use(function applyNumbers() {
+      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+    })
+    .use(acadamarkRefResolution)
+    .use(acadamarkCiteResolution)
+    .use(acadamarkNotePlacement)
+    .use(acadamarkBibliography)
+    .runSync(tree, file);
+
+  const jats = acadamarkToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-41-jats-refs-notes-tables.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-41-jats-refs-notes-tables.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc41: JATS snapshot matches', jats === expected);
+  }
+
+  // Spot-checks per slice 5c's added surface.
+
+  // Cross-references — one per discriminator type.
+  check('doc41: <xref ref-type="fig"> for figure ref',
+    /<xref ref-type="fig" rid="fig:elephant">/.test(jats));
+  check('doc41: <xref ref-type="disp-formula"> for equation ref',
+    /<xref ref-type="disp-formula" rid="eqn:euler">/.test(jats));
+  check('doc41: <xref ref-type="table"> for table ref',
+    /<xref ref-type="table" rid="tab:demo">/.test(jats));
+  check('doc41: <xref ref-type="sec"> for section ref',
+    /<xref ref-type="sec" rid="sec:intro">/.test(jats));
+  check('doc41: <xref ref-type="statement"> for theorem ref',
+    /<xref ref-type="statement" rid="thm:pyth">/.test(jats));
+  check('doc41: xref text uses pre-computed display text (e.g. "figure 1")',
+    /<xref[^>]*rid="fig:elephant">figure 1<\/xref>/.test(jats));
+
+  // Footnotes.
+  check('doc41: inline <xref ref-type="fn"> for note marker',
+    /<xref ref-type="fn" id="noteref-\d+" rid="[^"]+">\d+<\/xref>/.test(jats));
+  check('doc41: <fn-group> emitted', /<fn-group/.test(jats));
+  check('doc41: <fn id="..."> with <label>',
+    /<fn id="[^"]+">\s*<label>\d+<\/label>/.test(jats));
+
+  // Table rows.
+  check('doc41: <table> <thead> <tr> <th> for headers',
+    /<thead>\s*<tr>\s*<th>a<\/th>\s*<th>b<\/th>\s*<th>c<\/th>/.test(jats));
+  check('doc41: <table> <tbody> <tr> <td> for body rows',
+    /<tbody>\s*<tr>\s*<td>1<\/td>\s*<td>2<\/td>\s*<td>3<\/td>/.test(jats));
+  check('doc41: second body row present',
+    /<td>4<\/td>\s*<td>5<\/td>\s*<td>6<\/td>/.test(jats));
+
+  // Per-section footnote collection (foot-scope default for articles —
+  // sections that contain foot-notes get a <fn-group> at section end).
+  check('doc41: at least one <fn-group> sits inside a <sec>',
+    /<sec[^>]*>[\s\S]*<fn-group[\s\S]*?<\/fn-group>[\s\S]*<\/sec>/.test(jats));
+}
+
+// ─── Integration: doc-42 BITS book export (slice 5c) ──────────────────────
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-42-jats-bits-book.acm'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(acadamarkNormalizeToCanonical)
+    .use(acadamarkConfigDiscovery)
+    .use(acadamarkBookStructuring)
+    .use(acadamarkArticleStructuring)
+    .use(acadamarkSectionNesting)
+    .use(acadamarkNotes)
+    .use(acadamarkNumbering)
+    .use(function applyNumbers() {
+      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+    })
+    .use(acadamarkRefResolution)
+    .use(acadamarkCiteResolution)
+    .use(acadamarkNotePlacement)
+    .use(acadamarkBibliography)
+    .runSync(tree, file);
+
+  const jats = acadamarkToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-42-jats-bits-book.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-42-jats-bits-book.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc42: JATS snapshot matches', jats === expected);
+  }
+
+  // Spot-checks for the BITS book path.
+
+  check('doc42: BITS doctype declaration',
+    jats.includes('BITS-book2-0.dtd'));
+  check('doc42: <book book-type="book" xml:lang="en" dtd-version="2.0">',
+    /<book book-type="book" xml:lang="en" dtd-version="2\.0">/.test(jats));
+  check('doc42: <book-meta> with <book-title-group>',
+    jats.includes('<book-meta>') && jats.includes('<book-title-group>'));
+  check('doc42: <book-title> emitted',
+    /<book-title>A BITS Book for JATS Export<\/book-title>/.test(jats));
+  check('doc42: <book-subtitle subtitle> emitted',
+    jats.includes('<subtitle>Demonstrating Phase 5 slice 5c book path</subtitle>'));
+  check('doc42: <front-matter> region for preface', jats.includes('<front-matter>'));
+  check('doc42: <book-part book-part-type="preface">',
+    /<book-part book-part-type="preface"/.test(jats));
+  check('doc42: <body> region for chapters',
+    jats.includes('<body>'));
+  check('doc42: <book-part book-part-type="chapter">',
+    /<book-part book-part-type="chapter"/.test(jats));
+  check('doc42: per-book-part <book-part-meta>',
+    jats.includes('<book-part-meta>'));
+  check('doc42: <book-back> region for appendix',
+    jats.includes('<book-back>'));
+  check('doc42: <book-part book-part-type="appendix">',
+    /<book-part book-part-type="appendix"/.test(jats));
+  check('doc42: edited-volume — per-book-part <contrib-group> for Methods',
+    /<book-part book-part-type="chapter"[\s\S]*<book-part-meta>[\s\S]*<contrib-group>[\s\S]*<string-name>Guest Author/.test(jats));
+  check('doc42: chapter-scope footnotes collected per book-part (in <back>)',
+    /<book-part[\s\S]*?<back>\s*<fn-group/.test(jats));
+  // Chapter-prefixed cross-ref text. The exact chapter number depends
+  // on how the numbering registry counts book-parts (current behavior
+  // counts preface as chapter 1 — see drift finding noted in the
+  // slice commit message). Pattern-match the chapter-prefixed shape
+  // rather than the specific number.
+  check('doc42: chapter-prefixed cross-ref text (figure N.M)',
+    /<xref[^>]*rid="fig:intro">figure \d+\.\d+<\/xref>/.test(jats));
+
+  // Book-part titles lifted from pipe content.
+  check('doc42: <book-part-title> from <chapter | Introduction> pipe content',
+    jats.includes('<title>Introduction</title>'));
+  check('doc42: <book-part-title> from <preface | About this Book>',
+    jats.includes('<title>About this Book</title>'));
+  check('doc42: <book-part-title> from <appendix | Notation>',
+    jats.includes('<title>Notation</title>'));
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────

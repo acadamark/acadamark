@@ -63,13 +63,13 @@ design findings live in `BACKLOG.md` (the active-work index) and
 
 ## In flight / next
 
-**Phase 5 (JATS export) is the active phase.** Slice 5a landed
-2026-05-29 (`acadamark-jats-export` package + the deferred
-`mapAttributes` lift to `acadamark-core` + minimal article export);
-slices 5b–5d remain (body content; cross-refs + notes + BITS book;
-bibliography + external DSLs). See `ROADMAP.md` Phase 5 for the
-sub-slice list and `notes/phase5-jats-export-findings.md` for the
-design context.
+**Phase 5 (JATS export) is the active phase.** Slices 5a (2026-05-29
+— package + lift + minimal article export), 5b (2026-05-29 — body
+content), and 5c (2026-05-28 — cross-refs + footnotes + BITS book +
+table rows) have landed. Slice 5d (bibliography + external DSLs +
+Mermaid/ABC + DTD bundling for offline xmllint validation) remains.
+See `ROADMAP.md` Phase 5 for the sub-slice list and
+`notes/phase5-jats-export-findings.md` for the design context.
 
 ## Milestones
 
@@ -2640,3 +2640,167 @@ that). One line gets added every few months, not every slice.
   scope. Slices 5c (cross-references + footnotes + BITS book)
   and 5d (bibliography + external DSLs + DTD bundling for
   offline validation) remain.
+
+- **2026-Q2 — Phase 5 slice 5c: cross-refs + footnotes + BITS
+  book + table rows.** Four bundled pieces on the JATS-export
+  surface; HTML pipeline untouched.
+
+  **(1) Cross-references.** `__ref-marker` (produced by
+  `acadamarkRefResolution` from authored `<ref @id>`) →
+  `<xref ref-type="..." rid="...">text</xref>`. The
+  `ref-type` discriminator is inferred from the colon-id
+  prefix at emit time via a small lookup table
+  (`REF_TYPE_BY_PREFIX`): eqn → `disp-formula`; fig →
+  `fig`; tab → `table`; sec → `sec`; thm/lem/cor/prop/def/
+  ex → `statement`; note → `fn`; code → `fig`. Unknown
+  prefixes drop the `ref-type` attribute (JATS allows that —
+  `rid` alone is enough for consumers). The xref content is
+  the pre-computed `kwargs.text` from the marker, which
+  already carries the chapter-prefix for book documents
+  (per `ref-resolution.js`'s `computeRefText` walking
+  `entry.data.scope`). `__ref-error` renders as
+  `<italic specific-use="ref-error">??ref: ID??</italic>`
+  inline. Citations: `__cite-marker` → one
+  `<xref ref-type="bibr" rid="ref-KEY">KEY</xref>` per
+  bibtex key (joined with "; "); pre-rendered citation-js
+  HTML isn't passed through (it's HTML-flavored, not
+  JATS-structured). `__cite-error` → italic error marker
+  inline.
+
+  **(2) Footnotes.** `__note-marker` → inline
+  `<xref ref-type="fn" id="noteref-N" rid="noteId">N</xref>`.
+  `__note-list` (built by `acadamarkNotePlacement` —
+  per-section for article 'section' scope; per-`<book-part>`
+  for book 'chapter' scope; back-matter for 'document' scope
+  or residual) → `<fn-group content-type="footnotes|endnotes|
+  notes">` containing one `<fn id="noteId">` per
+  `__note-list-item`. Each `<fn>` carries `<label>N</label>`
+  + body via `emitBodyChildren`. Side notes get
+  `specific-use="sidenote"` on the `<fn>` (no separate
+  margin construct in JATS).
+
+  **(3) BITS 2.0 book export path.** New
+  `BITS_BOOK_DOCTYPE_DECL` (BITS 2.0 — the most widely
+  validator-supported version; 2.1 is newer but tooling
+  coverage is thinner). `acadamarkToJats` dispatches on the
+  root tag: `<book>` → BITS path; `<article>` → JATS
+  Archiving 1.3 path. `emitBook` produces `<book
+  book-type="..." xml:lang="..." dtd-version="2.0">` with
+  three regions:
+  - `<book-meta>` from `<meta>` content (book-level
+    `<book-title-group>` wrapping `<book-title>` +
+    `<subtitle>`; `<contrib-group>` for book-level authors;
+    vocab `jats_counterpart` for other lifted children).
+  - `<front-matter>` for preface / foreword / dedication
+    `<book-part>`s.
+  - `<body>` for chapter / part / introduction / conclusion
+    `<book-part>`s.
+  - `<book-back>` for appendix / glossary / colophon
+    `<book-part>`s plus residual back-matter (bibliography,
+    note-list).
+
+  Per-`<book-part>` `<book-part-meta>` carries the lifted
+  pipe-content title (`<chapter | Origins>` →
+  `<title>Origins</title>` — book-structuring.js leaves this
+  as a bare leading text node, the JATS emitter lifts it).
+  Per-chapter `<author>`s (the edited-volume case from
+  `book.md` L287-302) lift to per-`<book-part>`
+  `<contrib-group>`. Chapter-end footnotes ('chapter' scope
+  via `<config note-scope>`) emit inside the book-part's
+  `<back><fn-group>`.
+
+  **(4) Table-row emission.** `<table-wrap>`'s inner
+  `<table>` now carries parsed `<thead><tr><th>` / `<tbody>
+  <tr><td>` rows for CSV / TSV inputs, replacing slice 5b's
+  placeholder comment. New `emitTableInner` mirrors the
+  HTML pipeline's `buildTableBodyHast` shape directly into
+  XML. JSON / YAML / MD formats remain placeholders in the
+  JATS path (less common in publishing pipelines; CSV/TSV
+  is the 80% case). Required re-exporting `parseCsv` /
+  `parseTsv` from `acadamark-interpreter`'s `index.js`
+  (same re-export pattern as slice 5b's `fillNumbering`).
+
+  **Companion changes:**
+  - **Internal-marker inline-shape fix.** `__ref-marker` /
+    `__cite-marker` / `__note-marker` (and the matching
+    `*-error` markers) added to `isInlineShaped` so they
+    don't fragment paragraphs at the `groupInlineRuns`
+    pre-pass. Same bug shape as slice 5b's `inline-math`
+    fix, surfaced again by slice 5c's surface. Without it,
+    a paragraph like "This refers to <ref @x> and <ref
+    @y>" fragmented into four separate `<p>`s — visible in
+    the first doc-41 snapshot run before the fix.
+  - **`acadamarkNotePlacement` added to
+    `acadamark-interpreter`'s exports** so the JATS test
+    pipeline can include the plugin that injects
+    `__note-list` / `__note-marker` nodes into the post-
+    stage-3 tree the JATS emitter consumes.
+
+  **New fixtures:**
+  - **doc-41** (`document-41-jats-refs-notes-tables.acm`) —
+    article exercising cross-refs to all six discriminator
+    types, foot-placed + endnote-placed notes (per-section
+    foot collection + article-back endnote collection),
+    and a multi-row CSV table.
+  - **doc-42** (`document-42-jats-bits-book.acm`) — BITS
+    book with preface (front-matter), two chapters
+    (chapter-scope foot-notes; second chapter has guest
+    `<author>` for edited-volume case), and an appendix
+    (book-back). Pipe-content titles lifted to
+    `<book-part-title>`.
+
+  **Drift findings:**
+  - **Book-part pipe-content title not lifted by
+    `book-structuring.js`.** Per `book-part.md` L72-80, the
+    pipe content of `<chapter | Origins>` should become
+    children of `<book-part-title>`. The book-structuring
+    plugin doesn't realize this — the title remains a bare
+    leading text node in `<book-part>.content`. The JATS
+    emitter compensates locally (lifts leading text in
+    `emitBookPart`) so JATS output is correct. The HTML
+    side currently renders the title as unstructured text
+    inside the `<book-part>` div (visible in doc-38's
+    snapshot). Filing as a drift item: the lift belongs in
+    `book-structuring.js` so both HTML and JATS get
+    structured titles. Out of scope for slice 5c; the JATS
+    emitter's local compensation keeps the JATS path
+    working in the meantime.
+  - **Chapter-prefix numbering counts preface as
+    chapter 1.** doc-38's HTML snapshot already shows
+    `figure 2.1` for `fig:intro` in chapter 1 (the comment
+    in the source says "should resolve to 'figure 1.1'").
+    Pre-existing behavior in
+    `acadamark-interpreter/src/plugins/numbering.js`; not
+    introduced by slice 5c. doc-42's tests pattern-match
+    the chapter-prefixed shape (`figure N.M`) rather than a
+    specific number to avoid coupling to this behavior.
+    Filing as a separate drift item.
+
+  **Snapshot audit:**
+  - **All 24 acadamark-interpreter HTML snapshots: STRICT
+    ZERO DIFF.** Slice 5c adds JATS-side work only; HTML
+    pipeline untouched. Verified via `git status
+    packages/acadamark-interpreter/test/fixtures/` post-edit
+    (no fixture changes).
+  - **doc-39 JATS snapshot: STRICT ZERO DIFF.** No change to
+    minimal article path.
+  - **doc-40 JATS snapshot updated:** placeholder comment in
+    the CSV table-wrap's inner `<table>` replaced with the
+    parsed `<thead>` / `<tbody>` rows. Audited diff confirms
+    only the table-rows section changed.
+  - **doc-41 + doc-42 JATS snapshots:** new.
+
+  Tests:
+  - layer1-vocabulary:    52/52
+  - acadamark-core:       33/33 (17 colon-id + 16 sigil)
+  - remark-acadamark:    128/128
+  - acadamark-interpreter: 24/24 (HTML snapshots zero-diff)
+  - acadamark-jats-export: 74/74 (4 mapAttributes-unit + 4
+    snapshot-match + 15 doc-39 + 20 doc-40 + 13 doc-41 + 18
+    doc-42)
+
+  **Phase 5 sub-progress:** slice 5c closes the cross-refs +
+  footnotes + BITS book + table-rows scope. Slice 5d
+  (bibliography + external DSLs including Mermaid / ABC +
+  DTD bundling for offline xmllint validation) remains; it
+  is the final Phase 5 slice.

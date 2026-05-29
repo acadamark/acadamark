@@ -33,15 +33,32 @@
 
 import { VOCABULARY } from 'layer1-vocabulary';
 import { mapAttributes } from 'acadamark-core/map-attributes';
+import { parseColonId } from 'acadamark-core/colon-id';
+import { parseCsv, parseTsv } from 'acadamark-interpreter';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
-const JATS_DOCTYPE_DECL =
+const JATS_ARTICLE_DOCTYPE_DECL =
   '<?xml version="1.0" encoding="UTF-8"?>\n' +
   '<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.3 20210610//EN" ' +
   '"https://jats.nlm.nih.gov/archiving/1.3/JATS-archivearticle1-3.dtd">\n';
 
+// Phase 5 slice 5c (2026-05-28): BITS 2.0 doctype for book documents.
+// BITS — Book Interchange Tag Set — is JATS's book extension; book
+// documents carry the BITS doctype rather than the article doctype.
+// We pin to BITS 2.0 (the most widely supported version in
+// validators; 2.1 exists but tooling coverage is thinner).
+const BITS_BOOK_DOCTYPE_DECL =
+  '<?xml version="1.0" encoding="UTF-8"?>\n' +
+  '<!DOCTYPE book PUBLIC "-//NLM//DTD BITS Book Interchange DTD v2.0 20151225//EN" ' +
+  '"https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2-0.dtd">\n';
+
 /**
  * Export the post-stage-3 mdast tree to JATS XML.
+ *
+ * Dispatches on the root tag: `<book>` → BITS 2.0 book export,
+ * `<article>` → JATS 1.3 article export. The two paths share the
+ * per-element emitters (`emitBlock`, `emitInlines`, etc.) — only
+ * the outer wrapping and metadata regions differ.
  *
  * @param {object} tree - mdast root, post-stage-3 (acadamark-interpreter
  *                         structural plugins already ran).
@@ -49,26 +66,35 @@ const JATS_DOCTYPE_DECL =
  * @param {string} [opts.articleType='research-article'] - JATS
  *                  article-type attribute default. Article-meta values
  *                  override this if present.
- * @param {string} [opts.lang='en'] - default xml:lang on the <article>
- *                  element.
+ * @param {string} [opts.bookType='book'] - BITS book-type attribute
+ *                  default for book documents (e.g. 'monograph',
+ *                  'edited-volume').
+ * @param {string} [opts.lang='en'] - default xml:lang on the root.
  * @returns {string} JATS XML serialization.
  */
 export function acadamarkToJats(tree, opts = {}) {
   const articleType = opts.articleType ?? 'research-article';
-  const lang = opts.lang ?? 'en';
+  const bookType    = opts.bookType    ?? 'book';
+  const lang        = opts.lang        ?? 'en';
+
+  // Phase 5 slice 5c: dispatch on the root tag. Book documents take
+  // the BITS path; article documents take the JATS Archiving path.
+  const bookNode = findTagInChildren(tree.children, 'book');
+  if (bookNode) {
+    return BITS_BOOK_DOCTYPE_DECL + emitBook(bookNode, bookType, lang);
+  }
 
   const articleNode = findTagInChildren(tree.children, 'article');
   if (!articleNode) {
-    // No article wrapper — defensive. Wrap whatever's at root in a
-    // minimal <article> for export. (Slice 5c's BITS book support
-    // will add the <book> branch.)
-    return JATS_DOCTYPE_DECL +
+    // No article or book wrapper — defensive. Wrap whatever's at root
+    // in a minimal <article> for export.
+    return JATS_ARTICLE_DOCTYPE_DECL +
       `<article article-type="${articleType}" xml:lang="${lang}" dtd-version="1.3">\n` +
       `  <body/>\n` +
       `</article>\n`;
   }
 
-  return JATS_DOCTYPE_DECL +
+  return JATS_ARTICLE_DOCTYPE_DECL +
     emitArticle(articleNode, articleType, lang);
 }
 
@@ -160,6 +186,295 @@ function emitBack(backNode) {
   return `  <back>\n${emitBodyChildren(backNode.content, 4)}  </back>\n`;
 }
 
+// ─── BITS book emission (Phase 5 slice 5c) ────────────────────────────────
+
+/**
+ * Emit a complete BITS 2.0 `<book>` element from the acadamark
+ * `<book>` post-stage-3 mdast wrapper.
+ *
+ * BITS structural mapping (acadamark → BITS):
+ *   <book>           → <book book-type="..." xml:lang="..." dtd-version="2.0">
+ *   <book-front>     → <book-meta> (from <meta>) + <front-matter> (for
+ *                       front-matter book-parts: preface, foreword,
+ *                       dedication)
+ *   <book-body>      → <body>     (chapter/part/introduction/conclusion
+ *                       book-parts)
+ *   <book-back>      → <book-back> (appendix/glossary/colophon book-parts
+ *                       + bibliography + note-list)
+ *
+ * Per-book-part:
+ *   <book-part>      → <book-part book-part-type="...">
+ *                       <book-part-meta> (book-part-title +
+ *                                         book-part-subtitle +
+ *                                         per-book-part <author> for
+ *                                         the edited-volume case)
+ *                       <body> (the book-part's content)
+ *                       (optional <back> for per-book-part footnotes
+ *                        when note-scope=chapter)
+ */
+function emitBook(bookNode, bookType, lang) {
+  const attrs = ` book-type="${bookType}" xml:lang="${lang}" dtd-version="2.0"`;
+  const bookFront = findInArticleContent(bookNode, 'book-front');
+  const bookBody  = findInArticleContent(bookNode, 'book-body');
+  const bookBack  = findInArticleContent(bookNode, 'book-back');
+
+  let out = `<book${attrs}>\n`;
+  // <book-meta> from the <meta> tag inside <book-front>, then
+  // <front-matter> for any front-matter book-parts (preface, etc.).
+  if (bookFront) {
+    out += emitBookFrontRegion(bookFront);
+  }
+  if (bookBody) {
+    out += emitBookBodyRegion(bookBody);
+  }
+  if (bookBack) {
+    out += emitBookBackRegion(bookBack);
+  }
+  out += `</book>\n`;
+  return out;
+}
+
+/**
+ * Emit the BITS `<book-meta>` (from `<meta>`) and `<front-matter>`
+ * (for any preface/foreword/dedication book-parts) regions from the
+ * acadamark `<book-front>` content.
+ */
+function emitBookFrontRegion(bookFront) {
+  const content = Array.isArray(bookFront.content) ? bookFront.content : [];
+  const meta = content.find(c => isAcadamarkTag(c, 'meta'));
+  const frontParts = content.filter(c =>
+    isAcadamarkTag(c, 'book-part') &&
+    BOOK_FRONT_PART_TYPES.has(c.kwargs?.['book-part-type'] ?? 'other'),
+  );
+
+  let out = '';
+  if (meta) {
+    out += `  <book-meta>\n${emitBookMetaChildren(meta, 4)}  </book-meta>\n`;
+  }
+  if (frontParts.length > 0) {
+    out += `  <front-matter>\n`;
+    for (const part of frontParts) {
+      out += emitBookPart(part, 4);
+    }
+    out += `  </front-matter>\n`;
+  }
+  return out;
+}
+
+/**
+ * Emit the BITS `<body>` from the acadamark `<book-body>` — wraps
+ * the body-level book-parts (chapter / part / introduction /
+ * conclusion / other).
+ */
+function emitBookBodyRegion(bookBody) {
+  const content = Array.isArray(bookBody.content) ? bookBody.content : [];
+  let out = `  <body>\n`;
+  for (const child of content) {
+    if (isAcadamarkTag(child, 'book-part')) {
+      out += emitBookPart(child, 4);
+    } else {
+      // Loose body content (per book-structuring.js's tolerance for
+      // misplaced content) — best-effort emit as a regular block.
+      out += emitBlock(child, 4);
+    }
+  }
+  out += `  </body>\n`;
+  return out;
+}
+
+/**
+ * Emit the BITS `<book-back>` from the acadamark `<book-back>`.
+ * Contains back-matter book-parts (appendix / glossary / colophon)
+ * plus any residual back-matter content (bibliography, note-list).
+ */
+function emitBookBackRegion(bookBack) {
+  const content = Array.isArray(bookBack.content) ? bookBack.content : [];
+  let out = `  <book-back>\n`;
+  for (const child of content) {
+    if (isAcadamarkTag(child, 'book-part')) {
+      out += emitBookPart(child, 4);
+    } else {
+      out += emitBlock(child, 4);
+    }
+  }
+  out += `  </book-back>\n`;
+  return out;
+}
+
+const BOOK_FRONT_PART_TYPES = new Set(['preface', 'foreword', 'dedication']);
+
+/**
+ * Emit a single BITS `<book-part>`. The book-part's `<meta>` child
+ * (synthesized by `restructureBookPart` in book-structuring.js) becomes
+ * `<book-part-meta>`; the remaining content becomes the book-part's
+ * `<body>`. If the book-part contains a `__note-list` (chapter-scope
+ * footnotes), it's separated and emitted in `<back>` per BITS
+ * convention.
+ */
+function emitBookPart(bookPart, indent) {
+  const pad = ' '.repeat(indent);
+  const partType = bookPart.kwargs?.['book-part-type'] ?? 'other';
+  const id = bookPart.id ? ` id="${escapeXmlAttr(bookPart.id)}"` : '';
+  const content = Array.isArray(bookPart.content) ? bookPart.content : [];
+
+  // Lift the leading pipe-content title (per book-part.md L72-80:
+  // `<chapter | Origins>` → the pipe content becomes the
+  // <book-part-title>). The shorthand expansion leaves it as a
+  // bare leading text node at the top of the book-part's content
+  // — the JATS path lifts that to a structured
+  // <book-part-title>. Lift only the FIRST text node — subsequent
+  // text/inline content is body prose.
+  let titleText = null;
+  let consumeFirstText = false;
+  if (content.length > 0 && content[0]?.type === 'text' &&
+      typeof content[0].value === 'string' && content[0].value.trim() !== '') {
+    titleText = content[0].value.trim();
+    consumeFirstText = true;
+  }
+
+  const meta = content.find(c => isAcadamarkTag(c, 'meta'));
+  // Body = everything except meta, the consumed leading title text,
+  // and per-part note-lists (which move to <back> below).
+  const bodyContent = [];
+  const backNoteLists = [];
+  let firstTextConsumed = !consumeFirstText;
+  for (const child of content) {
+    if (child === meta) continue;
+    if (!firstTextConsumed && child === content[0]) {
+      firstTextConsumed = true;
+      continue;
+    }
+    if (isAcadamarkTag(child, '__note-list')) {
+      backNoteLists.push(child);
+    } else {
+      bodyContent.push(child);
+    }
+  }
+
+  // <book-part-meta> emission: combine the lifted title with any
+  // existing meta (e.g. per-chapter <author> for edited volumes).
+  // When neither title nor meta exists, skip the meta region —
+  // BITS allows an empty meta but it's noisier than necessary.
+  const hasMetaContent = titleText != null || (meta && Array.isArray(meta.content) && meta.content.length > 0);
+
+  let out = `${pad}<book-part book-part-type="${partType}"${id}>\n`;
+  if (hasMetaContent) {
+    out += `${pad}  <book-part-meta>\n`;
+    out += emitBookPartMetaChildren(meta, indent + 4, titleText);
+    out += `${pad}  </book-part-meta>\n`;
+  }
+  out += `${pad}  <body>\n`;
+  out += emitBodyChildren(bodyContent, indent + 4);
+  out += `${pad}  </body>\n`;
+  // Per-book-part footnotes (chapter-scope note-position) → <back>.
+  if (backNoteLists.length > 0) {
+    out += `${pad}  <back>\n`;
+    for (const nl of backNoteLists) {
+      out += emitFnGroupJats(nl, indent + 4);
+    }
+    out += `${pad}  </back>\n`;
+  }
+  out += `${pad}</book-part>\n`;
+  return out;
+}
+
+/**
+ * Emit `<book-meta>` children from the book-level `<meta>` tag. The
+ * structure parallels `emitArticleMetaChildren` but uses BITS
+ * element names: `<book-title-group>` wraps `<book-title>` and
+ * `<subtitle>`.
+ */
+function emitBookMetaChildren(metaNode, indent) {
+  const pad = ' '.repeat(indent);
+  const content = Array.isArray(metaNode.content) ? metaNode.content : [];
+
+  const titleNode    = content.find(c => isAcadamarkTag(c, 'book-title'));
+  const subtitleNode = content.find(c => isAcadamarkTag(c, 'book-subtitle'));
+  const authorNodes  = content.filter(c => isAcadamarkTag(c, 'author'));
+  const otherChildren = content.filter(c =>
+    !isAcadamarkTag(c, 'book-title') &&
+    !isAcadamarkTag(c, 'book-subtitle') &&
+    !isAcadamarkTag(c, 'author')
+  );
+
+  let out = '';
+  if (titleNode || subtitleNode) {
+    out += `${pad}<book-title-group>\n`;
+    if (titleNode) {
+      out += `${pad}  <book-title>${emitInlines(titleNode.content)}</book-title>\n`;
+    }
+    if (subtitleNode) {
+      out += `${pad}  <subtitle>${emitInlines(subtitleNode.content)}</subtitle>\n`;
+    }
+    out += `${pad}</book-title-group>\n`;
+  }
+  if (authorNodes.length > 0) {
+    out += `${pad}<contrib-group>\n`;
+    for (const author of authorNodes) {
+      out += `${pad}  <contrib contrib-type="author">\n`;
+      out += `${pad}    <string-name>${escapeXml(extractText(author.content))}</string-name>\n`;
+      out += `${pad}  </contrib>\n`;
+    }
+    out += `${pad}</contrib-group>\n`;
+  }
+  // Other lifted children (publisher, doi, isbn, etc.) — best-effort
+  // emit via vocab counterpart, same shape as the article path.
+  for (const child of otherChildren) {
+    if (!isAcadamarkTagNode(child)) continue;
+    const vocab = VOCABULARY[child.tagname];
+    const jatsEl = vocab?.jats_counterpart?.element;
+    if (jatsEl) {
+      const text = extractText(child.content);
+      out += `${pad}<${jatsEl}>${escapeXml(text)}</${jatsEl}>\n`;
+    }
+  }
+  return out;
+}
+
+/**
+ * Emit `<book-part-meta>` children from a book-part's `<meta>` tag.
+ * Per-book-part authorship (the edited-volume case from book.md
+ * L287-302) is the main reason this differs from the book-level meta:
+ * each chapter can carry its own `<author>`s.
+ *
+ * `liftedTitle` is the pipe-content title from `<chapter | Title>`
+ * shorthand (extracted by `emitBookPart` from a leading text node).
+ * Used as the `<book-part-title>` content when no explicit
+ * `<book-part-title>` exists in the meta.
+ */
+function emitBookPartMetaChildren(metaNode, indent, liftedTitle = null) {
+  const pad = ' '.repeat(indent);
+  const content = (metaNode && Array.isArray(metaNode.content)) ? metaNode.content : [];
+
+  const titleNode    = content.find(c => isAcadamarkTag(c, 'book-part-title'));
+  const subtitleNode = content.find(c => isAcadamarkTag(c, 'book-part-subtitle'));
+  const authorNodes  = content.filter(c => isAcadamarkTag(c, 'author'));
+
+  let out = '';
+  if (titleNode || subtitleNode || liftedTitle) {
+    out += `${pad}<title-group>\n`;
+    if (titleNode) {
+      out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
+    } else if (liftedTitle) {
+      out += `${pad}  <title>${escapeXml(liftedTitle)}</title>\n`;
+    }
+    if (subtitleNode) {
+      out += `${pad}  <subtitle>${emitInlines(subtitleNode.content)}</subtitle>\n`;
+    }
+    out += `${pad}</title-group>\n`;
+  }
+  if (authorNodes.length > 0) {
+    out += `${pad}<contrib-group>\n`;
+    for (const author of authorNodes) {
+      out += `${pad}  <contrib contrib-type="author">\n`;
+      out += `${pad}    <string-name>${escapeXml(extractText(author.content))}</string-name>\n`;
+      out += `${pad}  </contrib>\n`;
+    }
+    out += `${pad}</contrib-group>\n`;
+  }
+  return out;
+}
+
 function emitBodyChildren(children, indent) {
   // Phase 5 slice 5b (2026-05-29): pre-process to wrap loose inline-
   // shaped content (mdast text nodes, inline acadamarkTags) into
@@ -216,8 +531,26 @@ function isInlineShaped(node) {
   // theorems) are NOT inline-shaped.
   if (INLINE_MAP[node.tagname]) return true;
   if (node.tagname === 'inline-math') return true;
+  // Phase 5 slice 5c (2026-05-28): internal-marker nodes injected
+  // by ref-resolution / cite-resolution / note-placement render
+  // inline (the emitter dispatch in emitInlines produces a single
+  // <xref> per marker). Without inline-shaping them, a paragraph
+  // like "This refers to <ref @x> and <ref @y>" fragments into
+  // four separate <p>s — same bug shape as slice 5b's
+  // abstract-limitation fix, surfaced again by slice 5c's surface.
+  if (INTERNAL_INLINE_MARKERS.has(node.tagname)) return true;
   return false;
 }
+
+// Phase 5 slice 5c: internal-marker tagnames that render inline in
+// JATS (each produces a single `<xref>` element via emitInlines).
+// `__cite-error` / `__ref-error` render as <italic specific-use="..."/>
+// (also inline).
+const INTERNAL_INLINE_MARKERS = new Set([
+  '__ref-marker', '__ref-error',
+  '__cite-marker', '__cite-error',
+  '__note-marker',
+]);
 
 function emitBlock(node, indent) {
   const pad = ' '.repeat(indent);
@@ -277,6 +610,16 @@ function emitBlock(node, indent) {
       return emitBlockquoteJats(node, indent);
     case 'aside':
       return emitAsideJats(node, indent);
+    // Phase 5 slice 5c: footnote collections (built by
+    // acadamarkNotePlacement) — `__note-list` → `<fn-group>` with one
+    // `<fn>` per `__note-list-item`.
+    case '__note-list':
+      return emitFnGroupJats(node, indent);
+    case '__note-list-item':
+      // Defensive: a list-item should only appear inside a __note-list
+      // (where emitFnGroupJats handles it). Standalone emission is a
+      // best-effort <fn>.
+      return emitFnJats(node, indent);
     default: {
       // Unknown / out-of-scope-for-5b block — emit as <p> with the
       // node's text so the document still renders something.
@@ -409,18 +752,85 @@ function emitTableWrapJats(node, indent) {
     }
     out += `${pad}  </caption>\n`;
   }
-  // Inner <table>. For slice 5b, emit a minimal placeholder — the
-  // table data is stored as opaque CSV/TSV/etc. source in
-  // node.content. Slice 5b's scope ends at the structural wrapper;
-  // parsing the data and emitting `<thead>`/`<tbody>` from it
-  // (mirroring the HTML side's `renderParsedTable`) is a depth-of-
-  // implementation choice. For now: emit the table with a comment.
-  const fmt = node.tagname === 'table' ? (node.positional?.[0] ?? 'raw')
-            : node.tagname;
-  out += `${pad}  <table>\n`;
-  out += `${pad}    <!-- table data parsed at HTML stage; format=${fmt} -->\n`;
-  out += `${pad}  </table>\n`;
+  // Inner <table>. Phase 5 slice 5c (2026-05-28): parse the data
+  // and emit `<thead>` + `<tbody>` + `<tr>` + `<th>`/`<td>` rows,
+  // mirroring the HTML pipeline's `buildTableBodyHast` shape (it
+  // produces the same nested structure into hast; we serialize the
+  // equivalent into JATS directly). Falls back to a comment-only
+  // placeholder when the format is unknown or parsing fails — the
+  // table's caption + label still emit so the document remains
+  // structured.
+  out += emitTableInner(node, indent + 2);
   out += `${pad}</table-wrap>\n`;
+  return out;
+}
+
+/**
+ * Phase 5 slice 5c (2026-05-28): emit the inner `<table>` element
+ * with parsed `<thead>` / `<tbody>` rows. JATS table cells use the
+ * XHTML model directly (`<thead>`/`<tbody>`/`<tr>`/`<th>`/`<td>` —
+ * the same vocabulary), so we can serialize the parsed rows from
+ * `parseCsv` / `parseTsv` into XML straight from the {headers, rows}
+ * shape.
+ *
+ * Format detection mirrors `tableHandler` in
+ * `acadamark-interpreter/src/handlers/table.js`:
+ *   - `<table csv | ...>` / `<table tsv | ...>` — positional format
+ *   - `<csv | ...>` / `<tsv | ...>` — tagname is the format
+ *   - `<table>` (no format) — escape-hatch raw HTML; emit as comment
+ *     placeholder (raw HTML in JATS isn't portable across consumers)
+ *
+ * Unsupported formats (json / yaml / md) — out of scope for slice 5c;
+ * emit comment placeholder. Those formats are less common in
+ * publishing pipelines; CSV/TSV is the 80% case for tabular data.
+ */
+function emitTableInner(node, indent) {
+  const pad = ' '.repeat(indent);
+  const format = node.tagname === 'table' ? (node.positional?.[0] ?? null)
+               : node.tagname;
+  const rawData = typeof node.content === 'string' ? node.content : '';
+  const hasHeaders = node.booleans?.headers !== false; // default true
+
+  if (!format || rawData.trim() === '') {
+    return `${pad}<table>\n${pad}  <!-- table data; format=${format ?? 'raw'} -->\n${pad}</table>\n`;
+  }
+
+  const parsers = { csv: parseCsv, tsv: parseTsv };
+  const parserFn = parsers[format];
+  if (!parserFn) {
+    // json / yaml / md not yet handled in JATS path; emit placeholder.
+    return `${pad}<table>\n${pad}  <!-- unsupported table format for JATS export: ${escapeXml(format)} -->\n${pad}</table>\n`;
+  }
+
+  let parsed;
+  try {
+    parsed = parserFn(rawData, { hasHeaders });
+  } catch (err) {
+    return `${pad}<table>\n${pad}  <!-- table parse error: ${escapeXml(err.message)} -->\n${pad}</table>\n`;
+  }
+
+  let out = `${pad}<table>\n`;
+  if (parsed.headers) {
+    out += `${pad}  <thead>\n`;
+    out += `${pad}    <tr>\n`;
+    for (const cell of parsed.headers) {
+      out += `${pad}      <th>${escapeXml(String(cell))}</th>\n`;
+    }
+    out += `${pad}    </tr>\n`;
+    out += `${pad}  </thead>\n`;
+  }
+  if (parsed.rows.length > 0) {
+    out += `${pad}  <tbody>\n`;
+    for (const row of parsed.rows) {
+      out += `${pad}    <tr>\n`;
+      for (const cell of row) {
+        out += `${pad}      <td>${escapeXml(String(cell))}</td>\n`;
+      }
+      out += `${pad}    </tr>\n`;
+    }
+    out += `${pad}  </tbody>\n`;
+  }
+  out += `${pad}</table>\n`;
   return out;
 }
 
@@ -634,6 +1044,77 @@ function emitAsideJats(node, indent) {
   return out;
 }
 
+// ─── Footnote emission (Phase 5 slice 5c) ─────────────────────────────────
+
+/**
+ * Map the `__note-list` classes (set by `notePlacement`'s
+ * `listClassFor`) to a JATS `<fn-group>` `content-type` attribute.
+ * JATS doesn't have an enumerated content-type for "footnotes vs
+ * endnotes" — it's a usage hint. We forward the class name as
+ * content-type so consumers can distinguish.
+ */
+function fnGroupContentType(classes) {
+  if (!Array.isArray(classes) || classes.length === 0) return null;
+  // Single class — pass through. Mixed-class `notes` also passes
+  // through unchanged.
+  return classes[0];
+}
+
+/**
+ * Emit a JATS `<fn-group>` for a `__note-list` internal node. The
+ * note-placement plugin injects these into the appropriate region
+ * (per-section for article foot-notes, per-book-part for book
+ * chapter-end notes, residual to article-back / book-back). The
+ * emitter just unwraps the list-items into `<fn>` elements.
+ */
+function emitFnGroupJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const contentType = fnGroupContentType(node.classes);
+  const ct = contentType ? ` content-type="${contentType}"` : '';
+  const items = Array.isArray(node.content) ? node.content : [];
+  let out = `${pad}<fn-group${ct}>\n`;
+  for (const item of items) {
+    if (!isAcadamarkTag(item, '__note-list-item')) continue;
+    out += emitFnJats(item, indent + 2);
+  }
+  out += `${pad}</fn-group>\n`;
+  return out;
+}
+
+/**
+ * Emit a single JATS `<fn>` from a `__note-list-item` internal
+ * marker. The marker carries:
+ *   - `id`           — the note's authored id (e.g. `note:foo` or auto
+ *                      `note-3`)
+ *   - `kwargs.number` — the display number assigned by the registry
+ *   - `kwargs.refId`  — the back-reference id (`noteref-N`) that points
+ *                       at the marker location
+ *   - `kwargs.sidenote` — true for side notes (no list emission in HTML;
+ *                         in JATS we still emit a `<fn>` but flag with
+ *                         specific-use)
+ *   - `content`       — the resolved note body (mdast)
+ *
+ * JATS shape: `<fn id="..."><label>N</label><p>body</p></fn>`. The
+ * label carries the display number; the body uses `emitBodyChildren`
+ * so multi-paragraph notes work and inline content (including
+ * resolved refs/cites that ran before note-placement) renders
+ * correctly.
+ */
+function emitFnJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
+  const number = node.kwargs?.number ?? null;
+  const sidenote = node.kwargs?.sidenote === true;
+  const specific = sidenote ? ` specific-use="sidenote"` : '';
+  let out = `${pad}<fn${id}${specific}>\n`;
+  if (number != null) {
+    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+  }
+  out += emitBodyChildren(node.content, indent + 2);
+  out += `${pad}</fn>\n`;
+  return out;
+}
+
 function emitSection(secNode, indent) {
   const pad = ' '.repeat(indent);
   const attrs = aggregateJatsAttrs(mapAttributes(
@@ -680,12 +1161,44 @@ function emitInlines(children) {
     if (child.type === 'text') {
       out += escapeXml(child.value ?? '');
     } else if (isAcadamarkTagNode(child)) {
-      // Phase 5 slice 5b: inline-math gets its own JATS shape
-      // (`<inline-formula>` containing `<tex-math>`). Other math
-      // tags are block-shaped and shouldn't appear in inline
-      // context, but handle defensively.
+      // Phase 5 slice 5b: inline-math gets its own JATS shape.
       if (child.tagname === 'inline-math') {
         out += emitInlineFormulaJats(child);
+        continue;
+      }
+      // Phase 5 slice 5c: cross-references and citations.
+      if (child.tagname === '__ref-marker') {
+        out += emitXrefMarker(child);
+        continue;
+      }
+      if (child.tagname === '__ref-error') {
+        // Render the error inline; JATS has no canonical "broken ref"
+        // construct so we emit the same ??ref: ...?? marker the HTML
+        // side uses.
+        const id = child.kwargs?.targetId ?? '(none)';
+        out += `<italic specific-use="ref-error">??ref: ${escapeXml(id)}??</italic>`;
+        continue;
+      }
+      if (child.tagname === '__cite-marker') {
+        out += emitCiteMarker(child);
+        continue;
+      }
+      if (child.tagname === '__cite-error') {
+        const keys = child.kwargs?.keys ?? '(none)';
+        out += `<italic specific-use="cite-error">??cite: ${escapeXml(keys)}??</italic>`;
+        continue;
+      }
+      // Phase 5 slice 5c: inline footnote marker. JATS convention:
+      // `<xref ref-type="fn" rid="...">N</xref>`. The `refId` (e.g.
+      // `noteref-3`) is the id for back-reference targeting; the
+      // `rid` points to the corresponding `<fn id="noteId">` in
+      // `<fn-group>`.
+      if (child.tagname === '__note-marker') {
+        const noteId = child.kwargs?.noteId ?? '';
+        const number = child.kwargs?.number ?? '';
+        const refId  = child.kwargs?.refId  ?? '';
+        out += `<xref ref-type="fn" id="${escapeXmlAttr(refId)}" ` +
+               `rid="${escapeXmlAttr(noteId)}">${escapeXml(String(number))}</xref>`;
         continue;
       }
       const jatsTag = INLINE_MAP[child.tagname];
@@ -704,6 +1217,87 @@ function emitInlines(children) {
     }
   }
   return out;
+}
+
+// ─── Cross-reference + citation emission (Phase 5 slice 5c) ───────────────
+
+/**
+ * Map a colon-id prefix (the `eqn` of `eqn:newton`) to the JATS
+ * `<xref>` `ref-type` attribute value. This is the JATS-side
+ * counterpart of `acadamark-interpreter`'s prefix→display-word
+ * dictionary in `ref-resolution.js`.
+ *
+ * Per JATS Archiving 1.3 enumerated ref-type values used in this
+ * project's vocabulary:
+ *   - `fig`           — figure-family (fig/svg/frame/mermaid/abc)
+ *   - `table`         — table-family (table/csv/tsv)
+ *   - `disp-formula`  — display equations
+ *   - `sec`           — sections
+ *   - `statement`     — theorem family (theorem/lemma/corollary/proposition/
+ *                       definition/example/remark/proof)
+ *   - `fn`            — footnotes
+ *   - `bibr`          — bibliographic references (set directly by
+ *                       emitCiteMarker, not via this table)
+ *
+ * Unknown prefixes fall through to `null`; emitXrefMarker then omits
+ * the `ref-type` attribute (JATS allows that — the `rid` alone is
+ * enough for consumers to follow the link).
+ */
+const REF_TYPE_BY_PREFIX = {
+  eqn:  'disp-formula',
+  fig:  'fig',
+  tab:  'table',
+  sec:  'sec',
+  note: 'fn',
+  code: 'fig',           // code-block frameables (PG-6) render as figures in JATS
+  thm:  'statement', lem:  'statement', cor:  'statement',
+  prop: 'statement', def:  'statement', ex:   'statement',
+};
+
+/**
+ * Emit a JATS `<xref>` for a resolved `__ref-marker`. The marker
+ * carries pre-computed display text (chapter-prefixed for chapter-
+ * scope counters per ref-resolution.js's `computeRefText`); we use
+ * that as the xref content. `ref-type` is inferred from the target
+ * id's colon-prefix (see REF_TYPE_BY_PREFIX) — cleaner than a
+ * registry round-trip at emit time, and matches the
+ * vocab-declaration of which prefixes mean which kinds.
+ */
+function emitXrefMarker(node) {
+  const targetId = node.kwargs?.targetId ?? '';
+  const text = node.kwargs?.text ?? targetId;
+  const parsed = parseColonId(targetId);
+  const refType = parsed ? REF_TYPE_BY_PREFIX[parsed.prefix] ?? null : null;
+  const rt = refType ? ` ref-type="${refType}"` : '';
+  return `<xref${rt} rid="${escapeXmlAttr(targetId)}">${escapeXml(text)}</xref>`;
+}
+
+/**
+ * Emit JATS `<xref ref-type="bibr">` markers for a resolved
+ * `__cite-marker`. The marker carries `kwargs.keys` (comma-separated
+ * bibtex keys) and `kwargs.html` (the pre-formatted citation HTML
+ * from citation-js).
+ *
+ * JATS convention: one `<xref>` per cited key, each pointing to
+ * `rid="ref-KEY"` (matching the id injected into the bibliography by
+ * `bibliography.js`'s `formatBibliography`). The xref content is the
+ * raw key — JATS consumers typically re-render against the
+ * bibliography element rather than relying on the inline text. The
+ * pre-rendered citation-js HTML doesn't fit JATS's structured
+ * convention (it's HTML-flavored), so we don't pass it through.
+ *
+ * Keys are joined with "; " between xrefs — the most common JATS
+ * convention for multi-cite groupings (matches e.g. "[<xref/>;
+ * <xref/>]" patterns in published JATS articles).
+ */
+function emitCiteMarker(node) {
+  const keysStr = node.kwargs?.keys ?? '';
+  const keys = keysStr.split(',').map(k => k.trim()).filter(Boolean);
+  if (keys.length === 0) return '';
+  const xrefs = keys.map(k =>
+    `<xref ref-type="bibr" rid="ref-${escapeXmlAttr(k)}">${escapeXml(k)}</xref>`,
+  );
+  return xrefs.join('; ');
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────

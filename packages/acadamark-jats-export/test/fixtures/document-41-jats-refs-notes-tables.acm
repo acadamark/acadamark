@@ -1,0 +1,42 @@
+<meta>
+<title | Cross-references, footnotes, and table rows>
+<author | Test Author>
+<abstract |
+This abstract refers to <ref @fig:elephant> and <ref @eqn:euler>, with a
+footnote<note | An abstract-level footnote.>.
+>
+</meta>
+
+<section #sec:intro | Introduction>
+
+A paragraph that references <ref @sec:intro> itself, plus
+<ref @fig:elephant>, <ref @eqn:euler>, <ref @tab:demo>, and
+<ref @thm:pyth>. It also has a foot-placed footnote
+here<note placement=foot |A foot-placed footnote in body text.> which collects
+per-section, plus an endnote<note | A regular endnote.>.
+
+<section #sec:figs | Figures and tables>
+
+A figure with a caption:
+
+<fig #fig:elephant src=elephant.jpg | An elephant.>
+
+A small CSV table whose rows render in JATS as `<thead>`/`<tbody>`:
+
+<table #tab:demo csv caption="A demo table with two rows.">
+a,b,c
+1,2,3
+4,5,6
+</table>
+
+<section #sec:math | Math and theorems>
+
+A numbered equation:
+
+<$$ #eqn:euler | e^{i\pi} + 1 = 0 $$>
+
+A theorem:
+
+<theorem name="Pythagoras" #thm:pyth | If $a^2 + b^2 = c^2$ then right-angled.>
+
+A second footnote scope check<note | Section-scope footnote.>.

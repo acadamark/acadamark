@@ -82,6 +82,9 @@ import { acadamarkArticleStructuring } from './plugins/article-structuring.js';
 import { acadamarkBookStructuring } from './plugins/book-structuring.js';
 import { acadamarkSectionNesting } from './plugins/section-nesting.js';
 import { acadamarkNotes } from './plugins/notes.js';
+// Phase 5 slice 5c (2026-05-28): re-export acadamarkNotePlacement so the
+// JATS test pipeline can include it (it produces __note-list /
+// __note-list-item / __note-marker nodes the JATS emitter consumes).
 import { acadamarkNotePlacement } from './plugins/note-placement.js';
 import { buildCitationIndex, acadamarkLibraryLoad } from './plugins/library-load.js';
 import { acadamarkNumbering, fillNumbering } from './plugins/numbering.js';
@@ -92,8 +95,13 @@ import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plug
 import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js';
 import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
 import { ensureRegistry } from 'acadamark-core/registry';
+// Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
+// acadamark-jats-export can replicate the HTML pipeline's
+// thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
+// pattern as fillNumbering (slice 5b).
+import { parseCsv, parseTsv } from './handlers/table.js';
 
-export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, fillNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler };
+export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkNotePlacement, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, fillNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler, parseCsv, parseTsv };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 // Resolve the KaTeX dist directory from its package entry point.

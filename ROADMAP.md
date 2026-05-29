@@ -58,13 +58,14 @@ pickable within the phase.
 ## Current position
 
 Alpha phases 1–4 are closed; the milestone record is in
-`STATUS.md`. The active phase is **Phase 5 (JATS export)**: slice
-5a landed 2026-05-29 (`acadamark-jats-export` package + the
-deferred `mapAttributes` lift to `acadamark-core` + minimal
-article export); slices 5b–5d remain (body content; cross-refs +
-notes + BITS book; bibliography + external DSLs). After Phase 5:
-Phase 6 (alpha integration check) closes the alpha milestone.
-Phase 7 onward is post-alpha.
+`STATUS.md`. The active phase is **Phase 5 (JATS export)**: slices
+5a (2026-05-29 — package + lift + minimal article export), 5b
+(2026-05-29 — body content), and 5c (2026-05-28 — cross-refs +
+notes + BITS book + table rows) have landed; slice 5d remains
+(bibliography + external DSLs + Mermaid/ABC + DTD bundling for
+offline xmllint validation). After Phase 5: Phase 6 (alpha
+integration check) closes the alpha milestone. Phase 7 onward is
+post-alpha.
 
 ---
 
@@ -114,7 +115,41 @@ needs siting against the inward-pointing `acadamark-core`.
     paragraphs before block dispatch). New fixture doc-40.
     `fillNumbering` added to `acadamark-interpreter`'s exports
     so the JATS test pipeline can replicate numbering.
-  - **Slice 5c — cross-references + footnotes + BITS book**.
+  - **Slice 5c — cross-references + footnotes + BITS book + table
+    rows** *(done 2026-05-28)*. Cross-references → `<xref
+    ref-type="..." rid="...">` with per-prefix ref-type
+    discrimination (fig/svg/frame → `fig`; table/csv/tsv →
+    `table`; eqn → `disp-formula`; sec → `sec`; thm/lem/cor/prop/
+    def/ex → `statement`; note → `fn`; cite-keys → `bibr`);
+    chapter-prefixed display text preserved from
+    `ref-resolution.js`'s `computeRefText`. Footnotes → inline
+    `<xref ref-type="fn">` markers + collected `<fn-group>`/`<fn>`
+    sets honoring the `<config note-scope>` knob (article default
+    'section' → per-section foot-note collection;  book default
+    'chapter' → per-`<book-part>` `<back><fn-group>`; 'document'
+    → all to back). BITS 2.0 book export path: dispatch on
+    `<book>` vs `<article>` at root; `emitBook` produces
+    `<book book-type="..." dtd-version="2.0">` with `<book-meta>`
+    + `<book-title-group>` (from `<meta>`'s `<book-title>` /
+    `<book-subtitle>`), `<front-matter>` (preface/foreword/
+    dedication book-parts), `<body>` (chapter/part/intro/
+    conclusion), `<book-back>` (appendix/glossary/colophon).
+    Per-`<book-part>` `<book-part-meta>` carries lifted
+    pipe-content title (`<chapter | Origins>` → `<title>Origins
+    </title>`) plus per-chapter `<contrib-group>` for the
+    edited-volume case. Table-row emission: `<table-wrap>`'s
+    inner `<table>` now carries parsed `<thead>`/`<tbody>`/`<tr>`
+    /`<th>`/`<td>` for CSV/TSV (JSON/YAML/MD remain placeholders
+    in the JATS path). Two new fixtures: doc-41 (article with
+    cross-refs/footnotes/tables) and doc-42 (BITS book with
+    edited-volume). `parseCsv` / `parseTsv` and
+    `acadamarkNotePlacement` added to `acadamark-interpreter`'s
+    exports so the JATS test pipeline can reuse the parsers and
+    note-placement plugin. Internal-marker inline-shape fix:
+    `__ref-marker` / `__cite-marker` / `__note-marker` /
+    `__ref-error` / `__cite-error` added to `isInlineShaped` so
+    they don't fragment paragraphs at the `groupInlineRuns`
+    pre-pass (same shape as slice 5b's `inline-math` fix).
   - **Slice 5d — bibliography + external DSLs**.
 
 **Exits:** a Layer 1 document round-trips to JATS XML cleanly enough

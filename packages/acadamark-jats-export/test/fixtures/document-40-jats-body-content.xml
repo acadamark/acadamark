@@ -98,7 +98,20 @@ x + y &= z
           <p>A small CSV table.</p>
         </caption>
         <table>
-          <!-- table data parsed at HTML stage; format=csv -->
+          <thead>
+            <tr>
+              <th>a</th>
+              <th>b</th>
+              <th>c</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+          </tbody>
         </table>
       </table-wrap>
     </sec>

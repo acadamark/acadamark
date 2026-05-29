@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.3 20210610//EN" "https://jats.nlm.nih.gov/archiving/1.3/JATS-archivearticle1-3.dtd">
+<article article-type="research-article" xml:lang="en" dtd-version="1.3">
+  <front>
+    <article-meta>
+      <title-group>
+        <article-title>Cross-references, footnotes, and table rows</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author">
+          <string-name>Test Author</string-name>
+        </contrib>
+      </contrib-group>
+      <abstract>
+        <p>This abstract refers to <xref ref-type="fig" rid="fig:elephant">figure 1</xref> and <xref ref-type="disp-formula" rid="eqn:euler">equation 1</xref>, with a
+footnote<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref>.</p>
+      </abstract>
+    </article-meta>
+  </front>
+  <body>
+    <sec>
+      <title>Introduction</title>
+      <p>A paragraph that references <xref ref-type="sec" rid="sec:intro">intro</xref> itself, plus
+<xref ref-type="fig" rid="fig:elephant">figure 1</xref>, <xref ref-type="disp-formula" rid="eqn:euler">equation 1</xref>, <xref ref-type="table" rid="tab:demo">table 1</xref>, and
+<xref ref-type="statement" rid="thm:pyth">theorem 1</xref>. It also has a foot-placed footnote
+here<xref ref-type="fn" id="noteref-2" rid="note-2">2</xref> which collects
+per-section, plus an endnote<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref>.</p>
+      <fn-group content-type="footnotes">
+        <fn id="note-2">
+          <label>2</label>
+          <p>A foot-placed footnote in body text.</p>
+        </fn>
+      </fn-group>
+    </sec>
+    <sec>
+      <title>Figures and tables</title>
+      <p>A figure with a caption:</p>
+      <fig id="fig:elephant">
+        <label>1</label>
+        <caption>
+          <p>An elephant.</p>
+        </caption>
+        <graphic xlink:href="elephant.jpg"/>
+      </fig>
+      <p>A small CSV table whose rows render in JATS as <monospace>&lt;thead&gt;</monospace>/<monospace>&lt;tbody&gt;</monospace>:</p>
+      <table-wrap id="tab:demo">
+        <label>1</label>
+        <caption>
+          <p>A demo table with two rows.</p>
+        </caption>
+        <table>
+          <thead>
+            <tr>
+              <th>a</th>
+              <th>b</th>
+              <th>c</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>5</td>
+              <td>6</td>
+            </tr>
+          </tbody>
+        </table>
+      </table-wrap>
+    </sec>
+    <sec>
+      <title>Math and theorems</title>
+      <p>A numbered equation:</p>
+      <disp-formula id="eqn:euler">
+        <label>(1)</label>
+        <tex-math><![CDATA[e^{i\pi} + 1 = 0]]></tex-math>
+      </disp-formula>
+      <p>A theorem:</p>
+      <statement content-type="theorem" id="thm:pyth">
+        <label>Theorem 1.</label>
+        <title>Pythagoras</title>
+        <p>If <inline-formula><tex-math><![CDATA[a^2 + b^2 = c^2]]></tex-math></inline-formula> then right-angled.</p>
+      </statement>
+      <p>A second footnote scope check<xref ref-type="fn" id="noteref-4" rid="note-4">4</xref>.</p>
+    </sec>
+  </body>
+  <back>
+    <fn-group content-type="endnotes">
+      <fn id="note-1">
+        <label>1</label>
+        <p>An abstract-level footnote.</p>
+      </fn>
+      <fn id="note-3">
+        <label>3</label>
+        <p>A regular endnote.</p>
+      </fn>
+      <fn id="note-4">
+        <label>4</label>
+        <p>Section-scope footnote.</p>
+      </fn>
+    </fn-group>
+  </back>
+</article>
