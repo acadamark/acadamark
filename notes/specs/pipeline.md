@@ -45,7 +45,8 @@ grouping. Reading the plugins in their pipeline order shows the
 implementation; reading them as shape-index-number-resolve shows what
 each is doing for the document.
 
-An acadamark document goes through six stages to produce HTML output:
+An acadamark document goes through six stages to produce HTML output.
+The JATS export pipeline branches off after Stage 3:
 
 ```
 source text
@@ -57,22 +58,37 @@ source text
     │  remarkRecursiveContent
     │
     ▼  Stage 3: mdast transforms
-    │  normalize markdown → config discovery → article structure →
+    │  normalize markdown → config discovery →
+    │  book structure → article structure →
     │  section nesting → citation index → notes → numbering →
     │  apply numbers → ref resolution → cite resolution →
     │  note placement → bibliography
     │
-    ▼  Stage 4: mdast → hast
-    │  toHast() with acadamarkTag custom handler
-    │
-    ▼  Stage 5: Asset injection
-    │  Conditional CSS/JS prepended to hast tree
-    │
-    ▼  Stage 6: Serialization
-    │  rehypeFormat() → toHtml()
-    │
-HTML string
+    ├──────────────────────────────────┐
+    │                                  │
+    ▼  Stage 4 (HTML)                  ▼  Stage 4' (JATS)
+    │  mdast → hast                    │  mdast → JATS XML
+    │  toHast() with acadamarkTag      │  acadamarkToJats() — consumes the
+    │  custom handler                  │  post-stage-3 mdast directly
+    │                                  │
+    ▼  Stage 5: Asset injection        ▼  Stage 5' (JATS): metadata defaults
+    │  Conditional CSS/JS prepended    │  supplies required JATS attrs
+    │  to hast tree                    │  (xml:lang, dtd-version, etc.)
+    │                                  │
+    ▼  Stage 6: Serialization          ▼  Stage 6' (JATS): XML string
+    │  rehypeFormat() → toHtml()       │
+    │                                  │
+HTML string                       JATS XML string
 ```
+
+The JATS branch (Phase 5; `acadamark-jats-export` package, landed in
+slice 5a per `98f2d7f`) consumes the post-stage-3 mdast — the tree is
+already JATS-shaped at that point (the structural plugins produced
+`<article>`/`<book>` with the appropriate region wrappers; citations
+and cross-references are resolved; numbering is in). The package
+re-imports the structural plugins from `acadamark-interpreter` to
+build the post-stage-3 tree; HTML rendering stays in
+`acadamark-interpreter`.
 
 The pipeline is wired by the `acadamarkInterpreter` unified plugin, which
 registers all stages (2–6) on a single unified processor. The consumer provides
@@ -281,8 +297,51 @@ root
 `<meta>` internals). `acadamarkConfigDiscovery` has already run (no dependency
 between them — ordering is arbitrary).
 
-**Limitation:** `book` and `book-part` document types are not handled. The
-plugin emits a warning and returns without wrapping.
+**Book and book-part documents:** handled by `acadamarkBookStructuring`
+(Phase 4 slice 4a, `c7b2b75`), which runs immediately before this
+plugin in the pipeline. When `<meta type=book>` or `<meta type=book-part>`
+is at root, the book-structuring plugin wraps the tree first; this
+article-structuring plugin then detects the already-book-wrapped tree
+via its early no-op check and skips silently.
+
+#### 4.2.5 acadamarkBookStructuring
+
+**Source:** `packages/acadamark-interpreter/src/plugins/book-structuring.js`
+
+**Purpose:** Wrap the root children of a book document into the Layer 1
+book structure: `<book>` containing `<book-front>`, `<book-body>`, and
+`<book-back>`. Parallel to `acadamarkArticleStructuring` for the BITS
+book DTD shape.
+
+**When it runs:** before `acadamarkArticleStructuring`. For
+`<meta type=article>` (or absent `type`) documents it returns silently;
+for `<meta type=book>` / `<meta type=book-part>` it transforms the tree.
+
+**Region routing by `book-part-type`:**
+
+| book-part-type | Placement |
+|---|---|
+| chapter, part, introduction, conclusion, other | book-body |
+| preface, foreword, dedication | book-front |
+| appendix, glossary, colophon | book-back |
+
+See `book-part.md` §"Where book-parts appear" for the full table.
+
+**Body absorption:** the parser produces `<chapter | Title>` as a tag
+with title content; subsequent paragraphs sit as root-level siblings.
+The plugin gathers those siblings into the chapter's content (the
+`<chapter | Title>\nbody...\n<chapter | Next>` authoring pattern).
+
+**Per-chapter authorship:** an `<author>` child inside a book-part is
+synthesized into a per-book-part `<meta>` wrapper (the edited-volume
+case).
+
+**Companion configurable knobs** (added in the same slice; documented
+under the consuming plugins below):
+- `<config counter-reset-scope>` — controls per-chapter numbering
+  resets. See §4.6 `acadamarkNumbering`.
+- `<config note-scope>` — controls per-book-part footnote collection.
+  See §4.9 `acadamarkNotePlacement`.
 
 #### 4.3 acadamarkSectionNesting
 

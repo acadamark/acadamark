@@ -333,6 +333,62 @@ The rule is enforced today as a warning, not a hard error: a misplaced apparatus
 
 Apparatus tags also have a coupled interface principle. Each apparatus tag can be authored two equivalent ways: with **kwargs** for scalar values (`<meta title="X" author="Y">`) or with **child tags** for structured values (`<meta><title>X</title><author>Y</author></meta>`). The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag allowlist (`META_KWARGS` for `<meta>`; an analogous `CONFIG_KWARGS` for `<config>`); unknown kwargs are dropped with informative diagnostics. A kwarg on the wrong apparatus tag — e.g. `<config title=…>` — additionally gets a "did you mean `<meta>`?" misuse hint, and symmetrically for `<meta citation-style=…>`. Both forms are valid authoring; both reduce to the same canonical shape; the lift is the same single-gate normalization the architecture uses for every other authored form.
 
+## Document structure: articles vs. books
+
+Acadamark supports two top-level document shapes, distinguished by
+`<meta type=...>`: **articles** (the default; `type=article` or
+absent) and **books** (`type=book`, with chapters / parts / appendices
+as recursive `<book-part>` children). The two share most of the
+authoring surface — sections, paragraphs, frameables, math, citations,
+notes, references — but their structural wrappers differ.
+
+The distinction matters because the scholarly-publishing ecosystem
+draws it: JATS has two parallel DTDs (the **article DTD** for
+journal articles; **BITS**, the Book Interchange Tag Suite, for
+books). LaTeX has the same split (the `article` document class
+vs. the `book` class). Acadamark inherits the distinction so the
+Layer 1 output maps cleanly to either DTD without per-document
+restructuring.
+
+The pipeline expression of the distinction: two structural plugins —
+`acadamarkArticleStructuring` and `acadamarkBookStructuring` — sit
+side-by-side as Stage 3 (post-gate). For each document, exactly one
+of them transforms the tree:
+
+- **`acadamarkBookStructuring` runs first.** If `<meta type=book>` or
+  `<meta type=book-part>` is at root, it wraps the children into
+  `<book>` with `<book-front>` / `<book-body>` / `<book-back>`
+  regions, routing each `<book-part>` to its appropriate region by
+  `book-part-type` (chapter / part / introduction → body; preface /
+  foreword / dedication → front; appendix / glossary / colophon →
+  back). Otherwise it's a no-op.
+- **`acadamarkArticleStructuring` runs next.** If the tree is already
+  book-wrapped, it skips silently. Otherwise it does its article
+  shape (`<article>` containing `<article-front>` / `<article-body>`
+  / `<article-back>`).
+
+Downstream plugins (numbering, note-placement, cross-reference
+resolution) are aware of both shapes: they detect the document type
+by walking the post-structuring tree's root and dispatch
+accordingly. Per-document configuration knobs surface the
+article-vs-book defaults that diverge:
+
+- **`<config counter-reset-scope>`** — `none` (article default;
+  global counters) / `chapter` (book default; per-`<book-part>`
+  resets) / `section` (deeper resets, per-outermost-`<section>`).
+  Cross-reference rendering follows the scope: chapter scope
+  produces "Figure 1.3"; section scope produces "Figure 1.2.3";
+  none produces "Figure 3" (current article behavior).
+- **`<config note-scope>`** — `document` (single back-matter list)
+  / `chapter` (book default; per-`<book-part>` collection at
+  chapter end) / `section` (article default; outermost-section
+  collection, per the slice 7001aaa PG-1 behavior).
+
+The two shapes share everything below the structural wrapper. The
+frameable handlers, the theorem family, math, citations, and notes
+all work identically inside an article or a book. The shape divides
+the *outer container*; the *body authoring surface* is one acadamark.
+
 ## Structured-data-container tags
 
 The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which `<meta>` was the first member and `<author>` is the second. (`<config>` is *not* a structured-data container: its body is processing options, not a record of named document-descriptive fields, and the authoring surface today is kwargs-only.)

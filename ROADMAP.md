@@ -57,102 +57,14 @@ pickable within the phase.
 
 ## Current position
 
-**Phases 1 and 2 are closed** as of 2026-05-27. Phase 1 (vocabulary
-completeness) closed with deferred-vocabulary sub-slice 3; Phase 2
-(output handlers and DSL surface) closed with the per-section
-footnote slice (Phase 2 had two sub-arcs: the DSL handler bundle
-across slices 2a/2b/2c, and per-section footnote collection — both
-done). The alpha-tagged vocabulary set has no remaining `[alpha]`
-gaps; every alpha-tagged DSL handler dispatches; per-section
-footnotes work for the doc33 + doc34 fixtures.
-
-The flat-line of completed work to date is recorded in `STATUS.md`.
-
-**Phase 3 also CLOSED 2026-05-28** — frameable elements, shipped
-across Phase 0 (`cec620c`, findings) + slice 3a (`14b95b7`,
-numbering) + slice 3b (`8982409`, frameable build) + slice 3c
-(2026-05-28, caption-as-content + unified helper). Three new vocab
-entries (`<fig>`, `<svg>`, `<frame>`); the `<figure>` alias
-rewriting to `<fig>` at the gate; unified `renderFrameable` helper
-consumed by all 8 frameable handlers; caption-as-content via the
-gate's kwarg → child-tag lift; theorem-family label rendering as a
-parallel use of the shared `formatLabel` primitive.
-
-**Phase 4 also CLOSED 2026-05-29** — document structuring, shipped
-across Phase 0 (`fa38253`, findings) + slice 4a (`c7b2b75`,
-acadamarkBookStructuring plugin + scope-configurable counters and
-notes + per-chapter prefix-path cross-references + per-book-part
-authorship) + slice 4b (2026-05-29, doc-9 snapshot + integration
-test). The structural-tier alpha gap is closed; both article and
-book documents render structurally.
-
-The roadmap moves to **Phase 5 next** — JATS export (the first half
-of the JATS bridge: Layer 1 → JATS XML). Phase 5 has its own
-Phase 0 because the export is a large arc and the package boundary
-(`acadamark-jats-export`, not yet present) needs siting. After
-Phase 5: Phase 6 is the alpha integration check, closing the
-milestone. Phase 7 onwards is post-alpha.
-
----
-
-## Phase 1 — Vocabulary completeness *(alpha — supports line 1)* *(CLOSED)*
-
-Layer 1's vocabulary set must be present and rendering before any
-output-producing arc on top of it (handlers, JATS export, render-mode
-lowering) can be meaningfully built. The deferred-vocabulary item was
-the last gap.
-
-**Exits:** the alpha-tagged vocabulary set has no remaining `[alpha]`
-gaps.
-
-Closure record: see `STATUS.md`.
-
----
-
-## Phase 2 — Output handlers and DSL surface *(alpha — supports line 1)* *(CLOSED)*
-
-The Layer 1 vocabulary in Phase 1 fixed *what* renders; this phase
-fixed *how* each piece renders. DSL-surface handlers consumed the
-deferred vocabulary's entries; per-section footnote collection
-completed the notes-placement story.
-
-**Exits:** every alpha-tagged DSL handler dispatches; per-section
-footnotes work.
-
-Closure record: see `STATUS.md`.
-
----
-
-## Phase 3 — Frameable elements *(alpha — supports lines 1 and 2)* *(CLOSED)*
-
-A capability shared by `<fig>`, `<table>`, `<code>`, `<svg>`,
-`<mermaid>`, other DSL-registry block elements, plus the generic
-`<frame>`. Settled design: optional outline box, optional title (top),
-optional caption (bottom); numbering folded into the caption/title
-rendering, not a separate field. `<figure>` is an accepted authoring
-alias for the canonical `<fig>`, normalized at the lift gate.
-
-The phase ran a **Phase 0 first** to confirm the exact frameable
-membership list and any per-member shape divergences before building.
-
-**Exits:** every alpha-tagged frameable element renders with the
-shared capability; captions accept rich content.
-
-Closure record: see `STATUS.md`.
-
----
-
-## Phase 4 — Document structuring *(alpha — supports line 1)* *(CLOSED)*
-
-Layer 1's structural reach must include both articles (current) and
-books (deferred). `article-structuring.js` previously warned and
-skipped non-article document types; closing this was the last
-structural-tier alpha gap.
-
-**Exits:** book documents render structurally; the doc-9 dark surface
-is pinned by snapshot.
-
-Closure record: see `STATUS.md`.
+Alpha phases 1–4 are closed; the milestone record is in
+`STATUS.md`. The active phase is **Phase 5 (JATS export)**: slice
+5a landed 2026-05-29 (`acadamark-jats-export` package + the
+deferred `mapAttributes` lift to `acadamark-core` + minimal
+article export); slices 5b–5d remain (body content; cross-refs +
+notes + BITS book; bibliography + external DSLs). After Phase 5:
+Phase 6 (alpha integration check) closes the alpha milestone.
+Phase 7 onward is post-alpha.
 
 ---
 
@@ -337,9 +249,6 @@ parser surface.
 - Hardening the colon-id convention into an explicit spec rule.
 - Auditing documented language features against test-fixture coverage.
 - The cross-reference type-prefix mismatch warning.
-- The tag-form × tag matrix documentation *(formerly AUD-15)*.
-- Forward-pointers from governed specs to design directions DD-1..DD-5
-  *(formerly AUD-25)*.
 - `<data>` / `<library>` cleanup-pass discussion *(formerly AUD-18)*.
 - The qualifying-tag pattern generalized beyond `<table>` *(formerly
   DF-17)*.

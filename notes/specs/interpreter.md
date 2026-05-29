@@ -352,6 +352,110 @@ root
   data (root sibling, not inside article)
 ```
 
+**Document type detection update (Phase 4 slice 4a):** the warn-and-
+skip for `book`/`book-part` types is now a defensive backstop. The
+`acadamarkBookStructuring` plugin (§3.3.5 below) runs before this one
+and wraps book documents into a `<book>` root; article-structuring's
+early check then detects the already-book-wrapped tree and skips
+silently. The warn-and-skip code path remains as a safety net for the
+case where book-structuring somehow didn't fire (e.g. a future test
+that disables it).
+
+---
+
+### 3.3.5 acadamarkBookStructuring
+
+**Source:** `packages/acadamark-interpreter/src/plugins/book-structuring.js`
+
+**Purpose:** Parallel to `acadamarkArticleStructuring` for book
+documents. Wraps the root children into the Layer 1 book structure
+(`<book>` containing `<book-front>`, `<book-body>`, `<book-back>`)
+per the BITS book DTD shape that the `book.md` / `book-part.md`
+vocab entries declare.
+
+**Pipeline position:** runs BEFORE `acadamarkArticleStructuring`. For
+`<meta type=article>` (or absent `type`) documents this plugin is a
+no-op and article-structuring does its work. For `<meta type=book>`
+or `<meta type=book-part>` documents this plugin transforms the tree;
+the subsequent article-structuring detects the already-book-wrapped
+tree and skips.
+
+**Region routing by `book-part-type`:**
+
+| book-part-type | Placement |
+|---|---|
+| chapter, part, introduction, conclusion, other | `<book-body>` |
+| preface, foreword, dedication | `<book-front>` |
+| appendix, glossary, colophon | `<book-back>` |
+
+Per `book-part.md` §"Where book-parts appear".
+
+**Body absorption:** the parser produces `<chapter | Title>` as a tag
+with title content; subsequent paragraphs/sections/figures sit as
+root-level siblings. The plugin gathers those siblings into the
+chapter's content array — the authoring pattern is
+`<chapter | Title>\nbody...\n<chapter | Next>`. The first-pass
+`assembleBookPartContents` does this gathering before partition.
+
+**Title promotion and per-book-part `<meta>` synthesis:** inside each
+`<book-part>`, the title-after-pipe content lifts to a
+`<book-part-title>` inside a synthesized `<meta>` wrapper. The same
+synthesis absorbs any `<author>` child at the top of a book-part
+(the edited-volume case where a chapter has its own author distinct
+from the book-level author).
+
+**Book-part shorthand expansion:** the gate (normalize-to-canonical
+§"Group A1.7") expands `<chapter>` / `<part>` / `<appendix>` /
+`<preface>` / `<foreword>` / `<introduction>` / `<conclusion>` /
+`<glossary>` / `<dedication>` to `<book-part book-part-type="...">`
+before this plugin runs — but only when the document is a book
+context (signaled by `<meta type=book>` / `<meta type=book-part>` at
+root). The book-context flag disambiguates `<glossary>` (which has
+two meanings: standalone vocab-glossary container in articles vs.
+appendix-shaped book-part in books).
+
+**Tree shape after this step (book document):**
+
+```
+root
+  book
+    book-front
+      meta (with book-title, book-subtitle, author, etc.)
+      book-part (preface)
+        meta (with book-part-title)
+        [body content]
+    book-body
+      book-part (chapter)
+        meta (with book-part-title)
+        [body content]
+      book-part (chapter)
+        ...
+    book-back
+      book-part (appendix)
+        meta (with book-part-title)
+        [body content]
+      bibliography (if present)
+```
+
+**Configurable knobs added in the same slice** (consumed by
+downstream plugins; documented under each consumer):
+
+- `<config counter-reset-scope>` — `none` / `chapter` / `section`.
+  Default `chapter` for books, `none` for articles. See §3.7
+  `acadamarkNumbering` for the visitor's scope-tracking walk and
+  per-scope renumbering logic.
+- `<config note-scope>` — `document` / `chapter` / `section`.
+  Default `chapter` for books, `section` for articles. See §3.11
+  `acadamarkNotePlacement` for the collection-unit dispatch.
+
+**Cross-reference rendering with chapter prefix:** numbered entries
+in a book document carry an `entry.data.scope = { chapter, section }`
+field stamped by the scope-tracking visitor. `ref-resolution.js`'s
+`computeRefText` consumes the scope to render "Figure 1.3" (chapter-
+prefix) or "Figure 1.2.3" (chapter.section.figure) per the resolved
+scope. Articles render "Figure 3" (no prefix) — current behavior
+preserved.
+
 ---
 
 ### 3.4 acadamarkSectionNesting

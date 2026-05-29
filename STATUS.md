@@ -58,23 +58,18 @@ go stale.)
 ### Known open items
 
 The backlog is tracked, not duplicated here. All open bugs, gaps, and
-design findings live in `BACKLOG-ROADMAP.md` (the single
-home for open work). Notable currently-open items include vocabulary
-plugin-name drift (formerly AUD-24) and design-direction cross-referencing
-(formerly AUD-25).
+design findings live in `BACKLOG.md` (the active-work index) and
+`ROADMAP.md` (the phase plan).
 
 ## In flight / next
 
-Nothing currently in flight. The documentation-system reconciliation
-arc (three slices) is complete — the system defined in
-`CONTRIBUTING.md` is in force, and from here every implementation
-slice ends with its coherence check. The project returns to ordinary
-backlog work from `BACKLOG-ROADMAP.md`. Reasonable
-next candidates by appetite: the integration-test mirror fix (formerly
-AUD-17, a small slice that retires a recurring tax paid four times in
-the R3/R4/G1 arc); the asset-double-injection fix (formerly AUD-19);
-the four Layer 0 SUSPECTED CLOSED verifications (each a small code-check
-that probably closes the item).
+**Phase 5 (JATS export) is the active phase.** Slice 5a landed
+2026-05-29 (`acadamark-jats-export` package + the deferred
+`mapAttributes` lift to `acadamark-core` + minimal article export);
+slices 5b–5d remain (body content; cross-refs + notes + BITS book;
+bibliography + external DSLs). See `ROADMAP.md` Phase 5 for the
+sub-slice list and `notes/phase5-jats-export-findings.md` for the
+design context.
 
 ## Milestones
 
@@ -2448,3 +2443,92 @@ that). One line gets added every few months, not every slice.
   and 5; Item 2 had no detailed entry — confirmed as one of
   the pre-existing orphans flagged in the backlog reconciliation
   slice).
+- **2026-Q2 — documentation hygiene (comprehensive).** Seven
+  carried-forward documentation items cleaned up.
+
+  **(1) ROADMAP "Current position" rewritten** to forward-looking
+  content. The previous version (L58-94) carried per-phase
+  closure prose with commit hashes and slice-by-slice details
+  for Phases 1–4 — the same kind of content the ROADMAP
+  closure-prose cleanup (`a9bb8d8`) removed from the phase
+  sections themselves. Now a brief paragraph: alpha 1–4 closed
+  (pointer to STATUS); Phase 5 is active; Phase 6 closes the
+  alpha milestone; Phase 7 onward is post-alpha.
+
+  **(2) ROADMAP Phase 1–4 sections removed entirely.** The four
+  `## Phase N — ... *(CLOSED)*` sections (previously reduced to
+  brief summary-pointers by `a9bb8d8`) are now gone from
+  ROADMAP. Closed phases shouldn't appear in ROADMAP at all; the
+  historical record is STATUS's job. ROADMAP now starts at
+  Phase 5.
+
+  **(3) ROADMAP Phase 12 stale items removed.** The two items
+  closed by `64bdcec` (tag-form matrix documentation + DD-N
+  forward-pointers) are removed from Phase 12's item list. The
+  artifacts are `notes/specs/tag-forms-reference.md` and the
+  "Design context" sections in config/meta/table/fig vocab.
+
+  **(4) BACKLOG Verify-AUD-N entry closed.** Both the checklist
+  line under "### Verifications" and the detailed entry at
+  L708-723. The verification work was completed by the
+  inspection slice + the partial-item wrap-up slice (`64bdcec`).
+  Of the items the entry named: AUD-14, AUD-15, AUD-25 closed
+  in this arc; AUD-17 (integration.test.js hand-mirror) and
+  AUD-18 (`<data>` / `<library>` cleanup discussion) remain
+  open in their own dedicated BACKLOG entries — no orphans.
+
+  **(5) `pipeline.md` updates.** The stale L284-285 "limitation"
+  line ("book and book-part document types are not handled")
+  rewritten to reflect current state (book-structuring plugin
+  handles them via the early no-op-when-already-book-wrapped
+  check in article-structuring). New §4.2.5 added for
+  `acadamarkBookStructuring`. The pipeline diagram at §1
+  rewritten to show the JATS-export branch off post-stage-3
+  mdast (slice 5a's parallel pipeline).
+
+  **(6a) `interpreter.md` §3.3.5 added for
+  `acadamarkBookStructuring`.** Parallels §3.3's
+  acadamarkArticleStructuring documentation depth. Covers
+  purpose, pipeline position, region routing, body absorption,
+  title promotion + per-book-part `<meta>` synthesis, book-part
+  shorthand expansion (with glossary disambiguation), tree
+  shape after the step, and the configurable knobs surfaced for
+  downstream plugins (`counter-reset-scope`, `note-scope`)
+  with pointers to their consuming-plugin sections.
+
+  **(6b) `DESIGN.md` §"Document structure: articles vs. books"
+  added** (placed between §"Apparatus-tag positioning" and
+  §"Structured-data-container tags" — near the other
+  architectural-distinction sections). Covers the two top-level
+  shapes (article vs. book), why the distinction matters (JATS
+  has article DTD and BITS book DTD; LaTeX has article and book
+  classes), the pipeline expression (`acadamarkBookStructuring`
+  sibling to `acadamarkArticleStructuring`), and the two
+  configurable knobs whose defaults diverge between articles
+  and books.
+
+  **(7) STATUS editorial drift cleaned.** "Known open items"
+  and "In flight / next" rewritten. Removed stale AUD-N
+  references (AUD-17, AUD-19, AUD-24, AUD-25) which were
+  already closed by earlier slices. Fixed stale filename
+  reference (`BACKLOG-ROADMAP.md` → `BACKLOG.md` /
+  `ROADMAP.md`; the file was split). The new "In flight / next"
+  points at Phase 5 as the active work with a pointer to the
+  ROADMAP entry and the Phase 0 findings.
+
+  Counts:
+  - BACKLOG checklist items: 33 → 32 (-1; Verify-AUD-N closed).
+  - BACKLOG detailed entries: 34 → 33 (-1; Verify-AUD-N
+    detailed entry removed + the now-empty "## Detailed
+    entries — Verifications" section header removed).
+  - ROADMAP closed phases: 4 → 0 (Phases 1–4 removed
+    entirely).
+  - `pipeline.md`: pipeline diagram + plugin docs updated.
+  - `interpreter.md`: new §3.3.5 added.
+  - `DESIGN.md`: new architectural section added.
+
+  Tests: acadamark-interpreter 24/24 (no code changes; sanity-
+  verified). No other suites needed running.
+
+  No product code, schema field, or handler changes — pure
+  documentation hygiene.

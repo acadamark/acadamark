@@ -155,12 +155,6 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Discuss auditing documented language features against
   test-fixture coverage** `[tests/build]` `[post-alpha]`
 
-### Verifications
-
-- [ ] **Verify the remaining `(formerly AUD-N)` items against current
-  code** `[cross-cutting]` `[post-alpha]` — pre-flight before any AUD
-  item is picked up for implementation work
-
 ### Standing
 
 - [ ] **Run a spec-completeness audit against the rebuild-from-docs
@@ -700,27 +694,6 @@ test-fixture set, and close gaps. Options include — a one-time
 audit slice; a standing rule that every spec example must come
 with a fixture; a periodic coverage-against-spec sweep. Filed under
 the discussion-is-work rule.
-
----
-
-## Detailed entries — Verifications
-
-### Verify the remaining `(formerly AUD-N)` items against current code
-`[cross-cutting]` `[post-alpha]`
-
-Five items still carry an AUD-N origin marker: AUD-14, AUD-15,
-AUD-17, AUD-18, AUD-25. (AUD-13, the `<config>` silent-accept bug,
-was closed by alpha Phase 2 slice 2 — fixed, not verify-and-close.)
-The Layer 0 verification slice and the mechanical-fix batch each
-found a high already-resolved rate in their cohorts (4/4 Layer 0;
-2/2 of the two AUD items in the mechanical batch — AUD-19 and
-AUD-24), so the base rate suggests several of the remaining six
-are likely already resolved by code that landed without closing the
-backlog entry. This item: read each of the six remaining AUD items
-against the current code and either close-as-verified-resolved or
-leave open with a fresh "still applicable" finding. Should be done
-**before** any of those six is picked up as implementation work, to
-avoid wasted scoping work on an already-fixed item.
 
 ---
 
