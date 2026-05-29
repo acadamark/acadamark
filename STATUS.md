@@ -3090,3 +3090,25 @@ that). One line gets added every few months, not every slice.
   - Install `libxml2-utils` in the dev/CI environment so the
     DTD-validation hard requirement runs (currently bundled
     DTDs sit unused locally). Trivial operational follow-up.
+
+- **2026-Q2 — Phase 6 Phase 0 findings: alpha integration check.**
+  Read-only Phase 0 investigation; no implementation. Findings
+  recorded at `notes/phase6-alpha-integration-findings.md`
+  covering Q1.1-Q1.8: ROADMAP/BACKLOG Phase 6 entry verbatim;
+  43-fixture corpus inventory (38 interpreter + 5 JATS); per-line
+  alpha definition decomposition with line-5 reading settled as
+  **Reading B** (parse → render internal consistency for
+  canonical-form fixtures; the Layer 1 → acadamark lowering
+  direction is Phase 7 / post-alpha); coverage map showing every
+  alpha line has at least one strong existing fixture (doc-9 for
+  line 1; doc-1 for line 2; doc-16 + doc-11/12/14/15 for line 3;
+  doc-42 + doc-43 for line 4; doc-16 for line 5); annotation
+  strategy proposal (central `notes/alpha-acceptance-mapping.md`
+  table + optional per-fixture `.expected.md` companions); gap
+  prediction (Phase 6 vs Phase 10 alpha-line exit-prose drift;
+  optional cross-feature stress fixture; optional AUD-17 stale
+  integration-test mirror resolution); **SINGLE SLICE**
+  recommendation for the implementation work (primarily
+  annotation + small documentation-correctness adjustments;
+  fits comfortably in one commit). No stop-and-report; no
+  blocking drift.
