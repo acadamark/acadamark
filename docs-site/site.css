@@ -1,0 +1,189 @@
+/* acadamark docs-site chrome (Phase 14 Slice 3a).
+ *
+ * Styles only the site shell — the header/nav, the read-only article
+ * container, the footer, and the Quickstart playground panes. The rendered
+ * document's own look comes from default.css (the interpreter's theme) plus
+ * the CSS it injects (KaTeX, fonts). Minimal by design: the v0.1.0 site looks
+ * "acadamark-y" because it ships and demonstrates acadamark's own defaults.
+ */
+
+:root {
+  --border: #d8dee4;
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #57606a;
+  --accent: #0969da;
+  --editor-bg: #fbfcfd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  color: var(--fg);
+  background: var(--bg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ─── Header + navigation (shared by every page) ─────────────────────────── */
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.site-brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.1rem;
+}
+
+.site-nav a {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  color: var(--fg);
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* ─── Read-only article pages ────────────────────────────────────────────── */
+
+main.article {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.75rem 0;
+}
+
+.site-footer {
+  max-width: 46rem;
+  margin: 2.5rem auto 0;
+  padding: 1rem 1.75rem 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.site-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Quickstart playground (split pane, full height) ─────────────────────── */
+
+body.playground {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+body.playground .site-header {
+  flex: none;
+}
+
+.panes {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0; /* let panes scroll instead of overflowing the flex row */
+}
+
+.pane {
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+#editor-pane {
+  border-right: 1px solid var(--border);
+  background: var(--editor-bg);
+}
+
+#editor,
+.cm-editor {
+  height: 100%;
+}
+
+.cm-editor {
+  font-size: 13px;
+}
+
+.cm-scroller {
+  font-family: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+}
+
+#output {
+  padding: 1.25rem 1.75rem;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+/* Parse errors from mid-edit, incomplete source. */
+.pg-error {
+  margin: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: #fff0f0;
+  border: 1px solid #ffc1c1;
+  color: #86181d;
+  white-space: pre-wrap;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+/* Setup notice (e.g. the library bundle was not built/copied). */
+.pg-banner {
+  margin: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: #fff8e6;
+  border: 1px solid #f0d999;
+  color: #6a4b00;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.pg-banner code {
+  background: #fbe7c0;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 820px) {
+  .panes {
+    flex-direction: column;
+  }
+
+  #editor-pane {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}

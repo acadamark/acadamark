@@ -325,6 +325,14 @@ release-time org-split) means the site is a *living regression surface*: if the
 pipeline breaks, the site build breaks in CI. Dogfooding is structural, not
 cosmetic — the site content is acadamark source rendered by the real interpreter.
 
+> **Slice 3a update (revised siting).** The framework was implemented at
+> **`docs-site/` at the repo root**, not as a `packages/demo-site/` workspace
+> package, per the Slice 3a locked inputs (`docs-site/` distinct from the
+> standalone `demo/` editor showcase). Its `build.js` still imports
+> `buildAcadamarkPipeline` from the interpreter workspace and renders the real
+> pipeline, so the dogfooding/regression-surface rationale holds; only the
+> directory location and name differ from this Phase 0 recommendation.
+
 **Build pipeline.** A Node script in `packages/demo-site/` reads the `.acm`
 sources, runs `buildAcadamarkPipeline(options).processSync(source).toString()`
 (Section 2) per page, writes HTML + the published CSS to a build directory, and
@@ -531,6 +539,12 @@ The rename **gate** sits between *demo-site framework* and *org-split*; the
 demo-site framework slice forces it. **This document schedules the decision; it
 does not make it** (out of scope). Chat picks the name when the home page is
 drafted.
+
+> **Slice 3a update (rename deferred).** The Slice 3a locked inputs **deferred
+> the rename** — "Project name: acadamark for v0.1.0. Rename is a separate later
+> decision" — so the framework slice did *not* force it as scheduled above. The
+> placeholder home page is titled "acadamark"; the rename gate now sits at a
+> separate later decision before the org-split, not inside the framework slice.
 
 ---
 

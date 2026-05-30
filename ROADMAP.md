@@ -164,8 +164,14 @@ bundle, and a `demo/` page pairing a CodeMirror editor with live in-browser
 rendering. Slice 2 also fixed a Slice 1 defect that left the IIFE bundle
 unable to load in a browser, and a small interstitial **Slice 1.5** then closed
 that defect's whole class (symmetric node-builtin aliasing + a bundle-load smoke
-test). The next slice is the demo-site framework, which lands the project
-rename. Nothing else is in flight.
+test). **Slice 3a (docs-site framework)** is also done — a `docs-site/` static
+build (`npm run docs:build`) that renders `.acm` sources into a multi-page site
+with a Quickstart playground, with placeholder content. (It diverges from the
+Phase 0 plan per the slice's locked inputs: the site is `docs-site/` at the repo
+root rather than `packages/demo-site/`, and the **project rename is deferred** to
+a separate later decision rather than forced here.) The next slice is 3b —
+translating the README and DESIGN into canonical acadamark as articles. Nothing
+else is in flight.
 
 ---
 
@@ -500,8 +506,13 @@ both are release-blocking.
   esbuild `alias` is now keyed in both the bare and `node:` forms (with
   `removeNodeProtocol: false`), so either import form is safe, and a
   `bundle-load` smoke test loads the IIFE in jsdom on every run as the standing
-  guard. The remaining slices (demo-site framework + rename, demo-site content,
-  fixture consolidation, org-split) per the Phase 0 slicing continue.
+  guard. Slice 3a then built the **docs-site framework** (`docs-site/` at the
+  repo root — a static `npm run docs:build` that renders `.acm` sources into a
+  multi-page site, with a Quickstart playground and placeholder content; it
+  diverges from the Phase 0 `packages/demo-site/` siting and **defers the
+  rename**, both per its locked inputs). The remaining slices (docs-site content
+  in 3b–3d, the deferred rename decision, fixture consolidation, org-split) per
+  the Phase 0 slicing continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —
   the standard the display work (Phase 8) and the demonstrative fixture

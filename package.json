@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",
-    "demo": "npm run demo --workspaces --if-present"
+    "demo": "npm run demo --workspaces --if-present",
+    "docs:build": "node docs-site/build.js"
   }
 }

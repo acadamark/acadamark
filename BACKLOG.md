@@ -971,14 +971,24 @@ the underlying *class* of that defect: the alias is now keyed in both the bare
 and `node:` forms (with `removeNodeProtocol: false`), so either import form is
 safe and the four files Slice 2 had converted to bare were restored to modern
 `node:` form; a `bundle-load` smoke test (loads the IIFE in jsdom each run) is
-the standing guard. Remaining slices — the demo-site framework (which lands the
-rename), demo-site content, fixture consolidation, and the release-time
-org-split — stay open (this checkbox tracks the whole arc). Follow-up findings
-are filed as their own entries: the `.d.ts` types item and the citation-js
-bundle-weight item (Slice 1); the doc-46 missing-figure-images bug (Slice 2).
-(Slice 2's bare-import drift-guard enhancement was retired by Slice 1.5 — the
-symmetric alias and the bundle-load test supersede it.) The `renderInto`
-live-asset-execution discussion (Slice 1) was resolved by Slice 2.
+the standing guard. **Slice 3a (docs-site framework)** built the static-site
+machinery at `docs-site/` (repo root): a `npm run docs:build` that renders
+`.acm` sources through the Node entry into a multi-page site (shared
+header/nav + a "view source on GitHub" footer), with a Quickstart playground
+page (CodeMirror + the browser bundle, seeded with its own source) and three
+placeholder pages. Two deliberate divergences from the Phase 0 findings, per the
+slice's locked inputs: the site is `docs-site/` at the repo root, not the
+ratified `packages/demo-site/` workspace package; and the **project rename is
+deferred** to a separate later decision rather than forced by this slice (so the
+framework slice no longer "lands the rename"). Remaining slices — docs-site
+content (3b: README + DESIGN as articles; 3c: a written Quickstart; 3d: a
+JATS-relationship article), the deferred rename decision, fixture consolidation,
+and the release-time org-split — stay open (this checkbox tracks the whole arc).
+Follow-up findings are filed as their own entries: the `.d.ts` types item and
+the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
+bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by
+Slice 1.5 — the symmetric alias and the bundle-load test supersede it.) The
+`renderInto` live-asset-execution discussion (Slice 1) was resolved by Slice 2.
 
 ---
 

@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`acadamarkToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo shipped (`render` / `renderInto` / `executeAssets`, `acadamark.browser` bundle, `demo/`; Phase 14 Slices 1–2); types, demo-site, and the rename are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `acadamark.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); docs-site content, types, and the rename are follow-up slices
 
 ### Components
 
@@ -171,10 +171,24 @@ loaded — fixed by scoping the dedup to `<head>`. **Phase 14 Slice 1.5
 safe and Slice 2's bare-only convention is retired — the four converted files
 were restored to modern `node:` form. A `bundle-load` smoke test that loads the
 IIFE in a jsdom document on every run is the standing guard, catching a
-load-time throw at test time instead of in a user's browser. **Next:** Phase 14
-Slice 3 — the demo-site framework, which lands the project rename — plus the
-remaining slices (demo-site content, fixture consolidation, org-split) and the
-demonstrative-fixture work. Nothing else is in flight.
+load-time throw at test time instead of in a user's browser. **Phase 14
+Slice 3a (docs-site framework) is now done too:** a new `docs-site/` directory
+at the repo root holds a small static-site build (`npm run docs:build`) that
+renders canonical `.acm` sources through the acadamark Node entry and wraps each
+in a shared template (header/nav + article + a "view source on GitHub" footer),
+writing self-contained HTML to `docs-site/dist/`. Three placeholder pages
+exercise the framework: a homepage, a read-only example article, and a
+**Quickstart playground** that loads CodeMirror + the browser bundle and seeds
+the editor with its own source for live editing (the read-only pages ship no
+JavaScript). Two deliberate divergences from the Phase 0 plan, both per the
+slice's locked inputs: the site lives at `docs-site/` at the repo root rather
+than `packages/demo-site/`, and the **project rename is deferred** to a separate
+later decision rather than being forced by this slice. **Next:** Phase 14
+Slice 3b — translate the README and DESIGN into canonical acadamark and land
+them as articles — then Slice 3c (Quickstart guide), Slice 3d (JATS-relationship
+article), the rename decision, and the remaining packaging slices (fixture
+consolidation, org-split) plus the demonstrative-fixture work. Nothing else is
+in flight.
 
 ## Milestones
 
@@ -4037,3 +4051,26 @@ that). One line gets added every few months, not every slice.
   the load-time-throw class is caught at test time, not in a user's browser. No
   rendered-output change: fixtures and snapshots are untouched; the live editor
   demo still renders doc-46 with its Mermaid diagram.
+- **2026-Q2 — Phase 14 Slice 3a: docs-site framework.** The static-site
+  machinery for acadamark's documentation+articles website, with placeholder
+  content to prove it works. A new `docs-site/` directory at the repo root holds
+  a small Node build (`build.js`, run via `npm run docs:build`) that reads
+  canonical `.acm` sources from `docs-site/sources/`, renders each through the
+  acadamark Node entry (`buildAcadamarkPipeline`), and wraps the result in a
+  shared template (`template.html`: header + hardcoded nav, the article body, and
+  a "view source on GitHub" footer linking the source's blob URL), writing
+  self-contained pages to `docs-site/dist/` (gitignored build output). Read-only
+  pages ship no JavaScript; the one **Quickstart** page is a playground — it
+  loads CodeMirror and the acadamark IIFE bundle (copied into `dist/assets/` when
+  built) and seeds the editor with its own source inlined into the page, so
+  editing re-renders live via the same `render → executeAssets` loop as the
+  standalone editor demo. Three placeholder sources (homepage, example article,
+  Quickstart) exercise every path. Two deliberate divergences from the Phase 0
+  findings, both per the slice's locked inputs: the site is `docs-site/` at the
+  repo root, not the ratified `packages/demo-site/` workspace package; and the
+  **project rename is deferred** to a separate later decision, where Phase 0 had
+  the framework slice forcing it. The site reuses acadamark's own `default.css`
+  theme plus a small `site.css` for chrome. No interpreter or fixture changes —
+  the only non-`docs-site/` edit is a root `docs:build` script. The README and
+  DESIGN articles, a written Quickstart, and a JATS-relationship article land in
+  Slices 3b–3d.

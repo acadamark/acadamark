@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+
+    <!--
+      default.css themes the Layer 1 custom elements the interpreter emits (it
+      does not emit the stylesheet itself). site.css styles the docs-site chrome:
+      the header/nav, the article container, the footer, and the playground panes.
+      Both are copied into dist/assets/ by build.js so the deployed site is
+      self-contained.
+    -->
+    <link rel="stylesheet" href="assets/default.css" />
+    <link rel="stylesheet" href="assets/site.css" />
+    {{headExtra}}
+  </head>
+  <body class="{{bodyClass}}">
+    <header class="site-header">
+      <a class="site-brand" href="index.html">acadamark</a>
+      <nav class="site-nav">{{nav}}</nav>
+    </header>
+    {{body}}
+  </body>
+</html>
