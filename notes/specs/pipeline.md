@@ -1011,19 +1011,44 @@ and render as `null` (suppressed): their content has been consumed by
 
 ---
 
-## 14. Future: client-side rendering
+## 14. Client-side rendering (browser library)
 
-The current pipeline is build-time only. All processing runs in Node.js before
-the HTML is delivered.
+Layer 1 documents render in the browser with no build step, via the browser
+entry `src/browser.js` (Phase 14 Slice 1). It exports `render(source, options)`
+— source string to HTML string — and `renderInto(target, source, options)`,
+which assigns that HTML to an element. Both wrap `buildAcadamarkPipeline` with
+browser-safe defaults (external fonts / KaTeX CSS, linked third-party
+hover-preview libraries, live-link DSL); a caller can override any of them. tsup
+bundles the entry into an ESM module and an IIFE global (`window.acadamark`);
+see `tsup.config.js`.
 
-A future client-side rendering path would re-run the pipeline in the browser.
-This would require bundling all plugins, the Peggy grammar, the micromark
-extension, and the vocabulary into a browser-loadable bundle. No design has
-been done for this yet.
+The Node-only asset paths (font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads)
+are dead code under the browser defaults, but their `fs` / `path` / `url` /
+`module` imports must still resolve for the bundle to build and load. esbuild's
+`alias` redirects each to a throwing stub (`src/assets/node-builtin-stub.js`):
+the import resolves to a harmless binding, and a violated "never called in the
+browser" invariant surfaces as a loud, specific error rather than silent
+corruption. The alias only catches **bare** specifiers — `node:`-prefixed
+imports are claimed by tsup's node-protocol plugin first — so every Node-built-in
+import under `src/` reachable by this bundle is written bare (`from 'fs'`, never
+`from 'node:fs'`). That bare-specifier convention is load-bearing; it is
+documented in `tsup.config.js` and `src/assets/node-builtin-stub.js`.
 
-The plugin-based unified architecture does not inherently prevent client-side
-use; the constraint is the vocabulary loader (`readdirSync` + `readFileSync`)
-and the `citation-js` dependency, both of which are currently Node-only.
+**Live-mode assets under `renderInto` (Phase 14 Slice 2).** `renderInto` sets
+the HTML via `el.innerHTML`, and the HTML spec deliberately leaves
+`innerHTML`-injected `<script>` elements inert. The interactive layer acadamark
+emits — Tippy/Popper hover-previews and live-link DSL bundles (mermaid / abc) —
+is a set of `<script>`s, so under `renderInto` they do not run. The decided
+answer is an **opt-in two-step**: `render` (or `renderInto`) produces the markup,
+then `executeAssets(target)` walks the inserted subtree and re-creates each
+script so the browser executes it — in document order, awaiting each external
+load (the scripts carry load-order dependencies: a DSL library before its init,
+Popper before Tippy before the hover init), deduplicating externals already
+loaded into `<head>`, and finishing with a `mermaid.run()` kick for diagrams
+injected after initial load. The library deliberately does **not** auto-execute
+injected scripts: running markup-derived JS is the consumer's explicit call, not
+a side effect of rendering. The in-browser editor demo (`demo/`) is the worked
+example of the `render → executeAssets` pattern.
 
 ---
 

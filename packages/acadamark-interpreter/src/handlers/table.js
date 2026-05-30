@@ -23,8 +23,10 @@
 // headers/rows-to-hast machinery, the standalone handlers share table.js's
 // implementation via these exports.
 
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+// Bare built-in specifiers (not `node:fs`) — the browser bundle's esbuild `alias`
+// only stubs the bare form; see packages/acadamark-interpreter/tsup.config.js.
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import yaml from 'js-yaml';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';

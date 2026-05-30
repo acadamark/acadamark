@@ -154,7 +154,16 @@ comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain
 open, and carry an unresolved design question — one comprehensive
 document, or the small believable set the spec slice started (see
-`BACKLOG.md`). Nothing else is in flight.
+`BACKLOG.md`).
+
+The active release-blocking arc is now **Phase 14 packaging** (the
+client-side rendering library). **Slice 1 (library packaging)** and **Slice 2
+(in-browser editor demo)** are done — the `src/browser.js`
+`render` / `renderInto` / `executeAssets` façade, the tsup `acadamark.browser`
+bundle, and a `demo/` page pairing a CodeMirror editor with live in-browser
+rendering. Slice 2 also fixed a Slice 1 defect that left the IIFE bundle
+unable to load in a browser. The next slice is the demo-site framework, which
+lands the project rename. Nothing else is in flight.
 
 ---
 
@@ -463,9 +472,10 @@ both are release-blocking.
 
 **Items:**
 
-- **Client-side rendering library** *(Slice 1 — library packaging — done;
-  see STATUS.md's Phase 14 Slice 1 milestone)*. Layer 1 rendering packaged for
-  browser use — a document rendered in-browser with no Node build step.
+- **Client-side rendering library** *(Slices 1–2 done — library packaging +
+  in-browser editor demo; see STATUS.md's Phase 14 milestones)*. Layer 1
+  rendering packaged for browser use — a document rendered in-browser with no
+  Node build step.
   The `acadamark-core` extraction already drew the build/run-time seam
   as a browser-safety boundary for exactly this. The library carries
   **no JATS capability** — JATS export and import stay Node-side. An
@@ -477,8 +487,16 @@ both are release-blocking.
   `acadamark.browser` bundle (ESM + IIFE), the external-by-default
   `embedResources` flip, and the browser-safety work (lazy-ified `fs`
   reads, the `registry.js` → `node-assets.js` split, node-builtin
-  stubbing). The remaining slices (demo, demo-site, rename, fixture
-  consolidation, org-split) per the Phase 0 slicing continue.
+  stubbing). Slice 2 added the in-browser editor demo (`demo/` — CodeMirror
+  source left, rendered output right, live re-render on edit) and an
+  `executeAssets` export on the browser entry: the opt-in
+  `render → executeAssets` two-step that runs the live-mode scripts `innerHTML`
+  leaves inert (resolving the `renderInto` live-asset-execution discussion). It
+  also fixed a Slice 1 defect its byte-level checks missed — the IIFE bundle
+  threw `__require("fs")` at load and never ran in a browser (esbuild `alias` +
+  a bare-specifier convention). The remaining slices (demo-site framework +
+  rename, demo-site content, fixture consolidation, org-split) per the Phase 0
+  slicing continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —
   the standard the display work (Phase 8) and the demonstrative fixture

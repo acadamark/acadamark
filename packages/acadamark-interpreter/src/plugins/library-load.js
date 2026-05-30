@@ -24,8 +24,10 @@
 //     style: 'chicago-author-date',  // from config or default
 //   }
 
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+// Bare built-in specifiers (not `node:fs`) — the browser bundle's esbuild `alias`
+// only stubs the bare form; see packages/acadamark-interpreter/tsup.config.js.
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import Cite from 'citation-js';
 import { ACADAMARK_CONFIG, ACADAMARK_CITATIONS } from 'acadamark-core/file-data-keys';
 import { isAcadamarkTag } from '../lib/ast-helpers.js';

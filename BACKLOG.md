@@ -83,6 +83,15 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
+- [ ] **doc-46 references figure images that do not exist**
+  (`commit-graph.png`, `notebook-ci.png`) `[tests/build]` `[release]`
+  *(→ roadmap: Phase 14; filed by Phase 14 Slice 2)*
+- [x] **Browser IIFE bundle threw `Dynamic require of "fs"` at load —
+  never ran in a browser** `[tests/build]` `[release]` *(→ roadmap: Phase 14;
+  filed and CLOSED by Phase 14 Slice 2)* — **CLOSED 2026-05-29** by the
+  in-browser editor demo slice: esbuild `alias` (bare keys) plus a
+  bare-specifier convention across `src/` redirect every Node built-in to a
+  throwing stub, so the bundle resolves and loads.
 - [x] **Theorem-family elements render unstyled (inline, body size)**
   `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
   RQ-THM-S1/S2; filed by the render-quality slice)* — **CLOSED
@@ -162,6 +171,8 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Reconcile and de-duplicate the interpreter options
   documentation** `[specs/docs]` `[post-alpha]` *(filed by Phase 14
   Slice 1)*
+- [ ] **Add a drift guard for the bare Node-builtin import convention**
+  `[tests/build]` `[post-alpha]` *(filed by Phase 14 Slice 2)*
 
 ### Planned work
 
@@ -248,9 +259,12 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]`
 - [ ] **Discuss auditing documented language features against
   test-fixture coverage** `[tests/build]` `[post-alpha]`
-- [ ] **Decide how live-mode assets (hover-preview / DSL scripts) execute
+- [x] **Decide how live-mode assets (hover-preview / DSL scripts) execute
   under `renderInto`** `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-  *(filed by Phase 14 Slice 1)*
+  *(filed by Phase 14 Slice 1)* — **RESOLVED 2026-05-29** by Phase 14 Slice 2:
+  an opt-in `executeAssets(target)` two-step (`render → executeAssets`); the
+  library does not auto-execute injected scripts. Recorded in
+  `notes/specs/pipeline.md` §14.
 
 ### Standing
 
@@ -291,6 +305,58 @@ A root-cause fix would have `buildProperties` also walk
 can be reverted.
 
 Filed by sub-slice 2 of the deferred-vocab work.
+
+### doc-46 references figure images that do not exist
+`[tests/build]` `[release]` *(→ roadmap: Phase 14)*
+
+The demonstrative book fixture `document-46-reproducible-research.acm`
+declares two figures with external image sources —
+`<fig #fig:vcs-graph src=commit-graph.png …>` and
+`<fig #fig:nb-pipeline src=notebook-ci.png …>` — but neither
+`commit-graph.png` nor `notebook-ci.png` exists anywhere in the
+repository. The `.acm` source, the expected hast (`…-expected.json`),
+and the rendered `…-reproducible-research.html` all carry the `src`, so
+the rendered document shows two broken-image placeholders. Harmless to
+the test suite (snapshots compare structure, not fetched bytes) but
+visible the moment doc-46 is rendered for a human — which the in-browser
+editor demo does, since doc-46 is its default content.
+
+A demonstrative fixture should render cleanly. The fix is to supply the
+two images (or replace the `src=` figures with an asset that exists, or
+an inline SVG `<svg>` figure). Surfaced by Phase 14 Slice 2 while
+visually verifying the editor demo; also noted as a known rough edge in
+`demo/README.md`. Filed, not fixed (out of the demo slice's scope —
+authoring fixture assets is demonstrative-fixture work).
+
+### Browser IIFE bundle threw `Dynamic require of "fs"` at load — never ran in a browser
+`[tests/build]` `[release]` *(→ roadmap: Phase 14)*
+
+**CLOSED 2026-05-29 — Phase 14 Slice 2 (in-browser editor demo).** The
+Slice 1 tsup bundle externalized the Node built-ins (`fs` / `path` /
+`url` / `module`) that the interpreter's server-only code paths import at
+module top level. In the IIFE form that externalization became a
+top-level `__require("fs")`, which threw the instant the IIFE evaluated —
+*before* it could assign `window.acadamark`. So the committed Slice 1
+bundle, though it built and passed its byte-level safety checks, **never
+actually loaded in a browser**; the defect was invisible until a real
+page (the editor demo) tried to use the global. The earlier
+`esbuildPlugins` stub did not fire because tsup appends user plugins
+after its own node-externalizer, and a `node:`-prefixed import slips past
+esbuild's `alias` because tsup's node-protocol plugin claims it first.
+
+The fix: redirect the built-ins with esbuild `alias` (whose keys are
+**bare**) to a throwing stub (`src/assets/node-builtin-stub.js`), and
+adopt a project convention that every Node-built-in import under `src/`
+reachable by the bundle is written bare (`from 'fs'`, never
+`from 'node:fs'`) so the alias can catch it. Four files were converted
+`node:` → bare in the same slice (`font-loader.js`, `table.js`,
+`library-load.js`, `hover-preview-assets.js`); `index.js` and
+`node-assets.js` were already bare. The stub's members throw only when
+*called*, so binding them at module-init is harmless while a violated
+"never called in the browser" invariant surfaces as a loud error. The
+mechanism and convention are documented in `tsup.config.js`,
+`src/assets/node-builtin-stub.js`, and `notes/specs/pipeline.md` §14; a
+drift guard for the bare convention is filed as its own enhancement.
 
 ### Theorem-family elements render unstyled (inline, body size)
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
@@ -664,6 +730,25 @@ cross-file spec restructuring — the canonical-owner choice is flagged for a
 chat decision rather than resolved unilaterally. *(filed by Phase 14
 Slice 1)*
 
+### Add a drift guard for the bare Node-builtin import convention
+`[tests/build]` `[post-alpha]`
+
+The browser bundle resolves its (dead-code) Node-built-in imports through
+an esbuild `alias`, which catches only **bare** specifiers — so the bundle
+depends on a project convention that every `fs` / `path` / `url` / `module`
+import under `src/` reachable by `src/browser.js` is written bare, never
+`node:`-prefixed (see the closed bundle-load bug and
+`notes/specs/pipeline.md` §14). The convention is currently enforced only
+by code review and by the `platform:'browser'` build succeeding. A single
+`from 'node:fs'` slipping back in would ship a load-time `__require("fs")`
+that throws — and tsup's IIFE build would still *succeed*, so the failure
+would only surface when a page loads the bundle, exactly the silent class
+the original defect was. This item: add a cheap guard — e.g. a test that
+greps `src/` for `from 'node:(fs|path|url|module)'` and fails on a match,
+or an equivalent lint rule — so the convention is mechanically protected
+rather than convention-only. Low cost; prevents a regression that the test
+suite would otherwise miss. *(filed by Phase 14 Slice 2)*
+
 ---
 
 ## Detailed entries — Planned work
@@ -876,19 +961,27 @@ rendered output on the right — falls out of this library as an example
 application: it ships as a library demo documented in the library's
 README, **not as a standalone roadmap phase**. A multi-slice arc
 (packaging, the browser entry point, the demo app). **Phase 0 is done**
-(`aaa7e5c` — API surface, bundle toolchain, six-slice plan) and **Slice 1
-(library packaging) is done**: the `src/browser.js` `render` / `renderInto`
-façade, the tsup `acadamark.browser` bundle (ESM + IIFE), the
+(`aaa7e5c` — API surface, bundle toolchain, six-slice plan) and **Slices 1–2
+are done**. **Slice 1 (library packaging):** the `src/browser.js` `render` /
+`renderInto` façade, the tsup `acadamark.browser` bundle (ESM + IIFE), the
 external-by-default `embedResources` flip (breaking for the Node entry;
 `embedResources: true` restores self-contained output), and the
 browser-safety work (lazy-ified `fs` reads, the `registry.js` →
-`node-assets.js` split, node-builtin stubbing). Remaining slices — the
-in-browser editor demo, the demo-site framework (which lands the rename),
-demo-site content, fixture consolidation, and the release-time org-split —
-stay open (this checkbox tracks the whole arc). Follow-up findings from
-Slice 1 are filed as their own entries: the `.d.ts` types item, the
-citation-js bundle-weight item, and the `renderInto` live-asset-execution
-discussion.
+`node-assets.js` split, node-builtin stubbing). **Slice 2 (in-browser editor
+demo):** the `demo/` page (a CodeMirror 6 editor left, rendered output right,
+live re-render on edit, doc-46 as default content) plus a new `executeAssets`
+export on the browser entry — the opt-in `render → executeAssets` two-step
+that runs the live-mode scripts `innerHTML` leaves inert (resolving the
+`renderInto` live-asset discussion). Slice 2 also fixed a Slice 1 defect that
+its byte-level checks missed: the committed IIFE bundle threw
+`__require("fs")` at load and never ran in a browser (see the closed
+bundle-load bug). Remaining slices — the demo-site framework (which lands the
+rename), demo-site content, fixture consolidation, and the release-time
+org-split — stay open (this checkbox tracks the whole arc). Follow-up findings
+are filed as their own entries: the `.d.ts` types item and the citation-js
+bundle-weight item (Slice 1); the bare-import drift-guard enhancement and the
+doc-46 missing-figure-images bug (Slice 2). The `renderInto`
+live-asset-execution discussion (Slice 1) is now resolved by Slice 2.
 
 ---
 
@@ -1219,6 +1312,19 @@ the discussion-is-work rule.
 
 ### Decide how live-mode assets (hover-preview / DSL scripts) execute under `renderInto`
 `[interpreter]` `[release]`
+
+**RESOLVED 2026-05-29 — Phase 14 Slice 2 (in-browser editor demo).** The
+library adds an **opt-in activation helper**, `executeAssets(target)`, and
+the decided usage is the two-step `render → executeAssets`: render produces
+the markup, then `executeAssets` walks the inserted subtree and re-creates
+each injected `<script>` so the browser runs it — in document order,
+awaiting each external load (load-order dependencies: a DSL library before
+its init; Popper before Tippy before the hover init), deduplicating
+externals already in `<head>`, and finishing with a `mermaid.run()` kick.
+The library deliberately does **not** auto-execute injected scripts —
+running markup-derived JS is the consumer's explicit call. The decision is
+recorded in `notes/specs/pipeline.md` §14; the demo (`demo/`) is the worked
+example. (Resolution of the discussion below.)
 
 `renderInto(target, source)` (Phase 14 Slice 1, `src/browser.js`) assigns
 the rendered HTML via `el.innerHTML`. The HTML spec deliberately prevents

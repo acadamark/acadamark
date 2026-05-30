@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`acadamarkToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library shipped (`render` / `renderInto`, `acadamark.browser` bundle, Phase 14 Slice 1); demo app + types are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo shipped (`render` / `renderInto` / `executeAssets`, `acadamark.browser` bundle, `demo/`; Phase 14 Slices 1–2); types, demo-site, and the rename are follow-up slices
 
 ### Components
 
@@ -149,10 +149,24 @@ tsup into `acadamark.browser` (ESM + IIFE), with the Node-only code paths
 they are dead code under the browser defaults. The same slice flipped resource
 embedding **external-by-default** (`embedResources`, default false) — a breaking
 change for the Node entry, with `embedResources: true` restoring the prior
-self-contained output. The remaining Phase 14 slices (in-browser editor demo,
-demo-site framework + rename, demo-site content, fixture consolidation,
-org-split) and the render-quality / demonstrative-fixture work continue.
-Nothing else is in flight.
+self-contained output. **Phase 14 Slice 2 (in-browser editor demo) is now done
+too:** a `demo/` page pairs a CodeMirror 6 editor (left) with live in-browser
+rendering (right), re-rendering on each edit, defaulting to the doc-46
+edited-volume fixture; it exercises citations, math, footnotes, and a live
+Mermaid diagram with working hover previews. The slice added an `executeAssets`
+export to the browser entry — the opt-in `render → executeAssets` two-step that
+runs the live-mode scripts `innerHTML` leaves inert (resolving the `renderInto`
+live-asset-execution discussion). End-to-end verification surfaced two defects,
+both fixed in the slice: (1) the Slice 1 IIFE bundle threw `__require("fs")` at
+load and **never ran in a browser** — fixed with an esbuild `alias` to a
+throwing stub plus a bare-specifier convention across `src/` (every Node
+built-in imported bare, not `node:`-prefixed, so the alias catches it); and
+(2) `executeAssets`'s external-script dedup was whole-document-scoped, matching
+the inert injected original against itself, so mermaid / Tippy silently never
+loaded — fixed by scoping the dedup to `<head>`. **Next:** Phase 14 Slice 3 —
+the demo-site framework, which lands the project rename — plus the remaining
+slices (demo-site content, fixture consolidation, org-split) and the
+demonstrative-fixture work. Nothing else is in flight.
 
 ## Milestones
 
@@ -3954,3 +3968,38 @@ that). One line gets added every few months, not every slice.
   self-contained output. CDN URL literals (KaTeX / mermaid / abc) are now pinned
   and guarded by a `cdn-versions.test.js` drift test. The remaining Phase 14
   slices (demo, demo-site, rename, fixture consolidation, org-split) continue.
+- **2026-Q2 — Phase 14 Slice 2: in-browser editor demo.** acadamark became
+  something anyone can try in a browser with no install. A new `demo/` page (at
+  the repo root, not under `packages/`) pairs a CodeMirror 6 editor on the left
+  with live-rendered output on the right: each edit re-runs the browser
+  library and repaints the document, defaulting to the doc-46 edited-volume
+  fixture so citations, math, footnotes, and a live Mermaid diagram (with
+  working hover previews) are all exercised. The page loads the library as the
+  IIFE global and uses the **two-step `render → executeAssets` pattern**: a new
+  `executeAssets(target)` export walks the freshly-injected subtree and
+  re-creates each `<script>` so the browser runs it — in document order,
+  awaiting external loads, deduplicating libraries already in `<head>`, and
+  kicking `mermaid.run()` for diagrams added after load. This is the decided
+  answer to the Slice-1 `renderInto` live-asset question (the library does not
+  auto-execute markup-derived scripts; activation is the consumer's explicit
+  call), recorded in `notes/specs/pipeline.md` §14. End-to-end verification of
+  the demo surfaced — and the slice fixed — two defects the Slice 1 byte-level
+  checks could not catch. First, the committed IIFE bundle threw
+  `__require("fs")` the instant it evaluated and so **never loaded in a
+  browser**: tsup externalized the Node built-ins its server-only code paths
+  import, and in IIFE form that became a top-level require. The fix routes
+  every built-in through an esbuild `alias` to a throwing stub
+  (`node-builtin-stub.js`, members that throw only when called) and adopts a
+  **bare-specifier convention** — every Node-built-in import under `src/`
+  reachable by the bundle is written `from 'fs'`, never `from 'node:fs'`,
+  because the alias catches only bare specifiers (tsup's node-protocol plugin
+  claims the `node:` form first); four modules were converted to comply.
+  Second, `executeAssets`'s dedup of already-loaded external scripts was
+  whole-document-scoped, so the inert injected original matched itself and the
+  real library never loaded; scoping the check to `<head>` (where loaded
+  externals are appended) fixed it. The bare-import convention is left guarded
+  only by review and the browser build succeeding — a drift-guard test is filed
+  as a follow-up — and the demonstrative doc-46 fixture's two missing figure
+  images (`commit-graph.png`, `notebook-ci.png`) are filed as a separate bug.
+  The remaining Phase 14 slices (demo-site framework + rename, demo-site
+  content, fixture consolidation, org-split) continue.

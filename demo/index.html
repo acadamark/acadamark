@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>acadamark — live editor</title>
+
+    <!--
+      Document theme for the Layer 1 custom elements. This is the same shell CSS
+      the rendered fixtures use (src/assets/default.css); the interpreter does NOT
+      emit it, so the demo links it explicitly to style the output pane.
+    -->
+    <link
+      rel="stylesheet"
+      href="../packages/acadamark-interpreter/src/assets/default.css"
+    />
+    <link rel="stylesheet" href="demo.css" />
+
+    <!--
+      acadamark browser library (IIFE build → window.acadamark). Built locally by
+      `npm run build:lib` in packages/acadamark-interpreter and gitignored (dist/);
+      see README.md. A classic <script> so the global is set during parse, before
+      the deferred demo module (below) runs.
+    -->
+    <script src="../packages/acadamark-interpreter/dist/acadamark.browser.global.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>acadamark</h1>
+      <p class="tagline">
+        Type acadamark source on the left; the rendered output updates on the
+        right. Runs entirely in your browser — citations, math, footnotes, and
+        diagrams included.
+      </p>
+    </header>
+
+    <main class="panes">
+      <section class="pane" id="editor-pane" aria-label="Source editor">
+        <div id="editor"></div>
+      </section>
+      <section class="pane" id="output-pane" aria-label="Rendered output">
+        <article id="output"></article>
+      </section>
+    </main>
+
+    <script type="module" src="demo.js"></script>
+  </body>
+</html>

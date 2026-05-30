@@ -3,14 +3,31 @@
 // Bundles src/browser.js (the render/renderInto façade) into a self-contained
 // browser library, ESM + IIFE. Two mechanisms do the load-bearing work:
 //
-//   1. nodeBuiltinStubs (esbuild plugin) — our server-only code paths (table
-//      src=, library src=, DSL live-inline/static, inline font/KaTeX embedding)
-//      import node:fs/url/path/module at module top level, but under the browser
-//      façade's defaults none of those code paths execute. esbuild
-//      (platform:'browser') would error on unresolved built-ins, so we resolve
-//      them to a virtual stub whose members throw if ever called. "Never called"
-//      is the design invariant; the throw is a loud backstop if that invariant is
-//      ever violated.
+//   1. node-builtin alias + a bare-specifier convention — our server-only code
+//      paths (table src=, library src=, DSL live-inline/static, inline font/KaTeX
+//      embedding) import fs/url/path/module at module top level, but under the
+//      browser façade's defaults none of those code paths execute. esbuild
+//      (platform:'browser') would otherwise leave the built-ins as runtime
+//      `require()` calls that, in the IIFE form, become a top-level `__require("fs")`
+//      and throw the instant the IIFE evaluates — before it can assign
+//      `window.acadamark`. So esbuild `alias` (in esbuildOptions, below) redirects
+//      every fs/path/url/module specifier to src/assets/node-builtin-stub.js, a
+//      real module whose members throw only when CALLED. "Never called" is the
+//      design invariant; binding the import is harmless, and the throw is a loud
+//      backstop if that invariant is ever violated.
+//
+//      The catch — and why src/ uses BARE built-in specifiers: esbuild resolves in
+//      the order plugins → alias → default. tsup always installs a first-running
+//      `node-protocol-plugin` whose onResolve claims `node:`-prefixed specifiers
+//      and externalizes them — that runs BEFORE alias, so a `from 'node:fs'` import
+//      slips past the alias and ships as a load-time `__require("fs")`. Bare
+//      `from 'fs'` is claimed by no plugin, so alias catches it. Prepending our own
+//      resolve plugin to beat node-protocol-plugin does NOT work: tsup rebuilds
+//      options.plugins after esbuildOptions, discarding the mutation (options.alias
+//      IS honored, options.plugins is not). The robust resolution is therefore the
+//      alias PLUS a project convention: every Node-built-in import reachable by
+//      this bundle is written bare. (See node-builtin-stub.js's header. A drift
+//      guard for the convention is filed as a finding.)
 //
 //   2. esbuild `define` for the hover-preview assets — acadamark's own
 //      hover-preview.css/.js have no CDN, so even hoverPreviewMode:'link' must
@@ -54,30 +71,10 @@ const assetsDir = join(dirname(fileURLToPath(import.meta.url)), 'src', 'assets')
 const hoverPreviewCss = readFileSync(join(assetsDir, 'hover-preview.css'), 'utf8');
 const hoverPreviewJs = readFileSync(join(assetsDir, 'hover-preview.js'), 'utf8');
 
-const nodeBuiltinStubs = {
-  name: 'acadamark-node-builtin-stubs',
-  setup(build) {
-    build.onResolve({ filter: /^(node:)?(fs|path|url|module)$/ }, (args) => ({
-      path: args.path,
-      namespace: 'node-stub',
-    }));
-    build.onLoad({ filter: /.*/, namespace: 'node-stub' }, () => ({
-      contents: [
-        'const u = (n) => () => {',
-        '  throw new Error(n + " is not available in the acadamark browser bundle");',
-        '};',
-        'export const readFileSync = u("fs.readFileSync");',
-        'export const fileURLToPath = u("url.fileURLToPath");',
-        'export const dirname = u("path.dirname");',
-        'export const join = u("path.join");',
-        'export const resolve = u("path.resolve");',
-        'export const createRequire = u("module.createRequire");',
-        'export default {};',
-      ].join('\n'),
-      loader: 'js',
-    }));
-  },
-};
+// Absolute path to the node-builtin stub (see header item 1). The esbuild `alias`
+// in esbuildOptions redirects every (bare) fs/url/path/module specifier here, so
+// the browser bundle resolves — and loads — without a live `__require` of a built-in.
+const nodeBuiltinStub = join(assetsDir, 'node-builtin-stub.js');
 
 export default defineConfig({
   entry: { 'acadamark.browser': 'src/browser.js' },
@@ -93,8 +90,20 @@ export default defineConfig({
     __ACADAMARK_HOVER_PREVIEW_CSS__: JSON.stringify(hoverPreviewCss),
     __ACADAMARK_HOVER_PREVIEW_JS__: JSON.stringify(hoverPreviewJs),
   },
-  esbuildPlugins: [nodeBuiltinStubs],
   esbuildOptions(options) {
+    // Resolve the Node built-ins to the throwing stub via esbuild `alias` (see
+    // header item 1). `alias` only catches BARE specifiers — `node:`-prefixed
+    // imports are claimed by tsup's node-protocol-plugin before alias is consulted
+    // — so every fs/url/path/module import under src/ that is reachable by this
+    // bundle MUST be written bare (`from 'fs'`), never `from 'node:fs'`. The keys
+    // here are bare for that reason.
+    options.alias = {
+      ...options.alias,
+      fs: nodeBuiltinStub,
+      path: nodeBuiltinStub,
+      url: nodeBuiltinStub,
+      module: nodeBuiltinStub,
+    };
     // Silence the `empty-import-meta` warning class for the IIFE build only-by-
     // effect. Every import.meta.resolve / import.meta.url in the graph sits in an
     // inline-embed or live-inline code path (getKatexCss, the Tippy/Popper

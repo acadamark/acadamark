@@ -17,9 +17,12 @@
 // (src/assets/), so they are read as siblings here and imported as siblings in
 // the browser variant.
 
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+// Bare built-in specifiers (not `node:fs`) — src/ convention so the browser
+// bundle's esbuild `alias` can stub the bare form (this file is itself swapped out
+// of the bundle, but the convention is kept uniform); see tsup.config.js.
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 // Deferred into an accessor (not computed at module load) so this file's mere
 // import is side-effect-free; the fs read happens only when a document actually
