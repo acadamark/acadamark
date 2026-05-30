@@ -611,6 +611,111 @@ console.log('\nAll escape-rules bracketed-list grammar tests passed.')
 
 console.log('\nAll escape-rules opaque-region grammar tests passed.')
 
+// ─── Opaque inline spans in named-tag content (bug-fix arc Slice C) ─────────
+//
+// Inline/display math ($…$, $$…$$) and code spans (`…`, ``…``) inside pipe-form
+// named-tag content are opaque: the grammar returns them verbatim instead of
+// escape-processing their interior, so LaTeX backslash commands and Windows
+// paths survive. Before the OpaqueSpan rule, the inner \in / \mathbb / \sqrt /
+// path backslashes produced acadamarkParseError nodes that split the content
+// array and broke downstream math/code rendering.
+
+{
+  // Inline math with \in and \mathbb{…}: clean opaque string, verbatim.
+  const n = p('<definition | $X \\in \\mathbb{Y}$ is the set.>')
+  assert.equal(typeof n.content, 'string', 'inline math content is a clean string (no error nodes)')
+  assert.equal(n.content, ' $X \\in \\mathbb{Y}$ is the set.')
+  console.log('PASS grammar: $…$ with \\in \\mathbb{} in named-tag content is opaque')
+}
+
+{
+  // Inline math with \sqrt{…}.
+  const n = p('<lemma | If $f(x) = \\sqrt{x}$ then it is defined for $x \\geq 0$.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' If $f(x) = \\sqrt{x}$ then it is defined for $x \\geq 0$.')
+  console.log('PASS grammar: two $…$ spans with \\sqrt and \\geq are both opaque')
+}
+
+{
+  // \mathcal and \log inside inline math.
+  const n = p('<remark | We use $\\mathcal{O}(n \\log n)$ notation throughout.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' We use $\\mathcal{O}(n \\log n)$ notation throughout.')
+  console.log('PASS grammar: $…$ with \\mathcal \\log in named-tag content is opaque')
+}
+
+{
+  // Display math $$…$$ in named-tag content (Q3: same delimiter family).
+  const n = p('<aside | The identity $$e^{i\\pi} + 1 = 0$$ is the Euler identity.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' The identity $$e^{i\\pi} + 1 = 0$$ is the Euler identity.')
+  console.log('PASS grammar: $$…$$ display math in named-tag content is opaque')
+}
+
+{
+  // Single-backtick code span with backslashes — the exact escape-rules-spec
+  // "Unknown escape (in named-tag content)" promise: `C:\new\folder` is opaque.
+  const n = p('<aside | The path `C:\\new\\folder` is opaque.>')
+  assert.equal(typeof n.content, 'string', 'code span content is a clean string (no error nodes)')
+  assert.equal(n.content, ' The path `C:\\new\\folder` is opaque.')
+  console.log('PASS grammar: `…` code span with \\n \\f backslashes is opaque')
+}
+
+{
+  // Double-backtick code span (for code containing a backtick) with a backslash.
+  const n = p('<aside | Regex ``\\d+(\\.\\d+)?`` matches decimals.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' Regex ``\\d+(\\.\\d+)?`` matches decimals.')
+  console.log('PASS grammar: ``…`` double-backtick code span with backslashes is opaque')
+}
+
+{
+  // Invariant: backslash-free math is byte-identical to the pre-fix output
+  // (verbatim return), so existing snapshots cannot change.
+  const n = p('<aside | Einstein wrote $E = mc^2$ in 1905.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' Einstein wrote $E = mc^2$ in 1905.')
+  console.log('PASS grammar: backslash-free $…$ unchanged (zero-regression invariant)')
+}
+
+{
+  // Invariant: two currency dollars (no LaTeX) round-trip identically. The
+  // span machinery may pair them, but verbatim return reconstructs the source.
+  const n = p('<aside | The price rose from $5 to $10 overnight.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' The price rose from $5 to $10 overnight.')
+  console.log('PASS grammar: currency $5 … $10 round-trips identically (no error nodes)')
+}
+
+{
+  // Invariant: a lone unmatched $ (no closer before >) stays a literal char.
+  const n = p('<aside | A discount of $5 applies.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' A discount of $5 applies.')
+  console.log('PASS grammar: lone unmatched $ falls through to literal char')
+}
+
+{
+  // Guard: an escaped delimiter (\$) is consumed as a markdown pass-through
+  // BEFORE a span can open — the escape alternatives sit first in ContentItem.
+  const n = p('<aside | A literal cost of \\$5 here.>')
+  assert.equal(typeof n.content, 'string')
+  assert.equal(n.content, ' A literal cost of \\$5 here.')
+  console.log('PASS grammar: \\$ pass-through prevents span opening (literal dollar authorable)')
+}
+
+{
+  // Guard: a bare unknown escape OUTSIDE any span still errors (strict mode is
+  // unchanged — OpaqueSpan only suppresses errors inside a recognised span).
+  const n = p('<aside | A bare path C:\\new errors here.>')
+  assert.ok(Array.isArray(n.content), 'bare backslash outside a span still produces an error array')
+  const err = n.content.find(item => typeof item !== 'string')
+  assert.ok(err && err.type === 'acadamarkParseError', 'bare \\n outside a span is still an unknown-escape error')
+  console.log('PASS grammar: bare \\n outside a span still errors (strict mode preserved)')
+}
+
+console.log('\nAll opaque-inline-span (Slice C) grammar tests passed.')
+
 // ─── Multi-line: grammar unit tests ─────────────────────────────────────────
 // The grammar receives joined source strings (chunks joined with '\n').
 // These tests verify that the Peggy grammar accepts newlines in all regions

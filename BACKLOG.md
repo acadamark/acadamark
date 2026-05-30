@@ -125,9 +125,14 @@ A flat scannable index of every open item. Detailed entries below.
   `formatScopedNumber` helper the `<xref>` text uses, so a chapter-scoped
   book's `<label>`s carry the chapter prefix matching the references
   resolving to them (`<label>3.1</label>` matches `figure 3.1`).
-- [ ] **Inline math in pipe-form named-tag content is not protected from
+- [x] **Inline math in pipe-form named-tag content is not protected from
   escape processing** `[parser]` `[post-alpha]` *(filed by the
-  render-quality slice)*
+  render-quality slice)* — **CLOSED 2026-05-29** by the render-quality
+  bug-fix arc, slice C: inline and display math and markdown code spans in
+  pipe-form named-tag content are now opaque to the inner parser's escape
+  processing via a shared `OpaqueSpan` grammar rule; the scope was widened
+  from math-only to math + code spans (`escape-rules-spec.md` §"Opaque
+  inline spans within prose content").
 - [x] **ABC `<div>` source is not preserved verbatim; the HTML
   serializer adds indentation** `[interpreter]` `[release]`
   *(→ roadmap: Phase 14; render-quality RQ-DSL-M2; filed by the
@@ -473,6 +478,34 @@ rewritten to use block form for the affected proof and backslash-free
 inline math in the pipe-form definition, so it renders cleanly. Filed,
 not fixed, per the render-quality slice's scope. Author workaround: use
 block form, or keep backslash LaTeX out of pipe-form inline math.
+
+**CLOSED 2026-05-29 — render-quality bug-fix arc, slice C.** A shared
+`OpaqueSpan` grammar rule in `packages/remark-acadamark/grammar/acadamark.peggy`
+now recognises inline math (`$…$`), display math (`$$…$$`), and markdown code
+spans (`` `…` ``, `` ``…`` ``) inside the `ContentItem` rule and returns them
+verbatim, so the inner parser's escape processing never sees the LaTeX backslash
+commands (or Windows-path backslashes) inside them; the math then flows to
+`remark-math` intact. Correctness invariant: for a backslash-free span the
+emitted string is byte-identical (zero regression) — only backslash-inside-span
+behaviour changes. Backslash escape rules stay *first* in `ContentItem`, so
+`\$` / `` \` `` still pass through as markdown literals and never open a span.
+The scope was widened from math-only to **math + code spans**, bringing the
+parser in line with `escape-rules-spec.md` §"Opaque inline spans within prose
+content." New regression fixture `document-48-pipe-form-inline-math.acm`
+exercises inline, display-fence, and single/double-backtick code-span backslash
+content in pipe form. The fix also corrected latent parse-errors an existing
+fixture — `document-35-numbering-extension.acm` (lines 21 `\sum`/`\le`, 25
+`\mathbb`) — had silently carried in its snapshot: its propositions and example
+now render their math instead of `??parse: unknown-escape-sequence` markers,
+real-world proof the bug existed in the corpus and the fix resolves it.
+**Two findings:** (i) the fixture used `<lemma>` rather than the
+prompt-suggested `<theorem>`, because `<theorem>` is `isOpaqueContent: true`
+and its body is dropped (a separate pre-existing bug; see the doc-29 note) —
+`<lemma>` is a recursively-parsed sibling that renders its body; (ii) the same
+opacity is **deferred** for hash sigil-tag headings (`<# … #>`), because `>` is
+legal content there and the heading content class needs a different rule — out
+of scope for this named-tag-content fix (noted in the grammar comment and the
+escape-rules spec).
 
 ### ABC `<div>` source is not preserved verbatim — the HTML serializer adds indentation
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*

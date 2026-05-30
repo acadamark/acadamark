@@ -40,6 +40,22 @@ The rule is: if a region is parsed as prose by acadamark, escape rules apply. If
 
 **Prose outside named-tag constructs** is handled entirely by remark (CommonMark). Acadamark adds no special escape processing there — remark already handles `\<`, `\>`, `\|`, `\*`, `\\`, and all other CommonMark escapes. The escape rules described in this document apply to regions that the Peggy grammar processes: named-tag content and hash sigil-tag content.
 
+## Opaque inline spans within prose content
+
+Within **named-tag content** — prose that the Peggy grammar processes — two inline span forms are themselves opaque, even though the text around them is prose:
+
+- **Inline and display math:** `$…$`, `$$…$$`
+- **Inline code spans:** `` `…` ``, `` ``…`` ``
+
+These spans embed notation that carries its own backslash conventions: LaTeX commands (`\in`, `\mathbb{R}`, `\sqrt`) and filesystem paths (`C:\new\folder`). Their interior is preserved verbatim — escape rules do not apply inside them — and the intact string is handed to remark-math / CommonMark downstream, which own the final rendering. This mirrors the always-opaque sigil forms (`<$…$>`, `` <`…`> ``) and the block form, so the same expression authored as a sigil tag, as a block tag, or inside pipe-form content renders identically. It is also why the code-span path example in "Unknown escape (in named-tag content)" below works: a bare `C:\new\folder` is an unknown-escape error, but `` `C:\new\folder` `` is opaque and its backslashes survive.
+
+The opening delimiter must be balanced by a closing delimiter before the content's terminating `>`. An unbalanced delimiter is treated as a literal character — a lone `$` used as currency stays literal, and `$5 … $10` round-trips unchanged. To force a literal delimiter where a span would otherwise open, escape it: `\$` and `` \` `` pass through to remark as markdown literals and no span opens.
+
+Two scopes are deliberately excluded:
+
+- **Superscript and subscript interiors** (`^{…}`, `_{…}`): the brace closer `}` is ambiguous with math braces such as `\mathbb{Y}`, so spans inside these shortcuts are not recognised. Author math there with an explicit math sigil.
+- **Hash sigil-tag content** (`<#…#>` headings): headings share the same latent gap but need a different boundary rule (`>` is legal content inside a heading body, unlike named-tag content), so opaque-span recognition there is deferred. A math or code span containing a backslash inside a heading is still escape-processed until that work lands.
+
 ## Strict mode
 
 `\X` where `X` is not a recognized special character is an error. The parser produces an `acadamarkParseError` node and continues. The error renders as visible warning text in the output document, making the mistake unmissable.

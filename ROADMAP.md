@@ -143,8 +143,13 @@ side: the JATS `<label>` emitter derives its number through the same shared
 helper (re-exported from `acadamark-interpreter`), so a book's `<label>` and the
 `<xref>` resolving to it agree — `RQ-BOOK-M4` now holds across both the HTML and
 JATS targets, with the book JATS fixtures gaining the prefix and articles
-holding zero-diff. Only a pipe-form inline-math parser fix (slice C) remains,
-after which the corpus renders to spec. The
+holding zero-diff. **Slice C** then closed the arc's last deviation — the
+pipe-form inline-math parser bug: inline and display math and markdown code
+spans inside pipe-form named-tag content are now opaque to the inner parser's
+escape processing (a shared `OpaqueSpan` grammar rule), so LaTeX backslash
+commands and Windows paths survive where they were previously misread as escape
+sequences. The accumulated corpus now renders to spec; the render-quality
+bug-fix arc is complete. The
 comprehensive demonstrative
 fixture and the consolidation of the accumulated fixture corpus remain
 open, and carry an unresolved design question — one comprehensive
@@ -493,7 +498,10 @@ both are release-blocking.
   caption/cross-reference numbering mismatch (`RQ-BOOK-M4`, closed across
   both output targets — the HTML side by the bug-fix arc's slice B, the
   JATS export side by the follow-on JATS slice). The pipe-form inline-math
-  escape deviation remains (slice C). See `BACKLOG.md`.
+  escape deviation is closed too (the bug-fix arc's slice C — inline and
+  display math and code spans made opaque to escape processing in pipe-form
+  named-tag content), so the render-quality bug-fix arc is complete and no
+  longer gates Phase 14. See `BACKLOG.md`.
 - **Release housekeeping.** Version-stamping at `0.1.0`, repository
   tidying, and the doc-hygiene already filed under Standing (e.g. the
   stale-cross-reference reconciliation) folded in as release prep where

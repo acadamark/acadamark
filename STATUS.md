@@ -134,9 +134,15 @@ helper (re-exported from `acadamark-interpreter`), so in a book the `<label>`
 and the `<xref>` resolving to it agree (`<label>3.1</label>` / `figure 3.1`);
 the book JATS fixtures gained the chapter prefix on their labels, articles
 held zero-diff. `RQ-BOOK-M4` now holds across both output targets. **Next:**
-the last step of the render-quality bug-fix arc — slice C (the parser bug
-where inline math in pipe-form tag content is not opaque to escape
-processing). Nothing else is in flight.
+slice C is now done, **closing the render-quality bug-fix arc**: inline and
+display math and markdown code spans inside pipe-form named-tag content are now
+opaque to the inner parser's escape processing (a shared `OpaqueSpan` grammar
+rule), so LaTeX backslash commands survive where they were previously misread
+as escape sequences — and the accumulated fixture corpus now renders to spec.
+**Next:** the v0.1.0 release-blocking work named above — Phase 8's
+display-features subset, Phase 13 (JATS import), and Phase 14 (packaging:
+client-side rendering library, render-quality spec, comprehensive demonstrative
+fixture). Nothing else is in flight.
 
 ## Milestones
 
@@ -3756,3 +3762,84 @@ that). One line gets added every few months, not every slice.
   flight / next" still points to slice C as the last bug-fix step; Rule 2 — no
   computable facts added to living surfaces (the counts, fixture list, and
   emitter names live only in this frozen entry).
+
+- **2026-05-29 — render-quality bug-fix arc, slice C: pipe-form inline-math /
+  code-span escapes made opaque (closes the arc).** Closes the arc's last
+  deviation — the parser bug where inline math in pipe-form named-tag content
+  (`<definition | … $p \in [0,1]$ …>`) was not opaque to the inner parser's
+  escape processing. **Bug mechanism:** pipe-form content flows through the
+  grammar's `NamedTag` → `ContentItem*` rule, which applies backslash escape
+  processing character by character; a LaTeX command inside `$…$` (e.g. `\in`,
+  `\mathbb`, `\sum`) hit `ContentItem`'s `"\\" c:[^\n>]` branch and emitted a
+  `??parse: unknown-escape-sequence` node, and the broken escape misaligned the
+  `$…$` delimiters so surrounding prose was swallowed into a malformed KaTeX
+  span. Block-form and sigil-form already worked (block content flows opaquely
+  to the markdown math extension; sigil bodies are opaque by design) — pipe-form
+  named-tag content was the one remaining gap. **Fix:** a shared `OpaqueSpan`
+  grammar rule (`packages/remark-acadamark/grammar/acadamark.peggy`) added to
+  `ContentItem`, recognising display math (`$$…$$`), inline math (`$…$`), and
+  markdown code spans (`` ``…`` ``, `` `…` ``) — longest-delimiter-first — and
+  returning each verbatim via `text()`, so escape processing never sees the
+  backslashes inside; the spans then flow to `remark-math` / the code-span path
+  intact. The parser was regenerated and committed. **Scope widened by ruling:**
+  from math-only to math + code spans, bringing the parser in line with
+  `escape-rules-spec.md` §34–36 / §178–182 in one move (the chat-side scope
+  question chose "math + code spans"). **Two deliberate exclusions:** the
+  `BraceContentItem` rule (superscript / subscript interiors, where a bare `}`
+  is structural and a `$` / `` ` `` opacity rule would be ambiguous) and the hash
+  sigil-tag heading rules (`HashSigilBodyChar1/2/3`, where `>` is legal content
+  so the content class must differ) — both noted in the grammar comment and the
+  escape-rules spec, the hash-sigil case deferred as a finding. **Correctness
+  invariant:** for a backslash-free span the emitted string is byte-identical
+  (zero regression); only backslash-inside-span behaviour changes. Backslash
+  escape rules stay *first* in `ContentItem`, so `\$` / `` \` `` still pass
+  through as markdown literals and never open a span. **New regression fixture**
+  `document-48-pipe-form-inline-math.acm` exercises inline math (`\circ`, `\in`,
+  `\sqrt`, `\geq`, `\mathcal`, `\log`), a display-math fence (`e^{i\pi}+1=0`),
+  and single / double-backtick code spans (`C:\Users\me\AppData\Local`,
+  `\d+-\d+`) in pipe-form definition / lemma / remark / aside bodies; its
+  integration block asserts no `class="parse-error"` span and no `??parse:`
+  marker (the bare substring "parse-error" appears only in the fixture's own
+  bug-describing prose, so the assertions target the specific error markers),
+  `<inline-math>` + `<display-math>` + `class="katex"` present, no `katex-error`,
+  the code-span backslashes intact, and the surrounding prose not swallowed.
+  **Real-world validation:** the fix corrected five latent
+  `unknown-escape-sequence` parse-errors an *existing* fixture had been silently
+  carrying in its snapshot — `document-35-numbering-extension.acm` line 21
+  (`$(\sum a_i b_i)^2 \le …$`, three `\sum` + one `\le`) and line 25
+  (`$\mathbb{Z}$`); its proposition and example now render their math (`∑`, `≤`,
+  a `mathbb`-styled `Z`) instead of error markers. doc-35's own assertions are
+  numbering / cross-reference only, so they passed before and after; only its
+  snapshot moved (five parse-error spans → zero). **One benign snapshot move:**
+  `document-24-unclosed-tag-at-eof` — the Peggy "Expected …" token list inside
+  its unclosed-`<aside |` error grew by the four new `ContentItem` alternatives
+  (`"$"`, `"$$"`, `` "`" ``, `` "``" ``); the swallowed source and the error
+  position are byte-identical, no behavioural change. These two were the *only*
+  existing snapshots to move — every other integration fixture held strict
+  zero-diff, confirming the fix is surgical. **Finding recorded in BACKLOG:** the
+  fixture used `<lemma>` rather than the prompt-suggested `<theorem>`, because
+  `<theorem>` carries `isOpaqueContent: true` and the dispatcher drops its body
+  (a distinct pre-existing bug, doc-29 note) — `<lemma>` is a recursively-parsed
+  sibling that renders its body, so it demonstrates the math fix. **Tests:**
+  remark-acadamark `test.js` 128/128 and the grammar unit suite green (the
+  latter gained eleven `OpaqueSpan` regression tests covering the bug cases, the
+  byte-identical invariant cases — backslash-free math, currency `$5 … $10`,
+  lone unmatched `$` — and the `\$`-still-escapes / bare-`\n`-still-errors
+  guards); acadamark-interpreter 25/25 strict against the regenerated snapshots;
+  `npm run verify` re-rendered the fixture HTML and doc-48 / doc-35 carry zero
+  `class="parse-error"` spans with their math rendered. **Coherence:** spec ⇄
+  code — `escape-rules-spec.md` gained an "Opaque inline spans within prose
+  content" section recording the opacity rule, the balanced-delimiter /
+  lone-`$`-literal / `\$`-escape behaviour, and the two deliberate exclusions
+  (the spec was written ahead of and matched by the code, per spec-first);
+  `render-quality.md` needed no change (it governs markup / CSS predicates, not
+  parser escape behaviour — this is a parser bug under the escape-rules spec);
+  backlog ⇄ code — the pipe-form-inline-math entry flipped to `[x]` CLOSED in
+  BACKLOG (checklist entry + a detailed slice-C coda recording the doc-35
+  correction and the two findings); roadmap ⇄ backlog — ROADMAP's bug-fix-arc
+  narrative and Phase-14 gating now record slice C closing the arc, so the arc
+  no longer gates Phase 14; STATUS "In flight / next" advanced from slice C to
+  the v0.1.0 release-blocking work (Phase 8 display subset, Phase 13 JATS
+  import, Phase 14 packaging); Rule 2 — no computable facts added to living
+  surfaces (the counts, glyphs, fixture names, and grammar-rule names live only
+  in this frozen entry).

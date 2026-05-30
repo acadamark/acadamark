@@ -1,0 +1,32 @@
+<meta type=article>
+  <title | Inline math and code spans in pipe-form content>
+  <author | Test Author>
+</meta>
+
+<section | Inline math in pipe-form statement bodies>
+
+A regression fixture for the bug-fix arc. LaTeX backslash commands written
+inside inline math and inside code spans, when they appear in pipe-form
+named-tag content, must survive the parser's escape processing. Before the
+OpaqueSpan grammar rule the commands below produced visible parse-error
+markers and the surrounding prose was swallowed into a broken math span.
+
+<definition #def:closure | A set $S$ is closed under $\circ$ when $a \circ b \in S$ holds for all $a, b \in S$.>
+
+<lemma #lem:sqrt | If $f(x) = \sqrt{x}$ then $f$ is defined for every $x \geq 0$.>
+
+<remark | Throughout we write $\mathcal{O}(n \log n)$ for the asymptotic upper bound.>
+
+<section | Display math and code spans in pipe-form content>
+
+<aside | Euler connected five fundamental constants in a single line:
+
+$$
+e^{i\pi} + 1 = 0
+$$
+
+which remains striking for its economy.>
+
+<aside | On Windows the build cache lives at `C:\Users\me\AppData\Local` by default.>
+
+<aside | The linter flags a stray range with the double-backtick pattern ``\d+-\d+`` on each line.>

@@ -2256,4 +2256,80 @@ export function run() {
     snapshotHast('document-47', hast);
     console.log('PASS: integration doc47 (abc static mode — build-time SVG, no view-time JS)');
   }
+
+  // ── Document 48: Pipe-form inline/display math & code-span escapes ──────────
+  // Regression fixture for the bug-fix arc (Slice C). LaTeX backslash commands
+  // inside inline math, display math, and code spans must survive the inner
+  // parser's escape processing when they appear in PIPE-FORM named-tag content
+  // (<tag | …>). Before the OpaqueSpan grammar rule, \in / \mathbb / \sqrt / \pi
+  // were read as escape sequences, emitting parse-error markers and swallowing
+  // the surrounding prose into a broken math span. Block-form and sigil-form
+  // already worked; pipe-form named-tag content was the remaining gap.
+  {
+    const src = readFileSync(
+      join(FIXTURES_DIR, 'document-48-pipe-form-inline-math.acm'),
+      'utf8',
+    );
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc48: article structure present');
+
+    // No parse errors leaked. The bare substring "parse-error" DOES appear in
+    // the output — in the fixture's own prose, which describes the pre-fix bug —
+    // so the assertion targets the specific error markers, not the substring.
+    assert.ok(
+      !html.includes('class="parse-error"'),
+      'doc48: no parse-error spans (backslash commands survived escape processing)',
+    );
+    assert.ok(
+      !html.includes('??parse:'),
+      'doc48: no ??parse: error markers in output',
+    );
+
+    // Inline math inside pipe-form statement bodies renders to <inline-math>,
+    // and the LaTeX source is intact (KaTeX did not emit an error span).
+    assert.ok(html.includes('<inline-math>'), 'doc48: inline math rendered in pipe-form content');
+    assert.ok(html.includes('class="katex"'), 'doc48: KaTeX output present');
+    assert.ok(
+      !html.includes('katex-error'),
+      'doc48: no KaTeX error (LaTeX commands \\in \\mathbb \\sqrt \\circ survived intact)',
+    );
+
+    // Display math authored as a multi-line fence inside a pipe-form aside
+    // renders to <display-math> (the OpaqueSpan $$…$$ branch, backslashes intact).
+    assert.ok(
+      html.includes('<display-math>'),
+      'doc48: display-math fence rendered in pipe-form aside (\\pi survived)',
+    );
+
+    // Code-span backslashes survive verbatim — single- and double-backtick forms.
+    assert.ok(
+      html.includes('C:\\Users\\me\\AppData\\Local'),
+      'doc48: single-backtick code span preserves Windows-path backslashes',
+    );
+    assert.ok(
+      html.includes('\\d+-\\d+'),
+      'doc48: double-backtick code span preserves regex backslashes',
+    );
+
+    // Statement tags and asides rendered their (recursively-parsed) bodies.
+    assert.ok(html.includes('<definition'), 'doc48: <definition> rendered');
+    assert.ok(html.includes('<lemma'), 'doc48: <lemma> rendered');
+    assert.ok(html.includes('<remark'), 'doc48: <remark> rendered');
+    assert.ok(html.includes('<aside'), 'doc48: <aside> rendered');
+
+    // The surrounding prose was NOT swallowed into a math span — fragments on
+    // both sides of the math survive, the visible symptom the fix removes.
+    assert.ok(
+      html.includes('asymptotic upper bound'),
+      'doc48: prose after inline math survives (not swallowed into a math span)',
+    );
+    assert.ok(
+      html.includes('economy'),
+      'doc48: prose after the display-math fence survives',
+    );
+
+    snapshotHast('document-48', hast);
+    console.log('PASS: integration doc48 (pipe-form inline/display math + code-span escapes — bug-fix arc Slice C)');
+  }
 }

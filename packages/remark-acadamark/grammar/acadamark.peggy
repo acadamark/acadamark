@@ -25,6 +25,10 @@
 // Escape rules: ContentItem replaces $ContentChar* for named-tag content;
 // HashSigilBodyItem1/2/3 replace $SigilBody1/2/3 for hash sigil bodies.
 // Dollar and backtick sigil bodies remain opaque (no escape processing).
+// Inline math/code spans inside named-tag content are also opaque: ContentItem
+// recognises $…$, $$…$$, `…`, ``…`` via OpaqueSpan and returns them verbatim,
+// so LaTeX commands and Windows paths survive escape processing (see OpaqueSpan
+// below).
 // Escape rules per notes/escape-rules-spec.md:
 //   - \< \| \\ → literal char (acadamark-significant in content positions)
 //   - \X for other ASCII punct → pass-through (remark handles downstream)
@@ -311,6 +315,7 @@ ContentItem
   / SuperscriptShortcut
   / SubscriptShortcut
   / $("<" [a-zA-Z#$`/] ContentChar* ">")
+  / OpaqueSpan
   / $[^>\\]
 
 // ContentChar: depth tracking for nested constructs (unchanged from Slice 3.5).
@@ -320,6 +325,44 @@ ContentItem
 ContentChar
   = "<" [a-zA-Z#$`/] ContentChar* ">"
   / [^>]
+
+// ─── Opaque inline spans: math and code spans in named-tag content ─────────
+//
+// Inline/display math ($…$, $$…$$) and code spans (`…`, ``…``) embed notation
+// that carries its own backslash conventions: LaTeX commands (\in, \mathbb{R},
+// \sqrt) and filesystem paths (C:\new\folder). Inside named-tag prose content
+// these spans are OPAQUE — their interior is returned verbatim via text(), so
+// the grammar's escape processing is skipped and backslash sequences survive.
+// remark-math / CommonMark make the final rendering decision downstream on the
+// intact string. This mirrors the always-opaque sigil forms (<$…$>, <`…`>) and
+// the block form, and fulfils escape-rules-spec's promise (see "Unknown escape
+// (in named-tag content)") that `C:\new\folder` inside a code span is opaque.
+//
+// Correctness invariant: OpaqueSpan returns the matched span EXACTLY. For a
+// span containing no backslash, the emitted string is byte-identical to what
+// the old per-character rules produced — existing output is unchanged. The only
+// behavioural change is for spans that DO contain a backslash: those are now
+// preserved verbatim instead of producing acadamarkParseError nodes. The
+// backslash escape alternatives sit FIRST in ContentItem, so an escaped
+// delimiter (\$ or \`) is consumed as a markdown pass-through before any span
+// can open — a literal dollar or backtick is still authorable.
+//
+// Longest delimiter first ($$ before $, `` before `). Content class [^>] allows
+// { } (needed for \mathbb{Y}) and newlines, but stops at > so a span can never
+// swallow the named-tag closer (consistent with ContentItem's $[^>\\] rule). A
+// delimiter with no matching closer before > fails this rule and the opening
+// character falls through to the regular-character rule (e.g. a lone currency $
+// stays literal). NOT applied to BraceContentItem (^{…}/_{…}): its } closer is
+// ambiguous with math braces (\mathbb{Y}); super/subscript math is a deliberate,
+// documented exclusion. NOT applied to hash sigil bodies (HashSigilBodyChar*):
+// headings share the same latent gap but need a different content class (> is
+// legal content there) — deferred, see BACKLOG.
+
+OpaqueSpan
+  = $("$$" (!"$$" [^>])* "$$")     // display math  $$…$$
+  / $("$"  (!"$"  [^>])* "$")      // inline math   $…$
+  / $("``" (!"``" [^>])* "``")     // code span     ``…``
+  / $("`"  (!"`"  [^>])* "`")      // code span     `…`
 
 // ─── Inline shortcut rules: ^{...} → <sup>, _{...} → <sub> ───────────────
 //
