@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkAcadamark from 'remark-acadamark';
-import { acadamarkInterpreter, KATEX_CDN_URL } from '../src/index.js';
+import { acadamarkInterpreter, KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../src/index.js';
 
 function processHtml(source, options = {}) {
   return String(
@@ -17,22 +17,29 @@ function processHtml(source, options = {}) {
 const MATH_SOURCE = '<$$ x^2 $$>';
 const NO_MATH_SOURCE = 'Just some text.';
 
+// hast-util-to-html escapes the `&` family-separators in DOCUMENT_FONTS_CDN_URL
+// to numeric entities (`&#x26;`), so the raw constant never substring-matches
+// serialized HTML. Match the escape-free prefix up to the first `&` instead —
+// still distinctive (the Google Fonts css2 Inter request) and robust to whether
+// the serializer emits `&#x26;` or `&amp;`.
+const FONTS_LINK_PREFIX = DOCUMENT_FONTS_CDN_URL.split('&')[0];
+
 export function run() {
-  // --- inline mode (default): math doc → <style> present ---
+  // --- link mode (default, external-by-default): math doc → <link> present ---
   {
     const html = processHtml(MATH_SOURCE);
-    assert.ok(html.includes('<style>'), 'inline (default): <style> in output');
-    assert.ok(html.includes('katex'), 'inline (default): KaTeX CSS in style block');
-    assert.ok(!html.includes('<link'), 'inline (default): no <link> in output');
-    console.log('PASS: katex-css: inline mode (default) → <style> block with KaTeX CSS');
+    assert.ok(html.includes('<link'), 'link (default): <link> in output');
+    assert.ok(html.includes(KATEX_CDN_URL), 'link (default): KaTeX CDN URL in output');
+    assert.ok(!html.includes('.katex'), 'link (default): no inline KaTeX CSS');
+    console.log('PASS: katex-css: link mode (default) → <link> to KaTeX CDN');
   }
 
-  // --- explicit inline same as default ---
+  // --- explicit link same as default ---
   {
     const htmlDefault = processHtml(MATH_SOURCE);
-    const htmlExplicit = processHtml(MATH_SOURCE, { katexCss: 'inline' });
-    assert.equal(htmlDefault, htmlExplicit, 'explicit inline = default');
-    console.log('PASS: katex-css: explicit katexCss:"inline" is identical to default');
+    const htmlExplicit = processHtml(MATH_SOURCE, { katexCss: 'link' });
+    assert.equal(htmlDefault, htmlExplicit, 'explicit link = default');
+    console.log('PASS: katex-css: explicit katexCss:"link" is identical to default');
   }
 
   // --- link mode: math doc → <link rel=stylesheet> present ---
@@ -41,39 +48,39 @@ export function run() {
     assert.ok(html.includes('<link'), 'link mode: <link> in output');
     assert.ok(html.includes('rel="stylesheet"'), 'link mode: rel=stylesheet');
     assert.ok(html.includes('katex'), 'link mode: KaTeX CDN URL in href');
-    // Document fonts CSS is always injected via <style>; no KaTeX CSS inline.
-    assert.ok(html.includes('@font-face'), 'link mode: document fonts CSS present in <style>');
+    // Document fonts are linked too (external-by-default); no KaTeX CSS inline.
+    assert.ok(html.includes(FONTS_LINK_PREFIX), 'link mode: document fonts linked (external-by-default)');
     assert.ok(!html.includes('.katex'), 'link mode: no KaTeX CSS inline (served via <link>)');
     console.log('PASS: katex-css: link mode → <link rel="stylesheet"> to KaTeX CDN');
   }
 
-  // --- skip mode: math doc → no KaTeX CSS; document fonts still present ---
+  // --- skip mode: math doc → no KaTeX CSS; document fonts still linked ---
   {
     const html = processHtml(MATH_SOURCE, { katexCss: 'skip' });
-    assert.ok(html.includes('@font-face'), 'skip mode: document fonts CSS still injected');
+    assert.ok(html.includes(FONTS_LINK_PREFIX), 'skip mode: document fonts still linked');
     assert.ok(!html.includes('.katex'), 'skip mode: no KaTeX CSS (skipped)');
-    assert.ok(!html.includes('<link'), 'skip mode: no <link>');
+    assert.ok(!html.includes(KATEX_CDN_URL), 'skip mode: no KaTeX <link>');
     console.log('PASS: katex-css: skip mode → no KaTeX CSS emitted; document fonts present');
   }
 
-  // --- no math: document fonts always injected, no KaTeX CSS ---
+  // --- no math: document fonts always linked, no KaTeX CSS ---
   {
     const html = processHtml(NO_MATH_SOURCE);
-    assert.ok(html.includes('@font-face'), 'no math: document fonts CSS injected');
+    assert.ok(html.includes(FONTS_LINK_PREFIX), 'no math: document fonts linked');
     assert.ok(!html.includes('.katex'), 'no math: no KaTeX CSS');
-    assert.ok(!html.includes('<link'), 'no math: no <link>');
-    console.log('PASS: katex-css: document without math → document fonts injected, no KaTeX CSS');
+    assert.ok(!html.includes(KATEX_CDN_URL), 'no math: no KaTeX <link>');
+    console.log('PASS: katex-css: document without math → document fonts linked, no KaTeX CSS');
   }
 
-  // --- CSS is prepended before <article> ---
+  // --- linked CSS is prepended before <article> ---
   {
     const html = processHtml(MATH_SOURCE);
-    const styleIdx = html.indexOf('<style>');
+    const linkIdx = html.indexOf('<link');
     const articleIdx = html.indexOf('<article>');
-    assert.ok(styleIdx !== -1, 'CSS check: <style> present');
+    assert.ok(linkIdx !== -1, 'CSS check: <link> present');
     assert.ok(articleIdx !== -1, 'CSS check: <article> present');
-    assert.ok(styleIdx < articleIdx, 'CSS element appears before <article>');
-    console.log('PASS: katex-css: <style> block is prepended before <article>');
+    assert.ok(linkIdx < articleIdx, 'linked CSS element appears before <article>');
+    console.log('PASS: katex-css: <link> element is prepended before <article>');
   }
 
   // --- CDN URL is versioned ---
@@ -93,7 +100,7 @@ export function run() {
   {
     const inlineMathSource = 'The value is <$ x^2 $> in the equation.';
     const html = processHtml(inlineMathSource);
-    assert.ok(html.includes('<style>'), 'inline math: <style> injected');
+    assert.ok(html.includes(KATEX_CDN_URL), 'inline math: KaTeX CSS link injected');
     console.log('PASS: katex-css: inline math sigil (<$>) also triggers CSS injection');
   }
 

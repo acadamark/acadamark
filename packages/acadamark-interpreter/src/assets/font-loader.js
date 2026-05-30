@@ -26,12 +26,24 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-const _thisDir = dirname(fileURLToPath(import.meta.url));
-const _fontsDir = join(_thisDir, 'fonts');
+// Directory resolution is deferred into accessors (not computed at module load)
+// so this module imports cleanly in a browser bundle; the fs reads themselves
+// stay Node-only and run only when inline font embedding is actually requested.
+let _fontsDirCache = null;
+function fontsDir() {
+  if (_fontsDirCache === null) {
+    _fontsDirCache = join(dirname(fileURLToPath(import.meta.url)), 'fonts');
+  }
+  return _fontsDirCache;
+}
 
-// Resolve the KaTeX dist/fonts directory.
-const _katexDir = dirname(fileURLToPath(import.meta.resolve('katex')));
-const _katexFontsDir = join(_katexDir, 'fonts');
+let _katexFontsDirCache = null;
+function katexFontsDir() {
+  if (_katexFontsDirCache === null) {
+    _katexFontsDirCache = join(dirname(fileURLToPath(import.meta.resolve('katex'))), 'fonts');
+  }
+  return _katexFontsDirCache;
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -53,6 +65,22 @@ const DOCUMENT_FONT_FACES = [
   ['Source Code Pro', 'normal', '400', 'SourceCodePro-Regular.woff2'],
 ];
 
+// CDN URL for document fonts, used by `documentFontsCss: 'link'` mode (the
+// external-by-default counterpart to the inlined base64 faces getDocumentFontsCss
+// emits). Google Fonts' css2 API serves @font-face CSS pointing at Google's own
+// browser-subset woff2 files — one <link> instead of ~190KB of inlined base64.
+// The families/weights/styles mirror DOCUMENT_FONT_FACES above: Inter 400/600/700
+// upright + 400/700 italic, and Source Code Pro 400; `display=swap` matches the
+// inlined faces' font-display.
+//
+// Unlike KATEX_CDN_URL and the DSL CDN URLs, this pins NO package version: Google
+// Fonts is a living, versionless API, so there is no installed package to drift
+// against (hence no cdn-versions.test.js guard). Trade-off: 'link' adds a
+// third-party (Google) request — a privacy/archival cost that the self-contained
+// `documentFontsCss: 'inline'` (or `embedResources: true`) avoids.
+export const DOCUMENT_FONTS_CDN_URL =
+  'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap';
+
 let _documentFontsCss = null;
 
 /**
@@ -66,7 +94,7 @@ export function getDocumentFontsCss() {
   if (_documentFontsCss !== null) return _documentFontsCss;
 
   const rules = DOCUMENT_FONT_FACES.map(([family, style, weight, filename]) => {
-    const filePath = join(_fontsDir, filename);
+    const filePath = join(fontsDir(), filename);
     const dataUri = toBase64DataUri(filePath);
     return `@font-face {
   font-family: '${family}';
@@ -105,7 +133,7 @@ export function patchKatexFontUrls(rawCss) {
   _patchedKatexCss = rawCss.replace(
     /url\(fonts\/(KaTeX_[^)]+\.woff2)\)/g,
     (_, filename) => {
-      const filePath = join(_katexFontsDir, filename);
+      const filePath = join(katexFontsDir(), filename);
       const dataUri = toBase64DataUri(filePath);
       return `url(${dataUri})`;
     },

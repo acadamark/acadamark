@@ -158,6 +158,8 @@ RUN TIME, BROWSER-SAFE (ships in any future client-side bundle)
   ✓ acadamark-interpreter/src/handlers/*                 (except table.js's src= branch)
   ✓ acadamark-interpreter/src/schema/{shape-tokens,validate}.js
   ✓ acadamark-interpreter/src/interpret-plugin.js
+  ✓ acadamark-interpreter/src/dsl/registry.js             (DSL asset-emit registry; no Node built-ins after the node-assets split)
+  ✓ acadamark-interpreter/src/browser.js                  (the render/renderInto browser façade; Phase 14 Slice 1)
   ✓ layer1-vocabulary/src/data.js                         (the generated data module)
   ✓ layer1-vocabulary/src/index.js                        (re-exports)
 
@@ -169,6 +171,7 @@ RUN TIME, SERVER-OR-BUILD-ONLY (server-side rendering today; replaced
   ✗ acadamark-interpreter/src/assets/font-loader.js
   ✗ acadamark-interpreter/src/handlers/table.js's <table src=…> branch
   ✗ acadamark-interpreter/src/plugins/library-load.js
+  ✗ acadamark-interpreter/src/dsl/node-assets.js          (DSL live bundle loaders + jsdom abc→SVG static renderer; split from registry.js)
 ```
 
 This seam doubles as the **browser-safety boundary** — everything on the
@@ -229,18 +232,31 @@ work from quietly making the eventual client-side-build arc harder:
 > `url`, and other Node built-ins.** Build-time code (which may use them
 > freely) lives behind the build/run seam.
 
-The known server-only paths after this arc — the four `✗` items above
+The known server-only paths are the five `✗` items above
 (asset-injection's `fs` reads in `interpret-plugin`'s top-of-file
 asset-handling, `font-loader.js`, `table.js`'s `<table src=…>` branch,
-`library-load.js`) — are recorded so a future client-side-build arc has a
-visible target list to replace (with bundled-asset alternatives, or by
-feature-detecting them out). Until that arc happens, *no new runtime code
-should add to this list*. Cross-check new slices against the rule.
+`library-load.js`, and `dsl/node-assets.js`'s DSL bundle loaders + jsdom
+static renderer) — recorded so the client-side-build arc has a visible
+target list. **Phase 14 Slice 1 began that arc.** The tsup browser bundle
+(entry `src/browser.js`) ships these modules but neutralizes their Node calls
+two ways: (1) the build stubs `fs`/`path`/`url`/`module` so the imports
+resolve, while the browser façade's external-by-default options
+(`embedResources:false`, `hoverPreviewMode:'link'`, `dslMode:'live-link'`)
+leave the `fs`-reading bodies as unreached dead code; and (2) where an asset
+has no CDN to link to — acadamark's own `hover-preview.css/.js` — it is
+replaced with a **bundled-asset alternative**, the bytes build-inlined as
+string constants in `src/assets/hover-preview-assets.browser.js` (swapped in
+via the package's `browser` field) so hover-preview works fully client-side.
+The standing rule still holds: *no new runtime code should add to this list*
+without the same stub-and-dead-code-or-bundle treatment. Cross-check new
+slices against the rule.
 
-The client-side build itself is a separate, future Architecture-tier arc.
-This note exists so that backlog work done before that arc doesn't smuggle
-`fs` into a runtime path. The rule is short by design — checking against it
-is cheap.
+The full client-side build — loading an `.acm` file in-browser with no build
+step — remains a future Architecture-tier arc; Phase 14 Slice 1 delivered the
+library-packaging layer beneath it (a `render`/`renderInto` façade bundled by
+tsup, exposed as the package's `./browser` export). This note exists so that
+backlog work doesn't smuggle `fs` into a runtime path. The rule is short by
+design — checking against it is cheap.
 
 ## Implementation history
 

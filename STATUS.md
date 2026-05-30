@@ -35,13 +35,13 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 
 ### Output — what processing produces
 
-- [x] Self-contained HTML — CSS, fonts, rendered citations all inlined
+- [x] HTML output — CSS/fonts external by default, self-contained on request (`embedResources`); rendered citations inlined
 - [x] Conditionally-injected hover previews (notes / refs / citations)
 - [x] Bundled subsetted fonts (Inter, Source Code Pro) and patched KaTeX fonts
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`acadamarkToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [ ] Client-side rendering — `.acm` rendered in-browser with no build step
+- [~] Client-side rendering — browser library shipped (`render` / `renderInto`, `acadamark.browser` bundle, Phase 14 Slice 1); demo app + types are follow-up slices
 
 ### Components
 
@@ -140,9 +140,19 @@ opaque to the inner parser's escape processing (a shared `OpaqueSpan` grammar
 rule), so LaTeX backslash commands survive where they were previously misread
 as escape sequences — and the accumulated fixture corpus now renders to spec.
 **Next:** the v0.1.0 release-blocking work named above — Phase 8's
-display-features subset, Phase 13 (JATS import), and Phase 14 (packaging:
-client-side rendering library, render-quality spec, comprehensive demonstrative
-fixture). Nothing else is in flight.
+display-features subset, Phase 13 (JATS import), and Phase 14 (packaging).
+**Phase 14 Slice 1 (client-side library packaging) is now done:** the
+interpreter ships as a browser library — a `src/browser.js` `render` /
+`renderInto` façade over the pipeline with browser-safe defaults, bundled by
+tsup into `acadamark.browser` (ESM + IIFE), with the Node-only code paths
+(font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads) lazy-ified or stubbed so
+they are dead code under the browser defaults. The same slice flipped resource
+embedding **external-by-default** (`embedResources`, default false) — a breaking
+change for the Node entry, with `embedResources: true` restoring the prior
+self-contained output. The remaining Phase 14 slices (in-browser editor demo,
+demo-site framework + rename, demo-site content, fixture consolidation,
+org-split) and the render-quality / demonstrative-fixture work continue.
+Nothing else is in flight.
 
 ## Milestones
 
@@ -3914,3 +3924,33 @@ that). One line gets added every few months, not every slice.
   addressed, with the demonstrative final-shape ruling left to chat per the entry.
   No code, spec, DESIGN.md, fixture, snapshot, or test changes; the only edits are
   the new findings file and this log entry.
+- **2026-Q2 — Phase 14 Slice 1: client-side library packaging.** The interpreter
+  became a shippable browser library. A `src/browser.js` façade (`render` /
+  `renderInto`) wraps `buildAcadamarkPipeline` with browser-safe defaults
+  (external resources, live-link DSL, linked hover-preview third-party libs);
+  tsup bundles it into `dist/acadamark.browser.{js,global.js}` (ESM + IIFE) under
+  `platform:'browser'`. The slice made the engine browser-safe along its
+  Node-coupled seams: directory / asset reads were lazy-ified into accessors so
+  the modules import cleanly in a bundle (`font-loader.js`), the DSL Node-only
+  paths were split out of `registry.js` into a new `node-assets.js` — resolving
+  the Phase 0 drift (b): the ADR's server-only `✗` list now names
+  `node-assets.js`, the true Node-coupled site, because the split left
+  `registry.js` browser-safe — and the bundler stubs `fs` / `path` / `url` /
+  `module` to throwing shims (dead code under the browser defaults; the
+  `platform:'browser'` build succeeding is the proof every builtin resolved). The
+  hover-preview CSS/JS — which have no CDN — are inlined into the bundle as string
+  constants via esbuild `define`, after a text-loader was defeated by tsup's
+  built-in CSS pipeline claiming any import specifier containing the `css`
+  substring before user plugins run. citation-js ships in the bundle (it powers
+  client-side `<library>` / `<cite>` parsing); jsdom / mermaid / abcjs stay out
+  (resolved at runtime via `import.meta.resolve` / `createRequire`, which esbuild
+  does not follow). The slice also flipped resource embedding
+  **external-by-default** via a new top-level `embedResources` boolean (default
+  false, the Quarto pattern): fonts and KaTeX CSS now `<link>` to CDNs rather than
+  inlining base64, with per-resource overrides (`documentFontsCss` / `katexCss`
+  gaining a `'link'` mode, plus a `DOCUMENT_FONTS_CDN_URL` Google-Fonts `css2`
+  link). This is **breaking for the Node entry** — fixtures regenerated with
+  linked-not-embedded resources; `embedResources: true` restores the prior
+  self-contained output. CDN URL literals (KaTeX / mermaid / abc) are now pinned
+  and guarded by a `cdn-versions.test.js` drift test. The remaining Phase 14
+  slices (demo, demo-site, rename, fixture consolidation, org-split) continue.

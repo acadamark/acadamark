@@ -597,12 +597,19 @@ section 6 (Schema dispatch) for full dispatch details.
 
 **When:** After `toHast()` produces the hast tree, before formatting/serialization.
 
-**What:** Conditional CSS and JavaScript nodes prepended to `hast.children`.
+**What:** CSS and JavaScript nodes prepended to `hast.children`.
+
+**Document fonts:** Prepended on every document unless `documentFontsCss:
+'skip'`. In `'inline'` mode: a `<style>` of base64 `@font-face` rules (Inter +
+Source Code Pro; self-contained, ~190 KB). In `'link'` mode: a `<link>` to the
+document-fonts CDN (`DOCUMENT_FONTS_CDN_URL`, a Google Fonts `css2` request).
+Default `'inline'` when `embedResources: true`, else `'link'`.
 
 **KaTeX CSS:** Prepended if the hast tree contains `inline-math` or
 `display-math` elements. In `'inline'` mode: a `<style>` block with the full
 KaTeX CSS (font URLs replaced with base64 data URIs). In `'link'` mode: a
-`<link>` to the CDN. In `'skip'` mode: nothing.
+`<link>` to the CDN. In `'skip'` mode: nothing. Default `'inline'` when
+`embedResources: true`, else `'link'`.
 
 **Hover preview assets:** Prepended if the hast tree contains any of:
 - `<sup>` elements with `data-note-id` (note markers)
@@ -691,12 +698,23 @@ to have run before it.
 
 | option | type | default | description |
 |--------|------|---------|-------------|
-| `katexCss` | `'inline' \| 'link' \| 'skip'` | `'inline'` | KaTeX CSS delivery mode |
+| `embedResources` | `boolean` | `false` | Master switch for the two resources acadamark would otherwise inline (document fonts, KaTeX CSS). `false` links them externally (lean); `true` inlines them (self-contained). The per-resource options below override it. Does **not** affect `hoverPreviewMode` or `dslMode`. |
+| `documentFontsCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | Document-fonts (Inter, Source Code Pro) delivery |
+| `katexCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | KaTeX CSS delivery mode |
 | `hoverPreviewMode` | `'inline' \| 'link' \| 'skip'` | `'inline'` | Hover preview asset delivery |
 | `assetsDir` | `string \| null` | `null` | Base directory for `src=` file paths |
 
 `assetsDir` is required when using `<library src="...">` or `<table src="...">`.
 Without it, those elements produce warnings and skip the external file.
+
+**Migration (Phase 14 Slice 1).** The defaults for document fonts and KaTeX CSS
+flipped from inline (self-contained) to external `'link'` — output is leaner but
+now references the font and KaTeX CDNs. Set `embedResources: true` to restore the
+prior self-contained output, or set `documentFontsCss`/`katexCss` individually
+(they override `embedResources`). DSL libraries (`dslMode`) and hover-preview
+(`hoverPreviewMode`) are *not* driven by `embedResources` and keep their prior
+defaults (`'skip'` and `'inline'`); the browser entry (`src/browser.js`) sets
+them to `'live-link'` and `'link'` independently.
 
 ### 9.2 Document-level config
 
@@ -921,7 +939,11 @@ All three are initialized as needed:
 
 ## 12. Asset bundling
 
-The interpreter produces self-contained HTML by default (`'inline'` modes).
+By default (`embedResources: false`) the interpreter links document fonts and
+KaTeX CSS externally — leaner output that references the font and KaTeX CDNs.
+Set `embedResources: true` (or `documentFontsCss`/`katexCss` to `'inline'`
+individually) for self-contained HTML that needs no network to render. See
+§9.1 for the full precedence and the Phase 14 Slice 1 migration note.
 
 ### 12.1 KaTeX
 
@@ -944,10 +966,13 @@ The interpreter produces self-contained HTML by default (`'inline'` modes).
 ### 12.3 Body fonts
 
 `patchKatexFontUrls()` is in `src/assets/font-loader.js`. The same file also
-exports `getDocumentFontsCss()`, which provides Inter and Source Code Pro as
-base64-encoded `@font-face` declarations. This is called from `index.js` and
-the resulting `<style>` element is prepended to the document body unconditionally
-— every rendered document embeds the font data for self-contained output.
+exports `getDocumentFontsCss()` (Inter + Source Code Pro as base64-encoded
+`@font-face` declarations) and `DOCUMENT_FONTS_CDN_URL` (a Google Fonts `css2`
+request for the same families). `index.js` prepends one of them to the document
+body per the `documentFontsCss` mode: `'inline'` emits the base64 `<style>`
+(self-contained), `'link'` emits a `<link>` to the CDN (the external-by-default
+case), `'skip'` emits nothing. Fonts are emitted on every document (body text is
+universal) unless `'skip'`.
 
 ### 12.4 Lazy loading
 

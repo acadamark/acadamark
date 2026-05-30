@@ -11,6 +11,15 @@
 # leading slash) matches at every level.
 node_modules/
 
+# ─── Build artifacts ────────────────────────────────────────────────────────
+# The tsup-built browser library (packages/acadamark-interpreter/dist/) is a
+# generated, minified bundle, reproducible via `npm run build:lib`. Unlike the
+# two generated files deliberately committed (see bottom), it is NOT tracked: it
+# is large, machine-built, and rebuilt on demand. The `dist/` pattern (no
+# leading slash) matches the per-package dist directory at any depth — and does
+# not match either committed `src/` file below.
+dist/
+
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo
 # root while running a slice; they are working scratch, never artifacts to

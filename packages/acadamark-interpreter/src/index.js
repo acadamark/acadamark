@@ -47,9 +47,24 @@
 //   console.log(String(result)); // HTML string
 //
 // OPTIONS
-//   katexCss: 'inline' (default) | 'link' | 'skip'
-//     'inline' — emit a <style> block containing KaTeX CSS (documents work
-//                out-of-the-box; no external request required).
+//   embedResources: boolean (default false)
+//     The global embed-vs-external switch for the two resources acadamark would
+//     otherwise inline: document fonts and KaTeX CSS. false (the default) links
+//     them externally (lean output — the Quarto pattern); true inlines them
+//     (self-contained output — no network needed to view). The per-resource
+//     options below override it when set explicitly. It does NOT drive
+//     hoverPreviewMode or dslMode — those keep their own defaults (the browser
+//     entry, src/browser.js, sets them to link / live-link for client use).
+//
+//   documentFontsCss: 'inline' | 'link' | 'skip'   (default: embedResources ? 'inline' : 'link')
+//     'inline' — emit a <style> of @font-face rules with base64-inlined woff2
+//                (self-contained; ~190KB).
+//     'link'   — emit a <link rel="stylesheet"> to the font CDN (DOCUMENT_FONTS_CDN_URL).
+//     'skip'   — emit nothing; the consumer supplies the fonts.
+//   Fonts are emitted unconditionally (every document has body text) unless 'skip'.
+//
+//   katexCss: 'inline' | 'link' | 'skip'   (default: embedResources ? 'inline' : 'link')
+//     'inline' — emit a <style> block containing KaTeX CSS (no external request).
 //     'link'   — emit a <link rel="stylesheet"> to the KaTeX CDN.
 //     'skip'   — emit no CSS; consumer handles stylesheet inclusion.
 //   CSS is only emitted when the document contains math elements.
@@ -115,7 +130,15 @@ import { acadamarkCiteResolution } from './plugins/cite-resolution.js';
 import { acadamarkBibliography } from './plugins/bibliography.js';
 import { acadamarkTagHandler, createAcadamarkTagHandler } from './interpret-plugin.js';
 import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js';
-import { getDocumentFontsCss, patchKatexFontUrls } from './assets/font-loader.js';
+import { getDocumentFontsCss, patchKatexFontUrls, DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
+// Re-exported so consumers using documentFontsCss:'link' can reference the same
+// font CDN URL (symmetry with the KATEX_CDN_URL export below).
+export { DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
+// Hover-preview CSS/JS (acadamark-local assets, no CDN). Lives in a swappable
+// module: package.json's "browser" field substitutes the .browser.js variant
+// (build-inlined strings) for browser bundles, while this Node import reads the
+// sibling files from disk. See src/assets/hover-preview-assets.js for the why.
+import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-assets.js';
 // DSL render registry (internal): drives live-mode asset emission for external
 // DSLs (mermaid, abc). Distinct concern from acadamark-core's vocabulary
 // registry imported immediately below.
@@ -137,15 +160,12 @@ import { formatScopedNumber } from './lib/scoped-number.js';
 export { acadamarkNormalizeToCanonical, acadamarkNormalizeMarkdown, acadamarkConfigDiscovery, acadamarkArticleStructuring, acadamarkBookStructuring, acadamarkSectionNesting, acadamarkNotes, acadamarkNotePlacement, acadamarkLibraryLoad, buildCitationIndex, acadamarkNumbering, fillNumbering, acadamarkRefResolution, acadamarkCiteResolution, acadamarkBibliography, acadamarkTagHandler, createAcadamarkTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
-// Resolve the KaTeX dist directory from its package entry point.
-// import.meta.resolve('katex') → file://.../node_modules/katex/dist/katex.mjs
-const _katexDir = dirname(fileURLToPath(import.meta.resolve('katex')));
-const _katexCssPath = join(_katexDir, 'katex.min.css');
 
-// Read KaTeX package version for a pinned CDN URL.
-const _katexVersion = JSON.parse(
-  readFileSync(join(_katexDir, '..', 'package.json'), 'utf8'),
-).version;
+// Pinned KaTeX version for the CDN URL — a literal, not an fs read, so this
+// module loads in a browser bundle (the build slice's browser-safety boundary;
+// see notes/specs/acadamark-core.md). test/cdn-versions.test.js asserts it
+// equals the installed katex version, so a dependency bump fails loudly here.
+const _katexVersion = '0.16.45';
 
 /**
  * CDN URL for KaTeX CSS, pinned to the installed version.
@@ -159,7 +179,8 @@ export const KATEX_CDN_URL = `https://cdn.jsdelivr.net/npm/katex@${_katexVersion
 let _katexCss = null;
 function getKatexCss() {
   if (_katexCss === null) {
-    const raw = readFileSync(_katexCssPath, 'utf8');
+    const katexDir = dirname(fileURLToPath(import.meta.resolve('katex')));
+    const raw = readFileSync(join(katexDir, 'katex.min.css'), 'utf8');
     _katexCss = patchKatexFontUrls(raw);
   }
   return _katexCss;
@@ -181,15 +202,13 @@ export const TIPPY_CDN_JS_URL = `https://unpkg.com/tippy.js@6.3.7/dist/tippy.umd
 export const TIPPY_CDN_CSS_URL = `https://unpkg.com/tippy.js@6.3.7/dist/tippy.css`;
 export const TIPPY_CDN_LIGHT_BORDER_URL = `https://unpkg.com/tippy.js@6.3.7/themes/light-border.css`;
 
-const _thisDir = dirname(fileURLToPath(import.meta.url));
-
-// Lazy-loaded inline assets.
+// Lazy-loaded inline assets (third-party Tippy/Popper, used by inline hover mode).
+// acadamark's own hover CSS/JS moved to ./assets/hover-preview-assets.js so the
+// browser bundle can swap in build-inlined strings; see the import near the top.
 let _tippyCss = null;
 let _tippyLightBorderCss = null;
 let _popperJs = null;
 let _tippyJs = null;
-let _hoverPreviewCss = null;
-let _hoverPreviewJs = null;
 
 function getTippyCss() {
   if (_tippyCss === null) {
@@ -225,25 +244,8 @@ function getTippyJs() {
   return _tippyJs;
 }
 
-function getHoverPreviewCss() {
-  if (_hoverPreviewCss === null) {
-    _hoverPreviewCss = readFileSync(
-      join(_thisDir, 'assets', 'hover-preview.css'),
-      'utf8',
-    );
-  }
-  return _hoverPreviewCss;
-}
-
-function getHoverPreviewJs() {
-  if (_hoverPreviewJs === null) {
-    _hoverPreviewJs = readFileSync(
-      join(_thisDir, 'assets', 'hover-preview.js'),
-      'utf8',
-    );
-  }
-  return _hoverPreviewJs;
-}
+// getHoverPreviewCss / getHoverPreviewJs are imported from
+// ./assets/hover-preview-assets.js (swappable Node/browser variants).
 
 // ─── CSS injection helpers ────────────────────────────────────────────────────
 
@@ -479,14 +481,24 @@ function replaceDslContractsWithSvg(node, dsl) {
  *
  * @this {import('unified').Processor}
  * @param {object} [options]
- * @param {'inline'|'link'|'skip'} [options.katexCss='inline'] CSS handling mode.
+ * @param {boolean} [options.embedResources=false] Global embed (true) vs external-link (false) switch for fonts + KaTeX CSS.
+ * @param {'inline'|'link'|'skip'} [options.documentFontsCss] Document-fonts handling; default embedResources ? 'inline' : 'link'.
+ * @param {'inline'|'link'|'skip'} [options.katexCss] KaTeX CSS handling; default embedResources ? 'inline' : 'link'.
  * @param {'inline'|'link'|'skip'} [options.hoverPreviewMode='inline'] Hover preview mode.
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.dslMode='skip'] External-DSL render mode (all DSLs).
  * @param {'skip'|'live-inline'|'live-link'} [options.mermaidMode] Override dslMode for mermaid (live-only; no 'static').
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
  */
 export function acadamarkInterpreter(options = {}) {
-  const cssMode = options.katexCss ?? 'inline';
+  // embedResources is the global embed/external switch for the two resources
+  // acadamark would otherwise inline (fonts, KaTeX CSS); default false → link
+  // externally (lean output, the Quarto pattern). Each per-resource option below
+  // overrides it when set explicitly. hoverPreviewMode and dslMode are NOT driven
+  // by it — they keep their own defaults; the browser entry (src/browser.js) sets
+  // those to 'link' / 'live-link' for client-side use.
+  const embed = options.embedResources ?? false;
+  const fontsMode = options.documentFontsCss ?? (embed ? 'inline' : 'link');
+  const cssMode = options.katexCss ?? (embed ? 'inline' : 'link');
   const hoverMode = options.hoverPreviewMode ?? 'inline';
   const assetsDir = options.assetsDir ?? null;
 
@@ -601,9 +613,18 @@ export function acadamarkInterpreter(options = {}) {
       allowDangerousHtml: true,
     });
 
-    // Inject document fonts (Inter, Source Code Pro) unconditionally: every
-    // document has body text and needs these fonts for self-contained output.
-    hast.children.unshift(makeStyleElement(getDocumentFontsCss()));
+    // Inject document fonts (Inter, Source Code Pro). fontsMode — driven by
+    // embedResources unless documentFontsCss overrides — picks the form: 'inline'
+    // emits a <style> of base64 @font-face rules (self-contained), 'link' a <link>
+    // to the font CDN (lean, external-by-default), 'skip' nothing. Emitted
+    // unconditionally (every document has body text) unless 'skip'.
+    if (fontsMode !== 'skip') {
+      hast.children.unshift(
+        fontsMode === 'link'
+          ? makeLinkElement(DOCUMENT_FONTS_CDN_URL)
+          : makeStyleElement(getDocumentFontsCss()),
+      );
+    }
 
     // Inject KaTeX CSS if the document uses math and the mode is not 'skip'.
     // Detection is done by walking the hast tree for inline-math / display-math
@@ -690,8 +711,8 @@ export function acadamarkInterpreter(options = {}) {
  *     structural plugins, including book-structuring, but not the compiler),
  *     which the caller can pass to toHast directly.
  *
- * @param {object} [options] Forwarded to acadamarkInterpreter (katexCss,
- *   hoverPreviewMode, assetsDir).
+ * @param {object} [options] Forwarded to acadamarkInterpreter (embedResources,
+ *   documentFontsCss, katexCss, hoverPreviewMode, dslMode, assetsDir).
  * @returns {import('unified').Processor}
  */
 export function buildAcadamarkPipeline(options = {}) {

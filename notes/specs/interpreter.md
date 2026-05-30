@@ -1315,26 +1315,30 @@ Plugins communicate via `file.data`. Fields set during a pipeline run:
 ## 10. Asset injection
 
 Asset injection happens post-hast, pre-serialize, inside the compiler. Four
-categories of assets are managed: document fonts (always), KaTeX CSS
-(conditional on math), hover-preview JS+CSS (conditional on notes/refs/cites),
-and lazy-loading machinery shared by the conditional categories.
+categories of assets are managed: document fonts (every document unless
+`documentFontsCss: 'skip'`), KaTeX CSS (conditional on math), hover-preview
+JS+CSS (conditional on notes/refs/cites), and lazy-loading machinery shared by
+the conditional categories.
 
-### 10.0 Document fonts (always injected)
+### 10.0 Document fonts (every document unless `'skip'`)
 
-**Injected when:** unconditionally, on every rendered document.
+**Injected when:** on every rendered document unless `documentFontsCss: 'skip'`.
 
-A `<style>` element produced by `getDocumentFontsCss()`
-(`src/assets/font-loader.js`) is prepended to `hast.children` at the start
-of the compile step. The block contains base64-embedded `@font-face`
-declarations for Inter (body and headings) and Source Code Pro (monospace),
-Latin-subsetted. Embedding the font data inline makes documents render with
-the intended typography from `file://` URLs and in environments without
-those fonts installed (e.g. WSL/Linux).
+What is prepended to `hast.children` at the start of the compile step depends on
+the `documentFontsCss` mode (default `embedResources ? 'inline' : 'link'`):
 
-This is the AUD-16 fix; before it, fixture rendering had the fonts wired in
-via the render-fixtures shell but external consumers of the package
-silently fell back to the system font stack. See `notes/specs/pipeline.md` §12.3
-for the same description from the pipeline-stage perspective.
+| mode | what is injected |
+|------|-----------------|
+| `'inline'` | a `<style>` from `getDocumentFontsCss()` — base64-embedded `@font-face` declarations for Inter (body/headings) and Source Code Pro (monospace), Latin-subsetted; self-contained, renders from `file://` and where the fonts aren't installed |
+| `'link'` | a `<link rel="stylesheet">` to `DOCUMENT_FONTS_CDN_URL` (a Google Fonts `css2` request for the same families) — the external-by-default case |
+| `'skip'` | nothing; the consumer supplies the fonts |
+
+The `'inline'` path is the AUD-16 fix; before it, fixture rendering had the
+fonts wired in via the render-fixtures shell but external consumers of the
+package silently fell back to the system font stack. Phase 14 Slice 1 made the
+mode selectable and flipped the default to `'link'`; see
+`notes/specs/pipeline.md` §9.1 for the option and migration note, and §12.3 for
+the same description from the pipeline-stage perspective.
 
 The font assets are read from disk and cached on first call; subsequent
 documents reuse the cached string, same as the conditional asset categories
@@ -1349,9 +1353,12 @@ Detection: `hasMathElements` walks the hast tree looking for elements with
 
 | mode | what is injected |
 |------|-----------------|
-| `'inline'` (default) | `<style>` containing patched KaTeX CSS |
+| `'inline'` | `<style>` containing patched KaTeX CSS |
 | `'link'` | `<link rel="stylesheet" href="CDN_URL">` |
 | `'skip'` | nothing |
+
+The default is `embedResources ? 'inline' : 'link'` (external-by-default since
+Phase 14 Slice 1).
 
 "Patched" means the font-relative URLs in the raw KaTeX CSS (e.g.,
 `url(fonts/KaTeX_Main-Regular.woff2)`) are replaced with base64 data URIs
@@ -1501,13 +1508,19 @@ parser errors are invisible in the rendered output.
 
 | option | type | default | effect |
 |--------|------|---------|--------|
-| `katexCss` | `'inline' \| 'link' \| 'skip'` | `'inline'` | How KaTeX CSS is delivered |
+| `embedResources` | `boolean` | `false` | Master embed-vs-link switch for document fonts + KaTeX CSS; per-resource options override it. Does not affect `hoverPreviewMode`/`dslMode`. |
+| `documentFontsCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | How document fonts (Inter, Source Code Pro) are delivered |
+| `katexCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | How KaTeX CSS is delivered |
 | `hoverPreviewMode` | `'inline' \| 'link' \| 'skip'` | `'inline'` | How hover preview JS/CSS is delivered |
 | `assetsDir` | `string \| null` | `null` | Base directory for resolving `src=` paths in `<library src=...>` and `<table src=...>` |
 
-`'inline'` modes produce self-contained HTML documents. `'link'` modes require
-network access to the CDN. `'skip'` modes expect the consumer to provide the
-assets via other means.
+`'inline'` modes produce self-contained HTML; `'link'` modes are leaner but
+require network access to the relevant CDN; `'skip'` modes expect the consumer
+to provide the assets. Since Phase 14 Slice 1 the document-fonts and KaTeX
+defaults are external (`'link'`) — set `embedResources: true` to restore
+self-contained output (`pipeline.md` §9.1 carries the migration note). The
+browser entry (`src/browser.js`) ships these tuned for the client:
+`embedResources:false`, `hoverPreviewMode:'link'`, `dslMode:'live-link'`.
 
 ---
 

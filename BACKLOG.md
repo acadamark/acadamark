@@ -154,6 +154,14 @@ A flat scannable index of every open item. Detailed entries below.
   hardcoded** `[interpreter]` `[post-alpha]` *(formerly PG-10)*
 - [ ] **Migrate `<data>` onto the structured-element infrastructure**
   `[interpreter]` `[post-alpha]` *(filed by `beb2fb3`)*
+- [ ] **Ship generated `.d.ts` types for the browser library**
+  `[tests/build]` `[release]` *(→ roadmap: Phase 14)* *(filed by Phase 14
+  Slice 1)*
+- [ ] **Trim the browser bundle's citation-js weight** `[interpreter]`
+  `[post-alpha]` *(filed by Phase 14 Slice 1)*
+- [ ] **Reconcile and de-duplicate the interpreter options
+  documentation** `[specs/docs]` `[post-alpha]` *(filed by Phase 14
+  Slice 1)*
 
 ### Planned work
 
@@ -240,6 +248,9 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]`
 - [ ] **Discuss auditing documented language features against
   test-fixture coverage** `[tests/build]` `[post-alpha]`
+- [ ] **Decide how live-mode assets (hover-preview / DSL scripts) execute
+  under `renderInto`** `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
+  *(filed by Phase 14 Slice 1)*
 
 ### Standing
 
@@ -605,6 +616,54 @@ case surfaces, or when the difference between field-record and
 resource-list containers becomes worth abstracting. *(filed by
 `beb2fb3`)*
 
+### Ship generated `.d.ts` types for the browser library
+`[tests/build]` `[release]`
+
+The Phase 14 Slice 1 tsup config builds the `acadamark.browser` bundle
+(ESM + IIFE) but defers type declarations (`dts` is off, commented
+"deferred until the bundle itself is verified"). A consumer importing
+`render` / `renderInto` therefore gets no editor types. This item: turn on
+tsup's `dts` — or run a separate `tsc --emitDeclarationOnly` pass over the
+`.js` + JSDoc entry — and wire the emitted `.d.ts` into `package.json`'s
+`exports` / `types` for the `./browser` entry. Part of the Phase 14
+packaging deliverable (the Phase 0 named "pure JS + generated `.d.ts`");
+deferred *within* Slice 1 so the runtime bundle could be verified first.
+*(filed by Phase 14 Slice 1)*
+
+### Trim the browser bundle's citation-js weight
+`[interpreter]` `[post-alpha]`
+
+citation-js is by a wide margin the dominant contributor to the IIFE
+browser bundle's size (measurable from the `build:lib` output). The ratified
+Decision 1 keeps citation-js *in* the bundle because client-side
+`<library>` / `<cite>` parsing needs it — so this is not "remove it" but
+"make it lighter": investigate a lighter CSL/BibTeX path, lazy-loading
+citation-js only when a document actually has citations, or a citation-js
+plugin subset, without losing client-side citation support. Not
+release-blocking (the bundle works); an optimization lead surfaced while
+measuring the Slice 1 bundle. *(filed by Phase 14 Slice 1)*
+
+### Reconcile and de-duplicate the interpreter options documentation
+`[specs/docs]` `[post-alpha]`
+
+`pipeline.md` §9.1 and `interpreter.md` §12 each restate the interpreter's
+options table with default values (`embedResources`, `documentFontsCss`,
+`katexCss`, `hoverPreviewMode`, …). The two tables duplicate the same
+defaults, so an option-default change must be made in both places or one
+goes stale — a "one job per document" tension (the option-default facts
+have two homes). The same tables also omit the DSL options (`dslMode`,
+`mermaidMode`, `abcMode`) entirely, though both reference `dslMode` in their
+prose. This item: decide which document canonically owns the options table
+(`pipeline.md` §9.1 is the likely home — `interpreter.md` §12 already
+cross-references it for the migration note), have the other point to it
+rather than restating it, and add the missing DSL-option rows to the
+canonical table. Pre-existing (the duplication predates Phase 14 Slice 1,
+which extended both tables in lockstep with the new `embedResources` /
+`documentFontsCss` rows); surfaced by the Slice 1 coherence check. A
+cross-file spec restructuring — the canonical-owner choice is flagged for a
+chat decision rather than resolved unilaterally. *(filed by Phase 14
+Slice 1)*
+
 ---
 
 ## Detailed entries — Planned work
@@ -816,7 +875,20 @@ An **in-browser editor/viewer** — CodeMirror source on the left,
 rendered output on the right — falls out of this library as an example
 application: it ships as a library demo documented in the library's
 README, **not as a standalone roadmap phase**. A multi-slice arc
-(packaging, the browser entry point, the demo app); gets a Phase 0.
+(packaging, the browser entry point, the demo app). **Phase 0 is done**
+(`aaa7e5c` — API surface, bundle toolchain, six-slice plan) and **Slice 1
+(library packaging) is done**: the `src/browser.js` `render` / `renderInto`
+façade, the tsup `acadamark.browser` bundle (ESM + IIFE), the
+external-by-default `embedResources` flip (breaking for the Node entry;
+`embedResources: true` restores self-contained output), and the
+browser-safety work (lazy-ified `fs` reads, the `registry.js` →
+`node-assets.js` split, node-builtin stubbing). Remaining slices — the
+in-browser editor demo, the demo-site framework (which lands the rename),
+demo-site content, fixture consolidation, and the release-time org-split —
+stay open (this checkbox tracks the whole arc). Follow-up findings from
+Slice 1 are filed as their own entries: the `.d.ts` types item, the
+citation-js bundle-weight item, and the `renderInto` live-asset-execution
+discussion.
 
 ---
 
@@ -1144,6 +1216,24 @@ test-fixture set, and close gaps. Options include — a one-time
 audit slice; a standing rule that every spec example must come
 with a fixture; a periodic coverage-against-spec sweep. Filed under
 the discussion-is-work rule.
+
+### Decide how live-mode assets (hover-preview / DSL scripts) execute under `renderInto`
+`[interpreter]` `[release]`
+
+`renderInto(target, source)` (Phase 14 Slice 1, `src/browser.js`) assigns
+the rendered HTML via `el.innerHTML`. The HTML spec deliberately prevents
+`innerHTML`-injected `<script>` elements from executing, so the
+hover-preview init script and any live-mode DSL (mermaid / abc) activation
+scripts emitted into the fragment do **not** run when a consumer uses
+`renderInto`. (A full-page `render()` the browser parses normally is
+unaffected — only the `innerHTML` path is.) Auto-executing injected scripts
+was left out of Slice 1 on purpose: doing it would mean `eval`-ing
+markup-derived JS. This discussion: decide whether the library should offer
+an opt-in activation helper (re-inject / execute the emitted scripts after
+`renderInto`), document the limitation as the consumer's responsibility, or
+something else. Gates the in-browser editor demo slice, which needs live
+hover previews and DSL rendering inside a mounted element. *(filed by
+Phase 14 Slice 1)*
 
 ---
 

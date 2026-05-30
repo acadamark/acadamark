@@ -463,7 +463,8 @@ both are release-blocking.
 
 **Items:**
 
-- **Client-side rendering library.** Layer 1 rendering packaged for
+- **Client-side rendering library** *(Slice 1 — library packaging — done;
+  see STATUS.md's Phase 14 Slice 1 milestone)*. Layer 1 rendering packaged for
   browser use — a document rendered in-browser with no Node build step.
   The `acadamark-core` extraction already drew the build/run-time seam
   as a browser-safety boundary for exactly this. The library carries
@@ -471,7 +472,13 @@ both are release-blocking.
   in-browser editor/viewer (CodeMirror source left, rendered output
   right) is an example application of this library, shipped as a demo
   and documented in the library's README; it is deliberately **not** a
-  standalone roadmap phase.
+  standalone roadmap phase. Slice 1 delivered the packaging spine: the
+  `src/browser.js` `render` / `renderInto` façade, the tsup
+  `acadamark.browser` bundle (ESM + IIFE), the external-by-default
+  `embedResources` flip, and the browser-safety work (lazy-ified `fs`
+  reads, the `registry.js` → `node-assets.js` split, node-builtin
+  stubbing). The remaining slices (demo, demo-site, rename, fixture
+  consolidation, org-split) per the Phase 0 slicing continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —
   the standard the display work (Phase 8) and the demonstrative fixture

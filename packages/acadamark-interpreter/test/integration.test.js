@@ -18,12 +18,19 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { toHast } from 'mdast-util-to-hast';
 
-import { buildAcadamarkPipeline, createAcadamarkTagHandler } from '../src/index.js';
+import { buildAcadamarkPipeline, createAcadamarkTagHandler, KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../src/index.js';
 import { parseErrorHandler, tagErrorHandler } from '../src/handlers/parser-errors.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 const UPDATE = process.env.ACADAMARK_UPDATE_SNAPSHOTS === '1';
+
+// hast-util-to-html escapes the `&` family-separators in DOCUMENT_FONTS_CDN_URL
+// to numeric entities (`&#x26;`), so the raw constant never substring-matches
+// serialized HTML. Match the escape-free prefix up to the first `&` instead —
+// still distinctive (the Google Fonts css2 Inter request) and robust to whether
+// the serializer emits `&#x26;` or `&amp;`.
+const FONTS_LINK_PREFIX = DOCUMENT_FONTS_CDN_URL.split('&')[0];
 
 /**
  * Run the full pipeline on a source string and return the hast tree and HTML.
@@ -95,8 +102,8 @@ export function run() {
     assert.ok(html.includes('Introduction'), 'doc1: section title text');
     assert.ok(html.includes('<em>'), 'doc1: inline <em> present');
     assert.ok(html.includes('three years'), 'doc1: em content');
-    // Document fonts always injected; no KaTeX CSS when there's no math.
-    assert.ok(html.includes('@font-face'), 'doc1: document fonts CSS injected');
+    // Document fonts linked (external-by-default); no KaTeX CSS when there's no math.
+    assert.ok(html.includes(FONTS_LINK_PREFIX), 'doc1: document fonts linked (external-by-default)');
     assert.ok(!html.includes('.katex'), 'doc1: no KaTeX CSS injected (no math)');
 
     snapshotHast('document-1', hast);
@@ -122,8 +129,8 @@ export function run() {
     assert.ok(html.includes('<figcaption>'), 'doc2: figcaption present');
     assert.ok(html.includes('<aside>'), 'doc2: aside present');
     assert.ok(html.includes('<blockquote>'), 'doc2: blockquote present');
-    // Document fonts always injected; no KaTeX CSS when there's no math.
-    assert.ok(html.includes('@font-face'), 'doc2: document fonts CSS injected');
+    // Document fonts linked (external-by-default); no KaTeX CSS when there's no math.
+    assert.ok(html.includes(FONTS_LINK_PREFIX), 'doc2: document fonts linked (external-by-default)');
     assert.ok(!html.includes('.katex'), 'doc2: no KaTeX CSS injected (no math)');
 
     snapshotHast('document-2', hast);
@@ -144,8 +151,8 @@ export function run() {
     assert.ok(html.includes('<figure'), 'doc3: figure present');
     assert.ok(html.includes('<aside'), 'doc3: aside present');
     assert.ok(html.includes('<hr'), 'doc3: hr present');
-    // Document fonts always injected; no KaTeX CSS when there's no math.
-    assert.ok(html.includes('@font-face'), 'doc3: document fonts CSS injected');
+    // Document fonts linked (external-by-default); no KaTeX CSS when there's no math.
+    assert.ok(html.includes(FONTS_LINK_PREFIX), 'doc3: document fonts linked (external-by-default)');
     assert.ok(!html.includes('.katex'), 'doc3: no KaTeX CSS injected (no math)');
 
     snapshotHast('document-3', hast);
@@ -170,9 +177,8 @@ export function run() {
     assert.ok(html.includes('Pythagorean theorem'), 'doc4: section 1 content');
     assert.ok(html.includes('quadratic formula'), 'doc4: section 2 content');
     assert.ok(html.includes('error marker'), 'doc4: section 3 content');
-    // Math present → KaTeX CSS injected inline by default.
-    assert.ok(html.includes('<style>'), 'doc4: KaTeX CSS injected (inline mode)');
-    assert.ok(html.includes('katex'), 'doc4: CSS contains KaTeX class names');
+    // Math present → KaTeX CSS linked (external-by-default).
+    assert.ok(html.includes(KATEX_CDN_URL), 'doc4: KaTeX CSS linked (external-by-default)');
 
     snapshotHast('document-4', hast);
     console.log('PASS: integration doc4 (math minimal)');
@@ -216,8 +222,8 @@ export function run() {
     // Some representative LaTeX renders correctly — check for KaTeX-generated spans.
     // KaTeX produces mfrac for fractions.
     assert.ok(html.includes('mfrac'), 'doc5: fraction renders via KaTeX');
-    // Math present → KaTeX CSS injected inline.
-    assert.ok(html.includes('<style>'), 'doc5: KaTeX CSS injected (inline mode)');
+    // Math present → KaTeX CSS linked (external-by-default).
+    assert.ok(html.includes(KATEX_CDN_URL), 'doc5: KaTeX CSS linked (external-by-default)');
 
     // Notes: doc5 has 3 notes (2 end/foot, 1 side).
     // Count actual note marker <sup> elements by their id (noteref-N).
@@ -428,9 +434,8 @@ export function run() {
     // KaTeX wraps output in <span class="katex">.
     assert.ok(html.includes('class="katex"'), 'doc11: KaTeX output present');
 
-    // hasMathElements fires → KaTeX CSS injected (bare math document).
-    assert.ok(html.includes('<style>'), 'doc11: KaTeX CSS injected (inline mode, bare math triggers hasMathElements)');
-    assert.ok(html.includes('katex'), 'doc11: CSS contains KaTeX class names');
+    // hasMathElements fires → KaTeX CSS linked (external-by-default, bare math document).
+    assert.ok(html.includes(KATEX_CDN_URL), 'doc11: KaTeX CSS linked (external-by-default, bare math triggers hasMathElements)');
 
     // The aside content contains inline math (two-surface normalization check).
     assert.ok(html.includes('<aside>'), 'doc11: <aside> rendered');

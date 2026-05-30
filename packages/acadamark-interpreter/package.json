@@ -5,10 +5,19 @@
   "description": "The acadamark interpreter: schema-driven dispatch from acadamarkTag nodes to Layer 1 HTML, plus structural plugins (config discovery, article structuring, section nesting).",
   "type": "module",
   "main": "src/index.js",
-  "exports": "./src/index.js",
+  "browser": {
+    "./src/assets/hover-preview-assets.js": "./src/assets/hover-preview-assets.browser.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./browser": "./dist/acadamark.browser.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "test": "node test/run.js",
-    "verify": "node test/run.js && node test/render-fixtures.js"
+    "verify": "node test/run.js && node test/render-fixtures.js",
+    "build:lib": "tsup",
+    "build:lib:watch": "tsup --watch"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -39,5 +48,9 @@
     "unified",
     "interpreter",
     "layer1"
-  ]
+  ],
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
 }
