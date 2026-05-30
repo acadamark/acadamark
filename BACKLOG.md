@@ -89,9 +89,11 @@ A flat scannable index of every open item. Detailed entries below.
 - [x] **Browser IIFE bundle threw `Dynamic require of "fs"` at load —
   never ran in a browser** `[tests/build]` `[release]` *(→ roadmap: Phase 14;
   filed and CLOSED by Phase 14 Slice 2)* — **CLOSED 2026-05-29** by the
-  in-browser editor demo slice: esbuild `alias` (bare keys) plus a
-  bare-specifier convention across `src/` redirect every Node built-in to a
-  throwing stub, so the bundle resolves and loads.
+  in-browser editor demo slice: esbuild `alias` redirects every Node built-in to
+  a throwing stub, so the bundle resolves and loads. Phase 14 Slice 1.5 then
+  closed the underlying *class*: symmetric aliasing (both `fs` and `node:fs`
+  forms) plus a `bundle-load` smoke test that loads the IIFE in jsdom on every
+  test run.
 - [x] **Theorem-family elements render unstyled (inline, body size)**
   `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
   RQ-THM-S1/S2; filed by the render-quality slice)* — **CLOSED
@@ -171,8 +173,6 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Reconcile and de-duplicate the interpreter options
   documentation** `[specs/docs]` `[post-alpha]` *(filed by Phase 14
   Slice 1)*
-- [ ] **Add a drift guard for the bare Node-builtin import convention**
-  `[tests/build]` `[post-alpha]` *(filed by Phase 14 Slice 2)*
 
 ### Planned work
 
@@ -344,19 +344,29 @@ page (the editor demo) tried to use the global. The earlier
 after its own node-externalizer, and a `node:`-prefixed import slips past
 esbuild's `alias` because tsup's node-protocol plugin claims it first.
 
-The fix: redirect the built-ins with esbuild `alias` (whose keys are
-**bare**) to a throwing stub (`src/assets/node-builtin-stub.js`), and
-adopt a project convention that every Node-built-in import under `src/`
-reachable by the bundle is written bare (`from 'fs'`, never
-`from 'node:fs'`) so the alias can catch it. Four files were converted
-`node:` → bare in the same slice (`font-loader.js`, `table.js`,
-`library-load.js`, `hover-preview-assets.js`); `index.js` and
-`node-assets.js` were already bare. The stub's members throw only when
-*called*, so binding them at module-init is harmless while a violated
-"never called in the browser" invariant surfaces as a loud error. The
-mechanism and convention are documented in `tsup.config.js`,
-`src/assets/node-builtin-stub.js`, and `notes/specs/pipeline.md` §14; a
-drift guard for the bare convention is filed as its own enhancement.
+Slice 2's fix redirected the built-ins with esbuild `alias` (bare keys) to
+a throwing stub (`src/assets/node-builtin-stub.js`) and adopted a project
+convention that every Node-built-in import under `src/` reachable by the
+bundle is written bare (`from 'fs'`, never `from 'node:fs'`) so the alias
+could catch it; four files were converted `node:` → bare. The stub's
+members throw only when *called*, so binding them at module-init is harmless
+while a violated "never called in the browser" invariant surfaces as a loud
+error.
+
+**Phase 14 Slice 1.5 closed the underlying class.** The bare-only
+convention was a silent trap: writing the modern `from 'node:fs'` form would
+re-introduce the load-time throw, and the test suite would not catch it. The
+slice made the alias **symmetric** — both `fs` and `node:fs` (and the
+path/url/module pairs) keyed to the stub — and set `removeNodeProtocol: false`
+so the `node:` keys actually fire (tsup otherwise externalizes `node:`
+specifiers before `alias` runs). Both forms are now safe; the four files were
+restored to modern `node:` form. The standing guard is a `bundle-load` smoke
+test (`test/bundle-load.test.js`) that builds the IIFE and loads it in jsdom
+on every run, failing if it throws at evaluation — so the defect class is
+caught at test time, not at a user's browser. The previously-filed
+bare-convention drift-guard enhancement was retired as unnecessary. The
+mechanism is documented in `tsup.config.js`, `src/assets/node-builtin-stub.js`,
+and `notes/specs/pipeline.md` §14.
 
 ### Theorem-family elements render unstyled (inline, body size)
 `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
@@ -730,25 +740,6 @@ cross-file spec restructuring — the canonical-owner choice is flagged for a
 chat decision rather than resolved unilaterally. *(filed by Phase 14
 Slice 1)*
 
-### Add a drift guard for the bare Node-builtin import convention
-`[tests/build]` `[post-alpha]`
-
-The browser bundle resolves its (dead-code) Node-built-in imports through
-an esbuild `alias`, which catches only **bare** specifiers — so the bundle
-depends on a project convention that every `fs` / `path` / `url` / `module`
-import under `src/` reachable by `src/browser.js` is written bare, never
-`node:`-prefixed (see the closed bundle-load bug and
-`notes/specs/pipeline.md` §14). The convention is currently enforced only
-by code review and by the `platform:'browser'` build succeeding. A single
-`from 'node:fs'` slipping back in would ship a load-time `__require("fs")`
-that throws — and tsup's IIFE build would still *succeed*, so the failure
-would only surface when a page loads the bundle, exactly the silent class
-the original defect was. This item: add a cheap guard — e.g. a test that
-greps `src/` for `from 'node:(fs|path|url|module)'` and fails on a match,
-or an equivalent lint rule — so the convention is mechanically protected
-rather than convention-only. Low cost; prevents a regression that the test
-suite would otherwise miss. *(filed by Phase 14 Slice 2)*
-
 ---
 
 ## Detailed entries — Planned work
@@ -975,13 +966,19 @@ that runs the live-mode scripts `innerHTML` leaves inert (resolving the
 `renderInto` live-asset discussion). Slice 2 also fixed a Slice 1 defect that
 its byte-level checks missed: the committed IIFE bundle threw
 `__require("fs")` at load and never ran in a browser (see the closed
-bundle-load bug). Remaining slices — the demo-site framework (which lands the
+bundle-load bug). **Slice 1.5 (symmetric node-builtin aliasing)** then closed
+the underlying *class* of that defect: the alias is now keyed in both the bare
+and `node:` forms (with `removeNodeProtocol: false`), so either import form is
+safe and the four files Slice 2 had converted to bare were restored to modern
+`node:` form; a `bundle-load` smoke test (loads the IIFE in jsdom each run) is
+the standing guard. Remaining slices — the demo-site framework (which lands the
 rename), demo-site content, fixture consolidation, and the release-time
 org-split — stay open (this checkbox tracks the whole arc). Follow-up findings
 are filed as their own entries: the `.d.ts` types item and the citation-js
-bundle-weight item (Slice 1); the bare-import drift-guard enhancement and the
-doc-46 missing-figure-images bug (Slice 2). The `renderInto`
-live-asset-execution discussion (Slice 1) is now resolved by Slice 2.
+bundle-weight item (Slice 1); the doc-46 missing-figure-images bug (Slice 2).
+(Slice 2's bare-import drift-guard enhancement was retired by Slice 1.5 — the
+symmetric alias and the bundle-load test supersede it.) The `renderInto`
+live-asset-execution discussion (Slice 1) was resolved by Slice 2.
 
 ---
 

@@ -22,11 +22,12 @@
 //   Rationale: both fonts are available locally; source files from system font
 //   directory; subsetting reduces each weight from ~180KB to ~35KB.
 
-// Bare built-in specifiers (not `node:fs`) — the browser bundle's esbuild `alias`
-// only stubs the bare form; see packages/acadamark-interpreter/tsup.config.js.
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+// Node built-ins for the server/build path. In the browser bundle these are dead
+// code (browser defaults never call them); tsup aliases both the node: and bare
+// forms to a throwing stub. See packages/acadamark-interpreter/tsup.config.js.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 // Directory resolution is deferred into accessors (not computed at module load)
 // so this module imports cleanly in a browser bundle; the fs reads themselves

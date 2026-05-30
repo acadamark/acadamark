@@ -24,10 +24,11 @@
 //     style: 'chicago-author-date',  // from config or default
 //   }
 
-// Bare built-in specifiers (not `node:fs`) — the browser bundle's esbuild `alias`
-// only stubs the bare form; see packages/acadamark-interpreter/tsup.config.js.
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+// Node built-ins for the server/build path. In the browser bundle these are dead
+// code (browser defaults never call them); tsup aliases both the node: and bare
+// forms to a throwing stub. See packages/acadamark-interpreter/tsup.config.js.
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import Cite from 'citation-js';
 import { ACADAMARK_CONFIG, ACADAMARK_CITATIONS } from 'acadamark-core/file-data-keys';
 import { isAcadamarkTag } from '../lib/ast-helpers.js';

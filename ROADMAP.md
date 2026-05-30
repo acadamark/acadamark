@@ -162,8 +162,10 @@ client-side rendering library). **Slice 1 (library packaging)** and **Slice 2
 `render` / `renderInto` / `executeAssets` façade, the tsup `acadamark.browser`
 bundle, and a `demo/` page pairing a CodeMirror editor with live in-browser
 rendering. Slice 2 also fixed a Slice 1 defect that left the IIFE bundle
-unable to load in a browser. The next slice is the demo-site framework, which
-lands the project rename. Nothing else is in flight.
+unable to load in a browser, and a small interstitial **Slice 1.5** then closed
+that defect's whole class (symmetric node-builtin aliasing + a bundle-load smoke
+test). The next slice is the demo-site framework, which lands the project
+rename. Nothing else is in flight.
 
 ---
 
@@ -493,10 +495,13 @@ both are release-blocking.
   `render → executeAssets` two-step that runs the live-mode scripts `innerHTML`
   leaves inert (resolving the `renderInto` live-asset-execution discussion). It
   also fixed a Slice 1 defect its byte-level checks missed — the IIFE bundle
-  threw `__require("fs")` at load and never ran in a browser (esbuild `alias` +
-  a bare-specifier convention). The remaining slices (demo-site framework +
-  rename, demo-site content, fixture consolidation, org-split) per the Phase 0
-  slicing continue.
+  threw `__require("fs")` at load and never ran in a browser. Slice 1.5
+  (symmetric node-builtin aliasing) then closed that defect's whole class: the
+  esbuild `alias` is now keyed in both the bare and `node:` forms (with
+  `removeNodeProtocol: false`), so either import form is safe, and a
+  `bundle-load` smoke test loads the IIFE in jsdom on every run as the standing
+  guard. The remaining slices (demo-site framework + rename, demo-site content,
+  fixture consolidation, org-split) per the Phase 0 slicing continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —
   the standard the display work (Phase 8) and the demonstrative fixture

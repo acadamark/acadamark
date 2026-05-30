@@ -163,9 +163,17 @@ throwing stub plus a bare-specifier convention across `src/` (every Node
 built-in imported bare, not `node:`-prefixed, so the alias catches it); and
 (2) `executeAssets`'s external-script dedup was whole-document-scoped, matching
 the inert injected original against itself, so mermaid / Tippy silently never
-loaded — fixed by scoping the dedup to `<head>`. **Next:** Phase 14 Slice 3 —
-the demo-site framework, which lands the project rename — plus the remaining
-slices (demo-site content, fixture consolidation, org-split) and the
+loaded — fixed by scoping the dedup to `<head>`. **Phase 14 Slice 1.5
+(symmetric node-builtin aliasing) is now done too:** it closed the underlying
+*class* of the bundle-load defect rather than the single instance. The esbuild
+`alias` is now keyed in both the bare and `node:` forms (with
+`removeNodeProtocol: false` so the `node:` keys fire), so either import form is
+safe and Slice 2's bare-only convention is retired — the four converted files
+were restored to modern `node:` form. A `bundle-load` smoke test that loads the
+IIFE in a jsdom document on every run is the standing guard, catching a
+load-time throw at test time instead of in a user's browser. **Next:** Phase 14
+Slice 3 — the demo-site framework, which lands the project rename — plus the
+remaining slices (demo-site content, fixture consolidation, org-split) and the
 demonstrative-fixture work. Nothing else is in flight.
 
 ## Milestones
@@ -4003,3 +4011,29 @@ that). One line gets added every few months, not every slice.
   images (`commit-graph.png`, `notebook-ci.png`) are filed as a separate bug.
   The remaining Phase 14 slices (demo-site framework + rename, demo-site
   content, fixture consolidation, org-split) continue.
+- **2026-Q2 — Phase 14 Slice 1.5: symmetric node-builtin aliasing.** A small
+  interstitial slice that closed the *class* of the Slice 1 bundle-load defect
+  rather than the single instance, and retired the brittle workaround Slice 2
+  had left behind. Slice 2 made the browser bundle load by aliasing the Node
+  built-ins to a throwing stub and writing every `src/` built-in import in bare
+  form (`from 'fs'`), because tsup's esbuild `alias` catches only bare
+  specifiers — its `node-protocol-plugin` (on by default) claims `node:`-prefixed
+  specifiers and externalizes them before `alias` is consulted. That left a
+  silent trap: a developer writing the modern `from 'node:fs'` form would
+  re-introduce a load-time `__require("fs")`, and the build would still succeed,
+  so nothing caught it until a browser tried to load the bundle. This slice made
+  the aliasing **symmetric** — both `fs` and `node:fs` (and the path/url/module
+  pairs) keyed to the stub — and set tsup's `removeNodeProtocol: false` so the
+  `node:` keys actually fire (a probe confirmed plain symmetric aliasing alone
+  still threw at load; disabling the plugin is what lets the `node:` form reach
+  the alias). A useful side effect: with the plugin off, a stray un-aliased
+  `node:` built-in now fails the **build** ("Could not resolve") rather than
+  throwing silently at load. Both specifier forms are now safe, so the four files
+  Slice 2 had converted to bare were restored to modern `node:` form and the
+  bare-only convention (and its proposed drift-guard) was retired. The standing
+  guard is a new `bundle-load` smoke test: it builds the IIFE and loads it in a
+  jsdom document on every run, asserting `window.acadamark.render` /
+  `renderInto` / `executeAssets` exist and that a plain paragraph renders — so
+  the load-time-throw class is caught at test time, not in a user's browser. No
+  rendered-output change: fixtures and snapshots are untouched; the live editor
+  demo still renders doc-46 with its Mermaid diagram.

@@ -1028,11 +1028,18 @@ are dead code under the browser defaults, but their `fs` / `path` / `url` /
 `alias` redirects each to a throwing stub (`src/assets/node-builtin-stub.js`):
 the import resolves to a harmless binding, and a violated "never called in the
 browser" invariant surfaces as a loud, specific error rather than silent
-corruption. The alias only catches **bare** specifiers — `node:`-prefixed
-imports are claimed by tsup's node-protocol plugin first — so every Node-built-in
-import under `src/` reachable by this bundle is written bare (`from 'fs'`, never
-`from 'node:fs'`). That bare-specifier convention is load-bearing; it is
-documented in `tsup.config.js` and `src/assets/node-builtin-stub.js`.
+corruption. The alias is keyed in **both** specifier forms — `fs` and `node:fs`,
+etc. — so `src/` may import a built-in either way (modern `node:` is preferred);
+this also catches bundled dependencies that import built-ins in bare form. Making
+the `node:` form reach the alias requires `removeNodeProtocol: false` in the tsup
+config, because tsup otherwise externalizes `node:`-prefixed specifiers before
+esbuild consults `alias` (Phase 14 Slice 1.5 made the aliasing symmetric and
+retired the earlier bare-only convention; the mechanism is documented in
+`tsup.config.js` and `src/assets/node-builtin-stub.js`). The
+`test/bundle-load.test.js` smoke test is the runtime backstop: it builds the IIFE
+bundle and loads it in a browser-like context (jsdom), failing if the bundle
+throws at evaluation — the exact class of defect (a top-level `__require("fs")`)
+that left the Slice 1 bundle unable to load in a browser.
 
 **Live-mode assets under `renderInto` (Phase 14 Slice 2).** `renderInto` sets
 the HTML via `el.innerHTML`, and the HTML spec deliberately leaves

@@ -1,33 +1,40 @@
-// tsup configuration for the acadamark browser library (Phase 14 Slice 1).
+// tsup configuration for the acadamark browser library (Phase 14 Slice 1;
+// node-builtin aliasing made symmetric in Slice 1.5).
 //
 // Bundles src/browser.js (the render/renderInto façade) into a self-contained
 // browser library, ESM + IIFE. Two mechanisms do the load-bearing work:
 //
-//   1. node-builtin alias + a bare-specifier convention — our server-only code
-//      paths (table src=, library src=, DSL live-inline/static, inline font/KaTeX
-//      embedding) import fs/url/path/module at module top level, but under the
-//      browser façade's defaults none of those code paths execute. esbuild
-//      (platform:'browser') would otherwise leave the built-ins as runtime
-//      `require()` calls that, in the IIFE form, become a top-level `__require("fs")`
-//      and throw the instant the IIFE evaluates — before it can assign
-//      `window.acadamark`. So esbuild `alias` (in esbuildOptions, below) redirects
-//      every fs/path/url/module specifier to src/assets/node-builtin-stub.js, a
-//      real module whose members throw only when CALLED. "Never called" is the
-//      design invariant; binding the import is harmless, and the throw is a loud
-//      backstop if that invariant is ever violated.
+//   1. symmetric node-builtin alias — our server-only code paths (table src=,
+//      library src=, DSL live-inline/static, inline font/KaTeX embedding) import
+//      fs/url/path/module at module top level, but under the browser façade's
+//      defaults none of those code paths execute. esbuild (platform:'browser')
+//      would otherwise leave the built-ins as runtime `require()` calls that, in
+//      the IIFE form, become a top-level `__require("fs")` and throw the instant
+//      the IIFE evaluates — before it can assign `window.acadamark` (the Slice 1
+//      defect: the bundle "built" but never loaded in a browser). So esbuild
+//      `alias` (in esbuildOptions, below) redirects every built-in specifier to
+//      src/assets/node-builtin-stub.js, a real module whose members throw only
+//      when CALLED. "Never called" is the design invariant; binding the import is
+//      harmless, and the throw is a loud backstop if that invariant is violated.
 //
-//      The catch — and why src/ uses BARE built-in specifiers: esbuild resolves in
-//      the order plugins → alias → default. tsup always installs a first-running
-//      `node-protocol-plugin` whose onResolve claims `node:`-prefixed specifiers
-//      and externalizes them — that runs BEFORE alias, so a `from 'node:fs'` import
-//      slips past the alias and ships as a load-time `__require("fs")`. Bare
-//      `from 'fs'` is claimed by no plugin, so alias catches it. Prepending our own
-//      resolve plugin to beat node-protocol-plugin does NOT work: tsup rebuilds
-//      options.plugins after esbuildOptions, discarding the mutation (options.alias
-//      IS honored, options.plugins is not). The robust resolution is therefore the
-//      alias PLUS a project convention: every Node-built-in import reachable by
-//      this bundle is written bare. (See node-builtin-stub.js's header. A drift
-//      guard for the convention is filed as a finding.)
+//      The alias covers BOTH specifier forms — `fs` and `node:fs`, `path` and
+//      `node:path`, etc. — so src/ may use whichever it likes (modern `node:` is
+//      preferred). Making the `node:` form actually reach the alias takes one
+//      extra option, `removeNodeProtocol: false` (set below). By default tsup
+//      installs a `node-protocol-plugin` whose onResolve claims every
+//      `node:`-prefixed specifier and externalizes it — and a plugin onResolve
+//      runs BEFORE esbuild consults `alias`, so a `from 'node:fs'` import would
+//      slip past the alias and ship as a load-time `__require("fs")` (empirically
+//      confirmed in the Slice 1.5 probe: plain symmetric aliasing alone still
+//      threw at load). Disabling that plugin lets the `node:` alias keys fire.
+//      A consequence worth noting: with the plugin off, a node: built-in that is
+//      NOT aliased no longer externalizes silently — esbuild fails the build with
+//      "Could not resolve", so a stray new built-in is caught at build time rather
+//      than at browser load. The bundle-load smoke test (test/bundle-load.test.js)
+//      is the runtime backstop. (Slice 1.5 retired the earlier bare-only
+//      convention; appending our own resolve plugin to beat node-protocol-plugin
+//      was tried and does not work — tsup rebuilds options.plugins after
+//      esbuildOptions, discarding the mutation, though it honors options.alias.)
 //
 //   2. esbuild `define` for the hover-preview assets — acadamark's own
 //      hover-preview.css/.js have no CDN, so even hoverPreviewMode:'link' must
@@ -85,6 +92,11 @@ export default defineConfig({
   minify: true,
   sourcemap: true,
   clean: true,
+  // Disable tsup's node-protocol-plugin so `node:`-prefixed specifiers are NOT
+  // externalized before esbuild consults `alias` — without this, the `node:fs`
+  // alias key never fires and a `from 'node:fs'` import ships as a load-time
+  // `__require("fs")`. See header item 1.
+  removeNodeProtocol: false,
   // dts deferred until the bundle itself is verified (added in a follow-up build).
   define: {
     __ACADAMARK_HOVER_PREVIEW_CSS__: JSON.stringify(hoverPreviewCss),
@@ -92,17 +104,20 @@ export default defineConfig({
   },
   esbuildOptions(options) {
     // Resolve the Node built-ins to the throwing stub via esbuild `alias` (see
-    // header item 1). `alias` only catches BARE specifiers — `node:`-prefixed
-    // imports are claimed by tsup's node-protocol-plugin before alias is consulted
-    // — so every fs/url/path/module import under src/ that is reachable by this
-    // bundle MUST be written bare (`from 'fs'`), never `from 'node:fs'`. The keys
-    // here are bare for that reason.
+    // header item 1). Both specifier forms are keyed — bare and `node:`-prefixed —
+    // so src/ may import either (`removeNodeProtocol: false` above is what lets the
+    // `node:` keys actually fire). Bundled dependencies that import builtins in
+    // bare form (e.g. citation-js) are covered by the bare keys.
     options.alias = {
       ...options.alias,
       fs: nodeBuiltinStub,
+      'node:fs': nodeBuiltinStub,
       path: nodeBuiltinStub,
+      'node:path': nodeBuiltinStub,
       url: nodeBuiltinStub,
+      'node:url': nodeBuiltinStub,
       module: nodeBuiltinStub,
+      'node:module': nodeBuiltinStub,
     };
     // Silence the `empty-import-meta` warning class for the IIFE build only-by-
     // effect. Every import.meta.resolve / import.meta.url in the graph sits in an

@@ -27,6 +27,7 @@ import { run as runCiteHandler } from './handlers/cite.test.js';
 import { run as runNormalizeToCanonical } from './plugins/normalize-to-canonical.test.js';
 import { run as runRegistryDsl } from './dsl/registry.test.js';
 import { run as runCdnVersions } from './cdn-versions.test.js';
+import { run as runBundleLoad } from './bundle-load.test.js';
 import { run as runIntegration } from './integration.test.js';
 
 const suites = [
@@ -55,6 +56,7 @@ const suites = [
   ['plugins/normalize-to-canonical', runNormalizeToCanonical],
   ['dsl/registry',                 runRegistryDsl],
   ['cdn-versions',                 runCdnVersions],
+  ['bundle-load',                  runBundleLoad],
   ['integration',                  runIntegration],
 ];
 

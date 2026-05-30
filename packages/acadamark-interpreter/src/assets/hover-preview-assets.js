@@ -17,12 +17,13 @@
 // (src/assets/), so they are read as siblings here and imported as siblings in
 // the browser variant.
 
-// Bare built-in specifiers (not `node:fs`) — src/ convention so the browser
-// bundle's esbuild `alias` can stub the bare form (this file is itself swapped out
-// of the bundle, but the convention is kept uniform); see tsup.config.js.
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+// Node built-ins for the server/build path. This module is swapped out of the
+// browser bundle entirely (package.json "browser" field → the .browser.js
+// variant), so these never reach the bundle; tsup also aliases both the node: and
+// bare forms to a throwing stub for any module that does. See tsup.config.js.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 // Deferred into an accessor (not computed at module load) so this file's mere
 // import is side-effect-free; the fs read happens only when a document actually
