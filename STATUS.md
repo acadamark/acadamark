@@ -3843,3 +3843,74 @@ that). One line gets added every few months, not every slice.
   import, Phase 14 packaging); Rule 2 — no computable facts added to living
   surfaces (the counts, glyphs, fixture names, and grammar-rule names live only
   in this frozen entry).
+- **2026-05-29 — Phase 14 packaging Phase 0 (findings).**
+  A read-only investigation of the architecture for the largest v0.1.0
+  release-blocking phase — the client-side rendering library, its bundle, the
+  github.io demo site, the package org-split, and the demonstrative-fixture
+  consolidation — before any implementation. Deliverable:
+  `notes/phase14-packaging-findings.md` (Q1–Q7). The decisive finding is that
+  **the hard architecture is already done**: the `acadamark-core` ADR drew the
+  package boundaries and the build/run-time seam *as a browser-safety boundary
+  specifically to enable this build* (DESIGN.md line 496), so Phase 14 is mostly
+  assembly and packaging, not re-architecture. The dependency graph is
+  inward-pointing with no cycles, and the **JATS boundary is automatic** —
+  `acadamark-jats-export` is a downstream *consumer* of the interpreter,
+  unreachable from a render entry, so "Layer 1 only, no JATS in the browser" is a
+  free property of the arrow directions, not a constraint the bundle must enforce.
+  **Q1 (library):** a `render(source, options) → html` (plus `renderInto`) façade
+  over the already-synchronous `buildAcadamarkPipeline` (`src/index.js` 697); the
+  browser-safe deps survive (core, the micromark+Peggy parser, the isomorphic
+  remark/unified/hast stack, KaTeX/tippy/popper, js-yaml); the bundle's work-list
+  is the ADR's four `✗` server-only paths (inline the asset `fs`-reads as string
+  constants; exclude the `.bib` loader and the `table src=` CSV reader) **plus a
+  fifth** — `src/dsl/registry.js` (`fs`/`createRequire`/`jsdom` in its inline and
+  static modes); the browser default is **live-link** DSL (CDN `<script src>`,
+  browser-safe) and asset strategy **B** (app provides CSS) with self-contained
+  inline as an opt-in. **Q2 (bundle):** tsup (or rollup-direct), ESM + minified
+  UMD/IIFE (CJS omitted), pure JS + generated `.d.ts`; the byte budget is set by
+  measurement in the slice, not pre-committed — live-link + app-provided CSS are
+  what keep the default bundle to the render path + KaTeX JS. **Q3 (demo site):**
+  a new `packages/demo-site/` workspace package, dogfooded (`.acm` rendered by the
+  real pipeline), pre-rendered to static HTML, GitHub Actions → Pages, with one
+  live Playground page (CodeMirror + the UMD bundle = the in-browser editor, a
+  library demo, not a roadmap phase). **Q4 (org-split):**
+  monorepo-with-separate-publishing (not multi-repo); a bare headline `acadamark`
+  package + `@acadamark/*` for the rest; all six published (core and
+  layer1-vocabulary cannot stay `private` once depended on); the `"*"` workspace
+  refs → semver is the main mechanical migration; synchronized-0.1.0-at-release
+  vs. independent versioning flagged for chat (remark-acadamark's existing 0.2.0
+  complicates synchronizing); release-time per the locked input. **Q5
+  (fixtures):** regression-pinning is the active-corpus criterion, demonstration
+  is the document-45/46 anchors' job; a behavior-coverage audit keeps the minimal
+  covering set + the anchors and proves each removed test block redundant; archive
+  (not delete) to `notes/archive/fixtures/`; target size set by the audit, not
+  pre-committed; the BACKLOG's "demonstrative role's final shape" ruling stays
+  open for chat. **Q6 (rename):** the demo-site home page is the forcing function;
+  the rename gate sits between the demo-site-framework slice and the org-split
+  slice; candidates are `acadamark` (current), `RDF` (ruled out — W3C collision),
+  and "Rich Document" variants; this Phase 0 schedules the decision, it does not
+  make it. **Q7 (slicing):** six slices, sequential-by-dependency with a
+  library-first spine — library packaging → in-browser editor demo → demo-site
+  framework (lands the rename) → demo-site content → fixture consolidation →
+  org-split at release. **Drift surfaced (pre-existing, propose-only):** (a)
+  DESIGN.md (494–496) and `acadamark-core.md` describe `acadamark-jats-export` as
+  "planned"/"future" though it is built; (b) the ADR's server-only `✗` list omits
+  `src/dsl/registry.js` (the fifth Node-coupled site, added by DSL Slice 2 without
+  the standing "cross-check new slices against the rule" — the most consequential
+  drift, since it sits on the bundle's work-list); (c) the ROADMAP Phase 14
+  section under-documents the phase (names neither the demo site, the org-split,
+  nor the rename). All three left as proposals for follow-up slices. Seven
+  decisions are escalated to chat (API surface; bundle toolchain; demo-site
+  placement; org-split model + versioning; fixture framing + the open
+  demonstrative ruling; rename schedule; slicing). **Coherence:** findings ⇄ code
+  — every existing-infrastructure claim cites a file:line read this slice
+  (`src/index.js` 697; the workspace `package.json` graph and the `"*"` refs;
+  `acadamark-core.md`; `src/dsl/registry.js` 27/32/37–38/61–62/70–71/135–136;
+  DESIGN.md 494–496/524/528–537; `BACKLOG.md` 806–819/677–716;
+  `render-quality.md` 65–79); findings ⇄ design — the recommendations honor
+  DESIGN.md's seam-as-browser-boundary and no-new-parsers positions, and the three
+  drifts are flagged, not edited (DESIGN.md untouched, propose-only); backlog ⇄
+  findings — the client-side-library and demonstrative-fixture entries are
+  addressed, with the demonstrative final-shape ruling left to chat per the entry.
+  No code, spec, DESIGN.md, fixture, snapshot, or test changes; the only edits are
+  the new findings file and this log entry.
