@@ -4,14 +4,13 @@
 //   • author raw HTML for non-vocab tags is escaped; vocabulary tags render;
 //   • HTML comments (<!-- ... -->) are stripped from the output entirely.
 //
-// Issue 1 (same-line long-form `<b>bold</b>`) is now implemented (see
-// same-line-long-form.test.js for the positive cases). One consequence shows
-// up here: an unknown tag written same-line — `<glurp>hi</glurp>` — is now
-// parsed as a long-form tag and escaped via the canonical serializer, so the
-// literal the reader sees is the pipe form `<glurp | hi>`, identical to how a
-// multi-line unknown long-form tag has always escaped. The Issue-2 guarantee
-// (reader sees the angle brackets, no HTML passthrough, no error span) holds;
-// only the serialized shape of the literal changed.
+// Unknown tags echo the author's ORIGINAL syntax with the angle brackets
+// escaped — the literal is reconstructed in the same authoring form the author
+// used, not canonicalized to pipe form. So `<glurp>hi</glurp>` displays as
+// `<glurp>hi</glurp>`, `<glurp | hi>` as `<glurp | hi>`, and `<glurp />` as
+// `<glurp />`. The Issue-2 guarantee (reader sees the angle brackets, no HTML
+// passthrough, no error span) holds. (Same-line long form — `<b>bold</b>` —
+// is implemented; see same-line-long-form.test.js for the positive cases.)
 import assert from 'node:assert';
 import { buildEnscribePipeline } from '../src/index.js';
 
@@ -24,42 +23,60 @@ const LT = '&#x3C;';
 export function run() {
   // ── Issue 2: unrecognized tags escape to literal text ──────────────────────
   {
-    // Same-line `<glurp>hello</glurp>` now parses as a long-form tag; unknown,
-    // so it escapes via the canonical serializer to the pipe form. The reader
-    // still sees the angle brackets and the tag name (Issue-2 guarantee).
+    // Long form: echoes `<glurp>hello</glurp>` exactly (brackets escaped).
     const html = render('A <glurp>hello</glurp> B');
     assert.ok(
-      html.includes(`${LT}glurp | hello>`),
-      'unknown same-line long-form tag escapes to literal pipe form',
+      html.includes(`${LT}glurp>hello${LT}/glurp>`),
+      'unknown long-form tag echoes its original `<tag>content</tag>` syntax',
     );
     assert.ok(!html.includes('data-enscribe-unknown'), 'no data-enscribe-unknown span');
-    console.log('PASS: unknown <glurp>hello</glurp> → literal text (pipe form)');
+    console.log('PASS: unknown <glurp>hello</glurp> → literal <glurp>hello</glurp>');
   }
   {
     const html = render('A <glurp /> B');
-    assert.ok(html.includes(`${LT}glurp />`), 'self-closing unknown tag escapes literally');
-    console.log('PASS: unknown <glurp /> → literal text');
+    assert.ok(html.includes(`${LT}glurp />`), 'self-closing unknown tag echoes `<tag />`');
+    console.log('PASS: unknown <glurp /> → literal <glurp />');
   }
   {
+    // Pipe form echoes `<glurp | hello>` (not canonicalized away).
+    const html = render('A <glurp | hello> B');
+    assert.ok(
+      html.includes(`${LT}glurp | hello>`),
+      'unknown pipe-form tag echoes its original `<tag | content>` syntax',
+    );
+    console.log('PASS: unknown <glurp | hello> → literal <glurp | hello>');
+  }
+  {
+    // Long form with an attribute echoes `<glurp class="x">hi</glurp>`.
     const html = render('A <glurp class="x">hi</glurp> B');
     assert.ok(
-      html.includes(`${LT}glurp class="x" | hi>`),
-      'unknown same-line long-form tag with attrs escapes to literal pipe form',
+      html.includes(`${LT}glurp class="x">hi${LT}/glurp>`),
+      'unknown long-form tag with attrs echoes its original syntax',
     );
-    console.log('PASS: unknown <glurp class="x">hi</glurp> → literal text (pipe form)');
+    console.log('PASS: unknown <glurp class="x">hi</glurp> → literal long form');
+  }
+  {
+    // Mixed nesting: a recognized tag inside an unknown one still renders. The
+    // unknown opener/closer show literally; the inner `<b>` renders as real bold.
+    const html = render('<glurp>see <b>bold</b> here</glurp>');
+    assert.ok(
+      html.includes(`${LT}glurp>see <b>bold</b> here${LT}/glurp>`),
+      'unknown wrapper is literal but its recognized children still render',
+    );
+    console.log('PASS: recognized tag nested in unknown tag still renders');
   }
 
   // ── Issue 2b: non-vocab raw HTML escaped; vocabulary tags still render ──────
   {
-    // `<div>hi</div>` inline is a non-vocab tag: parsed as a long-form tag and
-    // escaped to the pipe form. No raw-HTML passthrough — the reader sees the
-    // brackets (the Issue-2b guarantee).
+    // `<div>hi</div>` inline is a non-vocab tag: echoes its original long-form
+    // syntax with the brackets escaped. No raw-HTML passthrough — the reader
+    // sees the brackets (the Issue-2b guarantee).
     const html = render('A <div>hi</div> B');
     assert.ok(
-      html.includes(`${LT}div | hi>`),
-      'non-vocab <div> escapes literally to pipe form (no HTML passthrough)',
+      html.includes(`${LT}div>hi${LT}/div>`),
+      'non-vocab <div> echoes `<div>hi</div>` literally (no HTML passthrough)',
     );
-    console.log('PASS: non-vocab raw <div> → literal text (pipe form)');
+    console.log('PASS: non-vocab raw <div> → literal <div>hi</div>');
   }
   {
     const html = render('A <em | emphasis> and <span | spanned> here');

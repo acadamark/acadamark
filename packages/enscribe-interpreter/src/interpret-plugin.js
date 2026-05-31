@@ -203,16 +203,19 @@ function convertContent(state, node, vocab) {
 // ─── Unknown-tag fallback: escape to literal text ─────────────────────────────
 // A tag whose name is not in the vocabulary is not an error and is not passed
 // through as HTML — it renders as the literal text the author typed, angle
-// brackets and all (the HTML serializer escapes `<`/`>` to `&lt;`/`&gt;`). See
-// notes/specs/interpreter.md §"Unknown tags and raw HTML". The matching close
-// tag of a broken same-line long form (`<glurp>hi</glurp>`) arrives as a
-// separate `html` node and is escaped by `htmlNodeHandler` below.
+// brackets and all (the HTML serializer escapes `<`/`>` to `&#x3C;`/bare). See
+// notes/specs/interpreter.md §"Unknown tags and raw HTML". The literal is
+// reconstructed in the SAME authoring form the author used (long / pipe /
+// slash / bare) — see makeUnknownElement — so `<glurp>hi</glurp>` displays as
+// `<glurp>hi</glurp>` and `<glurp | hi>` displays as `<glurp | hi>`, rather
+// than both canonicalizing to one form.
 
 /**
  * Reconstruct the opening-tag source of an enscribeTag node from its parsed
- * parts. Used to show an unrecognized tag literally. Not byte-exact with the
- * original (attribute order/quoting are canonicalized), but faithful enough
- * that the reader sees the tag they wrote.
+ * parts (everything up to but not including the closing `>`). The caller adds
+ * the form-specific tail (`>`, ` />`, ` | content>`, or `>content</tag>`).
+ * Attribute order and quoting are canonicalized — not byte-exact with the
+ * original — but faithful enough that the reader sees the tag they wrote.
  */
 function reconstructOpener(node) {
   let s = '<' + node.tagname;
@@ -227,30 +230,52 @@ function reconstructOpener(node) {
 function makeUnknownElement(state, node) {
   const opener = reconstructOpener(node);
 
+  // Slash / self-closing form: echo `<tag ... />`.
   if (node.selfClosing) {
     return { type: 'text', value: opener + ' />' };
   }
+
   const content = node.content;
+
+  // Render re-parsed array content (so a recognized tag nested inside an
+  // unrecognized one keeps rendering — the spec's mixed-nesting edge case),
+  // wrapped by literal open/close strings whose `<`/`>` the serializer escapes
+  // to `&#x3C;`/bare. Used by both the long and pipe forms.
+  const renderArrayBetween = (openStr, closeStr) => {
+    const kids = content.flatMap(child => {
+      const h = state.one(child, node);
+      if (h == null) return [];
+      return Array.isArray(h) ? h : [h];
+    });
+    return [{ type: 'text', value: openStr }, ...kids, { type: 'text', value: closeStr }];
+  };
+
+  // Reconstruct in the SAME form the author used, so the displayed literal
+  // echoes the original syntax rather than canonicalizing to pipe form.
+  if (node.form === 'long') {
+    // Long form: `<tag ...>content</tag>`.
+    const close = '</' + node.tagname + '>';
+    if (content == null || content === '' || (Array.isArray(content) && content.length === 0)) {
+      return { type: 'text', value: opener + '>' + close };
+    }
+    if (typeof content === 'string') {
+      // Opaque / not-yet-reparsed long-form content: show it verbatim.
+      return { type: 'text', value: opener + '>' + content + close };
+    }
+    return renderArrayBetween(opener + '>', close);
+  }
+
+  // Short form.
   if (content == null) {
-    // Bare opener (e.g. a same-line long-form `<glurp>` whose `hi</glurp>` fell
-    // through as text + a raw `</glurp>` html node). Emit just the opener; the
-    // separate `</glurp>` html node is escaped by htmlNodeHandler.
+    // Bare opener: the author wrote `<tag ...>` with no content and no slash.
     return { type: 'text', value: opener + '>' };
   }
   if (typeof content === 'string') {
-    // Opaque / not-yet-reparsed pipe content: show it verbatim.
+    // Pipe form, opaque / not-yet-reparsed content: `<tag ... | content>`.
     return { type: 'text', value: opener + ' |' + content + '>' };
   }
-  // Re-parsed pipe content (an array of nodes): show the opener and closing
-  // angle bracket literally, but still render the inner content so a recognized
-  // tag nested inside an unrecognized one keeps rendering (per the spec's
-  // mixed-nesting edge case).
-  const kids = content.flatMap(child => {
-    const h = state.one(child, node);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
-  return [{ type: 'text', value: opener + ' | ' }, ...kids, { type: 'text', value: '>' }];
+  // Pipe form, re-parsed array content: `<tag ... | content>`.
+  return renderArrayBetween(opener + ' | ', '>');
 }
 
 // ─── Author raw-HTML handler: escape non-vocab tags, strip comments ───────────

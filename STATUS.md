@@ -4270,3 +4270,20 @@ that). One line gets added every few months, not every slice.
   counting unbuilt), content that starts same-line but closes later, and the
   optional `""…""`-for-`<q>` sigil (Slice 2). BACKLOG Issue 1 CLOSED. Next: Phase
   14 Slices 3e / 3f, or the optional `<q>` sigil.
+- **2026-05-31 — Unknown tags echo the author's original syntax.** Follow-up to
+  the Issue 1 slice, which had unknown tags reconstructing in canonical pipe
+  form regardless of how the author wrote them (`<glurp>hello</glurp>` showed as
+  `<glurp | hello>`). `makeUnknownElement` (`interpret-plugin.js`) now
+  reconstructs the literal in the **same authoring form** the author used, read
+  from the node's `form` field plus `selfClosing`/content-presence: long →
+  `<tag>content</tag>`, short+content → `<tag | content>`, slash → `<tag />`,
+  short+no-content → `<tag>`. The brackets are escaped so the reader sees the
+  text; re-parsed children still render (a recognized tag nested inside an
+  unknown one keeps working). `htmlNodeHandler` was checked — it already echoes
+  raw author HTML verbatim (no pipe-form reconstruction), so no change there.
+  Attribute order/quoting stay canonicalized (form-faithful, not byte-exact).
+  `raw-html-comments.test.js` assertions flipped to the echoed forms, plus a
+  mixed-nesting guard; `interpreter.md` §5.1 updated (supersedes the prior
+  entry's "canonical pipe-form" detail). No fixture/snapshot changes; all suites
+  pass; docs site builds. Next: Phase 14 Slices 3e / 3f, or the optional `<q>`
+  sigil.

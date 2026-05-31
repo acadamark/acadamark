@@ -382,9 +382,11 @@ so its content is recursively parsed rather than passed through as raw HTML
 (the one snapshot change, `document-45`). Tests: `same-line-long-form.test.js`
 (covers `<b>/<i>/<s>/<u>/<q>`, `<a href>`, math-in-bold, different-name
 nesting, flow-trailing→one-paragraph, blockquote decision-B, multi-line guard);
-`raw-html-comments.test.js` updated (an unknown same-line tag now escapes to the
-canonical pipe-form literal `<glurp | hi>`, identical to how a multi-line unknown
-long-form tag has always escaped). Spec: `shorthand-syntax.md` §"Long-form tags"
+`raw-html-comments.test.js` updated (an unknown same-line tag escaped to the
+canonical pipe-form literal `<glurp | hi>` — **superseded 2026-05-31 by the
+unknown-tag-echo follow-up**, which makes unknown tags echo the author's original
+form, so `<glurp>hi</glurp>` now displays as `<glurp>hi</glurp>`). Spec:
+`shorthand-syntax.md` §"Long-form tags"
 (multi-line vs same-line, EBNF, bounded-scan rule, same-name limitation),
 `interpreter.md` §5.1, `tag-forms-reference.md` legend.
 

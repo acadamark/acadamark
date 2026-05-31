@@ -944,10 +944,21 @@ For each node, the handler performs this sequence:
      reconstructed from the node's parsed parts and emitted as text nodes, so
      the serializer escapes `<`/`>`. An unrecognized tag is not an error and is
      not passed through as HTML; the reader sees the angle brackets. The
-     reconstruction uses the canonical serialization: an unknown tag with
-     content (whether the author wrote it pipe-form `<glurp | hi>` or same-line
-     long-form `<glurp>hi</glurp>`) renders the same literal `<glurp | hi>`,
-     because both spellings parse to the same node. (Same-line long form is a
+     literal is reconstructed in the **same authoring form the author used**,
+     read from the node's `form` field (plus `selfClosing` and content
+     presence) — not canonicalized to one form:
+     - `form: 'long'` → `<tag …>content</tag>`
+     - `form: 'short'` with content (pipe form) → `<tag … | content>`
+     - `form: 'short'`, `selfClosing` → `<tag … />`
+     - `form: 'short'`, no content → `<tag …>` (bare opener)
+
+     So `<glurp>hi</glurp>` displays as `<glurp>hi</glurp>` and `<glurp | hi>`
+     as `<glurp | hi>`. When the content was re-parsed into child nodes (the
+     default-handler case), the children are still rendered between the literal
+     opener and closer, so a *recognized* tag nested inside an unrecognized one
+     keeps rendering (e.g. the `<b>` in `<glurp>see <b>bold</b></glurp>`).
+     Attribute order and quoting are canonicalized by `reconstructOpener` — the
+     echo is form-faithful, not byte-exact. (Same-line long form is a
      recognized authoring spelling — see `shorthand-syntax.md` §"Long-form
      tags"; only the *tagname* is unknown here, not the syntax.)
 
