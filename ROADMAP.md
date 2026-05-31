@@ -45,7 +45,7 @@ organizing milestone is the **v0.1.0 public release**. The version is
 SemVer with a patch component, so a `0.1.1` bugfix release can follow
 without disturbing the `0.1` minor line.
 
-The release demonstrably includes four things:
+The release demonstrably includes five things:
 
 1. **Bidirectional JATS conversion.** Layer 1 → JATS XML shipped in
    Phase 5 (alpha line 4); the release adds the reverse direction —
@@ -65,6 +65,13 @@ The release demonstrably includes four things:
    serving as both the project's manual and a render-regression
    fixture. It takes over the demonstrative role the accumulated
    fixture corpus has carried.
+5. **A command-line tool.** The `@enscribejs/cli` package ships an `enscribe`
+   command — `enscribe render` (→ self-contained HTML) and `enscribe export-jats`
+   (→ JATS 1.3 XML), thin wrappers over the existing pipelines (delivered
+   2026-05-31). `enscribe lift` (mixed → canonical-Enscribe serialization, the
+   lowering pass on the CLI) follows as its own slice before release;
+   `enscribe import-jats` and `enscribe import` arrive with Phase 13 (JATS import)
+   and the post-v0.1.0 pandoc bridge.
 
 The **release-blocking phases** are Phase 8 (the display-features
 subset above), Phase 13 (JATS import), and the new Phase 14

@@ -1,0 +1,46 @@
+{
+  "name": "@enscribejs/cli",
+  "version": "0.1.0",
+  "description": "The `enscribe` command-line tool — render Enscribe documents to HTML and export them to JATS XML.",
+  "keywords": [
+    "enscribe",
+    "cli",
+    "command-line",
+    "academic-publishing",
+    "scholarly-publishing",
+    "jats"
+  ],
+  "homepage": "https://github.com/enscribejs/enscribe",
+  "bugs": "https://github.com/enscribejs/enscribe/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enscribejs/enscribe.git",
+    "directory": "packages/enscribe-cli"
+  },
+  "license": "MIT",
+  "author": "Ariel Balter <ariel@arielbalter.com>",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "enscribe": "./bin/enscribe.js"
+  },
+  "exports": {
+    "./cli": "./src/cli.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "@enscribejs/interpreter": "^0.1.0",
+    "@enscribejs/jats-export": "^0.1.0"
+  }
+}

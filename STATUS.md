@@ -4446,3 +4446,22 @@ that). One line gets added every few months, not every slice.
   slicing (optionally 13a/b/c) building against the export fixtures before one
   carefully-chosen CC-BY PMC article. Neither discipline stop-condition fired. No
   code changed. Next: Phase 13 implementation (slice 13a — skeleton + citations).
+- **2026-05-31 — CLI: `enscribe render` + `enscribe export-jats`.** New
+  `@enscribejs/cli` package — the `enscribe` command-line tool, a thin layer over
+  the existing pipelines. `enscribe render <in.emd>`
+  (`buildEnscribePipeline().processSync` → HTML, self-contained by default,
+  `--no-embed`/`--dsl-mode`/`--quiet`) and `enscribe export-jats <in.emd>`
+  (`.runSync(parse)` → post-pipeline mdast → `enscribeToJats` → JATS 1.3 XML).
+  `-o` output (else stdout), `--help`/`--version`, hand-rolled arg parsing (no
+  dependency), exit 0/1 with helpful messages; `run(argv, io)` is
+  stream-injectable for fast tests, plus spawn tests for the real bin. **Package
+  home was forced:** the CLI cannot live in `@enscribejs/interpreter` —
+  `jats-export` depends on the interpreter, so importing `enscribeToJats` there
+  would cycle; the CLI is its own package depending on both. **`enscribe lift`
+  was deferred (ratified):** it needs a round-trip-faithful mdast→canonical-`.emd`
+  serializer (the Phase-7 lowering direction; no serializer exists today), which
+  is real new work, not a thin CLI add-on — tracked as the immediate next CLI
+  slice. Authoring Guide ch. 14 updated (the "no command-line tool" line is gone).
+  `bin`/package linked via `npm install`; all workspace suites pass (the new CLI
+  suite included); docs build is six pages. Next: `enscribe lift` slice, then
+  Phase 13 implementation.

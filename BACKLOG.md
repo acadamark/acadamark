@@ -216,7 +216,16 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Implement multi-column display rendering** `[interpreter]`
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
 - [ ] **Build the lowering pass (Layer 1 → canonical enscribe)**
-  `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
+  `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)* — `enscribe lift`
+  (below) is its CLI-facing, near-term slice, pulled forward to before v0.1.0
+- [x] **CLI: `enscribe render` + `enscribe export-jats`** `[cli]` `[release]` —
+  the `@enscribejs/cli` package; a thin layer over the existing pipelines.
+  **CLOSED 2026-05-31** (see detailed entry)
+- [ ] **CLI: `enscribe lift`** `[cli]` `[release]` — serialize mixed
+  markdown/sigil/canonical source to pure canonical Enscribe; the lowering
+  pass surfaced on the command line. Deferred from the CLI slice to its own
+  focused slice (the canonical serializer is real new work, not a thin CLI
+  add-on). **The immediate next CLI slice.**
 - [ ] **Table-of-contents sidebar** `[interpreter]` `[release]`
   *(→ roadmap: Phase 8)*
 - [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
@@ -923,6 +932,22 @@ Gated by MC-Q1 through MC-Q4 (in the Discussions group).
 this work: the margin is another column, and the multi-column layout
 engine is the machinery a margin needs.
 
+### CLI: `enscribe render` + `enscribe export-jats`
+`[cli]` `[release]`
+
+The `enscribe` command-line tool, in a new `@enscribejs/cli` package — a thin
+layer over the existing pipelines (no new capability). `enscribe render`
+(`buildEnscribePipeline().processSync` → HTML, self-contained by default) and
+`enscribe export-jats` (`.runSync(parse)` → post-pipeline mdast →
+`enscribeToJats` → JATS 1.3 XML). Hand-rolled arg parsing (no dependency), `-o`
+output, `--embed`/`--no-embed`/`--dsl-mode`/`--quiet`, `--help`/`--version`,
+exit 0/1 with helpful messages; `run(argv, io)` is stream-injectable so the
+tests drive it without spawning (plus two spawn tests for the real bin).
+**CLOSED 2026-05-31.** Package home: the CLI had to be its own package — putting
+it in `@enscribejs/interpreter` would cycle (`jats-export` already depends on the
+interpreter). `enscribe lift` was deferred (see below). `import-jats` / `import`
+arrive with Phase 13 and the pandoc bridge.
+
 ### Build the lowering pass (Layer 1 → canonical enscribe)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
 
@@ -931,7 +956,13 @@ plus the Layer 1 → canonical-enscribe serialization for authoring
 tooling that emits enscribe from Layer 1. The `TAGNAME_TO_SIGIL`
 lookup direction is already present in
 `packages/enscribe-core/src/tagname-sigil-map.js` (reserved for
-this work); the lowering pass itself is the missing piece.
+this work); the lowering pass itself is the missing piece. **`enscribe lift`
+is this work surfaced on the CLI** — the CLI slice (2026-05-31) confirmed no
+serializer exists today (the repo emits only HTML and JATS), so a
+round-trip-faithful canonical serializer (escaping for literal `<`/`>`/`|`,
+opaque-vs-array content, attribute reconstruction, every node type) is real new
+work. Ratified as its own focused slice before v0.1.0, the immediate next CLI
+slice.
 
 ### Table-of-contents sidebar
 `[interpreter]` `[release]` *(→ roadmap: Phase 8)*

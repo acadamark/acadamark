@@ -1,0 +1,12 @@
+<meta type=article>
+  <title | A CLI Sample Document>
+  <author | The Enscribe Project>
+</meta>
+
+<# #sec:intro | Introduction #>
+
+A paragraph with **bold**, *italic*, and inline math $E = mc^2$.
+
+<# Results #>
+
+The result follows from the method.

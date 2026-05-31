@@ -791,8 +791,21 @@ or an attribute-only `<cite @key />`.
 
 <# #sec:render | Chapter 14. Rendering and output #>
 
-Enscribe is a library: you render a document by calling it, in Node or in the
-browser. There is no command-line tool in this release.
+Enscribe is a library you call from Node or the browser, and a command-line tool
+over that library.
+
+**On the command line.** The `@enscribejs/cli` package installs an `enscribe`
+command:
+
+```
+enscribe render paper.emd -o paper.html      # render to self-contained HTML
+enscribe render paper.emd --no-embed         # link assets from CDNs instead
+enscribe export-jats paper.emd -o paper.xml  # export to JATS 1.3 XML
+```
+
+With no `-o`, output goes to stdout. `enscribe --help` lists the commands;
+`enscribe render --help` shows a command's options (`--embed` / `--no-embed`,
+`--dsl-mode`, `--quiet`).
 
 **In Node.** Build a processor and run your source through it. The result is an
 HTML string:
