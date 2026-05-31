@@ -1138,16 +1138,18 @@ cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). Remaining slices —
-docs-site content (the rest of the Authoring Guide, 3e-iii; and 3f: a Layer 1
-Reference) and fixture consolidation stay open; **Slices 3c, 3d, 3e-i, and
-3e-ii have since landed** — the Quickstart guide (authored in canonical enscribe,
-13 features in its own content), the JATS-relationship article (the export
-mapping, a real worked example, a workflow comparison), and the Authoring Guide
-(a fifth docs-site page): 3e-i wrote chapters 1–4 (document structure, sections,
-inline, block); 3e-ii added rendered demonstrations to chapters 1–4 and wrote
-chapters 5–9 (figures, tables, citations, footnotes, cross-references) with
-cross-references resolving inside the document. 3e-iii (theorem family, DSLs,
-book structure, arguments, rendering) remains. This checkbox tracks the whole arc.
+docs-site content (3f: a Layer 1 Reference) and fixture consolidation stay open;
+**Slices 3c, 3d, and 3e (i/ii/iii) have since landed** — the Quickstart guide
+(authored in canonical enscribe, 13 features in its own content), the
+JATS-relationship article (the export mapping, a real worked example, a workflow
+comparison), and the **complete Authoring Guide** (a fifth docs-site page): 3e-i
+wrote chapters 1–4 (document structure, sections, inline, block); 3e-ii added
+rendered demonstrations to chapters 1–4 and wrote chapters 5–9 (figures, tables,
+citations, footnotes, cross-references); 3e-iii wrote chapters 10–14 (theorem
+family, external DSLs, book structure, arguments-and-the-pipe, rendering) and
+removed the placeholder — all fourteen chapters, with cross-references resolving
+and DSL diagrams rendering inside the document. Only **3f (Layer 1 Reference)**
+remains for docs-site content. This checkbox tracks the whole arc.
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by

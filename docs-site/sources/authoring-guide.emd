@@ -15,8 +15,9 @@ shows all three; where an element has only one form, it says so.
 Each section is self-contained: you can read "Inline elements" without reading
 anything before it. Jump to what you need. This guide is itself an Enscribe
 document, so wherever it is useful it does not just describe an element — it
-*uses* it, and the rendered result sits right below the source. This installment
-covers chapters 1–9; the remaining chapters are listed at the end.
+*uses* it, and the rendered result sits right below the source. Its fourteen
+chapters cover every Enscribe element and authoring pattern, from the `<meta>`
+block to the rendering API.
 
 <# #sec:structure | Chapter 1. Document structure #>
 
@@ -579,15 +580,268 @@ and the book counters are covered in the book-structure chapter (forthcoming).
 <a href="#sec:block" | Block elements> (Chapter 4) for the equation referenced
 above.
 
-<# What's next #>
+<# #sec:thm | Chapter 10. Theorem family #>
 
-This installment covers document structure, sections, inline and block elements,
-figures, tables, citations, footnotes, and cross-references. Chapters on the
-**theorem family**, **external DSLs** (Mermaid, ABC), **book structure**,
-**arguments and the pipe**, and **rendering and output** are coming in subsequent
-updates. For the architecture behind the canonical-form model, read the
-<a href="design.html" | Design article>; for a guided tour of the whole feature
-set in one page, see the <a href="quickstart.html" | Quickstart>.
+The theorem family gives formal statements their own numbered, styled blocks. The
+members are `<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`,
+`<definition>`, `<example>`, `<remark>`, and `<proof>`.
+
+**Forms.** These are canonical-only tags, and all three content spellings work:
+pipe (`<theorem | …>`), same-line long form (`<theorem>…</theorem>`), and
+multi-line long form (opener and closer on their own lines). Use the long form
+when the statement runs to several paragraphs.
+
+**Numbering.** `<theorem>`, `<lemma>`, `<corollary>`, and `<proposition>` share
+one counter, so they number in a single sequence (Theorem 1, Lemma 2, Corollary 3,
+…). `<definition>` and `<example>` each have their own counter. `<remark>` and
+`<proof>` are unnumbered — a `<proof>` carries the word "Proof." and conventionally
+follows the result it proves.
+
+**Arguments.** `name=` gives a named result, rendered in the label:
+`<theorem name="Fundamental Theorem" | …>` → "Theorem 1 (Fundamental Theorem).".
+An `#id` (conventionally `#thm:name`, `#def:name`) makes the block a
+cross-reference target, so `<ref @thm:name>` resolves to "theorem 1".
+
+Here is a rendered definition, then a theorem with a corollary and a proof. Watch
+the counters: the definition is "Definition 1" on its own counter, while the
+theorem and corollary share the theorem counter (Theorem 1, then Corollary 2), and
+the proof is unnumbered:
+
+<definition #def:frameable name="Frameable" | A *frameable* is any block — a figure, table, math environment, or embedded diagram — that draws on one shared mechanism for its caption, its automatic number, and an optional border.>
+
+<theorem #thm:forms | The three authoring forms of an element compile to identical Layer 1.>
+
+<corollary | The choice between the forms is ergonomic, not semantic — it changes the typing, never the meaning.>
+
+<proof | Each form lifts to the same canonical node at the normalize-to-canonical gate, so nothing downstream can tell which one was typed.>
+
+In a **book**, theorem numbers are chapter-scoped (Theorem 2.1) just like figures
+and equations — see <a href="#sec:book" | Chapter 12>.
+
+> **Gotcha — a bare `>` ends pipe content.** A statement that contains a literal
+> greater-than sign (`n > 1`) will end the `<theorem | …>` early at that `>`. Write
+> such statements in long form (`<theorem>n > 1 implies …</theorem>`), where the
+> content is read verbatim, or phrase the comparison in words. This is the general
+> pipe rule covered in <a href="#sec:args" | Chapter 13>.
+
+*Related:* <a href="#sec:xref" | Cross-references> (Chapter 9);
+<a href="#sec:args" | Arguments and the pipe> (Chapter 13).
+
+<# #sec:dsl | Chapter 11. External DSLs #>
+
+Some content is a small language of its own — a diagram description, a snippet of
+music. Enscribe embeds these as *DSL* blocks: `<mermaid>` for diagrams and `<abc>`
+for music notation. Enscribe holds the source verbatim and delegates the drawing to
+the established library for that language.
+
+**Forms.** DSL tags are canonical-only, and you almost always want the **long
+form** — DSL source is full of characters that would end a pipe early (Mermaid's
+`-->` arrows contain `>`). Write the opener and closer on their own lines with the
+source between:
+
+```
+<mermaid caption="The Enscribe pipeline.">
+graph LR
+  Shorthand --> Parser --> L1[Layer 1] --> HTML
+  L1 --> JATS
+</mermaid>
+```
+
+**Rendering modes.** How a DSL block renders is set by the `dslMode` option:
+
+- `skip` (the default) — the source is preserved and shown as a labelled
+  `<pre>` block, not drawn. Nothing is loaded.
+- `live-link` — the library loads from a CDN and draws the diagram in the
+  browser. This page builds in `live-link` mode.
+- `live-inline` — the same client-side rendering, but the library is bundled
+  into the HTML instead of fetched from a CDN (self-contained, larger output).
+- `static` — the diagram is drawn to SVG at build time. Available for `<abc>`
+  only; Mermaid renders in the browser and so has no static mode.
+
+Per-DSL overrides (`mermaidMode`, `abcMode`) set the mode for one language and take
+precedence over `dslMode`. In every mode the original source is preserved, so a
+block is never lost — at worst it is shown verbatim.
+
+Because this guide builds in `live-link`, the Mermaid block above renders live
+below:
+
+<mermaid caption="The Enscribe pipeline: shorthand is parsed and lifted to canonical Layer 1, which renders to HTML and exports to JATS.">
+graph LR
+  Shorthand --> Parser --> L1[Layer 1] --> HTML
+  L1 --> JATS
+</mermaid>
+
+The `<abc>` element works the same way — its source renders as sheet music:
+
+<abc caption="A C-major scale, rendered from ABC notation.">
+X:1
+T:C major scale
+K:C
+CDEF GABc
+</abc>
+
+DSL blocks are frameables, so they take a `caption=` and an automatic figure number
+like any other figure.
+
+*Related:* <a href="#sec:fig" | Figures> (Chapter 5) — DSL blocks share the figure
+counter; <a href="#sec:render" | Rendering and output> (Chapter 14) for `dslMode`.
+
+<# #sec:book | Chapter 12. Book structure #>
+
+`<meta type=book>` produces a *book*: a chaptered document with front matter, body
+chapters, and back matter, numbered and scoped differently from a flat article.
+
+**Forms.** Book structure is authored with a small set of structural tags. Because
+rendering a whole book inside this article would derail it, here is the source and
+a description of what it produces rather than a live example:
+
+```
+<meta type=book>
+  <title | A Short Book on Enscribe>
+  <subtitle | A Worked Example>
+  <author | The Enscribe Project>
+</meta>
+
+<preface | About this book>
+Front matter goes here.
+
+<chapter | Introduction>
+The first body chapter. Its figures and footnotes belong to it.
+
+<fig #fig:intro src="intro.png" | An introductory diagram.>
+
+<chapter | Methods>
+<author | A Guest Author>
+A chapter may carry its own author — the edited-volume pattern.
+
+<appendix | Notation>
+Back matter.
+```
+
+This lifts to a Layer 1 `<book>` wrapping `<book-front>` (from `<preface>`),
+`<book-body>` (the `<chapter>`s, each a `<book-part>`), and `<book-back>` (from
+`<appendix>`). A per-chapter `<author>` overrides the book-level author for that
+chapter.
+
+**Scoped numbering.** A book numbers figures, equations, tables, and theorems
+*within each chapter*, with the chapter as a prefix: the first figure of Chapter 1
+is "Figure 1.1", the first of Chapter 2 is "Figure 2.1", and a `<ref>` to either
+renders the chapter-prefixed number. Counter and footnote scoping are controlled by
+the `counter-reset-scope` and `note-scope` settings in
+<a href="#sec:structure" | `<config>`> — books default to chapter scope, so
+footnotes collect at the end of each chapter rather than the end of the document,
+and a book-wide bibliography sits in the back matter.
+
+*Related:* <a href="#sec:structure" | Document structure> (Chapter 1) for `<meta>`
+and `<config>`; <a href="#sec:xref" | Cross-references> (Chapter 9) for scoped
+reference numbers.
+
+<# #sec:args | Chapter 13. Arguments and the pipe #>
+
+This chapter is about the *syntax* the earlier chapters have been using, gathered
+in one place. Every named tag shares one shape: a name, optional attributes, and an
+optional body.
+
+**Attributes.** Inside the opening tag, in any order:
+
+- **Keyword arguments** — `key=value`, or `key="value with spaces"` when the value
+  contains spaces or punctuation: `src="my photo.jpg"`, `citation-style="apa"`.
+- **Id shorthand** — `#name` sets the element's id: `<fig #fig:flow …>`.
+- **Class shorthand** — `.name` adds a CSS class: `<b .highlight | …>` renders
+  `<b class="highlight">`.
+- **Boolean flags** — `+flag` turns a boolean on (`<fig +border …>`); the bare
+  `-flag` turns one off.
+- **Positional arguments** — a bare token with no `key=`, used for the
+  *qualifying-tag* pattern: the `csv` in `<table csv | …>` and the URL in
+  `<a https://example.com | …>` are positionals.
+
+**The body: four forms.** The same element can carry its body four ways, and they
+produce the same Layer 1:
+
+```
+<b | bold>                     pipe form — body after a |, ended by >
+<b>bold</b>                     same-line long form — opener and closer on one line
+<b>                             multi-line long form — closer on its own later line
+bold
+</b>
+<hr />                          self-closing / short form — no body
+```
+
+Reach for the **pipe form** for short inline or single-paragraph content, the
+**long form** when the body spans paragraphs or contains characters that would
+confuse the pipe, and the **self-closing form** for empty elements like `<hr />`
+or an attribute-only `<cite @key />`.
+
+> **Gotcha — the pipe ends at the first bare `>`.** Pipe content is read up to the
+> first unescaped `>` (with a matching-`<…>` exception for nested tags). So content
+> with a literal `>` — a math comparison, a Mermaid arrow, a chunk of code — must
+> use the long form, where the body is verbatim. You have met this rule in the
+> theorem and DSL chapters; it is the one thing to remember about the pipe.
+
+*Related:* every preceding chapter — this is the syntax they all use;
+<a href="#sec:render" | Rendering and output> (Chapter 14).
+
+<# #sec:render | Chapter 14. Rendering and output #>
+
+Enscribe is a library: you render a document by calling it, in Node or in the
+browser. There is no command-line tool in this release.
+
+**In Node.** Build a processor and run your source through it. The result is an
+HTML string:
+
+```
+import { buildEnscribePipeline } from '@enscribejs/interpreter';
+
+const html = String(
+  buildEnscribePipeline({ embedResources: true }).processSync(source)
+);
+```
+
+**In the browser.** The browser entry offers a one-call façade and a two-step
+variant for live documents:
+
+```
+import { render, renderInto, executeAssets } from '@enscribejs/interpreter/browser';
+
+document.querySelector('#out').innerHTML = render(source);
+// or, to also run hover-preview and DSL scripts:
+renderInto('#out', source);
+executeAssets(document.querySelector('#out'));
+```
+
+**Options.** The main ones, all optional:
+
+- `embedResources` — `false` (default) links fonts and KaTeX CSS to CDNs for
+  small output; `true` inlines them for a fully self-contained file.
+- `dslMode` — `skip` / `live-link` / `live-inline` / `static` for diagrams and
+  music (see <a href="#sec:dsl" | Chapter 11>), with `mermaidMode` / `abcMode`
+  per-language overrides.
+- `hoverPreviewMode` — how the hover-preview assets for footnotes, references, and
+  citations are delivered (`link` loads Tippy/Popper from a CDN).
+- `katexCss` / `documentFontsCss` — finer control over those specific resources,
+  taking precedence over `embedResources`.
+
+The browser defaults (`embedResources: false`, `hoverPreviewMode: 'link'`,
+`dslMode: 'live-link'`) are tuned for a static deploy that links third-party assets
+from CDNs — exactly what this docs site uses. The
+<a href="quickstart.html" | Quickstart> playground is the rendering API at work:
+it calls the browser façade on every keystroke. For exporting to **JATS** — the
+archival XML format for scholarly publishing — see the
+<a href="jats.html" | JATS article>.
+
+*Related:* <a href="#sec:structure" | Document structure> (Chapter 1) for the
+in-document `<config>` block, which is distinct from these render-time options.
+
+<# The guide so far #>
+
+That completes the fourteen chapters: document structure, sections, inline and
+block elements, figures, tables, citations, footnotes, cross-references, the
+theorem family, external DSLs, book structure, the argument syntax, and rendering.
+For the architecture behind the canonical-form model, read the
+<a href="design.html" | Design article>; for a guided tour of the whole feature set
+in one page, see the <a href="quickstart.html" | Quickstart>; and for the output
+vocabulary element by element, the Layer 1 Reference is the next document to land
+on this site.
 
 <data>
 <library |

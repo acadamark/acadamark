@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d) and the Authoring Guide chapters 1–9 (3e-i + 3e-ii) landed, and the rest of the Authoring Guide (3e-iii), the Layer 1 Reference (3f), plus generated types are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d) and the complete 14-chapter Authoring Guide (3e-i/ii/iii) landed, and the Layer 1 Reference (3f) plus generated types are follow-up slices
 
 ### Components
 
@@ -88,12 +88,13 @@ articles, and **Slice 3c** landed the Quickstart guide (authored in canonical
 enscribe, exercising 13 features in its own content), and **Slice 3d** landed the
 JATS-relationship article. The **Issue 1 same-line-long-form** support has since
 landed (`<b>bold</b>` and the same-line long form work for every vocab tag), and
-**Slices 3e-i and 3e-ii** built the Authoring Guide: chapters 1–4 (document
-structure, sections, inline, block), then rendered demonstrations across those
-chapters plus chapters 5–9 (figures, tables, citations, footnotes,
-cross-references). **Next:** Ariel runs `npm publish` per package (out of band);
-the remaining docs-site content is Slice 3e-iii (the rest of the Authoring Guide)
-and 3f (Layer 1
+**Slices 3e-i, 3e-ii, and 3e-iii** built the **Authoring Guide to completion** —
+all fourteen chapters (document structure, sections, inline, block, figures,
+tables, citations, footnotes, cross-references, theorem family, external DSLs,
+book structure, arguments-and-the-pipe, rendering), authored in canonical
+enscribe with rendered demonstrations throughout. **Next:** Ariel runs
+`npm publish` per package (out of band); the remaining docs-site content is
+Slice 3f (Layer 1
 Reference).
 
 The **render-quality spec** is written
@@ -4342,3 +4343,30 @@ that). One line gets added every few months, not every slice.
   reads only string content). Guide uses the working `<fig src="…svg">` route
   instead. Next: 3e-iii (Theorem family, DSLs, Book structure, Arguments,
   Rendering).
+- **2026-05-31 — Authoring Guide 3e-iii: chapters 10–14 (guide complete).** Wrote
+  the final five chapters in `docs-site/sources/authoring-guide.emd` and removed
+  the "coming soon" placeholder, completing the 14-chapter guide. Chapter 10
+  Theorem family (theorem/lemma/corollary/proposition shared counter,
+  definition/example own counters, remark/proof unnumbered, `name=`, ids; a
+  rendered Definition 1 / Theorem 1 / Corollary 2 / Proof showing the counters).
+  Chapter 11 External DSLs (`<mermaid>`/`<abc>`, the four modes
+  skip/live-link/live-inline/static with `mermaidMode`/`abcMode` overrides; a
+  live-rendered Mermaid pipeline diagram and an ABC scale — the guide builds in
+  live-link). Chapter 12 Book structure (`<meta type=book>`,
+  `<preface>`/`<chapter>`/`<appendix>` → `<book-front>`/`<book-body>` (book-parts)
+  /`<book-back>`, chapter-scoped numbering, per-chapter author/footnotes — shown
+  in code fences, not by rendering a book inside the article). Chapter 13
+  Arguments and the pipe (kwargs, `#id`/`.class`/`+flag` shorthands, positionals,
+  the four body forms, the bare-`>`-ends-the-pipe rule). Chapter 14 Rendering
+  (the Node `buildEnscribePipeline` and browser `render`/`renderInto`/
+  `executeAssets` APIs, the options, JATS pointer). Every feature render-verified
+  first; builds with no error nodes; cross-references and citations still resolve;
+  the Mermaid/ABC blocks render via live-link; all suites pass (no code changes).
+  The **Authoring Guide is complete** — the documentation plan's Document 3 is
+  delivered. Findings: the theorem-family same-line body-drop limitation the
+  slice anticipated is **gone** — resolved by the Issue 1 same-line work, so
+  theorem-family long form preserves its body (documented as working); Mermaid
+  must use long form (its `-->` arrows contain `>`, which ends a pipe early). The
+  guide came in at ~5700 words — below the ~8000–12000 estimate, a consequence of
+  the concise reference voice (examples over prose); the coverage is complete and
+  not padded. Next: Slice 3f (Layer 1 Vocabulary Reference).

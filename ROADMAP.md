@@ -177,12 +177,13 @@ milestone). Slice 3b has since landed too — the README and DESIGN are
 translated to canonical enscribe and ship as the docs-site Home and Design
 articles (the `example-article` placeholder retired). Slices 3c and 3d have since
 landed too — the Quickstart guide and the JATS-relationship article, both
-authored in canonical enscribe. **Slices 3e-i and 3e-ii have since landed** — the
-Authoring Guide (a fifth docs-site page): chapters 1–4 (document structure,
-sections, inline, block), then rendered demonstrations across them plus chapters
-5–9 (figures, tables, citations, footnotes, cross-references), with
-cross-references resolving inside the document. The next docs-site slices are
-3e-iii (the remaining Authoring Guide chapters) and 3f (Layer 1 Reference).
+authored in canonical enscribe. **The Authoring Guide is now complete** (Slices
+3e-i/ii/iii, a fifth docs-site page): all fourteen chapters — document structure,
+sections, inline, block, figures, tables, citations, footnotes, cross-references,
+theorem family, external DSLs, book structure, arguments-and-the-pipe, and
+rendering — authored in canonical enscribe with rendered demonstrations
+throughout and cross-references resolving inside the document. The next docs-site
+slice is 3f (Layer 1 Reference).
 Nothing else is in flight.
 
 ---
