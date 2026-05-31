@@ -1,0 +1,27 @@
+<meta type=article>
+  <title | Parser edge-case fixture>
+  <author | Test Author>
+</meta>
+
+<section | Self-closing DSL-registry tag>
+
+A self-closing `<table />` should parse as a self-closing tag, not as a
+long-form opener missing its closer. Before the alpha Phase 2 fix the DSL-
+registry's long-form finder would greedily claim `<table />` and treat the
+missing `</table>` as a tag error.
+
+<table />
+
+Surrounding prose continues to render normally after the self-closing tag.
+
+<section | Visible parse-error rendering>
+
+A deliberate parse error: an unknown escape sequence in named-tag content
+produces an `enscribeParseError` node. The always-renders guarantee
+requires it to render visibly at its source location, not fall through
+silently.
+
+<aside | This aside has an unknown escape: \z and then more prose.>
+
+Surrounding content continues to render normally — the error is bounded to
+its construct.

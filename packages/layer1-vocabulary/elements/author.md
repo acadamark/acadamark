@@ -4,7 +4,7 @@ html_output:
   element: author
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -62,7 +62,7 @@ content:
     equivalent authoring forms: kwargs (scalar fields) and child tags
     (structured fields). The normalize-to-canonical gate lifts the
     kwarg form to the canonical child-tag form per the spec in
-    acadamark-core/structured-elements.js. The Layer 1 canonical
+    enscribe-core/structured-elements.js. The Layer 1 canonical
     shape carries child tags plus the +corresponding boolean kwarg.
 
     An unrecognized child tag inside <author> produces an informative
@@ -73,7 +73,7 @@ jats_counterpart:
   notes: |
     JATS uses <contrib contrib-type="author"> for authors. The structural
     JATS form uses <name><given-names>...</given-names><surname>...</surname></name>
-    inside <contrib>. Acadamark's <name> is a single unparsed string
+    inside <contrib>. Enscribe's <name> is a single unparsed string
     matching JATS's <string-name>; the exporter elects to emit
     <string-name> verbatim or decompose it into <surname>/<given-names>
     per the target schema's requirements. <affiliation>, <orcid>,
@@ -154,7 +154,7 @@ The element is the canonical home for structured author metadata: the author's n
 
 ## Why structured
 
-`<author>` was previously documented as a flat element (the author's name as the only content, with scholarly metadata deferred to the JATS export boundary). That stance was superseded — structured author data is a Layer 1 obligation the alpha release ships, not a JATS-export concession. The shared structured-element infrastructure (see `DESIGN.md` §"Structured-data-container tags" and the `acadamark-core/structured-elements.js` registry) gives `<author>` the same kwarg/child-tag duality `<meta>` has.
+`<author>` was previously documented as a flat element (the author's name as the only content, with scholarly metadata deferred to the JATS export boundary). That stance was superseded — structured author data is a Layer 1 obligation the alpha release ships, not a JATS-export concession. The shared structured-element infrastructure (see `DESIGN.md` §"Structured-data-container tags" and the `enscribe-core/structured-elements.js` registry) gives `<author>` the same kwarg/child-tag duality `<meta>` has.
 
 ## Authoring patterns
 
@@ -220,7 +220,7 @@ Or, equivalently in any other form (kwarg form, child-tag form). JATS export use
 
 ## The kwarg → child-tag lift
 
-The normalize-to-canonical gate lifts the kwarg form to the child-tag form per the per-tag spec recorded in `acadamark-core/structured-elements.js`. The lift fires whenever an `<author>` has a kwarg whose key is in the lifted set (`name`, `affiliation`, `orcid`, `email`). The kwarg value becomes the lifted child tag's text content.
+The normalize-to-canonical gate lifts the kwarg form to the child-tag form per the per-tag spec recorded in `enscribe-core/structured-elements.js`. The lift fires whenever an `<author>` has a kwarg whose key is in the lifted set (`name`, `affiliation`, `orcid`, `email`). The kwarg value becomes the lifted child tag's text content.
 
 `+corresponding` is in the boolean-kwargs set — it always stays as a kwarg on the canonical node, never as a child tag.
 
@@ -241,7 +241,7 @@ The accepted children of `<author>`:
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<author>` | `<contrib contrib-type="author">` |
 | `<name>` child | `<string-name>` (or decomposed `<name><given-names>…</given-names><surname>…</surname></name>` per target schema) |

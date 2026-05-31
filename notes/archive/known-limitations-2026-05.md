@@ -7,7 +7,7 @@ explains why it exists, and points to where the fix belongs.
 
 ---
 
-## Parser (remark-acadamark)
+## Parser (remark-enscribe)
 
 ### Sigil tags with trailing whitespace before EOL are treated as inline
 
@@ -32,12 +32,12 @@ match when any non-EOL character follows `>`. Trailing spaces are non-EOL
 characters, so the flow match is rejected and the text tokenizer takes over.
 Refining the guard to skip trailing whitespace is deferred.
 
-**Where the fix belongs:** `packages/remark-acadamark/src/syntax.js` —
+**Where the fix belongs:** `packages/remark-enscribe/src/syntax.js` —
 `makeSigilTagTokenizer.afterClose` and `makeNamedTagTokenizer.afterGt`.
 
 ---
 
-## Notes plugin (acadamark-interpreter)
+## Notes plugin (enscribe-interpreter)
 
 ### Sidenotes render as fallback list items, not margin notes
 
@@ -65,13 +65,13 @@ the note appears.
 tree walk. The current `walkAndReplace` implementation does not carry parent
 context. This is deferred to a later slice.
 
-**Where the fix belongs:** `packages/acadamark-interpreter/src/plugins/notes.js`
+**Where the fix belongs:** `packages/enscribe-interpreter/src/plugins/notes.js`
 — the `walkAndReplace` loop needs a parent-aware variant, and
 `findOrCreateArticleBack` needs a `findOrCreateSectionFoot` counterpart.
 
 ---
 
-## Asset bundling (acadamark-interpreter)
+## Asset bundling (enscribe-interpreter)
 
 ### KaTeX fonts are not included in inline-CSS mode
 
@@ -114,7 +114,7 @@ ARIA or interactive behavior should register custom elements themselves.
 
 **Workaround:** Use colon-ids for all referenceable elements (`fig:scatter`, `eqn:model`, `sec:methods`, etc.).
 
-**Where the fix belongs:** `packages/acadamark-interpreter/src/lib/registry.js` — extend label index to include all ids, or add a separate `idIndex`. Deferred.
+**Where the fix belongs:** `packages/enscribe-interpreter/src/lib/registry.js` — extend label index to include all ids, or add a separate `idIndex`. Deferred.
 
 ### `format` and `type` kwargs on `<ref>` are ignored
 
@@ -122,7 +122,7 @@ ARIA or interactive behavior should register custom elements themselves.
 
 **Why it exists:** Format variants require additional design (how does "number-only" vs "full" rendering differ per type?). Deferred to a later slice.
 
-**Where the fix belongs:** `packages/acadamark-interpreter/src/handlers/ref.js` — `refMarkerHandler` should read `node.kwargs.format` and switch label generation accordingly.
+**Where the fix belongs:** `packages/enscribe-interpreter/src/handlers/ref.js` — `refMarkerHandler` should read `node.kwargs.format` and switch label generation accordingly.
 
 ### Author-supplied pipe content in `<ref>` is ignored
 
@@ -182,6 +182,6 @@ reconstruct the output with keys in the authored order.
 
 ### `<library src="..."/>` self-closing form is broken for DSL-registry tags
 
-Filed as an open item in `notes/acadamark-backlog-roadmap.md` (formerly
+Filed as an open item in `notes/enscribe-backlog-roadmap.md` (formerly
 AUD-08 / DF-21). Workaround: use empty-body long-form
 `<library src="refs.bib">\n</library>`.

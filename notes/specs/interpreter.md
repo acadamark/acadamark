@@ -1,6 +1,6 @@
 # Interpreter Architecture
 
-This document describes how the acadamark interpreter works. It covers what
+This document describes how the enscribe interpreter works. It covers what
 the interpreter is, how its plugin chain is structured, how tags are dispatched
 to hast output, and how assets are bundled. For the pipeline ordering
 narrative — what runs when and why — see `notes/specs/pipeline.md`.
@@ -16,30 +16,30 @@ design, see `notes/specs/recursive-content-spec.md`.
 ## 1. What the interpreter is
 
 The interpreter is the transformation layer between a parsed mdast tree and
-HTML output. The parser (`remark-acadamark`) produces an mdast tree in which
-acadamark shorthand tags appear as `acadamarkTag` nodes. The interpreter takes
+HTML output. The parser (`remark-enscribe`) produces an mdast tree in which
+enscribe shorthand tags appear as `enscribeTag` nodes. The interpreter takes
 that tree and produces a standalone HTML document.
 
-The interpreter is implemented as a unified plugin, `acadamarkInterpreter`,
-in `packages/acadamark-interpreter/`. It is used with `unified`, `remark-parse`,
-and `remark-acadamark`:
+The interpreter is implemented as a unified plugin, `enscribeInterpreter`,
+in `packages/enscribe-interpreter/`. It is used with `unified`, `remark-parse`,
+and `remark-enscribe`:
 
 ```js
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkAcadamark from 'remark-acadamark';
-import { acadamarkInterpreter } from 'acadamark-interpreter';
+import remarkEnscribe from 'remark-enscribe';
+import { enscribeInterpreter } from 'enscribe-interpreter';
 
 const result = await unified()
   .use(remarkParse)
-  .use(remarkAcadamark)
-  .use(acadamarkInterpreter)
+  .use(remarkEnscribe)
+  .use(enscribeInterpreter)
   .process(source);
 
 console.log(String(result)); // HTML string
 ```
 
-Internally, `acadamarkInterpreter` registers — on the unified processor — the
+Internally, `enscribeInterpreter` registers — on the unified processor — the
 recursive-content plugin, the normalization pass, the discovery and structural
 plugins, the semantic-processing plugins (notes, numbering, apply-numbers,
 ref-resolution, cite-resolution, note-placement, bibliography), and a custom
@@ -62,7 +62,7 @@ The pipeline has three conceptual phases of mdast transformation, followed by
 a compile step.
 
 **Phase 1 — Discovery** (no tree mutation): Read document metadata from
-`<config>` blocks; populate `file.data.acadamarkConfig`.
+`<config>` blocks; populate `file.data.enscribeConfig`.
 
 **Phase 2 — Structural transformation**: Parse string content into mdast;
 wrap the document in the Layer 1 article structure; nest sections.
@@ -72,62 +72,62 @@ equations, figures, and tables; resolve cross-references and citations;
 render the bibliography.
 
 **Compile step**: Convert the final mdast to hast using `toHast()` with a
-custom `acadamarkTag` handler; inject CSS and JavaScript assets conditionally;
+custom `enscribeTag` handler; inject CSS and JavaScript assets conditionally;
 format the hast tree for readable indentation; serialize to HTML.
 
-The plugin registration order in `acadamarkInterpreter` is:
+The plugin registration order in `enscribeInterpreter` is:
 
 ```
 0a. remarkMath                  (parser extension on outer processor)
 0b. remarkGfm                   (parser extension on outer processor)
-    inner processor: remarkParse + remarkAcadamark + remarkMath + remarkGfm
+    inner processor: remarkParse + remarkEnscribe + remarkMath + remarkGfm
 1.   remarkRecursiveContent     (Phase 2 — content parsing; takes inner processor)
-1.5. acadamarkNormalizeMarkdown (Phase 0 — normalize delegated-parser nodes
-                                 to canonical acadamarkTag nodes)
-2.  acadamarkConfigDiscovery    (Phase 1 — discovery)
-3.  acadamarkArticleStructuring (Phase 2 — structural)
-4.  acadamarkSectionNesting     (Phase 2 — structural)
+1.5. enscribeNormalizeMarkdown (Phase 0 — normalize delegated-parser nodes
+                                 to canonical enscribeTag nodes)
+2.  enscribeConfigDiscovery    (Phase 1 — discovery)
+3.  enscribeArticleStructuring (Phase 2 — structural)
+4.  enscribeSectionNesting     (Phase 2 — structural)
 5.  buildCitationIndex          (Phase 3 — citation index-build; called via anonymous plugin)
-6.  acadamarkNotes              (Phase 3 — notes; register-only)
-7.  acadamarkNumbering          (Phase 3 — numbering; register-only)
-8.  acadamarkApplyNumbers       (Phase 3 — apply display numbers; anonymous plugin)
-9.  acadamarkRefResolution      (Phase 3 — cross-refs)
-10. acadamarkCiteResolution     (Phase 3 — citations)
-11. acadamarkNotePlacement      (Phase 3 — note placement; runs after cite-resolution)
-12. acadamarkBibliography       (Phase 3 — citations)
+6.  enscribeNotes              (Phase 3 — notes; register-only)
+7.  enscribeNumbering          (Phase 3 — numbering; register-only)
+8.  enscribeApplyNumbers       (Phase 3 — apply display numbers; anonymous plugin)
+9.  enscribeRefResolution      (Phase 3 — cross-refs)
+10. enscribeCiteResolution     (Phase 3 — citations)
+11. enscribeNotePlacement      (Phase 3 — note placement; runs after cite-resolution)
+12. enscribeBibliography       (Phase 3 — citations)
     compiler: toHast → rehypeFormat → toHtml
 ```
 
 Note that `remarkRecursiveContent` (step 1) runs before
-`acadamarkNormalizeMarkdown` (step 1.5). This is correct: normalization
+`enscribeNormalizeMarkdown` (step 1.5). This is correct: normalization
 rewrites nodes produced by the delegated parsers (`remark-math`,
 `remark-gfm`), and those nodes are produced on *both* the outer surface and
 the inner surface (via the inner processor inside `remarkRecursiveContent`).
 Running normalize after recursive-content ensures every delegated-parser
 node has surfaced before the rewrite walk. Configuration discovery (step 2)
 then runs on a tree whose math and pipe-table nodes are already canonical
-`acadamarkTag` nodes — so it never has to know about two representations.
+`enscribeTag` nodes — so it never has to know about two representations.
 
 `remarkMath` and `remarkGfm` (steps 0a / 0b) are parser-level extensions,
 not mdast transforms, and they affect tokenization during the parse pass;
 they're listed here so the wiring is visible in one place. The step-1.5
-numbering for `acadamarkNormalizeMarkdown` matches the inline `1.5.` comment
-in the source ([src/index.js](../../packages/acadamark-interpreter/src/index.js))
+numbering for `enscribeNormalizeMarkdown` matches the inline `1.5.` comment
+in the source ([src/index.js](../../packages/enscribe-interpreter/src/index.js))
 and keeps the existing step-2 through step-12 references in this document
 unchanged. All other Phase 0/1/2/3 plugins retain their original step
 numbers as cited throughout §3 below.
 
 ### Tree-walking is centralized in shared single-pass walkers (design property)
 
-Acadamark tree traversal is centralized in a small set of shared
+Enscribe tree traversal is centralized in a small set of shared
 walker helpers. Plugins and output generators that walk the tree do not
 write their own descent logic; they call the shared helper that matches
 their walk shape (read-only discovery, in-place replacement, in-place
 normalization). Each walk is **single-pass by design** — everything a
 given traversal needs to accomplish is done in one pass over the tree.
 
-The rationale is maintainability and cohesion. Acadamark trees are not
-plain mdast: an `acadamarkTag` node's children live on `.content`, not
+The rationale is maintainability and cohesion. Enscribe trees are not
+plain mdast: an `enscribeTag` node's children live on `.content`, not
 on `.children`, and opaque-content nodes (math bodies, code, DSL
 payloads) must not be descended into. The standard `unist-util-visit`
 does not encode either rule. Without centralized helpers, every plugin
@@ -146,14 +146,14 @@ recorded so the trade is explicit and the design is not mistaken for an
 unconditional commitment to single-pass.
 
 The shared walkers themselves live in
-`packages/acadamark-core/src/walkers/` (`discover.js`,
+`packages/enscribe-core/src/walkers/` (`discover.js`,
 `walk-replace.js`, `walk-normalize.js`); their per-plugin use sites are
 called out in §3. The centralization originated as an
 interpreter-internal property and broadened to span all consumers when
-the `acadamark-core` extraction made the walkers available to other
+the `enscribe-core` extraction made the walkers available to other
 output generators (the forthcoming JATS export and any future target);
 the multithreading caveat above continues to apply. See
-`notes/specs/acadamark-core.md` for the architecture-decision record
+`notes/specs/enscribe-core.md` for the architecture-decision record
 covering this broadening and the package boundaries it sits within.
 
 ---
@@ -162,28 +162,28 @@ covering this broadening and the package boundaries it sits within.
 
 ### 3.1 remarkRecursiveContent
 
-**Source:** `packages/remark-acadamark/src/recursive-content.js`
-(imported directly by the interpreter; not re-exported by remark-acadamark's
+**Source:** `packages/remark-enscribe/src/recursive-content.js`
+(imported directly by the interpreter; not re-exported by remark-enscribe's
 package exports).
 
-**Purpose:** After the parser runs, each `acadamarkTag` node's `content`
+**Purpose:** After the parser runs, each `enscribeTag` node's `content`
 field holds a raw string — the text between `|` and `>` in the shorthand
 syntax. This plugin feeds those strings through an inner parser pipeline
-(`remarkParse` + `remarkAcadamark`) to produce structured mdast arrays. After
+(`remarkParse` + `remarkEnscribe`) to produce structured mdast arrays. After
 this step, `node.content` is `Node[]` instead of a string.
 
 **Inner processor:** An independent `unified` instance with the four parsing
-plugins `remarkParse`, `remarkAcadamark`, `remarkMath`, and `remarkGfm` —
-no structural or compile steps. It is created by `acadamarkInterpreter` and
+plugins `remarkParse`, `remarkEnscribe`, `remarkMath`, and `remarkGfm` —
+no structural or compile steps. It is created by `enscribeInterpreter` and
 passed to this plugin via the `{ processor }` option. The inner processor
 does not include `remarkRecursiveContent` itself; recursion into nested
 tags is handled by the plugin's own tree walk. It also does not include
-`acadamarkNormalizeMarkdown` — normalization runs once on the outer tree
+`enscribeNormalizeMarkdown` — normalization runs once on the outer tree
 after this plugin has revealed every pipe-content subtree, so
 delegated-parser nodes produced inside pipe content are normalized at the
 same pass as those produced at the top level.
 
-**What it touches:** Only `acadamarkTag` nodes where `contentHandler ===
+**What it touches:** Only `enscribeTag` nodes where `contentHandler ===
 'default'`. Nodes where `contentHandler !== 'default'` (opaque content such
 as math, code, and raw table data) are skipped entirely.
 
@@ -200,11 +200,11 @@ This means `<em | emphasized>` produces an inline children array containing
 just the text node `"emphasized"` — not a paragraph wrapper around it.
 
 **Mixed content:** When the parser's escape processing has produced a
-`(string | acadamarkParseError)[]` array for `node.content`, each string
+`(string | enscribeParseError)[]` array for `node.content`, each string
 segment is parsed independently and error nodes are preserved in place.
 
 **Recursion:** After each node's content is parsed, the plugin recursively
-visits the newly revealed content to process any nested `acadamarkTag` nodes.
+visits the newly revealed content to process any nested `enscribeTag` nodes.
 Maximum depth is 10 (hard-coded constant `MAX_DEPTH`). Documents in practice
 never approach this limit.
 
@@ -213,13 +213,13 @@ and edge cases.
 
 ---
 
-### 3.1.5 acadamarkNormalizeMarkdown
+### 3.1.5 enscribeNormalizeMarkdown
 
-**Source:** `packages/acadamark-interpreter/src/plugins/normalize-markdown.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/normalize-markdown.js`
 
 **Purpose:** Rewrite nodes produced by the delegated parsers (`remark-math`
 and `remark-gfm`, registered on both the outer and inner processors) into
-canonical `acadamarkTag` nodes. After this pass every math construct and
+canonical `enscribeTag` nodes. After this pass every math construct and
 every pipe-table construct in the tree is represented as one node type,
 indistinguishable from the corresponding authored shorthand.
 
@@ -227,9 +227,9 @@ indistinguishable from the corresponding authored shorthand.
 
 | input node type | from | replacement |
 |----------------|------|-------------|
-| `inlineMath`   | `remark-math` | `acadamarkTag { tagname: '$',  isOpaqueContent: true, contentHandler: 'math' }` |
-| `math`         | `remark-math` | `acadamarkTag { tagname: '$$', isOpaqueContent: true, contentHandler: 'math-display' }` |
-| `table`        | `remark-gfm`  | `acadamarkTag { tagname: 'table', positional: ['md'], isOpaqueContent: true, contentHandler: 'table' }` |
+| `inlineMath`   | `remark-math` | `enscribeTag { tagname: '$',  isOpaqueContent: true, contentHandler: 'math' }` |
+| `math`         | `remark-math` | `enscribeTag { tagname: '$$', isOpaqueContent: true, contentHandler: 'math-display' }` |
+| `table`        | `remark-gfm`  | `enscribeTag { tagname: 'table', positional: ['md'], isOpaqueContent: true, contentHandler: 'table' }` |
 
 **GFM table serialization:** Tables produced by `remark-gfm` are structured
 mdast subtrees (`tableRow` → `tableCell` → inline children). The
@@ -251,7 +251,7 @@ nodes.
 
 **Pipeline position:** Step 1.5 — after `remarkRecursiveContent` (both outer
 and inner parses have completed and all delegated-parser nodes are present)
-and before `acadamarkConfigDiscovery` (no structural plugin ever sees an
+and before `enscribeConfigDiscovery` (no structural plugin ever sees an
 `inlineMath` / `math` / `table` node).
 
 **Tree walk:** Uses `walkNormalize()` from `lib/walk-normalize.js` — a
@@ -266,15 +266,15 @@ Milestones); `notes/specs/pipeline.md` §4.0 for the pipeline-level view.
 
 ---
 
-### 3.2 acadamarkConfigDiscovery
+### 3.2 enscribeConfigDiscovery
 
-**Source:** `packages/acadamark-interpreter/src/plugins/config-discovery.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/config-discovery.js`
 
 **Purpose:** Walk root-level `<config>` tags and extract their kwargs into a
-`Map<string, string>` stored at `file.data.acadamarkConfig`.
+`Map<string, string>` stored at `file.data.enscribeConfig`.
 
 **What it does:** Iterates `tree.children` (root-level nodes only; no deep
-traversal). For each `acadamarkTag` with `tagname === 'config'`, it reads all
+traversal). For each `enscribeTag` with `tagname === 'config'`, it reads all
 kwargs and adds them to the config map. Later `<config>` blocks override
 earlier ones for the same key.
 
@@ -287,19 +287,19 @@ where the hast handler renders them as null/hidden).
 | Key | Consumed by | Effect |
 |-----|-------------|--------|
 | `citation-style` | `buildCitationIndex` | CSL style for citation formatting (default: `chicago-author-date`) |
-| `number-equations` | `acadamarkNumbering` | Suppress equation numbering document-wide |
-| `number-figures` | `acadamarkNumbering` | Suppress figure numbering document-wide |
-| `number-tables` | `acadamarkNumbering` | Suppress table numbering document-wide |
-| `ref-prefix-{prefix}` | `acadamarkRefResolution` | Custom display word for cross-reference labels (e.g., `ref-prefix-eqn=Eq.`) |
+| `number-equations` | `enscribeNumbering` | Suppress equation numbering document-wide |
+| `number-figures` | `enscribeNumbering` | Suppress figure numbering document-wide |
+| `number-tables` | `enscribeNumbering` | Suppress table numbering document-wide |
+| `ref-prefix-{prefix}` | `enscribeRefResolution` | Custom display word for cross-reference labels (e.g., `ref-prefix-eqn=Eq.`) |
 
 **Limitation:** Deeply-nested `<config>` blocks (e.g., a `<config>` inside a
 `<section>`) are not read. Only top-level configs apply.
 
 ---
 
-### 3.3 acadamarkArticleStructuring
+### 3.3 enscribeArticleStructuring
 
-**Source:** `packages/acadamark-interpreter/src/plugins/article-structuring.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/article-structuring.js`
 
 **Purpose:** Wrap the flat list of root children into the Layer 1 article
 structure: `<article>` containing `<article-front>`, `<article-body>`, and
@@ -356,7 +356,7 @@ root
 
 **Document type detection update (Phase 4 slice 4a):** the warn-and-
 skip for `book`/`book-part` types is now a defensive backstop. The
-`acadamarkBookStructuring` plugin (§3.3.5 below) runs before this one
+`enscribeBookStructuring` plugin (§3.3.5 below) runs before this one
 and wraps book documents into a `<book>` root; article-structuring's
 early check then detects the already-book-wrapped tree and skips
 silently. The warn-and-skip code path remains as a safety net for the
@@ -365,17 +365,17 @@ that disables it).
 
 ---
 
-### 3.3.5 acadamarkBookStructuring
+### 3.3.5 enscribeBookStructuring
 
-**Source:** `packages/acadamark-interpreter/src/plugins/book-structuring.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/book-structuring.js`
 
-**Purpose:** Parallel to `acadamarkArticleStructuring` for book
+**Purpose:** Parallel to `enscribeArticleStructuring` for book
 documents. Wraps the root children into the Layer 1 book structure
 (`<book>` containing `<book-front>`, `<book-body>`, `<book-back>`)
 per the BITS book DTD shape that the `book.md` / `book-part.md`
 vocab entries declare.
 
-**Pipeline position:** runs BEFORE `acadamarkArticleStructuring`. For
+**Pipeline position:** runs BEFORE `enscribeArticleStructuring`. For
 `<meta type=article>` (or absent `type`) documents this plugin is a
 no-op and article-structuring does its work. For `<meta type=book>`
 or `<meta type=book-part>` documents this plugin transforms the tree;
@@ -444,11 +444,11 @@ downstream plugins; documented under each consumer):
 
 - `<config counter-reset-scope>` — `none` / `chapter` / `section`.
   Default `chapter` for books, `none` for articles. See §3.7
-  `acadamarkNumbering` for the visitor's scope-tracking walk and
+  `enscribeNumbering` for the visitor's scope-tracking walk and
   per-scope renumbering logic.
 - `<config note-scope>` — `document` / `chapter` / `section`.
   Default `chapter` for books, `section` for articles. See §3.11
-  `acadamarkNotePlacement` for the collection-unit dispatch.
+  `enscribeNotePlacement` for the collection-unit dispatch.
 
 **Cross-reference rendering with chapter prefix:** numbered entries
 in a book document carry an `entry.data.scope = { chapter, section }`
@@ -460,15 +460,15 @@ preserved.
 
 ---
 
-### 3.4 acadamarkSectionNesting
+### 3.4 enscribeSectionNesting
 
-**Source:** `packages/acadamark-interpreter/src/plugins/section-nesting.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/section-nesting.js`
 
 **Purpose:** Convert a flat sequence of `section` / `sub-section` /
 `sub-sub-section` nodes into a properly nested tree where each section contains
 the content that follows it until the next peer-level or parent-level section.
 
-**When it runs:** After `acadamarkArticleStructuring`. Sections are already
+**When it runs:** After `enscribeArticleStructuring`. Sections are already
 inside `<article-body>`.
 
 **Algorithm:** Single-pass stack. For each node in a content array:
@@ -493,7 +493,7 @@ child:
 Single-paragraph wrappers are unwrapped: if the pipe content is a single
 paragraph, its children are used directly as the title's content.
 
-**Tree walk:** The plugin walks `acadamarkTag.content` arrays manually (not
+**Tree walk:** The plugin walks `enscribeTag.content` arrays manually (not
 via `unist-util-visit`), because visit only recurses through `.children` and
 these nodes use `.content`.
 
@@ -501,13 +501,13 @@ these nodes use `.content`.
 
 ### 3.5 buildCitationIndex
 
-**Source:** `packages/acadamark-interpreter/src/plugins/library-load.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/library-load.js`
 
 **Purpose:** Parse BibTeX or CSL-JSON citation data from `<data>/<library>`
-nodes, and store a citation-js `Cite` instance in `file.data.acadamarkCitations`.
-In `acadamarkInterpreter`, `buildCitationIndex` is called directly via an anonymous
-plugin wrapper (`acadamarkCitationIndex`) at step 5 — not through
-`this.use(acadamarkLibraryLoad)`. The exported `acadamarkLibraryLoad` plugin wrapper
+nodes, and store a citation-js `Cite` instance in `file.data.enscribeCitations`.
+In `enscribeInterpreter`, `buildCitationIndex` is called directly via an anonymous
+plugin wrapper (`enscribeCitationIndex`) at step 5 — not through
+`this.use(enscribeLibraryLoad)`. The exported `enscribeLibraryLoad` plugin wrapper
 is kept for external callers and the test suite.
 
 **Input structure:** `<data>` nodes, deep-collected wherever they sit in the
@@ -517,7 +517,7 @@ Each `<data>` may contain one or more `<library>` nodes.
 **Content sources (checked in order):**
 
 1. `kwargs.src` is set → read an external file at `resolve(assetsDir, src)`.
-   The `assetsDir` option must be provided to `acadamarkInterpreter`; if it
+   The `assetsDir` option must be provided to `enscribeInterpreter`; if it
    is null, a `file.message()` warning is emitted and the library is skipped.
 2. `node.content` is a non-whitespace string → use it as inline BibTeX or
    CSL-JSON.
@@ -527,7 +527,7 @@ Each `<data>` may contain one or more `<library>` nodes.
 instances, then their `.data` arrays are concatenated and a new merged `Cite`
 instance is built from the combined CSL-JSON.
 
-**Output:** `file.data.acadamarkCitations`:
+**Output:** `file.data.enscribeCitations`:
 
 ```js
 {
@@ -538,25 +538,25 @@ instance is built from the combined CSL-JSON.
 ```
 
 **No-library case:** If no `<data>` nodes exist anywhere in the tree, the
-plugin returns immediately. `file.data.acadamarkCitations` is not set.
+plugin returns immediately. `file.data.enscribeCitations` is not set.
 Downstream citation plugins check for its presence before proceeding.
 
 ---
 
-### 3.6 acadamarkNotes
+### 3.6 enscribeNotes
 
-**Source:** `packages/acadamark-interpreter/src/plugins/notes.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/notes.js`
 
 **Purpose:** Register note elements (record-only). Walks the tree with `discover()`,
 calls `registry.assign('note', id, { numbered: true })` for each `<note>` node
-found, and stores `{ node, entry }` pairs in `file.data.acadamarkNotesPending`.
+found, and stores `{ node, entry }` pairs in `file.data.enscribeNotesPending`.
 `<note>` nodes **stay in the tree** at their authored positions through steps 9–10
 so that any refs/cites inside note bodies are resolved before placement. Actual
-marker splicing and note-list injection are done by `acadamarkNotePlacement` (step 11).
+marker splicing and note-list injection are done by `enscribeNotePlacement` (step 11).
 
 **Placement modes:** Each note has a `placement` kwarg (also accepts `position`
 as a legacy alias). The placement value is read here and stored in
-`entry.data.placement` for use by `acadamarkNotePlacement`. Valid values:
+`entry.data.placement` for use by `enscribeNotePlacement`. Valid values:
 
 | Value | Class on `<note-list>` | `<li>` class |
 |-------|------------------------|--------------|
@@ -572,29 +572,29 @@ single-list aggregation is the current behavior pending the per-section
 walk.
 
 When a document uses more than one placement mode, the class falls back to
-`notes` (neutral). This fallback is applied by `acadamarkNotePlacement`.
+`notes` (neutral). This fallback is applied by `enscribeNotePlacement`.
 
 **Registry:** Uses `registry.assign('note', node.id || null, { numbered: true })`
 to claim a numbered slot. Sequential numbers are assigned when
-`registry.numberRegistry()` runs in `acadamarkApplyNumbers` (step 8). The
-registry is shared across plugins via `file.data.acadamarkRegistry`.
+`registry.numberRegistry()` runs in `enscribeApplyNumbers` (step 8). The
+registry is shared across plugins via `file.data.enscribeRegistry`.
 
 **Tree walk:** Uses `discover()` from `lib/discover.js` — a read-only pre-order
-DFS that recurses into `acadamarkTag.content` arrays (skipping opaque-content
+DFS that recurses into `enscribeTag.content` arrays (skipping opaque-content
 nodes) and mdast `.children` arrays.
 
 ---
 
-### 3.7 acadamarkNumbering
+### 3.7 enscribeNumbering
 
-**Source:** `packages/acadamark-interpreter/src/plugins/numbering.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/numbering.js`
 
 **Purpose:** Register `$$` (display-math), `figure`, and `table` nodes with
 the registry; register `section`, `sub-section`, and `sub-sub-section` nodes
 for cross-reference lookup; and register code-block sigil nodes (tagname
 `` ``` ``) for cross-reference lookup. Stores `{ node, entry }` pairs for
-numbered elements in `file.data.acadamarkNumberingPending`. Display numbers
-are assigned by `acadamarkApplyNumbers` (step 8) after `numberRegistry()`
+numbered elements in `file.data.enscribeNumberingPending`. Display numbers
+are assigned by `enscribeApplyNumbers` (step 8) after `numberRegistry()`
 runs.
 
 **Numbered types and registry keys:**
@@ -637,8 +637,8 @@ This logic is implemented by `readBoolKwarg()` in `lib/bool-kwarg.js`.
 **Side effects per numbered element node:**
 
 - `node.registryType = 'equation' | 'figure' | 'table'` (set immediately)
-- `file.data.acadamarkNumberingPending.push({ node, entry })` (deferred;
-  `node.computedNumber` is set by `acadamarkApplyNumbers` in step 8)
+- `file.data.enscribeNumberingPending.push({ node, entry })` (deferred;
+  `node.computedNumber` is set by `enscribeApplyNumbers` in step 8)
 
 Unnumbered nodes are still registered (so they appear in the type map for
 potential lookup), but receive `number: null` and `numbered: false`.
@@ -647,13 +647,13 @@ Entries whose id contains `:` are indexed in the cross-type label index for
 cross-reference lookup.
 
 **Tree walk:** Uses `discover()` from `lib/discover.js` (same shared walker as
-`acadamarkNotes`).
+`enscribeNotes`).
 
 ---
 
-### 3.8 acadamarkApplyNumbers
+### 3.8 enscribeApplyNumbers
 
-**Source:** `packages/acadamark-interpreter/src/index.js` (anonymous plugin defined inline).
+**Source:** `packages/enscribe-interpreter/src/index.js` (anonymous plugin defined inline).
 
 **Purpose:** Assign display numbers to all registered numbered elements and write
 them back onto the nodes.
@@ -665,31 +665,31 @@ them back onto the nodes.
    After this call, `entry.number` is a positive integer for numbered entries,
    `null` for unnumbered.
 2. `fillNumbering(file)` (from `plugins/numbering.js`) — reads
-   `file.data.acadamarkNumberingPending` and sets `node.computedNumber = entry.number`
+   `file.data.enscribeNumberingPending` and sets `node.computedNumber = entry.number`
    on each node.
 
-**Why two calls:** Steps 6–7 (`acadamarkNotes`, `acadamarkNumbering`) each claim
+**Why two calls:** Steps 6–7 (`enscribeNotes`, `enscribeNumbering`) each claim
 registry slots during their walks. `numberRegistry()` must run once after all
 registration is complete so that numbers are assigned in a single ordered pass.
 `fillNumbering` then writes the assigned numbers back to nodes.
 
-**Must run after:** Steps 6 (`acadamarkNotes`) and 7 (`acadamarkNumbering`) — all
+**Must run after:** Steps 6 (`enscribeNotes`) and 7 (`enscribeNumbering`) — all
 registration must be complete before numbering is computed.
 
-**Must run before:** `acadamarkRefResolution` (step 9) — ref resolution reads
+**Must run before:** `enscribeRefResolution` (step 9) — ref resolution reads
 `entry.number` when computing reference display text; nodes must have `computedNumber`
 set before ref text is built.
 
 ---
 
-### 3.9 acadamarkRefResolution
+### 3.9 enscribeRefResolution
 
-**Source:** `packages/acadamark-interpreter/src/plugins/ref-resolution.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/ref-resolution.js`
 
 **Purpose:** Replace each `<ref>` node with either a `__ref-marker` (resolved)
 or `__ref-error` (unresolved) internal node.
 
-**When it runs:** After `acadamarkApplyNumbers` (step 8). At this point all numbered
+**When it runs:** After `enscribeApplyNumbers` (step 8). At this point all numbered
 elements have `computedNumber` set and their colon-ids are in the label index.
 
 **Target id extraction:**
@@ -738,14 +738,14 @@ still deferred.
 
 ---
 
-### 3.10 acadamarkCiteResolution
+### 3.10 enscribeCiteResolution
 
-**Source:** `packages/acadamark-interpreter/src/plugins/cite-resolution.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/cite-resolution.js`
 
 **Purpose:** Replace each `<cite>` node with `__cite-marker` (resolved keys)
 and/or `__cite-error` (missing keys) internal nodes.
 
-**When it runs:** After `buildCitationIndex` (step 5). If `file.data.acadamarkCitations`
+**When it runs:** After `buildCitationIndex` (step 5). If `file.data.enscribeCitations`
 is not set (no library was loaded), the plugin is a no-op.
 
 **Key extraction (tries four sources in order):**
@@ -776,27 +776,27 @@ citation-js's output and is open work in the roadmap.
 
 ---
 
-### 3.11 acadamarkNotePlacement
+### 3.11 enscribeNotePlacement
 
-**Source:** `packages/acadamark-interpreter/src/plugins/note-placement.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/note-placement.js`
 
 **Purpose:** Splice `__note-marker` nodes in place of `<note>` nodes, build
 `__note-list-item` nodes from the now-resolved note content, and inject a
 `__note-list` into `<article-back>`. This is the placement step that was separated
-from `acadamarkNotes` in the R3a refactor.
+from `enscribeNotes` in the R3a refactor.
 
-**When it runs:** After `acadamarkCiteResolution` (step 10). At this point:
+**When it runs:** After `enscribeCiteResolution` (step 10). At this point:
 - `<note>` nodes are still in the tree (they stayed through steps 9–10 so their
   content arrays were resolved — refs/cites inside note bodies are now
   `__ref-marker`/`__cite-marker` nodes).
 - `entry.number` is set for each note (from step 8).
-- `file.data.acadamarkNotesPending` holds `{ node, entry }` pairs in document order.
+- `file.data.enscribeNotesPending` holds `{ node, entry }` pairs in document order.
 
 **What replaces an inline `<note>`:** A `__note-marker` internal node:
 
 ```js
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   tagname: '__note-marker',
   kwargs: {
     noteId: 'note-1',    // assigned id
@@ -827,14 +827,14 @@ falls back to `notes` (neutral).
 
 ---
 
-### 3.12 acadamarkBibliography
+### 3.12 enscribeBibliography
 
-**Source:** `packages/acadamark-interpreter/src/plugins/bibliography.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/bibliography.js`
 
 **Purpose:** Render the bibliography HTML and inject it into the back-matter
 region — `<article-back>` for an article, `<book-back>` for a book.
 
-**When it runs:** After `acadamarkCiteResolution` (`citations.order` is populated).
+**When it runs:** After `enscribeCiteResolution` (`citations.order` is populated).
 
 **Empty case:** If `citations.order.length === 0` (no resolved citations), any
 author-placed `<bibliography>` tag is removed from the back-matter region. No
@@ -878,13 +878,13 @@ for the stringify step). It runs after all mdast-transform plugins complete.
 
 ```js
 const hast = toHast(tree, {
-  handlers: { acadamarkTag: tagHandler },
+  handlers: { enscribeTag: tagHandler },
   allowDangerousHtml: true,
 });
 ```
 
 `toHast` from `mdast-util-to-hast` converts standard mdast nodes via built-in
-rules. The `acadamarkTag` handler is called for every `acadamarkTag` node in
+rules. The `enscribeTag` handler is called for every `enscribeTag` node in
 the tree. `allowDangerousHtml: true` is required for raw HTML passthrough
 (used for KaTeX output, citation HTML, and table raw mode).
 
@@ -912,9 +912,9 @@ for KaTeX output, citation HTML, inline CSS/JS blocks).
 
 ## 5. Handler dispatch
 
-The custom `acadamarkTag` handler is produced by `createAcadamarkTagHandler(opts)`
-in `packages/acadamark-interpreter/src/interpret-plugin.js`. It is called once
-per `acadamarkTag` node during `toHast`.
+The custom `enscribeTag` handler is produced by `createEnscribeTagHandler(opts)`
+in `packages/enscribe-interpreter/src/interpret-plugin.js`. It is called once
+per `enscribeTag` node during `toHast`.
 
 ### 5.1 Dispatch order
 
@@ -935,7 +935,7 @@ For each node, the handler performs this sequence:
 
 3. If the vocabulary lookup did not find an entry:
    - Emit `warnUnknownTag(tagname)` to console.
-   - Return `makeUnknownElement()`: `<span data-acadamark-unknown="tagname">`.
+   - Return `makeUnknownElement()`: `<span data-enscribe-unknown="tagname">`.
 
 4. If `vocab.interpreter_strategy === 'handler'`:
    - Look up `vocab.handler_module` in HANDLER_REGISTRY.
@@ -1046,7 +1046,7 @@ children   = convertContent(state, node, vocab)
 1. `node.id` → `properties.id`
 2. `node.classes` → `properties.className`
 3. For each kwarg in `node.kwargs`:
-   - Look up `vocab.acadamark_attributes.kwargs[key]`.
+   - Look up `vocab.enscribe_attributes.kwargs[key]`.
    - If the def has `maps_to` and does NOT have `handled_by: 'handler'`,
      set `properties[def.maps_to] = value`.
    - Kwargs marked `handled_by: 'handler'` are for handler-strategy elements
@@ -1079,9 +1079,9 @@ the blockquote element.
 
 ### 7.1 mathHandler
 
-**Source:** `packages/acadamark-interpreter/src/handlers/math.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/math.js`
 
-**Input:** `acadamarkTag` with `tagname: '$'` (inline) or `'$$'` (display);
+**Input:** `enscribeTag` with `tagname: '$'` (inline) or `'$$'` (display);
 `content: string` (opaque LaTeX source); `isOpaqueContent: true`.
 
 **Process:**
@@ -1101,9 +1101,9 @@ elements.
 
 ### 7.2 figureHandler
 
-**Source:** `packages/acadamark-interpreter/src/handlers/figure.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/figure.js`
 
-**Input:** `acadamarkTag` with `tagname: 'figure'`; pipe content parsed into
+**Input:** `enscribeTag` with `tagname: 'figure'`; pipe content parsed into
 mdast; optional kwargs `src`, `alt`, `align`, `width`, `type`.
 
 **Process:**
@@ -1123,9 +1123,9 @@ mdast; optional kwargs `src`, `alt`, `align`, `width`, `type`.
 
 ### 7.3 tableHandler
 
-**Source:** `packages/acadamark-interpreter/src/handlers/table.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/table.js`
 
-**Input:** `acadamarkTag` with `tagname: 'table'`; opaque content (raw data
+**Input:** `enscribeTag` with `tagname: 'table'`; opaque content (raw data
 string); `positional[0]` = format word.
 
 **Supported formats:** `csv`, `tsv`, `json`, `yaml`, `md` (GFM pipe table).
@@ -1148,9 +1148,9 @@ with a visible error message in a `<td>`.
 
 ### 7.4 codeBlockHandler
 
-**Source:** `packages/acadamark-interpreter/src/handlers/code-block.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/code-block.js`
 
-**Input:** `acadamarkTag` with `` tagname: '```' ``; opaque content; optional
+**Input:** `enscribeTag` with `` tagname: '```' ``; opaque content; optional
 `positional[0]` = language.
 
 **Output:** `<pre><code class="language-X" id="Y">content</code></pre>`.
@@ -1159,16 +1159,16 @@ any sigil-provided classes.
 
 ### 7.5 inlineCodeHandler
 
-**Source:** `packages/acadamark-interpreter/src/handlers/inline-code.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/inline-code.js`
 
-**Input:** `acadamarkTag` with `` tagname: '`' ``; opaque content; optional
+**Input:** `enscribeTag` with `` tagname: '`' ``; opaque content; optional
 `positional[0]` = language.
 
 **Output:** `<code class="language-X" id="Y">content</code>`.
 
 ### 7.6 Note handlers
 
-**Source:** `packages/acadamark-interpreter/src/handlers/notes.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/notes.js`
 
 Three handlers for the three internal note node types:
 
@@ -1202,7 +1202,7 @@ reposition these items.
 
 ### 7.7 Ref handlers
 
-**Source:** `packages/acadamark-interpreter/src/handlers/ref.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/ref.js`
 
 **`refMarkerHandler`** (`__ref-marker` → resolved cross-reference):
 ```html
@@ -1217,7 +1217,7 @@ Visible in the rendered output. Authors see unresolved refs immediately.
 
 ### 7.8 Cite handlers
 
-**Source:** `packages/acadamark-interpreter/src/handlers/cite.js`
+**Source:** `packages/enscribe-interpreter/src/handlers/cite.js`
 
 **`citeMarkerHandler`** (`__cite-marker` → resolved citation):
 ```html
@@ -1245,11 +1245,11 @@ markup citation-js produces (e.g., `<i>` for journal names).
 
 ## 8. The registry
 
-**Source:** `packages/acadamark-interpreter/src/lib/registry.js`
+**Source:** `packages/enscribe-interpreter/src/lib/registry.js`
 
 The registry is a per-document numbering and label-lookup service. It is
 created per-document by `createRegistry()` and attached to the unified `VFile`
-at `file.data.acadamarkRegistry`. The convenience function `ensureRegistry(file)`
+at `file.data.enscribeRegistry`. The convenience function `ensureRegistry(file)`
 creates it on first call.
 
 ### 8.1 Structure
@@ -1286,7 +1286,7 @@ Auto-generated ids take the form `${type}-${sequence}` (e.g., `note-1`,
   positive integer to entries with `numbered: true`; sets `number: null` for
   entries with `numbered: false`. Called once after all `assign()` calls are
   complete and before any consumer reads `entry.number`. (This is the call
-  invoked by `acadamarkApplyNumbers` in §3.8.)
+  invoked by `enscribeApplyNumbers` in §3.8.)
 - `reset()` — clear all state (used in tests).
 
 ### 8.4 Cross-reference resolution
@@ -1304,11 +1304,11 @@ Plugins communicate via `file.data`. Fields set during a pipeline run:
 
 | field | set by | read by |
 |-------|--------|---------|
-| `file.data.acadamarkConfig` | `acadamarkConfigDiscovery` | `buildCitationIndex`, `acadamarkNumbering`, `acadamarkRefResolution` |
-| `file.data.acadamarkRegistry` | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkApplyNumbers`, `acadamarkRefResolution` |
-| `file.data.acadamarkCitations` | `buildCitationIndex` | `acadamarkCiteResolution`, `acadamarkBibliography` |
-| `file.data.acadamarkNotesPending` | `acadamarkNotes` | `acadamarkNotePlacement` |
-| `file.data.acadamarkNumberingPending` | `acadamarkNumbering` | `acadamarkApplyNumbers` |
+| `file.data.enscribeConfig` | `enscribeConfigDiscovery` | `buildCitationIndex`, `enscribeNumbering`, `enscribeRefResolution` |
+| `file.data.enscribeRegistry` | first `ensureRegistry(file)` call | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution` |
+| `file.data.enscribeCitations` | `buildCitationIndex` | `enscribeCiteResolution`, `enscribeBibliography` |
+| `file.data.enscribeNotesPending` | `enscribeNotes` | `enscribeNotePlacement` |
+| `file.data.enscribeNumberingPending` | `enscribeNumbering` | `enscribeApplyNumbers` |
 
 ---
 
@@ -1418,7 +1418,7 @@ is a tracked gap against the guarantee, described in §11.5.
 
 ### 11.1 Console warnings (`lib/errors.js`)
 
-All warnings use the prefix `[acadamark-interpreter] warning:`.
+All warnings use the prefix `[enscribe-interpreter] warning:`.
 
 | function | when |
 |---------|------|
@@ -1437,7 +1437,7 @@ not yet render visibly.
 
 | condition | visible marker |
 |-----------|---------------|
-| Unknown vocabulary tag | `<span data-acadamark-unknown="tagname">` |
+| Unknown vocabulary tag | `<span data-enscribe-unknown="tagname">` |
 | Unresolved `<ref>` | `<a class="ref-error" href="#id">??ref: id??</a>` |
 | Missing citation key | `<cite class="cite-error" data-keys="k">??cite: k??</cite>` |
 | Table parse failure | `<table class="table-parse-error">??table-error: msg??</table>` |
@@ -1450,8 +1450,8 @@ mdast) as best-effort children.
 Some plugins use `file.message()` to attach diagnostics to the unified VFile:
 
 - `buildCitationIndex` (step 5): file read failures, empty library, parse errors.
-- `acadamarkRefResolution`: missing id, target not found.
-- `acadamarkCiteResolution`: empty `<cite>`, missing keys.
+- `enscribeRefResolution`: missing id, target not found.
+- `enscribeCiteResolution`: empty `<cite>`, missing keys.
 
 These messages appear in the `file.messages` array after `process()` resolves.
 They do not appear in the HTML output.
@@ -1467,16 +1467,16 @@ They do not appear in the HTML output.
 
 ### 11.5 Parser-stage error nodes — tracked gap against the always-renders guarantee
 
-The parser (`remark-acadamark`) produces two error node types when source
-constructs cannot be parsed: `acadamarkTagError` (for example, an
+The parser (`remark-enscribe`) produces two error node types when source
+constructs cannot be parsed: `enscribeTagError` (for example, an
 unterminated long-form construct, or a long-form opening whose interior
-the grammar rejects) and `acadamarkParseError` (for example, an unknown
+the grammar rejects) and `enscribeParseError` (for example, an unknown
 escape sequence, an empty or unterminated `^{}`/`_{}` shortcut, or a
 named-tag content tree exceeding the recursion-depth limit).
 
 The interpreter currently has **no handler** registered for either node
-type. Neither is dispatched by the `acadamarkTag` handler (that handler
-is invoked only when `node.type === 'acadamarkTag'`, which these error
+type. Neither is dispatched by the `enscribeTag` handler (that handler
+is invoked only when `node.type === 'enscribeTag'`, which these error
 types are not), and `INTERNAL_REGISTRY` contains no entries for them.
 When `toHast` encounters them it falls through to
 `mdast-util-to-hast`'s default unknown-node handling, which produces an
@@ -1504,7 +1504,7 @@ parser errors are invisible in the rendered output.
 
 ## 12. Interpreter options
 
-`acadamarkInterpreter(options)` accepts:
+`enscribeInterpreter(options)` accepts:
 
 | option | type | default | effect |
 |--------|------|---------|--------|
@@ -1544,7 +1544,7 @@ To add a new vocabulary element with custom handler logic:
 
 1. Create the vocabulary entry with `interpreter_strategy: handler` and
    `handler_module: ./handlers/new-element.js`.
-2. Create `packages/acadamark-interpreter/src/handlers/new-element.js`
+2. Create `packages/enscribe-interpreter/src/handlers/new-element.js`
    exporting a handler function `(state, node, vocab, opts) => hastElement`.
 3. Add the entry to `HANDLER_REGISTRY` in `interpret-plugin.js`:
    ```js
@@ -1564,27 +1564,27 @@ To add a new plugin-created internal node type (no vocabulary entry):
 
 ## 14. Source file map
 
-Files reachable from `acadamarkInterpreter` at runtime. Test-only files
+Files reachable from `enscribeInterpreter` at runtime. Test-only files
 (e.g. `schema/shape-tokens.js`, `schema/validate.js`) are omitted; they
 exist in the source tree but are not on the pipeline's call graph.
 
 ```
-packages/acadamark-interpreter/
+packages/enscribe-interpreter/
   src/
-    index.js                      Main entry; acadamarkInterpreter plugin
-    interpret-plugin.js           acadamarkTag handler; dispatch logic; registries
+    index.js                      Main entry; enscribeInterpreter plugin
+    interpret-plugin.js           enscribeTag handler; dispatch logic; registries
     plugins/
-      normalize-markdown.js       acadamarkNormalizeMarkdown (step 1.5)
-      config-discovery.js         acadamarkConfigDiscovery
-      article-structuring.js      acadamarkArticleStructuring
-      section-nesting.js          acadamarkSectionNesting
-      library-load.js             buildCitationIndex; acadamarkLibraryLoad (wrapper for external callers)
-      notes.js                    acadamarkNotes (register-only)
-      note-placement.js           acadamarkNotePlacement
-      numbering.js                acadamarkNumbering
-      ref-resolution.js           acadamarkRefResolution
-      cite-resolution.js          acadamarkCiteResolution
-      bibliography.js             acadamarkBibliography
+      normalize-markdown.js       enscribeNormalizeMarkdown (step 1.5)
+      config-discovery.js         enscribeConfigDiscovery
+      article-structuring.js      enscribeArticleStructuring
+      section-nesting.js          enscribeSectionNesting
+      library-load.js             buildCitationIndex; enscribeLibraryLoad (wrapper for external callers)
+      notes.js                    enscribeNotes (register-only)
+      note-placement.js           enscribeNotePlacement
+      numbering.js                enscribeNumbering
+      ref-resolution.js           enscribeRefResolution
+      cite-resolution.js          enscribeCiteResolution
+      bibliography.js             enscribeBibliography
     handlers/
       math.js                     mathHandler (KaTeX rendering)
       figure.js                   figureHandler
@@ -1597,7 +1597,7 @@ packages/acadamark-interpreter/
     schema/
     lib/
       registry.js                 createRegistry(); ensureRegistry()
-      ast-helpers.js              isAcadamarkTag(), sectionDepth(), findTag(), extractPlainText()
+      ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
       bool-kwarg.js               readBoolKwarg()
       discover.js                 discover() — shared read-only pre-order DFS walker
       walk-replace.js             walkReplace() — shared in-place node replacement walker
@@ -1608,7 +1608,7 @@ packages/acadamark-interpreter/
       hover-preview.css           CSS for Tippy-based hover previews
       hover-preview.js            JS init for Tippy-based hover previews
 
-packages/remark-acadamark/
+packages/remark-enscribe/
   src/
     recursive-content.js          remarkRecursiveContent (used by interpreter)
 

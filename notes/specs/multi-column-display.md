@@ -12,7 +12,7 @@ a STATUS question; the open work is tracked as DF-5 in
 The feature targets several authoring patterns:
 
 - **Journal articles.** Many scientific journals use two-column layouts.
-  Authors writing for these venues want their acadamark documents to
+  Authors writing for these venues want their enscribe documents to
   render in the appropriate column format.
 - **Newspaper and magazine layouts.** Less common in scholarly contexts
   but relevant for some publication types (editorials, blog-style content
@@ -59,7 +59,7 @@ below); the spec previously illustrated it with a nested-element form:
 
 Note that this nested-element form is **not supported by `<config>` as it
 currently works** — per `notes/specs/interpreter.md` §3.2 the
-`acadamarkConfigDiscovery` plugin reads `<config>` kwargs and does not
+`enscribeConfigDiscovery` plugin reads `<config>` kwargs and does not
 walk nested children (the "nested `<config>` not read" gap is also
 tracked separately in `BACKLOG-ROADMAP.md`, formerly PG-9). The kwarg
 alternative `<config columns=2>` would work with the existing mechanism
@@ -175,7 +175,7 @@ not in this spec.
 - **MC-Q1 — `<config>` syntax for column settings.** The previously-shown
   nested-element form (`<config><columns count=2></config>`) is not
   supported by `<config>` as it currently works — the
-  `acadamarkConfigDiscovery` plugin (`notes/specs/interpreter.md` §3.2)
+  `enscribeConfigDiscovery` plugin (`notes/specs/interpreter.md` §3.2)
   reads kwargs and does not walk nested children (the gap is also
   tracked separately as the formerly-PG-9 "nested `<config>` not read"
   item). The fork: adopt the kwarg form `<config columns=2>` (no new

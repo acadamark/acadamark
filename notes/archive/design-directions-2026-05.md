@@ -4,7 +4,7 @@
 
 # Design directions
 
-This file captures architectural directions for acadamark — design decisions and targets that aren't bugs but guide future work. Distinct from `audit-findings.md` (which captures specific issues to address) and from spec documents (which describe the current state).
+This file captures architectural directions for enscribe — design decisions and targets that aren't bugs but guide future work. Distinct from `audit-findings.md` (which captures specific issues to address) and from spec documents (which describe the current state).
 
 A direction here represents where the system is going, not where it is. Each direction is filed with rationale and (where relevant) implementation implications.
 
@@ -30,7 +30,7 @@ kwargs:
     role: argument          # opaque, not parsed
   caption:
     type: string
-    role: content           # parsed as acadamark content
+    role: content           # parsed as enscribe content
 ```
 
 The cite-resolution, ref-resolution, numbering, and similar plugins iterate over `role: content` kwargs alongside child nodes.
@@ -111,7 +111,7 @@ The compact form is convenient when the caption is brief and has no rich content
 
 **Principle:** The current pipeline produces self-contained HTML files. Each rendered document includes all CSS, all fonts, all rendered citations, all hover-preview infrastructure. The HTML can travel — emailed, archived, viewed offline — and renders identically.
 
-**Direction:** This isn't changing. But: a future target is full client-side rendering. Like JupyterLite, an acadamark source document (`.acm` file) loaded in a browser should render to its full presentation without server-side build. This requires:
+**Direction:** This isn't changing. But: a future target is full client-side rendering. Like JupyterLite, an enscribe source document (`.emd` file) loaded in a browser should render to its full presentation without server-side build. This requires:
 - The parser to run in the browser.
 - Plugins to run in the browser.
 - citation-js to run in the browser (already possible).

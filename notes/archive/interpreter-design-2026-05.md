@@ -1,24 +1,24 @@
-> **Archived 2026-Q2.** This document describes an interpreter architecture (`acadamarkTagInterpret` as a single rehype plugin doing schema-driven dispatch) that was not implemented. The actual interpreter is a chain of mdast plugins plus toHast handlers. See `notes/interpreter.md` for the current architecture. Retained here for historical reference.
+> **Archived 2026-Q2.** This document describes an interpreter architecture (`enscribeTagInterpret` as a single rehype plugin doing schema-driven dispatch) that was not implemented. The actual interpreter is a chain of mdast plugins plus toHast handlers. See `notes/interpreter.md` for the current architecture. Retained here for historical reference.
 
 ---
 
 # Interpreter design
 
-This document records the architectural decisions for `acadamarkTagInterpret`, the plugin that transforms acadamark AST nodes into Layer 1 HTML. It is the bridge between the parser substrate and rendered output.
+This document records the architectural decisions for `enscribeTagInterpret`, the plugin that transforms enscribe AST nodes into Layer 1 HTML. It is the bridge between the parser substrate and rendered output.
 
 ## Position in the pipeline
 
-The interpreter runs as a rehype plugin, after `remarkRehype` has converted the mdast tree (with acadamarkTag nodes) into a hast tree. The interpreter walks the hast tree, finds nodes that originated as acadamarkTag, and replaces each with the corresponding Layer 1 HTML structure.
+The interpreter runs as a rehype plugin, after `remarkRehype` has converted the mdast tree (with enscribeTag nodes) into a hast tree. The interpreter walks the hast tree, finds nodes that originated as enscribeTag, and replaces each with the corresponding Layer 1 HTML structure.
 
 ```
-remarkParse + acadamark + remark-math + remark-gfm
+remarkParse + enscribe + remark-math + remark-gfm
   → recursive-content plugin (mdast)
   → remark-rehype (mdast → hast)
-  → acadamarkTagInterpret  ← here
-  → acadamarkSectionNesting
-  → acadamarkNumbering
-  → acadamarkCitations
-  → acadamarkCrossRefs
+  → enscribeTagInterpret  ← here
+  → enscribeSectionNesting
+  → enscribeNumbering
+  → enscribeCitations
+  → enscribeCrossRefs
   → rehype-katex
   → rehype-shiki
   → rehype-stringify
@@ -28,7 +28,7 @@ The interpreter produces Layer 1 HTML elements; downstream plugins (section nest
 
 ## Design philosophy
 
-Acadamark takes a top-down view of the entire system and leverages HTML to create output. It is not an HTML+ system — it is not "HTML with academic features added." It is an academic publishing system that uses HTML as the rendering substrate.
+Enscribe takes a top-down view of the entire system and leverages HTML to create output. It is not an HTML+ system — it is not "HTML with academic features added." It is an academic publishing system that uses HTML as the rendering substrate.
 
 The interpreter is the place where this top-down view becomes concrete output. It is one plugin because the design is one coherent system, not a collection of HTML augmentations.
 
@@ -38,12 +38,12 @@ The interpreter uses a schema-driven approach for transformation, with escape ha
 
 Each Layer 1 tag has a schema entry in the vocabulary describing:
 - The output HTML element name.
-- How acadamark attributes map to HTML attributes.
+- How enscribe attributes map to HTML attributes.
 - Where content goes (as element children, as a specific sub-element, etc.).
 - Any default attributes the output should carry.
 - Whether the tag has children that should be wrapped specially (e.g., figure caption wrapped in `<figcaption>`).
 
-For tags whose transformation cannot be expressed as a simple schema (because the output structure depends on attributes, or because external engine output needs to be embedded, or because the transformation is genuinely complex), the schema provides a handler function instead. The handler receives the acadamark node and returns a hast subtree.
+For tags whose transformation cannot be expressed as a simple schema (because the output structure depends on attributes, or because external engine output needs to be embedded, or because the transformation is genuinely complex), the schema provides a handler function instead. The handler receives the enscribe node and returns a hast subtree.
 
 This pattern matches how rehype-sanitize, rehype-format, and other unified-ecosystem plugins handle transformation: declarative for the common case, imperative escape hatch when needed.
 
@@ -61,7 +61,7 @@ This means:
 
 ## Attribute mapping
 
-Each schema entry describes how acadamark attributes map to HTML attributes.
+Each schema entry describes how enscribe attributes map to HTML attributes.
 
 Some mappings are conventionally direct:
 - `id` → HTML `id`.
@@ -71,7 +71,7 @@ Some mappings are conventionally direct:
 Some mappings are tag-specific:
 - `<cite>`'s positional argument becomes `data-cite-key`, not an HTML attribute named "positional."
 - `<figure>`'s `src` kwarg generates an `<img>` child element.
-- `<ref>`'s target id is captured from the `#id` positional argument (or `target=` kwarg). A pre-pass plugin (`acadamarkRefResolution`) walks the mdast, looks up each target in the label index, and replaces the `<ref>` node with a `__ref-marker` (resolved) or `__ref-error` (unresolved) internal node before hast conversion. The final rendered element is `<a class="ref" href="#id">text</a>` or `<a class="ref-error" href="#id">??ref: id??</a>` — no `data-ref-target` attribute is emitted.
+- `<ref>`'s target id is captured from the `#id` positional argument (or `target=` kwarg). A pre-pass plugin (`enscribeRefResolution`) walks the mdast, looks up each target in the label index, and replaces the `<ref>` node with a `__ref-marker` (resolved) or `__ref-error` (unresolved) internal node before hast conversion. The final rendered element is `<a class="ref" href="#id">text</a>` or `<a class="ref-error" href="#id">??ref: id??</a>` — no `data-ref-target` attribute is emitted.
 
 The schema for each tag defines its specific mappings. Standard mappings (id, classes) can be defaults so that not every schema has to repeat them.
 
@@ -102,10 +102,10 @@ Per the project's error-recovery principle: the parser always produces a tree; t
 
 Error cases the interpreter handles:
 
-- **Unknown tag.** A tagname not present in the vocabulary. Produce an `<acadamark-error>` element with diagnostic information. Continue processing the rest of the tree.
+- **Unknown tag.** A tagname not present in the vocabulary. Produce an `<enscribe-error>` element with diagnostic information. Continue processing the rest of the tree.
 - **Engine failure.** A DSL engine's adapter throws or returns invalid output. Produce an error node containing the engine's error message. Continue.
 - **Schema mismatch.** A tag's attributes are inconsistent with the schema (required attribute missing, etc.). Produce an error node noting the mismatch. Continue.
-- **Existing parse errors.** `acadamarkTagError` and `acadamarkParseError` nodes from earlier stages are preserved and rendered as visible error markers in the output.
+- **Existing parse errors.** `enscribeTagError` and `enscribeParseError` nodes from earlier stages are preserved and rendered as visible error markers in the output.
 
 Errors are visible in the rendered document. The author can locate problems by looking at where rendering breaks. They never see a "compilation failed, no output" state.
 
@@ -113,7 +113,7 @@ Errors are visible in the rendered document. The author can locate problems by l
 
 The interpreter has minimal configurability in its initial form. Schemas describe the default rendering for each tag; there is no mechanism for documents to override the default.
 
-If users later need overrides (custom citation styles, alternative figure layouts), configuration can be added. For now, vocabulary-as-default is the simplest design and matches the principle that acadamark is opinionated about its outputs.
+If users later need overrides (custom citation styles, alternative figure layouts), configuration can be added. For now, vocabulary-as-default is the simplest design and matches the principle that enscribe is opinionated about its outputs.
 
 ## Slicing strategy
 
@@ -136,11 +136,11 @@ The auto-generated child elements that the structural plugins produce — `<arti
 
 Excluded from this slice (deferred to subsequent slices): `<a>`, `<img>`, `<pre>`+`<code>` (display code block), `<cite>`, `<ref>`, `<note>`, math sigils, and other inline elements not listed above.
 
-After this slice, simple structural acadamark documents render to real HTML.
+After this slice, simple structural enscribe documents render to real HTML.
 
 **Slice II — Math.** Add the DSL engine adapter pattern. Implement math via KaTeX. After this slice, math renders.
 
-**Slice III — Citations and cross-references.** Schema entries for `<cite>` and `<ref>` produce hast nodes with appropriate `data-*` attributes. The actual resolution (against bibliography, against numbered elements) is handled by separate resolver plugins (`acadamarkCitations`, `acadamarkCrossRefs`) which are also built in this or later slices.
+**Slice III — Citations and cross-references.** Schema entries for `<cite>` and `<ref>` produce hast nodes with appropriate `data-*` attributes. The actual resolution (against bibliography, against numbered elements) is handled by separate resolver plugins (`enscribeCitations`, `enscribeCrossRefs`) which are also built in this or later slices.
 
 **Subsequent slices.** Other DSL engines (CSV, mermaid). Theorem-family elements. Resolver plugins for numbering, citations, cross-references. Complete vocabulary coverage.
 
@@ -175,6 +175,6 @@ The interpreter does not depend on the specific engines themselves. Adapters are
 
 ## Why this matters
 
-The interpreter is what makes acadamark a usable authoring system. Without it, the parser produces structured AST that nobody can render. With it, acadamark documents become HTML, and the rest of the unified ecosystem can take over for math rendering, syntax highlighting, and serialization.
+The interpreter is what makes enscribe a usable authoring system. Without it, the parser produces structured AST that nobody can render. With it, enscribe documents become HTML, and the rest of the unified ecosystem can take over for math rendering, syntax highlighting, and serialization.
 
 The first interpreter slice is the first time the test document partially renders to actual HTML. That's the moment the project shifts from "parser substrate" to "academic publishing system."

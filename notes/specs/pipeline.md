@@ -1,6 +1,6 @@
 # Pipeline
 
-This document describes the acadamark processing pipeline: what stages run,
+This document describes the enscribe processing pipeline: what stages run,
 in what order, what each stage produces, and how they depend on each other.
 For the implementation details of individual plugins and handlers, see
 `notes/specs/interpreter.md`. For the authoring syntax at the source end of the
@@ -19,12 +19,12 @@ this document.
 
 2. **Two tree dialects.** *mdast* is the markdown AST. *hast* is the HTML
    AST. Markdown parses to mdast; mdast converts to hast; hast serializes
-   to HTML. Acadamark plugins live on one or both dialects.
+   to HTML. Enscribe plugins live on one or both dialects.
 
 3. **Named pieces of the ecosystem.** *remark* handles markdown ↔ mdast.
    *rehype* handles HTML ↔ hast. *unified* chains them together.
    *micromark* is the lower-level tokenizer used only when inventing
-   genuinely new syntax (the acadamark shorthand). The acadamark
+   genuinely new syntax (the enscribe shorthand). The enscribe
    interpreter does not use `remark-rehype` — it converts mdast to hast
    directly via `mdast-util-to-hast`, registered as the unified compiler.
 
@@ -45,14 +45,14 @@ grouping. Reading the plugins in their pipeline order shows the
 implementation; reading them as shape-index-number-resolve shows what
 each is doing for the document.
 
-An acadamark document goes through six stages to produce HTML output.
+An enscribe document goes through six stages to produce HTML output.
 The JATS export pipeline branches off after Stage 3:
 
 ```
 source text
     │
     ▼  Stage 1: Source → mdast
-    │  remarkParse + remarkAcadamark
+    │  remarkParse + remarkEnscribe
     │
     ▼  Stage 2: Recursive content parsing
     │  remarkRecursiveContent
@@ -68,7 +68,7 @@ source text
     │                                  │
     ▼  Stage 4 (HTML)                  ▼  Stage 4' (JATS)
     │  mdast → hast                    │  mdast → JATS XML
-    │  toHast() with acadamarkTag      │  acadamarkToJats() — consumes the
+    │  toHast() with enscribeTag      │  enscribeToJats() — consumes the
     │  custom handler                  │  post-stage-3 mdast directly
     │                                  │
     ▼  Stage 5: Asset injection        ▼  Stage 5' (JATS): metadata defaults
@@ -81,35 +81,35 @@ source text
 HTML string                       JATS XML string
 ```
 
-The JATS branch (Phase 5; `acadamark-jats-export` package, landed in
+The JATS branch (Phase 5; `enscribe-jats-export` package, landed in
 slice 5a per `98f2d7f`) consumes the post-stage-3 mdast — the tree is
 already JATS-shaped at that point (the structural plugins produced
 `<article>`/`<book>` with the appropriate region wrappers; citations
 and cross-references are resolved; numbering is in). The package
-re-imports the structural plugins from `acadamark-interpreter` to
+re-imports the structural plugins from `enscribe-interpreter` to
 build the post-stage-3 tree; HTML rendering stays in
-`acadamark-interpreter`.
+`enscribe-interpreter`.
 
-The pipeline is wired by the `acadamarkInterpreter` unified plugin, which
+The pipeline is wired by the `enscribeInterpreter` unified plugin, which
 registers all stages (2–6) on a single unified processor. The consumer provides
-stage 1 (`remarkParse` + `remarkAcadamark`):
+stage 1 (`remarkParse` + `remarkEnscribe`):
 
 ```js
 const result = await unified()
   .use(remarkParse)
-  .use(remarkAcadamark)
-  .use(acadamarkInterpreter, options)
+  .use(remarkEnscribe)
+  .use(enscribeInterpreter, options)
   .process(source);
 ```
 
 **Delegated parser extensions auto-registered by the interpreter.**
-`acadamarkInterpreter` also calls `this.use(remarkMath)` and
+`enscribeInterpreter` also calls `this.use(remarkMath)` and
 `this.use(remarkGfm)` on the outer processor (and includes both in the inner
 processor passed to `remarkRecursiveContent`). This lets the parser tokenize
 bare `$x$` / `$$x$$` math and bare GFM pipe tables anywhere in the source —
 both at the top level and inside named-tag content. The resulting
 `inlineMath` / `math` / `table` nodes are then rewritten to canonical
-`acadamarkTag` nodes by `acadamarkNormalizeMarkdown` (Stage 3's first
+`enscribeTag` nodes by `enscribeNormalizeMarkdown` (Stage 3's first
 plugin), so the rest of the pipeline only sees one node type. See AUD-20 in
 `notes/archive/audit-findings-2026-05.md` for the Option-A normalization decision.
 
@@ -117,21 +117,21 @@ plugin), so the rest of the pipeline only sees one node type. See AUD-20 in
 
 ## 2. Stage 1: Source → mdast
 
-**Plugins:** `remarkParse`, `remarkAcadamark` (consumer-provided).
+**Plugins:** `remarkParse`, `remarkEnscribe` (consumer-provided).
 
 **Input:** UTF-8 source text.
 
 **Output:** mdast tree where:
 - Standard Markdown constructs (paragraphs, emphasis, headings, fenced code,
   etc.) are represented as normal mdast node types.
-- Acadamark shorthand tags (`<tag #id .class kwarg=value | content>` and sigil
-  forms) are represented as `acadamarkTag` nodes with `content` as a raw string.
+- Enscribe shorthand tags (`<tag #id .class kwarg=value | content>` and sigil
+  forms) are represented as `enscribeTag` nodes with `content` as a raw string.
 
-An `acadamarkTag` node after parsing looks like:
+An `enscribeTag` node after parsing looks like:
 
 ```js
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   tagname: 'em',           // tag name or sigil ('$', '$$', '```', '`')
   id: 'my-id',             // from #my-id, or null
   classes: ['highlight'],  // from .highlight, or []
@@ -160,22 +160,22 @@ this stage. Stage 2 re-parses it into a structured mdast subtree.
 ## 3. Stage 2: Recursive content parsing
 
 **Plugin:** `remarkRecursiveContent`
-**Source:** `packages/remark-acadamark/src/recursive-content.js`
+**Source:** `packages/remark-enscribe/src/recursive-content.js`
 
-**Input:** mdast tree with `acadamarkTag` nodes having string `content` fields.
+**Input:** mdast tree with `enscribeTag` nodes having string `content` fields.
 
-**Output:** mdast tree with `acadamarkTag` nodes having `content: Node[]`
+**Output:** mdast tree with `enscribeTag` nodes having `content: Node[]`
 (parsed mdast arrays). Opaque-content nodes are unchanged.
 
-**What it does:** For each `acadamarkTag` node with `contentHandler === 'default'`,
+**What it does:** For each `enscribeTag` node with `contentHandler === 'default'`,
 the raw `content` string is fed through an inner processor (`remarkParse +
-remarkAcadamark`) and the resulting mdast is stored back onto the node. After
+remarkEnscribe`) and the resulting mdast is stored back onto the node. After
 this step, `node.content` is a proper array of mdast nodes (possibly containing
-nested `acadamarkTag` nodes).
+nested `enscribeTag` nodes).
 
-**Inner processor:** Created by `acadamarkInterpreter` and passed as the
+**Inner processor:** Created by `enscribeInterpreter` and passed as the
 `{ processor }` option. It runs the same four parser plugins as the outer
-processor — `remarkParse`, `remarkAcadamark`, `remarkMath`, `remarkGfm` —
+processor — `remarkParse`, `remarkEnscribe`, `remarkMath`, `remarkGfm` —
 but does NOT include `remarkRecursiveContent` (this plugin), the
 normalization pass, or any structural plugins. Recursion into nested tags
 is handled by the plugin's own tree walk. (The structural plugins all run
@@ -189,12 +189,12 @@ the node's content is `[text("emphasized text")]`, not
 hast conversion if the element's content type is `block` rather than `prose`.
 
 **Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
-are converted to `acadamarkParseError` nodes with `subtype: 'max-recursion-depth'`.
+are converted to `enscribeParseError` nodes with `subtype: 'max-recursion-depth'`.
 
 **Parser-stage error nodes.** Max-recursion-depth is one source of
-`acadamarkParseError`; the parser also produces `acadamarkParseError` for
+`enscribeParseError`; the parser also produces `enscribeParseError` for
 unknown escape sequences and for empty / unterminated `^{}` and `_{}`
-shortcuts, and produces `acadamarkTagError` for unterminated long-form
+shortcuts, and produces `enscribeTagError` for unterminated long-form
 constructs and for long-form openings the grammar rejects. The fate of
 all such nodes through the interpreter compile step — currently a
 tracked gap against the always-renders guarantee — is described in
@@ -217,7 +217,7 @@ detail follows in §4.0–§4.10.
 
 ### Phase 0 — Normalization
 
-#### 4.0 acadamarkNormalizeMarkdown
+#### 4.0 enscribeNormalizeMarkdown
 
 **When:** First in Stage 3, immediately after `remarkRecursiveContent`. By
 this point both the outer `remarkParse` run and the inner `remarkParse` run
@@ -226,15 +226,15 @@ nodes (`inlineMath`, `math`, `table`) are present in the tree on both
 surfaces.
 
 **What it does:** Walks the tree and rewrites delegated-parser nodes to
-canonical `acadamarkTag` nodes so that downstream structural and semantic
+canonical `enscribeTag` nodes so that downstream structural and semantic
 plugins see exactly one node type. Settled principle: *delegate the lexer,
 own the node identity*.
 
 | input node type | from | replacement |
 |----------------|------|-------------|
-| `inlineMath`   | `remark-math` | `acadamarkTag { tagname: '$',  isOpaqueContent: true,  contentHandler: 'math' }` |
-| `math`         | `remark-math` | `acadamarkTag { tagname: '$$', isOpaqueContent: true,  contentHandler: 'math-display' }` |
-| `table`        | `remark-gfm`  | `acadamarkTag { tagname: 'table', positional: ['md'], isOpaqueContent: true, contentHandler: 'table' }` |
+| `inlineMath`   | `remark-math` | `enscribeTag { tagname: '$',  isOpaqueContent: true,  contentHandler: 'math' }` |
+| `math`         | `remark-math` | `enscribeTag { tagname: '$$', isOpaqueContent: true,  contentHandler: 'math-display' }` |
+| `table`        | `remark-gfm`  | `enscribeTag { tagname: 'table', positional: ['md'], isOpaqueContent: true, contentHandler: 'table' }` |
 
 For GFM tables, the structured `tableRow`/`tableCell` subtree is serialized
 back to a GFM pipe-table string by `gfmTableToPipeString()` so the canonical
@@ -250,22 +250,22 @@ have completed).
 assume one node type.
 
 **Cross-reference:** AUD-20 in `notes/archive/audit-findings-2026-05.md` for the Option-A
-decision; `packages/acadamark-interpreter/src/plugins/normalize-markdown.js`
+decision; `packages/enscribe-interpreter/src/plugins/normalize-markdown.js`
 for the implementation.
 
 ---
 
 ### Phase 1 — Discovery
 
-#### 4.1 acadamarkConfigDiscovery
+#### 4.1 enscribeConfigDiscovery
 
 **When:** First after recursive-content parsing. The tree is still flat (not
 yet wrapped in article structure).
 
 **What it does:** Reads `<config>` blocks at root level and populates
-`file.data.acadamarkConfig` with their kwargs. No tree modification.
+`file.data.enscribeConfig` with their kwargs. No tree modification.
 
-**Output:** `file.data.acadamarkConfig = Map<string, string>`.
+**Output:** `file.data.enscribeConfig = Map<string, string>`.
 
 **Dependencies:** None (reads tree as-is after recursive-content).
 
@@ -277,7 +277,7 @@ the tree must be stable).
 
 ### Phase 2 — Structural transformation
 
-#### 4.2 acadamarkArticleStructuring
+#### 4.2 enscribeArticleStructuring
 
 **What it does:** Wraps the document in the Layer 1 article structure.
 Partitions root children into front / body / back / root-siblings buckets
@@ -294,26 +294,26 @@ root
 ```
 
 **Dependencies:** `remarkRecursiveContent` (needs parsed content to read
-`<meta>` internals). `acadamarkConfigDiscovery` has already run (no dependency
+`<meta>` internals). `enscribeConfigDiscovery` has already run (no dependency
 between them — ordering is arbitrary).
 
-**Book and book-part documents:** handled by `acadamarkBookStructuring`
+**Book and book-part documents:** handled by `enscribeBookStructuring`
 (Phase 4 slice 4a, `c7b2b75`), which runs immediately before this
 plugin in the pipeline. When `<meta type=book>` or `<meta type=book-part>`
 is at root, the book-structuring plugin wraps the tree first; this
 article-structuring plugin then detects the already-book-wrapped tree
 via its early no-op check and skips silently.
 
-#### 4.2.5 acadamarkBookStructuring
+#### 4.2.5 enscribeBookStructuring
 
-**Source:** `packages/acadamark-interpreter/src/plugins/book-structuring.js`
+**Source:** `packages/enscribe-interpreter/src/plugins/book-structuring.js`
 
 **Purpose:** Wrap the root children of a book document into the Layer 1
 book structure: `<book>` containing `<book-front>`, `<book-body>`, and
-`<book-back>`. Parallel to `acadamarkArticleStructuring` for the BITS
+`<book-back>`. Parallel to `enscribeArticleStructuring` for the BITS
 book DTD shape.
 
-**When it runs:** before `acadamarkArticleStructuring`. For
+**When it runs:** before `enscribeArticleStructuring`. For
 `<meta type=article>` (or absent `type`) documents it returns silently;
 for `<meta type=book>` / `<meta type=book-part>` it transforms the tree.
 
@@ -339,11 +339,11 @@ case).
 **Companion configurable knobs** (added in the same slice; documented
 under the consuming plugins below):
 - `<config counter-reset-scope>` — controls per-chapter numbering
-  resets. See §4.6 `acadamarkNumbering`.
+  resets. See §4.6 `enscribeNumbering`.
 - `<config note-scope>` — controls per-book-part footnote collection.
-  See §4.9 `acadamarkNotePlacement`.
+  See §4.9 `enscribeNotePlacement`.
 
-#### 4.3 acadamarkSectionNesting
+#### 4.3 enscribeSectionNesting
 
 **What it does:** Converts the flat body content into a nested section tree.
 Each `section` / `sub-section` / `sub-sub-section` tag becomes a parent that
@@ -351,7 +351,7 @@ contains the content following it until the next peer or parent section.
 Section titles (pipe content) are promoted to `section-title` /
 `sub-section-title` / `sub-sub-section-title` child elements.
 
-**Dependencies:** `acadamarkArticleStructuring` (sections must be inside
+**Dependencies:** `enscribeArticleStructuring` (sections must be inside
 `article-body` for the walk to operate on the right content array).
 
 **Tree shape after this step (example):**
@@ -381,54 +381,54 @@ article-body
 at root level in an article, nested inside `<book-body>` in a book — walks
 their `<library>` children, reads citation data (BibTeX or CSL-JSON)
 from inline content or `src=` files, and stores a citation-js `Cite` instance
-in `file.data.acadamarkCitations`. Called as an explicit index-build step in
-`index.js` via an anonymous plugin wrapper (`acadamarkCitationIndex`), not as
-`this.use(acadamarkLibraryLoad)`. The exported `acadamarkLibraryLoad` plugin
+in `file.data.enscribeCitations`. Called as an explicit index-build step in
+`index.js` via an anonymous plugin wrapper (`enscribeCitationIndex`), not as
+`this.use(enscribeLibraryLoad)`. The exported `enscribeLibraryLoad` plugin
 wrapper is kept for external callers.
 
 **Output:**
 ```js
-file.data.acadamarkCitations = {
+file.data.enscribeCitations = {
   cite: Cite,          // citation-js instance; all entries
-  order: [],           // filled by acadamarkCiteResolution
+  order: [],           // filled by enscribeCiteResolution
   style: string,       // CSL style (from config or default)
 }
 ```
 
-**Dependencies:** `acadamarkConfigDiscovery` (reads `citation-style` from
+**Dependencies:** `enscribeConfigDiscovery` (reads `citation-style` from
 config). It does **not** require a structuring step to have relocated `<data>`:
 the deep-collect finds `<data>` at root (article) or in `<book-body>` (book).
 
-**No-op case:** If there are no `<data>` nodes, `file.data.acadamarkCitations`
+**No-op case:** If there are no `<data>` nodes, `file.data.enscribeCitations`
 is not set. Cite resolution and bibliography will be no-ops.
 
-#### 4.5 acadamarkNotes
+#### 4.5 enscribeNotes
 
 **What it does:** Registers note elements (record-only). Walks the tree with
 `discover()`, calls `registry.assign('note', id, { numbered: true })` for
 each `<note>` node found, and stores `{ node, entry }` pairs in
-`file.data.acadamarkNotesPending`. `<note>` nodes **stay in the tree** through
+`file.data.enscribeNotesPending`. `<note>` nodes **stay in the tree** through
 steps 4.7–4.9 so that any refs/cites inside note bodies are resolved before
 placement. Actual marker splicing and note-list injection happen in
-`acadamarkNotePlacement` (step 4.10).
+`enscribeNotePlacement` (step 4.10).
 
-**Output:** `file.data.acadamarkNotesPending` (array of `{ node, entry }` pairs);
+**Output:** `file.data.enscribeNotesPending` (array of `{ node, entry }` pairs);
 registry note entries with slots claimed (numbers assigned later by step 4.6.5).
 
 **Registry:** `registry.assign('note', id, { numbered: true })` per note node.
-Sequential numbers are assigned in `acadamarkApplyNumbers` (step 4.6.5).
+Sequential numbers are assigned in `enscribeApplyNumbers` (step 4.6.5).
 
 **Dependencies:** `remarkRecursiveContent` (note content must be parsed mdast),
-`acadamarkSectionNesting` (tree structure stable).
+`enscribeSectionNesting` (tree structure stable).
 
-#### 4.6 acadamarkNumbering
+#### 4.6 enscribeNumbering
 
 **What it does:** Registers `$$` (display-math), `figure`, and `table` nodes
 with the registry (record-only); registers `section`, `sub-section`, and
 `sub-sub-section` nodes for cross-reference lookup; and registers code-block
 sigil nodes (tagname `` ``` ``) under registry type `code` for cross-reference
 lookup. Stores `{ node, entry }` pairs for numbered elements in
-`file.data.acadamarkNumberingPending`.
+`file.data.enscribeNumberingPending`.
 
 **Registered types:**
 
@@ -444,10 +444,10 @@ Section and code-block entries are `numbered: false` — they land in the
 registry's label index (when their `id` contains `:`) so `findByLabel()` can
 resolve them, but they do not get a sequential display number.
 
-**Output:** `file.data.acadamarkNumberingPending`; registry entries for numbered
+**Output:** `file.data.enscribeNumberingPending`; registry entries for numbered
 elements (numbers not yet assigned); `node.registryType` set on each numbered node.
 
-**Dependencies:** `acadamarkNotes` (notes claim their registry slots first, so
+**Dependencies:** `enscribeNotes` (notes claim their registry slots first, so
 note numbers are allocated before equation/figure/table numbers — convention,
 not a hard dependency since they use separate type counters).
 
@@ -456,7 +456,7 @@ kwargs → document config (`number-equations`, etc.) → default `true`.
 
 ---
 
-#### 4.6.5 acadamarkApplyNumbers
+#### 4.6.5 enscribeApplyNumbers
 
 **What it does:** Assigns sequential display numbers to all registered numbered
 elements in a single ordered pass, then writes them back to nodes.
@@ -464,22 +464,22 @@ elements in a single ordered pass, then writes them back to nodes.
 **Calls:**
 1. `registry.numberRegistry()` — assigns `entry.number` for all registered entries.
 2. `fillNumbering(file)` — sets `node.computedNumber = entry.number` for each entry
-   in `file.data.acadamarkNumberingPending`.
+   in `file.data.enscribeNumberingPending`.
 
 **Output:** `node.computedNumber` set on all registered numbered elements.
 
-**Dependencies:** `acadamarkNotes` (step 4.5) and `acadamarkNumbering` (step 4.6)
+**Dependencies:** `enscribeNotes` (step 4.5) and `enscribeNumbering` (step 4.6)
 — all registration must be complete before numbering is computed.
 
-**Must precede:** `acadamarkRefResolution` (step 4.7) — ref resolution reads
+**Must precede:** `enscribeRefResolution` (step 4.7) — ref resolution reads
 `entry.number` when building reference display text.
 
-#### 4.7 acadamarkRefResolution
+#### 4.7 enscribeRefResolution
 
 **What it does:** Replaces every `<ref>` node with a `__ref-marker` (target
 found in label index) or `__ref-error` (target not found) internal node.
 
-**Dependency on numbering:** Must run after `acadamarkApplyNumbers` (step 4.6.5)
+**Dependency on numbering:** Must run after `enscribeApplyNumbers` (step 4.6.5)
 so that all numbered elements have `computedNumber` set and their colon-ids are
 in the label index.
 
@@ -491,12 +491,12 @@ targets produce the label-tail. Config key `ref-prefix-{prefix}` overrides.
 **Known limitation:** Only colon-ids are referenceable. Non-colon ids produce
 `__ref-error`.
 
-#### 4.8 acadamarkCiteResolution
+#### 4.8 enscribeCiteResolution
 
 **What it does:** Replaces every `<cite>` node with `__cite-marker` and/or
 `__cite-error` internal nodes. Builds `citations.order` (first-cited key order).
 
-**Dependency:** `buildCitationIndex` (step 4.4; needs `file.data.acadamarkCitations`).
+**Dependency:** `buildCitationIndex` (step 4.4; needs `file.data.enscribeCitations`).
 If citations were not loaded, this plugin is a no-op.
 
 **Citation keys:** Extracted from `node.atRefs` (canonical: `<cite @Smith2020>` or `<cite @Smith2020 @Jones2019>`), `node.positional` (bracketed form: `<cite [@Smith2020, @Jones2019]>`, `@` stripped per item), `node.content` as string (pipe form), or parsed content text (defensive path).
@@ -506,7 +506,7 @@ If citations were not loaded, this plugin is a no-op.
 
 ---
 
-#### 4.9 acadamarkNotePlacement
+#### 4.9 enscribeNotePlacement
 
 **What it does:** Splices `__note-marker` nodes in place of `<note>` nodes,
 builds `__note-list-item` nodes from the now-resolved note content, and injects
@@ -522,12 +522,12 @@ node containing `__note-list-item` nodes prepended to `article-back.content`.
 
 **Tree walk:** Uses `walkReplace()` from `lib/walk-replace.js`.
 
-**Dependencies:** `acadamarkCiteResolution` (step 4.8; note content must be
-resolved), `acadamarkApplyNumbers` (step 4.6.5; `entry.number` must be set).
+**Dependencies:** `enscribeCiteResolution` (step 4.8; note content must be
+resolved), `enscribeApplyNumbers` (step 4.6.5; `entry.number` must be set).
 
 ---
 
-#### 4.10 acadamarkBibliography
+#### 4.10 enscribeBibliography
 
 **What it does:** Renders the full bibliography via citation-js and injects
 a `__bibliography` node into the back-matter region — `<article-back>` for an
@@ -537,7 +537,7 @@ appended (pushed) to the back-matter region. A book gets a single
 document-wide bibliography in `<book-back>`; per-chapter bibliographies are a
 deferred post-alpha option (see `BACKLOG.md`).
 
-**Dependency:** `acadamarkCiteResolution` (needs `citations.order` to be
+**Dependency:** `enscribeCiteResolution` (needs `citations.order` to be
 populated with the first-cited key list).
 
 **Empty case:** If `citations.order.length === 0`, any author-placed
@@ -551,7 +551,7 @@ entries by key.
 
 ## 5. Stage 4: mdast → hast
 
-**Function:** `toHast(tree, { handlers: { acadamarkTag: tagHandler }, allowDangerousHtml: true })`
+**Function:** `toHast(tree, { handlers: { enscribeTag: tagHandler }, allowDangerousHtml: true })`
 from `mdast-util-to-hast`.
 
 **Not remark-rehype:** The interpreter uses `mdast-util-to-hast` directly.
@@ -562,8 +562,8 @@ from `mdast-util-to-hast`.
 
 - Standard mdast node types (paragraph, emphasis, heading, etc.) are converted
   by built-in mdast-util-to-hast rules.
-- `acadamarkTag` nodes call the custom handler registered in `handlers.acadamarkTag`.
-- Parser-stage error nodes (`acadamarkTagError`, `acadamarkParseError`)
+- `enscribeTag` nodes call the custom handler registered in `handlers.enscribeTag`.
+- Parser-stage error nodes (`enscribeTagError`, `enscribeParseError`)
   fall through to `mdast-util-to-hast`'s default unknown-node handling —
   the interpreter has no handler for them. This is a tracked gap against
   the always-renders guarantee, described in `notes/specs/interpreter.md`
@@ -650,19 +650,19 @@ to have run before it.
 
 | Plugin | Must run after | Produces |
 |--------|---------------|---------|
-| `remarkRecursiveContent` | `remarkAcadamark` (string content set) | `node.content` as `Node[]` |
-| `acadamarkNormalizeMarkdown` | `remarkRecursiveContent` (both outer and inner parses complete) | delegated-parser nodes (`inlineMath`, `math`, `table`) rewritten to canonical `acadamarkTag` nodes |
-| `acadamarkConfigDiscovery` | `acadamarkNormalizeMarkdown` | `file.data.acadamarkConfig` |
-| `acadamarkArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
-| `acadamarkSectionNesting` | `acadamarkArticleStructuring` | nested section tree |
-| `buildCitationIndex` | `acadamarkConfigDiscovery` | `file.data.acadamarkCitations` |
-| `acadamarkNotes` | `remarkRecursiveContent`, `acadamarkSectionNesting` | `file.data.acadamarkNotesPending`; registry note slots |
-| `acadamarkNumbering` | `acadamarkNotes` | `file.data.acadamarkNumberingPending`; `node.registryType` |
-| `acadamarkApplyNumbers` | `acadamarkNotes`, `acadamarkNumbering` | `node.computedNumber`; label index entries |
-| `acadamarkRefResolution` | `acadamarkApplyNumbers` | `__ref-marker`, `__ref-error` |
-| `acadamarkCiteResolution` | `buildCitationIndex` | `__cite-marker`, `__cite-error`, `citations.order` |
-| `acadamarkNotePlacement` | `acadamarkCiteResolution`, `acadamarkApplyNumbers` | `__note-marker`, `__note-list`, `__note-list-item` |
-| `acadamarkBibliography` | `acadamarkCiteResolution` | `__bibliography` |
+| `remarkRecursiveContent` | `remarkEnscribe` (string content set) | `node.content` as `Node[]` |
+| `enscribeNormalizeMarkdown` | `remarkRecursiveContent` (both outer and inner parses complete) | delegated-parser nodes (`inlineMath`, `math`, `table`) rewritten to canonical `enscribeTag` nodes |
+| `enscribeConfigDiscovery` | `enscribeNormalizeMarkdown` | `file.data.enscribeConfig` |
+| `enscribeArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
+| `enscribeSectionNesting` | `enscribeArticleStructuring` | nested section tree |
+| `buildCitationIndex` | `enscribeConfigDiscovery` | `file.data.enscribeCitations` |
+| `enscribeNotes` | `remarkRecursiveContent`, `enscribeSectionNesting` | `file.data.enscribeNotesPending`; registry note slots |
+| `enscribeNumbering` | `enscribeNotes` | `file.data.enscribeNumberingPending`; `node.registryType` |
+| `enscribeApplyNumbers` | `enscribeNotes`, `enscribeNumbering` | `node.computedNumber`; label index entries |
+| `enscribeRefResolution` | `enscribeApplyNumbers` | `__ref-marker`, `__ref-error` |
+| `enscribeCiteResolution` | `buildCitationIndex` | `__cite-marker`, `__cite-error`, `citations.order` |
+| `enscribeNotePlacement` | `enscribeCiteResolution`, `enscribeApplyNumbers` | `__note-marker`, `__note-list`, `__note-list-item` |
+| `enscribeBibliography` | `enscribeCiteResolution` | `__bibliography` |
 | compiler (toHast) | all mdast transforms | hast tree |
 | asset injection | compiler | CSS/JS nodes prepended to hast |
 | serialization | asset injection | HTML string |
@@ -672,20 +672,20 @@ to have run before it.
 - `remarkRecursiveContent` must precede all structural plugins. Structural
   plugins read node content (e.g., `<meta>` internals, note content) as parsed
   mdast arrays; they cannot work with raw strings.
-- `acadamarkNormalizeMarkdown` must precede every Phase 1+ plugin. After
+- `enscribeNormalizeMarkdown` must precede every Phase 1+ plugin. After
   normalization, the structural and semantic plugins only ever see
-  `acadamarkTag` nodes — never raw `inlineMath`, `math`, or GFM `table` nodes.
+  `enscribeTag` nodes — never raw `inlineMath`, `math`, or GFM `table` nodes.
   Running any structural plugin first would mean some code paths see two node
   representations for the same construct.
-- `acadamarkApplyNumbers` must precede `acadamarkRefResolution`. Cross-references
+- `enscribeApplyNumbers` must precede `enscribeRefResolution`. Cross-references
   look up by label; labels are only in the registry after `numberRegistry()` has
   assigned numbers and `fillNumbering` has written them to nodes.
-- `acadamarkCiteResolution` must precede `acadamarkBibliography`. The bibliography
+- `enscribeCiteResolution` must precede `enscribeBibliography`. The bibliography
   assembles from `citations.order`, which is populated during cite resolution.
-- `acadamarkCiteResolution` must precede `acadamarkNotePlacement`. Note bodies
+- `enscribeCiteResolution` must precede `enscribeNotePlacement`. Note bodies
   may contain `<cite>` tags; those must be resolved before note content is moved
   to article-back.
-- `buildCitationIndex` must precede `acadamarkCiteResolution`. Cite resolution
+- `buildCitationIndex` must precede `enscribeCiteResolution`. Cite resolution
   needs the citation-js instance.
 
 ---
@@ -694,11 +694,11 @@ to have run before it.
 
 ### 9.1 Plugin options
 
-`acadamarkInterpreter(options)` accepts:
+`enscribeInterpreter(options)` accepts:
 
 | option | type | default | description |
 |--------|------|---------|-------------|
-| `embedResources` | `boolean` | `false` | Master switch for the two resources acadamark would otherwise inline (document fonts, KaTeX CSS). `false` links them externally (lean); `true` inlines them (self-contained). The per-resource options below override it. Does **not** affect `hoverPreviewMode` or `dslMode`. |
+| `embedResources` | `boolean` | `false` | Master switch for the two resources enscribe would otherwise inline (document fonts, KaTeX CSS). `false` links them externally (lean); `true` inlines them (self-contained). The per-resource options below override it. Does **not** affect `hoverPreviewMode` or `dslMode`. |
 | `documentFontsCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | Document-fonts (Inter, Source Code Pro) delivery |
 | `katexCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | KaTeX CSS delivery mode |
 | `hoverPreviewMode` | `'inline' \| 'link' \| 'skip'` | `'inline'` | Hover preview asset delivery |
@@ -719,18 +719,18 @@ them to `'live-link'` and `'link'` independently.
 ### 9.2 Document-level config
 
 Authors can override pipeline behavior with `<config>` tags in the document.
-These are processed by `acadamarkConfigDiscovery` and stored in
-`file.data.acadamarkConfig`.
+These are processed by `enscribeConfigDiscovery` and stored in
+`file.data.enscribeConfig`.
 
 | key | type | consumed by | effect |
 |-----|------|-------------|--------|
 | `citation-style` | CSL style name | `buildCitationIndex` | Citation format (default: `chicago-author-date`) |
-| `number-equations` | `'false'` | `acadamarkNumbering` | Suppress equation numbering |
-| `number-figures` | `'false'` | `acadamarkNumbering` | Suppress figure numbering |
-| `number-tables` | `'false'` | `acadamarkNumbering` | Suppress table numbering |
-| `ref-prefix-eqn` | string | `acadamarkRefResolution` | Override "equation" word in ref labels |
-| `ref-prefix-fig` | string | `acadamarkRefResolution` | Override "figure" word in ref labels |
-| *(other `ref-prefix-*` keys)* | string | `acadamarkRefResolution` | Override any prefix word |
+| `number-equations` | `'false'` | `enscribeNumbering` | Suppress equation numbering |
+| `number-figures` | `'false'` | `enscribeNumbering` | Suppress figure numbering |
+| `number-tables` | `'false'` | `enscribeNumbering` | Suppress table numbering |
+| `ref-prefix-eqn` | string | `enscribeRefResolution` | Override "equation" word in ref labels |
+| `ref-prefix-fig` | string | `enscribeRefResolution` | Override "figure" word in ref labels |
+| *(other `ref-prefix-*` keys)* | string | `enscribeRefResolution` | Override any prefix word |
 
 Boolean-like config values are strings. The string `'false'` suppresses
 numbering; any other value (including absent) enables it.
@@ -751,7 +751,7 @@ Some prose text.
 { type: 'paragraph', children: [{ type: 'text', value: 'Some prose text.' }] }
 ```
 
-**Stages 2–3:** No `acadamarkTag` nodes involved; no transformation.
+**Stages 2–3:** No `enscribeTag` nodes involved; no transformation.
 
 **Stage 4 (toHast):** Built-in mdast-util-to-hast rule:
 ```js
@@ -772,7 +772,7 @@ Some prose text.
 <em | emphasized>
 ```
 
-**Stage 1:** `acadamarkTag { tagname: 'em', content: 'emphasized', contentHandler: 'default' }`
+**Stage 1:** `enscribeTag { tagname: 'em', content: 'emphasized', contentHandler: 'default' }`
 
 **Stage 2 (remarkRecursiveContent):**
 ```
@@ -803,16 +803,16 @@ See <ref @eqn:newton>.
 ```
 
 **Stage 1:**
-- `acadamarkTag { tagname: '$$', id: 'eqn:newton', content: ' F = ma ', isOpaqueContent: true }`
-- `acadamarkTag { tagname: 'ref', atRefs: ['eqn:newton'], id: null }`
+- `enscribeTag { tagname: '$$', id: 'eqn:newton', content: ' F = ma ', isOpaqueContent: true }`
+- `enscribeTag { tagname: 'ref', atRefs: ['eqn:newton'], id: null }`
 
 **Stage 2:** `$$` is opaque; skipped. `ref` has no default content to parse.
 
-**Stage 3 — acadamarkNumbering:**
+**Stage 3 — enscribeNumbering:**
 - `$$` node: `registryType = 'equation'`, `registry.assign('equation', 'eqn:newton', { numbered: true })` → `entry.number = 1`
 - `node.computedNumber = 1`. id `'eqn:newton'` (contains `:`) → added to label index.
 
-**Stage 3 — acadamarkRefResolution:**
+**Stage 3 — enscribeRefResolution:**
 - `registry.findByLabel('eqn:newton')` → found, `entry.number = 1`
 - `computeRefText('eqn:newton', entry, config)` → prefix `eqn` → `DEFAULT_PREFIXES['eqn'] = 'equation'` → text `"equation 1"`
 - `<ref>` replaced with `__ref-marker { targetId: 'eqn:newton', text: 'equation 1' }`
@@ -839,19 +839,19 @@ See <ref @eqn:newton>.
 See <cite @Smith2020>.
 ```
 
-**Stage 1:** `acadamarkTag { tagname: 'cite', atRefs: ['Smith2020'], positional: [] }`
+**Stage 1:** `enscribeTag { tagname: 'cite', atRefs: ['Smith2020'], positional: [] }`
 
 **Stage 3 — buildCitationIndex:**
-- `file.data.acadamarkCitations = { cite: Cite([Smith2020]), order: [], style: 'chicago-author-date' }`
+- `file.data.enscribeCitations = { cite: Cite([Smith2020]), order: [], style: 'chicago-author-date' }`
 
-**Stage 3 — acadamarkCiteResolution:**
+**Stage 3 — enscribeCiteResolution:**
 - `extractCiteKeys(node)` → `['Smith2020']` from `node.atRefs`
 - `cite.data.find(e => e.id === 'Smith2020')` → found
 - `order.push('Smith2020')` → `citations.order = ['Smith2020']`
 - `cite.format('citation', { entry: ['Smith2020'], template: 'chicago-author-date', format: 'html', lang: 'en-US' })` → `'(Smith, 2020)'`
 - `<cite>` replaced with `__cite-marker { keys: 'Smith2020', html: '(Smith, 2020)' }`
 
-**Stage 3 — acadamarkBibliography:**
+**Stage 3 — enscribeBibliography:**
 - `citations.order.length === 1` → bibliography is rendered
 - bibliography HTML formatted, `id="ref-Smith2020"` injected
 - `__bibliography` node injected into article-back
@@ -873,31 +873,31 @@ See <cite @Smith2020>.
 Here is some text.<note | This is an endnote.> More text.
 ```
 
-**Stage 1:** `acadamarkTag { tagname: 'note', content: 'This is an endnote.' }`
+**Stage 1:** `enscribeTag { tagname: 'note', content: 'This is an endnote.' }`
 
 **Stage 2 (remarkRecursiveContent):**
 - `'This is an endnote.'` → parsed → `[text("This is an endnote.")]` (single inline node)
 - `node.content = [text("This is an endnote.")]`
 
-**Stage 3 — acadamarkNotes (register-only):**
+**Stage 3 — enscribeNotes (register-only):**
 - `registry.assign('note', null, { numbered: true })` → `entry = { id: 'note-1' }` (number not yet assigned)
-- `file.data.acadamarkNotesPending = [{ node: <note>, entry }]`
+- `file.data.enscribeNotesPending = [{ node: <note>, entry }]`
 - `<note>` node **stays in the tree**
 
-**Stage 3 — acadamarkApplyNumbers:**
+**Stage 3 — enscribeApplyNumbers:**
 - `registry.numberRegistry()` → `entry.number = 1`
-- `fillNumbering(file)` → (no-op for notes; `acadamarkNumberingPending` has equations/figures/tables)
+- `fillNumbering(file)` → (no-op for notes; `enscribeNumberingPending` has equations/figures/tables)
 
-**Stage 3 — acadamarkNumbering, acadamarkRefResolution, acadamarkCiteResolution:**
+**Stage 3 — enscribeNumbering, enscribeRefResolution, enscribeCiteResolution:**
 - The `<note>` node is still in the tree at its authored position, so any
   `<ref>` or `<cite>` tags inside `node.content` are resolved here in
-  document order — by the time `acadamarkNotePlacement` runs, the note's
+  document order — by the time `enscribeNotePlacement` runs, the note's
   content array contains `__ref-marker` / `__cite-marker` nodes rather than
   raw `<ref>` / `<cite>` tags. (This single-note example has no inner
   refs/cites, so these steps are no-ops, but they are the reason
-  `acadamarkNotePlacement` runs as late as step 4.9.)
+  `enscribeNotePlacement` runs as late as step 4.9.)
 
-**Stage 3 — acadamarkNotePlacement:**
+**Stage 3 — enscribeNotePlacement:**
 - Splices `<note>` → `__note-marker { noteId: 'note-1', number: 1, refId: 'noteref-1' }`
 - Builds `__note-list-item` with `content: [text("This is an endnote.")]`
 - Prepends `__note-list` with one `__note-list-item` to article-back
@@ -921,18 +921,18 @@ set during a pipeline run:
 
 | field | type | set by | read by |
 |-------|------|--------|----------|
-| `file.data.acadamarkConfig` | `Map<string, string>` | `acadamarkConfigDiscovery` | `buildCitationIndex`, `acadamarkNumbering`, `acadamarkRefResolution` |
-| `file.data.acadamarkRegistry` | registry object | first `ensureRegistry(file)` call | `acadamarkNotes`, `acadamarkNumbering`, `acadamarkApplyNumbers`, `acadamarkRefResolution` |
-| `file.data.acadamarkCitations` | `{ cite, order, style }` | `buildCitationIndex` | `acadamarkCiteResolution`, `acadamarkBibliography` |
-| `file.data.acadamarkNotesPending` | array of `{ node, entry }` | `acadamarkNotes` | `acadamarkNotePlacement` |
-| `file.data.acadamarkNumberingPending` | array of `{ node, entry }` | `acadamarkNumbering` | `acadamarkApplyNumbers` |
+| `file.data.enscribeConfig` | `Map<string, string>` | `enscribeConfigDiscovery` | `buildCitationIndex`, `enscribeNumbering`, `enscribeRefResolution` |
+| `file.data.enscribeRegistry` | registry object | first `ensureRegistry(file)` call | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution` |
+| `file.data.enscribeCitations` | `{ cite, order, style }` | `buildCitationIndex` | `enscribeCiteResolution`, `enscribeBibliography` |
+| `file.data.enscribeNotesPending` | array of `{ node, entry }` | `enscribeNotes` | `enscribeNotePlacement` |
+| `file.data.enscribeNumberingPending` | array of `{ node, entry }` | `enscribeNumbering` | `enscribeApplyNumbers` |
 
 All three are initialized as needed:
-- `acadamarkConfig` is set to a new `Map` even if the document has no `<config>`
+- `enscribeConfig` is set to a new `Map` even if the document has no `<config>`
   blocks (the map is just empty).
-- `acadamarkRegistry` is created on first `ensureRegistry(file)` call;
-  `acadamarkNotes` is typically first.
-- `acadamarkCitations` is only set when at least one `<data>/<library>` block
+- `enscribeRegistry` is created on first `ensureRegistry(file)` call;
+  `enscribeNotes` is typically first.
+- `enscribeCitations` is only set when at least one `<data>/<library>` block
   is found and successfully parsed.
 
 ---
@@ -960,7 +960,7 @@ individually) for self-contained HTML that needs no network to render. See
 - Source map comments (`//# sourceMappingURL=...`) are stripped to avoid
   console warnings about missing `.map` files.
 - Custom `hover-preview.css` and `hover-preview.js` in
-  `packages/acadamark-interpreter/src/assets/` handle acadamark-specific
+  `packages/enscribe-interpreter/src/assets/` handle enscribe-specific
   tooltip behavior.
 
 ### 12.3 Body fonts
@@ -996,14 +996,14 @@ and cannot be authored directly.
 
 | created by | tagname | rendered as |
 |-----------|---------|-------------|
-| `acadamarkNotePlacement` | `__note-marker` | `<sup>` with link |
-| `acadamarkNotePlacement` | `__note-list` | `<note-list><ol>` |
-| `acadamarkNotePlacement` | `__note-list-item` | `<li>` |
-| `acadamarkRefResolution` | `__ref-marker` | `<a class="ref">` |
-| `acadamarkRefResolution` | `__ref-error` | `<a class="ref-error">` |
-| `acadamarkCiteResolution` | `__cite-marker` | `<cite class="cite">` |
-| `acadamarkCiteResolution` | `__cite-error` | `<cite class="cite-error">` |
-| `acadamarkBibliography` | `__bibliography` | `<bibliography>` |
+| `enscribeNotePlacement` | `__note-marker` | `<sup>` with link |
+| `enscribeNotePlacement` | `__note-list` | `<note-list><ol>` |
+| `enscribeNotePlacement` | `__note-list-item` | `<li>` |
+| `enscribeRefResolution` | `__ref-marker` | `<a class="ref">` |
+| `enscribeRefResolution` | `__ref-error` | `<a class="ref-error">` |
+| `enscribeCiteResolution` | `__cite-marker` | `<cite class="cite">` |
+| `enscribeCiteResolution` | `__cite-error` | `<cite class="cite-error">` |
+| `enscribeBibliography` | `__bibliography` | `<bibliography>` |
 
 The `data` and `library` tagnames (author-written) are also in INTERNAL_REGISTRY
 and render as `null` (suppressed): their content has been consumed by
@@ -1016,10 +1016,10 @@ and render as `null` (suppressed): their content has been consumed by
 Layer 1 documents render in the browser with no build step, via the browser
 entry `src/browser.js` (Phase 14 Slice 1). It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
-which assigns that HTML to an element. Both wrap `buildAcadamarkPipeline` with
+which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
 browser-safe defaults (external fonts / KaTeX CSS, linked third-party
 hover-preview libraries, live-link DSL); a caller can override any of them. tsup
-bundles the entry into an ESM module and an IIFE global (`window.acadamark`);
+bundles the entry into an ESM module and an IIFE global (`window.enscribe`);
 see `tsup.config.js`.
 
 The Node-only asset paths (font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads)
@@ -1043,7 +1043,7 @@ that left the Slice 1 bundle unable to load in a browser.
 
 **Live-mode assets under `renderInto` (Phase 14 Slice 2).** `renderInto` sets
 the HTML via `el.innerHTML`, and the HTML spec deliberately leaves
-`innerHTML`-injected `<script>` elements inert. The interactive layer acadamark
+`innerHTML`-injected `<script>` elements inert. The interactive layer enscribe
 emits — Tippy/Popper hover-previews and live-link DSL bundles (mermaid / abc) —
 is a set of `<script>`s, so under `renderInto` they do not run. The decided
 answer is an **opt-in two-step**: `render` (or `renderInto`) produces the markup,

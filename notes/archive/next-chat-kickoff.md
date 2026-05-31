@@ -1,4 +1,4 @@
-# Acadamark — kickoff for the next chat
+# Enscribe — kickoff for the next chat
 
 This document gets you (Claude in a fresh chat) and me (Ariel) on the same page quickly without re-reading the whole project.
 
@@ -6,9 +6,9 @@ This document gets you (Claude in a fresh chat) and me (Ariel) on the same page 
 
 **Parser:** Slice 3.5 is complete. 48/48 tests pass. The parser handles all sigil families (`#`, `##`, `###`, `$`, `$$`, `` ` ``, ```` ``` ````), named tags in short form, and the full attribute vocabulary (positionals, bracketed lists, ids, classes, kwargs, flags, permissive identifiers). Five small post-Slice-3.5 cleanup edits have been queued for Claude Code (CC), all documentation only — once those land, the slice is fully closed.
 
-**Vocabulary spec:** Just produced. The first complete draft of acadamark's Layer 1 semantic HTML vocabulary lives in `packages/layer1-vocabulary/SPEC.md` (moved from `notes/layer1-vocabulary-revised.md`). All major decisions are settled and documented with rationale. ~35 elements covering articles, books, chapters, and book-parts with floats, citations, cross-refs, notes, and apparatus.
+**Vocabulary spec:** Just produced. The first complete draft of enscribe's Layer 1 semantic HTML vocabulary lives in `packages/layer1-vocabulary/SPEC.md` (moved from `notes/layer1-vocabulary-revised.md`). All major decisions are settled and documented with rationale. ~35 elements covering articles, books, chapters, and book-parts with floats, citations, cross-refs, notes, and apparatus.
 
-**Notes file:** `notes/idioms.md` has been added. Captures the delegation principle (acadamark is not markdown plus extensions; markdown idioms are accepted as shortcuts because the parsers exist; at the interpreter, sigil tags convert to existing mdast/hast types where possible).
+**Notes file:** `notes/idioms.md` has been added. Captures the delegation principle (enscribe is not markdown plus extensions; markdown idioms are accepted as shortcuts because the parsers exist; at the interpreter, sigil tags convert to existing mdast/hast types where possible).
 
 **Test fixture:** `notes/test.amd` exists. Comprehensive feature catalog exercising every parser feature through Slice 3.5 plus authoring patterns for section-nesting and the worked-document scenario.
 
@@ -36,7 +36,7 @@ These are how Ariel and Claude work together. Keep them in mind:
 - **Pushback is preferred over agreement.** Ariel has stated this explicitly. Disagreement, alternative framings, "have you considered X?" — these are part of the work, not interruptions.
 - **Drift checks at the end of each slice.** Re-read spec, grammar, tests together to catch where they've gotten out of sync.
 - **Two-surface workflow.** This chat session is for design, drift analysis, prompt-crafting, decisions. Claude Code in VS Code is for tactical implementation. The chat produces specs and prompts; CC executes them.
-- **Slow over fast.** Decisions are made deliberately. Acadamark has been worked on intermittently over years; deliberate decisions are what make it resumable.
+- **Slow over fast.** Decisions are made deliberately. Enscribe has been worked on intermittently over years; deliberate decisions are what make it resumable.
 
 ## Most likely next steps (Ariel's call which one to start)
 
@@ -46,7 +46,7 @@ In rough priority order:
 
 2. **Attribute spec for each element.** The second draft of the vocabulary, where each element gets its allowed attributes specified with JATS as primary reference. This is a focused design pass — probably worth doing before any implementation.
 
-3. **`acadamarkTagInterpret` design.** The interpreter is the next major plugin in the pipeline. Per `STATUS.md`, it needs a schema-registration model. The vocabulary spec gives it a concrete target. A `notes/tag-schemas.md` should precede the implementation.
+3. **`enscribeTagInterpret` design.** The interpreter is the next major plugin in the pipeline. Per `STATUS.md`, it needs a schema-registration model. The vocabulary spec gives it a concrete target. A `notes/tag-schemas.md` should precede the implementation.
 
 4. **Slice 4 of the parser** (long-form DSL tags: `<csv>...</csv>`, `<theorem>...</theorem>`). Mechanical extension of the parser. Can run in parallel with vocabulary work since they don't interfere.
 
@@ -60,7 +60,7 @@ In rough priority order:
 
 - **Theorem-family is reserved but not specified.** The slot is held in the vocabulary; specifying the elements is a separate design pass.
 
-- **The vocabulary as a standalone artifact has value beyond acadamark.** It can be published as a usable custom-element library independent of the shorthand parser. Worth keeping the boundary clean — the package shouldn't depend on acadamark internals, and acadamark's interpreter consumes the vocabulary via its public interface.
+- **The vocabulary as a standalone artifact has value beyond enscribe.** It can be published as a usable custom-element library independent of the shorthand parser. Worth keeping the boundary clean — the package shouldn't depend on enscribe internals, and enscribe's interpreter consumes the vocabulary via its public interface.
 
 - **`packages/layer1-vocabulary/` is recommended location** rather than a separate repo, but the package should be cleanly extractable later if needed.
 
@@ -74,7 +74,7 @@ Two things to keep an eye on:
 
 ## How to start the next chat
 
-Ariel will probably open with something like "starting back up on acadamark, want to work on X." Read the relevant docs in this order based on what X is:
+Ariel will probably open with something like "starting back up on enscribe, want to work on X." Read the relevant docs in this order based on what X is:
 
 - **For vocabulary work:** `README.md`, `DESIGN.md`, `notes/layer1-naming.md`, `packages/layer1-vocabulary/SPEC.md` (the spec; moved from `notes/layer1-vocabulary-revised.md`).
 - **For parser work:** `README.md`, `DESIGN.md`, `BUILD.md`, `STATUS.md`, `notes/shorthand-syntax.md`.
@@ -83,7 +83,7 @@ Ariel will probably open with something like "starting back up on acadamark, wan
 
 For any work, the standard preamble:
 
-> Resuming work on acadamark. Please read [files in order]. The previous chat session settled the Layer 1 vocabulary (now at `packages/layer1-vocabulary/SPEC.md`). Today I want to work on [topic].
+> Resuming work on enscribe. Please read [files in order]. The previous chat session settled the Layer 1 vocabulary (now at `packages/layer1-vocabulary/SPEC.md`). Today I want to work on [topic].
 
 If Claude needs to push back on something or has a real concern, surface it before proceeding. That's the working style.
 

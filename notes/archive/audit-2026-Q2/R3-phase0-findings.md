@@ -5,19 +5,19 @@
 `notes.js` and supporting machinery. No code, tests, or documents were modified.
 
 **Files read at code level:**
-- `packages/acadamark-interpreter/src/plugins/notes.js`
-- `packages/acadamark-interpreter/src/plugins/ref-resolution.js`
-- `packages/acadamark-interpreter/src/plugins/cite-resolution.js`
-- `packages/acadamark-interpreter/src/index.js`
-- `packages/acadamark-interpreter/src/lib/registry.js`
-- `packages/acadamark-interpreter/src/lib/discover.js` (R2 output)
-- `packages/acadamark-interpreter/src/handlers/notes.js`
-- `packages/acadamark-interpreter/test/plugins/notes.test.js`
+- `packages/enscribe-interpreter/src/plugins/notes.js`
+- `packages/enscribe-interpreter/src/plugins/ref-resolution.js`
+- `packages/enscribe-interpreter/src/plugins/cite-resolution.js`
+- `packages/enscribe-interpreter/src/index.js`
+- `packages/enscribe-interpreter/src/lib/registry.js`
+- `packages/enscribe-interpreter/src/lib/discover.js` (R2 output)
+- `packages/enscribe-interpreter/src/handlers/notes.js`
+- `packages/enscribe-interpreter/test/plugins/notes.test.js`
 - `packages/layer1-vocabulary/elements/note.md`
 - `notes/interpreter.md`, `notes/pipeline.md`
 - `notes/pipeline-refactor-plan.md`, `notes/pipeline-refactor-plan-amendment.md`
 - `notes/audit-2026-Q2/R2-phase0-findings.md`
-- Integration fixtures: `test/fixtures/document-{2,5,6,9}-*.acm`
+- Integration fixtures: `test/fixtures/document-{2,5,6,9}-*.emd`
 
 ---
 
@@ -25,19 +25,19 @@
 
 ### 1.1 Pipeline position
 
-`acadamarkNotes` is step 6 of 11. At this point the tree looks like:
+`enscribeNotes` is step 6 of 11. At this point the tree looks like:
 ```
 root → article → [article-front, article-body, article-back]
 ```
 All note content is already parsed into mdast node arrays by `remarkRecursiveContent`
-(step 1). `<note>.content` is an array of mdast/acadamarkTag nodes, not a raw string.
+(step 1). `<note>.content` is an array of mdast/enscribeTag nodes, not a raw string.
 
 ### 1.2 `walkAndReplace` (notes.js lines 56–78)
 
 Iterative while-loop. For each `<note>` node encountered:
 
 ```js
-if (isAcadamarkTag(node, 'note')) {
+if (isEnscribeTag(node, 'note')) {
   const replacements = processNote(node);
   nodes.splice(i, 1, ...replacements);  // in-place: splice note out, marker in
   i += replacements.length;
@@ -45,7 +45,7 @@ if (isAcadamarkTag(node, 'note')) {
 ```
 
 Recurses into:
-- `acadamarkTag.content` (no `isOpaqueContent` check — same gap as numbering's old `walkAndCollect`)
+- `enscribeTag.content` (no `isOpaqueContent` check — same gap as numbering's old `walkAndCollect`)
 - `node.children` (mdast children: paragraphs, blockquotes, etc.)
 
 Result: every `<note>` node in the tree is replaced with `[markerNode]`. After this
@@ -67,7 +67,7 @@ Registers the note with `numbered: true`, so notes get sequential display number
 **b. Marker creation:**
 ```js
 const markerNode = {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   tagname: '__note-marker',
   id: null,
   kwargs: { noteId, number: undefined, refId: undefined },
@@ -105,13 +105,13 @@ tree; only the shallow copy in `pendingNotes` holds a reference to the content a
 }
 ```
 
-Stored in `file.data.acadamarkNotesPending` (line 179). Nothing outside `notes.js` reads
+Stored in `file.data.enscribeNotesPending` (line 179). Nothing outside `notes.js` reads
 this directly — it is read only by `fillNotes`, which is called from `index.js`'s
-`acadamarkApplyNumbers` step.
+`enscribeApplyNumbers` step.
 
 ### 1.5 `fillNotes` (notes.js lines 193–250)
 
-Called from `acadamarkApplyNumbers` (step 8), after `registry.numberRegistry()` has run.
+Called from `enscribeApplyNumbers` (step 8), after `registry.numberRegistry()` has run.
 
 **a. Fill marker number and refId:**
 ```js
@@ -172,7 +172,7 @@ mechanism to mark an individual note as unnumbered.
 
 Three modes: `end` (default), `foot`, `side`. Read from `node.kwargs?.placement ?? node.kwargs?.position ?? 'end'` (line 44–47). `position` is a legacy alias.
 
-**The `notePlacement` function does NOT read from `file.data.acadamarkConfig`.** There
+**The `notePlacement` function does NOT read from `file.data.enscribeConfig`.** There
 is no config key like `note-default-placement` that would let authors set a document-wide
 default via `<config>`. The default `'end'` is hardcoded. This is a minor drift from the
 vocabulary spec, which says "Document-wide default is 'end'" — the hardcoding is consistent
@@ -199,7 +199,7 @@ removed (per the header comment in notes.js).
 
 Since all modes produce the same structural result (one `__note-list` in `article-back`),
 deferred placement does not need to route notes to different tree locations. A single
-`acadamarkNotePlacement` plugin handles all three modes uniformly. The mode distinction is
+`enscribeNotePlacement` plugin handles all three modes uniformly. The mode distinction is
 captured in the CSS class and `sidenote` flag, both of which can be computed at placement
 time from `notePlacement(node)`.
 
@@ -220,12 +220,12 @@ visitors.set('note', (node) => {
 ```
 
 The pending array stores `(node reference, entry)` — not a copy of content, not a marker.
-The marker is not created until `acadamarkNotePlacement` runs.
+The marker is not created until `enscribeNotePlacement` runs.
 
 ### 3.2 Content is reached naturally
 
 After the re-architecture, notes remain in the tree at their authored positions through
-steps 6–10. The `discover()` walk recurses into acadamarkTag `.content` (guarded by
+steps 6–10. The `discover()` walk recurses into enscribeTag `.content` (guarded by
 `!node.isOpaqueContent`). A `<note>` has `contentHandler: 'default'` and
 `isOpaqueContent: false`, so `discover()` descends into its content automatically.
 This means:
@@ -244,7 +244,7 @@ Yes, with one qualification.
 The ordering problem (R2 findings §5) was: after step 6 (notes.js extraction), refs
 inside notes were off the tree. No single walk point could see both all numbered elements
 AND all refs. With notes in the tree, a single discovery walk at step 7 (after
-`acadamarkNotes` registers but before `numberRegistry()` runs) sees everything.
+`enscribeNotes` registers but before `numberRegistry()` runs) sees everything.
 
 **The qualification: numbered elements inside note content.** Currently, `walkAndCollect`
 in numbering.js (before R2) walked into note content to find equations, figures, tables.
@@ -260,42 +260,42 @@ discovery walk. Removing extraction removes the problem entirely. Nothing else i
 
 ## 4. What does "defer placement to the end" require?
 
-### 4.1 Proposed design: `acadamarkNotePlacement` as a late pipeline plugin
+### 4.1 Proposed design: `enscribeNotePlacement` as a late pipeline plugin
 
-**Recommendation: Option A** — a new `acadamarkNotePlacement` plugin that runs after
+**Recommendation: Option A** — a new `enscribeNotePlacement` plugin that runs after
 cite-resolution and before bibliography (currently step 11).
 
 Revised pipeline:
 ```
 1.  remarkRecursiveContent       (unchanged)
-2.  acadamarkConfigDiscovery     (unchanged)
-3.  acadamarkArticleStructuring  (unchanged)
-4.  acadamarkSectionNesting      (unchanged)
-5.  acadamarkLibraryLoad         (unchanged)
-6.  acadamarkNotes (revised)     — register only; no extraction; <note> stays in tree
-7.  acadamarkNumbering           (unchanged, uses discover())
-8.  acadamarkApplyNumbers        — numberRegistry() + fillNumbering(); NO fillNotes call
-9.  acadamarkRefResolution       (unchanged in R3a; <ref> inside notes now visible)
-10. acadamarkCiteResolution      (unchanged in R3a; <cite> inside notes now visible)
-11. acadamarkNotePlacement (new) — splice markers, build __note-list in article-back
-12. acadamarkBibliography        (unchanged; still step 11 in current numbering)
+2.  enscribeConfigDiscovery     (unchanged)
+3.  enscribeArticleStructuring  (unchanged)
+4.  enscribeSectionNesting      (unchanged)
+5.  enscribeLibraryLoad         (unchanged)
+6.  enscribeNotes (revised)     — register only; no extraction; <note> stays in tree
+7.  enscribeNumbering           (unchanged, uses discover())
+8.  enscribeApplyNumbers        — numberRegistry() + fillNumbering(); NO fillNotes call
+9.  enscribeRefResolution       (unchanged in R3a; <ref> inside notes now visible)
+10. enscribeCiteResolution      (unchanged in R3a; <cite> inside notes now visible)
+11. enscribeNotePlacement (new) — splice markers, build __note-list in article-back
+12. enscribeBibliography        (unchanged; still step 11 in current numbering)
 ```
 
 ### 4.2 Between discovery and placement: tree state
 
 Between steps 6 and 11, the tree contains `<note>` nodes at their authored positions.
-They are live `acadamarkTag` nodes with `tagname: 'note'`, reachable by any tree walk.
+They are live `enscribeTag` nodes with `tagname: 'note'`, reachable by any tree walk.
 Their content arrays hold the fully-parsed note body, including any `<ref>` nodes already
 resolved to `__ref-marker`/`__ref-error` after step 9, and any `<cite>` nodes already
 resolved after step 10.
 
-`file.data.acadamarkNotesPending` holds `{ node, entry }` pairs in document order,
+`file.data.enscribeNotesPending` holds `{ node, entry }` pairs in document order,
 where `entry.number` is set after `numberRegistry()` at step 8.
 
 Nothing else in the pipeline cares about the `<note>` nodes between steps 6 and 11.
 The hast compiler at step 12+ never sees them (placement has already happened).
 
-### 4.3 How `acadamarkNotePlacement` works
+### 4.3 How `enscribeNotePlacement` works
 
 **Step A — Walk and splice markers:**
 
@@ -304,11 +304,11 @@ This requires a walk that provides the parent array reference — the same patte
 current `walkAndReplace` in notes.js, but now at placement time rather than extraction
 time.
 
-The cleanest approach: `acadamarkNotePlacement` uses a local `walkAndSplice` that is
+The cleanest approach: `enscribeNotePlacement` uses a local `walkAndSplice` that is
 structurally identical to the existing `walkAndReplace`, but with the `isOpaqueContent`
 guard included (the gap from the current notes.js walkAndReplace). The walk locates
 each `<note>` node, looks it up in a `Map<node, {entry, ...}>` built from
-`acadamarkNotesPending`, creates the marker, and splices.
+`enscribeNotesPending`, creates the marker, and splices.
 
 ```js
 // Build lookup map: note node object → pending record
@@ -337,7 +337,7 @@ the content can be moved directly to the list item's `.content`.
 
 Same as `fillNotes` currently: `findOrCreateArticleBack(tree.children)`, then
 `back.content.unshift(noteList)`. The `findOrCreateArticleBack` / `findDeep` helper
-can be copied to `acadamarkNotePlacement` or extracted to a shared helper.
+can be copied to `enscribeNotePlacement` or extracted to a shared helper.
 
 ### 4.4 The two-surface question: marker position vs. note-list position
 
@@ -371,7 +371,7 @@ This is cleaner than the current design — the extraction at step 6 is gone.
 ### 4.5 Option B: Placement at toHast time
 
 The alternative would handle notes entirely within the hast compiler step (step 12+). The
-`acadamarkTag` handler for `note` would generate a marker, accumulate list items, and
+`enscribeTag` handler for `note` would generate a marker, accumulate list items, and
 inject a note-list after all notes are processed. This is how LaTeX handles footnotes
 (deferred to page-break time).
 
@@ -387,10 +387,10 @@ hast conversion stateless.
 
 ### 5.1 `notes.js` after re-architecture
 
-The revised `acadamarkNotes` becomes a pure register visitor — its whole job is:
+The revised `enscribeNotes` becomes a pure register visitor — its whole job is:
 
 ```js
-export function acadamarkNotes() {
+export function enscribeNotes() {
   return (tree, file) => {
     const registry = ensureRegistry(file);
     const pending = [];
@@ -401,14 +401,14 @@ export function acadamarkNotes() {
         pending.push({ node, entry });
       }],
     ]));
-    if (file?.data) file.data.acadamarkNotesPending = pending;
+    if (file?.data) file.data.enscribeNotesPending = pending;
   };
 }
 ```
 
-This is the model from R2's `acadamarkNumbering`. No `walkAndReplace`, no `pendingNotes`
+This is the model from R2's `enscribeNumbering`. No `walkAndReplace`, no `pendingNotes`
 with `content` or `markerNode`. The `walkAndReplace` function in notes.js is deleted.
-`findDeep` and `findOrCreateArticleBack` move to `acadamarkNotePlacement`.
+`findDeep` and `findOrCreateArticleBack` move to `enscribeNotePlacement`.
 
 ### 5.2 `ref-resolution.js` after R3a (notes re-architecture only)
 
@@ -451,16 +451,16 @@ notes are no longer extracted. Migration to `discover()` is R3b, not R3a. The mi
 **Split is recommended.** R3 should be cut into two sub-slices:
 
 - **R3a — Notes re-architecture (correctness fix):**
-  - Revise `acadamarkNotes` to use `discover()` for registration only; delete its `walkAndReplace`
-  - Add `acadamarkNotePlacement` plugin (new, after cite-resolution)
+  - Revise `enscribeNotes` to use `discover()` for registration only; delete its `walkAndReplace`
+  - Add `enscribeNotePlacement` plugin (new, after cite-resolution)
   - Remove `fillNotes` export from notes.js
-  - Remove `fillNotes` call from `acadamarkApplyNumbers` in index.js
+  - Remove `fillNotes` call from `enscribeApplyNumbers` in index.js
   - Add unit tests: (a) `<ref>` inside `<note>` content resolves, (b) `<cite>` inside `<note>` content resolves
   - Correctness proof: empty fixture diff
 
 - **R3b — Shared walkAndReplace helper + walker cleanups (code quality):**
   - Create `src/lib/walk-replace.js` with a single correct walkAndReplace
-  - Migrate `ref-resolution.js`, `cite-resolution.js`, and `acadamarkNotePlacement` to use it
+  - Migrate `ref-resolution.js`, `cite-resolution.js`, and `enscribeNotePlacement` to use it
   - Delete the three hand-rolled copies
   - No correctness change; proof is unchanged test suite + empty fixture diff
 
@@ -470,14 +470,14 @@ design (what exactly the shared helper's interface is) can be decided separately
 ### 5.5 After full migration: what is deleted
 
 - `notes.js`: `walkAndReplace` function (lines 56–78), `processNote` inner function,
-  `pendingNotes` array with `content`/`markerNode` fields, `findDeep` function, `findOrCreateArticleBack` function (moved to `acadamarkNotePlacement`), `fillNotes` export.
+  `pendingNotes` array with `content`/`markerNode` fields, `findDeep` function, `findOrCreateArticleBack` function (moved to `enscribeNotePlacement`), `fillNotes` export.
 - `ref-resolution.js` (R3b): `walkAndReplace` function (lines 79–100).
 - `cite-resolution.js` (R3b): `walkAndReplace` function (lines 121–143).
-- `index.js`: `fillNotes` import, `fillNotes(tree, file)` call in `acadamarkApplyNumbers`.
+- `index.js`: `fillNotes` import, `fillNotes(tree, file)` call in `enscribeApplyNumbers`.
 
 Nothing outside these files reads `pendingNotes`, `fillNotes`, or the three
 `walkAndReplace` locals (they are not exported). Confirmed by grep:
-`acadamarkNotesPending` appears only in `notes.js` (lines 25, 28, 179, 194).
+`enscribeNotesPending` appears only in `notes.js` (lines 25, 28, 179, 194).
 `fillNotes` appears only in `notes.js` (exported) and `index.js` (imported and called,
 lines 66 and 349).
 
@@ -490,7 +490,7 @@ lines 66 and 349).
 For all existing fixtures: **no.** The final HTML should be identical, and the empty
 fixture diff proof still works for R3a.
 
-The argument: `acadamarkNotePlacement` produces exactly the same `__note-marker`,
+The argument: `enscribeNotePlacement` produces exactly the same `__note-marker`,
 `__note-list-item`, and `__note-list` nodes as `fillNotes` currently produces, in the same
 tree positions (markers at authored positions, `__note-list` prepended to `article-back`).
 The handlers in `src/handlers/notes.js` are unchanged — they render these internal nodes
@@ -524,7 +524,7 @@ At minimum, these unit tests are needed before R3a lands:
 
 1. **`<ref>` inside `<note>` content resolves.** Create a tree with a `<note>` whose
    content includes a `<ref #eqn:newton>`. Run the full pipeline through
-   `acadamarkRefResolution`. Verify the ref is replaced with `__ref-marker`, not
+   `enscribeRefResolution`. Verify the ref is replaced with `__ref-marker`, not
    `__ref-error`. Currently untested by any unit test or fixture (confirmed: no fixture has
    a `<ref>` inside a `<note>` body; the fixture doc-6 has `<ref #note:galton>` which
    targets a note, not a ref inside one).
@@ -558,35 +558,35 @@ is identical, the re-architecture is correct.
 
 ## 7. Migration risk
 
-### 7.1 Riskiest part: the `walkAndSplice` in `acadamarkNotePlacement`
+### 7.1 Riskiest part: the `walkAndSplice` in `enscribeNotePlacement`
 
 The new placement plugin needs to walk the tree and splice `<note>` nodes out, replacing
 them with markers. This is structurally the same as the current `walkAndReplace` in
 notes.js — the implementation is not new logic, just moved timing.
 
-The risk: if `acadamarkNotePlacement`'s walk has different traversal behavior than the
+The risk: if `enscribeNotePlacement`'s walk has different traversal behavior than the
 current `walkAndReplace`, notes may be visited in a different order, producing different
-numbering. Since `acadamarkNotes` (revised) now registers notes via `discover()` in
-document order, the pending array is in document order. `acadamarkNotePlacement` iterates
+numbering. Since `enscribeNotes` (revised) now registers notes via `discover()` in
+document order, the pending array is in document order. `enscribeNotePlacement` iterates
 `pending` in order to build list items. As long as list items are built in insertion order,
 note numbering in the list matches the markers.
 
-Mitigation: make `acadamarkNotePlacement` iterate `pending` (already in document order)
+Mitigation: make `enscribeNotePlacement` iterate `pending` (already in document order)
 rather than re-walking the tree to collect notes in order. The walk is only needed for
 splicing (finding each note node in the tree and replacing it); the order for list-building
 comes from `pending`.
 
-### 7.2 `acadamarkApplyNumbers` change
+### 7.2 `enscribeApplyNumbers` change
 
-Removing the `fillNotes(tree, file)` call from `acadamarkApplyNumbers` (index.js line 349)
+Removing the `fillNotes(tree, file)` call from `enscribeApplyNumbers` (index.js line 349)
 and the `fillNotes` import (line 66) is a mechanical change. The only risk is forgetting
-it and leaving a stale call that tries to read `acadamarkNotesPending` with the new shape
+it and leaving a stale call that tries to read `enscribeNotesPending` with the new shape
 (which no longer has `content` or `markerNode` fields). Tests will catch this if the
 pending shape changes.
 
 ### 7.3 What reads `pendingNotes` / `file.data` keys
 
-Full grep results for `acadamarkNotesPending`:
+Full grep results for `enscribeNotesPending`:
 - `notes.js` lines 25, 28 (comments), 179 (write), 194 (read)
 - No other file reads it
 
@@ -616,7 +616,7 @@ structure, list structure, numbering, ids), not on mid-pipeline state (pendingNo
 contents, etc.). They use the pattern:
 
 ```js
-acadamarkNotes()(tree, file);
+enscribeNotes()(tree, file);
 ensureRegistry(file).numberRegistry();
 fillNotes(tree, file);
 // assert on tree structure
@@ -624,19 +624,19 @@ fillNotes(tree, file);
 
 After R3a, the corresponding pattern becomes:
 ```js
-acadamarkNotes()(tree, file);          // revised: register-only
+enscribeNotes()(tree, file);          // revised: register-only
 ensureRegistry(file).numberRegistry();
-acadamarkNotePlacement()(tree, file);  // new: splice + build note-list
+enscribeNotePlacement()(tree, file);  // new: splice + build note-list
 // assert on same tree structure
 ```
 
 The assertions themselves do not change. The test helper sequence changes. This is a
 minor update to test/plugins/notes.test.js — all 13 tests remain valid, they just need
-the `fillNotes` call replaced with `acadamarkNotePlacement()()`.
+the `fillNotes` call replaced with `enscribeNotePlacement()()`.
 
 No test currently asserts on mid-pipeline state (no test checks `pendingNotes` fields
 directly, or checks that the `<note>` is absent from the tree immediately after
-`acadamarkNotes()()` runs). So there are no "mid-pipeline structure" tests that would
+`enscribeNotes()()` runs). So there are no "mid-pipeline structure" tests that would
 fail under the new design for the wrong reason.
 
 ---
@@ -653,9 +653,9 @@ Confirmed across all sources:
 
 The current behavior (refs inside notes resolve correctly, after `fillNotes` reinstalls the content) is tested only implicitly by the integration suite — and only for refs targeting notes, not refs inside note bodies. R3a must explicitly add these tests before landing.
 
-### F2 — `notePlacement` ignores `acadamarkConfig`
+### F2 — `notePlacement` ignores `enscribeConfig`
 
-`notePlacement` (notes.js lines 44–47) reads only `node.kwargs?.placement ?? node.kwargs?.position ?? 'end'`. The `file.data.acadamarkConfig` map is never consulted. Authors cannot set a document-wide note placement default via `<config note-placement=foot>`. The vocabulary spec (note.md line 20) says "Document-wide default is 'end'" — which is true, but only because it is hardcoded. This implies config-based override is possible, but it is not implemented.
+`notePlacement` (notes.js lines 44–47) reads only `node.kwargs?.placement ?? node.kwargs?.position ?? 'end'`. The `file.data.enscribeConfig` map is never consulted. Authors cannot set a document-wide note placement default via `<config note-placement=foot>`. The vocabulary spec (note.md line 20) says "Document-wide default is 'end'" — which is true, but only because it is hardcoded. This implies config-based override is possible, but it is not implemented.
 
 This is a pre-existing gap, not introduced by R3. Record it; do not fix it in R3 without a separate design pass.
 
@@ -675,11 +675,11 @@ After R3a, no shallow copy is needed (content stays in the original `<note>` nod
 
 ### F6 — `findTag` in ast-helpers.js vs. `findDeep` in notes.js
 
-notes.js has its own `findDeep` (lines 82–96). There is also `findTag` in `ast-helpers.js`. It is worth checking whether `findTag` covers the same ground as `findDeep` before deciding whether to keep `findDeep` in `acadamarkNotePlacement` or replace it with the shared helper. The R3a implementer should check this before copying `findDeep`.
+notes.js has its own `findDeep` (lines 82–96). There is also `findTag` in `ast-helpers.js`. It is worth checking whether `findTag` covers the same ground as `findDeep` before deciding whether to keep `findDeep` in `enscribeNotePlacement` or replace it with the shared helper. The R3a implementer should check this before copying `findDeep`.
 
 ### F7 — `walkAndReplace` in notes.js lacks `isOpaqueContent` guard
 
-Like the old `walkAndCollect` in numbering.js (deleted in R2), `walkAndReplace` in notes.js recurses into acadamarkTag `.content` without checking `isOpaqueContent`. In the new design, `discover()` is used for registration (and has the guard), and `acadamarkNotePlacement`'s placement walk should add the guard. R3a is the opportunity to add it; R3b makes it consistent across the remaining walkers.
+Like the old `walkAndCollect` in numbering.js (deleted in R2), `walkAndReplace` in notes.js recurses into enscribeTag `.content` without checking `isOpaqueContent`. In the new design, `discover()` is used for registration (and has the guard), and `enscribeNotePlacement`'s placement walk should add the guard. R3a is the opportunity to add it; R3b makes it consistent across the remaining walkers.
 
 ---
 
@@ -690,14 +690,14 @@ Like the old `walkAndCollect` in numbering.js (deleted in R2), `walkAndReplace` 
 ### R3a — Notes re-architecture (recommended next slice)
 
 Scope:
-1. Revise `acadamarkNotes` to use `discover()` for registration only; delete `walkAndReplace`,
+1. Revise `enscribeNotes` to use `discover()` for registration only; delete `walkAndReplace`,
    `processNote`, and the `content`/`markerNode` fields from `pendingNotes`.
-2. Create `acadamarkNotePlacement` (new plugin, step 11). Handles splice + list build + article-back injection. Use the current `fillNotes` logic as the starting point, but replace the `pendingNotes.content` reference with a live read from the `<note>` node's `.content` (which now has resolved refs/cites).
+2. Create `enscribeNotePlacement` (new plugin, step 11). Handles splice + list build + article-back injection. Use the current `fillNotes` logic as the starting point, but replace the `pendingNotes.content` reference with a live read from the `<note>` node's `.content` (which now has resolved refs/cites).
 3. Remove `fillNotes` export from notes.js.
-4. Update `acadamarkApplyNumbers` in index.js: remove `fillNotes` import and call. Add
-   `acadamarkNotePlacement` to the plugin chain after `acadamarkCiteResolution`.
+4. Update `enscribeApplyNumbers` in index.js: remove `fillNotes` import and call. Add
+   `enscribeNotePlacement` to the plugin chain after `enscribeCiteResolution`.
 5. Add tests: (a) `<ref>` inside `<note>` resolves, (b) `<cite>` inside `<note>` resolves, (c) deferred-placement produces correct structure for all three modes.
-6. Update existing notes.test.js: replace `fillNotes(tree, file)` with `acadamarkNotePlacement()(tree, file)` in the test helper sequence (13 tests, mechanical change).
+6. Update existing notes.test.js: replace `fillNotes(tree, file)` with `enscribeNotePlacement()(tree, file)` in the test helper sequence (13 tests, mechanical change).
 7. Check `findTag` in ast-helpers.js vs. `findDeep` in notes.js; decide whether to consolidate.
 
 End state: notes discovered in place, placed at the end. `<ref>` and `<cite>` inside notes resolved naturally. fillNotes machinery gone. Correctness proof: empty fixture diff.
@@ -708,7 +708,7 @@ End state: notes discovered in place, placed at the end. `<ref>` and `<cite>` in
 
 Scope:
 1. Create `src/lib/walk-replace.js` with a single `walkAndReplace(nodes, tagname, process)` that includes the `isOpaqueContent` guard.
-2. Migrate `ref-resolution.js`, `cite-resolution.js`, and `acadamarkNotePlacement` to use it.
+2. Migrate `ref-resolution.js`, `cite-resolution.js`, and `enscribeNotePlacement` to use it.
 3. Delete the three hand-rolled copies.
 
 End state: one `walkAndReplace` helper, correctly guarded. The three replacement plugins are simpler. No correctness change. Correctness proof: unchanged test suite + empty fixture diff.

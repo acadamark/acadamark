@@ -51,7 +51,7 @@ either directly (`<article>`, `<book>`) or implicitly via
 
 These wrap document content into front/body/back regions per the
 JATS-shaped structure. Always produced by the structural plugins
-(`acadamarkArticleStructuring`, `acadamarkBookStructuring`); not
+(`enscribeArticleStructuring`, `enscribeBookStructuring`); not
 typically authored directly.
 
 | Tag | Pipe | Slash | Long | Notes |

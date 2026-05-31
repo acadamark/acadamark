@@ -1,6 +1,6 @@
 # Layer 1 Naming Conventions
 
-This document records the conventions for naming Layer 1 (semantic HTML) elements in acadamark. These decisions are load-bearing for every plugin downstream — change them only with deliberate intent.
+This document records the conventions for naming Layer 1 (semantic HTML) elements in enscribe. These decisions are load-bearing for every plugin downstream — change them only with deliberate intent.
 
 ## Four rules
 
@@ -22,7 +22,7 @@ This rule:
 
 ### Rule 2: Defer to HTML where HTML is sufficient
 
-If standard HTML already provides an element that does the job, acadamark uses it. Custom elements are added only where HTML genuinely lacks vocabulary.
+If standard HTML already provides an element that does the job, enscribe uses it. Custom elements are added only where HTML genuinely lacks vocabulary.
 
 Stays HTML:
 - `<section>`, `<article>`, `<figure>`, `<header>`, `<footer>`, `<aside>`, `<nav>`
@@ -33,9 +33,9 @@ Stays HTML:
 
 Custom elements added:
 - Title and subtitle vocabulary (`<article-title>`, `<section-title>`, etc.) — HTML has no first-class concept of these.
-- Section depth ladder (`<sub-section>`, `<sub-sub-section>`) — HTML's `<section>` is recursive, but acadamark uses named depth (see Rule 3 below).
+- Section depth ladder (`<sub-section>`, `<sub-sub-section>`) — HTML's `<section>` is recursive, but enscribe uses named depth (see Rule 3 below).
 - Academic constructs (`<theorem>`, `<proof>`, `<lemma>`, `<corollary>`) — reserved Layer-1 names whose per-element specs are open work in the roadmap.
-- Citation and cross-reference vocabulary (`<cite>` already exists in HTML but with weak semantics; acadamark uses it with `data-*` attributes; `<ref>` for cross-references is custom).
+- Citation and cross-reference vocabulary (`<cite>` already exists in HTML but with weak semantics; enscribe uses it with `data-*` attributes; `<ref>` for cross-references is custom).
 
 ### Rule 3: Named section depth ladder
 
@@ -64,22 +64,22 @@ The corresponding title elements follow the container-role rule:
 
 ### Rule 4: Consult JATS before adding new vocabulary
 
-When extending Layer 1 with a new element, the JATS tag library ([jats.nlm.nih.gov/archiving/tag-library/](https://jats.nlm.nih.gov/archiving/tag-library/)) is the first reference. JATS has spent two decades refining a vocabulary for academic content; acadamark inherits that thinking rather than reinventing it.
+When extending Layer 1 with a new element, the JATS tag library ([jats.nlm.nih.gov/archiving/tag-library/](https://jats.nlm.nih.gov/archiving/tag-library/)) is the first reference. JATS has spent two decades refining a vocabulary for academic content; enscribe inherits that thinking rather than reinventing it.
 
 The rule is binding, not advisory. Before specifying a new Layer 1 element:
 
 1. Find the corresponding JATS element (or determine that no JATS equivalent exists).
-2. Adopt JATS naming where it makes sense, adjusted for HTML conventions and the container-role rule (Rule 1). For instance, JATS's `<article-title>` becomes acadamark's `<article-title>` directly. JATS's `<sec><title>` pattern becomes acadamark's `<section-title>` (because acadamark uses named depth, not nested `<sec>` with `<title>`).
-3. Adopt JATS attribute conventions where they're sensible. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references. Acadamark may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
+2. Adopt JATS naming where it makes sense, adjusted for HTML conventions and the container-role rule (Rule 1). For instance, JATS's `<article-title>` becomes enscribe's `<article-title>` directly. JATS's `<sec><title>` pattern becomes enscribe's `<section-title>` (because enscribe uses named depth, not nested `<sec>` with `<title>`).
+3. Adopt JATS attribute conventions where they're sensible. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references. Enscribe may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
 4. Document any deliberate divergences in the spec for that element, with rationale.
 
-This rule means that as the Layer 1 vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Acadamark's JATS export plugin (`rehype-acadamark-to-jats`) becomes a mostly-mechanical transform rather than a deep restructuring.
+This rule means that as the Layer 1 vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Enscribe's JATS export plugin (`rehype-enscribe-to-jats`) becomes a mostly-mechanical transform rather than a deep restructuring.
 
-JATS also includes elements acadamark may not need (`<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting, etc.). Don't add them speculatively. Add elements when authors actually need them.
+JATS also includes elements enscribe may not need (`<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting, etc.). Don't add them speculatively. Add elements when authors actually need them.
 
 ## Two compilation targets
 
-Acadamark Layer 1 is the canonical, archival representation: custom-element-rich, semantically explicit, lossless. But Layer 1 is not the only useful output — for browser display without custom CSS, a *render-mode* lowering is also useful.
+Enscribe Layer 1 is the canonical, archival representation: custom-element-rich, semantically explicit, lossless. But Layer 1 is not the only useful output — for browser display without custom CSS, a *render-mode* lowering is also useful.
 
 **Semantic mode** (the default) preserves Layer 1 elements:
 
@@ -123,11 +123,11 @@ The mapping is straightforward:
 
 ## Coexistence with raw HTML
 
-Authors can use raw HTML wherever they want — `<h1>`, `<h2>`, hand-nested `<section>`, `<div>` with classes, anything. Acadamark does not lock authors out of HTML's existing vocabulary.
+Authors can use raw HTML wherever they want — `<h1>`, `<h2>`, hand-nested `<section>`, `<div>` with classes, anything. Enscribe does not lock authors out of HTML's existing vocabulary.
 
-However, acadamark plugins only operate on Layer 1 named elements. The section-nesting plugin nests `<section>`, `<sub-section>`, `<sub-sub-section>` based on the depth ladder; it does not look at heading levels inside plain `<section>` elements. If you write raw HTML with hand-nested sections, you're responsible for the nesting yourself.
+However, enscribe plugins only operate on Layer 1 named elements. The section-nesting plugin nests `<section>`, `<sub-section>`, `<sub-sub-section>` based on the depth ladder; it does not look at heading levels inside plain `<section>` elements. If you write raw HTML with hand-nested sections, you're responsible for the nesting yourself.
 
-This keeps the rules simple. Acadamark plugins have one job each, with predictable inputs.
+This keeps the rules simple. Enscribe plugins have one job each, with predictable inputs.
 
 ## Open decisions
 
@@ -137,15 +137,15 @@ These are flagged here so they don't get re-litigated implicitly later:
 
 - **`<header>` block usage.** When `<article-title>` and `<article-subtitle>` are both present, are they wrapped in `<header>`? Probably yes (matches HTML5 convention), but the shorthand layer needs to either generate the wrapper automatically or expose a `<header | ...>` form.
 
-- **Markdown-input section wrapping.** Plain markdown input (`# Heading`) produces a flat sequence of `<h1>`, `<p>`, `<h2>` etc. with no `<section>` wrappers. If markdown documents should participate in acadamark's section-nesting, a separate plugin (or borrowing `rehype-section`) needs to wrap heading-delimited regions into `<section>` elements first. Or declare that markdown-only input doesn't get section treatment. Decide when building the full pipeline.
+- **Markdown-input section wrapping.** Plain markdown input (`# Heading`) produces a flat sequence of `<h1>`, `<p>`, `<h2>` etc. with no `<section>` wrappers. If markdown documents should participate in enscribe's section-nesting, a separate plugin (or borrowing `rehype-section`) needs to wrap heading-delimited regions into `<section>` elements first. Or declare that markdown-only input doesn't get section treatment. Decide when building the full pipeline.
 
-- **Theorem-family elements.** `<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`, `<example>`, `<remark>`, `<proof>` — the standard LaTeX amsthm set plus `<proof>`. Per-element vocabulary specs landed in deferred-vocabulary sub-slice 3 (2026-05-27). **Settled against LaTeX amsthm and JATS prior art: no internal element parts** — content is body content (paragraphs and inline) placed directly inside the theorem container, not wrapped in `<theorem-statement>` / `<theorem-proof>` sub-elements. JATS's `<statement content-type="theorem">` is the all-eight counterpart and likewise contains body content directly (plus `<label>` / `<title>` constructed at export). The earlier speculative "internal parts likely follow the container-role rule" claim is therefore retracted: theorem-family elements are an exception to that rule, because LaTeX and JATS both put content directly inside the container with no internal-part wrappers and acadamark follows. `<proof>` is a peer sibling of theorem-like statements (not nested inside them), matching both LaTeX (`\begin{proof}` is independent) and JATS (`<statement content-type="proof">` is a peer statement).
+- **Theorem-family elements.** `<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`, `<example>`, `<remark>`, `<proof>` — the standard LaTeX amsthm set plus `<proof>`. Per-element vocabulary specs landed in deferred-vocabulary sub-slice 3 (2026-05-27). **Settled against LaTeX amsthm and JATS prior art: no internal element parts** — content is body content (paragraphs and inline) placed directly inside the theorem container, not wrapped in `<theorem-statement>` / `<theorem-proof>` sub-elements. JATS's `<statement content-type="theorem">` is the all-eight counterpart and likewise contains body content directly (plus `<label>` / `<title>` constructed at export). The earlier speculative "internal parts likely follow the container-role rule" claim is therefore retracted: theorem-family elements are an exception to that rule, because LaTeX and JATS both put content directly inside the container with no internal-part wrappers and enscribe follows. `<proof>` is a peer sibling of theorem-like statements (not nested inside them), matching both LaTeX (`\begin{proof}` is independent) and JATS (`<statement content-type="proof">` is a peer statement).
 
-- **JATS mapping divergences.** As the Layer 1 vocabulary grows, some elements will deliberately diverge from JATS for good reasons (HTML vs. XML conventions, simpler nesting, different attribute semantics). Each divergence should be documented in the spec for that element. A consolidated "acadamark ↔ JATS mapping table" should appear in the Layer 1 spec once it's mature, both as documentation and as the basis for the JATS export plugin.
+- **JATS mapping divergences.** As the Layer 1 vocabulary grows, some elements will deliberately diverge from JATS for good reasons (HTML vs. XML conventions, simpler nesting, different attribute semantics). Each divergence should be documented in the spec for that element. A consolidated "enscribe ↔ JATS mapping table" should appear in the Layer 1 spec once it's mature, both as documentation and as the basis for the JATS export plugin.
 
 ## Why this matters
 
-These conventions are the spine of acadamark's contribution. Markdown extensions accrete idioms because they don't have a unifying naming scheme — every feature gets its own special-case syntax. By committing to container-role naming, defer-to-HTML, named depth, and JATS-aligned vocabulary, acadamark keeps its vocabulary growing in a single coherent direction *and* maintains an exit ramp to the established scholarly publishing ecosystem.
+These conventions are the spine of enscribe's contribution. Markdown extensions accrete idioms because they don't have a unifying naming scheme — every feature gets its own special-case syntax. By committing to container-role naming, defer-to-HTML, named depth, and JATS-aligned vocabulary, enscribe keeps its vocabulary growing in a single coherent direction *and* maintains an exit ramp to the established scholarly publishing ecosystem.
 
 When in doubt, two questions to ask:
 

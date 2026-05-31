@@ -5,11 +5,11 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <config> is a custom element. It does not produce inline
+    Enscribe's <config> is a custom element. It does not produce inline
     output; it carries build-time and render-time configuration that the
     pipeline reads to determine how to process the document. The element
     is parsed during a discovery pass before body rendering.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -19,7 +19,7 @@ acadamark_attributes:
       <config> accepts an allowlisted set of kwargs as an authoring shorthand
       for its structured-children configuration interface. The current
       allowlist (interpreter-side, see
-      packages/acadamark-interpreter/src/lib/apparatus-allowlists.js):
+      packages/enscribe-interpreter/src/lib/apparatus-allowlists.js):
         - citation-style          (live; consumed by cite-resolution)
         - number-equations        (live; consumed by numbering)
         - number-figures          (live; consumed by numbering)
@@ -69,7 +69,7 @@ jats_counterpart:
   element: 'no direct equivalent'
   notes: |
     JATS doesn't have a single configuration element. Most configuration
-    is handled at the publication-system level, not in JATS. Acadamark's
+    is handled at the publication-system level, not in JATS. Enscribe's
     <config> is decomposed at JATS export — relevant settings affect how
     the export is generated; they don't appear in JATS output.
 shorthand_examples:
@@ -101,8 +101,8 @@ shorthand_examples:
       </config>
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkConfigDiscovery
-    runs_before: acadamarkTagInterpret
+  - name: enscribeConfigDiscovery
+    runs_before: enscribeTagInterpret
     purpose: 'Phase 1 discovery — extracts <config> values into the configuration registry. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
@@ -115,7 +115,7 @@ Build-time and render-time configuration for the document. Holds settings that a
 
 `<config>` carries operational settings that the build system needs to know but that aren't part of the document's descriptive metadata or content. The element is processed at discovery time (before body rendering) so that configuration is available throughout subsequent processing.
 
-This is parallel to how RMarkdown and Quarto put YAML frontmatter at the top of a document containing both descriptive metadata (`title:`, `author:`) and operational configuration (`output:`, `bibliography:`). Acadamark splits these into separate elements (`<meta>` for descriptive, `<config>` for operational) to keep responsibilities clear.
+This is parallel to how RMarkdown and Quarto put YAML frontmatter at the top of a document containing both descriptive metadata (`title:`, `author:`) and operational configuration (`output:`, `bibliography:`). Enscribe splits these into separate elements (`<meta>` for descriptive, `<config>` for operational) to keep responsibilities clear.
 
 The element is processed during a discovery pass before body rendering. This means configuration declared anywhere in the document is available everywhere.
 

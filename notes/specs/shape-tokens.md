@@ -4,7 +4,7 @@ Vocabulary entries use abstract tokens in their `content.shape` and `contains` f
 
 ## The three tokens
 
-Acadamark uses three shape tokens:
+Enscribe uses three shape tokens:
 
 - **`inline`** — content that appears within a flow of prose without breaking the line.
 - **`block`** — content that produces a block-level visual unit, breaking the line and occupying its own vertical region.
@@ -151,9 +151,9 @@ The three-token design was chosen because:
 
 - **Two tokens (inline/block) is too coarse.** It can't distinguish "block content within a section" from "section content within a section" — both are technically block-level in HTML, but their structural roles differ significantly.
 - **Many tokens (one per element) is too fine.** It produces unwieldy `contains` arrays and forces vocabulary entries to enumerate every allowed element. Adding a new element requires touching every container's entry.
-- **Three tokens (inline/block/section)** matches HTML's structural grammar (phrasing content, flow content, sectioning content) and acadamark's authoring concerns. It's the natural granularity.
+- **Three tokens (inline/block/section)** matches HTML's structural grammar (phrasing content, flow content, sectioning content) and enscribe's authoring concerns. It's the natural granularity.
 
-This is the same approach HTML5's content categories take, simplified to acadamark's specific needs.
+This is the same approach HTML5's content categories take, simplified to enscribe's specific needs.
 
 ## Future extensions
 

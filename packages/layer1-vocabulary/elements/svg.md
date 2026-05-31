@@ -4,7 +4,7 @@ html_output:
   element: svg
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -60,7 +60,7 @@ jats_counterpart:
   attributes: {}
   notes: |
     JATS uses <graphic> for embedded images (raster or vector). Inline
-    SVG in acadamark exports as <graphic xlink:href="#svg-N"> with the
+    SVG in enscribe exports as <graphic xlink:href="#svg-N"> with the
     SVG content placed in the article's resource bundle, or — when the
     export target supports it — as <graphic> with the SVG inline.
     Wrapping in <fig>...</fig> is the captioned form for JATS.
@@ -106,7 +106,7 @@ Inline SVG embedded in the document. A member of the Phase 3 frameable class —
 
 ## Semantic intent
 
-SVG is a first-class web image format and a frequent academic-publishing need (diagrams, scientific plots, custom illustrations). `<svg>` provides a direct authoring surface for SVG that integrates with acadamark's frameable infrastructure for numbering and captioning.
+SVG is a first-class web image format and a frequent academic-publishing need (diagrams, scientific plots, custom illustrations). `<svg>` provides a direct authoring surface for SVG that integrates with enscribe's frameable infrastructure for numbering and captioning.
 
 The rendered output is HTML-native `<svg>` (which browsers handle natively). For JATS export, the SVG content lifts to `<graphic>` with appropriate referencing.
 
@@ -118,7 +118,7 @@ The rendered output is HTML-native `<svg>` (which browsers handle natively). For
 
 The handler is needed because:
 
-- The pipe content is opaque SVG source, not parsed as acadamark.
+- The pipe content is opaque SVG source, not parsed as enscribe.
 - The frameable caption rendering needs to emit a `<figcaption>` sibling when numbered or captioned.
 - The `+border` flag adds the `frameable-border` class.
 
@@ -151,7 +151,7 @@ The id enables `<ref @fig:phase-diagram>` cross-references resolving to "Figure 
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<svg>` | `<graphic>` (typically via `<fig>` wrapper) |
 | Captioned `<svg>` | `<fig><graphic.../><caption>...</caption></fig>` |

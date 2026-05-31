@@ -4,7 +4,7 @@ html_output:
   element: u
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -39,7 +39,7 @@ Underline styling for content that is unarticulated but explicitly rendered with
 
 `<u>` represents content that is rendered with an underline for a specific reason: marking a misspelling, indicating a Chinese proper name (a typographic convention), or noting an editorial correction. HTML5's redefinition of `<u>` is "unarticulated, though explicitly rendered" — text that has a non-textual annotation.
 
-In modern web rendering, underline conventionally indicates a hyperlink. Using `<u>` on non-link content can confuse readers. Most acadamark documents won't need `<u>`.
+In modern web rendering, underline conventionally indicates a hyperlink. Using `<u>` on non-link content can confuse readers. Most enscribe documents won't need `<u>`.
 
 ## When `<u>` is appropriate
 
@@ -74,7 +74,7 @@ The author wrote <u type=misspelling | recieve> in the original.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<u>` | `<underline>` |
 

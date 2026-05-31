@@ -4,7 +4,7 @@ html_output:
   element: corollary
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -59,7 +59,7 @@ The element is block-level; its content is body content directly. Numbering: sha
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<corollary>` | `<statement content-type="corollary">` |
 

@@ -1,12 +1,12 @@
-> **Archived 2026-Q2.** This document uses planning-era plugin names (`acadamarkLibraryParsing`, `acadamarkCitationResolution`, etc.) that diverged from the implemented names (`acadamarkLibraryLoad`, `acadamarkCiteResolution`, etc.). See `notes/pipeline.md` for the current pipeline (to be written in audit Step 2). Retained for historical reference.
+> **Archived 2026-Q2.** This document uses planning-era plugin names (`enscribeLibraryParsing`, `enscribeCitationResolution`, etc.) that diverged from the implemented names (`enscribeLibraryLoad`, `enscribeCiteResolution`, etc.). See `notes/pipeline.md` for the current pipeline (to be written in audit Step 2). Retained for historical reference.
 
 ---
 
 # Plugin pipeline
 
-This document describes the structural plugin pipeline that transforms an acadamark AST into rendered HTML. It captures the order in which plugins run, the contract each plugin satisfies, and the dependencies between them.
+This document describes the structural plugin pipeline that transforms an enscribe AST into rendered HTML. It captures the order in which plugins run, the contract each plugin satisfies, and the dependencies between them.
 
-The pipeline applies after the parser has produced an AST of acadamarkTag nodes (with content recursively parsed by the recursive-content plugin). It runs before the final HTML output is generated.
+The pipeline applies after the parser has produced an AST of enscribeTag nodes (with content recursively parsed by the recursive-content plugin). It runs before the final HTML output is generated.
 
 ## Three phases
 
@@ -22,7 +22,7 @@ The pipeline has three phases. Plugins within a phase are mostly independent of 
 
 Discovery plugins read the AST without modifying it. They populate registries that subsequent phases consume.
 
-### `acadamarkConfigDiscovery`
+### `enscribeConfigDiscovery`
 
 **Purpose.** Find `<config>` blocks throughout the document. Extract settings (output formats, citation style, numbering style, note position, bibliography source, stylesheets, etc.). Make settings available to subsequent plugins via a configuration registry.
 
@@ -33,7 +33,7 @@ Discovery plugins read the AST without modifying it. They populate registries th
 
 **Dependencies.** None. Runs first.
 
-### `acadamarkLibraryParsing`
+### `enscribeLibraryParsing`
 
 **Purpose.** Find `<library>` blocks throughout the document. Dispatch to format-specific parser (BibTeX, CSL-JSON, RIS, etc.) based on the `format` kwarg. Parse opaque content into structured bibliography entries. Register entries in the citation registry under their ids (bibtex keys, CSL ids, etc.).
 
@@ -44,7 +44,7 @@ Discovery plugins read the AST without modifying it. They populate registries th
 
 **Dependencies.** None. Runs in parallel with config discovery.
 
-### `acadamarkBibEntryRegistration`
+### `enscribeBibEntryRegistration`
 
 **Purpose.** Find `<bib-entry>` elements throughout the document. Register each with the citation registry under its id.
 
@@ -63,13 +63,13 @@ Discovery plugins read the AST without modifying it. They populate registries th
 - Input: configuration registry (with bibliography source path), citation registry.
 - Output: citation registry populated with entries from external file.
 
-**Dependencies.** Runs after `acadamarkConfigDiscovery` (needs the source path). May run in parallel with `acadamarkLibraryParsing` and `acadamarkBibEntryRegistration` since all populate the same registry.
+**Dependencies.** Runs after `enscribeConfigDiscovery` (needs the source path). May run in parallel with `enscribeLibraryParsing` and `enscribeBibEntryRegistration` since all populate the same registry.
 
 ## Phase 2: Structural transformation
 
 Structural plugins mutate the AST. They produce an AST that conforms to Layer 1 structural conventions, with implicit containers added and content grouped into expected regions.
 
-### `acadamarkArticleStructuring`
+### `enscribeArticleStructuring`
 
 **Purpose.** Handle article-shaped documents driven by `<meta type=article>`:
 
@@ -91,9 +91,9 @@ If the author wrote `<article>`, `<article-front>`, `<article-body>`, or `<artic
 - Input: AST after Phase 1 (registries populated). `<meta>` may be present or absent; container wrappers may be present or absent.
 - Output: AST with `<article>` containing `<article-front>` (with `<meta>` inside), `<article-body>`, and `<article-back>` (each region present only if it has content).
 
-**Dependencies.** Phase 1 complete. Independent of `acadamarkBookStructuring` (handles different document types — selection is driven by `<meta>`'s `type` kwarg, mutually exclusive).
+**Dependencies.** Phase 1 complete. Independent of `enscribeBookStructuring` (handles different document types — selection is driven by `<meta>`'s `type` kwarg, mutually exclusive).
 
-### `acadamarkBookStructuring`
+### `enscribeBookStructuring`
 
 **Purpose.** Handle book-shaped documents driven by `<meta type=book>` (or by an explicit `<book>` wrapper):
 
@@ -116,9 +116,9 @@ If the author wrote `<book>` or any of the region wrappers explicitly, the plugi
 - Input: AST after Phase 1.
 - Output: AST with `<book>` containing `<book-front>` (with `<meta>` inside), `<book-body>` (containing chapter-like book-parts), and `<book-back>` (containing appendix-like book-parts plus back-matter elements). Each region present only if it has content. Each `<book-part>` directly contains `<meta>` (if any metadata) and body content with no nested region wrappers.
 
-**Dependencies.** Phase 1 complete. Independent of `acadamarkArticleStructuring`. The two plugins are mutually exclusive — a document is either article-shaped or book-shaped, determined by `<meta>`'s `type` kwarg.
+**Dependencies.** Phase 1 complete. Independent of `enscribeArticleStructuring`. The two plugins are mutually exclusive — a document is either article-shaped or book-shaped, determined by `<meta>`'s `type` kwarg.
 
-### `acadamarkSectionNesting`
+### `enscribeSectionNesting`
 
 **Purpose.** Handle implicit closing of sections at peer-level boundaries. When a new `<section>` opens at the same depth as an open one, the open one is closed implicitly. The plugin restructures the tree so each section's children include only the content that belongs to it.
 
@@ -126,13 +126,13 @@ If the author wrote `<book>` or any of the region wrappers explicitly, the plugi
 - Input: AST with sections potentially flat (each `<section>` followed by its body content as siblings rather than children).
 - Output: AST with each section properly containing its body content.
 
-**Dependencies.** Runs after `acadamarkArticleStructuring` and `acadamarkBookStructuring` (which may have rearranged sections during their grouping passes).
+**Dependencies.** Runs after `enscribeArticleStructuring` and `enscribeBookStructuring` (which may have rearranged sections during their grouping passes).
 
 ### A note on AST traversal
 
-acadamarkTag nodes use the `.content` property rather than the standard `.children` property used by most mdast nodes. This means `unist-util-visit` (which traverses `.children`) cannot be used directly for walking through the contents of an acadamarkTag node.
+enscribeTag nodes use the `.content` property rather than the standard `.children` property used by most mdast nodes. This means `unist-util-visit` (which traverses `.children`) cannot be used directly for walking through the contents of an enscribeTag node.
 
-Plugins that need to walk into acadamarkTag content must implement a custom recursive walker. The section-nesting plugin demonstrates this pattern: `walkAndNest` traverses both `.children` (for standard mdast nodes) and `.content` (for acadamarkTag nodes).
+Plugins that need to walk into enscribeTag content must implement a custom recursive walker. The section-nesting plugin demonstrates this pattern: `walkAndNest` traverses both `.children` (for standard mdast nodes) and `.content` (for enscribeTag nodes).
 
 If the node shape ever changes (e.g., migration to standard `.children`), all custom walkers must be updated. This is a known divergence from standard unified ecosystem conventions and is documented here so future plugin authors don't lose track of it.
 
@@ -162,7 +162,7 @@ Resolution plugins use the AST and registries to compute final attributes (numbe
 
 The specific numbering plugins (one per numbered element type, or one shared plugin) are implementation details. The contract is what matters.
 
-### `acadamarkNoteNumbering`
+### `enscribeNoteNumbering`
 
 **Purpose.** Assign sequential numbers to `<note>` elements based on document order. Generate the visible reference marker (typically a superscript number) at the note's source location.
 
@@ -172,7 +172,7 @@ The specific numbering plugins (one per numbered element type, or one shared plu
 
 **Dependencies.** Phase 2 complete. Runs in parallel with other numbering plugins.
 
-### `acadamarkCitationResolution`
+### `enscribeCitationResolution`
 
 **Purpose.** Find `<cite>` elements. Resolve each against the citation registry. Apply the document-level citation style (or per-citation override). Generate the rendered citation marker text.
 
@@ -182,7 +182,7 @@ The specific numbering plugins (one per numbered element type, or one shared plu
 
 **Dependencies.** Phase 1 (citation registry populated) and Phase 2 (structural transformations complete).
 
-### `acadamarkCrossReferenceResolution`
+### `enscribeCrossReferenceResolution`
 
 **Purpose.** Find `<ref>` elements. Resolve each against the numbered-elements registry. Generate the rendered cross-reference text appropriate to the target type and format kwarg.
 
@@ -192,7 +192,7 @@ The specific numbering plugins (one per numbered element type, or one shared plu
 
 **Dependencies.** Numbering plugins (the registry must be populated). Runs in parallel with citation resolution.
 
-### `acadamarkNotePlacement`
+### `enscribeNotePlacement`
 
 **Purpose.** Move notes to their rendered position based on document-level `note-position` setting:
 - `foot`: notes stay in source position; rendering pipeline (CSS or print) handles foot-of-page placement.
@@ -201,24 +201,24 @@ The specific numbering plugins (one per numbered element type, or one shared plu
 - `chapter-end`: notes collect into a `<note-list>` at the end of each chapter.
 
 **Contract.**
-- Input: AST with notes numbered (by `acadamarkNoteNumbering`) and possibly inline.
+- Input: AST with notes numbered (by `enscribeNoteNumbering`) and possibly inline.
 - Output: AST with notes in their appropriate rendered positions; `<note-list>` elements generated where needed.
 
-**Dependencies.** `acadamarkNoteNumbering` (notes need numbers before placement).
+**Dependencies.** `enscribeNoteNumbering` (notes need numbers before placement).
 
-### `acadamarkBibliographyAssembly`
+### `enscribeBibliographyAssembly`
 
 **Purpose.** Read the citation registry, identify entries that were cited, sort according to the bibliography style, format each entry, place them as children of `<bibliography>`. Generate the `<bibliography>` element if not explicitly authored.
 
 **Contract.**
-- Input: citation registry with cited entries flagged (by `acadamarkCitationResolution`).
+- Input: citation registry with cited entries flagged (by `enscribeCitationResolution`).
 - Output: AST with `<bibliography>` element populated with formatted bibliography entries; auto-placed in `<article-back>` (or `<book-back>`) if no explicit `<bibliography>` was authored.
 
-**Dependencies.** `acadamarkCitationResolution` (registry must reflect what was cited).
+**Dependencies.** `enscribeCitationResolution` (registry must reflect what was cited).
 
-### `acadamarkTagInterpret`
+### `enscribeTagInterpret`
 
-**Purpose.** The main interpreter. Walks the AST. For each acadamarkTag node, looks up the vocabulary entry; dispatches based on `interpreter_strategy`:
+**Purpose.** The main interpreter. Walks the AST. For each enscribeTag node, looks up the vocabulary entry; dispatches based on `interpreter_strategy`:
 - `schema`: applies the schema's transformation rules to produce Layer 1 HTML.
 - `handler`: invokes the named handler module.
 
@@ -234,28 +234,28 @@ Produces the final HTML output.
 
 ```
 Phase 1: Discovery (parallel)
-├── acadamarkConfigDiscovery
-├── acadamarkLibraryParsing
-├── acadamarkBibEntryRegistration
+├── enscribeConfigDiscovery
+├── enscribeLibraryParsing
+├── enscribeBibEntryRegistration
 └── (bibliography source resolution, after config discovery)
 
 Phase 2: Structural transformation (sequential)
-├── acadamarkArticleStructuring OR acadamarkBookStructuring
-└── acadamarkSectionNesting
+├── enscribeArticleStructuring OR enscribeBookStructuring
+└── enscribeSectionNesting
 
 Phase 3: Resolution and rendering (mostly parallel with dependencies)
 ├── Numbering plugins (figures, tables, equations, sections)
-│   └── acadamarkCrossReferenceResolution (depends on numbering)
-├── acadamarkNoteNumbering
-│   └── acadamarkNotePlacement (depends on note numbering)
-├── acadamarkCitationResolution (depends on Phase 1 registries)
-│   └── acadamarkBibliographyAssembly (depends on citation resolution)
-└── acadamarkTagInterpret (depends on all previous)
+│   └── enscribeCrossReferenceResolution (depends on numbering)
+├── enscribeNoteNumbering
+│   └── enscribeNotePlacement (depends on note numbering)
+├── enscribeCitationResolution (depends on Phase 1 registries)
+│   └── enscribeBibliographyAssembly (depends on citation resolution)
+└── enscribeTagInterpret (depends on all previous)
 ```
 
 ## Implementation considerations
 
-**Plugin framework.** Acadamark's plugins are unified/rehype plugins, conventional in the unified ecosystem. Each plugin operates on a tree visitor or via direct AST traversal.
+**Plugin framework.** Enscribe's plugins are unified/rehype plugins, conventional in the unified ecosystem. Each plugin operates on a tree visitor or via direct AST traversal.
 
 **Registry storage.** Registries (configuration, citation, numbered-elements) live in the plugin context — the unified processor's data store or a similar shared state. Each plugin reads from and writes to the registry as needed. Registries are scoped to a single processing pass; they don't persist across documents.
 
@@ -264,7 +264,7 @@ Phase 3: Resolution and rendering (mostly parallel with dependencies)
 **Slice plan.** The first interpreter slice will likely implement only:
 - A subset of Phase 1 (config discovery is straightforward).
 - The article-side of Phase 2 (article structuring, section nesting, title extraction).
-- A minimal Phase 3 (just `acadamarkTagInterpret` for the in-scope vocabulary; no numbering, citations, cross-references yet).
+- A minimal Phase 3 (just `enscribeTagInterpret` for the in-scope vocabulary; no numbering, citations, cross-references yet).
 
 Subsequent slices add the resolution plugins (citations, cross-references, notes) and book-shaped structural transformation. The pipeline contract above defines the interface between slices.
 

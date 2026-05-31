@@ -1,6 +1,6 @@
-# Acadamark Shorthand Syntax Specification
+# Enscribe Shorthand Syntax Specification
 
-This document specifies the acadamark shorthand syntax precisely enough for a parser implementation. It defines what valid source looks like, how the parser tokenizes and structures it, and what the parser does *not* do (which is the interpreter's job).
+This document specifies the enscribe shorthand syntax precisely enough for a parser implementation. It defines what valid source looks like, how the parser tokenizes and structures it, and what the parser does *not* do (which is the interpreter's job).
 
 This is the syntactic ground truth. Other notes in this directory (`shorthand-tag-processing.md`, `figures.md`, `tables.md`, etc.) are illustrative — they show *what* tags are useful and *how* they should be interpreted, but this document defines the underlying syntax those tags are written in.
 
@@ -135,7 +135,7 @@ Identifiers are the values of `#id` attributes, `@ref` attributes, `key=value` k
 
 ### Quoted strings
 
-Either single (`'`) or double (`"`) quotes. The quote character cannot appear inside its own kind. Acadamark stores attribute values verbatim — no escape processing at the parser level. Escape sequences inside quoted values (e.g., `\"`) are preserved literally in the stored string; they are processed by remark when recursive content parsing is implemented. Until then, switch quote types to include the other delimiter:
+Either single (`'`) or double (`"`) quotes. The quote character cannot appear inside its own kind. Enscribe stores attribute values verbatim — no escape processing at the parser level. Escape sequences inside quoted values (e.g., `\"`) are preserved literally in the stored string; they are processed by remark when recursive content parsing is implemented. Until then, switch quote types to include the other delimiter:
 
 ```
 <figure caption='An adult "elephant"'>
@@ -212,7 +212,7 @@ content line 2
 </tagname>
 ```
 
-The opening tag follows the same attribute syntax as short-form named tags (positionals, ids, classes, kwargs, flags all permitted). The closing tag is `</tagname>` with the tag name matching the opener exactly; no whitespace is permitted inside the angle brackets of the closer. Content between the opening and closing tags is preserved verbatim, including newlines, indentation, and any characters that look like acadamark constructs. At Slice 4, all long-form content is an opaque string regardless of `contentHandler`. When recursive content parsing is implemented (a future slice), nodes with `contentHandler: "default"` will have their content re-fed through remark; DSL-handler nodes remain permanently opaque.
+The opening tag follows the same attribute syntax as short-form named tags (positionals, ids, classes, kwargs, flags all permitted). The closing tag is `</tagname>` with the tag name matching the opener exactly; no whitespace is permitted inside the angle brackets of the closer. Content between the opening and closing tags is preserved verbatim, including newlines, indentation, and any characters that look like enscribe constructs. At Slice 4, all long-form content is an opaque string regardless of `contentHandler`. When recursive content parsing is implemented (a future slice), nodes with `contentHandler: "default"` will have their content re-fed through remark; DSL-handler nodes remain permanently opaque.
 
 **Long-form tags are recognized in flow (block) position only.** They are not recognized inside paragraphs.
 
@@ -224,13 +224,13 @@ The opening tag follows the same attribute syntax as short-form named tags (posi
 | Slash form  | `<tag attrs />`                    | The `/` before `>` (via `prevWasSlash`) rejects long-form |
 | Long form   | `<tag attrs>content</tag>`         | No `|` and no `/` — unambiguously long-form opener |
 
-The finder decides locally — no registry consultation, no vocabulary lookup, no lookahead. A tag with neither `|` nor `/` before `>` is a long-form opener, regardless of tag name. For every long-form opener, the finder consumes content until it encounters a matching `</tagname>`. If end-of-document is reached without a closer, the node is emitted as `acadamarkTagError` — there is no fallback to short-form. This is deliberate: lookahead (scanning forward before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` with no `</csv>` (or any `<tag>` with no `</tag>`) is almost certainly an authoring mistake.
+The finder decides locally — no registry consultation, no vocabulary lookup, no lookahead. A tag with neither `|` nor `/` before `>` is a long-form opener, regardless of tag name. For every long-form opener, the finder consumes content until it encounters a matching `</tagname>`. If end-of-document is reached without a closer, the node is emitted as `enscribeTagError` — there is no fallback to short-form. This is deliberate: lookahead (scanning forward before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` with no `</csv>` (or any `<tag>` with no `</tag>`) is almost certainly an authoring mistake.
 
 Authors who want a short-form empty tag (the slash form) write `<tag />` — covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`, `<config attrs />`).
 
 **Nested same-name tags.** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outermost `<tagname>`. Depth is not tracked inside long-form content at Slice 4 since content is opaque. For example, `<aside>outer<aside>inner</aside>more</aside>` produces one `<aside>` with content `outer<aside>inner`; the trailing `more</aside>` is not consumed and falls through to remark. When recursive content parsing lands, nodes with `contentHandler: "default"` will re-parse their content, at which point nested same-name tags are handled correctly by the inner pipeline.
 
-**Defensive error.** If the finder encounters a long-form opener but reaches end-of-document without finding a matching `</tagname>`, it emits `acadamarkTagError` rather than producing a partial node. The long-form error node retains the `acadamarkTag` fields populated from the opener (`tagname`, `form`, `content`, `kwargs`, etc.) and adds an `error` field — see the **Long-form error node** shape under "What the parser produces". This is a distinct shape from the sigil-opener error node (which is sparse, with `source` instead of `tagname`/`content`); the two error paths reach their failure points at different stages and carry different information.
+**Defensive error.** If the finder encounters a long-form opener but reaches end-of-document without finding a matching `</tagname>`, it emits `enscribeTagError` rather than producing a partial node. The long-form error node retains the `enscribeTag` fields populated from the opener (`tagname`, `form`, `content`, `kwargs`, etc.) and adds an `error` field — see the **Long-form error node** shape under "What the parser produces". This is a distinct shape from the sigil-opener error node (which is sparse, with `source` instead of `tagname`/`content`); the two error paths reach their failure points at different stages and carry different information.
 
 ## Sigil-tag and DSL-tag verbatim content
 
@@ -247,17 +247,17 @@ Inside opaque content:
 - The closer is the only escape from opaque mode.
 - Whitespace is preserved exactly.
 
-This is what allows acadamark to embed CSV, TSV, LaTeX, code, mermaid, and other DSLs without any escaping mechanism.
+This is what allows enscribe to embed CSV, TSV, LaTeX, code, mermaid, and other DSLs without any escaping mechanism.
 
-**Hash sigils are not opaque.** The `<#`, `<##`, `<###` heading sigils carry prose-bearing content (`contentHandler: "default"`, `isOpaqueContent: false`). Their content is recursively parsed via the same path as named-tag default content, so markdown idioms and nested acadamark constructs inside a heading body are processed normally. `<# *bold* heading #>` has its emphasis parsed; the result is the same as if the body appeared in any other prose-bearing context. The mirrored closer (`#>` / `##>` / `###>`) ends the sigil at the source level; opacity is a separate property and hash sigils do not have it.
+**Hash sigils are not opaque.** The `<#`, `<##`, `<###` heading sigils carry prose-bearing content (`contentHandler: "default"`, `isOpaqueContent: false`). Their content is recursively parsed via the same path as named-tag default content, so markdown idioms and nested enscribe constructs inside a heading body are processed normally. `<# *bold* heading #>` has its emphasis parsed; the result is the same as if the body appeared in any other prose-bearing context. The mirrored closer (`#>` / `##>` / `###>`) ends the sigil at the source level; opacity is a separate property and hash sigils do not have it.
 
 ## DSL handler-dispatch registry
 
-The DSL registry (`packages/acadamark-core/src/dsl-registry.js`) assigns a **content handler** to every DSL tag — a tag whose content is a foreign language interpreted by an external processor (LaTeX math via KaTeX, Mermaid source via Mermaid renderer, CSV via the table data parser, BibTeX via citation-js, etc.). The registry's role is **handler dispatch** for these foreign-language tags. It does not gate long-form parsing — every named tag is long-form-eligible at the parser level, regardless of registry membership (see the three-form grammar above).
+The DSL registry (`packages/enscribe-core/src/dsl-registry.js`) assigns a **content handler** to every DSL tag — a tag whose content is a foreign language interpreted by an external processor (LaTeX math via KaTeX, Mermaid source via Mermaid renderer, CSV via the table data parser, BibTeX via citation-js, etc.). The registry's role is **handler dispatch** for these foreign-language tags. It does not gate long-form parsing — every named tag is long-form-eligible at the parser level, regardless of registry membership (see the three-form grammar above).
 
 The `contentHandler` field on a node names which handler the interpreter should dispatch to. DSL-handler entries (`csv → "csv"`, `math → "math"`, `library → "library"`, etc.) name a specific embedded-language handler. The math and code sigils (`$ → "math"`, `$$ → "math-display"`, `` ` `` → `"code"`, ``` ``` ``` → `"code-block"`) are in the registry for the same content-handler lookup, even though sigils don't go through the long-form tokenizer.
 
-For any tag *not* in the registry, `getContentHandler()` returns `"default"` (the fallback). The default handler means "recursively parse as acadamark" — content is re-fed through the regular remark pipeline by the recursive-content plugin. This is what regular Layer 1 vocabulary tags (`<aside>`, `<note>`, `<dl>`, the theorem family, etc.) use; they don't need to be in the registry because their default-handler value matches the fallback.
+For any tag *not* in the registry, `getContentHandler()` returns `"default"` (the fallback). The default handler means "recursively parse as enscribe" — content is re-fed through the regular remark pipeline by the recursive-content plugin. This is what regular Layer 1 vocabulary tags (`<aside>`, `<note>`, `<dl>`, the theorem family, etc.) use; they don't need to be in the registry because their default-handler value matches the fallback.
 
 `from-markdown.js` derives `isOpaqueContent` from `contentHandler`: `isOpaqueContent = contentHandler !== "default"`. Non-default handlers receive verbatim content strings; default-handler tags have their content recursively parsed.
 
@@ -282,7 +282,7 @@ Current registry contents (all are DSLs):
 | `table`          | `"table"`              | Table (data string in CSV/TSV/JSON/YAML/MD)      |
 | `library`        | `"library"`            | BibTeX/CSL-JSON source (citation-js)             |
 
-Regular Layer 1 vocabulary tags (`<section>`, `<aside>`, `<note>`, `<blockquote>`, `<ul>`/`<ol>`/`<li>`, `<dl>`/`<dt>`/`<dd>`, `<glossary>`, `<details>`, the theorem family, `<meta>`, `<author>`, `<data>`, every other tag) are **not** in this registry — they don't need handler dispatch, their content is regular acadamark (recursively parsed via the default handler), and they reach the parser through the language's regular three-form grammar.
+Regular Layer 1 vocabulary tags (`<section>`, `<aside>`, `<note>`, `<blockquote>`, `<ul>`/`<ol>`/`<li>`, `<dl>`/`<dt>`/`<dd>`, `<glossary>`, `<details>`, the theorem family, `<meta>`, `<author>`, `<data>`, every other tag) are **not** in this registry — they don't need handler dispatch, their content is regular enscribe (recursively parsed via the default handler), and they reach the parser through the language's regular three-form grammar.
 
 The map currently uses identity keys (tag name = handler name) for the DSL entries. A future `<equation>` tag could map to `"math"` without changing the handler implementation.
 
@@ -331,7 +331,7 @@ For each parsed construct, the parser produces a structured node with the follow
 
 ```
 {
-  type: "acadamarkTag",
+  type: "enscribeTag",
   form: "short",               // "short" | "long" — distinguishes short-form from long-form
   tagname: "figure",
   positional: ["csv"],         // array of strings or arrays
@@ -350,15 +350,15 @@ For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` →
 
 Defaults — when an attribute is absent from the source, the field is present on the node with its empty default:
 `positional: []`, `booleans: {}`, `kwargs: {}`, `id: null`, `classes: []`, `atRefs: []`, `isOpaqueContent: false`, `selfClosing: false`.
-`content` is `null` when there is no content (e.g. `<tag attr />`), the verbatim string for opaque-content tags, or the parsed `Node[]` after recursive-content parsing for prose tags. This matches the parser's grammar `makeNode` factory verbatim (`packages/remark-acadamark/grammar/acadamark.peggy`), which is the ground-truth origin of the shape; downstream consumers should expect every field present on every parser-produced node.
+`content` is `null` when there is no content (e.g. `<tag attr />`), the verbatim string for opaque-content tags, or the parsed `Node[]` after recursive-content parsing for prose tags. This matches the parser's grammar `makeNode` factory verbatim (`packages/remark-enscribe/grammar/enscribe.peggy`), which is the ground-truth origin of the shape; downstream consumers should expect every field present on every parser-produced node.
 
-For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `acadamarkTag` nodes, or markdown nodes, or plain text).
+For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `enscribeTag` nodes, or markdown nodes, or plain text).
 
 **Long-form nodes** have `form: "long"` and one additional field:
 
 ```
 {
-  type: "acadamarkTag",
+  type: "enscribeTag",
   form: "long",
   tagname: "theorem",
   contentHandler: "theorem",  // names the content handler; "default" for regular long-form
@@ -378,11 +378,11 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 
 **Error nodes.** Two distinct error-node shapes are produced, depending on which finder caught the malformed construct.
 
-**Sigil-opener error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-document without finding the mirrored closer, it commits the span (from the opener through to EOF) as a token and the Peggy parser fails on it. The result is an `acadamarkTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Parsing failed before any `acadamarkTag` fields were populated, so the shape is sparse:
+**Sigil-opener error node.** When the micromark finder recognizes a sigil opener (`<#`, `<$`, `` <` `` etc.) but reaches end-of-document without finding the mirrored closer, it commits the span (from the opener through to EOF) as a token and the Peggy parser fails on it. The result is an `enscribeTagError` node rather than a silent fall-through to remark's tokenizer (which can produce runaway fenced-code-block parsing for backtick sigils). Parsing failed before any `enscribeTag` fields were populated, so the shape is sparse:
 
 ```
 {
-  type: "acadamarkTagError",
+  type: "enscribeTagError",
   source: "<```",         // the raw fragment as extracted by the micromark finder
   error: "...",           // the Peggy parse-error message
   position: { ... }       // standard mdast position (added automatically)
@@ -391,11 +391,11 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
 
 Multi-line sigil tags themselves parse cleanly: a sigil opener with a matching closer is handled across line endings in both flow and text positions (`<# heading\n   spans lines #>`, `<$$\n...\n$$>`, etc.). The error token arises only when no closer is found at all — the sigil-side of the EOF-consumption behavior the long-form error below also exhibits. Localizing the error footprint so it covers only the unterminated opener (rather than swallowing everything from the opener to EOF) is a tracked gap against the core always-renders guarantee, filed in `BACKLOG-ROADMAP.md` as the blank-line-termination / EOF-consumption item (formerly DF-16, in the parser-bug cluster).
 
-**Long-form error node.** When the micromark finder recognizes a long-form opener but reaches end-of-document without finding the matching `</tagname>` closer, the long-form node has already had its opener parsed (so its `acadamarkTag` fields are populated) before the missing closer is detected. The node's `type` is flipped from `acadamarkTag` to `acadamarkTagError` and an `error` field is added, but the rest of the node's fields are retained:
+**Long-form error node.** When the micromark finder recognizes a long-form opener but reaches end-of-document without finding the matching `</tagname>` closer, the long-form node has already had its opener parsed (so its `enscribeTag` fields are populated) before the missing closer is detected. The node's `type` is flipped from `enscribeTag` to `enscribeTagError` and an `error` field is added, but the rest of the node's fields are retained:
 
 ```
 {
-  type: "acadamarkTagError",
+  type: "enscribeTagError",
   form: "long",
   tagname: "csv",
   positional: [],
@@ -850,7 +850,7 @@ These were open questions that were settled during implementation.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
 
-- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the remark-acadamark parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
+- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the remark-enscribe parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
 
 - **`|` in short-form content: subsequent `|` characters are literal.** The "exactly one `|` per construct" rule means only the first `|` separates attributes from content. Any further `|` characters in the content section are stored as literal content; no escaping is needed. Example: `<aside | first | second>` produces `content: " first | second"`.
 
@@ -875,27 +875,27 @@ Two short-form constructs sit alongside the tag shorthand, both for the common c
 
 **Edge cases.** `^{}` (empty braces) and `^{abc` (unmatched opener with no closer) are parse errors — the syntax is well-defined only when the braces are matched and non-empty.
 
-**Escapes.** `\^` and `\_` produce literal `^` and `_` (suppressing the shortcut even before a `{`); `\{` and `\}` produce literal braces. The four characters are in the acadamark-consumed escape class (see `escape-rules-spec.md`).
+**Escapes.** `\^` and `\_` produce literal `^` and `_` (suppressing the shortcut even before a `{`); `\{` and `\}` produce literal braces. The four characters are in the enscribe-consumed escape class (see `escape-rules-spec.md`).
 
 **Two surfaces.** The shortcuts work both inside named-tag content (the Peggy grammar handles them as `SuperscriptShortcut` / `SubscriptShortcut`) and in top-level prose (a dedicated micromark tokenizer recognizes them). The two-surface design is the reason the same shortcut works whether the author writes `<aside | H_{2}O>` or `H_{2}O` in a bare paragraph.
 
 ## Coexistence with raw HTML
 
-Acadamark's text-position (inline) tokenizers — for both named tags and sigil tags — run before remark-parse's built-in HTML inline tokenizer. This means `<tagname ...>` and `<$...$>`, `` <`...`> ``, `<#...#>` constructs appearing inside paragraphs are consumed by acadamark, not treated as raw HTML.
+Enscribe's text-position (inline) tokenizers — for both named tags and sigil tags — run before remark-parse's built-in HTML inline tokenizer. This means `<tagname ...>` and `<$...$>`, `` <`...`> ``, `<#...#>` constructs appearing inside paragraphs are consumed by enscribe, not treated as raw HTML.
 
-**What works:** Most common HTML inline tags happen to round-trip correctly. `<em | text>`, `<strong | text>`, `<a href="url" | link>` all parse correctly with acadamark syntax. For HTML-style `<a href="url">link</a>`, acadamark parses `<a href="url">` as an acadamark tag with no content (kwarg `href`, no `|`), and `link</a>` becomes trailing text including a raw closing tag. This is imperfect but usually harmless if authors use acadamark idioms.
+**What works:** Most common HTML inline tags happen to round-trip correctly. `<em | text>`, `<strong | text>`, `<a href="url" | link>` all parse correctly with enscribe syntax. For HTML-style `<a href="url">link</a>`, enscribe parses `<a href="url">` as an enscribe tag with no content (kwarg `href`, no `|`), and `link</a>` becomes trailing text including a raw closing tag. This is imperfect but usually harmless if authors use enscribe idioms.
 
 **What doesn't work:**
 
-- **Bare HTML boolean attributes.** `<input type="checkbox" disabled>` — acadamark parses `disabled` as a positional, not as a boolean attribute flag. Use `+disabled` for acadamark boolean flags instead.
+- **Bare HTML boolean attributes.** `<input type="checkbox" disabled>` — enscribe parses `disabled` as a positional, not as a boolean attribute flag. Use `+disabled` for enscribe boolean flags instead.
 - **Self-closing syntax.** `<br />`, `<img src="x" />` — the trailing `/>` is recognized as a self-closing marker. The parser emits a `selfClosing: true` flag on the AST node. The content field is `null`; no pipe content is allowed in self-closing form. Self-closing is valid for any named tag. Example: `<library src="refs.bib" />` → `{ tagname: 'library', selfClosing: true, kwargs: { src: 'refs.bib' } }`. The slash must be the last character before `>` with no pipe. Technically, `<br/>` (no space before `/`) is also valid. The lookahead that recognizes self-closing is precise: a bare `/` positional is still accepted when it is not in the `/ >` position — e.g., `<tag /path>` parses `positional: ['/path']` without `selfClosing: true`.
-- **Closing tags as standalone constructs.** `</em>` starts with `</`. The acadamark tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it. This means closing tags are passed through as raw HTML, which can produce mismatched structure.
+- **Closing tags as standalone constructs.** `</em>` starts with `</`. The enscribe tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it. This means closing tags are passed through as raw HTML, which can produce mismatched structure.
 
-**Guidance for authors:** Use acadamark shorthand for semantic markup. A
+**Guidance for authors:** Use enscribe shorthand for semantic markup. A
 verbatim-passthrough mechanism (`<html-passthrough>...</html-passthrough>`)
-for the rare case where authors need to drop into raw HTML that acadamark
+for the rare case where authors need to drop into raw HTML that enscribe
 cannot express is open design work in the backlog.
 
 ## What this enables
 
-The parser has a clear target: a micromark extension recognizes the syntax above and produces the structured nodes described; a remark plugin wraps it and emits mdast nodes. The interpreter consumes those nodes against a per-tag vocabulary schema, turning generic `acadamarkTag` nodes into specific HTML. New tags are added by registering vocabulary entries, never by modifying the parser.
+The parser has a clear target: a micromark extension recognizes the syntax above and produces the structured nodes described; a remark plugin wraps it and emits mdast nodes. The interpreter consumes those nodes against a per-tag vocabulary schema, turning generic `enscribeTag` nodes into specific HTML. New tags are added by registering vocabulary entries, never by modifying the parser.

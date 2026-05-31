@@ -1,0 +1,20 @@
+<meta type=article>
+  <title | Multi-paragraph tag content fixture>
+  <author | Test Author>
+</meta>
+
+<section | Aside with blank line in content>
+
+The aside below contains a blank line in its content. Under Option A
+(decided 2026-05-26), a blank line inside an open tag is a paragraph
+break, not a terminator — the tag remains open until its explicit
+closing `>`. The aside must produce two paragraph children.
+
+<aside | First paragraph of the aside.
+
+Second paragraph of the aside, after a blank line.>
+
+This fixture pins Option A's allow-multi-paragraph-tag-content half
+against regression. RC-6 in `remark-enscribe/test/test-recursive.js`
+covers this at the parser level; this fixture covers the full
+integration pipeline end-to-end.

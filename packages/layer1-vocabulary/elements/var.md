@@ -4,7 +4,7 @@ html_output:
   element: var
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:

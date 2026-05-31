@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>document-21-meta-kwargs-and-children</title>
+<style>
+/* Enscribe default theme — Nature-inspired academic journal style.
+ *
+ * Design language: clean, editorial, high information density.
+ * Inspired by Nature journal: tight leading on headings, restrained serif body,
+ * generous white-space on structure, no decorative color.
+ *
+ * Does NOT override .tippy-box or .tippy-content (hover-preview.css owns those).
+ * Does NOT use @font-face, dark mode, print styles, or SCSS.
+ */
+
+/* ─── Design tokens ─────────────────────────────────────────────────────────── */
+
+:root {
+  /* Color */
+  --enscribe-text-primary:   #1a1a1a;
+  --enscribe-text-secondary: #555;
+  --enscribe-text-muted:     #888;
+  --enscribe-link:           #0052cc;
+  --enscribe-link-hover:     #003d99;
+  --enscribe-link-visited:   #0052cc;
+  --enscribe-bg:             #ffffff;
+  --enscribe-bg-subtle:      #f7f7f7;
+  --enscribe-bg-code:        #f5f5f5;
+  --enscribe-border:         #e1e1e1;
+  --enscribe-border-strong:  #ccc;
+  --enscribe-accent:         #444;
+  --enscribe-error:          #c0392b;
+
+  /* Typography — Inter (sans) and Source Code Pro (mono) are bundled as base64
+   * @font-face rules and injected before this CSS. System stacks serve as
+   * fallback for any consumer that includes default.css without the font loader. */
+  --enscribe-font-sans:  'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+  --enscribe-font-mono:  'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco,
+                    Consolas, "Liberation Mono", "Courier New", monospace;
+  --enscribe-text-base:  1rem;
+  --enscribe-text-sm:    0.875rem;
+  --enscribe-text-xs:    0.75rem;
+  --enscribe-text-code:  0.95rem;
+
+  /* Heading scale */
+  --enscribe-h1-size: 2.25rem;
+  --enscribe-h2-size: 1.5rem;
+  --enscribe-h3-size: 1.2rem;
+  --enscribe-h4-size: 1.05rem;
+
+  /* Spacing */
+  --enscribe-line-height:         1.65;
+  --enscribe-line-height-heading: 1.3;
+  --enscribe-line-height-tight:   1.4;
+  --enscribe-space-1:  0.25rem;
+  --enscribe-space-2:  0.5rem;
+  --enscribe-space-3:  0.75rem;
+  --enscribe-space-4:  1rem;
+  --enscribe-space-6:  1.5rem;
+  --enscribe-space-8:  2rem;
+  --enscribe-space-12: 3rem;
+
+  /* Layout */
+  --enscribe-content-width:   760px;
+  --enscribe-content-padding: 1.5rem;
+}
+
+/* ─── Reset / base ──────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: var(--enscribe-text-base);
+  line-height: var(--enscribe-line-height);
+  color: var(--enscribe-text-primary);
+  background: var(--enscribe-bg);
+  margin: var(--enscribe-space-12) auto;
+  padding: 0 var(--enscribe-content-padding);
+  max-width: var(--enscribe-content-width);
+}
+
+/* ─── Article structure ─────────────────────────────────────────────────────── */
+
+article {
+  display: block;
+}
+
+article-front {
+  display: block;
+  margin-bottom: var(--enscribe-space-8);
+  padding-bottom: var(--enscribe-space-6);
+  border-bottom: 2px solid var(--enscribe-border-strong);
+}
+
+article-body {
+  display: block;
+}
+
+article-back {
+  display: block;
+  margin-top: var(--enscribe-space-8);
+  padding-top: var(--enscribe-space-6);
+  border-top: 1px solid var(--enscribe-border);
+}
+
+/* Front-matter metadata container. display:contents lets children flow as
+ * direct descendants of article-front for styling purposes. */
+meta[data-document-type] {
+  display: contents;
+}
+
+article-title {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-h1-size);
+  font-weight: 700;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-2);
+}
+
+article-subtitle {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-h2-size);
+  font-weight: 400;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+/* Individual author element. Multiple <author> elements render as a run. */
+author {
+  display: inline;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+}
+
+author + author::before {
+  content: ", ";
+}
+
+/* Wrap all authors in a block display. Achieved by making article-front a
+ * flex column or by wrapping the author run with a display:block pseudo. */
+
+/* ─── Book structure ────────────────────────────────────────────────────────── */
+
+/*
+ * RQ-BOOK-S1. Book documents wrap their content in <book> with <book-front>,
+ * <book-body>, <book-back> regions, each holding <book-part> chapters/parts.
+ * Custom elements default to display:inline, so without these rules a whole
+ * book collapses into one inline run. These rules mirror the article-structure
+ * baseline: block regions, a prominent book-title, and a chapter-level
+ * book-part-title sized clearly between the book-title and section-title.
+ */
+book,
+book-front,
+book-body,
+book-back,
+book-part {
+  display: block;
+}
+
+book-front {
+  margin-bottom: var(--enscribe-space-8);
+  padding-bottom: var(--enscribe-space-6);
+  border-bottom: 2px solid var(--enscribe-border-strong);
+}
+
+book-back {
+  margin-top: var(--enscribe-space-8);
+  padding-top: var(--enscribe-space-6);
+  border-top: 1px solid var(--enscribe-border);
+}
+
+/* Each chapter/part is set off with generous top space. */
+book-part {
+  margin-top: var(--enscribe-space-12);
+}
+
+/* RQ-BOOK-S1: book-title is the most prominent heading on the page (block, at
+ * least --enscribe-h1-size). Reasonable default: 1.25× the article h1 token, so the
+ * book cover title sits clearly above every chapter and section heading while
+ * still scaling with the theme's heading token. */
+book-title {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: calc(var(--enscribe-h1-size) * 1.25);
+  font-weight: 700;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-2);
+}
+
+book-subtitle {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-h2-size);
+  font-weight: 400;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+/* RQ-BOOK-S1: book-part-title is a chapter-level heading — block, prominent,
+ * and clearly above section-title scale (--enscribe-h2-size). Uses --enscribe-h1-size so
+ * a chapter heading sits between the book-title and section headings. */
+book-part-title {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-h1-size);
+  font-weight: 700;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+book-part-subtitle {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-h3-size);
+  font-weight: 400;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+/* ─── Section hierarchy ─────────────────────────────────────────────────────── */
+
+section,
+sub-section,
+sub-sub-section {
+  display: block;
+  margin-top: var(--enscribe-space-8);
+}
+
+section-title,
+sub-section-title,
+sub-sub-section-title {
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-weight: 700;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-3);
+}
+
+section-title {
+  font-size: var(--enscribe-h2-size);
+  margin-top: 0;
+}
+
+sub-section-title {
+  font-size: var(--enscribe-h3-size);
+}
+
+sub-sub-section-title {
+  font-size: var(--enscribe-h4-size);
+}
+
+/* Suppress top margin on section directly following article-body open. */
+article-body > section:first-child {
+  margin-top: 0;
+}
+
+/* ─── Prose ─────────────────────────────────────────────────────────────────── */
+
+p {
+  margin: 0 0 var(--enscribe-space-4);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+strong {
+  font-weight: 700;
+}
+
+em {
+  font-style: italic;
+}
+
+blockquote {
+  margin: var(--enscribe-space-6) 0;
+  padding: var(--enscribe-space-3) var(--enscribe-space-6);
+  border-left: 3px solid var(--enscribe-border-strong);
+  color: var(--enscribe-text-secondary);
+  font-style: italic;
+}
+
+blockquote p {
+  margin-bottom: var(--enscribe-space-2);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--enscribe-border);
+  margin: var(--enscribe-space-8) 0;
+}
+
+ul,
+ol {
+  margin: var(--enscribe-space-3) 0 var(--enscribe-space-4);
+  padding-left: var(--enscribe-space-6);
+}
+
+li {
+  margin-bottom: var(--enscribe-space-1);
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Links and cross-references ────────────────────────────────────────────── */
+
+a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--enscribe-link-hover);
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--enscribe-link-visited);
+}
+
+/* Resolved cross-reference: styled as a link. */
+a.ref {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-style: normal;
+}
+
+a.ref:hover {
+  text-decoration: underline;
+}
+
+/* Unresolved cross-reference: error color, wavy underline. */
+a.ref-error {
+  color: var(--enscribe-error);
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  cursor: help;
+}
+
+/* ─── Citations ─────────────────────────────────────────────────────────────── */
+
+cite.cite {
+  font-style: normal;
+  cursor: pointer;
+}
+
+cite.cite-error {
+  font-style: normal;
+  color: var(--enscribe-error);
+  cursor: help;
+}
+
+/* ─── Math ──────────────────────────────────────────────────────────────────── */
+
+/*
+ * Flex layout for display-math: equation centered, number flush right.
+ *
+ * HTML structure emitted by the interpreter:
+ *   <display-math>
+ *     <span class="katex-display">...</span>   ← KaTeX in display mode
+ *     <span class="equation-number">(N)</span>  ← only when numbered
+ *   </display-math>
+ *
+ * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
+ * When display-math becomes a flex container, .katex-display becomes a flex item
+ * (flex: 1) while retaining text-align: center for its content.
+ *
+ * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * the full width and the equation is centered by KaTeX's text-align: center.
+ *
+ * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
+ * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
+ * .katex-display child) and may carry a single .equation-number, so grouping
+ * them with display-math makes them render as display blocks with vertical
+ * margin and presents any equation number flush-right, consistently with the
+ * display-math case. (Per-line align numbering is out of spec — a single
+ * number for the whole block is the documented baseline.)
+ */
+display-math,
+math,
+align,
+cases,
+matrix,
+eqnarray {
+  display: flex;
+  align-items: center;
+  margin: var(--enscribe-space-6) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* KaTeX display block: grows to fill available space; equation centered within. */
+display-math > .katex-display,
+math > .katex-display,
+align > .katex-display,
+cases > .katex-display,
+matrix > .katex-display,
+eqnarray > .katex-display {
+  flex: 1;
+  margin: 0;            /* override KaTeX's default 1em top/bottom margin */
+  overflow-x: auto;
+}
+
+/* Equation number: does not grow; sits flush right at same vertical centre. */
+display-math > .equation-number,
+math > .equation-number,
+align > .equation-number,
+cases > .equation-number,
+matrix > .equation-number,
+eqnarray > .equation-number {
+  flex: 0 0 auto;
+  min-width: 3em;
+  text-align: right;
+  padding-left: var(--enscribe-space-4);
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  white-space: nowrap;
+}
+
+inline-math {
+  display: inline;
+}
+
+/* ─── Theorem family ────────────────────────────────────────────────────────── */
+
+/*
+ * RQ-THM-S1: each theorem-family element renders display:block with vertical
+ * margin. Custom elements default to display:inline, so without this the
+ * theorem statement collapses into the surrounding paragraph. The vertical
+ * margin matches the display-math block rhythm (--enscribe-space-6).
+ */
+theorem,
+lemma,
+corollary,
+proposition,
+definition,
+example,
+remark,
+proof {
+  display: block;
+  margin: var(--enscribe-space-6) 0;
+}
+
+/*
+ * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * "Proof.") renders with prominence (font-weight: 700). Matches the
+ * weight-only convention of .figure-label / .table-label; the label already
+ * carries a trailing space from the handler, so no extra margin is needed.
+ * Italicised statement bodies (an amsthm convention) are out of spec for S2
+ * and left to a later theme.
+ */
+.theorem-label,
+.lemma-label,
+.corollary-label,
+.proposition-label,
+.definition-label,
+.example-label,
+.remark-label,
+.proof-label {
+  font-weight: 700;
+}
+
+/* ─── Code ──────────────────────────────────────────────────────────────────── */
+
+code {
+  font-family: var(--enscribe-font-mono);
+  font-size: var(--enscribe-text-code);
+  background: var(--enscribe-bg-code);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+pre {
+  background: var(--enscribe-bg-code);
+  border: 1px solid var(--enscribe-border);
+  border-radius: 4px;
+  padding: var(--enscribe-space-4);
+  overflow-x: auto;
+  margin: var(--enscribe-space-4) 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+}
+
+/* code-block is the custom element wrapper for sigil ``` blocks. */
+code-block {
+  display: block;
+  margin: var(--enscribe-space-4) 0;
+}
+
+code-block pre {
+  margin: 0;
+}
+
+/* ─── Figures and tables ─────────────────────────────────────────────────────── */
+
+figure {
+  display: block;
+  margin: var(--enscribe-space-8) 0;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+figcaption {
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  margin-top: var(--enscribe-space-2);
+  text-align: left;
+  line-height: var(--enscribe-line-height-tight);
+}
+
+.figure-label {
+  font-weight: 700;
+  margin-right: var(--enscribe-space-1);
+}
+
+/* RQ-FRM-S4: a frame renders <figure class="frameable-border">. The border
+ * class draws a visible outline box around the frameable, setting the bordered
+ * callout off from the body text. Reasonable baseline: a 1px solid rule in the
+ * theme's strong border color, a subtle 4px radius (matching <pre>), and
+ * padding so content does not touch the rule. */
+.frameable-border {
+  border: 1px solid var(--enscribe-border-strong);
+  border-radius: 4px;
+  padding: var(--enscribe-space-4);
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--enscribe-space-6) 0;
+  font-size: var(--enscribe-text-sm);
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-2);
+  font-weight: normal;
+}
+
+.table-label {
+  font-weight: 700;
+  margin-right: var(--enscribe-space-1);
+}
+
+th,
+td {
+  border: 1px solid var(--enscribe-border-strong);
+  padding: var(--enscribe-space-2) var(--enscribe-space-3);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--enscribe-bg-subtle);
+  font-weight: 700;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--enscribe-accent);
+}
+
+thead th {
+  border-bottom: 2px solid var(--enscribe-border-strong);
+}
+
+/* ─── Notes ─────────────────────────────────────────────────────────────────── */
+
+note-list {
+  display: block;
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  margin-top: var(--enscribe-space-8);
+  padding-top: var(--enscribe-space-4);
+  border-top: 1px solid var(--enscribe-border);
+}
+
+/* "Notes" heading supplied by ::before; no heading element is emitted. */
+note-list::before {
+  content: "Notes";
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  margin-bottom: var(--enscribe-space-3);
+}
+
+/* Override hover-preview.css which also sets these to 0. Both agree here. */
+note-list ol {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+note-list li {
+  margin-bottom: var(--enscribe-space-2);
+  padding-left: var(--enscribe-space-6);
+  text-indent: calc(-1 * var(--enscribe-space-6));
+}
+
+.note-backref {
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-text-muted);
+  text-decoration: none;
+  margin-left: var(--enscribe-space-1);
+}
+
+.note-backref:hover {
+  color: var(--enscribe-link);
+}
+
+/* Sidenote fallback: inline sidenotes collected to end (deferred feature). */
+.sidenote-fallback {
+  font-style: italic;
+}
+
+/* Inline note marker superscript. */
+sup[data-note-id] {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-link);
+  cursor: pointer;
+}
+
+/* ─── Bibliography ───────────────────────────────────────────────────────────── */
+
+bibliography {
+  display: block;
+  margin-top: var(--enscribe-space-6);
+}
+
+bibliography h2 {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-h3-size);
+  font-weight: 700;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin: 0 0 var(--enscribe-space-4);
+}
+
+.csl-bib-body {
+  font-size: var(--enscribe-text-sm);
+}
+
+.csl-entry {
+  margin-bottom: var(--enscribe-space-3);
+  padding-left: var(--enscribe-space-6);
+  text-indent: calc(-1 * var(--enscribe-space-6));
+  line-height: var(--enscribe-line-height-tight);
+  color: var(--enscribe-text-primary);
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  body {
+    margin: var(--enscribe-space-6) auto;
+    padding: 0 var(--enscribe-space-4);
+    font-size: 0.95rem;
+  }
+
+  article-title {
+    font-size: 1.75rem;
+  }
+
+  article-subtitle {
+    font-size: 1.2rem;
+  }
+
+  section-title {
+    font-size: 1.25rem;
+  }
+
+  table {
+    font-size: var(--enscribe-text-xs);
+  }
+}
+
+</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
+<article>
+  <article-front>
+    <meta data-document-type="article">
+      <article-title>Equivalent metadata via kwarg form</article-title>
+      <author>Ariel Balter</author>
+    </meta>
+  </article-front>
+  <article-body>
+    <section>
+      <section-title>Convergence of kwarg and child-tag 
+        <meta>forms
+      </section-title>
+      <p>
+        The two authoring forms of <code>&#x3C;meta></code> must produce the same Layer 1 child-tag
+        shape. The <code>&#x3C;meta></code> above uses the kwarg form; the gate lifts each
+        allowlisted kwarg to a corresponding child tag. The result is the same as
+        authoring with explicit <code>&#x3C;title></code> and <code>&#x3C;author></code> child tags.
+      </p>
+      <p>
+        This fixture exercises only the META allowlist keys that have existing
+        Layer 1 vocabulary entries (title, author, date, subtitle). The other
+        allowlist entries (doi, license, lang, version, keywords) lift correctly
+        but their target vocabulary entries are not yet defined — filed as a
+        finding for a separate vocabulary item, parallel to the missing
+        
+        <abstract></abstract>entry the slice prompt noted.
+      </p>
+    </section>
+  </article-body>
+</article>
+
+</body>
+</html>

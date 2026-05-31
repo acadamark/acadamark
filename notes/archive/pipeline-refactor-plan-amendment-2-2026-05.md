@@ -34,24 +34,24 @@ re-architecture) is the R1 mistake. R3 is split.
 
 ### R3a — Notes re-architecture (the correctness slice)
 
-Re-architect `acadamarkNotes` so notes are discovered in place and placement is
+Re-architect `enscribeNotes` so notes are discovered in place and placement is
 deferred to a late pipeline stage. This is the real fix; it is the necessary
 slice.
 
-- Revise `acadamarkNotes` to use `discover()` for **registration only**: visit
+- Revise `enscribeNotes` to use `discover()` for **registration only**: visit
   `<note>` nodes, register each in the registry, record `{ node, entry }` in
-  `acadamarkNotesPending`. Delete its `walkAndReplace` and `processNote`. The
+  `enscribeNotesPending`. Delete its `walkAndReplace` and `processNote`. The
   `<note>` node stays in the tree at its authored position. No marker is
   created at this stage; no content is copied.
-- Add a new `acadamarkNotePlacement` plugin, running late — after
-  `acadamarkCiteResolution`, before `acadamarkBibliography`. It splices each
+- Add a new `enscribeNotePlacement` plugin, running late — after
+  `enscribeCiteResolution`, before `enscribeBibliography`. It splices each
   `<note>` out, puts a marker in its place, builds the `__note-list-item`
   nodes from the (now resolved) live note content, and injects the
   `__note-list` into `article-back`. This is the current `fillNotes` logic,
   moved to a late stage and reading live `<note>.content` instead of a shallow
   copy.
 - Remove the `fillNotes` export from `notes.js` and its call from
-  `acadamarkApplyNumbers` in `index.js`.
+  `enscribeApplyNumbers` in `index.js`.
 - `ref-resolution.js` and `cite-resolution.js` are **not** touched in R3a.
   Their existing `walkAndReplace` works correctly once notes stay in the tree.
 
@@ -62,7 +62,7 @@ identified was caused entirely by the extraction; removing the extraction
 removes it.
 
 **Correctness proof:** the final rendered HTML is unchanged for every existing
-fixture — `acadamarkNotePlacement` produces the same internal nodes in the same
+fixture — `enscribeNotePlacement` produces the same internal nodes in the same
 positions as `fillNotes`, just later. The empty fixture-diff proof still holds.
 
 **One intended behavior change, not visible in the fixture diff:** citations
@@ -78,7 +78,7 @@ and protected.
 
 After R3a lands clean: collapse the three near-identical `walkAndReplace`
 copies (in `ref-resolution.js`, `cite-resolution.js`, and the new
-`acadamarkNotePlacement`) into one shared helper, correctly guarded with
+`enscribeNotePlacement`) into one shared helper, correctly guarded with
 `!node.isOpaqueContent`.
 
 - The design question — shared `walkAndReplace` helper vs. in-place node

@@ -32,7 +32,7 @@ Worth pausing to acknowledge what just happened. The system now:
 
 The proof-of-principle is genuinely complete. You could email someone the demo HTML file and they'd see exactly what you intended.
 
-## Taking stock — what acadamark is now
+## Taking stock — what enscribe is now
 
 Worth being honest about the scope of what's been built. The system supports:
 
@@ -49,7 +49,7 @@ Worth being honest about the scope of what's been built. The system supports:
 - Figures with captions.
 
 **Authoring:**
-- Acadamark shorthand syntax (`<tag attrs>`, `<tag | content>`, etc.).
+- Enscribe shorthand syntax (`<tag attrs>`, `<tag | content>`, etc.).
 - Long-form HTML nesting (`<data><library>...</library></data>`).
 - Self-closing `<tag />`.
 - Comma and space-separated positionals.
@@ -122,7 +122,7 @@ My lean: **both.** Report is a project artifact (this is what we found in May 20
 
 **Q4: What about the client-side plan?**
 
-You said you'd share more when we got here. The post-audit work is the client-side architecture rebuild — the JupyterLite-style standalone HTML files that load raw .acm in browser. Real architectural shift.
+You said you'd share more when we got here. The post-audit work is the client-side architecture rebuild — the JupyterLite-style standalone HTML files that load raw .emd in browser. Real architectural shift.
 
 Worth knowing now:
 - Does the audit need to keep client-side in mind? (E.g., flag patterns that would resist migration.)

@@ -4,15 +4,15 @@
 
 ## What it is
 
-Acadamark should eventually support presentation-style documents — slide decks rendered for screen presentation, similar to Quarto's revealjs output, Pandoc's beamer support, or LaTeX's beamer package. The natural element name is `<slide>`.
+Enscribe should eventually support presentation-style documents — slide decks rendered for screen presentation, similar to Quarto's revealjs output, Pandoc's beamer support, or LaTeX's beamer package. The natural element name is `<slide>`.
 
 ## Why it matters
 
-Presentations are a major academic publishing format that acadamark doesn't currently address. Researchers regularly need to convert paper content into slides, and the source-of-truth → multiple-output pattern that acadamark already supports (HTML, JATS) extends naturally to presentation output.
+Presentations are a major academic publishing format that enscribe doesn't currently address. Researchers regularly need to convert paper content into slides, and the source-of-truth → multiple-output pattern that enscribe already supports (HTML, JATS) extends naturally to presentation output.
 
 A `<slide>` element gives authors a way to:
 
-- Author presentations in acadamark's shorthand syntax.
+- Author presentations in enscribe's shorthand syntax.
 - Reuse content between papers and slides (the same body text might appear in both with different formatting).
 - Generate presentation HTML (revealjs-style) and printed handouts from the same source.
 - Maintain consistent citation, figure, and equation handling between papers and presentations.

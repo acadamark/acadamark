@@ -4,7 +4,7 @@ html_output:
   element: glossary
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -24,7 +24,7 @@ content_handler: default
 jats_counterpart:
   element: glossary
   notes: |
-    JATS has a <glossary> element. Acadamark's <glossary> maps directly,
+    JATS has a <glossary> element. Enscribe's <glossary> maps directly,
     with children mapping per <glossary-entry>'s entry. JATS's <glossary>
     can also wrap a <def-list>; the exporter chooses the structure based
     on whether the source uses <glossary> or <dl>.
@@ -32,7 +32,7 @@ shorthand_examples:
   - source: |
       <glossary #project-terms>
         <glossary-entry>
-          <dt | acadamark>
+          <dt | enscribe>
           <dd | An academic publishing system built on HTML+CSS+JS.>
         </glossary-entry>
         <glossary-entry>
@@ -43,7 +43,7 @@ shorthand_examples:
     layer1_html: |
       <glossary id="project-terms">
         <glossary-entry>
-          <dt>acadamark</dt>
+          <dt>enscribe</dt>
           <dd>An academic publishing system built on HTML+CSS+JS.</dd>
         </glossary-entry>
         <glossary-entry>
@@ -64,19 +64,19 @@ A glossary block — a collection of glossary entries, each a term/definition pa
 
 ## Semantic intent
 
-`<glossary>` is acadamark's element for glossary-shaped content — a curated list of project-specific terms with their definitions, typically appearing as a back-matter section or sidebar resource. Each entry is a `<glossary-entry>` carrying the term and its definition.
+`<glossary>` is enscribe's element for glossary-shaped content — a curated list of project-specific terms with their definitions, typically appearing as a back-matter section or sidebar resource. Each entry is a `<glossary-entry>` carrying the term and its definition.
 
 The key distinction from `<dl>`:
 
 - `<dl>` is HTML's general definition-list element. Its children are alternating `<dt>`/`<dd>` siblings; the pairing is structural-by-position. Use `<dl>` for inline term-definition pairings (an aside listing a few key terms; a small inline glossary; a key-value display).
-- `<glossary>` is acadamark's named glossary container. Its children are `<glossary-entry>` envelopes, each holding a term/definition pair. Use `<glossary>` for glossary-section content — items the document treats as cross-referenceable glossary entries, or content that maps to JATS's `<glossary>` at export.
+- `<glossary>` is enscribe's named glossary container. Its children are `<glossary-entry>` envelopes, each holding a term/definition pair. Use `<glossary>` for glossary-section content — items the document treats as cross-referenceable glossary entries, or content that maps to JATS's `<glossary>` at export.
 
 ## Authoring
 
 ```
 <glossary #project-terms>
   <glossary-entry>
-    <dt | acadamark>
+    <dt | enscribe>
     <dd | An academic publishing system.>
   </glossary-entry>
   <glossary-entry>
@@ -90,14 +90,14 @@ Each `<glossary-entry>` contains a `<dt>`/`<dd>` pair (reusing the definition-li
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<glossary>` | `<glossary>` |
 | `<glossary-entry>` (within `<glossary>`) | `<def-item>` (inside `<glossary>`) |
 | `<dt>` (within a `<glossary-entry>`) | `<term>` (inside `<def-item>`) |
 | `<dd>` (within a `<glossary-entry>`) | `<def>` (inside `<def-item>`) |
 
-JATS's `<glossary>` can hold `<def-item>` children directly, or wrap a `<def-list>` of items. Acadamark's `<glossary-entry>` maps to JATS's `<def-item>` — the structural envelope around a term/definition pair.
+JATS's `<glossary>` can hold `<def-item>` children directly, or wrap a `<def-list>` of items. Enscribe's `<glossary-entry>` maps to JATS's `<def-item>` — the structural envelope around a term/definition pair.
 
 ## Render-mode lowering
 

@@ -4,7 +4,7 @@ html_output:
   element: dd
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -60,7 +60,7 @@ A definition-list description. The "value" half of a definition pair within a `<
 
 ```
 <dl>
-  <dt | acadamark>
+  <dt | enscribe>
   <dd | An academic publishing system.>
 </dl>
 ```
@@ -69,7 +69,7 @@ The pipe content is the description text. Multi-paragraph descriptions work:
 
 ```
 <dl>
-  <dt | acadamark>
+  <dt | enscribe>
   <dd |
   An academic publishing system built on HTML+CSS+JS.
 
@@ -81,7 +81,7 @@ The pipe content is the description text. Multi-paragraph descriptions work:
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<dd>` (within `<dl>`) | `<def>` (inside `<def-item>` inside `<def-list>`) |
 

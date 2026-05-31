@@ -4,7 +4,7 @@ html_output:
   element: license
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -29,7 +29,7 @@ jats_counterpart:
   notes: |
     JATS uses <license xlink:href="..."> inside <permissions> inside
     <article-meta>. The license content can be free-form text or a
-    structured <license-p>. Acadamark's <license> maps to JATS's
+    structured <license-p>. Enscribe's <license> maps to JATS's
     <license> directly; the href kwarg maps to xlink:href.
 shorthand_examples:
   - source: |
@@ -91,7 +91,7 @@ The license name passes through as text content; downstream tooling matches agai
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<license href="...">CC BY 4.0</license>` | `<license xlink:href="..."><license-p>CC BY 4.0</license-p></license>` (inside `<permissions>`) |
 

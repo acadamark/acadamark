@@ -18,7 +18,7 @@ The math sigil path (`<$ x^2 $>`) handles all of these correctly via KaTeX, but 
 
 ## User-facing rule
 
-In prose content, `^{...}` produces a superscript and `_{...}` produces a subscript. The `...` is the content; it is parsed recursively as prose, supporting nested acadamark constructs, markdown idioms, and other inline elements.
+In prose content, `^{...}` produces a superscript and `_{...}` produces a subscript. The `...` is the content; it is parsed recursively as prose, supporting nested enscribe constructs, markdown idioms, and other inline elements.
 
 ```
 The 1^{st} edition of the work...
@@ -54,7 +54,7 @@ The content between `{` and `}` is parsed recursively as prose. The full prose v
 
 - Plain text: `^{abc}`.
 - Markdown idioms: `^{*emphasis*}`.
-- Acadamark constructs: `^{<cite jones2026>}`.
+- Enscribe constructs: `^{<cite jones2026>}`.
 - Nested super/sub: `x^{y_{1}}`.
 - Multiple constructs combined: `x^{see <cite | jones2026> <note | qualification>}`.
 
@@ -89,7 +89,7 @@ For ordinals, chemistry, and isotopes, the inline shortcut is the right path. Fo
 
 ## Single-character forms not supported
 
-LaTeX supports both `x^2` (single character without braces) and `x^{2}` (braced). Acadamark deliberately supports only the braced form.
+LaTeX supports both `x^2` (single character without braces) and `x^{2}` (braced). Enscribe deliberately supports only the braced form.
 
 Reasons:
 
@@ -101,7 +101,7 @@ Reasons:
 
 **Empty braces.** `^{}` is a parse error: empty superscript is rarely intentional, and the error is visible in the rendered output.
 
-**Unmatched braces.** `^{abc` (missing closing brace) follows the existing pattern for unterminated constructs: the parser produces `acadamarkParseError` and continues. Same defensive-error pattern as other unterminated multi-character constructs.
+**Unmatched braces.** `^{abc` (missing closing brace) follows the existing pattern for unterminated constructs: the parser produces `enscribeParseError` and continues. Same defensive-error pattern as other unterminated multi-character constructs.
 
 **Adjacent shortcuts.** `^{12}_{24}` should produce `<sup>12</sup><sub>24</sub>` — two separate elements adjacent in the output. No special handling needed; each shortcut parses independently.
 
@@ -111,9 +111,9 @@ Reasons:
 
 ## Interaction with opaque regions
 
-The shortcut applies only in prose regions. Inside opaque content (math sigils `<$...$>`, code sigils `` <`...`> ``, DSL tags), the `^` and `_` characters retain their language-specific meaning and are not interpreted by acadamark.
+The shortcut applies only in prose regions. Inside opaque content (math sigils `<$...$>`, code sigils `` <`...`> ``, DSL tags), the `^` and `_` characters retain their language-specific meaning and are not interpreted by enscribe.
 
-This matches the existing escape-rules behavior: prose has acadamark conventions; opaque regions defer to embedded languages.
+This matches the existing escape-rules behavior: prose has enscribe conventions; opaque regions defer to embedded languages.
 
 ## Implementation surfaces
 
@@ -123,13 +123,13 @@ The implementation has two surfaces, because the Peggy grammar only runs on
 - **Grammar `ContentItem` rules (G1a)** — handles `^{...}` and `_{...}`
   inside named-tag content (`<aside | 1^{st} edition>`). The
   `SuperscriptShortcut` / `SubscriptShortcut` / `BraceContentItem` rules live
-  in `grammar/acadamark.peggy`.
+  in `grammar/enscribe.peggy`.
 - **Micromark tokenizer (G1b)** — handles `^{...}` and `_{...}` in top-level
   prose (`The 1^{st} edition...`, outside any `<...>` tag). A new tokenizer in
   `syntax.js` registers for character codes 94 (`^`) and 95 (`_`) and emits
-  `acadamarkTag` nodes with `tagname: 'sup'`/`'sub'`.
+  `enscribeTag` nodes with `tagname: 'sup'`/`'sub'`.
 
-Both surfaces produce identical `acadamarkTag` nodes and are processed by the
+Both surfaces produce identical `enscribeTag` nodes and are processed by the
 same `remarkRecursiveContent` and interpreter pipeline.
 
 ## Implementation considerations
@@ -146,7 +146,7 @@ same `remarkRecursiveContent` and interpreter pipeline.
 
 Implemented. G1a (commit b6304a3) added `SuperscriptShortcut` / `SubscriptShortcut` rules to the Peggy grammar, covering shortcuts inside named-tag content. G1b added a micromark tokenizer (`tokenizeShortcutTag` in `syntax.js` + `buildShortcutNode` in `from-markdown.js`) covering top-level prose.
 
-Both surfaces emit identical `acadamarkTag` nodes (form `shortcut`, tagname `sup` or `sub`, contentHandler `default`). Those nodes are processed by `remarkRecursiveContent` and rendered via the existing `<sup>` / `<sub>` schema dispatch in the interpreter.
+Both surfaces emit identical `enscribeTag` nodes (form `shortcut`, tagname `sup` or `sub`, contentHandler `default`). Those nodes are processed by `remarkRecursiveContent` and rendered via the existing `<sup>` / `<sub>` schema dispatch in the interpreter.
 
 The vocabulary entries for `<sup>` and `<sub>` reference this shortcut as the expected authoring affordance, which is now active.
 
@@ -155,4 +155,4 @@ The vocabulary entries for `<sup>` and `<sub>` reference this shortcut as the ex
 - [`<sup>`](../packages/layer1-vocabulary/elements/sup.md) — the Layer 1 superscript element.
 - [`<sub>`](../packages/layer1-vocabulary/elements/sub.md) — the Layer 1 subscript element.
 - [`escape-rules-spec.md`](escape-rules-spec.md) — the escape rules that would extend to support `^`, `_`, `{`, `}`.
-- [`idioms.md`](idioms.md) — the broader principle of when acadamark adopts shortcuts vs. delegates to other parsers.
+- [`idioms.md`](idioms.md) — the broader principle of when enscribe adopts shortcuts vs. delegates to other parsers.

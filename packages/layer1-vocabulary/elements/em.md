@@ -4,7 +4,7 @@ html_output:
   element: em
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -44,7 +44,7 @@ Emphasis. The semantic element for stressed words or phrases — content the aut
 
 `<em>` represents semantic emphasis, not merely visual italics. The default rendering is italic, but the meaning is "this text carries emphasis." Screen readers may pronounce emphasized text with vocal stress; some accessibility tools surface emphasis distinctly.
 
-For purely visual italic styling without semantic emphasis (foreign words, biological taxa, technical terms), use `<i>` instead. The HTML5 spec distinguishes the two; acadamark follows.
+For purely visual italic styling without semantic emphasis (foreign words, biological taxa, technical terms), use `<i>` instead. The HTML5 spec distinguishes the two; enscribe follows.
 
 ## Authoring
 
@@ -54,7 +54,7 @@ For purely visual italic styling without semantic emphasis (foreign words, biolo
 This is *emphasized* content.
 ```
 
-Single asterisks (or single underscores) around content produce `<em>` via remark. No explicit acadamark tags needed.
+Single asterisks (or single underscores) around content produce `<em>` via remark. No explicit enscribe tags needed.
 
 **Explicit form.**
 
@@ -70,7 +70,7 @@ Used when attributes are needed.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<em>` | `<italic toggle="yes">` |
 

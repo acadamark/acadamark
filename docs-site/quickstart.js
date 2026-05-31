@@ -1,17 +1,17 @@
-// acadamark docs-site Quickstart playground (Phase 14 Slice 3a).
+// enscribe docs-site Quickstart playground (Phase 14 Slice 3a).
 //
 // Structurally the same as the standalone editor demo (demo/demo.js): a
-// CodeMirror 6 editor on the left, live-rendered acadamark on the right,
+// CodeMirror 6 editor on the left, live-rendered enscribe on the right,
 // re-rendering on edit via the `render → executeAssets` two-step. Two
 // differences from the demo:
 //
 //   • The initial source is the Quickstart article itself. build.js inlines
-//     quickstart.acm into the page as `window.__QUICKSTART_SOURCE__` (a
+//     quickstart.emd into the page as `window.__QUICKSTART_SOURCE__` (a
 //     JSON-string-escaped literal), so the playground is self-contained — no
 //     runtime fetch, which means it also works when the dist/ folder is
 //     deployed on its own.
 //
-//   • The acadamark library (window.acadamark) is loaded by a classic <script>
+//   • The enscribe library (window.enscribe) is loaded by a classic <script>
 //     that build.js injects into THIS page's <head> only. The read-only pages
 //     ship no editor and no library — the playground is the one heavy page.
 //
@@ -27,14 +27,14 @@ const outputEl = document.querySelector("#output");
 // The library bundle is built locally (gitignored) and copied into dist/assets/
 // by build.js. A missing global almost always means `npm run build:lib` hasn't
 // been run, so say so actionably instead of throwing a cryptic error.
-const acadamark = window.acadamark;
-if (!acadamark || typeof acadamark.render !== "function") {
+const enscribe = window.enscribe;
+if (!enscribe || typeof enscribe.render !== "function") {
   outputEl.innerHTML =
-    '<div class="pg-banner">The acadamark browser bundle is not loaded. Build ' +
-    "it, then rebuild the site:<br /><code>cd packages/acadamark-interpreter &amp;&amp; " +
+    '<div class="pg-banner">The enscribe browser bundle is not loaded. Build ' +
+    "it, then rebuild the site:<br /><code>cd packages/enscribe-interpreter &amp;&amp; " +
     "npm run build:lib</code><br /><code>npm run docs:build</code><br />then reload " +
     "this page.</div>";
-  throw new Error("acadamark browser bundle not found on window.acadamark");
+  throw new Error("enscribe browser bundle not found on window.enscribe");
 }
 
 function escapeHtml(s) {
@@ -50,7 +50,7 @@ function escapeHtml(s) {
 async function renderNow(source) {
   let html;
   try {
-    html = acadamark.render(source);
+    html = enscribe.render(source);
   } catch (err) {
     // Mid-edit source is often syntactically incomplete; show the error and keep
     // the editor responsive rather than blanking the pane.
@@ -61,7 +61,7 @@ async function renderNow(source) {
   }
   outputEl.innerHTML = html;
   try {
-    await acadamark.executeAssets(outputEl);
+    await enscribe.executeAssets(outputEl);
   } catch (err) {
     console.error("executeAssets failed:", err);
   }
@@ -76,7 +76,7 @@ function schedule(source) {
 const initialDoc =
   typeof window.__QUICKSTART_SOURCE__ === "string"
     ? window.__QUICKSTART_SOURCE__
-    : "<section | Hello, acadamark. Edit me.>\n";
+    : "<section | Hello, enscribe. Edit me.>\n";
 
 const view = new EditorView({
   doc: initialDoc,

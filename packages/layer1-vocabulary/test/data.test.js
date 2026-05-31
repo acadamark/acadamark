@@ -1,8 +1,8 @@
 // Tests for the generated `src/data.js` data module — the run-time
 // vocabulary that ships from this package.
 //
-// Relocated from `acadamark-interpreter/test/schema/load-vocabulary.test.js`
-// in Slice 4 of the acadamark-core extraction arc, where the runtime
+// Relocated from `enscribe-interpreter/test/schema/load-vocabulary.test.js`
+// in Slice 4 of the enscribe-core extraction arc, where the runtime
 // `loadVocabulary` loader was replaced by a build-time generator
 // (`build/generate-data-module.js`) emitting this module. The structural
 // invariants the old test checked are reframed against `VOCABULARY` and
@@ -61,7 +61,7 @@ function check(label, cond) {
 //   per-tagname dispatch). Brought count from 100 → 105 primary.
 // - 2026-Q2: 2 entries added by Phase 2 slice 2c — mermaid, abc
 //   (external DSLs; handlers emit pass-through markup with a
-//   `data-acadamark-dsl` marker for downstream tooling).
+//   `data-enscribe-dsl` marker for downstream tooling).
 //   Brought count from 105 → 107 primary.
 check(
   `VOCABULARY has 111 entries (109 primary + 'quote' and 'figure' aliases)`,
@@ -120,7 +120,7 @@ check('<figure> interpreter_strategy === "handler"', fig?.interpreter_strategy =
 check('<figure> declares handler_module', Boolean(fig?.handler_module));
 
 const meta = VOCABULARY.meta;
-const typeValues = meta?.acadamark_attributes?.kwargs?.type?.values ?? [];
+const typeValues = meta?.enscribe_attributes?.kwargs?.type?.values ?? [];
 for (const t of ['article', 'book', 'book-part']) {
   check(`<meta> type kwarg includes "${t}"`, typeValues.includes(t));
 }

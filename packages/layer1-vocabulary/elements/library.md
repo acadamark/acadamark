@@ -5,10 +5,10 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <library> is a custom element. It is a data block: opaque
+    Enscribe's <library> is a custom element. It is a data block: opaque
     content processed by a format-specific parser, registers entries with
     the citation system, produces no inline rendered output.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -30,7 +30,7 @@ content:
   becomes: 'parsed entries (registered in citation system)'
   notes: |
     Content is preserved verbatim and parsed by a format-specific parser.
-    No acadamark interpretation of the content. Authors typically copy
+    No enscribe interpretation of the content. Authors typically copy
     the content directly from a reference manager (Zotero, JabRef, etc.)
     or a text editor.
 content_handler: library
@@ -105,12 +105,12 @@ shorthand_examples:
       </library>
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkLibraryLoad
-    location: packages/acadamark-interpreter/src/plugins/library-load.js
-    runs_before: acadamarkCiteResolution
+  - name: enscribeLibraryLoad
+    location: packages/enscribe-interpreter/src/plugins/library-load.js
+    runs_before: enscribeCiteResolution
     purpose: |
       The actual library processing happens at PLUGIN time, not at handler
-      time. `acadamarkLibraryLoad` walks `<data>` root siblings, reads each
+      time. `enscribeLibraryLoad` walks `<data>` root siblings, reads each
       contained `<library>` node's opaque content, dispatches to the
       format-specific parser (BibTeX via citation-js, etc.), and registers
       every entry in the citation registry. By the time interpreter
@@ -137,7 +137,7 @@ An opaque block of bibliography content in a specific format (BibTeX, CSL-JSON, 
 
 ## Semantic intent
 
-`<library>` is a **data block**: content that's part of the document source for processing purposes but doesn't render in the document body. It's a way for authors to paste bibliography entries directly from a reference manager (Zotero, JabRef, Mendeley) without converting them to acadamark's structured form.
+`<library>` is a **data block**: content that's part of the document source for processing purposes but doesn't render in the document body. It's a way for authors to paste bibliography entries directly from a reference manager (Zotero, JabRef, Mendeley) without converting them to enscribe's structured form.
 
 The element is parallel to:
 
@@ -154,7 +154,7 @@ Three paths give bibliography entries to the citation system:
 |------|----------|
 | External file (`<bibliography source="refs.bib">`) | The bibliography is maintained separately, possibly shared across documents. |
 | `<library>` | A bibliography block exists in some format and the author wants to paste it inline. |
-| `<bib-entry>` | The author wants to write a structured entry in acadamark form. |
+| `<bib-entry>` | The author wants to write a structured entry in enscribe form. |
 
 `<library>` is most useful for casual authoring or for incremental additions to an externally-maintained bibliography. The author copies a few entries from Zotero or BibTeX, pastes them inline, and the citations work without needing to maintain a separate file.
 
@@ -226,7 +226,7 @@ Adding new formats means writing new parsers, not changing the vocabulary. The f
 
 ## Content
 
-The content between `<library format=...>` and `</library>` is opaque source in the specified format. Acadamark does not interpret it as prose. Special characters (braces, ampersands, etc.) appear literally.
+The content between `<library format=...>` and `</library>` is opaque source in the specified format. Enscribe does not interpret it as prose. Special characters (braces, ampersands, etc.) appear literally.
 
 The content is processed by the format-specific parser. Parsing failures are reported as warnings (the parser identifies the problem entry, the rest are still registered).
 
@@ -240,7 +240,7 @@ The element is a data block, so it doesn't have most of the attributes other ele
 
 `<library>` doesn't appear in JATS output. The entries it registers are merged into the JATS `<ref-list>` along with entries from other sources (external file, `<bib-entry>`).
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |-----------|------|
 | `<library>` element | (not in output) |
 | Parsed entries from `<library>` | merged into `<ref-list>` as `<ref>` elements |

@@ -4,7 +4,7 @@ html_output:
   element: editor
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -100,7 +100,7 @@ Same as `<author>`: `affiliation`, `orcid`, `email`, plus `role` for editor type
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<editor>` | `<contrib contrib-type="editor">` |
 | `role=series-editor` | `contrib-type="series-editor"` |

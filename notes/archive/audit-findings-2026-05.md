@@ -108,7 +108,7 @@ This is parsed by the micromark extension as a **long-form tag** opening (lookin
 **Found during:** Slice 5 tables.
 
 **Description:**
-`packages/remark-acadamark/src/dsl-registry.js` already has entries `['csv', 'csv']` and `['tsv', 'tsv']` as registered DSL contentHandlers. However, no vocabulary entries exist for `csv` or `tsv` as standalone tagnames, and no handlers are registered. Using `<csv | ...>` would fall through to a `warnUnknownTag` and produce an unknown-element output.
+`packages/remark-enscribe/src/dsl-registry.js` already has entries `['csv', 'csv']` and `['tsv', 'tsv']` as registered DSL contentHandlers. However, no vocabulary entries exist for `csv` or `tsv` as standalone tagnames, and no handlers are registered. Using `<csv | ...>` would fall through to a `warnUnknownTag` and produce an unknown-element output.
 
 **Fix approach:** Either implement them as aliases for `<table csv | ...>` in a dedicated shortcut-alias slice, or document them as deferred.
 
@@ -125,7 +125,7 @@ GFM pipe tables (` | h1 | h2 |\n|---|---| `) are a natural authoring form and ar
 
 The `<table md | ...>` form provides equivalent capability via the hand-written pipe-table parser in `table.js`, but the plain (untagged) form doesn't work.
 
-**Fix approach:** `npm install remark-gfm` in `remark-acadamark` package and wire it into the default parser; confirm it doesn't break existing tests.
+**Fix approach:** `npm install remark-gfm` in `remark-enscribe` package and wire it into the default parser; confirm it doesn't break existing tests.
 
 **Deferred to:** GFM compatibility slice.
 
@@ -154,7 +154,7 @@ long-form tokenizer in `syntax.js` takes precedence over the Peggy
 `SelfClosingNamedTag` rule. The tokenizer consumes the `/` before `>` as a
 regular attribute character (not a self-closing signal), commits to long-form
 mode looking for `</tagname>`, and fails to find a closer — producing
-`acadamarkTagError` instead of a self-closing node.
+`enscribeTagError` instead of a self-closing node.
 
 Currently affects `library` (the only DSL_REGISTRY tag where authors would
 plausibly use self-closing).
@@ -162,7 +162,7 @@ plausibly use self-closing).
 Example:
 
 ```
-<library src="refs.bib" />     ← produces acadamarkTagError, not a parsed tag
+<library src="refs.bib" />     ← produces enscribeTagError, not a parsed tag
 ```
 
 **Workaround:** Use empty-body long-form syntax:
@@ -224,7 +224,7 @@ resolves. `ref-resolution.js` is unchanged — it already queries the label inde
 so it finds sections automatically.
 
 **Code-block registration: deferred.** Code blocks have a representation
-question — a code block is only an `acadamarkTag` (reachable by `.content`
+question — a code block is only an `enscribeTag` (reachable by `.content`
 descent) when written in the shorthand-wrapped form `<code #code:snippet | ...>`.
 Plain fenced code blocks are mdast `code` nodes with no shorthand wrapper and
 no `id` field accessible to the discovery walk. Registering code blocks requires
@@ -271,7 +271,7 @@ CSS served inline is now fully self-contained. See `notes/font-investigation.md`
 **Found during:** Slice 7 follow-up (Finding 3), visual verification.
 
 **Description:**
-`default.css` specified `--acm-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`.
+`default.css` specified `--enscribe-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`.
 None of those fonts are installed in the WSL/Linux environment used for development,
 so the browser fell back to its default serif font (Times New Roman or equivalent),
 making body text of rendered fixtures look like LaTeX output rather than a modern
@@ -304,13 +304,13 @@ The CSS for blockquote (left border, italic, padding) was already in place from 
 Note on concern 2 (HTML passthrough ambiguity): This is the scope of AUD-15. `<blockquote>` is now unambiguously a first-class vocabulary element — not passthrough.
 
 **Description:**
-No vocabulary entry exists for block quotations. Author tried `<quote>` (assumed it existed); did not work. Settled on `<blockquote>` which renders acceptably — but likely via raw HTML passthrough plus theme CSS (which styles `blockquote` directly), not via a first-class acadamark element with handler and plugin support.
+No vocabulary entry exists for block quotations. Author tried `<quote>` (assumed it existed); did not work. Settled on `<blockquote>` which renders acceptably — but likely via raw HTML passthrough plus theme CSS (which styles `blockquote` directly), not via a first-class enscribe element with handler and plugin support.
 
 **Two related concerns:**
 
 1. Block quotations are common in academic writing and should be a first-class vocabulary item with vocabulary entry, handler, tests, and documentation.
 
-2. The ambiguity between "first-class acadamark element" and "raw HTML passthrough that renders because the browser knows the element and CSS happens to style it" is broader than just this case. Other HTML-like tags (e.g. `<em>`, `<strong>`, `<table>` raw form, `<div>`, `<span>`) may work via passthrough without proper acadamark support. Authors have no way to know which is which.
+2. The ambiguity between "first-class enscribe element" and "raw HTML passthrough that renders because the browser knows the element and CSS happens to style it" is broader than just this case. Other HTML-like tags (e.g. `<em>`, `<strong>`, `<table>` raw form, `<div>`, `<span>`) may work via passthrough without proper enscribe support. Authors have no way to know which is which.
 
 ---
 
@@ -352,7 +352,7 @@ The bug is doubly bad because:
 **Found during:** Slice 7 follow-up, Document 9 review.
 
 **Description:**
-Table caption is provided via the `caption=` kwarg. The kwarg value is a string. Citation tags inside that string (or other rich content like emphasis, inline math) are NOT parsed as acadamark tags — they remain as literal text:
+Table caption is provided via the `caption=` kwarg. The kwarg value is a string. Citation tags inside that string (or other rich content like emphasis, inline math) are NOT parsed as enscribe tags — they remain as literal text:
 
 ```
 <table #tab:burnout csv caption="Risk and protective factors, adapted from <cite Mantzalas2022>" |
@@ -375,7 +375,7 @@ Domain,Risk,Protect
 Captions become parsed content. Recursive content parsing handles citations naturally. Matches Pandoc/Quarto conventions where captions are markdown blocks.
 
 **Option B: Attribute values get recursive parsing.**
-`caption="text <cite key>"` would parse the value as acadamark content, find the cite tag, render it. More invasive parser change. Affects all attribute values, not just captions.
+`caption="text <cite key>"` would parse the value as enscribe content, find the cite tag, render it. More invasive parser change. Affects all attribute values, not just captions.
 
 **Recommended: Option A.** Cleaner architecturally. Treats rich content as content (parsed) rather than attribute strings (raw). Matches conventional document tooling.
 
@@ -392,7 +392,7 @@ This is potentially a meaningful architectural change for tables, figures, and a
 **Found during:** Slice 7 follow-up, Document 9 review (meta-architectural question).
 
 **Description:**
-The acadamark grammar supports several tag forms:
+The enscribe grammar supports several tag forms:
 - Short form: `<tag attrs>`
 - Pipe-content: `<tag attrs | inline content>`
 - Pipe-content multi-line: `<tag attrs |\n multi-line content\n>`
@@ -437,7 +437,7 @@ Authors have no clear guide. The author-paramount principle requires that author
 
 `src/index.js` (the main interpreter pipeline) does NOT import or call 
 `getDocumentFontsCss()`. Documents rendered through the standard 
-`acadamarkInterpreter` plugin will not receive the bundled fonts and will 
+`enscribeInterpreter` plugin will not receive the bundled fonts and will 
 fall back to the system font stack — which fails on environments where 
 those system fonts aren't installed (e.g., WSL through Windows).
 
@@ -462,7 +462,7 @@ that a `<style>` block is always present.
 
 ## GAP-9: document-9 has no integration test or snapshot
 
-`test/fixtures/document-9-demo.acm` and `test/fixtures/document-9-demo.html`
+`test/fixtures/document-9-demo.emd` and `test/fixtures/document-9-demo.html`
 exist and are re-rendered by `render-fixtures.js` alongside documents 1–8.
 Unlike documents 1–8, document-9 has no corresponding `document-9-expected.json`
 snapshot and is not covered by any test case in `test/integration.test.js`.
@@ -506,7 +506,7 @@ R3a scope.
 - R3a (2026-05) — `fillNotes` import, first surfacing.
 - R3b (2026-05) — pipeline reordering update.
 - R4 (2026-05) — `buildCitationIndex` stage change.
-- G1b (2026-05) — `document-10-shortcuts.acm` integration block added by hand.
+- G1b (2026-05) — `document-10-shortcuts.emd` integration block added by hand.
 
 Each occurrence strengthens the case for the recommended fix.
 
@@ -519,7 +519,7 @@ Severity: Medium — a maintenance hazard, not a current bug.
 **Found during:** R4 Phase 0 investigation (2026-05).
 
 **Description:**
-`buildCitationIndex` (formerly the closure in `acadamarkLibraryLoad`) reads
+`buildCitationIndex` (formerly the closure in `enscribeLibraryLoad`) reads
 `<data>` and `<library>` nodes at `tree.children` level but does not remove or
 modify them. After the citation-index step runs, `<data>` nodes remain in
 `tree.children` through cite-resolution, note-placement, bibliography, and
@@ -572,7 +572,7 @@ GFM table normalization was investigated in NORM Phase 0 (see
 `notes/audit-2026-Q2/NORM-phase0-findings.md` Q3 for the Option A/B/C
 analysis). Three options were identified for converting a `remark-gfm` `table`
 node (structured mdast with `tableRow`/`tableCell` children that may contain
-inline markup) to a canonical `acadamarkTag` table node (opaque string payload).
+inline markup) to a canonical `enscribeTag` table node (opaque string payload).
 
 **Decision (chat session, 2026-05-22):** Use **Option A** — the normalization
 pass serializes a `remark-gfm` `table` node to a GFM pipe-table string and
@@ -580,10 +580,10 @@ produces a canonical `<table md | ...>` node. This keeps the normalized node
 indistinguishable from authored `<table md>` shorthand (the normalization
 principle) at the cost of being lossy for cells containing rich inline content
 (emphasis, links, inline math), which flatten to plain text. Rich-celled tables
-should be authored in the acadamark `<table>` form directly.
+should be authored in the enscribe `<table>` form directly.
 
 **Implementation (NORM-tables slice, 2026-05-22):**
-1. `remark-gfm@4.0.1` installed in `acadamark-interpreter`.
+1. `remark-gfm@4.0.1` installed in `enscribe-interpreter`.
 2. `remarkGfm` threaded into both outer and inner processors in `index.js`.
 3. `gfmTableToPipeString(node, file)` serializer in `normalize-markdown.js`.
 4. GFM table entry added to `NORMALIZATIONS` in `normalize-markdown.js`.
@@ -591,13 +591,13 @@ should be authored in the acadamark `<table>` form directly.
    Option A round-trip correctness; GFM spec escape sequence).
 6. Tests: serializer unit tests (alignment, pipe-escape, markup-loss warnings),
    field-for-field identity with authored `<table md>`, footnote harmlessness,
-   integration fixture `document-12-bare-table.acm`.
+   integration fixture `document-12-bare-table.emd`.
 
 **remark-gfm footnote note:** `remark-gfm` bundles GFM footnotes (`[^1]`);
 there is no option to disable footnotes alone. Footnote nodes are NOT matched
 by any `NORMALIZATIONS` predicate and pass through the normalization walk
 unchanged, reaching `mdast-util-to-hast`'s built-in handler. No collision with
-the acadamark `<note>` system. No existing fixtures use `[^...]` syntax.
+the enscribe `<note>` system. No existing fixtures use `[^...]` syntax.
 
 **Status: Implemented. Commit: `ec0d071` (NORM-tables slice, 2026-05-22).**
 
@@ -608,11 +608,11 @@ the acadamark `<note>` system. No existing fixtures use `[^...]` syntax.
 **Found during:** Audit 1A gap analysis / `notes/parser-newline-investigation.md` (2026-05).
 
 **Description:**
-In the acadamark parser (`packages/remark-acadamark/src/syntax.js`), the
+In the enscribe parser (`packages/remark-enscribe/src/syntax.js`), the
 text-position named-tag tokenizer (`makeNamedTagTokenizer({ multiLine: false })`)
 calls `nok(code)` when it encounters a line ending in its `attrSection` or
 `content` state. This causes micromark to backtrack entirely — the `<` is treated
-as literal text and no `acadamarkTag` node is produced.
+as literal text and no `enscribeTag` node is produced.
 
 **Empirical result:** `Text.<note | line one\nline two.> end.` → one `text` node
 with the literal string `"Text.<note | line oneline two.> end."` (newline
@@ -638,7 +638,7 @@ Q1 and Q5.
 unexpected paragraph splitting in normal authored documents — not an edge case.
 
 **Description:**
-When an acadamark tag appears at the start of a line (even within prose), the
+When an enscribe tag appears at the start of a line (even within prose), the
 flow-position tokenizer claims it before the text-position tokenizer can. The
 flow tokenizer calls `ok` in its `afterClose` state unconditionally, regardless
 of what character follows the closing `>`. Any text that follows `>` on the same
@@ -648,7 +648,7 @@ line is left over and becomes the beginning of a new paragraph.
 becomes a standalone flow element; `is two.` becomes a separate paragraph.
 
 **Empirical result (named tag):** `<note | content> trailing text.` at line-start
-→ 3 children: paragraph (preceding), `acadamarkTag`, paragraph (`trailing text.`).
+→ 3 children: paragraph (preceding), `enscribeTag`, paragraph (`trailing text.`).
 
 **Root cause:** `afterClose` in both the sigil and named-tag flow tokenizers:
 ```js
@@ -666,7 +666,7 @@ The proposed fix — add an `afterGt` check that calls `nok` if the character af
 
 ---
 
-## AUD-23: Code sigil with multi-line content in text position produces `acadamarkTagError`
+## AUD-23: Code sigil with multi-line content in text position produces `enscribeTagError`
 
 **Found during:** Audit 1A gap analysis / `notes/parser-newline-investigation.md` (2026-05).
 
@@ -676,9 +676,9 @@ triggers the text-position sigil tokenizer's `!multiLine` branch. Unlike the
 named-tag tokenizer (which calls `nok`), the sigil tokenizer calls `ok` on the
 partial token (everything up to but not including the `\n`). `from-markdown.js`
 then passes the incomplete source (no closing sigil) to Peggy, which fails and
-produces an `acadamarkTagError` node.
+produces an `enscribeTagError` node.
 
-**Empirical result:** `` Text <``` python\ncode here ```> more. `` → `acadamarkTagError`
+**Empirical result:** `` Text <``` python\ncode here ```> more. `` → `enscribeTagError`
 node inside paragraph; `code here ```> more.` is raw text in the output.
 
 **Root cause:** Same as AUD-21 (`!multiLine` early path in text-position tokenizer);
@@ -700,15 +700,15 @@ Three vocabulary entries in `packages/layer1-vocabulary/elements/` have
 `related_plugins` sections that name plugins that no longer match the implemented
 plugin names. Three sub-cases:
 
-1. **`cite.md`** — says `acadamarkCitationResolution`; actual name: `acadamarkCiteResolution`.
-2. **`ref.md`** — says `acadamarkCrossReferenceResolution`; actual name: `acadamarkRefResolution`.
+1. **`cite.md`** — says `enscribeCitationResolution`; actual name: `enscribeCiteResolution`.
+2. **`ref.md`** — says `enscribeCrossReferenceResolution`; actual name: `enscribeRefResolution`.
    Also calls it a "rehype plugin" when it runs as an mdast plugin.
-3. **`note.md`** — says `acadamarkNoteNumbering`; actual name: `acadamarkNotes`
+3. **`note.md`** — says `enscribeNoteNumbering`; actual name: `enscribeNotes`
    (numbering and placement were merged into one plugin).
 
 **Fix path:** In each vocabulary entry, correct the `name` field in
 `related_plugins` to match the actual plugin name in
-`packages/acadamark-interpreter/src/plugins/`. Small live-file fix; no code change.
+`packages/enscribe-interpreter/src/plugins/`. Small live-file fix; no code change.
 
 **Status: Open.** Filed; not fixed. Fix is a future vocabulary-doc slice.
 
@@ -757,7 +757,7 @@ The fix is a propagation slice; `DESIGN.md` remains the canonical owner.
 the authoritative description of how the interpreter works (mdast plugin chain,
 `toHast` handlers, schema vs. handler interpreter_strategy). However, it has not
 been audited against the implemented interpreter in
-`packages/acadamark-interpreter/`. Its accuracy is therefore an open unknown.
+`packages/enscribe-interpreter/`. Its accuracy is therefore an open unknown.
 
 This supersedes the old `notes/interpreter-design.md` (which described an
 architecture that was never built and is already archived as
@@ -774,7 +774,7 @@ and `notes/pipeline.md` claim-by-claim against the implemented interpreter and
 found 14 stale divergences (8 in interpreter.md, 6 in pipeline.md) and **zero
 `DRIFT?` findings** — the interpreter is internally consistent; the docs simply
 lagged the G3 math/table-normalization arc and the G4 code-block-registration
-slice. Recurring omissions: `acadamarkNormalizeMarkdown` (step 1.5), the
+slice. Recurring omissions: `enscribeNormalizeMarkdown` (step 1.5), the
 `remarkMath`/`remarkGfm` registration on both outer and inner processors, the
 code-block sigil visitor in `numbering.js`, and `code → listing` in
 `DEFAULT_PREFIXES`. One cross-doc contradiction (interpreter.md §10 omitted

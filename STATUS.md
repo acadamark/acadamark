@@ -1,6 +1,6 @@
-# Acadamark — Project Status
+# Enscribe — Project Status
 
-What acadamark can do today, what is in progress, and what is still aspirational.
+What enscribe can do today, what is in progress, and what is still aspirational.
 For *why* the project exists, read `README.md` and `DESIGN.md`. For the
 architecture, read `notes/specs/pipeline.md` and `notes/specs/interpreter.md`. For the open
 backlog, read `BACKLOG.md`; for the build sequence and phase plan, `ROADMAP.md`.
@@ -13,7 +13,7 @@ something ships, flip a checkbox; that is the whole maintenance burden.
 
 Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not started.
 
-### Authoring — what a `.acm` document can express
+### Authoring — what a `.emd` document can express
 
 - [x] Markdown prose (paragraphs, emphasis, lists, links, fenced code) via remark
 - [x] Tagged shorthand — `<tag #id .class attr=value +flag -flag | content>`
@@ -28,7 +28,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [x] Notes — footnotes / endnotes / sidenotes
 - [x] Citations and bibliography (citation-js, BibTeX `<library>`, CSL styles)
 - [x] Cross-references to figures, equations, tables, sections, and code blocks
-- [x] Bare markdown forms normalized to canonical acadamark nodes (`$x$`, GFM tables)
+- [x] Bare markdown forms normalized to canonical enscribe nodes (`$x$`, GFM tables)
 - [~] Self-closing form `<tag />` — works for plain tags, broken for DSL-registry tags (AUD-08)
 - [ ] Caption-as-content — citations / rich content inside `caption="..."` (AUD-14)
 - [x] Theorem family — `<theorem>`, `<proof>`, `<lemma>`, `<definition>` (shared / own / unnumbered counters)
@@ -39,19 +39,19 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [x] Conditionally-injected hover previews (notes / refs / citations)
 - [x] Bundled subsetted fonts (Inter, Source Code Pro) and patched KaTeX fonts
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
-- [x] JATS XML export (`acadamarkToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
+- [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `acadamark.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); docs-site content, types, and the rename are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); docs-site content, types, and the rename are follow-up slices
 
 ### Components
 
-- [x] `acadamark-core` — the inward-pointing shared foundation (`fs`-free, browser-safe)
-- [x] `remark-acadamark` — the shorthand parser (Peggy + micromark hybrid)
-- [x] `acadamark-interpreter` — the full mdast→HTML interpreter pipeline
+- [x] `enscribe-core` — the inward-pointing shared foundation (`fs`-free, browser-safe)
+- [x] `remark-enscribe` — the shorthand parser (Peggy + micromark hybrid)
+- [x] `enscribe-interpreter` — the full mdast→HTML interpreter pipeline
 - [x] `layer1-vocabulary` — per-element vocabulary entries (build-time-generated `data.js` ships)
-- [x] Example documents — fixture `.acm` files exercising the system end to end
+- [x] Example documents — fixture `.emd` files exercising the system end to end
 
-For the current test status, run `npm run verify` in `packages/acadamark-interpreter`.
+For the current test status, run `npm run verify` in `packages/enscribe-interpreter`.
 (STATUS.md deliberately states no test count — a number is the fastest thing to
 go stale.)
 
@@ -77,6 +77,11 @@ post-alpha), and the new Phase 14 (packaging — client-side rendering
 library, render-quality spec, comprehensive demonstrative fixture).
 Phases 7, 9, 10, 11, and 12 are post-release.
 
+The **project rename** has landed as a standalone slice (see Milestones): the
+project is now *enscribe*, with the `.emd` source extension. Version
+coordination, a license file, and the metadata audit are the **prep-for-publish**
+slice that follows.
+
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
 demonstrative fixtures against it and filed the render-quality
@@ -90,7 +95,7 @@ predicates against the existing corpus — finding the demonstrative
 fixtures already exercise `<mermaid>` — and filed a deviation: the
 abc `<div>` source is not preserved verbatim in the rendered HTML
 (`RQ-DSL-M2`). A **DSL rendering architecture Phase 0** then settled how
-acadamark should render mermaid / abc beyond the markup contract: a
+enscribe should render mermaid / abc beyond the markup contract: a
 two-mode design — **static** (build-time SVG, self-contained output) and
 **live** (ships the library, renders in-browser) — plus the existing
 **skip** default, all honoring DESIGN.md's "publisher chooses the tool"
@@ -120,7 +125,7 @@ written, and doc-45 / doc-46 render their mermaid diagrams live-inline.
 under a jsdom shim, synchronously, inside the compiler — so the output needs
 no view-time JS (`RQ-DSL-STATIC-*`). mermaid stays live-only; asking for
 static mermaid is still the fail-explicitly build error. New fixture
-`document-47-abc-static.acm` exercises the path. This closes the
+`document-47-abc-static.emd` exercises the path. This closes the
 DSL-rendering arc. **Slice B (book caption/cross-reference numbering) is now
 done** (`RQ-BOOK-M4`): a chapter-scoped book's captions / labels / equation
 numbers now carry the same chapter prefix as the cross-references resolving
@@ -130,7 +135,7 @@ cross-reference resolver. Slice B was HTML-only — `node.computedNumber`
 stayed the bare per-scope integer, so the JATS exporter (which reads it) was
 left untouched. **The JATS analog is now done too**: the JATS `<label>`
 emitter derives its display number through the same `formatScopedNumber`
-helper (re-exported from `acadamark-interpreter`), so in a book the `<label>`
+helper (re-exported from `enscribe-interpreter`), so in a book the `<label>`
 and the `<xref>` resolving to it agree (`<label>3.1</label>` / `figure 3.1`);
 the book JATS fixtures gained the chapter prefix on their labels, articles
 held zero-diff. `RQ-BOOK-M4` now holds across both output targets. **Next:**
@@ -144,7 +149,7 @@ display-features subset, Phase 13 (JATS import), and Phase 14 (packaging).
 **Phase 14 Slice 1 (client-side library packaging) is now done:** the
 interpreter ships as a browser library — a `src/browser.js` `render` /
 `renderInto` façade over the pipeline with browser-safe defaults, bundled by
-tsup into `acadamark.browser` (ESM + IIFE), with the Node-only code paths
+tsup into `enscribe.browser` (ESM + IIFE), with the Node-only code paths
 (font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads) lazy-ified or stubbed so
 they are dead code under the browser defaults. The same slice flipped resource
 embedding **external-by-default** (`embedResources`, default false) — a breaking
@@ -174,7 +179,7 @@ IIFE in a jsdom document on every run is the standing guard, catching a
 load-time throw at test time instead of in a user's browser. **Phase 14
 Slice 3a (docs-site framework) is now done too:** a new `docs-site/` directory
 at the repo root holds a small static-site build (`npm run docs:build`) that
-renders canonical `.acm` sources through the acadamark Node entry and wraps each
+renders canonical `.emd` sources through the enscribe Node entry and wraps each
 in a shared template (header/nav + article + a "view source on GitHub" footer),
 writing self-contained HTML to `docs-site/dist/`. Three placeholder pages
 exercise the framework: a homepage, a read-only example article, and a
@@ -184,7 +189,7 @@ JavaScript). Two deliberate divergences from the Phase 0 plan, both per the
 slice's locked inputs: the site lives at `docs-site/` at the repo root rather
 than `packages/demo-site/`, and the **project rename is deferred** to a separate
 later decision rather than being forced by this slice. **Next:** Phase 14
-Slice 3b — translate the README and DESIGN into canonical acadamark and land
+Slice 3b — translate the README and DESIGN into canonical enscribe and land
 them as articles — then Slice 3c (Quickstart guide), Slice 3d (JATS-relationship
 article), the rename decision, and the remaining packaging slices (fixture
 consolidation, org-split) plus the demonstrative-fixture work. Nothing else is
@@ -246,7 +251,7 @@ that). One line gets added every few months, not every slice.
   DS-3 (`BUILD.md` parser slice table); DS-4 (`notes/interpreter-design.md`
   archived); DS-5 (`notes/hover-previews-deferred.md` archived) — all via
   the F2 doc-staleness sweep, commit `f00c877`.
-- **2026-Q2 — `remark-acadamark-pure-micromark-archive` package deleted
+- **2026-Q2 — `remark-enscribe-pure-micromark-archive` package deleted
   as dead weight.** The retired pure-micromark parser predecessor (kept on
   the workspace floor as a reference after the move to the Peggy hybrid
   architecture in `373c4b7`, "Switch to Peggy hybrid parser architecture")
@@ -277,18 +282,18 @@ that). One line gets added every few months, not every slice.
   filed open in `ff5163d` without re-verifying that the later multi-line
   work had resolved it; newly guarded by the
   short-form-no-content-no-pipe test added to
-  `packages/remark-acadamark/test/test.js`. **AUD-21** (multi-line content
+  `packages/remark-enscribe/test/test.js`. **AUD-21** (multi-line content
   in text-position named tags silently lost): fixed by `ff5163d` (the
   `!multiLine` early-return removed from `attrSection` / `content` states
   of `makeNamedTagTokenizer`, per `parser-newline-investigation.md`
   Issue 1); filed open by `495b47f`, which transcribed the
   investigation's pre-fix empirical results without checking that the
   same commit which added the investigation had also landed the fix;
-  guarded by `packages/remark-acadamark/test/multiline-text-position.test.js`
+  guarded by `packages/remark-enscribe/test/multiline-text-position.test.js`
   Issue 1. **AUD-22** (inline tag at line-start splits paragraphs): fixed
   by `ff5163d` (the flow-position guard added to `afterClose`/`afterGt`,
   Issue 2); same transcribe-without-re-verify filing as AUD-21; guarded
-  by `packages/remark-acadamark/test/line-start-flow-reject.test.js`.
+  by `packages/remark-enscribe/test/line-start-flow-reject.test.js`.
   **AUD-23** (multi-line content in text-position code-sigil tags
   produces an error node): fixed by `ff5163d` (the `!multiLine`
   early-return removed from the sigil `body()` state, Issue 3); the
@@ -296,19 +301,19 @@ that). One line gets added every few months, not every slice.
   reproducing" because its probe placed the closing `` ```> `` at
   line-start, triggering CommonMark's fenced-code-block tokenizer — a
   block-level precedence rule, not the parser bug AUD-23 described;
-  guarded by `packages/remark-acadamark/test/multiline-text-position.test.js`
+  guarded by `packages/remark-enscribe/test/multiline-text-position.test.js`
   Issue 3.
 - **2026-Q2 — `rehype-section-nesting` package deleted as dead machinery.**
   The standalone hast-stage section-nesting plugin (sole commit `15f171d`,
   2026-04-25, untouched for ~30 days) was superseded by the interpreter's
-  mdast-stage `packages/acadamark-interpreter/src/plugins/section-nesting.js`
+  mdast-stage `packages/enscribe-interpreter/src/plugins/section-nesting.js`
   (`fa95078`, 2026-05-12, "interpreter slice 1") — the architectural shift
   to mdast-stage nesting was needed because section-title extraction from
   pipe content is only feasible while content is still structured mdast.
   The rehype package was on no live call graph (no `import` / `require`
   outside its own source/tests; no other package depends on it; the
   interpreter's compile step goes `toHast` → `rehypeFormat` → `toHtml`
-  without invoking it). Same disposition the `remark-acadamark-pure-
+  without invoking it). Same disposition the `remark-enscribe-pure-
   micromark-archive` deletion (commit `5acb555`) used — git is the
   archive; dead code in the tree is a cost; the sole commit `15f171d`
   remains in history. The depth-by-name design principle the section-
@@ -332,19 +337,19 @@ that). One line gets added every few months, not every slice.
   numbers was filed in `b996301` (2026-05-22 14:20) — four hours after
   `f00c877` (2026-05-22 10:26, the F2 doc-staleness sweep) had already
   added to §10.5 the exact clarification the item asks for
-  (`fillNumbering(file) → (no-op for notes; acadamarkNumberingPending has
+  (`fillNumbering(file) → (no-op for notes; enscribeNumberingPending has
   equations/figures/tables)`). Git history confirms `f00c877` is the only
   commit ever to touch a `fillNumbering` mention in `pipeline.md`, so the
   clarification was present continuously from the moment it was added —
   including at the moment the backlog item was written. Item closed as
   misdiagnosis at filing; no spec edit needed (§10.5 is already correct);
   surfaced by the packages/ reconciliation — interpreter cluster Phase 0.
-- **2026-Q2 — `acadamark-core` extraction arc complete.** Five slices
+- **2026-Q2 — `enscribe-core` extraction arc complete.** Five slices
   (`0a4523a`, `2fabdf5`, `7cc6002`, `442202c`, and this slice's commit)
-  extracted an inward-pointing `acadamark-core` package and reorganized
+  extracted an inward-pointing `enscribe-core` package and reorganized
   the workspace dependency graph around it. The arc resolved the
   cross-package DRY audit's Bin A findings (Bin A.1 — the canonical
-  `acadamarkTag` shape was restated with field-drift across 12
+  `enscribeTag` shape was restated with field-drift across 12
   hand-construction sites; Bin A.2 — the HTML attribute-mapper was
   duplicated in two interpreter sites). It split the Layer 1 vocabulary
   into a build-time generator and a committed, browser-safe, `fs`-free
@@ -352,7 +357,7 @@ that). One line gets added every few months, not every slice.
   It drew the build/run-time seam so it doubles as the browser-safety
   boundary — the package boundaries are now drawn to enable the future
   client-side build without redrawing them. Architecture-decision record
-  at `notes/specs/acadamark-core.md` (includes the dependency diagram,
+  at `notes/specs/enscribe-core.md` (includes the dependency diagram,
   per-module inventory, build/run-seam definition, and the standing
   client-side build constraints rule). T2-2's walker centralization
   preserved and broadened from interpreter-internal to package-spanning.
@@ -365,10 +370,10 @@ that). One line gets added every few months, not every slice.
   spec-conformance fix at `registry.js` in Slice 3 — leading-colon ids
   (`:foo`) are no longer indexed in the label index, matching the spec's
   `type:name` convention, the old behavior was the bug, 17 dedicated
-  unit tests pin the new behavior; (ii) `acadamark-core/src/error-nodes.js`
+  unit tests pin the new behavior; (ii) `enscribe-core/src/error-nodes.js`
   exports `makeParseError` / `makeTagError` builders that intentionally
   have zero callers today — the JS-side error-node sites are in-place
-  mutations of an existing acadamarkTag stub (per the spec's "fields
+  mutations of an existing enscribeTag stub (per the spec's "fields
   retained" long-form rule), not fresh constructions; the builders exist
   ahead of their consumers (the forthcoming parser-error renderer; JATS
   export's error handling), so a future reader should not "tidy away"
@@ -382,7 +387,7 @@ that). One line gets added every few months, not every slice.
   gap; three Discussions for colon-id hardening, sigil-as-first-class-
   category, and documented-but-unfixtured coverage auditing). The arc's
   one outstanding deferred question — whether the HTML attribute-mapper
-  iteration shape lifts to `acadamark-core` as a generic
+  iteration shape lifts to `enscribe-core` as a generic
   `mapAttributes(node, vocab, emit)` API — is recorded in the ADR; the
   lift waits for JATS export so the API is designed against a real
   second consumer.
@@ -395,15 +400,15 @@ that). One line gets added every few months, not every slice.
   content e.g. `<aside | ... $x$ ...>` (`formerly OQ-1`). A
   verification slice read the current code (no code changes) and
   confirmed all four closed: `remark-gfm` ^4.0.1 and `remark-math`
-  ^6.0.0 are dependencies of `acadamark-interpreter` and wired into
+  ^6.0.0 are dependencies of `enscribe-interpreter` and wired into
   both the outer pipeline and the inner processor (in
   `src/index.js` at L337/342/353); the normalization pass
   (`src/plugins/normalize-markdown.js`) contains the rewrite paths
   for `inlineMath` → `$`, `math` → `$$`, and `table` → `<table md>`
-  (lines 207, 218, 237 respectively); fixture `document-11-bare-math.acm`
+  (lines 207, 218, 237 respectively); fixture `document-11-bare-math.emd`
   exercises bare math at the outer surface (top-level inline + display)
   and at the inner surface (bare `$E=mc^2$` inside `<aside | ...>`);
-  fixture `document-12-bare-table.acm` exercises bare pipe tables at
+  fixture `document-12-bare-table.emd` exercises bare pipe tables at
   the outer surface (top-level + aligned-columns) and at the inner
   surface (bare pipe table inside `<note placement=foot | ...>`); the
   `normalize-markdown.test.js` unit suite asserts byte-equivalence
@@ -417,8 +422,8 @@ that). One line gets added every few months, not every slice.
   product code, no spec falsehoods to correct (`idioms.md` and
   `recursive-content-spec.md` already describe the design as
   in-place). The opt-in math-coverage Phase 0 noted in the OQ-1 entry
-  (three-column adequacy table: acadamark's intended math surface vs
-  remark-math's tokenizer coverage vs acadamark's DSL-math coverage)
+  (three-column adequacy table: enscribe's intended math surface vs
+  remark-math's tokenizer coverage vs enscribe's DSL-math coverage)
   was not in scope and remains opt-in scoping work; the verification
   did not surface a missing-construct concern for the constructs
   currently fixture-covered.
@@ -427,8 +432,8 @@ that). One line gets added every few months, not every slice.
   decision-laden: (1) **Stale `related_plugins` plugin names in
   `cite.md`/`ref.md`/`note.md`** (`formerly AUD-24`) — verification
   found all three `name:` fields already correct
-  (`acadamarkCiteResolution`, `acadamarkRefResolution`,
-  `acadamarkNotes`) and the prior "rehype plugin" miscategorization
+  (`enscribeCiteResolution`, `enscribeRefResolution`,
+  `enscribeNotes`) and the prior "rehype plugin" miscategorization
   in `ref.md` no longer present; closed as already-resolved at code
   level (stale backlog entry — same pattern as the Layer 0
   verifications). (2) **`shorthand-syntax.md` §"What the parser
@@ -474,8 +479,8 @@ that). One line gets added every few months, not every slice.
   Discussions closed.** A rulings slice tagged every open backlog
   item with one of `[alpha]` / `[post-alpha]` / `[alpha-if-cheap]` /
   `[undecided]` and added the five-point alpha-scope definition to
-  `BACKLOG-ROADMAP.md` (Layer 1 elements + canonical acadamark +
-  sigils/markdown idioms reducing to it + JATS conversion + acadamark
+  `BACKLOG-ROADMAP.md` (Layer 1 elements + canonical enscribe +
+  sigils/markdown idioms reducing to it + JATS conversion + enscribe
   conversion). The book / book-part item was split into two: a
   `[alpha]` book-structuring item and a `[post-alpha]` pagination
   item, with the print-requirements spec filed as a `[post-alpha]`
@@ -484,8 +489,8 @@ that). One line gets added every few months, not every slice.
   in-browser JavaScript + Arquero + Vega-Lite. Two Discussions were
   closed by ruling: (i) the layer-naming-structure discussion closed
   with the decision to keep the current names — the layer metaphor is
-  sound; the hierarchy custom-HTML / strict-acadamark /
-  shorthand-acadamark / +markdown is a real ladder, recorded as the
+  sound; the hierarchy custom-HTML / strict-enscribe /
+  shorthand-enscribe / +markdown is a real ladder, recorded as the
   new "Layered model and terminology" section of `DESIGN.md`;
   (ii) the canonical-section-form discussion closed with the
   reduction-ladder ruling — named `<section>` and the sigil form
@@ -526,12 +531,12 @@ that). One line gets added every few months, not every slice.
   bugs fixed.** The first alpha build slice. Two coupled `[alpha]`
   bugs closed: (i) **hash-sigil dispatch** — added `'#' → 'section'`,
   `'##' → 'sub-section'`, `'###' → 'sub-sub-section'` entries to
-  `acadamark-core/src/sigil-mapping.js` PARSER_TO_VOCAB so the
+  `enscribe-core/src/sigil-mapping.js` PARSER_TO_VOCAB so the
   interpreter's vocabulary lookup resolves hash-sigil tagnames to
   their semantic Layer 1 keys; (ii) **hash-sigil isOpaqueContent
   discrepancy** — removed `isOpaqueContent: true` from the three
-  hash-sigil grammar rules in `packages/remark-acadamark/grammar/
-  acadamark.peggy` and regenerated the parser, so the grammar emits
+  hash-sigil grammar rules in `packages/remark-enscribe/grammar/
+  enscribe.peggy` and regenerated the parser, so the grammar emits
   the spec-correct `isOpaqueContent: false`; the prior bug was
   runtime-masked by `from-markdown.js`'s contentHandler-based
   override (the override fired because hash sigils have
@@ -545,16 +550,16 @@ that). One line gets added every few months, not every slice.
   (a `normalizeSigilSectionNames` pre-walk that rewrites `#`/`##`/
   `###` to the canonical Layer 1 names before nesting), so the
   structural pipeline treats sigil and named sections identically.
-  New integration fixture `document-14-hash-sigil-headings.acm`
+  New integration fixture `document-14-hash-sigil-headings.emd`
   exercises all three sigil levels including a sigil with id and
   prose content (emphasis, inline code) in titles — the absence of
   such coverage was what let the bug stay latent through the
-  acadamark-core extraction arc. A new `sigil-mapping.test.js` unit
-  test in `acadamark-core` pins the PARSER_TO_VOCAB mappings. One
+  enscribe-core extraction arc. A new `sigil-mapping.test.js` unit
+  test in `enscribe-core` pins the PARSER_TO_VOCAB mappings. One
   grammar test (`test-grammar.js` L30) was updated to assert the
   spec-correct `isOpaqueContent: false`; previously it asserted the
-  buggy `true`. Tests: acadamark-core 30/30, remark-acadamark
-  128/128, acadamark-interpreter 24/24 — all 13 prior integration
+  buggy `true`. Tests: enscribe-core 30/30, remark-enscribe
+  128/128, enscribe-interpreter 24/24 — all 13 prior integration
   snapshots stable, document-14 snapshot written on first run.
   Downstream impact: the `[alpha]` section-form / heading-
   normalization item's Form 2 (sigil) prerequisite is now satisfied;
@@ -562,14 +567,14 @@ that). One line gets added every few months, not every slice.
   normalization in `normalize-markdown.js`.
 - **2026-Q2 — normalize-to-canonical gate landed; section-form ladder
   converges; alpha item closed.** The lift architecture's
-  implementation slice. Built `acadamark-core/src/tagname-sigil-map.js`
+  implementation slice. Built `enscribe-core/src/tagname-sigil-map.js`
   — a single source-of-truth `[sigil, tagname]` pair list with both
   `SIGIL_TO_TAGNAME` (lift) and `TAGNAME_TO_SIGIL` (lower-direction;
   no consumer yet but built bidirectional from day one so the two
   directions cannot drift) derived from it, plus a load-time
   bijection assertion. Replaces the prior `sigil-mapping.js`'s
   one-directional `PARSER_TO_VOCAB` / `resolveVocabKey`. Renamed and
-  rewrote `acadamark-interpreter/src/plugins/normalize-markdown.js`
+  rewrote `enscribe-interpreter/src/plugins/normalize-markdown.js`
   → `normalize-to-canonical.js`: the single early pipeline stage
   that coerces every authored form to canonical Layer 1 shape. The
   gate rewrites all sigil tagnames uniformly (sections AND math/code
@@ -598,12 +603,12 @@ that). One line gets added every few months, not every slice.
   → `i`/`b` in fixtures with bare markdown emphasis, and bare `##`
   → `<sub-section>` in doc-8's citations fixture (which had been
   rendering as `<h2>` until the gate). New integration fixtures:
-  `document-15-bare-headings.acm` (bare-heading lift, depths 4-6
+  `document-15-bare-headings.emd` (bare-heading lift, depths 4-6
   pass-through, inline lift recursion into aside content) and
-  `document-16-section-form-convergence.acm` (three forms of the same
+  `document-16-section-form-convergence.emd` (three forms of the same
   section title — named, sigil, bare-markdown — proving they produce
   structurally identical Layer 1 `<section>` nodes). New unit suite
-  `acadamark-core/test/tagname-sigil-map.test.js` (33 cases including
+  `enscribe-core/test/tagname-sigil-map.test.js` (33 cases including
   bijection and round-trip properties). The `[alpha]` "Build heading
   normalization and verify the section-form ladder converges" item
   closes — the convergence-proof fixture is its verification.
@@ -613,8 +618,8 @@ that). One line gets added every few months, not every slice.
   in a downstream plugin), "The `<h4>`-`<h6>` exception" (named,
   deliberate, narrow exception to Layer 1's otherwise-closed
   vocabulary), and "Deferred: section model in JATS export". Tests:
-  acadamark-core 17+33=50/50; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites; 4 prior snapshots updated
+  enscribe-core 17+33=50/50; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites; 4 prior snapshots updated
   (each change explained as a consequence of the gate's lifts);
   math/code snapshots unchanged (behavior-neutrality verified).
 - **2026-Q2 — alpha build Phase 2 slice 1: parser-side bugs (2 of 3
@@ -634,11 +639,11 @@ that). One line gets added every few months, not every slice.
   `SelfClosingNamedTag`); the fix is in the micromark finder layer.
   **(ii) Render parser-error nodes visibly** (always-renders
   guarantee work, sibling of the blank-line item). Added
-  `packages/acadamark-interpreter/src/handlers/parser-errors.js`
+  `packages/enscribe-interpreter/src/handlers/parser-errors.js`
   with two compile-step handlers: `parseErrorHandler` for
-  `acadamarkParseError` nodes (renders
+  `enscribeParseError` nodes (renders
   `<span class="parse-error">??parse: SUBTYPE "SOURCE"??</span>`)
-  and `tagErrorHandler` for `acadamarkTagError` nodes (renders
+  and `tagErrorHandler` for `enscribeTagError` nodes (renders
   `<span class="tag-error">??tag: NAME — ERROR??</span>`, branching
   on the sigil-opener vs. long-form variants per the error-node
   spec). Wired into `toHast`'s `handlers` map in both the main
@@ -656,7 +661,7 @@ that). One line gets added every few months, not every slice.
   the case it's armed for. Pulled, recorded with the finding;
   remains the sole open gap in the always-renders guarantee per
   `principles.md`.
-  New integration fixture `document-17-parser-edge-cases.acm`
+  New integration fixture `document-17-parser-edge-cases.emd`
   exercises both fixes end-to-end: a self-closing `<table />` (no
   tag-error marker; clean self-close), and a deliberate `\z`
   unknown-escape that produces the visible `??parse:
@@ -667,10 +672,10 @@ that). One line gets added every few months, not every slice.
   Backlog: bug 1 (self-closing) and bug 3 (parser-error rendering)
   removed from both views; bug 2 (blank-line) updated with the pull
   finding; the tag-form-matrix item's mention of AUD-08's brokenness
-  updated to note the fix. Tests: acadamark-core 50/50;
-  remark-acadamark 128/128 (the grammar is unchanged; the syntax.js
+  updated to note the fix. Tests: enscribe-core 50/50;
+  remark-enscribe 128/128 (the grammar is unchanged; the syntax.js
   finder change is exercised through the integration suite);
-  acadamark-interpreter 24/24 suites; all prior integration
+  enscribe-interpreter 24/24 suites; all prior integration
   snapshots stable under strict comparison (no existing fixture
   exercised `<DSL />` or `\z`, which is itself a coverage finding
   the fixture closes); doc-17 snapshot written on first run.
@@ -693,13 +698,13 @@ that). One line gets added every few months, not every slice.
   **(ii) Small cite/config bugs cluster** (formerly PG-8/9/11) —
   partial: 2 of 3 closed.
   - **PG-9 (nested `<config>` not read):** closed. Rewrote
-    `acadamarkConfigDiscovery` to walk the tree recursively through
-    both mdast `children` and acadamarkTag `content` arrays (with
+    `enscribeConfigDiscovery` to walk the tree recursively through
+    both mdast `children` and enscribeTag `content` arrays (with
     opacity guards), so `<config>` blocks inside `<meta>`, inside a
     section, or anywhere else are discovered. Top-level discovery
     still works — the recursive walk is a superset, not a replacement.
   - **PG-11 (trailing whitespace before EOL):** closed. In
-    `packages/remark-acadamark/src/syntax.js`, the flow-position
+    `packages/remark-enscribe/src/syntax.js`, the flow-position
     `afterClose` (sigil-tag tokenizer) and `afterGt` (named-tag
     tokenizer) now skip trailing space/tab characters before checking
     for the line ending. Without this fix, `<# Heading #> ` (trailing
@@ -712,21 +717,21 @@ that). One line gets added every few months, not every slice.
     input order would require either modifying the CSL style XML (not
     per-call), formatting each key individually and joining (loses
     cluster-level features), or patching citation-js. This is both a
-    design question (should acadamark diverge from CSL convention?)
+    design question (should enscribe diverge from CSL convention?)
     and a non-trivial implementation choice. Re-filed as its own
     backlog item.
   **(iii) `<config>` no longer silently accepts metadata kwargs**
-  (formerly AUD-13) — closed. `acadamarkConfigDiscovery` now validates
+  (formerly AUD-13) — closed. `enscribeConfigDiscovery` now validates
   every kwarg against an allowlist (`citation-style`,
   `number-equations`, `number-figures`, `number-tables`, and the
   `ref-prefix-*` prefix family). Unknown kwargs are dropped from the
   config map and a `file.message()` warning is emitted. Metadata-shaped
   kwargs (`title`, `subtitle`, `author`, `date`) get a more specific
   hint suggesting the author meant `<meta>` per DD-3 in `DESIGN.md`.
-  New fixtures: `document-18-config-edge-cases.acm` (exercises PG-9
+  New fixtures: `document-18-config-edge-cases.emd` (exercises PG-9
   recursive walk via a nested `<config>`, PG-11 trailing-whitespace
   sigil, and the end-to-end `ref-prefix-eqn` override producing
-  "Eq. 1"); `document-19-config-unknown-kwargs.acm` (deliberately
+  "Eq. 1"); `document-19-config-unknown-kwargs.emd` (deliberately
   abuses `<config>` with `title=` and `foo-bar=`, asserts both are
   dropped and the `<meta>` title wins). New unit tests in
   `plugins/config-discovery.test.js` (the two prior tests used
@@ -738,8 +743,8 @@ that). One line gets added every few months, not every slice.
   vocab entry describes a structured-children configuration interface
   that is not (yet) the implemented surface, which is a separate
   larger drift item, not introduced by this slice. Tests:
-  acadamark-core 50/50; remark-acadamark 128/128 (grammar unchanged;
-  the syntax.js change is exercised through integration); acadamark-
+  enscribe-core 50/50; remark-enscribe 128/128 (grammar unchanged;
+  the syntax.js change is exercised through integration); enscribe-
   interpreter 24/24 suites; all prior integration snapshots stable
   under strict comparison; doc-18 and doc-19 snapshots written on
   first run. Backlog: bug 3 (AUD-13) removed from both views; bug 1
@@ -802,24 +807,24 @@ that). One line gets added every few months, not every slice.
   implement new settings: reserved keys are accepted into the
   config map without warnings but no plugin consumes them yet;
   the per-key status is documented in
-  `acadamark-interpreter/src/lib/apparatus-allowlists.js`.
+  `enscribe-interpreter/src/lib/apparatus-allowlists.js`.
   Adding a key here does not implement its behavior.
   **(vi) Misuse feedback** fires for the complete key sets in both
   directions: `<meta>`-shaped key in `<config>` gets a "did you
   mean `<meta>`?" hint; `<config>`-shaped key in `<meta>` gets a
   "did you mean `<config>`?" hint. Both are informative
   diagnostics, not errors; the offending kwarg is dropped.
-  New shared module: `acadamark-interpreter/src/lib/apparatus-allowlists.js`
+  New shared module: `enscribe-interpreter/src/lib/apparatus-allowlists.js`
   (allowlists as data + predicates, single source of truth for the
   gate's lift, the misuse-feedback hints, and any future consumers).
   Validation moved out of `config-discovery.js` (which is now a
   read-only kwarg-collector) into the gate, keeping the
   single-gate architecture consistent.
-  Three new fixtures: `document-20-apparatus-reconciliation.acm`
+  Three new fixtures: `document-20-apparatus-reconciliation.emd`
   (`<ref>` with kwargs/flags + misuse hint end-to-end);
-  `document-21-meta-kwargs-and-children.acm` (kwarg form of `<meta>`
+  `document-21-meta-kwargs-and-children.emd` (kwarg form of `<meta>`
   produces the same Layer 1 shape as authored child-tag form);
-  `document-22-apparatus-positioning.acm` (misplaced `<config>`
+  `document-22-apparatus-positioning.emd` (misplaced `<config>`
   inside an aside triggers the warning; document still renders).
   Five new unit tests added to `normalize-to-canonical.test.js`
   covering the four kwarg-handling paths (unknown drop, meta-shaped
@@ -833,8 +838,8 @@ that). One line gets added every few months, not every slice.
   the missing-entry finding. `DESIGN.md` records the
   apparatus-tag positioning principle as a new principle
   (alongside "The single gate" and "The h4-h6 exception"). Tests:
-  acadamark-core 50/50; remark-acadamark 128/128 (grammar
-  unchanged); acadamark-interpreter 24/24 suites; all prior
+  enscribe-core 50/50; remark-enscribe 128/128 (grammar
+  unchanged); enscribe-interpreter 24/24 suites; all prior
   integration snapshots stable under strict comparison; the three
   new fixtures' snapshots written on first run. Backlog: the
   pulled `<ref>` honor-attributes item (formerly PG-3/4/5) removed
@@ -860,7 +865,7 @@ that). One line gets added every few months, not every slice.
   closed as not-a-bug** — citation cluster ordering is delegated
   to citation-js / CSL by design; the broader principle
   ("citation formatting, ordering, and style questions are
-  delegated to citation-js / CSL — acadamark does not reimplement
+  delegated to citation-js / CSL — enscribe does not reimplement
   or override them") is now recorded in `DESIGN.md` as a sibling
   of the existing processor-delegation principle. (ii) The
   missing-`<meta>`-allowlist-vocabulary item **re-tagged
@@ -871,7 +876,7 @@ that). One line gets added every few months, not every slice.
   paragraph break, not a terminator; multi-paragraph tag content
   allowed; explicit `>` is the only terminator; unclosed tags
   detected at EOF (or a hard structural boundary, sub-question)
-  produce a visible `acadamarkTagError`. The implementation
+  produce a visible `enscribeTagError`. The implementation
   question being investigated by a Phase 0 in progress.
   Two small stale cross-references found in passing and corrected
   (the sigil-first-class Discussion item's reference to closed
@@ -885,10 +890,10 @@ that). One line gets added every few months, not every slice.
   that the chosen design (Option A — blank line inside a tag is a
   paragraph break, not a terminator; tag terminates only on its
   explicit closing `>` or at EOF; unclosed tag produces a visible
-  `acadamarkTagError`) was *already implemented* in the current code:
+  `enscribeTagError`) was *already implemented* in the current code:
   all three open-tag tokenizers in `syntax.js` scan through line
   endings transparently and terminate at EOF; `from-markdown.js`
-  stamps `acadamarkTagError` for the EOF-without-closer case; the
+  stamps `enscribeTagError` for the EOF-without-closer case; the
   Phase 2 slice 1 `tagErrorHandler` (`handlers/parser-errors.js`)
   renders it visibly. Parser-level tests RC-6 (multi-paragraph
   content) and ML-8 (unterminated multi-line construct → error)
@@ -898,10 +903,10 @@ that). One line gets added every few months, not every slice.
   heuristic Option A was chosen to avoid), no implementation work
   remains. **This slice changed no product code.** Its product was:
   two new integration fixtures pinning the behavior end-to-end
-  against regression — `document-23-multi-paragraph-tag-content.acm`
+  against regression — `document-23-multi-paragraph-tag-content.emd`
   (an `<aside>` with a blank-line-separated multi-paragraph content
   block; asserts two `<p>` children, no `tag-error` marker) and
-  `document-24-unclosed-tag-at-eof.acm` (an `<aside>` opened with
+  `document-24-unclosed-tag-at-eof.emd` (an `<aside>` opened with
   `|` and never closed; asserts the visible `??tag: …??` marker,
   the article body still renders, no document failure);
   `principles.md` §"Current known gaps" rewritten — both
@@ -915,8 +920,8 @@ that). One line gets added every few months, not every slice.
   swallows downstream content into the error node — bounded because
   the error renders visibly at the open position; tighter
   localization is an incremental future change, not foreclosed).
-  Tests: acadamark-core 50/50; remark-acadamark 128/128 (RC-6 and
-  ML-8 included); acadamark-interpreter 24/24 suites; **no existing
+  Tests: enscribe-core 50/50; remark-enscribe 128/128 (RC-6 and
+  ML-8 included); enscribe-interpreter 24/24 suites; **no existing
   snapshot changed** — the Phase 0's premise that the current code
   already implements Option A is confirmed empirically by zero
   pre-existing diffs. Backlog: DF-16 removed from both views; item
@@ -931,10 +936,10 @@ that). One line gets added every few months, not every slice.
   apparatus-tag reconciliation (`578d6f0`) had left as a gap: `doi`,
   `license`, `lang`, `version`, `keywords` — the `<meta>` allowlist
   members that lifted correctly at the gate but rendered as
-  `<span data-acadamark-unknown="…">` for want of vocabulary
+  `<span data-enscribe-unknown="…">` for want of vocabulary
   entries. Each entry written to the existing entry schema
   (frontmatter with `semantic_role`, `html_output`,
-  `acadamark_attributes`, `content`, `content_handler`,
+  `enscribe_attributes`, `content`, `content_handler`,
   `jats_counterpart`, `shorthand_examples`,
   `interpreter_strategy: schema`) and a markdown body. JATS
   counterparts verified where straightforward (`<doi>` → `<article-id
@@ -950,12 +955,12 @@ that). One line gets added every few months, not every slice.
   report; no code change needed for `<abstract>`. Vocabulary
   `data.js` regenerated (66 → 71 entries; +5 new); `pretest`
   staleness guard passes. New integration fixture
-  `document-25-meta-allowlist-elements.acm` exercises a `<meta>`
+  `document-25-meta-allowlist-elements.emd` exercises a `<meta>`
   carrying all five new kwargs plus an `<abstract>`; asserts each
   renders as a real custom element and that no
-  `data-acadamark-unknown` span remains. One existing snapshot
+  `data-enscribe-unknown` span remains. One existing snapshot
   changed: `document-20-expected.json` had a `<doi>` rendering as
-  `<span data-acadamark-unknown="doi">` (because doc-20 includes a
+  `<span data-enscribe-unknown="doi">` (because doc-20 includes a
   `<meta doi=…>`); now renders as `<doi>` — the expected
   unknown-span → real-element correction. No other snapshots
   changed. Updated the vocabulary test's hardcoded entry-count check
@@ -963,8 +968,8 @@ that). One line gets added every few months, not every slice.
   `[alpha]` "Add vocabulary entries for `<meta>` allowlist members
   and `<abstract>`" item removed from both views (item count 39 →
   38). Tests: layer1-vocabulary 52/52 (one count assertion updated);
-  acadamark-core 50/50; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites.
+  enscribe-core 50/50; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites.
 - **2026-Q2 — deferred-vocabulary sub-slice 1: schema-clear
   scalars and inline elements shipped (11 entries).** The first of
   three build sub-slices closing the `[alpha]` "Add deferred
@@ -988,9 +993,9 @@ that). One line gets added every few months, not every slice.
     `<lang>` precedent — no invented counterpart.
   Vocabulary `data.js` regenerated (71 → 82 entries; +11);
   pretest staleness guard passes. New integration fixture
-  `document-26-deferred-vocab-sub1.acm` exercises all eleven
+  `document-26-deferred-vocab-sub1.emd` exercises all eleven
   elements end-to-end: integration test asserts each renders as a
-  real custom element with its value, no `data-acadamark-unknown`
+  real custom element with its value, no `data-enscribe-unknown`
   span, `abbr`'s `title` kwarg carries through, `term`'s id
   threads, `subject`'s `scheme` kwarg flows to
   `data-subject-scheme`. Vocabulary test entry-count assertion
@@ -1007,8 +1012,8 @@ that). One line gets added every few months, not every slice.
   proves. The backlog item remains open — sub-slice 2 (structural
   blocks: definition lists, glossary, details/summary) and
   sub-slice 3 (theorem family) follow. Tests: layer1-vocabulary
-  52/52; acadamark-core 50/50; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites.
+  52/52; enscribe-core 50/50; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites.
 - **2026-Q2 — design decisions recorded; two earlier rulings
   superseded.** A recording slice (no product code) wrote down a
   batch of settled design decisions into `DESIGN.md` and the backlog,
@@ -1076,7 +1081,7 @@ that). One line gets added every few months, not every slice.
     (vocab spec: "`<author>` — author (a single flat value per
     `<author>`) … Structured author data … is attempted at the JATS
     export boundary"); (b)
-    `packages/acadamark-interpreter/src/lib/apparatus-allowlists.js`
+    `packages/enscribe-interpreter/src/lib/apparatus-allowlists.js`
     L20-29 (code comment: "`author` is FLAT … structured author data
     is attempted at the JATS export boundary, not carried in the
     authoring surface"). Both are filed into the new `<author>`
@@ -1113,7 +1118,7 @@ that). One line gets added every few months, not every slice.
   shared infrastructure for structured-data-container tags (tags
   holding a record of named fields, accepting both kwarg and child-tag
   authoring forms, with a kwarg→child-tag lift at the gate). The
-  infrastructure lives at `packages/acadamark-core/src/structured-elements.js`
+  infrastructure lives at `packages/enscribe-core/src/structured-elements.js`
   as a separate registry from `DSL_REGISTRY`; the parser's
   long-form-eligibility check consults the union via a derived
   `LONG_FORM_TAGS` set. Each entry is a per-tag spec: accepted kwargs,
@@ -1183,21 +1188,21 @@ that). One line gets added every few months, not every slice.
   fixture).
   Two follow-up backlog items filed (both `[post-alpha]`):
   (a) the `<data>` migration revisit above; (b) renaming the
-  `dslRegistry` option on `acadamarkSyntax` (the option's default
+  `dslRegistry` option on `enscribeSyntax` (the option's default
   became `LONG_FORM_TAGS` and the name is now misleading; the slice
   kept the historical name to avoid a public-API churn in an
   already-large refactor).
   Backlog: the `<author>` structured-interface reconciliation item
   removed from both views (closed by this slice).
-  New integration fixture `document-27-author-structured-interface.acm`
+  New integration fixture `document-27-author-structured-interface.emd`
   + `integration doc27` test asserts kwarg-form and child-tag-form
   `<author>` produce equivalent Layer 1 child structures (each child
   element appears exactly twice — once per form), `+corresponding`
   carries through to the canonical Layer 1 node, the unknown-kwarg
   `bogus=x` is dropped (not present as an `<author>` attribute), and
   the backward-compatible casual pipe-content form still works.
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites (incl.
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites (incl.
   new doc27); **no existing snapshot changed**.
 - **2026-Q2 — deferred-vocabulary sub-slice 2: structural-block
   elements shipped (7 entries).** The second of three build sub-slices
@@ -1206,11 +1211,11 @@ that). One line gets added every few months, not every slice.
   - **Definition lists** (3): `dl` → JATS `<def-list>`; `dt` → JATS
     `<term>` inside `<def-item>`; `dd` → JATS `<def>` inside
     `<def-item>`. The JATS exporter groups adjacent `<dt>`/`<dd>`
-    pairs into `<def-item>` wrappers at export (acadamark follows
+    pairs into `<def-item>` wrappers at export (enscribe follows
     HTML's flatter alternating-siblings pattern).
   - **Glossary** (2): `glossary` → JATS `<glossary>`; `glossary-entry`
     → JATS `<def-item>` (inside `<glossary>`). The `glossary-entry`
-    envelope is acadamark's named pairing convenience; JATS does not
+    envelope is enscribe's named pairing convenience; JATS does not
     have a separate `glossary-entry` element. Glossary entries
     typically carry an id using the `term:` colon-prefix convention
     (consistent with `fig:`, `eqn:`, `sec:`) for cross-references.
@@ -1228,7 +1233,7 @@ that). One line gets added every few months, not every slice.
   with nested `<dt>`/`<dd>`), which requires long-form-eligibility.
   This was a judgment call against the slice prompt's "no parser or
   interpreter code changes" constraint — DSL_REGISTRY is registry
-  data in `acadamark-core` (not parser or interpreter code in the
+  data in `enscribe-core` (not parser or interpreter code in the
   literal sense) and is the same kind of registry-data change a vocab
   entry is. Without it, the seven entries would be hollow — authorable
   only in their unnatural short-form. Recorded here so the call is
@@ -1236,13 +1241,13 @@ that). One line gets added every few months, not every slice.
   Vocabulary `data.js` regenerated (83 → 90 primary entries; 91 with
   the `quote` alias). Pretest staleness guard passes; test count
   assertion bumped 84 → 91.
-  New integration fixture `document-28-deferred-vocab-sub2.acm` +
+  New integration fixture `document-28-deferred-vocab-sub2.emd` +
   `integration doc28` exercises all seven elements end-to-end: a
   `<dl>` with three term/description pairs; a `<glossary>` with two
   `<glossary-entry>` items, each carrying a `<dt>`/`<dd>`; two
   `<details>` blocks (one default-collapsed, one with `open=true`).
   Assertions: each of the seven renders as a real element with its
-  content; no `data-acadamark-unknown` span for any of them; both
+  content; no `data-enscribe-unknown` span for any of them; both
   `<details>` blocks render; the `open=true` kwarg renders as
   `open="true"` on the canonical `<details>`. **No existing snapshot
   changed** — the new fixture is new output, no prior fixture
@@ -1264,8 +1269,8 @@ that). One line gets added every few months, not every slice.
   the finding; the fix is a separate item.
   Backlog: the "Add deferred vocabulary elements" item remains open
   — sub-slice 2 ticked off; sub-slice 3 (theorem family) follows.
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc28).
 - **2026-Q2 — deferred-vocabulary sub-slice 3: theorem-family
   elements shipped (8 entries); "Add deferred vocabulary elements"
@@ -1288,15 +1293,15 @@ that). One line gets added every few months, not every slice.
     wrapper. Resolves the earlier speculative claim in
     `layer1-naming.md` ("internal parts likely follow the
     container-role rule"); LaTeX amsthm and JATS both put body
-    content directly inside the container, and acadamark follows.
+    content directly inside the container, and enscribe follows.
     `layer1-naming.md` L142 rewritten in this slice to record the
     settled answer.
   - **`<proof>` is a peer, not a child** of theorem-like statements.
     Matches LaTeX (`\begin{proof}` is independent of any theorem
     environment) and JATS (`<statement content-type="proof">` is a
-    peer statement). Acadamark follows.
+    peer statement). Enscribe follows.
   - **Optional `name` kwarg** per element — the "(Pythagoras)" suffix
-    pattern. Recorded under each entry's `acadamark_attributes.kwargs`
+    pattern. Recorded under each entry's `enscribe_attributes.kwargs`
     with `maps_to: data-name`. The schema dispatch flows the kwarg
     through to the rendered HTML; the Phase-2 handler will use it for
     the visible label.
@@ -1347,14 +1352,14 @@ that). One line gets added every few months, not every slice.
   with the `quote` alias). Pretest staleness guard passes. Test
   count assertion bumped 91 → 99.
   New integration fixture
-  `document-29-deferred-vocab-sub3.acm` + `integration doc29`
+  `document-29-deferred-vocab-sub3.emd` + `integration doc29`
   exercises all eight elements end-to-end: a `<theorem>` (short-form
   with the opacity workaround) + `<proof>` peer + `<lemma>` /
   `<corollary>` / `<proposition>` propositional siblings + `<definition>`
   / `<example>` / `<remark>` rhetorical-family elements. Assertions:
   each renders as a real element; the `name` kwarg flows through to
   `data-name` on `<theorem>`, `<lemma>`, `<proposition>`,
-  `<definition>`; no `data-acadamark-unknown` span for any of the
+  `<definition>`; no `data-enscribe-unknown` span for any of the
   eight. Numbering output is not asserted (Phase-2 work).
   **No existing snapshot changed** — the eight entries are net-new
   vocabulary; no prior fixture authored any of these elements.
@@ -1371,8 +1376,8 @@ that). One line gets added every few months, not every slice.
   - The line-142 speculative theorem-family claim in
     `notes/specs/layer1-naming.md` retracted; the settled answer
     (no internal parts; `<proof>` is a peer) recorded in its place.
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc29).
 - **2026-Q2 — DSL/long-form parser bug fix: registry gate removed;
   three-form grammar locally unambiguous; DSL_REGISTRY shrunk to
@@ -1388,7 +1393,7 @@ that). One line gets added every few months, not every slice.
   findings file `notes/dsl-purge-phase0-findings.md` records the
   full investigation.
   The fix:
-  - **Parser change** at `packages/remark-acadamark/src/syntax.js`:
+  - **Parser change** at `packages/remark-enscribe/src/syntax.js`:
     removed the `registry.has(tagName)` gate in
     `makeLongFormTokenizer.consumeOpenTagName`. Every named tag is
     now long-form-eligible. The three syntactic forms — pipe form
@@ -1405,9 +1410,9 @@ that). One line gets added every few months, not every slice.
     into 5 short-form-no-close (migrated) plus 22 long-form-openers
     (already correct).
   - **Test-source migration** (2 instances): the `<quux>` test in
-    `packages/remark-acadamark/test/test.js` updated to assert the
+    `packages/remark-enscribe/test/test.js` updated to assert the
     post-D1 behavior (bare unregistered tag produces
-    `acadamarkTagError`; `<quux />` is the short-form-no-content
+    `enscribeTagError`; `<quux />` is the short-form-no-content
     path); the multi-line opener test updated to use
     `<figure ... />` and `<cite @ref />` for the slash-form cases.
   - **`DSL_REGISTRY` pruned** to 16 entries — only genuine DSLs
@@ -1421,7 +1426,7 @@ that). One line gets added every few months, not every slice.
     option's purpose was overriding a long-form-eligibility list; no
     such list exists any more, so the option is unnecessary. No
     backward-compat alias.
-  - **`LONG_FORM_TAGS` removed** from `acadamark-core` exports. It
+  - **`LONG_FORM_TAGS` removed** from `enscribe-core` exports. It
     was the parser-time union of the two registries; with the gate
     gone, nothing consumes it. `STRUCTURED_ELEMENTS` and
     `DSL_REGISTRY` are now independent.
@@ -1467,8 +1472,8 @@ that). One line gets added every few months, not every slice.
   families to three (DF-11a `<theorem>` handler retired —
   theorem is regular vocab); `AUD-15` tag-form matrix item updated
   to reflect the post-D1 three-form grammar.
-  Tests: acadamark-core 33/33; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites; layer1-vocabulary 52/52. The
+  Tests: enscribe-core 33/33; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites; layer1-vocabulary 52/52. The
   structured-element infrastructure (`beb2fb3`) is untouched and
   remains correct.
 - **2026-Q2 — Phase 2 handler bundle: Phase 0 findings recorded.** A
@@ -1551,13 +1556,13 @@ that). One line gets added every few months, not every slice.
   `HANDLER_REGISTRY` at `interpret-plugin.js:68-77` grew from 5
   entries to 8 (csv, tsv, code added).
 
-  Fixture coverage: `document-30-csv-tsv-code-handlers.acm` +
+  Fixture coverage: `document-30-csv-tsv-code-handlers.emd` +
   `integration doc30` exercises all three additions end-to-end
   (`<csv>` with header row + id; `<tsv>` with header row; three
   `<code>` forms covering long-form / short-form-no-language /
   language=javascript). Assertions confirm rendered `<table>`
   shapes for csv/tsv, body-content presence for code, no
-  `data-acadamark-unknown` spans, no empty `<code></code>`
+  `data-enscribe-unknown` spans, no empty `<code></code>`
   elements.
 
   **Snapshot zero-diff confirmed.** Verified via
@@ -1569,8 +1574,8 @@ that). One line gets added every few months, not every slice.
   envs) and 2c (Mermaid/ABC) follow per the Phase 0 split
   recommendation.
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc30).
 - **2026-Q2 — Phase 2 slice 2b: math environments + `<math>` long-form.**
   Second implementation slice of Phase 2 handler bundle. Added handler
@@ -1605,10 +1610,10 @@ that). One line gets added every few months, not every slice.
   Vocab `data.js` regenerated (100 → 105 primary entries; 106 with
   `quote` alias). Vocab test count assertion bumped 101 → 106.
 
-  Fixture `document-31-math-envs.acm` + `integration doc31` exercises
+  Fixture `document-31-math-envs.emd` + `integration doc31` exercises
   all five new tags end-to-end. Assertions: each tag renders as a real
   wrapper element with KaTeX-rendered content inside; no
-  `data-acadamark-unknown` spans; KaTeX `class="katex"` markers appear
+  `data-enscribe-unknown` spans; KaTeX `class="katex"` markers appear
   in at least 5 places (one per wrapper); the `<matrix>` wrapper
   contains KaTeX-rendered output.
 
@@ -1628,8 +1633,8 @@ that). One line gets added every few months, not every slice.
   (Mermaid/ABC) follows per the Phase 0 split recommendation.
 
   Tests: layer1-vocabulary 52/52 (count assertion updated 101 → 106);
-  acadamark-core 33/33; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites (incl. new doc31).
+  enscribe-core 33/33; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites (incl. new doc31).
 - **2026-Q2 — Phase 2 slice 2c: Mermaid/ABC external DSLs; DSL handler
   bundle closed.** Third and final implementation slice of Phase 2's
   handler bundle. Added handler coverage for two specialty DSL tags:
@@ -1638,7 +1643,7 @@ that). One line gets added every few months, not every slice.
   - `<abc>` — ABC music notation
   Both are **external DSLs**: the handlers emit pass-through markup
   preserving the source; rendering to SVG happens external to
-  acadamark — in the consumer's browser (CDN library scans the DOM
+  enscribe — in the consumer's browser (CDN library scans the DOM
   at view time) or at build time via a headless pre-render pass.
   No npm dependencies added.
 
@@ -1655,18 +1660,18 @@ that). One line gets added every few months, not every slice.
   **Markup contract.** Both handlers emit a wrapper element with the
   upstream library's CDN-scanning class (`class="mermaid"` for
   Mermaid; `class="abc"` for ABC by convention) **plus** a
-  `data-acadamark-dsl="<name>"` attribute. The class matches the CDN
+  `data-enscribe-dsl="<name>"` attribute. The class matches the CDN
   scanner so view-time rendering works with no extra config; the
-  `data-acadamark-dsl` attribute is the acadamark-specific contract
+  `data-enscribe-dsl` attribute is the enscribe-specific contract
   for build-time tooling, independent of CDN-specific class
   conventions that may change between library versions.
 
   **`<mermaid>`** wrapper: `<pre class="mermaid"
-  data-acadamark-dsl="mermaid">`. Matches Mermaid's documented
+  data-enscribe-dsl="mermaid">`. Matches Mermaid's documented
   `<pre>`-with-`class="mermaid"` convention (verified via the v10
   docs).
 
-  **`<abc>`** wrapper: `<div class="abc" data-acadamark-dsl="abc">`.
+  **`<abc>`** wrapper: `<div class="abc" data-enscribe-dsl="abc">`.
   abcjs has no DOM auto-scan (requires explicit
   `ABCJS.renderAbc(target, source)` calls); a typical consumer init
   script is sketched in `abc.md`. The abcjs convention was used from
@@ -1691,13 +1696,13 @@ that). One line gets added every few months, not every slice.
   Vocab `data.js` regenerated (105 → 107 primary entries; 108 with
   `quote` alias). Test count assertion bumped 106 → 108.
 
-  **Fixture** `document-32-external-dsls.acm` + `integration doc32`
+  **Fixture** `document-32-external-dsls.emd` + `integration doc32`
   exercises both tags end-to-end (Mermaid flowchart + sequence
   diagram + ABC "Twinkle Twinkle" excerpt). Assertions confirm:
-  CDN-compatible class on each wrapper; `data-acadamark-dsl`
+  CDN-compatible class on each wrapper; `data-enscribe-dsl`
   attribute present and correct; source preserved verbatim; ids
   flow through; no `<svg>` in output (confirming external
-  rendering); no `data-acadamark-unknown` spans.
+  rendering); no `data-enscribe-unknown` spans.
 
   **Snapshot zero-diff confirmed** on all existing fixtures —
   verified via `git diff --stat` on `test/fixtures/*.json` and
@@ -1721,8 +1726,8 @@ that). One line gets added every few months, not every slice.
   the Phase 2 closure.
 
   Tests: layer1-vocabulary 52/52 (count assertion updated
-  106 → 108); acadamark-core 33/33; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites (incl. new doc32).
+  106 → 108); enscribe-core 33/33; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites (incl. new doc32).
 - **2026-Q2 — Phase 2 closed: per-section footnotes implemented
   (formerly PG-1); ROADMAP drift fixed (AUD-N verification moved out
   of Phase 2).** Two pieces of work in one commit:
@@ -1813,8 +1818,8 @@ that). One line gets added every few months, not every slice.
   position" paragraph updated: roadmap moves to Phase 3 next
   (frameable elements). All Phase 2 sub-items done.
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc33 and doc34). Three existing snapshots updated
   per the audit above (doc5, doc6, doc12 — per-section list
   moves).
@@ -1828,7 +1833,7 @@ that). One line gets added every few months, not every slice.
   frameable members lack vocab entries today: `<fig>`, `<svg>`,
   `<frame>` — with per-element caption/numbered/id/content.type/strategy
   shape table); Q1.3 (existing infrastructure survey: the generic
-  per-type counter machinery in `acadamark-core/src/registry.js`,
+  per-type counter machinery in `enscribe-core/src/registry.js`,
   the NUMBERED_TAGNAMES Map in `numbering.js` with three entries
   today, the ref-resolution DEFAULT_PREFIXES dictionary, and the
   mixed caption-handling shapes across figure/table/mermaid/abc/csv/
@@ -1861,7 +1866,7 @@ that). One line gets added every few months, not every slice.
   theorem family + math envs.** The first implementation slice of
   Phase 3 (the precursor recommended by `cec620c`'s findings).
   Extended `NUMBERED_TAGNAMES` in
-  `packages/acadamark-interpreter/src/plugins/numbering.js` with
+  `packages/enscribe-interpreter/src/plugins/numbering.js` with
   eight new entries: six for the theorem family
   (`theorem`/`lemma`/`corollary`/`proposition` all mapped to the
   shared `theorem` registry-type per amsthm "plain" style;
@@ -1916,7 +1921,7 @@ that). One line gets added every few months, not every slice.
   paragraph updated to reflect Phase 0 done (cec620c) and 3a done
   (this slice) with 3b/3c still pending.
 
-  New fixture: `document-35-numbering-extension.acm` exercises the
+  New fixture: `document-35-numbering-extension.emd` exercises the
   full theorem family with cross-references (theorem/lemma/
   corollary/proposition resolve to "Theorem 1" through
   "Proposition 4" — sharing one counter; definition/example each
@@ -1931,8 +1936,8 @@ that). One line gets added every few months, not every slice.
   1-5 in document order. Every other existing fixture's snapshot
   unchanged. No regressions surfaced.
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc35).
 - **2026-Q2 — Phase 3 slice 3b: frameable class built.** The middle
   implementation slice of Phase 3, bundling six pieces of work
@@ -1971,7 +1976,7 @@ that). One line gets added every few months, not every slice.
   computedNumber, body, kind }` would have switched between these
   three idioms inside the helper — premature abstraction. The
   shipping helper sits at a smaller granularity: `formatLabel(prefix,
-  number, name?)` in `acadamark-interpreter/src/lib/frameable.js`,
+  number, name?)` in `enscribe-interpreter/src/lib/frameable.js`,
   returning a single hast span (`<span class="<prefix>-label">Figure
   3 (Pythagoras).</span>`). figure.js and table.js call it where
   they were building the inline label span; behavior-preserving
@@ -2037,8 +2042,8 @@ that). One line gets added every few months, not every slice.
     HTML output regardless of `node.tagname`).
 
   Tests: layer1-vocabulary 52/52 (count assertion 108 → 111);
-  acadamark-core 33/33; remark-acadamark 128/128;
-  acadamark-interpreter 24/24 suites (incl. new doc36).
+  enscribe-core 33/33; remark-enscribe 128/128;
+  enscribe-interpreter 24/24 suites (incl. new doc36).
 
   **Slice 3c (caption-as-content, DD-1 / DD-2) remains open** as
   the third and final Phase 3 sub-slice. The current slice's
@@ -2057,7 +2062,7 @@ that). One line gets added every few months, not every slice.
 
   **Caption-as-content (Option A, formerly AUD-14).** New
   `FRAMEABLE_LIFTABLE` registry in
-  `acadamark-core/src/frameable-elements.js` — a small companion
+  `enscribe-core/src/frameable-elements.js` — a small companion
   to STRUCTURED_ELEMENTS that records which kwargs lift to which
   child tags per frameable. Eight frameables register today (fig,
   table, csv, tsv, mermaid, abc, svg, frame), each lifting
@@ -2128,8 +2133,8 @@ that). One line gets added every few months, not every slice.
     table/csv/tsv/mermaid/abc behavior byte-identical when no
     new authoring form is in play.
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc37).
 
   **Phase 3 CLOSED.** ROADMAP Phase 3 marked CLOSED parallel to
@@ -2144,12 +2149,12 @@ that). One line gets added every few months, not every slice.
   `notes/phase3-frameable-findings.md` played for Phase 3). Covers
   Q1.1 (BACKLOG / ROADMAP Phase 4 entries quoted verbatim with
   line numbers; Phase 5 framing as Phase 4's downstream); Q1.2
-  (doc-9 fixture state — `.acm` + `.html` exist, no
+  (doc-9 fixture state — `.emd` + `.html` exist, no
   `document-9-expected.json` snapshot, no `doc9` test block;
   fixture is an *article*, not a book — confirming that "book
   structuring" and "doc-9 snapshot" are two independent work
   streams pairing in Phase 4); Q1.3 (current `<article>` pipeline
-  via `acadamarkArticleStructuring`, with the warn-and-skip
+  via `enscribeArticleStructuring`, with the warn-and-skip
   placeholder for `<meta type=book>` at L170-173); Q1.4 (JATS book
   DTD target shape; mature vocab already declares the JATS
   mapping cleanly); Q1.5 (six design questions surfaced — three
@@ -2163,11 +2168,11 @@ that). One line gets added every few months, not every slice.
   cross-refs by DD-Q4; section-nesting needs minor adaptation);
   Q1.7 (9 mature book vocab entries already in place — book.md,
   book-part.md, book-front/body/back, book-title/subtitle,
-  book-part-title/subtitle — but `acadamarkBookStructuring`
+  book-part-title/subtitle — but `enscribeBookStructuring`
   plugin doesn't exist; vocab references it as a forward-reference);
   Q1.8 (no BACKLOG ⇄ ROADMAP drift). Three sibling cleanup items
   flagged. **Recommendation: SPLIT into two slices — 4a
-  (`acadamarkBookStructuring` plugin + book-shaped fixture) → 4b
+  (`enscribeBookStructuring` plugin + book-shaped fixture) → 4b
   (doc-9 snapshot + integration test).** 4b is independent of 4a
   (doc-9 is an article); ship 4b after 4a so the doc-9 snapshot
   pins the full alpha-complete pipeline. No product code, spec,
@@ -2176,10 +2181,10 @@ that). One line gets added every few months, not every slice.
   The major implementation slice of Phase 4. Six bundled pieces of
   work in the document-structure neighborhood:
 
-  **(1) `acadamarkBookStructuring` plugin.** New file
-  `packages/acadamark-interpreter/src/plugins/book-structuring.js`,
+  **(1) `enscribeBookStructuring` plugin.** New file
+  `packages/enscribe-interpreter/src/plugins/book-structuring.js`,
   realizing the forward-referenced plugin from `book.md:146` and
-  `book-part.md:142`. Runs BEFORE `acadamarkArticleStructuring` in
+  `book-part.md:142`. Runs BEFORE `enscribeArticleStructuring` in
   the pipeline. For `<meta type=book>` documents: wraps the tree in
   `<book>` containing `<book-front>`/`<book-body>`/`<book-back>`;
   routes book-parts by `book-part-type` (chapter/part/introduction/
@@ -2275,8 +2280,8 @@ that). One line gets added every few months, not every slice.
     behavior 100% preserved.
   - **doc38 (new):** snapshot written on first run.
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc38).
 
   **Phase 4 sub-progress:** slice 4a closes the book-structuring
@@ -2321,8 +2326,8 @@ that). One line gets added every few months, not every slice.
     on first run; `document-9-demo.html` re-rendered byte-identical
     (no diff against the existing on-disk HTML).
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
   (incl. new doc9 block).
 
   **Phase 4 CLOSED.** ROADMAP Phase 4 marked CLOSED parallel to
@@ -2334,13 +2339,13 @@ that). One line gets added every few months, not every slice.
   **Three documentation follow-ups from slice 4a remain open**
   (separate spec-sweep slice): `pipeline.md` L284-285 "limitation"
   line is now stale; `interpreter.md` needs a §3.X for the
-  `acadamarkBookStructuring` plugin; `DESIGN.md` may want a
+  `enscribeBookStructuring` plugin; `DESIGN.md` may want a
   §"Document structure: articles vs. books".
 
   The roadmap moves to **Phase 5 next** (JATS export). Phase 5 has
   its own Phase 0 because the export is a large arc and the
-  package boundary (`acadamark-jats-export`, not yet present)
-  needs siting against `acadamark-core`.
+  package boundary (`enscribe-jats-export`, not yet present)
+  needs siting against `enscribe-core`.
 - **2026-Q2 — Phase 5 Phase 0: JATS export findings.** Read-only
   investigation producing `notes/phase5-jats-export-findings.md`
   — the artifact Phase 5's implementation slice(s) will build from
@@ -2351,14 +2356,14 @@ that). One line gets added every few months, not every slice.
   already declare `jats_counterpart`); Q1.3 (recommend target JATS
   1.3 + BITS 2.0 + Archiving and Interchange Tag Set per the
   widest validator support; few DTD constraints, no fundamental
-  conflicts with acadamark vocab); Q1.4 (package boundary —
-  Option A `packages/acadamark-jats-export/` recommended per
+  conflicts with enscribe vocab); Q1.4 (package boundary —
+  Option A `packages/enscribe-jats-export/` recommended per
   DESIGN.md's stated plan; attribute-mapper lift to
-  `acadamark-core` recommended in slice 5a since JATS export IS
+  `enscribe-core` recommended in slice 5a since JATS export IS
   the second consumer the deferred question was waiting for);
   Q1.5 (intermediate representation — post-stage-3 mdast is the
   right input; structural plugins re-imported from
-  `acadamark-interpreter`, lift-to-core deferred until render-mode
+  `enscribe-interpreter`, lift-to-core deferred until render-mode
   is the second consumer); Q1.6 (vocabulary mapping inventory
   grouped by JATS section — Groups A–J: containers, regions,
   titles, sections, metadata, frameables, inline, block, math,
@@ -2380,29 +2385,29 @@ that). One line gets added every few months, not every slice.
 - **2026-Q2 — Phase 5 slice 5a: package + lift + minimal article
   export.** The foundation slice of Phase 5. Three bundled pieces.
 
-  **(1) `acadamark-jats-export` package created.** New
-  `packages/acadamark-jats-export/` per Phase 0 Q1.4 Option A.
-  Standard monorepo shape; depends on `acadamark-core` +
-  `acadamark-interpreter` (for the structural plugins re-import per
+  **(1) `enscribe-jats-export` package created.** New
+  `packages/enscribe-jats-export/` per Phase 0 Q1.4 Option A.
+  Standard monorepo shape; depends on `enscribe-core` +
+  `enscribe-interpreter` (for the structural plugins re-import per
   Phase 0 Q1.5 option (i)) + `layer1-vocabulary`. Entry point
-  `acadamarkToJats(tree, opts)` takes a post-stage-3 mdast tree
+  `enscribeToJats(tree, opts)` takes a post-stage-3 mdast tree
   and returns a JATS XML string.
 
-  **(2) `mapAttributes` lift to `acadamark-core` — the deferred
+  **(2) `mapAttributes` lift to `enscribe-core` — the deferred
   lift from `6ae6844` landed.** New module
-  `acadamark-core/src/map-attributes.js` exports
+  `enscribe-core/src/map-attributes.js` exports
   `mapAttributes(node, vocab, target, emit)`. Two emit callbacks
-  shipped: `acadamark-interpreter/src/lib/html-emit.js` (HTML
+  shipped: `enscribe-interpreter/src/lib/html-emit.js` (HTML
   side; consumed by the five pre-lift `buildProperties` sites —
   schema dispatch + figure/svg/frame/theorem handlers) and
-  `acadamark-jats-export/src/lib/jats-emit.js` (JATS side; classes
+  `enscribe-jats-export/src/lib/jats-emit.js` (JATS side; classes
   go to `specific-use` per the design call). The pre-lift
   `buildProperties` wrapper is gone (Decision 3 B). Vocab
   `maps_to` migrated to target-keyed object form via the
   build-time generator — vocab YAMLs still author `maps_to: id`
   shorthand; the generator normalizes to `{ html: "id" }`. 302
   declarations migrated across 109 entries.
-  `notes/specs/acadamark-core.md` updated: the "deferred open
+  `notes/specs/enscribe-core.md` updated: the "deferred open
   question" marked RESOLVED with a forward-pointer to this slice.
 
   **(3) Minimal article export.** Article scaffolding (article
@@ -2414,7 +2419,7 @@ that). One line gets added every few months, not every slice.
   Group D Option I), and inline text formatting (italic / bold /
   underline / strike / sub / sup / monospace).
 
-  **New fixture: doc-39** (`document-39-jats-minimal-article.acm`).
+  **New fixture: doc-39** (`document-39-jats-minimal-article.emd`).
   JATS XML snapshot pinned with 14 spot-check assertions for the
   most distinctive surface features (article-type, dtd-version,
   title-group, contrib-group, string-name, abstract, body+sec+title,
@@ -2435,13 +2440,13 @@ that). One line gets added every few months, not every slice.
 
   **Known limitation flagged for 5b:** the abstract rendering
   drops surrounding prose text when bare-markdown emphasis lifts
-  to inline acadamarkTags inside the abstract's content array.
+  to inline enscribeTags inside the abstract's content array.
   Inline-vs-block content handling refinement; 5b will address as
   part of frameable / list / block-content work.
 
-  Tests: layer1-vocabulary 52/52; acadamark-core 33/33;
-  remark-acadamark 128/128; acadamark-interpreter 24/24 suites
-  (zero-diff); acadamark-jats-export 19/19 checks.
+  Tests: layer1-vocabulary 52/52; enscribe-core 33/33;
+  remark-enscribe 128/128; enscribe-interpreter 24/24 suites
+  (zero-diff); enscribe-jats-export 19/19 checks.
 
   **Phase 5 sub-progress:** slice 5a closes the package-creation
   + lift + minimal-export work. Slices 5b/5c/5d remain.
@@ -2551,7 +2556,7 @@ that). One line gets added every few months, not every slice.
   scope shift needed.
 
   Tests: layer1-vocabulary 52/52 (count assertion unchanged —
-  vocab YAML edits don't affect the entry count); acadamark-
+  vocab YAML edits don't affect the entry count); enscribe-
   interpreter 24/24 (no code changes; verified zero-diff on all
   snapshots).
 
@@ -2601,13 +2606,13 @@ that). One line gets added every few months, not every slice.
   rewritten to reflect current state (book-structuring plugin
   handles them via the early no-op-when-already-book-wrapped
   check in article-structuring). New §4.2.5 added for
-  `acadamarkBookStructuring`. The pipeline diagram at §1
+  `enscribeBookStructuring`. The pipeline diagram at §1
   rewritten to show the JATS-export branch off post-stage-3
   mdast (slice 5a's parallel pipeline).
 
   **(6a) `interpreter.md` §3.3.5 added for
-  `acadamarkBookStructuring`.** Parallels §3.3's
-  acadamarkArticleStructuring documentation depth. Covers
+  `enscribeBookStructuring`.** Parallels §3.3's
+  enscribeArticleStructuring documentation depth. Covers
   purpose, pipeline position, region routing, body absorption,
   title promotion + per-book-part `<meta>` synthesis, book-part
   shorthand expansion (with glossary disambiguation), tree
@@ -2621,8 +2626,8 @@ that). One line gets added every few months, not every slice.
   architectural-distinction sections). Covers the two top-level
   shapes (article vs. book), why the distinction matters (JATS
   has article DTD and BITS book DTD; LaTeX has article and book
-  classes), the pipeline expression (`acadamarkBookStructuring`
-  sibling to `acadamarkArticleStructuring`), and the two
+  classes), the pipeline expression (`enscribeBookStructuring`
+  sibling to `enscribeArticleStructuring`), and the two
   configurable knobs whose defaults diverge between articles
   and books.
 
@@ -2646,7 +2651,7 @@ that). One line gets added every few months, not every slice.
   - `interpreter.md`: new §3.3.5 added.
   - `DESIGN.md`: new architectural section added.
 
-  Tests: acadamark-interpreter 24/24 (no code changes; sanity-
+  Tests: enscribe-interpreter 24/24 (no code changes; sanity-
   verified). No other suites needed running.
 
   No product code, schema field, or handler changes — pure
@@ -2657,7 +2662,7 @@ that). One line gets added every few months, not every slice.
 
   **(1) Abstract limitation fix (Q1 root cause).** Slice 5a's
   `emitBlock` dropped mdast `text` nodes at top level and treated
-  inline acadamarkTags as separate blocks via the default-case
+  inline enscribeTags as separate blocks via the default-case
   `extractText` path. New `groupInlineRuns` pre-pass in
   `emitBodyChildren` wraps consecutive inline-shaped nodes (text
   + INLINE_MAP tags + inline-math) into synthetic mdast
@@ -2726,19 +2731,19 @@ that). One line gets added every few months, not every slice.
     inside a paragraph doesn't fragment the paragraph at the
     pre-pass step (theorem-body bug surfaced during doc-40
     verification).
-  - `fillNumbering` added to `acadamark-interpreter`'s
+  - `fillNumbering` added to `enscribe-interpreter`'s
     `index.js` exports so the JATS test pipeline can replicate
     the numbering step. The function existed but wasn't
     surfaced.
 
-  **New fixture: doc-40** (`document-40-jats-body-content.acm`)
+  **New fixture: doc-40** (`document-40-jats-body-content.emd`)
   exercises all five pieces end-to-end. 39/39 spot-check
   assertions + snapshot pinning. xmllint validation skipped
   (xmllint not in test environment; DTD bundling is a 5d
   follow-up).
 
   **Snapshot audit:**
-  - **All 24 acadamark-interpreter HTML snapshots: STRICT ZERO
+  - **All 24 enscribe-interpreter HTML snapshots: STRICT ZERO
     DIFF.** Slice 5b adds JATS-side work only; HTML pipeline
     untouched.
   - **doc-39 JATS snapshot updated:** abstract section moved
@@ -2750,10 +2755,10 @@ that). One line gets added every few months, not every slice.
 
   Tests:
   - layer1-vocabulary:    52/52
-  - acadamark-core:       33/33
-  - remark-acadamark:    128/128
-  - acadamark-interpreter: 24/24 (HTML snapshots zero-diff)
-  - acadamark-jats-export: 39/39 (4 unit + 14 doc-39 + 21 doc-40)
+  - enscribe-core:       33/33
+  - remark-enscribe:    128/128
+  - enscribe-interpreter: 24/24 (HTML snapshots zero-diff)
+  - enscribe-jats-export: 39/39 (4 unit + 14 doc-39 + 21 doc-40)
 
   **Phase 5 sub-progress:** slice 5b closes the body-content
   scope. Slices 5c (cross-references + footnotes + BITS book)
@@ -2765,7 +2770,7 @@ that). One line gets added every few months, not every slice.
   surface; HTML pipeline untouched.
 
   **(1) Cross-references.** `__ref-marker` (produced by
-  `acadamarkRefResolution` from authored `<ref @id>`) →
+  `enscribeRefResolution` from authored `<ref @id>`) →
   `<xref ref-type="..." rid="...">text</xref>`. The
   `ref-type` discriminator is inferred from the colon-id
   prefix at emit time via a small lookup table
@@ -2788,7 +2793,7 @@ that). One line gets added every few months, not every slice.
 
   **(2) Footnotes.** `__note-marker` → inline
   `<xref ref-type="fn" id="noteref-N" rid="noteId">N</xref>`.
-  `__note-list` (built by `acadamarkNotePlacement` —
+  `__note-list` (built by `enscribeNotePlacement` —
   per-section for article 'section' scope; per-`<book-part>`
   for book 'chapter' scope; back-matter for 'document' scope
   or residual) → `<fn-group content-type="footnotes|endnotes|
@@ -2801,7 +2806,7 @@ that). One line gets added every few months, not every slice.
   **(3) BITS 2.0 book export path.** New
   `BITS_BOOK_DOCTYPE_DECL` (BITS 2.0 — the most widely
   validator-supported version; 2.1 is newer but tooling
-  coverage is thinner). `acadamarkToJats` dispatches on the
+  coverage is thinner). `enscribeToJats` dispatches on the
   root tag: `<book>` → BITS path; `<article>` → JATS
   Archiving 1.3 path. `emitBook` produces `<book
   book-type="..." xml:lang="..." dtd-version="2.0">` with
@@ -2836,7 +2841,7 @@ that). One line gets added every few months, not every slice.
   XML. JSON / YAML / MD formats remain placeholders in the
   JATS path (less common in publishing pipelines; CSV/TSV
   is the 80% case). Required re-exporting `parseCsv` /
-  `parseTsv` from `acadamark-interpreter`'s `index.js`
+  `parseTsv` from `enscribe-interpreter`'s `index.js`
   (same re-export pattern as slice 5b's `fillNumbering`).
 
   **Companion changes:**
@@ -2849,19 +2854,19 @@ that). One line gets added every few months, not every slice.
     a paragraph like "This refers to <ref @x> and <ref
     @y>" fragmented into four separate `<p>`s — visible in
     the first doc-41 snapshot run before the fix.
-  - **`acadamarkNotePlacement` added to
-    `acadamark-interpreter`'s exports** so the JATS test
+  - **`enscribeNotePlacement` added to
+    `enscribe-interpreter`'s exports** so the JATS test
     pipeline can include the plugin that injects
     `__note-list` / `__note-marker` nodes into the post-
     stage-3 tree the JATS emitter consumes.
 
   **New fixtures:**
-  - **doc-41** (`document-41-jats-refs-notes-tables.acm`) —
+  - **doc-41** (`document-41-jats-refs-notes-tables.emd`) —
     article exercising cross-refs to all six discriminator
     types, foot-placed + endnote-placed notes (per-section
     foot collection + article-back endnote collection),
     and a multi-row CSV table.
-  - **doc-42** (`document-42-jats-bits-book.acm`) — BITS
+  - **doc-42** (`document-42-jats-bits-book.emd`) — BITS
     book with preface (front-matter), two chapters
     (chapter-scope foot-notes; second chapter has guest
     `<author>` for edited-volume case), and an appendix
@@ -2890,17 +2895,17 @@ that). One line gets added every few months, not every slice.
     `figure 2.1` for `fig:intro` in chapter 1 (the comment
     in the source says "should resolve to 'figure 1.1'").
     Pre-existing behavior in
-    `acadamark-interpreter/src/plugins/numbering.js`; not
+    `enscribe-interpreter/src/plugins/numbering.js`; not
     introduced by slice 5c. doc-42's tests pattern-match
     the chapter-prefixed shape (`figure N.M`) rather than a
     specific number to avoid coupling to this behavior.
     Filing as a separate drift item.
 
   **Snapshot audit:**
-  - **All 24 acadamark-interpreter HTML snapshots: STRICT
+  - **All 24 enscribe-interpreter HTML snapshots: STRICT
     ZERO DIFF.** Slice 5c adds JATS-side work only; HTML
     pipeline untouched. Verified via `git status
-    packages/acadamark-interpreter/test/fixtures/` post-edit
+    packages/enscribe-interpreter/test/fixtures/` post-edit
     (no fixture changes).
   - **doc-39 JATS snapshot: STRICT ZERO DIFF.** No change to
     minimal article path.
@@ -2912,10 +2917,10 @@ that). One line gets added every few months, not every slice.
 
   Tests:
   - layer1-vocabulary:    52/52
-  - acadamark-core:       33/33 (17 colon-id + 16 sigil)
-  - remark-acadamark:    128/128
-  - acadamark-interpreter: 24/24 (HTML snapshots zero-diff)
-  - acadamark-jats-export: 74/74 (4 mapAttributes-unit + 4
+  - enscribe-core:       33/33 (17 colon-id + 16 sigil)
+  - remark-enscribe:    128/128
+  - enscribe-interpreter: 24/24 (HTML snapshots zero-diff)
+  - enscribe-jats-export: 74/74 (4 mapAttributes-unit + 4
     snapshot-match + 15 doc-39 + 20 doc-40 + 13 doc-41 + 18
     doc-42)
 
@@ -2987,7 +2992,7 @@ that). One line gets added every few months, not every slice.
   0.1") — no ref-side change needed.
 
   **(3) JATS-side title-lift compensator removed.** Slice 5c
-  added a local lift in `acadamark-jats-export`'s
+  added a local lift in `enscribe-jats-export`'s
   `emitBookPart` because book-structuring didn't honor the
   contract. With the upstream fix landed, the compensator
   is unnecessary; `emitBookPart` now just reads the
@@ -3022,11 +3027,11 @@ that). One line gets added every few months, not every slice.
   - **doc-38 hast `.json` snapshot: STRICT ZERO DIFF.** The
     integration-test mirror (`runPipeline` in
     integration.test.js) doesn't include
-    `acadamarkBookStructuring` in its hast capture — a
+    `enscribeBookStructuring` in its hast capture — a
     separate stale-mirror drift item (AUD-17-shaped) filed
     earlier in slice 4a coherence checks; this slice
     doesn't address it. The HTML-rendering path
-    (`acadamarkInterpreter` plugin) is the live path and
+    (`enscribeInterpreter` plugin) is the live path and
     does reflect the fix.
   - **doc-39 / doc-40 / doc-41 JATS snapshots: STRICT ZERO
     DIFF.** Article-shaped fixtures; neither bug applies.
@@ -3037,12 +3042,12 @@ that). One line gets added every few months, not every slice.
 
   Tests:
   - layer1-vocabulary:    52/52
-  - acadamark-core:       33/33
-  - remark-acadamark:    128/128
-  - acadamark-interpreter: 24/24 (HTML zero-diff for
+  - enscribe-core:       33/33
+  - remark-enscribe:    128/128
+  - enscribe-interpreter: 24/24 (HTML zero-diff for
     articles; doc-38 HTML re-rendered; hast snapshot zero-
     diff)
-  - acadamark-jats-export: 74/74 (doc-42 JATS XML
+  - enscribe-jats-export: 74/74 (doc-42 JATS XML
     intentionally updated per the title-lift completeness
     improvement)
 
@@ -3061,7 +3066,7 @@ that). One line gets added every few months, not every slice.
   **(1) Bibliography → JATS `<element-citation>`.** The biggest
   net-new piece per Phase 0 Q1.7. Slice 5d's investigation
   established that `citation-js` already produces structured
-  CSL-JSON in `file.data.acadamarkCitations.cite.data` (no
+  CSL-JSON in `file.data.enscribeCitations.cite.data` (no
   bibliography-pipeline refactor needed). `bibliography.js`
   threads the structured entries through the `__bibliography`
   marker's new `kwargs.cslEntries` field (the HTML side ignores
@@ -3102,7 +3107,7 @@ that). One line gets added every few months, not every slice.
 
   **(2) External DSLs (mermaid, abc) → JATS `<fig>`.** Per Q3's
   chosen shape (slight enhancement of the slice prompt's
-  recommendation A): `<fig specific-use="acadamark-dsl-{type}">`
+  recommendation A): `<fig specific-use="enscribe-dsl-{type}">`
   containing `<label>` + `<caption>` + `<alt-text>` (JATS-
   conventional accessibility prose) + `<preformat content-type=
   "{type}-source">` carrying the verbatim DSL source. The
@@ -3164,7 +3169,7 @@ that). One line gets added every few months, not every slice.
   fetch script. doc-42 snapshot updated (1-line diff).
 
   **New fixture: doc-43** (`document-43-jats-bibliography-
-  dsls.acm`). Three-entry bibliography (article/book/
+  dsls.emd`). Three-entry bibliography (article/book/
   conference paper covering all major CSL types) with body
   cross-refs to each via `<cite @key>`; Mermaid flowchart and
   ABC tune snippet with captions and cross-refs to both.
@@ -3186,10 +3191,10 @@ that). One line gets added every few months, not every slice.
 
   **Tests:**
   - layer1-vocabulary:    52/52
-  - acadamark-core:       33/33
-  - remark-acadamark:    128/128
-  - acadamark-interpreter: 24/24 (HTML snapshots zero-diff)
-  - acadamark-jats-export: 104/104 (4 mapAttributes-unit +
+  - enscribe-core:       33/33
+  - remark-enscribe:    128/128
+  - enscribe-interpreter: 24/24 (HTML snapshots zero-diff)
+  - enscribe-jats-export: 104/104 (4 mapAttributes-unit +
     5 snapshot-match + 15 doc-39 + 20 doc-40 + 13 doc-41 +
     18 doc-42 + 29 doc-43); DTD validation skipped in this
     env (no xmllint on PATH)
@@ -3217,7 +3222,7 @@ that). One line gets added every few months, not every slice.
   43-fixture corpus inventory (38 interpreter + 5 JATS); per-line
   alpha definition decomposition with line-5 reading settled as
   **Reading B** (parse → render internal consistency for
-  canonical-form fixtures; the Layer 1 → acadamark lowering
+  canonical-form fixtures; the Layer 1 → enscribe lowering
   direction is Phase 7 / post-alpha); coverage map showing every
   alpha line has at least one strong existing fixture (doc-9 for
   line 1; doc-1 for line 2; doc-16 + doc-11/12/14/15 for line 3;
@@ -3243,9 +3248,9 @@ that). One line gets added every few months, not every slice.
   companion doc-44; line 2 (canonical authoring) → doc-1, supplement
   doc-14; line 3 (idioms reduce to canonical) → doc-16, supporting
   doc-11/12/14/15; line 4 (JATS export) → doc-43 article + doc-42
-  book, companion doc-44; line 5 (acadamark ⇔ Layer 1, Reading B) →
+  book, companion doc-44; line 5 (enscribe ⇔ Layer 1, Reading B) →
   doc-16 + corpus-wide snapshot pinning. Export-only for line 4
-  (JATS import is Phase 13, post-alpha); the Layer 1 → acadamark
+  (JATS import is Phase 13, post-alpha); the Layer 1 → enscribe
   lowering direction for line 5 is Phase 7 (post-alpha). The
   document is the durable acceptance record; this milestone line
   records only that alpha was reached.
@@ -3275,10 +3280,10 @@ that). One line gets added every few months, not every slice.
 
   **(4) AUD-17: integration-test pipeline de-duplicated.**
   `integration.test.js` built its pipeline by hand-mirroring
-  `index.js`; the mirror predated `acadamarkBookStructuring` (slice
+  `index.js`; the mirror predated `enscribeBookStructuring` (slice
   4a) and so omitted it, meaning book fixtures captured a pre-book-
   structuring hast tree. `index.js` now exports a shared
-  `buildAcadamarkPipeline(opts)` factory + `createAcadamarkTagHandler`,
+  `buildEnscribePipeline(opts)` factory + `createEnscribeTagHandler`,
   and the test builds from it. doc-38's hast snapshot regenerated to
   the correct post-book-structuring tree (HTML byte-identical;
   audited — the entire diff is the book wrapper the old mirror
@@ -3307,10 +3312,10 @@ that). One line gets added every few months, not every slice.
 
   **Tests (point-in-time, this commit):**
   - layer1-vocabulary:     52/52
-  - acadamark-core:        50/50 (colon-id 17 + tagname-sigil-map 33)
-  - remark-acadamark:     128/128
-  - acadamark-interpreter:  24/24 (HTML snapshots zero-diff)
-  - acadamark-jats-export: 133/133 (doc-44 checks added; DTD
+  - enscribe-core:        50/50 (colon-id 17 + tagname-sigil-map 33)
+  - remark-enscribe:     128/128
+  - enscribe-interpreter:  24/24 (HTML snapshots zero-diff)
+  - enscribe-jats-export: 133/133 (doc-44 checks added; DTD
     validation skipped — no xmllint on PATH in this env)
 
   **Phase 6 CLOSED 2026-05-29. Alpha milestone reached.** The roadmap
@@ -3324,7 +3329,7 @@ that). One line gets added every few months, not every slice.
   §3.5/§3.12, pipeline.md §4.4/§4.10, plus the library-load.js and
   index.js header comments. Drift
   filed, not fixed (out of slice scope): the widespread stale
-  `BACKLOG-ROADMAP.md` and `rehypeAcadamarkToJats` references across
+  `BACKLOG-ROADMAP.md` and `rehypeEnscribeToJats` references across
   the live doc surface, filed as a post-alpha doc cross-reference
   hygiene item in `BACKLOG.md`.
 - **2026-05-29 — v0.1.0 release goals set; roadmap restructured.**
@@ -3355,7 +3360,7 @@ that). One line gets added every few months, not every slice.
   built; render-quality deviations filed.** The render-quality slice —
   the first Phase 14 work. Wrote `notes/specs/render-quality.md`: a
   tight, mechanically-checkable definition of what well-rendered
-  acadamark HTML is, organized per feature category (`RQ-DOC` …
+  enscribe HTML is, organized per feature category (`RQ-DOC` …
   `RQ-BOOK`), each feature carrying two predicate families — **markup
   predicates** (`M`, checked against the rendered HTML/hast: class
   names, structural elements, label text) and **stylesheet predicates**
@@ -3442,14 +3447,14 @@ that). One line gets added every few months, not every slice.
   so its demonstrative coverage stays deferred (Q1 option C) while its
   predicate is verified against doc-32, the existing abc fixture.
   Verification against the rendered corpus: `RQ-DSL-M1` (mermaid `<pre
-  class="mermaid" data-acadamark-dsl="mermaid">`, source byte-verbatim
+  class="mermaid" data-enscribe-dsl="mermaid">`, source byte-verbatim
   because `<pre>` is whitespace-preserving) passes; `RQ-DSL-M3` (shared
   figure counter; sibling `<figcaption>` with `figure-label`) passes —
   doc-32 numbers two mermaids then the abc as Figure 1 / 2 / 3;
   `RQ-DSL-S1` (the mermaid `<pre>` styled as a code block, so an
   un-rendered diagram degrades to readable source) passes via the bare
   `pre` rule. One predicate fails: `RQ-DSL-M2` — the abc `<div>` carries
-  the right class / `data-acadamark-dsl` marker / id, but its source is
+  the right class / `data-enscribe-dsl` marker / id, but its source is
   not verbatim in the rendered HTML: the hast→HTML serializer
   pretty-prints the `<div>` (not a whitespace-preserving element),
   prefixing every ABC line with indentation. The hast snapshot holds the
@@ -3467,13 +3472,13 @@ that). One line gets added every few months, not every slice.
   figures too. The arc continues with slice B and slice C.
 
 - **2026-05-29 — DSL rendering architecture Phase 0 (findings).**
-  A read-only investigation settling how acadamark should render its two
+  A read-only investigation settling how enscribe should render its two
   external DSLs (`<mermaid>`, `<abc>`) beyond the markup contract, before
   any implementation. Deliverable:
   `notes/dsl-rendering-architecture-findings.md`. The architecture (locked
   in chat) is **two modes — static and live — plus the existing skip
   default**, all honoring DESIGN.md's "rendering is the publisher's choice
-  of tool" stance: the publisher chooses the mode; acadamark never decides
+  of tool" stance: the publisher chooses the mode; enscribe never decides
   to render on its own. *Static* pre-renders to inline SVG in Node at build
   time (self-contained, no client JS); *live* emits the library (inlined or
   CDN-linked) plus an init call and lets the browser render the contract
@@ -3566,7 +3571,7 @@ that). One line gets added every few months, not every slice.
   `‹dsl›Mode ?? dslMode ?? 'skip'` and throws on an invalid value. Wired
   **live mode** into the interpreter (`src/index.js`): a presence-gated asset
   prepend that iterates the registry (rather than naming each DSL), and for
-  every DSL that both appears in the document (`data-acadamark-dsl` marker
+  every DSL that both appears in the document (`data-enscribe-dsl` marker
   walk, overridable per registration via an optional `detector`) and resolves
   to a live mode, unshifts the library + init ahead of the document —
   `live-inline` inlines the bundle via the lazy `bundleLoader` (read only on
@@ -3579,7 +3584,7 @@ that). One line gets added every few months, not every slice.
   Added `mermaid@^10.9.6` and `abcjs@^6.6.3` to the interpreter's
   `dependencies` (lockfile updated) so the bundles are resolvable for
   live-inline. Closed **`RQ-DSL-M2`**: the `<abc>` handler now emits `<pre
-  class="abc" data-acadamark-dsl="abc">` instead of `<div>`, so the hast→HTML
+  class="abc" data-enscribe-dsl="abc">` instead of `<div>`, so the hast→HTML
   formatter (which reflows only non-whitespace-sensitive containers, and
   `<pre>` is not one) preserves the line-oriented ABC source byte-verbatim;
   this also makes the source safe for the live init, which renders from
@@ -3634,7 +3639,7 @@ that). One line gets added every few months, not every slice.
   element's `innerHTML`. Two **fail-loud** guards, no silent fallback: a
   catch-rethrow that names the offending source, and a no-`<svg>`-produced
   throw. abc's registration now carries `staticRenderer: renderAbcStatic` and
-  `staticClass: 'acadamark-abc-rendered'`; **mermaid's `staticRenderer` stays
+  `staticClass: 'enscribe-abc-rendered'`; **mermaid's `staticRenderer` stays
   `null` — permanently** (static mermaid was dropped in the Phase 0
   amendment), so asking for static mermaid remains the Slice 1
   fail-explicitly build error. Wired the static emit into the compiler
@@ -3650,15 +3655,15 @@ that). One line gets added every few months, not every slice.
   pulls `@asamuzakjp/css-color`, which eagerly `require`s the ESM-only
   `@csstools/css-calc` and throws `ERR_REQUIRE_ESM` under Node's CommonJS
   loader — fatal for a synchronous renderer that must `require` abcjs/jsdom
-  synchronously. New fixture **doc-47** (`document-47-abc-static.acm` — two
+  synchronously. New fixture **doc-47** (`document-47-abc-static.emd` — two
   `<abc>` blocks, one `#music:c-scale`-identified and one anonymous, plus
   surrounding prose) exercises the path; it renders static via an
   `ABC_STATIC_FIXTURES` set in `render-fixtures.js` (`abcMode: 'static'`),
   *not* by moving the interpreter default, which stays `skip`. Spec:
   `render-quality.md` §9's static block flipped from **deferred** to
   **realized for abc** — `RQ-DSL-STATIC-M1` (contract replaced by inline
-  `<svg class="acadamark-abc-rendered">`; no `<pre class="abc">`,
-  `data-acadamark-dsl`, or `<script>` survives), `RQ-DSL-STATIC-M2` (id
+  `<svg class="enscribe-abc-rendered">`; no `<pre class="abc">`,
+  `data-enscribe-dsl`, or `<script>` survives), `RQ-DSL-STATIC-M2` (id
   carried onto the `<svg>`; anonymous block carries none), `RQ-DSL-STATIC-O1`
   (observable: the notation renders in a browser offline / with JS disabled) —
   with the "no `RQ-DSL-STATIC-*` predicate exists for mermaid; asking is a
@@ -3669,12 +3674,12 @@ that). One line gets added every few months, not every slice.
   determinism** on repeat — abcjs's default SVG writer uses no
   `Math.random`/`Date`/cross-render id counter — and the null-source
   fail-loud throw), and `integration.test.js` gained a doc-47 block (no
-  `<pre>`/`data-acadamark-dsl`/`<script>`/init; exactly two classed `<svg>`,
+  `<pre>`/`data-enscribe-dsl`/`<script>`/init; exactly two classed `<svg>`,
   one id-bearing; "C Major Scale" title present as proof abcjs actually
   rendered). **25/25 suites pass** from a clean run. The new doc-47 snapshot
   was written on first existence; **every pre-existing snapshot held strict
   zero-diff**, and re-rendering changed no existing `.html` — only the
-  `document-47-abc-static.{acm,html}` pair was added. **Deferred:** static
+  `document-47-abc-static.{emd,html}` pair was added. **Deferred:** static
   mermaid (permanently dropped, not deferred); the public `registerDsl` API
   and the live/static dependency *category* (peer/optional) stay for v0.2.0;
   exposing abcjs render options is out of scope. **Coherence:** spec ⇄ code —
@@ -3731,7 +3736,7 @@ that). One line gets added every few months, not every slice.
   references each have a matching "Figure 2.1." / "Definition 3.1." /
   "Table 3.1." / "(2.1)" caption); every article fixture held strict zero-diff;
   the three book `.html` re-rendered with correct label markup. JATS:
-  **133/133 checks pass and the `acadamark-jats-export` package is byte-identical**
+  **133/133 checks pass and the `enscribe-jats-export` package is byte-identical**
   (no file changed), the empirical proof the fix is HTML-only. **Finding
   (surfaced, not fixed):** the JATS export has the *analogous* inconsistency,
   still open — its `<label>`s are bare ("1", "Theorem 1.", "Definition 1.")
@@ -3762,12 +3767,12 @@ that). One line gets added every few months, not every slice.
   output target. Surfaced (not fixed) by slice B (commit 7127b5d), whose
   HTML-only discipline kept the JATS `.xml` byte-identical there and left this
   for a dedicated JATS slice. **Root cause:** five `<label>` emitters in
-  `acadamark-jats-export/src/index.js` — `emitFigureJats`, `emitDslFigureJats`,
+  `enscribe-jats-export/src/index.js` — `emitFigureJats`, `emitDslFigureJats`,
   `emitTableWrapJats`, `emitDispFormulaJats`, `emitStatementJats` — read the
   bare `node.computedNumber` directly, while the `<xref>` text (`emitXrefMarker`)
   used `node.kwargs.text`, pre-computed by the interpreter's `computeRefText`
   and therefore already chapter-prefixed. **Fix:** `formatScopedNumber` is now
-  re-exported from `acadamark-interpreter` (a single re-export added to its
+  re-exported from `enscribe-interpreter` (a single re-export added to its
   `src/index.js`, the same pattern as `parseCsv` / `parseTsv`), and the five
   `<label>` emitters derive their display number through it —
   `formatScopedNumber(number, node._scope)` in place of `String(number)` —
@@ -3822,7 +3827,7 @@ that). One line gets added every few months, not every slice.
   span. Block-form and sigil-form already worked (block content flows opaquely
   to the markdown math extension; sigil bodies are opaque by design) — pipe-form
   named-tag content was the one remaining gap. **Fix:** a shared `OpaqueSpan`
-  grammar rule (`packages/remark-acadamark/grammar/acadamark.peggy`) added to
+  grammar rule (`packages/remark-enscribe/grammar/enscribe.peggy`) added to
   `ContentItem`, recognising display math (`$$…$$`), inline math (`$…$`), and
   markdown code spans (`` ``…`` ``, `` `…` ``) — longest-delimiter-first — and
   returning each verbatim via `text()`, so escape processing never sees the
@@ -3840,7 +3845,7 @@ that). One line gets added every few months, not every slice.
   (zero regression); only backslash-inside-span behaviour changes. Backslash
   escape rules stay *first* in `ContentItem`, so `\$` / `` \` `` still pass
   through as markdown literals and never open a span. **New regression fixture**
-  `document-48-pipe-form-inline-math.acm` exercises inline math (`\circ`, `\in`,
+  `document-48-pipe-form-inline-math.emd` exercises inline math (`\circ`, `\in`,
   `\sqrt`, `\geq`, `\mathcal`, `\log`), a display-math fence (`e^{i\pi}+1=0`),
   and single / double-backtick code spans (`C:\Users\me\AppData\Local`,
   `\d+-\d+`) in pipe-form definition / lemma / remark / aside bodies; its
@@ -3851,7 +3856,7 @@ that). One line gets added every few months, not every slice.
   the code-span backslashes intact, and the surrounding prose not swallowed.
   **Real-world validation:** the fix corrected five latent
   `unknown-escape-sequence` parse-errors an *existing* fixture had been silently
-  carrying in its snapshot — `document-35-numbering-extension.acm` line 21
+  carrying in its snapshot — `document-35-numbering-extension.emd` line 21
   (`$(\sum a_i b_i)^2 \le …$`, three `\sum` + one `\le`) and line 25
   (`$\mathbb{Z}$`); its proposition and example now render their math (`∑`, `≤`,
   a `mathbb`-styled `Z`) instead of error markers. doc-35's own assertions are
@@ -3867,11 +3872,11 @@ that). One line gets added every few months, not every slice.
   `<theorem>` carries `isOpaqueContent: true` and the dispatcher drops its body
   (a distinct pre-existing bug, doc-29 note) — `<lemma>` is a recursively-parsed
   sibling that renders its body, so it demonstrates the math fix. **Tests:**
-  remark-acadamark `test.js` 128/128 and the grammar unit suite green (the
+  remark-enscribe `test.js` 128/128 and the grammar unit suite green (the
   latter gained eleven `OpaqueSpan` regression tests covering the bug cases, the
   byte-identical invariant cases — backslash-free math, currency `$5 … $10`,
   lone unmatched `$` — and the `\$`-still-escapes / bare-`\n`-still-errors
-  guards); acadamark-interpreter 25/25 strict against the regenerated snapshots;
+  guards); enscribe-interpreter 25/25 strict against the regenerated snapshots;
   `npm run verify` re-rendered the fixture HTML and doc-48 / doc-35 carry zero
   `class="parse-error"` spans with their math rendered. **Coherence:** spec ⇄
   code — `escape-rules-spec.md` gained an "Opaque inline spans within prose
@@ -3895,16 +3900,16 @@ that). One line gets added every few months, not every slice.
   github.io demo site, the package org-split, and the demonstrative-fixture
   consolidation — before any implementation. Deliverable:
   `notes/phase14-packaging-findings.md` (Q1–Q7). The decisive finding is that
-  **the hard architecture is already done**: the `acadamark-core` ADR drew the
+  **the hard architecture is already done**: the `enscribe-core` ADR drew the
   package boundaries and the build/run-time seam *as a browser-safety boundary
   specifically to enable this build* (DESIGN.md line 496), so Phase 14 is mostly
   assembly and packaging, not re-architecture. The dependency graph is
   inward-pointing with no cycles, and the **JATS boundary is automatic** —
-  `acadamark-jats-export` is a downstream *consumer* of the interpreter,
+  `enscribe-jats-export` is a downstream *consumer* of the interpreter,
   unreachable from a render entry, so "Layer 1 only, no JATS in the browser" is a
   free property of the arrow directions, not a constraint the bundle must enforce.
   **Q1 (library):** a `render(source, options) → html` (plus `renderInto`) façade
-  over the already-synchronous `buildAcadamarkPipeline` (`src/index.js` 697); the
+  over the already-synchronous `buildEnscribePipeline` (`src/index.js` 697); the
   browser-safe deps survive (core, the micromark+Peggy parser, the isomorphic
   remark/unified/hast stack, KaTeX/tippy/popper, js-yaml); the bundle's work-list
   is the ADR's four `✗` server-only paths (inline the asset `fs`-reads as string
@@ -3916,15 +3921,15 @@ that). One line gets added every few months, not every slice.
   UMD/IIFE (CJS omitted), pure JS + generated `.d.ts`; the byte budget is set by
   measurement in the slice, not pre-committed — live-link + app-provided CSS are
   what keep the default bundle to the render path + KaTeX JS. **Q3 (demo site):**
-  a new `packages/demo-site/` workspace package, dogfooded (`.acm` rendered by the
+  a new `packages/demo-site/` workspace package, dogfooded (`.emd` rendered by the
   real pipeline), pre-rendered to static HTML, GitHub Actions → Pages, with one
   live Playground page (CodeMirror + the UMD bundle = the in-browser editor, a
   library demo, not a roadmap phase). **Q4 (org-split):**
-  monorepo-with-separate-publishing (not multi-repo); a bare headline `acadamark`
-  package + `@acadamark/*` for the rest; all six published (core and
+  monorepo-with-separate-publishing (not multi-repo); a bare headline `enscribe`
+  package + `@enscribe/*` for the rest; all six published (core and
   layer1-vocabulary cannot stay `private` once depended on); the `"*"` workspace
   refs → semver is the main mechanical migration; synchronized-0.1.0-at-release
-  vs. independent versioning flagged for chat (remark-acadamark's existing 0.2.0
+  vs. independent versioning flagged for chat (remark-enscribe's existing 0.2.0
   complicates synchronizing); release-time per the locked input. **Q5
   (fixtures):** regression-pinning is the active-corpus criterion, demonstration
   is the document-45/46 anchors' job; a behavior-coverage audit keeps the minimal
@@ -3933,13 +3938,13 @@ that). One line gets added every few months, not every slice.
   pre-committed; the BACKLOG's "demonstrative role's final shape" ruling stays
   open for chat. **Q6 (rename):** the demo-site home page is the forcing function;
   the rename gate sits between the demo-site-framework slice and the org-split
-  slice; candidates are `acadamark` (current), `RDF` (ruled out — W3C collision),
+  slice; candidates are `enscribe` (current), `RDF` (ruled out — W3C collision),
   and "Rich Document" variants; this Phase 0 schedules the decision, it does not
   make it. **Q7 (slicing):** six slices, sequential-by-dependency with a
   library-first spine — library packaging → in-browser editor demo → demo-site
   framework (lands the rename) → demo-site content → fixture consolidation →
   org-split at release. **Drift surfaced (pre-existing, propose-only):** (a)
-  DESIGN.md (494–496) and `acadamark-core.md` describe `acadamark-jats-export` as
+  DESIGN.md (494–496) and `enscribe-core.md` describe `enscribe-jats-export` as
   "planned"/"future" though it is built; (b) the ADR's server-only `✗` list omits
   `src/dsl/registry.js` (the fifth Node-coupled site, added by DSL Slice 2 without
   the standing "cross-check new slices against the rule" — the most consequential
@@ -3951,7 +3956,7 @@ that). One line gets added every few months, not every slice.
   demonstrative ruling; rename schedule; slicing). **Coherence:** findings ⇄ code
   — every existing-infrastructure claim cites a file:line read this slice
   (`src/index.js` 697; the workspace `package.json` graph and the `"*"` refs;
-  `acadamark-core.md`; `src/dsl/registry.js` 27/32/37–38/61–62/70–71/135–136;
+  `enscribe-core.md`; `src/dsl/registry.js` 27/32/37–38/61–62/70–71/135–136;
   DESIGN.md 494–496/524/528–537; `BACKLOG.md` 806–819/677–716;
   `render-quality.md` 65–79); findings ⇄ design — the recommendations honor
   DESIGN.md's seam-as-browser-boundary and no-new-parsers positions, and the three
@@ -3962,9 +3967,9 @@ that). One line gets added every few months, not every slice.
   the new findings file and this log entry.
 - **2026-Q2 — Phase 14 Slice 1: client-side library packaging.** The interpreter
   became a shippable browser library. A `src/browser.js` façade (`render` /
-  `renderInto`) wraps `buildAcadamarkPipeline` with browser-safe defaults
+  `renderInto`) wraps `buildEnscribePipeline` with browser-safe defaults
   (external resources, live-link DSL, linked hover-preview third-party libs);
-  tsup bundles it into `dist/acadamark.browser.{js,global.js}` (ESM + IIFE) under
+  tsup bundles it into `dist/enscribe.browser.{js,global.js}` (ESM + IIFE) under
   `platform:'browser'`. The slice made the engine browser-safe along its
   Node-coupled seams: directory / asset reads were lazy-ified into accessors so
   the modules import cleanly in a bundle (`font-loader.js`), the DSL Node-only
@@ -3990,7 +3995,7 @@ that). One line gets added every few months, not every slice.
   self-contained output. CDN URL literals (KaTeX / mermaid / abc) are now pinned
   and guarded by a `cdn-versions.test.js` drift test. The remaining Phase 14
   slices (demo, demo-site, rename, fixture consolidation, org-split) continue.
-- **2026-Q2 — Phase 14 Slice 2: in-browser editor demo.** acadamark became
+- **2026-Q2 — Phase 14 Slice 2: in-browser editor demo.** enscribe became
   something anyone can try in a browser with no install. A new `demo/` page (at
   the repo root, not under `packages/`) pairs a CodeMirror 6 editor on the left
   with live-rendered output on the right: each edit re-runs the browser
@@ -4046,22 +4051,22 @@ that). One line gets added every few months, not every slice.
   Slice 2 had converted to bare were restored to modern `node:` form and the
   bare-only convention (and its proposed drift-guard) was retired. The standing
   guard is a new `bundle-load` smoke test: it builds the IIFE and loads it in a
-  jsdom document on every run, asserting `window.acadamark.render` /
+  jsdom document on every run, asserting `window.enscribe.render` /
   `renderInto` / `executeAssets` exist and that a plain paragraph renders — so
   the load-time-throw class is caught at test time, not in a user's browser. No
   rendered-output change: fixtures and snapshots are untouched; the live editor
   demo still renders doc-46 with its Mermaid diagram.
 - **2026-Q2 — Phase 14 Slice 3a: docs-site framework.** The static-site
-  machinery for acadamark's documentation+articles website, with placeholder
+  machinery for enscribe's documentation+articles website, with placeholder
   content to prove it works. A new `docs-site/` directory at the repo root holds
   a small Node build (`build.js`, run via `npm run docs:build`) that reads
-  canonical `.acm` sources from `docs-site/sources/`, renders each through the
-  acadamark Node entry (`buildAcadamarkPipeline`), and wraps the result in a
+  canonical `.emd` sources from `docs-site/sources/`, renders each through the
+  enscribe Node entry (`buildEnscribePipeline`), and wraps the result in a
   shared template (`template.html`: header + hardcoded nav, the article body, and
   a "view source on GitHub" footer linking the source's blob URL), writing
   self-contained pages to `docs-site/dist/` (gitignored build output). Read-only
   pages ship no JavaScript; the one **Quickstart** page is a playground — it
-  loads CodeMirror and the acadamark IIFE bundle (copied into `dist/assets/` when
+  loads CodeMirror and the enscribe IIFE bundle (copied into `dist/assets/` when
   built) and seeds the editor with its own source inlined into the page, so
   editing re-renders live via the same `render → executeAssets` loop as the
   standalone editor demo. Three placeholder sources (homepage, example article,
@@ -4069,8 +4074,29 @@ that). One line gets added every few months, not every slice.
   findings, both per the slice's locked inputs: the site is `docs-site/` at the
   repo root, not the ratified `packages/demo-site/` workspace package; and the
   **project rename is deferred** to a separate later decision, where Phase 0 had
-  the framework slice forcing it. The site reuses acadamark's own `default.css`
+  the framework slice forcing it. The site reuses enscribe's own `default.css`
   theme plus a small `site.css` for chrome. No interpreter or fixture changes —
   the only non-`docs-site/` edit is a root `docs:build` script. The README and
   DESIGN articles, a written Quickstart, and a JATS-relationship article land in
   Slices 3b–3d.
+- **2026-05-30 — project renamed acadamark → enscribe.** A comprehensive
+  case-aware sweep renamed the project across the whole tree: `acadamark` /
+  `Acadamark` / `ACADAMARK` → `enscribe` / `Enscribe` / `ENSCRIBE` in code,
+  comments, prose, and identifiers; the four workspace packages and their
+  directories (`enscribe-core`, `enscribe-interpreter`, `enscribe-jats-export`,
+  `remark-enscribe`; `layer1-vocabulary` unchanged), cross-package imports, and
+  every `package.json` name/dependency; the file extension `.acm` → `.emd`, with
+  `.enscribe` accepted as an alias in the fixture-render glob (the parser itself
+  is extension-agnostic — see `DESIGN.md`); the theme's `--acm-*` CSS
+  custom-property namespace → `--enscribe-*`; and the GitHub URL →
+  `github.com/enscribejs/enscribe`. Files moved with `git mv` (per-file history
+  preserved), including the Peggy grammar (`acadamark.peggy` → `enscribe.peggy`)
+  and the `acadamark-core.md` spec → `enscribe-core.md`. The npm lockfile was
+  refreshed by sweeping its workspace names and reinstalling with `npm ci`, so
+  every third-party version stayed pinned — **no version bump**. HAST and JATS
+  snapshots were regenerated from the swept sources; a reverse-substitution check
+  confirmed every rendered output changed by name substitution only (the HAST
+  position offsets shifted as a mechanical consequence of the shorter name). All
+  test suites green; the library bundle and the docs site build. License,
+  version coordination, and the metadata audit are deliberately untouched — they
+  belong to the prep-for-publish slice that follows.

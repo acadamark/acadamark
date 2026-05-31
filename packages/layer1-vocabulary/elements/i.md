@@ -4,7 +4,7 @@ html_output:
   element: i
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -88,7 +88,7 @@ The `type` kwarg classifies the italic's role for tooling and accessibility.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<i>` | `<italic toggle="no">` |
 

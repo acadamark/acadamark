@@ -4,7 +4,7 @@ html_output:
   element: sub-sub-section
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -39,7 +39,7 @@ jats_counterpart:
   attributes:
     sec-type: from sec-type
   notes: |
-    JATS uses recursive <sec>; acadamark's <sub-sub-section> becomes a nested
+    JATS uses recursive <sec>; enscribe's <sub-sub-section> becomes a nested
     <sec> at depth 3 inside its parent.
 shorthand_examples:
   - source: |
@@ -75,15 +75,15 @@ shorthand_examples:
       </section>
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkSectionNesting
-    runs_before: acadamarkTagInterpret
+  - name: enscribeSectionNesting
+    runs_before: enscribeTagInterpret
     purpose: 'Phase 2 — implicit closing of peer sub-sub-sections. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 
 # `<sub-sub-section>`
 
-A sub-sub-section is a depth-3 division within a sub-section. The deepest level of acadamark's named-depth ladder.
+A sub-sub-section is a depth-3 division within a sub-section. The deepest level of enscribe's named-depth ladder.
 
 ## Semantic intent
 
@@ -128,7 +128,7 @@ Notably, a sub-sub-section does not contain further nested section levels.
 
 `<sub-sub-section>` maps to a JATS `<sec>` nested at depth 3 within its grandparent `<sec>`.
 
-| acadamark Layer 1 | JATS |
+| enscribe Layer 1 | JATS |
 |-------------------|------|
 | `<sub-sub-section>` | `<sec>` (nested at depth 3) |
 | `<sub-sub-section-title>` | `<title>` (inside the depth-3 `<sec>`) |

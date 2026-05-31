@@ -4,7 +4,7 @@ html_output:
   element: abbr
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -31,7 +31,7 @@ jats_counterpart:
     JATS uses <abbrev> with the expansion typically supplied either
     as the content of a child <def> element or as the title-like
     attribute, depending on the JATS version. The exporter maps
-    acadamark's title kwarg to the JATS form the target schema expects.
+    enscribe's title kwarg to the JATS form the target schema expects.
 shorthand_examples:
   - source: 'The <abbr title="Document Object Model" | DOM> is the browser API for HTML.'
     layer1_html: '<p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>'
@@ -69,7 +69,7 @@ The pipe content is the abbreviation as it appears in prose; the `title` kwarg i
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<abbr title="X">Y</abbr>` | `<abbrev>` with expansion carried as appropriate (varies by JATS version) |
 

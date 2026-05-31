@@ -10,7 +10,7 @@ Status: **Phase 0 complete — awaiting approach confirmation before Phase 1**
 
 1. Multi-line content in text-position (inline) named tags — content silently becomes plain text.
 2. Inline tags at line-start captured as flow constructs — trailing text on the same line becomes a separate paragraph.
-3. Code sigil with multi-line content in text position — produces `acadamarkTagError` instead of parsing correctly.
+3. Code sigil with multi-line content in text position — produces `enscribeTagError` instead of parsing correctly.
 
 ---
 
@@ -22,7 +22,7 @@ The tokenizer has two layers:
 
 - **`syntax.js`** — micromark boundary finder. Two factories: `makeSigilTagTokenizer({ multiLine })` and `makeNamedTagTokenizer({ multiLine })`. Each produces two tokenizers: a flow-position one (`multiLine: true`, registered in `flow`) and a text-position one (`multiLine: false`, registered in `text`).
 
-- **`from-markdown.js`** — mdast builder. Collects `acadamarkTagRaw` chunks (one per line for multi-line constructs), joins them with `\n`, passes to Peggy grammar.
+- **`from-markdown.js`** — mdast builder. Collects `enscribeTagRaw` chunks (one per line for multi-line constructs), joins them with `\n`, passes to Peggy grammar.
 
 ### Named tags in text position: silent failure
 
@@ -36,7 +36,7 @@ if (markdownLineEnding(code)) {
 
 When `nok` is called, micromark backtracks and the `<` is treated as literal text. Remark then handles the two lines as a paragraph with a soft line break, collapsing them. The tag is never parsed.
 
-**Empirical result:** `Text.<note | line one\nline two.> end.` → one `text` node with value `"Text.<note | line oneline two.> end."` (newline collapsed, no `acadamarkTag`).
+**Empirical result:** `Text.<note | line one\nline two.> end.` → one `text` node with value `"Text.<note | line oneline two.> end."` (newline collapsed, no `enscribeTag`).
 
 ### Sigil tags in text position: error node
 
@@ -46,25 +46,25 @@ In the `body` state, line endings trigger:
 ```js
 if (markdownLineEnding(code)) {
   if (!multiLine) {
-    effects.exit('acadamarkTagRaw')
-    effects.exit('acadamarkTag')
+    effects.exit('enscribeTagRaw')
+    effects.exit('enscribeTag')
     return ok(code)   // ← text position: accept partial token!
   }
 ```
 
-Unlike named tags, the sigil tokenizer calls `ok` (not `nok`) on the partial token. From-markdown.js then passes the incomplete source (no closing sigil) to Peggy, which fails, producing `acadamarkTagError`.
+Unlike named tags, the sigil tokenizer calls `ok` (not `nok`) on the partial token. From-markdown.js then passes the incomplete source (no closing sigil) to Peggy, which fails, producing `enscribeTagError`.
 
-**Empirical result:** `Text <``` python\ncode here ```> more.` → `acadamarkTagError` node inside paragraph; `code here ```> more.` is raw text.
+**Empirical result:** `Text <``` python\ncode here ```> more.` → `enscribeTagError` node inside paragraph; `code here ```> more.` is raw text.
 
 ### Multi-line in flow position: works correctly
 
 Both factories, when `multiLine: true`, emit `lineEnding` sibling tokens and continue scanning:
 ```js
-effects.exit('acadamarkTagRaw')
+effects.exit('enscribeTagRaw')
 effects.enter('lineEnding')
 effects.consume(code)
 effects.exit('lineEnding')
-effects.enter('acadamarkTagRaw')
+effects.enter('enscribeTagRaw')
 return body  // or content
 ```
 
@@ -79,8 +79,8 @@ From-markdown.js joins the chunks with `\n`. Works correctly for flow-position m
 The root cause is in `afterClose` of the sigil tokenizer:
 ```js
 function afterClose(code) {
-  effects.exit('acadamarkTagRaw')
-  effects.exit('acadamarkTag')
+  effects.exit('enscribeTagRaw')
+  effects.exit('enscribeTag')
   return ok(code)   // ← unconditional ok; code = char AFTER `>`
 }
 ```
@@ -89,7 +89,7 @@ function afterClose(code) {
 
 The same applies to named tags. `<note | content> trailing text.` at line-start: the flow named-tag tokenizer succeeds on `<note | content>`, leaving `trailing text.` as a new paragraph.
 
-**Empirical result for named tag:** `Line 1\n<note | content> trailing text.` → 3 children: paragraph, acadamarkTag, paragraph.
+**Empirical result for named tag:** `Line 1\n<note | content> trailing text.` → 3 children: paragraph, enscribeTag, paragraph.
 
 ---
 
@@ -102,7 +102,7 @@ Text <``` python
 code here ```> more.
 ```
 
-The text-position tokenizer hits the `\n` after `python`, calls `ok` on the partial token (everything up to but not including the `\n`), and from-markdown.js passes `<``` python` (no closer) to Peggy, which fails → `acadamarkTagError`.
+The text-position tokenizer hits the `\n` after `python`, calls `ok` on the partial token (everything up to but not including the `\n`), and from-markdown.js passes `<``` python` (no closer) to Peggy, which fails → `enscribeTagError`.
 
 The content is not truly "swallowed" — it produces an error node — but the intended structured node is lost. This is the same root cause as Issue 1 (the `!multiLine` early-return in the `body` state), but the behavior differs: named tags produce no node (full `nok`), sigil tags produce an error node (partial `ok`).
 
@@ -122,18 +122,18 @@ After Issues 1 and 3 are fixed, text-position tokenizers can cross soft line bre
 
 ### Fix for Issues 1 and 3 (text-position multi-line)
 
-**File:** `packages/remark-acadamark/src/syntax.js`
+**File:** `packages/remark-enscribe/src/syntax.js`
 
 **Change in `makeSigilTagTokenizer`:** In the `body` state, remove the `!multiLine` branch entirely. The line-ending handling becomes unconditional:
 
 ```js
 if (markdownLineEnding(code)) {
   // Both flow and text positions: emit lineEnding sibling and continue.
-  effects.exit('acadamarkTagRaw')
+  effects.exit('enscribeTagRaw')
   effects.enter('lineEnding')
   effects.consume(code)
   effects.exit('lineEnding')
-  effects.enter('acadamarkTagRaw')
+  effects.enter('enscribeTagRaw')
   return body
 }
 ```
@@ -150,7 +150,7 @@ if (markdownLineEnding(code)) {
 
 ### Fix for Issue 2 (flow tokenizer trailing-text check)
 
-**File:** `packages/remark-acadamark/src/syntax.js`
+**File:** `packages/remark-enscribe/src/syntax.js`
 
 **Change in `makeSigilTagTokenizer`:** In `afterClose`, check whether the next character is EOL or null before accepting the flow match:
 
@@ -160,8 +160,8 @@ function afterClose(code) {
   if (multiLine && code !== null && !markdownLineEnding(code)) {
     return nok(code)
   }
-  effects.exit('acadamarkTagRaw')
-  effects.exit('acadamarkTag')
+  effects.exit('enscribeTagRaw')
+  effects.exit('enscribeTag')
   return ok(code)
 }
 ```
@@ -176,8 +176,8 @@ function afterGt(code) {
   if (multiLine && code !== null && !markdownLineEnding(code)) {
     return nok(code)
   }
-  effects.exit('acadamarkTagRaw')
-  effects.exit('acadamarkTag')
+  effects.exit('enscribeTagRaw')
+  effects.exit('enscribeTag')
   return ok(code)
 }
 ```
@@ -187,8 +187,8 @@ And modify both GT branches to use it:
 // in attrSection and content, at code === GT, depth === 0:
 effects.consume(code)      // consume `>`
 if (multiLine) return afterGt   // check for trailing text (flow position)
-effects.exit('acadamarkTagRaw')
-effects.exit('acadamarkTag')
+effects.exit('enscribeTagRaw')
+effects.exit('enscribeTag')
 return ok(code)            // text position: no check needed
 ```
 
@@ -196,7 +196,7 @@ return ok(code)            // text position: no check needed
 
 **Risk:** Low for the common case. One edge case: trailing whitespace before EOL (e.g., `<$ math $>   ` — three trailing spaces). Currently, `<$ math $>   ` is a block element; after this fix, the flow tokenizer rejects it (` ` is not EOL), and it becomes an inline element in a paragraph. This is a minor behavior change for an unusual input pattern. It can be refined with whitespace-skipping in `afterClose`/`afterGt` if it proves to be a problem in practice, but it is not addressed in this fix.
 
-**After the fix:** `<$ b $> is two.` → one paragraph with inline `acadamarkTag $` followed by ` is two.` text ✓. `<$ b $>` alone on a line → block `acadamarkTag $` ✓. `<note | content> trailing` → inline `acadamarkTag note` in paragraph ✓. `<cite jones2001>` alone on a line → block ✓.
+**After the fix:** `<$ b $> is two.` → one paragraph with inline `enscribeTag $` followed by ` is two.` text ✓. `<$ b $>` alone on a line → block `enscribeTag $` ✓. `<note | content> trailing` → inline `enscribeTag note` in paragraph ✓. `<cite jones2001>` alone on a line → block ✓.
 
 ---
 
@@ -208,7 +208,7 @@ return ok(code)            // text position: no check needed
 
 This contradicts:
 - The table in the same file: "Named-tag content (after `|`): Yes — Preserved verbatim." (no position qualifier)
-- CommonMark semantics: emphasis, link text, code spans all cross soft line breaks within a paragraph; there is no principled reason to forbid inline acadamark tags from doing the same
+- CommonMark semantics: emphasis, link text, code spans all cross soft line breaks within a paragraph; there is no principled reason to forbid inline enscribe tags from doing the same
 - The stated design intent of Issues 1 and 3 (they are bugs to be fixed, not intentional limits)
 
 **Resolution:** The spec restriction was a placeholder at the time it was written. The correct behavior is: inline (text-position) tags may cross soft line breaks within a single paragraph. They cannot cross paragraph boundaries (blank lines). The implementation note should be updated before Phase 1 implementation.
@@ -219,13 +219,13 @@ This contradicts:
 
 | File | Change |
 |------|--------|
-| `packages/remark-acadamark/src/syntax.js` | Issues 1, 2, 3: remove `!multiLine` early-returns in body/content; add trailing-text check in afterClose/afterGt |
+| `packages/remark-enscribe/src/syntax.js` | Issues 1, 2, 3: remove `!multiLine` early-returns in body/content; add trailing-text check in afterClose/afterGt |
 | `notes/multiline-spec.md` | Update implementation note: text-position tags may cross soft line breaks |
 | `notes/known-limitations.md` | Remove "Multi-line inline tag content is not supported" entry |
 
 New test files:
-- `packages/remark-acadamark/test/multiline-text-position.test.js` — Issues 1 and 3
-- `packages/remark-acadamark/test/line-start-flow-reject.test.js` — Issue 2
+- `packages/remark-enscribe/test/multiline-text-position.test.js` — Issues 1 and 3
+- `packages/remark-enscribe/test/line-start-flow-reject.test.js` — Issue 2
 
 ---
 

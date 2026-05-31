@@ -4,7 +4,7 @@ html_output:
   element: section
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -39,9 +39,9 @@ jats_counterpart:
   attributes:
     sec-type: from sec-type
   notes: |
-    JATS uses recursive <sec> for all section depths. Acadamark uses named
+    JATS uses recursive <sec> for all section depths. Enscribe uses named
     depth (<section>, <sub-section>, <sub-sub-section>) for explicit
-    semantic clarity. The JATS exporter maps acadamark's depth ladder to
+    semantic clarity. The JATS exporter maps enscribe's depth ladder to
     nested <sec> elements.
 shorthand_examples:
   - source: |
@@ -86,8 +86,8 @@ shorthand_examples:
       </section>
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkSectionNesting
-    runs_before: acadamarkTagInterpret
+  - name: enscribeSectionNesting
+    runs_before: enscribeTagInterpret
     purpose: 'Phase 2 — implicit closing of peer sections. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
@@ -121,7 +121,7 @@ The explicit `<section-title>` and `<section-subtitle>` elements are available a
 
 ## Implicit closing
 
-Sections close implicitly when a peer-level section opens. This is the largest authoring affordance acadamark provides over raw HTML.
+Sections close implicitly when a peer-level section opens. This is the largest authoring affordance enscribe provides over raw HTML.
 
 ```
 <section | Introduction>
@@ -131,7 +131,7 @@ First paragraph of introduction.
 Methods paragraph.
 ```
 
-The Methods section's opening implicitly closes the Introduction section. The author doesn't write `</section>`. The `acadamarkSectionNesting` plugin handles this on the rehype tree, recognizing peer-level boundaries.
+The Methods section's opening implicitly closes the Introduction section. The author doesn't write `</section>`. The `enscribeSectionNesting` plugin handles this on the rehype tree, recognizing peer-level boundaries.
 
 This works only at the same depth. A `<sub-section>` inside a `<section>` doesn't close the section because they're at different depths; the section continues until the next peer `<section>` or the end of its container.
 
@@ -153,14 +153,14 @@ The title and subtitle, if present, are the first children of the section. Body 
 
 ## JATS mapping
 
-| acadamark Layer 1 | JATS |
+| enscribe Layer 1 | JATS |
 |-------------------|------|
 | `<section>` | `<sec>` |
 | `<section-title>` | `<title>` (inside `<sec>`) |
 | `<section-subtitle>` | `<subtitle>` (inside `<sec>`) |
 | `sec-type` attribute | `sec-type` attribute |
 
-JATS uses recursive `<sec>` for all section depths. Acadamark's named-depth ladder maps to nested `<sec>` elements at export time. A `<section>` containing a `<sub-section>` becomes a `<sec>` containing a `<sec>` (or `<sec sec-type="...">` if the type is specified).
+JATS uses recursive `<sec>` for all section depths. Enscribe's named-depth ladder maps to nested `<sec>` elements at export time. A `<section>` containing a `<sub-section>` becomes a `<sec>` containing a `<sec>` (or `<sec sec-type="...">` if the type is specified).
 
 ## Authoring patterns
 

@@ -4,7 +4,7 @@ html_output:
   element: sub
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -57,7 +57,7 @@ The math sigil renders via KaTeX, which handles complex subscript notation.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<sub>` | `<sub>` |
 

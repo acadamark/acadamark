@@ -1,6 +1,6 @@
 # Multi-line constructs
 
-Acadamark allows line endings inside many construct regions, so authors can structure their source for readability without affecting the parsed output. The general principle: line endings are allowed wherever they don't introduce ambiguity, and they are preserved verbatim wherever they appear in prose content.
+Enscribe allows line endings inside many construct regions, so authors can structure their source for readability without affecting the parsed output. The general principle: line endings are allowed wherever they don't introduce ambiguity, and they are preserved verbatim wherever they appear in prose content.
 
 ## Where line endings are allowed
 
@@ -37,7 +37,7 @@ The principle: quoted attribute values are for short, structured strings (captio
 
 Line endings between attributes are allowed for readability. The result is the same as putting all attributes on one line: a `<figure>` with the listed attributes and content `\n    An adult elephant.\n`.
 
-This applies to both short-form tags (`<tag attrs | content>`) and long-form openers (`<csv\n    delimiter=,\n>`). HTML itself allows attributes broken across lines; acadamark follows the same convention.
+This applies to both short-form tags (`<tag attrs | content>`) and long-form openers (`<csv\n    delimiter=,\n>`). HTML itself allows attributes broken across lines; enscribe follows the same convention.
 
 ### Multi-line named-tag content
 
@@ -112,7 +112,7 @@ Authors should use a quoted value or keep the URL on one line.
 on the next line.>
 ```
 
-`\` immediately followed by a line ending is an unknown escape sequence. The parser emits an `acadamarkParseError` node at the backslash position. Line continuation via trailing backslash is **not supported**. Authors who want content that flows across lines should simply write it on multiple lines without a trailing backslash — the prose parser collapses single line breaks to spaces in flowing text.
+`\` immediately followed by a line ending is an unknown escape sequence. The parser emits an `enscribeParseError` node at the backslash position. Line continuation via trailing backslash is **not supported**. Authors who want content that flows across lines should simply write it on multiple lines without a trailing backslash — the prose parser collapses single line breaks to spaces in flowing text.
 
 ## Closer detection
 
@@ -122,11 +122,11 @@ The micromark finder scans lines until it finds the appropriate closer:
 - Sigil tag: scans until the mirrored sigil sequence followed by `>`.
 - DSL tag: scans until `</tagname>` matching the opener.
 
-If the closer is not found before end-of-document, the parser emits an `acadamarkTagError` node, following the defensive error pattern from earlier slices.
+If the closer is not found before end-of-document, the parser emits an `enscribeTagError` node, following the defensive error pattern from earlier slices.
 
 ## Unterminated constructs: current behavior and tracked gap
 
-When a multi-line construct opener is recognized but no closer is found before end-of-document, the construct **consumes everything from the opener to EOF** and produces a single `acadamarkTagError` node. Content after the opener that would otherwise parse correctly is subsumed into the error node.
+When a multi-line construct opener is recognized but no closer is found before end-of-document, the construct **consumes everything from the opener to EOF** and produces a single `enscribeTagError` node. Content after the opener that would otherwise parse correctly is subsumed into the error node.
 
 This is the same behavior as long-form DSL tags (`<csv>` with no `</csv>` consumes to EOF).
 
@@ -144,13 +144,13 @@ Quoted values preserve their internal whitespace verbatim, but cannot contain li
 
 ## Implementation note
 
-Multi-line construct support requires the micromark finder to scan across line endings rather than terminating at them. Because micromark's subtokenize algorithm requires that all line boundaries inside a flow construct be represented by `lineEnding` void-tokens, the finder exits the `acadamarkTagRaw` chunk token before each line ending, emits a `lineEnding` sibling token, and re-enters `acadamarkTagRaw` for the next line. `from-markdown.js` accumulates multiple `acadamarkTagRaw` chunks and concatenates them (inserting `\n` at each boundary) before passing the full source to the Peggy grammar. Single-line constructs produce a single chunk and are handled identically to before.
+Multi-line construct support requires the micromark finder to scan across line endings rather than terminating at them. Because micromark's subtokenize algorithm requires that all line boundaries inside a flow construct be represented by `lineEnding` void-tokens, the finder exits the `enscribeTagRaw` chunk token before each line ending, emits a `lineEnding` sibling token, and re-enters `enscribeTagRaw` for the next line. `from-markdown.js` accumulates multiple `enscribeTagRaw` chunks and concatenates them (inserting `\n` at each boundary) before passing the full source to the Peggy grammar. Single-line constructs produce a single chunk and are handled identically to before.
 
 Multi-line constructs are supported in both flow (block) and text (inline) positions. Text-position tags — those inside a paragraph — may span soft line breaks within that paragraph, matching CommonMark convention for emphasis, link text, and code spans. An inline tag cannot cross a paragraph boundary (blank line), because micromark's block-level processing splits the document at blank lines before the text tokenizer runs. Within a paragraph, the text-position tokenizer emits `lineEnding` sibling tokens at internal `\n` characters, just as the flow tokenizer does; `from-markdown.js` joins the chunks identically. This is valid and expected for content such as `<note | This note spans\nthe line break.>` inside flowing prose.
 
 The grammar's content rules accept line endings as valid characters in prose content (`ContentItem`, `ContentChar`, `HashSigilBodyChar*`). The opaque-body rules (`SigilBodyDollar*`, `SigilBodyBt*`) use `("\n" / "\r" / .)` to match any character including newlines — note that `[\s\S]` in Peggy compiles to `/^[sS]/` (literal `s`/`S`), not "any character," and must not be used. The bracketed-list whitespace separator (`_`) is extended to include line endings.
 
-The single-line restriction on quoted attribute values is enforced by the **tokenizer**, not the grammar. The tokenizer's `scanQuoted` helper returns `nok` on any line ending regardless of whether multi-line mode is active. When the tokenizer rejects, the construct is not recognized as an acadamark tag at all; the `<` falls through to remark's HTML handler. No `acadamarkTagError` is produced for this case.
+The single-line restriction on quoted attribute values is enforced by the **tokenizer**, not the grammar. The tokenizer's `scanQuoted` helper returns `nok` on any line ending regardless of whether multi-line mode is active. When the tokenizer rejects, the construct is not recognized as an enscribe tag at all; the `<` falls through to remark's HTML handler. No `enscribeTagError` is produced for this case.
 
 ## What's not changed
 

@@ -2,10 +2,10 @@
 
 **Date:** 2026-05-22  
 **Scope:** DF-1 + PG-12. Read-only investigation. No code changed.  
-**Refs:** `notes/inline-tex-shortcuts-spec.md`, grammar `grammar/acadamark.peggy`,
+**Refs:** `notes/inline-tex-shortcuts-spec.md`, grammar `grammar/enscribe.peggy`,
 `src/recursive-content.js`, `src/syntax.js`, `src/from-markdown.js`,
 `packages/layer1-vocabulary/elements/sup.md` and `sub.md`,
-`packages/acadamark-interpreter/src/interpret-plugin.js`.
+`packages/enscribe-interpreter/src/interpret-plugin.js`.
 
 ---
 
@@ -33,20 +33,20 @@ two implementation surfaces, not one.
 `src/recursive-content.js` line 62–65:
 
 ```javascript
-visit(subtree, 'acadamarkTag', (node) => {
+visit(subtree, 'enscribeTag', (node) => {
   if (node.contentHandler !== 'default') return SKIP
   if (node.content === null) return SKIP
 ```
 
-Dispatch is on **both** `type === 'acadamarkTag'` AND `contentHandler ===
+Dispatch is on **both** `type === 'enscribeTag'` AND `contentHandler ===
 'default'`. A node that is the right type but lacks `contentHandler` (or has it
 `undefined`) is skipped.
 
 ### Path 1: micromark tokenizer (top-level prose)
 
 When `^{st}` appears in top-level prose, a new micromark tokenizer (see
-Architectural Gap below) emits an `acadamarkTag` token. `from-markdown.js`
-handles the token via the existing `exitAcadamarkTag` path, which calls
+Architectural Gap below) emits an `enscribeTag` token. `from-markdown.js`
+handles the token via the existing `exitEnscribeTag` path, which calls
 `getContentHandler(node.tagname)`. For `'sup'`, `getContentHandler` returns
 `'default'` (it is not in `DSL_REGISTRY`, so the fallback applies —
 `dsl-registry.js` line 117). The node enters the mdast tree with
@@ -57,7 +57,7 @@ handles the token via the existing `exitAcadamarkTag` path, which calls
 
 When `^{st}` appears inside named-tag content (`<aside | 1^{st} edition>`), the
 grammar's `ContentItem*` loop processes it. A new `SuperscriptShortcut` rule in
-`ContentItem` would return an `acadamarkTag` node object (not a string). That
+`ContentItem` would return an `enscribeTag` node object (not a string). That
 node is placed into the content array by `processContentItems`, which already
 handles non-string items (`processContentItems` in the grammar's global section
 — it checks `typeof item !== 'string'` and routes non-strings into the result
@@ -105,7 +105,7 @@ a one-line change with no ripple.**
 ### Where the escape-significant-character set lives
 
 `ContentItem` in the grammar (around line 295) is the prose-content rule for
-named-tag content. Its first alternative consumes acadamark-significant escapes:
+named-tag content. Its first alternative consumes enscribe-significant escapes:
 
 ```peggy
 ContentItem
@@ -114,7 +114,7 @@ ContentItem
   ...
 ```
 
-Rule 1: acadamark-consumed (`<`, `|`, `\`).  
+Rule 1: enscribe-consumed (`<`, `|`, `\`).  
 Rule 2: pass-through to remark (all other ASCII punctuation, including `^`, `_`,
 `{`, `}`, `@`, etc.).
 
@@ -131,9 +131,9 @@ F1 added `@` handling to the **`Attribute` rule section** of the grammar — a n
 `^`, `_`, `{`, `}` are currently in the **pass-through** class (rule 2 above).
 They produce `\^`, `\_`, `\{`, `\}` which remark then processes as CommonMark
 escapes, yielding literal chars. The observable output is identical to
-acadamark-consuming them. The spec says to upgrade them to acadamark-consumed
-(rule 1), consistent with the principle that any acadamark-significant character
-is acadamark-consumed.
+enscribe-consuming them. The spec says to upgrade them to enscribe-consumed
+(rule 1), consistent with the principle that any enscribe-significant character
+is enscribe-consumed.
 
 The change: extend rule 1's character class from `[<|\\]` to `[<|\\^_{}]`.
 Remove `^_{}` from rule 2's character class to keep the rules non-overlapping.
@@ -153,7 +153,7 @@ choice. This is correct behavior by construction.
 ### `{`/`}` as paired delimiters — interaction concern
 
 `{` and `}` are not currently used as delimiters anywhere else in the grammar.
-Making them acadamark-consumed escapes (`\{` → `{`, `\}` → `}`) does not
+Making them enscribe-consumed escapes (`\{` → `{`, `\}` → `}`) does not
 interact with anything. The braces are new syntax with no prior grammar meaning.
 
 ---
@@ -162,7 +162,7 @@ interact with anything. The braces are new syntax with no prior grammar meaning.
 
 **This is the most important finding. The spec is silent on it.**
 
-The Peggy grammar is invoked by `from-markdown.js`'s `exitAcadamarkTag` handler,
+The Peggy grammar is invoked by `from-markdown.js`'s `exitEnscribeTag` handler,
 which is triggered by the micromark extension (`syntax.js`) finding `<...>`
 boundary tokens. The micromark extension in `syntax.js` only registers
 character-code handlers for `<` (code 60):
@@ -191,7 +191,7 @@ are never seen by the Peggy grammar. Remark treats `^{st}` as literal text.
 The spec's examples show `The 1^{st} edition of the work...` as standalone prose
 — this unambiguously means top-level prose. Both surfaces are needed.
 
-**Impact on A1:** Once both surfaces emit `acadamarkTag` nodes, the A1 analysis
+**Impact on A1:** Once both surfaces emit `enscribeTag` nodes, the A1 analysis
 holds. `remarkRecursiveContent` handles both automatically. But the micromark
 path requires a new tokenizer and corresponding `from-markdown.js` handler, which
 is the riskiest implementation piece (see Slice Shape below).
@@ -233,7 +233,7 @@ needed:
 SuperscriptShortcut
   = "^" !("{") { return errorNode("^") }       // bare ^ is an error (see bare-^ note)
   / "^" "{" content:BraceContentItem* "}" {
-      return { type: 'acadamarkTag', tagname: 'sup', form: 'shortcut',
+      return { type: 'enscribeTag', tagname: 'sup', form: 'shortcut',
                contentHandler: 'default', content: processContentItems(content),
                isOpaqueContent: false, ... }
     }
@@ -241,7 +241,7 @@ SuperscriptShortcut
 SubscriptShortcut
   = "_" !("{") { return errorNode("_") }       // bare _ (see bare-_ note below)
   / "_" "{" content:BraceContentItem* "}" {
-      return { type: 'acadamarkTag', tagname: 'sub', form: 'shortcut',
+      return { type: 'enscribeTag', tagname: 'sub', form: 'shortcut',
                contentHandler: 'default', content: processContentItems(content),
                isOpaqueContent: false, ... }
     }
@@ -253,7 +253,7 @@ BraceContentItem
   / "\\"                                  { return errorNode("\\") }
   / SuperscriptShortcut
   / SubscriptShortcut
-  / $("<" [a-zA-Z#$`/] ContentChar* ">") // nested acadamark construct
+  / $("<" [a-zA-Z#$`/] ContentChar* ">") // nested enscribe construct
   / $[^}\\]                              // regular char: stops at }, not >
 ```
 
@@ -269,7 +269,7 @@ which consumes `{1}`. Back at the outer loop, `}` closes the outer brace. Correc
 
 ### Bare `^`/`_` parse error — design note
 
-The spec says bare `^` and `_` without `{` produce `acadamarkParseError`. For
+The spec says bare `^` and `_` without `{` produce `enscribeParseError`. For
 `^` this is unambiguous — `^` has no meaning in CommonMark prose. For `_` this
 is **problematic**: `_` is extremely common in prose as `snake_case` identifiers,
 URLs (`https://example.com/path_to_page`), and other text. Making bare `_` an
@@ -295,7 +295,7 @@ needed.
 Both shortcut rules emit:
 ```javascript
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   form: 'shortcut',       // distinguishes from 'short' (named) and 'long'
   tagname: 'sup',         // or 'sub'
   contentHandler: 'default',
@@ -315,7 +315,7 @@ Both shortcut rules emit:
 Already covered in A2. Summary:
 
 - Move `^_{}` from the pass-through class (rule 2 of `ContentItem`) to the
-  acadamark-consumed class (rule 1).
+  enscribe-consumed class (rule 1).
 - Apply the same change to `HashSigilBodyChar1`, `HashSigilBodyChar2`,
   `HashSigilBodyChar3`.
 - The `BraceContentItem` rule (new) inherits the same escape structure from
@@ -357,7 +357,7 @@ Verification:
 
 The interpreter sees no difference between the explicit form `<sup | st>` and
 the shortcut form `^{st}` — after `remarkRecursiveContent`, both produce the
-same `acadamarkTag` node shape. The interpreter does not need to change.
+same `enscribeTag` node shape. The interpreter does not need to change.
 
 ---
 
@@ -373,7 +373,7 @@ there or in a new `test/test-shortcuts.js` if the section grows large. Cover:
 - Nested: `<aside | x^{y_{1}}>` → nested sup and sub nodes
 - Escape inside braces: `<aside | ^{\^}>` → sup node with content `\^` (pass-through)
 - Escape outside braces: `<aside | text \^ more>` → literal `^` via escape
-- Nested acadamark inside braces: `<aside | ^{see <cite @jones>}>` → sup with
+- Nested enscribe inside braces: `<aside | ^{see <cite @jones>}>` → sup with
   cite node in content
 - Error: empty braces `<aside | ^{}>` → parse error (per spec: empty braces error)
 - Error: unmatched brace `<aside | ^{abc>` → parse error (unterminated construct)
@@ -389,8 +389,8 @@ array) and RC-14 (pass-through escapes). Add:
 
 **Fixture:** No existing fixtures exercise `<sup>` or `<sub>`. Options:
 
-- Add `^{st}`, `H_{2}O`, `x^{n}` to an existing fixture (e.g., `document-3-edge-cases.acm`), or
-- Add a new `document-10-shortcuts.acm` fixture.
+- Add `^{st}`, `H_{2}O`, `x^{n}` to an existing fixture (e.g., `document-3-edge-cases.emd`), or
+- Add a new `document-10-shortcuts.emd` fixture.
 
 **Correctness model for G1 (not output-neutral):** This slice ADDS new rendered
 output where there was none. The fixture snapshots (`document-X-expected.json`
@@ -416,9 +416,9 @@ since the feature is only testable with both.
 
 | File | Change |
 |------|--------|
-| `grammar/acadamark.peggy` | (1) Extend rule 1 escape class to `[<\|\\^_{}]`; (2) update rule 2 to exclude `^_{}` (×4: ContentItem, HashSigilBodyChar1/2/3); (3) add `SuperscriptShortcut`, `SubscriptShortcut`, `BraceContentItem` rules |
+| `grammar/enscribe.peggy` | (1) Extend rule 1 escape class to `[<\|\\^_{}]`; (2) update rule 2 to exclude `^_{}` (×4: ContentItem, HashSigilBodyChar1/2/3); (3) add `SuperscriptShortcut`, `SubscriptShortcut`, `BraceContentItem` rules |
 | `src/syntax.js` | New tokenizer(s) for character codes 94 (`^`) and 95 (`_`) in `text` position |
-| `src/from-markdown.js` | Handler for new token types; create `acadamarkTag` nodes with `tagname: 'sup'`/`'sub'` and `contentHandler: 'default'` (mirrors `exitAcadamarkTag` but without Peggy parse step) |
+| `src/from-markdown.js` | Handler for new token types; create `enscribeTag` nodes with `tagname: 'sup'`/`'sub'` and `contentHandler: 'default'` (mirrors `exitEnscribeTag` but without Peggy parse step) |
 | `src/generated/parser.js` | Rebuilt from grammar (automated: `npm run build:grammar`) |
 | `test/test.js` or `test/test-shortcuts.js` | Grammar-level unit tests |
 | `test/test-recursive.js` | RC-15 / RC-16 / RC-17 integration tests |
@@ -429,7 +429,7 @@ since the feature is only testable with both.
 | File | Why not |
 |------|---------|
 | `src/recursive-content.js` | Dispatches generically on `contentHandler: 'default'` — unchanged |
-| `packages/acadamark-interpreter/` | Parser-only gap confirmed; schema dispatch handles `sup`/`sub` |
+| `packages/enscribe-interpreter/` | Parser-only gap confirmed; schema dispatch handles `sup`/`sub` |
 | `packages/layer1-vocabulary/elements/sup.md` | Vocabulary spec already correct |
 | `packages/layer1-vocabulary/elements/sub.md` | Vocabulary spec already correct |
 | `notes/escape-rules-spec.md` | Spec already describes `^_{}` as future additions |
@@ -442,7 +442,7 @@ since the feature is only testable with both.
    `test/test-recursive.js` for integration coverage).
 3. Fixture update last (regenerate, inspect diff, confirm only `<sup>`/`<sub>`
    appears, commit).
-4. Run both full test suites clean: `node packages/acadamark-interpreter/test/run.js`
+4. Run both full test suites clean: `node packages/enscribe-interpreter/test/run.js`
    (23 suites) + all five parser test files (118+ tests). Both must be green.
 
 ### Correctness proof
@@ -462,7 +462,7 @@ The `^` tokenizer must:
 1. Trigger only when `^` is followed by `{` (nok otherwise — for `^` not
    followed by `{`, fall through to CommonMark literal-char processing).
 2. Correctly depth-track nested `{...}` braces to find the matching `}`.
-3. Handle nested `<...>` acadamark constructs inside the braces (depth-track
+3. Handle nested `<...>` enscribe constructs inside the braces (depth-track
    those too, to avoid mistaking `>` inside `<cite jones>` for a shortcut
    terminator).
 4. Not interfere with the existing `<...>` tokenizer or CommonMark escape

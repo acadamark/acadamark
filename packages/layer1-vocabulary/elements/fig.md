@@ -14,7 +14,7 @@ html_output:
     tagName from this field; handler-strategy entries control output
     tagName in the handler. `<fig>` is handler-strategy, so this
     field's value selects the vocab key only.)
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -96,7 +96,7 @@ jats_counterpart:
     JATS <fig> wraps <graphic> (the image) and <caption>. When src is
     present, the exporter generates <graphic xlink:href="..."> from the
     src kwarg. The figcaption becomes <caption>. The fig-type attribute
-    maps from acadamark's type kwarg.
+    maps from enscribe's type kwarg.
 shorthand_expansions:
   - shorthand: figure
     expands_to: fig
@@ -125,7 +125,7 @@ shorthand_examples:
       figcaption text when not specified explicitly. The Layer 1
       element is HTML-native <figure> (not the custom-element <fig>)
       because the HTML rendering surface is the HTML5 native element
-      while the acadamark canonical name follows JATS's shorter <fig>.
+      while the enscribe canonical name follows JATS's shorter <fig>.
   - source: '<figure src=elephant.jpg | An adult African elephant.>'
     layer1_html: |
       <figure>
@@ -202,7 +202,7 @@ Both cases produce semantically rich HTML that browsers and screen readers handl
 
 - HTML5 uses `<figure>` natively, so authors coming from HTML are likely to type `<figure>`.
 - JATS uses `<fig>` for the same element, so the Layer 1 canonical name matches JATS for export simplicity.
-- The acadamark frameable design (`DESIGN.md` §"Frameable elements") explicitly settled `<fig>` as the canonical name with `<figure>` as the authoring alias.
+- The enscribe frameable design (`DESIGN.md` §"Frameable elements") explicitly settled `<fig>` as the canonical name with `<figure>` as the authoring alias.
 
 The normalize-to-canonical gate rewrites authored `<figure>` to `<fig>` before any downstream plugin runs. The vocabulary entry's `shorthand_expansions` provides a secondary safety net.
 
@@ -286,7 +286,7 @@ A figure without `src`. The content includes whatever is being captioned followe
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<fig>` | `<fig>` |
 | `<fig src=foo.jpg>` | `<fig><graphic xlink:href="foo.jpg" /></fig>` |

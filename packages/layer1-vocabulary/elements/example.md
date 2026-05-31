@@ -4,7 +4,7 @@ html_output:
   element: example
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -66,7 +66,7 @@ The element is block-level; its content is body content directly. Examples often
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<example>` | `<statement content-type="example">` |
 

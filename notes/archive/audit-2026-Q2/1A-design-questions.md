@@ -6,7 +6,7 @@ Questions raised during the Audit 1A reading pass that require a design conversa
 
 ## DQ-1: What do we do with `notes/interpreter-design.md`?
 
-**Background:** `notes/interpreter-design.md` is the most deeply stale document in the notes corpus. It describes an architecture (rehype plugin, `acadamarkTagInterpret` as a single post-hast transformer) that doesn't match what was built (mdast plugins + handler functions invoked from `toHast`). It also says the interpreter "doesn't exist yet" when it is substantially implemented.
+**Background:** `notes/interpreter-design.md` is the most deeply stale document in the notes corpus. It describes an architecture (rehype plugin, `enscribeTagInterpret` as a single post-hast transformer) that doesn't match what was built (mdast plugins + handler functions invoked from `toHast`). It also says the interpreter "doesn't exist yet" when it is substantially implemented.
 
 **The question:** Do we:
 
@@ -25,9 +25,9 @@ Questions raised during the Audit 1A reading pass that require a design conversa
 **Background:** DRIFT-3 documents that all the plugin names in `plugin-pipeline.md` are wrong (the doc uses planning names, not implemented names). But there's also a deeper question: the doc describes a three-phase model (Discovery → Structural → Resolution) with specific plugin contracts. Is that model still the intended architecture?
 
 Specifically:
-- **`acadamarkBookStructuring`** is described in the doc but not implemented. Is it still planned?
-- **`acadamarkTagInterpret` as the last plugin** — the actual architecture puts interpretation in `toHast` handlers, not a final rehype plugin. Should the pipeline doc be updated to reflect this?
-- **`acadamarkBibEntryRegistration`** as a separate plugin — not implemented, merged into `acadamarkLibraryLoad`. Is the merge deliberate?
+- **`enscribeBookStructuring`** is described in the doc but not implemented. Is it still planned?
+- **`enscribeTagInterpret` as the last plugin** — the actual architecture puts interpretation in `toHast` handlers, not a final rehype plugin. Should the pipeline doc be updated to reflect this?
+- **`enscribeBibEntryRegistration`** as a separate plugin — not implemented, merged into `enscribeLibraryLoad`. Is the merge deliberate?
 
 **The question:** Before correcting the names throughout, should we review whether the three-phase model and the specific plugin list still reflect the intended design? If some planned plugins were merged or dropped, the doc should describe the actual intended plan, not just have the names corrected.
 
@@ -66,7 +66,7 @@ Specifically:
 **Background:** GAP-6 identifies three real parser bugs (documented in `notes/parser-newline-investigation.md`) that aren't yet in `audit-findings.md` and have no slice:
 1. Inline named tags with newlines in text position: content silently becomes plain text.
 2. Inline tags at line-start captured as flow constructs: trailing text becomes separate paragraph.
-3. Code sigil with multi-line content in text position: produces `acadamarkTagError`.
+3. Code sigil with multi-line content in text position: produces `enscribeTagError`.
 
 **The question:** Should these be filed as AUD-16/17/18 and added to the parser slice plan (a future "parser fix" slice)? Or are they lower-priority edge cases that can wait for the "inline tag behavior" spec pass that's probably needed before the interpreter's inline tag support is built?
 

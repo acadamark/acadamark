@@ -5,13 +5,13 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <title> inside <meta> is a custom element distinct from
+    Enscribe's <title> inside <meta> is a custom element distinct from
     HTML's <title> (which goes in <head> and represents the browser tab title).
-    The render-mode plugin maps acadamark's metadata <title> to HTML's
+    The render-mode plugin maps enscribe's metadata <title> to HTML's
     <title> in the rendered <head>. The structural plugin promotes
-    acadamark's metadata <title> to <article-title> or <book-title> at
+    enscribe's metadata <title> to <article-title> or <book-title> at
     Layer 1 based on the surrounding container.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -27,7 +27,7 @@ jats_counterpart:
   element: 'article-title or book-title (inside title-group inside article-meta or book-meta)'
   notes: |
     JATS represents document titles via <article-title> inside <title-group>
-    inside <article-meta>, or via <book-title> inside <book-meta>. Acadamark's
+    inside <article-meta>, or via <book-title> inside <book-meta>. Enscribe's
     metadata <title> gets promoted to the appropriate JATS structure at
     export time based on the surrounding container.
 shorthand_examples:
@@ -73,9 +73,9 @@ The document title, when authored inside `<meta>`. Promoted to `<article-title>`
 
 ## Semantic intent
 
-`<title>` inside `<meta>` is the structured form for specifying a document's title. It mirrors HTML's `<title>` (in `<head>`) and the YAML `title:` field in RMarkdown/Quarto frontmatter. The element is part of acadamark's structured metadata vocabulary.
+`<title>` inside `<meta>` is the structured form for specifying a document's title. It mirrors HTML's `<title>` (in `<head>`) and the YAML `title:` field in RMarkdown/Quarto frontmatter. The element is part of enscribe's structured metadata vocabulary.
 
-This element is distinct from HTML's `<title>`, despite sharing a name. HTML's `<title>` sits in `<head>` and represents the browser tab text. Acadamark's `<title>` is a metadata field; the render-mode plugin maps it to HTML's `<title>` for browser rendering.
+This element is distinct from HTML's `<title>`, despite sharing a name. HTML's `<title>` sits in `<head>` and represents the browser tab text. Enscribe's `<title>` is a metadata field; the render-mode plugin maps it to HTML's `<title>` for browser rendering.
 
 ## Authoring
 
@@ -99,7 +99,7 @@ Both paths produce identical Layer 1 output (`<article-title>` in `<article-fron
 
 ## Promotion to Layer 1
 
-The `acadamarkArticleStructuring` and `acadamarkBookStructuring` plugins promote `<title>` from `<meta>` to the appropriate Layer 1 element:
+The `enscribeArticleStructuring` and `enscribeBookStructuring` plugins promote `<title>` from `<meta>` to the appropriate Layer 1 element:
 
 | Surrounding container | Promotion target |
 |----------------------|------------------|

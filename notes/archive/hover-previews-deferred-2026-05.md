@@ -4,7 +4,7 @@
 
 # Hover previews — deferred feature
 
-This document captures the design intent for hover-preview rendering in acadamark. The feature is deferred to a future slice; this note preserves the thinking.
+This document captures the design intent for hover-preview rendering in enscribe. The feature is deferred to a future slice; this note preserves the thinking.
 
 ## Status
 
@@ -83,7 +83,7 @@ The hover-preview JavaScript could be:
 
 **Option C: Existing library** (something like Tippy.js or Popper.js). More features but adds a dependency.
 
-The author's archive/ implementations are a starting point. The relevant choice depends on whether acadamark wants to provide the JS itself or document the data-attribute schema and let users plug in their own preview library.
+The author's archive/ implementations are a starting point. The relevant choice depends on whether enscribe wants to provide the JS itself or document the data-attribute schema and let users plug in their own preview library.
 
 A reasonable default: provide a minimal Web Component that reads `data-preview` attributes and shows a tooltip on hover. Users can replace it with anything else they prefer.
 
@@ -96,7 +96,7 @@ The author has prior implementations of hover previews in archive/ documents. Th
 - Accessibility (keyboard navigation, screen reader compatibility).
 - Performance (avoiding layout thrashing, lazy initialization).
 
-The archive/ documents predate the acadamark project; their hover-preview implementations were standalone. The acadamark implementation can adopt the patterns while integrating with the acadamark rendering pipeline.
+The archive/ documents predate the enscribe project; their hover-preview implementations were standalone. The enscribe implementation can adopt the patterns while integrating with the enscribe rendering pipeline.
 
 ## Mobile and accessibility
 
@@ -130,7 +130,7 @@ Slice 1 produces elements without preview attributes; a later slice adds them. T
 
 Hover previews become valuable when:
 
-- Real documents with substantial citation density exist in acadamark.
+- Real documents with substantial citation density exist in enscribe.
 - The rendering pipeline supports rich web output (slice 3+ probably).
 - A specific use case demands them.
 

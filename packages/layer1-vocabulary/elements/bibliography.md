@@ -5,9 +5,9 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <bibliography> is the rendered bibliography container.
+    Enscribe's <bibliography> is the rendered bibliography container.
     Distinct from JATS's <ref-list>; the elements correspond but the names differ.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -130,15 +130,15 @@ shorthand_examples:
       Useful for "selected bibliography" or "further reading" sections.
 interpreter_strategy: schema
 generated_by:
-  - plugin: acadamarkBibliographyAssembly
+  - plugin: enscribeBibliographyAssembly
     when: |
       The document has citations or bibliography entries. The plugin
       collects all cited entries from the citation registry and renders
       them as children of <bibliography>. Auto-placed in article-back
       or book-back unless explicitly written by the author.
 related_plugins:
-  - name: acadamarkBibliographyAssembly
-    runs_after: acadamarkCitationResolution
+  - name: enscribeBibliographyAssembly
+    runs_after: enscribeCitationResolution
     purpose: 'Assembles cited entries into <bibliography> per the configured style. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
@@ -270,7 +270,7 @@ The `style` kwarg on `<bibliography>` overrides for the bibliography rendering s
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<bibliography>` | `<ref-list>` |
 | `<bib-entry>` (children of `<bibliography>`) | `<ref>` (children of `<ref-list>`) |

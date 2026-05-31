@@ -13,7 +13,7 @@ one small new fixture + gap resolution). Rationale in the "Bundle
 vs split" section.
 
 **Line-5 reading:** **Reading B** confirmed (canonical-form internal-
-consistency + the doc-16 convergence proof). The Layer 1 → acadamark
+consistency + the doc-16 convergence proof). The Layer 1 → enscribe
 lowering direction that Reading A would require is Phase 7 — explicitly
 post-alpha. **No stop-and-report.**
 
@@ -23,7 +23,7 @@ ROADMAP.md L182-198 frames Phase 6 as two items:
 
 1. **Five-point verification fixtures.** "One acceptance fixture per
    line of the alpha definition: Layer 1 elements render; canonical
-   acadamark authors them; sigils and markdown idioms reduce to them;
+   enscribe authors them; sigils and markdown idioms reduce to them;
    JATS export round-trips; Layer 2 ⇔ Layer 1 round-trips losslessly
    for canonical-form fixtures."
 2. **Resolve any gaps surfaced by the five-point verification.**
@@ -53,7 +53,7 @@ the acceptance criteria.
 
 - **Five-point verification fixtures.** One acceptance fixture per
   line of the alpha definition: Layer 1 elements render; canonical
-  acadamark authors them; sigils and markdown idioms reduce to them;
+  enscribe authors them; sigils and markdown idioms reduce to them;
   JATS export round-trips; Layer 2 ⇔ Layer 1 round-trips losslessly
   for canonical-form fixtures.
 - **Resolve any gaps surfaced by the five-point verification.** Filed
@@ -77,10 +77,10 @@ filed.
 The alpha release demonstrably includes five things:
 
 1. The **Layer 1 custom-HTML elements** that render a rich document.
-2. **Canonical acadamark shorthand** authoring that form.
+2. **Canonical enscribe shorthand** authoring that form.
 3. **Further shorthands (sigils) and markdown idioms** reducing to it.
 4. **JATS ⇔ Layer 1** conversion.
-5. **Acadamark ⇔ Layer 1** conversion.
+5. **Enscribe ⇔ Layer 1** conversion.
 
 Each of the five lines above is a literal acceptance criterion.
 ```
@@ -89,17 +89,17 @@ Each of the five lines above is a literal acceptance criterion.
 
 Two fixture corpora exist:
 
-**`packages/acadamark-interpreter/test/fixtures/` (38 fixtures, doc-1
-through doc-38).** Each `.acm` source paired with `.html` (rendered
+**`packages/enscribe-interpreter/test/fixtures/` (38 fixtures, doc-1
+through doc-38).** Each `.emd` source paired with `.html` (rendered
 output) and `.json` (snapshot hast tree). Assertions in
 `test/integration.test.js` exercise specific surface features.
 
-**`packages/acadamark-jats-export/test/fixtures/` (5 fixtures, doc-39
-through doc-43).** Each `.acm` source paired with `.xml` (JATS XML
+**`packages/enscribe-jats-export/test/fixtures/` (5 fixtures, doc-39
+through doc-43).** Each `.emd` source paired with `.xml` (JATS XML
 snapshot). Assertions in `test/run.js` plus optional `xmllint`
 DTD-validation.
 
-All sources are `.acm` (no Layer 1 HTML-authored fixtures; not
+All sources are `.emd` (no Layer 1 HTML-authored fixtures; not
 relevant for alpha line 5 per Reading B — see Q1.3).
 
 ### Per-fixture summary (one line each)
@@ -220,23 +220,23 @@ theorem-family element.
 Already explicitly framed as the comprehensive demonstrator at the
 end of Phase 4. Pinned by snapshot.
 
-### Line 2 — Canonical acadamark shorthand authoring
+### Line 2 — Canonical enscribe shorthand authoring
 
-"Canonical acadamark" per DESIGN.md L264: "The lossless shorthand
+"Canonical enscribe" per DESIGN.md L264: "The lossless shorthand
 register — the tag form `<tag #id .class attr=value | content>` and
 the small set of sigil shorthands defined as canonical (`<#>` /
 `<##>` / `<###>` for sections; `<$>` / `<$$>` for math; the
-code-fence sigils). Every canonical-acadamark construct round-trips
+code-fence sigils). Every canonical-enscribe construct round-trips
 to and from Layer 1 without loss."
 
 The line-2 verification: a document authored entirely in canonical
-acadamark (named-tag form or canonical sigils — both count as
+enscribe (named-tag form or canonical sigils — both count as
 canonical per DESIGN.md L262-264) produces a valid rich Layer 1
 document. Distinct from line 3 — line 2 establishes that the
 canonical surface ALONE is sufficient for authoring.
 
 **Candidate: doc-1.** Fully canonical-named (no sigils, no markdown
-idioms). Minimal but covers the essential canonical-acadamark shapes:
+idioms). Minimal but covers the essential canonical-enscribe shapes:
 `<meta>`, `<title>`, `<author>`, `<section>` with pipe-content
 title, paragraphs, inline `<em>`.
 
@@ -290,15 +290,15 @@ exclusive at the root level. Two fixtures (one per doctype) is the
 cleaner shape; the acceptance criterion is satisfied by both
 validating against their respective DTDs.
 
-### Line 5 — Acadamark ⇔ Layer 1 conversion
+### Line 5 — Enscribe ⇔ Layer 1 conversion
 
 **Reading settled: Reading B.** Per the slice prompt:
 
-> *Reading B:* Acadamark source parses to Layer 1 mdast; that mdast
+> *Reading B:* Enscribe source parses to Layer 1 mdast; that mdast
 > renders to Layer 1 HTML; the Layer 1 HTML, when authored directly,
 > parses back to the same mdast. The verification is that the parse
 > → render pipeline is internally consistent at the Layer 1 mdast
-> level. No new code required; existing fixtures' acadamark source
+> level. No new code required; existing fixtures' enscribe source
 > + rendered Layer 1 HTML is the evidence.
 
 The ROADMAP Phase 7 framing makes this unambiguous:
@@ -306,23 +306,23 @@ The ROADMAP Phase 7 framing makes this unambiguous:
 ```
 ## Phase 7 — Lift-and-lower completeness *(post-alpha)*
 
-The lift gate at `packages/acadamark-interpreter/src/plugins/
+The lift gate at `packages/enscribe-interpreter/src/plugins/
 normalize-to-canonical.js` is the single home for normalizing all
 authored forms to canonical. Alpha covers what is authored; this
 phase fills in the lowering direction (Layer 1 → canonical-named
 or canonical-sigil) for round-trip and authoring tooling that emits
-acadamark from Layer 1.
+enscribe from Layer 1.
 ```
 
 > "Alpha covers what is authored; this phase fills in the lowering
-> direction." Phase 7 is post-alpha. Therefore the Layer 1 → acadamark
+> direction." Phase 7 is post-alpha. Therefore the Layer 1 → enscribe
 > lowering that Reading A's full bidirectional round-trip would
 > require is not in alpha scope.
 
 And ROADMAP Phase 6's own wording — "Layer 2 ⇔ Layer 1 round-trips
 losslessly for **canonical-form fixtures**" — narrows the alpha line
 5 to the canonical-form subset where the parse-direction is itself
-the round-trip (canonical acadamark and Layer 1 are structurally
+the round-trip (canonical enscribe and Layer 1 are structurally
 identical modulo the named-tag↔sigil cipher; the parse direction
 IS the cipher).
 
@@ -339,7 +339,7 @@ fixtures + 5 JATS fixtures collectively pin this property by
 construction.
 
 **Not in alpha scope (Phase 7):**
-- A round-tripping demo that lowers Layer 1 → canonical acadamark
+- A round-tripping demo that lowers Layer 1 → canonical enscribe
   and shows the source recovers. The lowering pass doesn't exist
   yet.
 - A "strict mode" demo where markdown idioms produce errors (the
@@ -355,7 +355,7 @@ Rows: alpha lines. Columns: candidate fixtures + verdict.
 | **2** Canonical authoring | doc-1 | **PARTIAL** — minimal but fully canonical-named. Doesn't exercise canonical sigils (`<#>`, `<$>`, `<$$>`, code-fence) | Consider new doc-44 covering canonical sigils end-to-end, OR annotate doc-1 + doc-14 jointly as the line-2 evidence |
 | **3** Idioms → canonical | doc-16 | **FULL** for sections — three-way convergence proof | doc-11 (math), doc-12 (tables), doc-14 (sigil headings), doc-15 (bare-md headings) jointly cover the other reducible idiom categories |
 | **4** JATS export | doc-43 (article) + doc-42 (book) | **FULL** — slice 5d exercises the broadest article surface; doc-42 exercises BITS book + edited-volume. Both DTD-valid when xmllint available | None — slice 5d closed Phase 5 |
-| **5** Acadamark ⇔ Layer 1 | doc-16 | **FULL** for the alpha scope (Reading B + canonical-form constraint) — convergence + per-fixture snapshot pinning of every parse → render | None — Phase 7 (post-alpha) addresses the lowering direction |
+| **5** Enscribe ⇔ Layer 1 | doc-16 | **FULL** for the alpha scope (Reading B + canonical-form constraint) — convergence + per-fixture snapshot pinning of every parse → render | None — Phase 7 (post-alpha) addresses the lowering direction |
 
 **No line lacks at least one strong existing fixture.** The work
 Phase 6 implementation needs is: (a) annotate existing fixtures so
@@ -369,7 +369,7 @@ line 2.
 
 doc-9 already serves as the alpha-complete demonstrator (so labeled
 in `integration.test.js`'s PASS log). Phase 6's annotation: a brief
-`.expected.md` companion or a top-of-file comment in the `.acm`
+`.expected.md` companion or a top-of-file comment in the `.emd`
 source explicitly stating "this fixture serves as alpha line 1
 verification: Layer 1 elements rendering a rich document." No code
 change.
@@ -382,7 +382,7 @@ canonical sigils also exist (per DESIGN.md) and are verified
 separately by doc-14, this suffices for line 2. **Smaller commit;
 no new fixture.**
 
-**Option B: build a new doc-44 ("canonical acadamark — named +
+**Option B: build a new doc-44 ("canonical enscribe — named +
 sigils").** A single fixture that uses canonical-named tags
 (`<meta>`, `<section>`, `<author>`) AND canonical sigils
 (`<# .. #>`, `<$ .. $>`, `<$$ .. $$>`, code-fence) but no markdown
@@ -416,7 +416,7 @@ hard requirement enforces line 4 demonstrably.
 doc-16 is the natural line-5 demonstrator too. Its annotation
 explains the dual role: line 3 (the lift direction reducing
 idioms to canonical) AND line 5 (within the canonical-form subset,
-the parse direction IS the round-trip because canonical acadamark
+the parse direction IS the round-trip because canonical enscribe
 and Layer 1 are structurally equivalent).
 
 ### Annotation form recommendation
@@ -426,11 +426,11 @@ Three options:
 **Option X: `*.expected.md` companion file per acceptance fixture.**
 A new file alongside each acceptance fixture (e.g.
 `document-9-demo.expected.md`) describing its alpha-acceptance
-role. Discoverable; doesn't pollute the .acm source. Mirrors the
+role. Discoverable; doesn't pollute the .emd source. Mirrors the
 existing `.expected.json` / `.html` snapshot pattern. **Recommended.**
 
-**Option Y: top-of-file comment block in the `.acm` source.** Less
-discoverable; pollutes the source. The .acm format doesn't have
+**Option Y: top-of-file comment block in the `.emd` source.** Less
+discoverable; pollutes the source. The .emd format doesn't have
 a standard comment syntax that survives parsing — would need to
 be a leading prose paragraph that the parser tolerates. **Not
 recommended.**
@@ -504,7 +504,7 @@ per-feature pinning is sufficient evidence.
 
 Filed in the recent book-side bugfix slice's STATUS as a separate
 drift: `integration.test.js`'s `runPipeline` hand-mirror omits
-`acadamarkBookStructuring` from its hast-capture path. The
+`enscribeBookStructuring` from its hast-capture path. The
 JSON-snapshot path therefore doesn't reflect book-side fixes;
 only the HTML-rendering path does. doc-38's `expected.json`
 snapshot shows the wrong shape (flat book-parts instead of
@@ -512,7 +512,7 @@ wrapped book/book-front/book-body) as a result.
 
 **Prediction**: Phase 6 may be the natural moment to resolve
 AUD-17. The fix: replace `runPipeline`'s 25-line hand-mirror
-with a shared assembly that mirrors `acadamark-interpreter`'s
+with a shared assembly that mirrors `enscribe-interpreter`'s
 real plugin sequence. The book-related hast snapshots would
 then reflect reality.
 
@@ -606,7 +606,7 @@ as 6b. Default is single.
   alpha milestone requires it. The ROADMAP framing already gives
   it its own phase.
 - **Phase 7 (Lift-and-lower completeness)** — post-alpha; the
-  Layer 1 → acadamark lowering direction. Out of Phase 6 scope by
+  Layer 1 → enscribe lowering direction. Out of Phase 6 scope by
   definition; reading B for line 5 explicitly defers this.
 - **Phase 13 (JATS import)** — post-alpha; the JATS → Layer 1
   import direction. Out of Phase 6 scope by Phase 5's framing.

@@ -4,7 +4,7 @@ html_output:
   element: name
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -28,7 +28,7 @@ jats_counterpart:
     form — the full name string when the document does not commit to
     a surname/given-names split. JATS's structured <name> wraps
     <surname>/<given-names>; <string-name> is the unparsed sibling.
-    Acadamark's <name> matches <string-name> directly because Layer 1
+    Enscribe's <name> matches <string-name> directly because Layer 1
     preserves the author-written form without imposing a name-model.
     The exporter chooses between emitting <string-name> verbatim or
     parsing it into <surname>/<given-names> per the target schema's
@@ -91,7 +91,7 @@ The `name` kwarg lifts to a `<name>` child tag at the normalize-to-canonical gat
 
 ## Why not split surname/given-names at Layer 1
 
-JATS's structured `<name>` wraps `<surname>` and `<given-names>`. Acadamark deliberately keeps the name string undivided at Layer 1 because:
+JATS's structured `<name>` wraps `<surname>` and `<given-names>`. Enscribe deliberately keeps the name string undivided at Layer 1 because:
 
 - Many name traditions do not fit a Western surname/given-name split.
 - Authors typing `<name | Jane Goodall>` are providing a name, not committing to a name-model.
@@ -101,7 +101,7 @@ JATS's `<string-name>` element exists for exactly this case (the unparsed name s
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<name>Jane Goodall</name>` | `<string-name>Jane Goodall</string-name>` inside `<contrib>` |
 

@@ -4,7 +4,7 @@ html_output:
   element: dl
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -34,13 +34,13 @@ jats_counterpart:
   notes: |
     JATS uses <def-list> for definition lists, with <def-item> wrapping
     each term/definition pair: <def-list><def-item><term/><def/>
-    </def-item>...</def-list>. Acadamark's <dl> follows HTML's flatter
+    </def-item>...</def-list>. Enscribe's <dl> follows HTML's flatter
     pattern (alternating <dt>/<dd> siblings); the JATS exporter groups
     adjacent <dt>/<dd> pairs into <def-item> wrappers at export.
 shorthand_examples:
   - source: |
       <dl>
-        <dt | acadamark>
+        <dt | enscribe>
         <dd | An academic publishing system built on HTML+CSS+JS.>
         <dt | Layer 1>
         <dd | The canonical semantic HTML vocabulary.>
@@ -49,7 +49,7 @@ shorthand_examples:
       </dl>
     layer1_html: |
       <dl>
-        <dt>acadamark</dt>
+        <dt>enscribe</dt>
         <dd>An academic publishing system built on HTML+CSS+JS.</dd>
         <dt>Layer 1</dt>
         <dd>The canonical semantic HTML vocabulary.</dd>
@@ -90,7 +90,7 @@ For glossary-specific content with a heading and multiple cross-referenceable en
 
 ```
 <dl>
-  <dt | acadamark>
+  <dt | enscribe>
   <dd | An academic publishing system.>
   <dt | Layer 1>
   <dd | The canonical semantic HTML vocabulary.>
@@ -101,7 +101,7 @@ The natural shape is alternating `<dt>` (term) and `<dd>` (definition) children 
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<dl>` | `<def-list>` |
 | `<dt>` (within `<dl>`) | `<term>` (inside `<def-item>`) |
@@ -112,14 +112,14 @@ JATS pairs each term with its definition in a `<def-item>` wrapper:
 ```xml
 <def-list>
   <def-item>
-    <term>acadamark</term>
+    <term>enscribe</term>
     <def>An academic publishing system.</def>
   </def-item>
   ...
 </def-list>
 ```
 
-The JATS exporter groups adjacent `<dt>`/`<dd>` pairs from the acadamark source into `<def-item>` wrappers at export. Patterns with multiple `<dd>` for one `<dt>` (or vice versa) require a per-pattern export choice — recorded here as a JATS-export concern, not an authoring one.
+The JATS exporter groups adjacent `<dt>`/`<dd>` pairs from the enscribe source into `<def-item>` wrappers at export. Patterns with multiple `<dd>` for one `<dt>` (or vice versa) require a per-pattern export choice — recorded here as a JATS-export concern, not an authoring one.
 
 ## Render-mode lowering
 

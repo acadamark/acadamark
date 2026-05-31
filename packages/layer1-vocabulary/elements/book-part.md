@@ -4,7 +4,7 @@ html_output:
   element: book-part
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -138,8 +138,8 @@ shorthand_examples:
       in book-body, and the appendix in book-back based on book-part-type.
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkBookStructuring
-    runs_before: acadamarkTagInterpret
+  - name: enscribeBookStructuring
+    runs_before: enscribeTagInterpret
     purpose: |
       Generates <book-part> from <meta type=book-part> or from book-part
       shorthand expansions (<chapter>, <part>, <appendix>, etc.). Inside
@@ -183,7 +183,7 @@ The explicit `<book-part-title>` element is available when needed (multi-line ti
 
 Book-parts appear inside `<book-body>` (most book-parts) or in `<book-front>` and `<book-back>` (for front-matter and back-matter types).
 
-The `acadamarkBookStructuring` plugin places book-parts automatically based on their type:
+The `enscribeBookStructuring` plugin places book-parts automatically based on their type:
 
 | book-part-type | Placement |
 |----------------|-----------|
@@ -241,7 +241,7 @@ In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part b
 
 Direct mapping to JATS `<book-part>`. The element name, the recursive structure, and the `book-part-type` attribute are all preserved exactly.
 
-| acadamark Layer 1 | JATS |
+| enscribe Layer 1 | JATS |
 |-------------------|------|
 | `<book-part>` | `<book-part>` |
 | `book-part-type` attribute | `book-part-type` attribute |

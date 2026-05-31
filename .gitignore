@@ -1,4 +1,4 @@
-# acadamark — what git deliberately does not track.
+# enscribe — what git deliberately does not track.
 #
 # Written to the repo's actual needs, not from a generic boilerplate. Two
 # generated files are deliberately committed; this file is written to not
@@ -6,13 +6,13 @@
 
 # ─── Dependencies ───────────────────────────────────────────────────────────
 # npm-workspaces hoists most deps to the root `node_modules/`, but per-package
-# `node_modules/` directories also appear (e.g. acadamark-interpreter holds a
+# `node_modules/` directories also appear (e.g. enscribe-interpreter holds a
 # per-package `.package-lock.json`). The unscoped `node_modules/` pattern (no
 # leading slash) matches at every level.
 node_modules/
 
 # ─── Build artifacts ────────────────────────────────────────────────────────
-# The tsup-built browser library (packages/acadamark-interpreter/dist/) is a
+# The tsup-built browser library (packages/enscribe-interpreter/dist/) is a
 # generated, minified bundle, reproducible via `npm run build:lib`. Unlike the
 # two generated files deliberately committed (see bottom), it is NOT tracked: it
 # is large, machine-built, and rebuilt on demand. The `dist/` pattern (no
@@ -40,11 +40,11 @@ ghc-prompt-*.md
 #     The Layer 1 vocabulary data module, generated from elements/*.md by
 #     packages/layer1-vocabulary/build/generate-data-module.js. Committed per
 #     the Slice 4 Phase 0's Option-A ruling (committed + pretest
-#     regenerate-and-diff staleness guard). See notes/specs/acadamark-core.md.
+#     regenerate-and-diff staleness guard). See notes/specs/enscribe-core.md.
 #
-#   packages/remark-acadamark/src/generated/parser.js
-#     The Peggy-generated parser, produced from grammar/acadamark.peggy by
-#     packages/remark-acadamark/build/compile-grammar.js. Committed so the
+#   packages/remark-enscribe/src/generated/parser.js
+#     The Peggy-generated parser, produced from grammar/enscribe.peggy by
+#     packages/remark-enscribe/build/compile-grammar.js. Committed so the
 #     parser package is consumable without a build step at install time.
 #
 # The patterns above are deliberately narrow (node_modules/, ghc-prompt-*.md,
@@ -52,4 +52,4 @@ ghc-prompt-*.md
 # pattern below — anything matching `**/*.js` or `**/generated/**` or `**/src/data.*` —
 # add an explicit unignore here so the deliberate files stay tracked, e.g.:
 #   !packages/layer1-vocabulary/src/data.js
-#   !packages/remark-acadamark/src/generated/parser.js
+#   !packages/remark-enscribe/src/generated/parser.js

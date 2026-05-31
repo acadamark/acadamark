@@ -40,7 +40,7 @@ The one remaining audit-cleanup step. Small targeted edits, mostly mechanical:
 
 - `notes/recursive-content-spec.md` — the "Error recovery: blank-line termination" section describes future work as if implemented. Add "Status: deferred" qualifier.
 - `notes/inline-tex-shortcuts-spec.md` — promote "Status: Not implemented" from near the bottom to the top.
-- `BUILD.md` — pipeline diagram uses planning-era plugin names (`acadamarkTagInterpret`, `acadamarkCitations`, `acadamarkCrossRefs`, `rehypeKatex`). Update to match the current pipeline; mark BUILD.md's status clearly.
+- `BUILD.md` — pipeline diagram uses planning-era plugin names (`enscribeTagInterpret`, `enscribeCitations`, `enscribeCrossRefs`, `rehypeKatex`). Update to match the current pipeline; mark BUILD.md's status clearly.
 - DRIFT-7, DRIFT-8, DRIFT-9: vocabulary entries (`cite.md`, `ref.md`, `note.md`) have `related_plugins` fields with wrong plugin names. Mechanical name fixes.
 - Zone.Identifier ghost files (NTFS artifacts in `notes/`). Clean up if desired.
 

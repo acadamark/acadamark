@@ -4,7 +4,7 @@ html_output:
   element: keywords
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -23,11 +23,11 @@ jats_counterpart:
   element: 'kwd-group'
   notes: |
     JATS uses <kwd-group> containing <kwd> elements, inside
-    <article-meta>. Comma-separated acadamark content splits on
+    <article-meta>. Comma-separated enscribe content splits on
     commas at export time; structured <keyword> children map
     directly to <kwd>. Multiple <kwd-group> elements (each with a
     kwd-group-type attribute) are allowed in JATS for multi-language
-    keyword sets — acadamark does not currently model that distinction
+    keyword sets — enscribe does not currently model that distinction
     at the authoring layer.
 shorthand_examples:
   - source: |
@@ -79,11 +79,11 @@ The content is a comma-separated list as text. Whitespace around commas is permi
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<keywords>elephants, conservation, climate</keywords>` | `<kwd-group><kwd>elephants</kwd><kwd>conservation</kwd><kwd>climate</kwd></kwd-group>` (inside `<article-meta>`) |
 
-The exporter splits on commas (trimming whitespace) and emits one `<kwd>` per term. Multiple `<kwd-group>` elements with `kwd-group-type` distinctions (multi-language, controlled-vocabulary, etc.) are a JATS feature acadamark does not currently model at the authoring layer — single keyword list per document.
+The exporter splits on commas (trimming whitespace) and emits one `<kwd>` per term. Multiple `<kwd-group>` elements with `kwd-group-type` distinctions (multi-language, controlled-vocabulary, etc.) are a JATS feature enscribe does not currently model at the authoring layer — single keyword list per document.
 
 ## Render-mode lowering
 

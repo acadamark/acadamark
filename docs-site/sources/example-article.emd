@@ -1,0 +1,25 @@
+# Example article
+
+This is a placeholder read-only article. It exists to prove the docs-site
+framework: each enscribe source becomes one rendered page, the pages share a
+navigation header, and a read-only page carries a "view source on GitHub"
+link in its footer.
+
+## Rendering Layer 1
+
+Body text with some **emphasis**, a bit of `inline code`, and inline math
+$f(x) = x^2$. enscribe renders these to semantic Layer 1 HTML, which the
+default stylesheet themes into the finished look you see here.
+
+## Block content
+
+> A blockquote, to show block-level rendering distinct from body paragraphs.
+
+Lists, math, quotes, and emphasis are all delegated to well-established
+parsers; enscribe adds the scholarly vocabulary on top.
+
+## Status
+
+This is placeholder content for the Phase 14 Slice 3a framework. The real
+articles — the project's README and DESIGN translated to canonical
+enscribe — land in Slice 3b.

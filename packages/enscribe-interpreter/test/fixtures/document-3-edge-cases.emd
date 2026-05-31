@@ -1,0 +1,33 @@
+<meta type=article>
+  <title | Edge Cases in Enscribe>
+  <author | Test Author>
+</meta>
+
+<section | The <em | important> finding>
+A paragraph in the outer section with some *emphasis* and `inline code`.
+
+<sub-section | Sub-section title>
+A paragraph in the middle section.
+
+<sub-sub-section | Deepest nesting>
+A paragraph in the inner section.
+
+<section | Second top-level section>
+Body of the second section.
+
+<figure type=code | A code listing as a figure with no src.>
+
+<aside>
+First paragraph of the aside.
+
+Second paragraph of the aside.
+</aside>
+
+A paragraph between aside and rule.
+
+<hr />
+
+A paragraph after the thematic break.
+
+- First list item.
+- Second list item.

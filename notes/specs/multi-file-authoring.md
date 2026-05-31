@@ -1,6 +1,6 @@
 # Multi-file authoring
 
-Multi-file authoring lets an acadamark document be split across several
+Multi-file authoring lets an enscribe document be split across several
 files — one file per chapter, separate files for appendices, shared
 bibliography files — with a project-level configuration tying them
 together. This document describes the intended mechanism. (Whether it is
@@ -43,7 +43,7 @@ content.
 
 The mechanism has two layers.
 
-**Project configuration.** A project-level file (`acadamark.yml` or
+**Project configuration.** A project-level file (`enscribe.yml` or
 similar) describes:
 
 - Which files belong to the project.
@@ -52,11 +52,11 @@ similar) describes:
 - Project-level metadata (authors, title, license) inherited by all files.
 - Bibliography source paths.
 
-**Include directive.** Within an acadamark file, an explicit include
+**Include directive.** Within an enscribe file, an explicit include
 references another file:
 
 ```
-<include src="chapter-1.acm">
+<include src="chapter-1.emd">
 ```
 
 The interpreter reads the included file's content and inserts it at the
@@ -112,7 +112,7 @@ each phase does* is unchanged from the single-file pipeline. The
 difference is that the registries span the project rather than a single
 file.
 
-- **Phase 1 (Discovery).** `acadamarkConfigDiscovery` reads `<config>`
+- **Phase 1 (Discovery).** `enscribeConfigDiscovery` reads `<config>`
   blocks (per `notes/specs/pipeline.md` §4.1 and `notes/specs/interpreter.md`
   §3.2). In multi-file mode the configs read from every file accumulate
   into the project-wide config registry.

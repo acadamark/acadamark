@@ -1,6 +1,6 @@
-# Contributing to acadamark
+# Contributing to enscribe
 
-This file defines how acadamark's documentation is organized, so that every piece of information has one home and the documentation stays coherent with the code. A contributor — or an AI session — works against this system: a slice ends with the coherence check below, and a piece of content always has a single owning document.
+This file defines how enscribe's documentation is organized, so that every piece of information has one home and the documentation stays coherent with the code. A contributor — or an AI session — works against this system: a slice ends with the coherence check below, and a piece of content always has a single owning document.
 
 ## The coherence principle
 
@@ -56,7 +56,7 @@ check (below) names the rule that keeps them in agreement.
 The "Spec" role covers two tiers. **`DESIGN.md` is the conceptual master
 blueprint**: the layer model, the architectural primitives, the design
 directions, the JATS relationship, the DSL-processor model, scope decisions —
-*what acadamark fundamentally is*. **The `notes/specs/` files are the
+*what enscribe fundamentally is*. **The `notes/specs/` files are the
 technical blueprint set** — each is the implementation-precise design of one
 subsystem, sitting inside the conceptual frame `DESIGN.md` provides. There is
 no single master technical blueprint file; the technical blueprint is the

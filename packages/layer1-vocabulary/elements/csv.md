@@ -12,7 +12,7 @@ html_output:
     because `interpreter_strategy: handler` routes through the handler
     instead; the handler builds the `<table>` shape directly. `<csv>`
     itself does not appear in the rendered HTML.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -37,7 +37,7 @@ content:
   becomes: 'parsed CSV rows (rendered as <table>)'
   notes: |
     Content is comma-separated source data, preserved verbatim and parsed
-    by the handler. No acadamark interpretation. Quoted fields with RFC
+    by the handler. No enscribe interpretation. Quoted fields with RFC
     4180 escaping are supported (same parser as `<table csv>`).
 content_handler: csv
 jats_counterpart:
@@ -94,7 +94,7 @@ A CSV (comma-separated values) data block. Parses its opaque content as CSV and 
 
 ## Semantic intent
 
-`<csv>` is a DSL — its content is foreign-language data (CSV), parsed by a delegated processor (the CSV handler) into a rendered table. Acadamark does not interpret the content as prose.
+`<csv>` is a DSL — its content is foreign-language data (CSV), parsed by a delegated processor (the CSV handler) into a rendered table. Enscribe does not interpret the content as prose.
 
 The element is the natural authoring shape for an unstyled CSV table. For an authored table with explicit format dispatch (e.g. CSV alongside TSV/JSON/YAML in the same tag), use the qualifying form `<table csv | …>`; both `<csv>` and `<table csv>` use the same parser and produce equivalent output.
 
@@ -129,7 +129,7 @@ The CSV parser is RFC-4180-compatible — quoted fields with embedded commas, em
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<csv>` (rendered output) | `<table-wrap>/<table>` |
 

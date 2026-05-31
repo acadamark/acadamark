@@ -4,7 +4,7 @@ html_output:
   element: book
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -32,11 +32,11 @@ title_extraction: true
 jats_counterpart:
   element: book
   notes: |
-    JATS <book> wraps <book-front>, <book-body>, and <book-back>. Acadamark's
+    JATS <book> wraps <book-front>, <book-body>, and <book-back>. Enscribe's
     structural elements map directly. JATS uses <book-part> recursively for
     all major divisions discriminated by the book-part-type attribute.
     JATS's book-type attribute (with values like monograph, edited-volume,
-    textbook, etc.) is not currently set by acadamark — sub-classification
+    textbook, etc.) is not currently set by enscribe — sub-classification
     within the book category is deferred until a JATS-export slice needs it.
 shorthand_examples:
   - source: |
@@ -143,8 +143,8 @@ shorthand_examples:
       </book>
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkBookStructuring
-    runs_before: acadamarkTagInterpret
+  - name: enscribeBookStructuring
+    runs_before: enscribeTagInterpret
     purpose: |
       Reads <meta type=book> and generates the <book> wrapper plus
       <book-front>/<book-body>/<book-back> regions. Promotes
@@ -192,7 +192,7 @@ Use `<book>` even for short multi-part works. The structural division is the det
 ...
 ```
 
-`acadamarkBookStructuring` reads `<meta type=book>` and generates:
+`enscribeBookStructuring` reads `<meta type=book>` and generates:
 
 - The outer `<book>` element.
 - `<book-front>` wrapping the original `<meta>`.
@@ -241,7 +241,7 @@ Sub-classification within the book category (monograph, edited-volume, textbook,
 
 ## JATS mapping
 
-| acadamark Layer 1 | JATS |
+| enscribe Layer 1 | JATS |
 |-------------------|------|
 | `<book>` | `<book>` |
 | `<book-front>` | `<book-front>` |

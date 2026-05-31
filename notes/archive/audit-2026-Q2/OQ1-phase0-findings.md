@@ -7,16 +7,16 @@ tests, or documents were modified.
 
 **Files read at code level:**
 - `notes/recursive-content-spec.md` (spec, re-read for context)
-- `packages/remark-acadamark/src/recursive-content.js` (actual implementation)
-- `packages/remark-acadamark/src/dsl-registry.js` (contentHandler registry)
-- `packages/remark-acadamark/src/from-markdown.js` (isOpaqueContent assignment, line 207)
-- `packages/remark-acadamark/src/sigil-mapping.js` ($ → inline-math key translation)
-- `packages/acadamark-interpreter/src/index.js` (inner processor construction, outer pipeline)
-- `packages/acadamark-interpreter/src/interpret-plugin.js` (toHast handler dispatch)
-- `packages/acadamark-interpreter/src/handlers/math.js` (KaTeX rendering path)
-- `packages/acadamark-interpreter/src/handlers/table.js` (table dispatch, parseMd)
-- `packages/remark-acadamark/package.json` (dependency versions)
-- `packages/acadamark-interpreter/package.json` (dependency versions)
+- `packages/remark-enscribe/src/recursive-content.js` (actual implementation)
+- `packages/remark-enscribe/src/dsl-registry.js` (contentHandler registry)
+- `packages/remark-enscribe/src/from-markdown.js` (isOpaqueContent assignment, line 207)
+- `packages/remark-enscribe/src/sigil-mapping.js` ($ → inline-math key translation)
+- `packages/enscribe-interpreter/src/index.js` (inner processor construction, outer pipeline)
+- `packages/enscribe-interpreter/src/interpret-plugin.js` (toHast handler dispatch)
+- `packages/enscribe-interpreter/src/handlers/math.js` (KaTeX rendering path)
+- `packages/enscribe-interpreter/src/handlers/table.js` (table dispatch, parseMd)
+- `packages/remark-enscribe/package.json` (dependency versions)
+- `packages/enscribe-interpreter/package.json` (dependency versions)
 
 ---
 
@@ -24,7 +24,7 @@ tests, or documents were modified.
 
 The recursive-content spec (`notes/recursive-content-spec.md` lines 53–57) names `remark-math` and
 `remark-gfm` as intended inner processor plugins ("The caller constructs innerProcessor with the
-appropriate plugins (e.g., remarkParse, remark-acadamark, remark-math, remark-gfm)"). The design
+appropriate plugins (e.g., remarkParse, remark-enscribe, remark-math, remark-gfm)"). The design
 decision to delegate bare `$x$` to `remark-math` and bare pipe tables to `remark-gfm` is settled
 (see `notes/idioms.md` and `notes/principles.md`). This investigation answers three questions about
 the collision risk:
@@ -40,22 +40,22 @@ And an implicit **Q4** (the two-surface question): do bare `$x$` / pipe tables i
 
 ## 2. Q1 — Inner processor: location and current contents
 
-**File:** `packages/acadamark-interpreter/src/index.js`  
-**Function:** `acadamarkInterpreter` (exported function, line ~313)  
+**File:** `packages/enscribe-interpreter/src/index.js`  
+**Function:** `enscribeInterpreter` (exported function, line ~313)  
 **Construction line:** approximately line 330
 
 ```js
-const innerProcessor = unified().use(remarkParse).use(remarkAcadamark);
+const innerProcessor = unified().use(remarkParse).use(remarkEnscribe);
 ```
 
 This is constructed **inside the function body**, not at module scope, so a fresh processor is
 created per pipeline instantiation. The surrounding comment reads: "It runs the same parser plugins
 as the outer processor but does NOT include the structural or compile steps."
 
-**Current contents:** `remarkParse` + `remarkAcadamark` only.
+**Current contents:** `remarkParse` + `remarkEnscribe` only.
 
 Neither `remark-math` nor `remark-gfm` is present. Neither is listed as a dependency in either
-`packages/remark-acadamark/package.json` or `packages/acadamark-interpreter/package.json`.
+`packages/remark-enscribe/package.json` or `packages/enscribe-interpreter/package.json`.
 
 ---
 
@@ -100,17 +100,17 @@ The interpreter's `toHast` call in `index.js` line ~383:
 
 ```js
 const hast = toHast(tree, {
-  handlers: { acadamarkTag: tagHandler },
+  handlers: { enscribeTag: tagHandler },
   allowDangerousHtml: true,
 });
 ```
 
-Only registers handlers for `acadamarkTag`. `inlineMath` and `math` mdast node types (from
+Only registers handlers for `enscribeTag`. `inlineMath` and `math` mdast node types (from
 `remark-math`) are **not registered**. `mdast-util-to-hast` v13's default unknown handler for
 leaf nodes (which have `value` but no `children`) converts them to a text node with the raw value
 string, or drops them — either way, math rendering is lost.
 
-The existing `mathHandler` in `handlers/math.js` handles only `acadamarkTag` nodes with
+The existing `mathHandler` in `handlers/math.js` handles only `enscribeTag` nodes with
 `tagname: '$'` or `'$$'`. It has no path for raw `inlineMath`/`math` mdast nodes.
 
 **Required additional work for Q2:**  
@@ -120,7 +120,7 @@ additional handlers for `inlineMath` and `math` mdast node types. Two candidate 
   from `inlineMath`/`math` nodes and call `katex.renderToString`. This keeps all math rendering
   in one place.
 - (b) Use `mdast-util-math`'s hast handler exports and accept that the output element names
-  (`<span class="math math-inline">`) differ from the acadamark vocab names (`<inline-math>`).
+  (`<span class="math math-inline">`) differ from the enscribe vocab names (`<inline-math>`).
 
 The choice between (a) and (b) is a design question, not settled by this investigation.
 
@@ -152,7 +152,7 @@ processor, the pipe table in the aside content would be parsed as a standard `ta
 
 `mdast-util-to-hast` v13 has built-in handlers for `table`, `tableRow`, and `tableCell` — these are
 listed as standard mdast node types in its handler map. The table would render correctly to an HTML
-`<table>` element **without** any acadamark vocabulary wrapping (no `computedNumber`, no caption,
+`<table>` element **without** any enscribe vocabulary wrapping (no `computedNumber`, no caption,
 no id). This is the intended behavior per the delegation principle in `notes/idioms.md`: a bare GFM
 table is an unnumbered, uncaptioned shorthand table. Numbered tables require the explicit
 `<table csv | ...>` form.
@@ -175,17 +175,17 @@ OQ-1 / G3 has the same structure:
 | `remark-gfm` | re-parses pipe tables in default-handler tag content | needed for pipe tables in top-level prose |
 
 **For remark-gfm:** Adding it to the outer pipeline (`this.use(remarkGfm)` in
-`acadamarkInterpreter`, before or after `remarkAcadamark` depending on micromark extension ordering)
+`enscribeInterpreter`, before or after `remarkEnscribe` depending on micromark extension ordering)
 would allow bare pipe tables in top-level prose. `mdast-util-to-hast`'s built-in `table` handler
 means no further interpreter work is needed. The `<tag | content>` syntax is not endangered:
-`remark-acadamark`'s micromark extension consumes `<...>` constructs before GFM table detection
+`remark-enscribe`'s micromark extension consumes `<...>` constructs before GFM table detection
 (GFM tables start with `|` at line start, not `<`). No pipe-character ambiguity.
 
 **For remark-math:** Adding it to the outer pipeline would allow bare `$x$` in top-level prose —
 but hits the same hast-handler gap identified in §3.2. The `toHast` call does not handle
 `inlineMath`/`math` nodes. The hast-handler fix is required at **both** surfaces.
 
-**Note on micromark extension ordering:** `remark-acadamark` uses micromark's `text` hook for its
+**Note on micromark extension ordering:** `remark-enscribe` uses micromark's `text` hook for its
 tag tokenizer. `remark-math` also uses the `text` hook for `$`-delimiters. These are independent
 hooks that stack (each runs on its slice of text). No ordering conflict is anticipated, but this
 should be verified with integration tests rather than asserted here.
@@ -213,16 +213,16 @@ as dependencies before any implementation work.
 The investigation reveals two separable sub-problems:
 
 **G3a — remark-gfm (simpler):**
-1. Add `remark-gfm` as a dependency of `acadamark-interpreter`.
+1. Add `remark-gfm` as a dependency of `enscribe-interpreter`.
 2. Add it to the inner processor (`innerProcessor.use(remarkGfm)`).
-3. Add it to the outer pipeline (`this.use(remarkGfm)` in `acadamarkInterpreter`).
+3. Add it to the outer pipeline (`this.use(remarkGfm)` in `enscribeInterpreter`).
 4. Write tests: bare pipe table at top level renders as `<table>`; bare pipe table inside
    `<aside | ...>` renders as `<table>`; `<table md | ...>` still works unchanged.
 5. No hast-handler changes needed — `mdast-util-to-hast` already handles GFM tables.
 
 **G3b — remark-math (requires design decision first):**
 1. Resolve the hast-handler question from §3.2 (approach a vs b, or a third option).
-2. Add `remark-math` as a dependency of `acadamark-interpreter`.
+2. Add `remark-math` as a dependency of `enscribe-interpreter`.
 3. Add to inner processor and outer pipeline.
 4. Register hast handlers for `inlineMath`/`math` mdast nodes in the `toHast` call.
 5. Write tests: bare `$x$` at top level renders via KaTeX; `$x$` inside `<aside | ...>` renders;
@@ -242,17 +242,17 @@ implementation splits cleanly.
    Which is preferable? Requires design input from Ariel.
 
 2. **Micromark extension ordering:** `remark-math` registers in the `text` hook; so does
-   `remark-acadamark`. The acadamark `$...$` sigil syntax and `remark-math`'s `$...$` syntax
-   occupy the same character space. At the outer level, `remark-acadamark`'s text-hook tokenizer
+   `remark-enscribe`. The enscribe `$...$` sigil syntax and `remark-math`'s `$...$` syntax
+   occupy the same character space. At the outer level, `remark-enscribe`'s text-hook tokenizer
    only fires inside `<...>` brackets (specifically for the `^{...}` and `_{...}` shortcuts added
-   in G1). Raw `$x$` at the outer level is NOT consumed by `remark-acadamark` — it sees `$` as
+   in G1). Raw `$x$` at the outer level is NOT consumed by `remark-enscribe` — it sees `$` as
    plain text and leaves it for `remark-math` to handle. This should be safe, but requires a test
    to confirm no unexpected interaction.
 
 3. **Top-level `$x$` rendering element name:** `remark-math` produces `inlineMath`/`math` nodes
    that, when rendered, produce `<span class="math math-inline">` elements (if using
    `mdast-util-math`'s hast handlers) rather than `<inline-math>` / `<display-math>` (the
-   acadamark Layer 1 vocabulary elements). Whether top-level bare math should use the full Layer 1
+   enscribe Layer 1 vocabulary elements). Whether top-level bare math should use the full Layer 1
    element name is a vocabulary question — not strictly required for delegation to work, but it
    affects consistency of the Layer 1 output.
 

@@ -5,15 +5,15 @@
 five walker files and supporting context. No code, tests, or documents were modified.
 
 **Files read at code level:**
-- `packages/acadamark-interpreter/src/plugins/numbering.js`
-- `packages/acadamark-interpreter/src/plugins/notes.js`
-- `packages/acadamark-interpreter/src/plugins/ref-resolution.js`
-- `packages/acadamark-interpreter/src/plugins/cite-resolution.js` (R3, but read for pattern completeness)
-- `packages/remark-acadamark/src/recursive-content.js`
-- `packages/acadamark-interpreter/src/plugins/section-nesting.js`
-- `packages/acadamark-interpreter/src/lib/registry.js`
-- `packages/acadamark-interpreter/src/lib/ast-helpers.js`
-- `packages/acadamark-interpreter/src/index.js` (pipeline assembly)
+- `packages/enscribe-interpreter/src/plugins/numbering.js`
+- `packages/enscribe-interpreter/src/plugins/notes.js`
+- `packages/enscribe-interpreter/src/plugins/ref-resolution.js`
+- `packages/enscribe-interpreter/src/plugins/cite-resolution.js` (R3, but read for pattern completeness)
+- `packages/remark-enscribe/src/recursive-content.js`
+- `packages/enscribe-interpreter/src/plugins/section-nesting.js`
+- `packages/enscribe-interpreter/src/lib/registry.js`
+- `packages/enscribe-interpreter/src/lib/ast-helpers.js`
+- `packages/enscribe-interpreter/src/index.js` (pipeline assembly)
 - `notes/pipeline-refactor-plan.md`
 
 ---
@@ -28,7 +28,7 @@ five walker files and supporting context. No code, tests, or documents were modi
 function walkAndCollect(nodes, registry, config, pending) {
   if (!Array.isArray(nodes)) return;
   for (const node of nodes) {
-    if (isAcadamarkTag(node)) {
+    if (isEnscribeTag(node)) {
       const registryType = NUMBERED_TAGNAMES.get(node.tagname);
       if (registryType) { /* register + push to pending */ }
       if (Array.isArray(node.content)) {
@@ -44,10 +44,10 @@ function walkAndCollect(nodes, registry, config, pending) {
 
 Entry point: `walkAndCollect(tree.children, ...)`.
 
-- **Walks:** `.content` (if `isAcadamarkTag`) AND `.children` (always if present, even on non-tag nodes).
+- **Walks:** `.content` (if `isEnscribeTag`) AND `.children` (always if present, even on non-tag nodes).
 - **Target types:** `$$`, `figure`, `table` — matched via `NUMBERED_TAGNAMES` Map.
 - **Mutation:** None during walk. Pushes `{ node, entry }` to `pending` array. Calls `registry.assign()` to record each match.
-- **`isOpaqueContent` check:** Absent. Recurses into `.content` of any acadamarkTag regardless of handler type.
+- **`isOpaqueContent` check:** Absent. Recurses into `.content` of any enscribeTag regardless of handler type.
 - **Traversal order:** Pre-order DFS (process node, then recurse) = document order. ✓
 
 ### 1.2 `notes.js` — `walkAndReplace` (lines 56–78)
@@ -59,12 +59,12 @@ function walkAndReplace(nodes, processNote) {
   let i = 0;
   while (i < nodes.length) {
     const node = nodes[i];
-    if (isAcadamarkTag(node, 'note')) {
+    if (isEnscribeTag(node, 'note')) {
       const replacements = processNote(node);
       nodes.splice(i, 1, ...replacements);    // mutates in-place
       i += replacements.length;
     } else {
-      if (isAcadamarkTag(node) && Array.isArray(node.content)) {
+      if (isEnscribeTag(node) && Array.isArray(node.content)) {
         walkAndReplace(node.content, processNote);
       }
       if (node.children && Array.isArray(node.children)) {
@@ -78,7 +78,7 @@ function walkAndReplace(nodes, processNote) {
 
 Entry point: `walkAndReplace(tree.children, processNote)`.
 
-- **Walks:** `.content` (if `isAcadamarkTag`) AND `.children` (always if present).
+- **Walks:** `.content` (if `isEnscribeTag`) AND `.children` (always if present).
 - **Target type:** `note`. Each `<note>` is replaced 1:1 with `[markerNode]`.
 - **Mutation:** Splices `[markerNode]` over the `<note>` node in-place. Tree is modified.
 - **`isOpaqueContent` check:** Absent. Same gap as numbering.js.
@@ -94,12 +94,12 @@ function walkAndReplace(nodes, processRef) {
   let i = 0;
   while (i < nodes.length) {
     const node = nodes[i];
-    if (isAcadamarkTag(node, 'ref')) {
+    if (isEnscribeTag(node, 'ref')) {
       const replacements = processRef(node);
       nodes.splice(i, 1, ...replacements);
       i += replacements.length;
     } else {
-      if (isAcadamarkTag(node) && Array.isArray(node.content)) {
+      if (isEnscribeTag(node) && Array.isArray(node.content)) {
         walkAndReplace(node.content, processRef);
       }
       if (node.children && Array.isArray(node.children)) {
@@ -113,7 +113,7 @@ function walkAndReplace(nodes, processRef) {
 
 Entry point: `walkAndReplace(tree.children, processRef)`.
 
-- **Walks:** `.content` (if `isAcadamarkTag`) AND `.children` (always if present).
+- **Walks:** `.content` (if `isEnscribeTag`) AND `.children` (always if present).
 - **Target type:** `ref`. Each `<ref>` is replaced 1:1 with either `__ref-marker` or `__ref-error`.
 - **Mutation:** Splices in-place.
 - **`isOpaqueContent` check:** Absent. Same gap as notes.js.
@@ -123,8 +123,8 @@ Entry point: `walkAndReplace(tree.children, processRef)`.
 Structurally identical to notes.js and ref-resolution.js, with one exception:
 
 ```js
-    // Recurse into non-opaque acadamarkTag content.
-    if (isAcadamarkTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {
+    // Recurse into non-opaque enscribeTag content.
+    if (isEnscribeTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {
       walkAndReplace(node.content, processCite);
     }
 ```
@@ -139,7 +139,7 @@ Structurally identical to notes.js and ref-resolution.js, with one exception:
 ```js
 function walkAndNest(nodes) {
   for (const node of nodes) {
-    if (!isAcadamarkTag(node)) continue;
+    if (!isEnscribeTag(node)) continue;
     const content = node.content;
     if (!content || !Array.isArray(content)) continue;
 
@@ -156,19 +156,19 @@ function walkAndNest(nodes) {
 
 Entry point: `walkAndNest(tree.children ?? [])`.
 
-- **Walks:** `.content` ONLY. Does NOT walk `.children`. Explicitly iterates only `isAcadamarkTag` nodes.
+- **Walks:** `.content` ONLY. Does NOT walk `.children`. Explicitly iterates only `isEnscribeTag` nodes.
 - **Target:** Content arrays that contain section-family nodes (`sectionDepth > 0`).
 - **Mutation:** Replaces `node.content` with the output of `nestSectionArray`. Structural transformation.
 - **Does NOT recurse into the nested sections** after nesting an array — `nestSectionArray` handles all depths in a single pass via its stack algorithm.
-- **Rationale for `.children`-only skip:** By the time this runs, sections live inside `.content` arrays of acadamarkTag nodes (article-body, article-front, etc.), not in mdast `.children`. This is intentional and correct.
+- **Rationale for `.children`-only skip:** By the time this runs, sections live inside `.content` arrays of enscribeTag nodes (article-body, article-front, etc.), not in mdast `.children`. This is intentional and correct.
 
 ### 1.6 `recursive-content.js` — `processNodes` (uses `unist-util-visit`)
 
-**Pattern:** Uses the standard `visit(subtree, 'acadamarkTag', visitor)` from `unist-util-visit`, not a hand-rolled content descent.
+**Pattern:** Uses the standard `visit(subtree, 'enscribeTag', visitor)` from `unist-util-visit`, not a hand-rolled content descent.
 
 ```js
 function processNodes(subtree, processor, depth) {
-  visit(subtree, 'acadamarkTag', (node) => {
+  visit(subtree, 'enscribeTag', (node) => {
     if (node.contentHandler !== 'default') return SKIP
     if (node.content === null) return SKIP
     // ...
@@ -185,9 +185,9 @@ function processNodes(subtree, processor, depth) {
 
 Entry point: `processNodes(tree, processor, 0)`.
 
-- **Walk mechanism:** `visit()` finds `acadamarkTag` nodes via standard `.children` descent. For the newly-parsed `.content` arrays, recursion is triggered manually by creating a wrapper `{ type: 'root', children: toChildren(content) }` and calling `processNodes` on it.
+- **Walk mechanism:** `visit()` finds `enscribeTag` nodes via standard `.children` descent. For the newly-parsed `.content` arrays, recursion is triggered manually by creating a wrapper `{ type: 'root', children: toChildren(content) }` and calling `processNodes` on it.
 - **Why the wrapper:** `visit()` follows `.children`, not `.content`. The wrapper lets the standard visitor find tags inside content arrays.
-- **Target:** `acadamarkTag` nodes with `contentHandler === 'default'`. Skips math, opaque, null content.
+- **Target:** `enscribeTag` nodes with `contentHandler === 'default'`. Skips math, opaque, null content.
 - **Mutation:** Replaces `node.content` string with a parsed `Node[]` array.
 - **Architecturally separate:** This is the "shape" step, not a discovery or resolution step. It runs before the discovery walkers and transforms the tree so that `.content` arrays exist for the other walkers to traverse.
 
@@ -200,9 +200,9 @@ Entry point: `processNodes(tree, processor, 0)`.
 | Feature | `notes.js` | `ref-resolution.js` | `cite-resolution.js` |
 |---------|-----------|--------------------|--------------------|
 | Pattern | `while` + splice | `while` + splice | `while` + splice |
-| `.content` descent | `isAcadamarkTag(node)` | `isAcadamarkTag(node)` | `isAcadamarkTag(node) && !node.isOpaqueContent` |
+| `.content` descent | `isEnscribeTag(node)` | `isEnscribeTag(node)` | `isEnscribeTag(node) && !node.isOpaqueContent` |
 | `.children` descent | `node.children && Array.isArray` | `node.children && Array.isArray` | `node.children && Array.isArray` |
-| Target | `isAcadamarkTag(node, 'note')` | `isAcadamarkTag(node, 'ref')` | `isAcadamarkTag(node, 'cite')` |
+| Target | `isEnscribeTag(node, 'note')` | `isEnscribeTag(node, 'ref')` | `isEnscribeTag(node, 'cite')` |
 | Replace with | `[markerNode]` (1:1) | `[markerNode]` or `[errorNode]` (1:1) | `[markerNode]` or `[errorNode]` (1:1) |
 
 The bodies are copy-paste-identical except for the `isOpaqueContent` check in cite-resolution and the target tag name. Same algorithm, written three times.
@@ -229,12 +229,12 @@ The shared discovery walk should follow the `cite-resolution.js` pattern and che
 - Node types: `$$` (mapped to type `'equation'`), `figure` (mapped to `'figure'`), `table` (mapped to `'table'`).
 - Identification: `NUMBERED_TAGNAMES.get(node.tagname)` — exact tagname match.
 - For each match: calls `registry.assign(registryType, node.id || null, { numbered, data: {} })`.
-- Stores `{ node, entry }` in `file.data.acadamarkNumberingPending`.
+- Stores `{ node, entry }` in `file.data.enscribeNumberingPending`.
 - Does NOT need parent position — just the node reference.
 - **Document order is essential**: numbers are assigned by `numberRegistry()` in insertion order. `walkAndCollect`'s pre-order DFS guarantees document order. The discovery walk must preserve this.
 
 **`ref-resolution.js` — what it finds:**
-- Node type: `ref` (exact tagname match, `isAcadamarkTag(node, 'ref')`).
+- Node type: `ref` (exact tagname match, `isEnscribeTag(node, 'ref')`).
 - Resolution uses `node.id ?? node.kwargs?.target` to look up the registry label index.
 - Currently replaces in-place via splice. To eliminate the tree walk, resolution needs to iterate collected ref nodes. For in-place splice, it needs `(node, parentArray, index)` — or else use a different replacement strategy (see §5).
 
@@ -289,7 +289,7 @@ The `numbered` question is a design decision:
 
 **Recommended:** `numbered: false`. Sections should be findable by label, not numbered through the registry. The label-tail display text (`"intro"`, `"background"`) is more useful for authors than a numeric counter that doesn't correspond to visible numbering. If visible cross-reference text like "Section 2.3" is wanted, it needs a separate design pass.
 
-For code blocks, the same situation applies: no `registry.assign('code-block', ...)` call exists. Code block nodes in mdast have `id` only if the author uses the shorthand form `<code #code:snippet | ...>`. The discovery walk would need to identify code blocks with author-provided colon-ids and register them. The node type in mdast for a code block is `code` (not `acadamarkTag`) unless wrapped in the shorthand form. Only the shorthand-wrapped form would be reachable via `.content` descent. The scope of code-block registration is ambiguous and should be explicitly deferred; see §5.
+For code blocks, the same situation applies: no `registry.assign('code-block', ...)` call exists. Code block nodes in mdast have `id` only if the author uses the shorthand form `<code #code:snippet | ...>`. The discovery walk would need to identify code blocks with author-provided colon-ids and register them. The node type in mdast for a code block is `code` (not `enscribeTag`) unless wrapped in the shorthand form. Only the shorthand-wrapped form would be reachable via `.content` descent. The scope of code-block registration is ambiguous and should be explicitly deferred; see §5.
 
 ---
 
@@ -303,18 +303,18 @@ The post-R1 pipeline is:
 
 ```
 1. remarkRecursiveContent
-2. acadamarkConfigDiscovery
-3. acadamarkArticleStructuring
-4. acadamarkSectionNesting
-5. acadamarkLibraryLoad
-6. acadamarkNotes          ← walkAndReplace: extracts <note> nodes from the tree,
+2. enscribeConfigDiscovery
+3. enscribeArticleStructuring
+4. enscribeSectionNesting
+5. enscribeLibraryLoad
+6. enscribeNotes          ← walkAndReplace: extracts <note> nodes from the tree,
                               stores their content in pendingNotes
-7. acadamarkNumbering      ← walkAndCollect: registers $$, figure, table
-8. acadamarkApplyNumbers   ← calls numberRegistry(); then fillNotes() which INJECTS
+7. enscribeNumbering      ← walkAndCollect: registers $$, figure, table
+8. enscribeApplyNumbers   ← calls numberRegistry(); then fillNotes() which INJECTS
                               note content into article-back.content
-9. acadamarkRefResolution  ← walkAndReplace: walks complete tree including note content
-10. acadamarkCiteResolution
-11. acadamarkBibliography
+9. enscribeRefResolution  ← walkAndReplace: walks complete tree including note content
+10. enscribeCiteResolution
+11. enscribeBibliography
 ```
 
 If a `<ref>` node lives inside a `<note>` (e.g. `<note | See <ref #eqn:newton>>`), it is accessible in the tree at steps 1–6 (before notes.js runs). After step 6, that `<ref>` node is in `pendingNotes[i].content[j]`, not in the main tree. After step 8 (fillNotes), it is back in the tree, inside `article-back > __note-list > __note-list-item.content`. Step 9 currently finds it there.
@@ -337,11 +337,11 @@ A `discover(tree, file, visitors)` function accepting a `Map<tagname, (node) => 
 // In new file: src/lib/discover.js
 
 /**
- * Walk the full mdast/acadamarkTag tree in document order.
+ * Walk the full mdast/enscribeTag tree in document order.
  * For each node, if its tagname is in `visitors`, call the registered callback.
  *
  * Recurses into:
- *   - acadamarkTag .content arrays (skips opaque: !node.isOpaqueContent)
+ *   - enscribeTag .content arrays (skips opaque: !node.isOpaqueContent)
  *   - mdast .children arrays
  *
  * Read-only. Does not mutate the tree.
@@ -351,7 +351,7 @@ A `discover(tree, file, visitors)` function accepting a `Map<tagname, (node) => 
  */
 function walkDiscover(nodes, visitors) {
   for (const node of nodes) {
-    if (isAcadamarkTag(node)) {
+    if (isEnscribeTag(node)) {
       const visitor = visitors.get(node.tagname);
       if (visitor) visitor(node);
       if (Array.isArray(node.content) && !node.isOpaqueContent) {
@@ -372,11 +372,11 @@ export function discover(tree, visitors) {
 **For R2, the callers would be:**
 
 ```js
-// In acadamarkNumbering (rewritten):
-export function acadamarkNumbering() {
+// In enscribeNumbering (rewritten):
+export function enscribeNumbering() {
   return (tree, file) => {
     const registry = ensureRegistry(file);
-    const config = file?.data?.acadamarkConfig ?? null;
+    const config = file?.data?.enscribeConfig ?? null;
     const pending = [];
 
     const visitors = new Map([
@@ -389,7 +389,7 @@ export function acadamarkNumbering() {
     ]);
 
     discover(tree, visitors);
-    file.data.acadamarkNumberingPending = pending;
+    file.data.enscribeNumberingPending = pending;
   };
 }
 ```
@@ -419,9 +419,9 @@ For `ref-resolution.js`, the plan says "resolution iterates collected `<ref>` no
 
 **Sub-option R2a:** Include ref collection in the R2 discovery walk. Refs are collected along with equations/figures/tables in the same pass. But the ordering complication (§4 context above) means refs-inside-notes won't be collected if the discovery walk runs in the natural position (between notes.js and applyNumbers).
 
-Mitigation: The discovery walk could run before `acadamarkNotes` (at step 5.5, after library-load but before notes). It would collect refs inside `<note>` content. After notes.js splices out the notes and fillNotes reinstalls the content, those ref node *objects* are the same references (the spread is shallow). If resolution replaces them via `Object.assign(refNode, markerNode)` (in-place mutation of the node object) rather than splice, position information isn't needed.
+Mitigation: The discovery walk could run before `enscribeNotes` (at step 5.5, after library-load but before notes). It would collect refs inside `<note>` content. After notes.js splices out the notes and fillNotes reinstalls the content, those ref node *objects* are the same references (the spread is shallow). If resolution replaces them via `Object.assign(refNode, markerNode)` (in-place mutation of the node object) rather than splice, position information isn't needed.
 
-This is technically workable but introduces in-place mutation of nodes, which is architecturally unusual and potentially surprising. It would also require moving the discovery walk to before `acadamarkNotes`, which changes the observable pipeline structure.
+This is technically workable but introduces in-place mutation of nodes, which is architecturally unusual and potentially surprising. It would also require moving the discovery walk to before `enscribeNotes`, which changes the observable pipeline structure.
 
 **Sub-option R2b (recommended):** Defer ref collection to R3. In R2, `ref-resolution.js` keeps its `walkAndReplace`. The discovery walk is established and used for numbering + AUD-09. R3 migrates both `notes.js` AND `ref-resolution.js` simultaneously. At that point, the ordering can be addressed holistically: the notes collection step and ref collection step can be designed together, so that refs inside note content are correctly handled in whatever final structure R3 produces.
 
@@ -460,9 +460,9 @@ The three `walkAndReplace` copies (notes.js, ref-resolution.js, cite-resolution.
 ### Order dependencies between current walkers
 
 The relevant ordering constraint (post-R1):
-- `acadamarkNotes` (step 6) must run before `acadamarkApplyNumbers` (step 8).
-- `acadamarkNumbering` (step 7) must run before `acadamarkApplyNumbers`.
-- `acadamarkApplyNumbers` must run before `acadamarkRefResolution` (step 9).
+- `enscribeNotes` (step 6) must run before `enscribeApplyNumbers` (step 8).
+- `enscribeNumbering` (step 7) must run before `enscribeApplyNumbers`.
+- `enscribeApplyNumbers` must run before `enscribeRefResolution` (step 9).
 
 After R2, if the discovery walk replaces step 7 (numbering registration), it takes step 7's position. Steps 6 and 8 are unchanged. Step 9 is unchanged for R2. No ordering changes are required.
 
@@ -492,14 +492,14 @@ The integration fixtures (`test/fixtures/`) will catch any regression in output.
 **Do not attempt to replace `ref-resolution.js`'s `walkAndReplace` in R2.**
 
 The plan says: "`ref-resolution.js`: resolution iterates collected `<ref>` nodes instead of walking." This is technically achievable in R2 but requires either:
-1. Running the discovery walk before `acadamarkNotes`, with careful handling of the ref-node-inside-note ordering problem; or
+1. Running the discovery walk before `enscribeNotes`, with careful handling of the ref-node-inside-note ordering problem; or
 2. In-place mutation of node objects (instead of splice), which is an architectural change.
 
 Neither of these complications is worth taking on in R2. The `walkAndReplace` in `ref-resolution.js` is 20 lines and works correctly. Moving it to R3 alongside `notes.js`'s migration means the ordering problem can be addressed once, with full context.
 
 **Revised R2 scope:**
 - Write `src/lib/discover.js`: the shared traversal function, visitor-map interface, handles `.content`/`.children`/`isOpaqueContent`.
-- Rewrite `acadamarkNumbering` in `numbering.js` to use `discover()` instead of `walkAndCollect`. Delete `walkAndCollect`. Register visitors for `$$`, `figure`, `table`, and (new) `section`/`sub-section`/`sub-sub-section`.
+- Rewrite `enscribeNumbering` in `numbering.js` to use `discover()` instead of `walkAndCollect`. Delete `walkAndCollect`. Register visitors for `$$`, `figure`, `table`, and (new) `section`/`sub-section`/`sub-sub-section`.
 - `ref-resolution.js`: unchanged. Its `walkAndReplace` is not migrated in R2.
 - All tests green. No rendered output changes. AUD-09 fixed for section refs.
 
@@ -509,7 +509,7 @@ Neither of these complications is worth taking on in R2. The `walkAndReplace` in
 
 1. **`recursive-content.js` is architecturally separate.** It uses `visit()` via a wrapper-node trick, not a hand-rolled `.content`/`.children` loop. It is not contributing to the duplication problem. R2 does not touch it.
 
-2. **`section-nesting.js` does not walk `.children`.** The other walkers all walk both `.content` and `.children`. Section-nesting walks only `.content`. This is correct for its purpose (sections are in acadamarkTag content, not mdast children) but means section-nesting cannot be "unified" into the same walker pattern as the others even if one wanted to.
+2. **`section-nesting.js` does not walk `.children`.** The other walkers all walk both `.content` and `.children`. Section-nesting walks only `.content`. This is correct for its purpose (sections are in enscribeTag content, not mdast children) but means section-nesting cannot be "unified" into the same walker pattern as the others even if one wanted to.
 
 3. **The `isOpaqueContent` inconsistency between notes/ref and cite.** Three walkers that are otherwise identical differ on this one guard. The shared walk should standardize on checking `!node.isOpaqueContent`, matching cite-resolution. The notes and ref walkers will behave identically in practice (since `remarkRecursiveContent` has already set `isOpaqueContent = false` on all default-handler nodes), but correctness argues for the guard.
 

@@ -4,7 +4,7 @@ html_output:
   element: glossary-entry
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -29,24 +29,24 @@ jats_counterpart:
   element: def-item
   notes: |
     JATS uses <def-item> inside <glossary> (or inside <def-list>) to
-    wrap a term/definition pair. Acadamark's <glossary-entry> maps
+    wrap a term/definition pair. Enscribe's <glossary-entry> maps
     directly to JATS <def-item> — the envelope around the <term>/<def>
     pair. (JATS does not have a separate "glossary-entry" name; the
     pairing structure is provided by <def-item>.)
 shorthand_examples:
   - source: |
-      <glossary-entry #term:acadamark>
-        <dt | acadamark>
+      <glossary-entry #term:enscribe>
+        <dt | enscribe>
         <dd | An academic publishing system built on HTML+CSS+JS.>
       </glossary-entry>
     layer1_html: |
-      <glossary-entry id="term:acadamark">
-        <dt>acadamark</dt>
+      <glossary-entry id="term:enscribe">
+        <dt>enscribe</dt>
         <dd>An academic publishing system built on HTML+CSS+JS.</dd>
       </glossary-entry>
     notes: |
       A single glossary entry. The id uses the "term:" colon-prefix
-      convention so cross-references like <ref @term:acadamark> can
+      convention so cross-references like <ref @term:enscribe> can
       resolve into the entry.
 interpreter_strategy: schema
 ---
@@ -65,8 +65,8 @@ The element is a structural-context child element: it only makes sense inside `<
 
 ```
 <glossary>
-  <glossary-entry #term:acadamark>
-    <dt | acadamark>
+  <glossary-entry #term:enscribe>
+    <dt | enscribe>
     <dd | An academic publishing system.>
   </glossary-entry>
 </glossary>
@@ -76,23 +76,23 @@ The `<dt>` carries the term; the `<dd>` carries the definition. Multiple `<dd>` 
 
 ## Cross-referencing
 
-The `term:` id-prefix convention (consistent with `fig:` / `eqn:` / `sec:` elsewhere in acadamark) makes glossary entries cross-referenceable from prose:
+The `term:` id-prefix convention (consistent with `fig:` / `eqn:` / `sec:` elsewhere in enscribe) makes glossary entries cross-referenceable from prose:
 
 ```
-A <ref @term:acadamark> document is HTML directly.
+A <ref @term:enscribe> document is HTML directly.
 ```
 
-resolves the reference into the glossary entry with `id="term:acadamark"`.
+resolves the reference into the glossary entry with `id="term:enscribe"`.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<glossary-entry>` | `<def-item>` (inside `<glossary>`) |
 | Its `<dt>` child | `<term>` (inside `<def-item>`) |
 | Its `<dd>` child | `<def>` (inside `<def-item>`) |
 
-JATS does not have a separate `glossary-entry` element name — the pairing structure is provided by `<def-item>`. Acadamark's named envelope is a convenience for authoring and for cross-reference resolution.
+JATS does not have a separate `glossary-entry` element name — the pairing structure is provided by `<def-item>`. Enscribe's named envelope is a convenience for authoring and for cross-reference resolution.
 
 ## Render-mode lowering
 

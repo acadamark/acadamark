@@ -29,7 +29,7 @@ scope. Q1.1–Q1.8 below unpack it. The biggest unsurprise of this
 Phase 0: **book/book-part vocabulary is already in place**, with
 mature vocab entries describing both the authoring surface and the
 intended structural-plugin behavior. The implementation slice is
-primarily the structural plugin (`acadamarkBookStructuring`), not
+primarily the structural plugin (`enscribeBookStructuring`), not
 new vocab.
 
 ## Q1.1 — what `Phase 4` filed
@@ -89,7 +89,7 @@ skips non-article types. *(formerly DF-12)*
 ### Add integration test and snapshot for `document-9-demo`
 `[tests/build]` `[alpha]` *(→ roadmap: Phase 4)*
 
-`test/fixtures/document-9-demo.acm` and `document-9-demo.html` exist
+`test/fixtures/document-9-demo.emd` and `document-9-demo.html` exist
 and are re-rendered by `render-fixtures.js`, but unlike documents 1–8
 there is no corresponding `document-9-expected.json` snapshot and no
 test case in `test/integration.test.js`. document-9 is the most
@@ -127,10 +127,10 @@ from book authoring units.
 ### Phase 5 (JATS export) — Phase 4's downstream
 
 ROADMAP.md L287-310, verbatim summary: Phase 5 builds
-`rehypeAcadamarkToJats`; "this is alpha line 4, the payoff for
+`rehypeEnscribeToJats`; "this is alpha line 4, the payoff for
 vocabulary being JATS-aligned from the start". Phase 5 has its own
 Phase 0 because "JATS export is a large arc and the package boundary
-(`acadamark-jats-export`, not yet present) needs siting". Two items:
+(`enscribe-jats-export`, not yet present) needs siting". Two items:
 (i) JATS-export Phase 0 (package siting, attribute-mapper question,
 the JATS section-model deferred-design); (ii) Build JATS export
 proper.
@@ -145,7 +145,7 @@ Phase 4 propagate to JATS export choices.
 
 ## Q1.2 — doc-9 snapshot
 
-**Status:** the fixture exists (168 lines, `document-9-demo.acm`)
+**Status:** the fixture exists (168 lines, `document-9-demo.emd`)
 plus its rendered `document-9-demo.html`, but:
 
 - No `document-9-expected.json` snapshot file
@@ -193,7 +193,7 @@ neither is technically blocked on the other.
 ### Implication for Phase 4
 
 Two separable work streams:
-- **Stream A** — `acadamarkBookStructuring` plugin + a new book-
+- **Stream A** — `enscribeBookStructuring` plugin + a new book-
   shaped integration fixture (probably doc38 or doc39) exercising
   the new structural shape.
 - **Stream B** — doc-9 snapshot generation + integration test block.
@@ -218,8 +218,8 @@ book). They can land in either order or together.
 
 ### Article pipeline
 
-The `acadamarkArticleStructuring` plugin
-(`packages/acadamark-interpreter/src/plugins/article-structuring.js`)
+The `enscribeArticleStructuring` plugin
+(`packages/enscribe-interpreter/src/plugins/article-structuring.js`)
 does the work. From `notes/specs/interpreter.md` §3.3 (L300-336):
 
 1. Reads `<meta type=...>` from root children.
@@ -243,7 +243,7 @@ ad-hoc.
 
 ### Section nesting
 
-`acadamarkSectionNesting` (`section-nesting.js`) converts the flat
+`enscribeSectionNesting` (`section-nesting.js`) converts the flat
 body content into a nested section tree (per
 `notes/specs/interpreter.md` §3.4, L287-298). Section titles (pipe
 content) promote to `<section-title>`. Three-deep section ladder:
@@ -255,7 +255,7 @@ the section ladder is per-book-part).
 
 ### Per-section footnote collection
 
-`acadamarkNotes` + `note-placement.js`'s
+`enscribeNotes` + `note-placement.js`'s
 `findTopLevelSections(treeChildren)` (L92-98):
 
 ```js
@@ -264,7 +264,7 @@ function findTopLevelSections(treeChildren) {
   if (!article) return [];
   const body = findTag(article.content ?? [], 'article-body');
   if (!body) return [];
-  return (body.content ?? []).filter(c => isAcadamarkTag(c, 'section'));
+  return (body.content ?? []).filter(c => isEnscribeTag(c, 'section'));
 }
 ```
 
@@ -289,7 +289,7 @@ scope question.
 
 ## Q1.4 — JATS book elements (target shape)
 
-Acadamark vocab entries already describe the JATS mapping
+Enscribe vocab entries already describe the JATS mapping
 explicitly. Survey from `book.md` and `book-part.md` JATS-mapping
 sections:
 
@@ -313,9 +313,9 @@ sections:
     <ref-list> (bibliography), <index>, etc.
 ```
 
-### Acadamark Layer 1 mapping (from book.md L244-252, book-part.md L244-249)
+### Enscribe Layer 1 mapping (from book.md L244-252, book-part.md L244-249)
 
-| Acadamark Layer 1 | JATS |
+| Enscribe Layer 1 | JATS |
 |---|---|
 | `<book>` | `<book>` |
 | `<book-front>` | `<book-front>` |
@@ -330,7 +330,7 @@ sections:
 **JATS section model.** Sections (`<sec>`) nest inside `<book-part>`s.
 `<book-body>` does NOT directly contain sections; it contains book-
 parts which contain sections. `book-body.md` L26-28 confirms this is
-acadamark's intended shape too: "Body-level prose (paragraphs,
+enscribe's intended shape too: "Body-level prose (paragraphs,
 sections) is **not** typically a direct child of `<book-body>` —
 prose belongs inside book-parts. The schema accepts only `<book-part>`
 children at this level."
@@ -340,7 +340,7 @@ children at this level."
 conclusion, glossary, dedication, other]`
 
 This matches JATS's book-part-type enumeration plus an `other`
-escape hatch. The acadamark vocab declares `book-part-type:
+escape hatch. The enscribe vocab declares `book-part-type:
 required: true` — every Layer 1 `<book-part>` carries an explicit
 type. The shorthand layer (`<chapter>`, `<part>`, `<appendix>`,
 etc.) sets it automatically via `shorthand_expansions` (book-part.md
@@ -388,7 +388,7 @@ top-level shapes.
 
 ### DD-Q2: Book-part types — one element or many
 
-**Question.** Does acadamark expose one `<book-part>` tag with a
+**Question.** Does enscribe expose one `<book-part>` tag with a
 `type=` kwarg, or separate tags (`<chapter>`, `<part>`, etc.)?
 
 **Status: SETTLED in vocab.** book-part.md L323-332 ("Why one
@@ -495,7 +495,7 @@ this in future.
 
 **Question.** Book-level front matter (title page, copyright,
 preface) vs. book-part-level front matter (chapter epigraph,
-chapter-author). Does acadamark need both?
+chapter-author). Does enscribe need both?
 
 **Status: PARTIALLY SETTLED.** book.md L222-228: "A book has three
 structural regions, mirroring JATS/BITS: `<book-front>`,
@@ -536,7 +536,7 @@ recommended per-book-part scope is the simplest extension.
 
 **Intersection: REAL, conditional on DD-Q4.** If counter scope is
 global across the book, the existing per-type registry shape
-(`packages/acadamark-core/src/registry.js`) works unchanged — same
+(`packages/enscribe-core/src/registry.js`) works unchanged — same
 shape as articles. If per-book-part resets are chosen, the
 registry needs extension to support per-section resets (or
 per-book-part contexts). That extension is non-trivial: the
@@ -563,7 +563,7 @@ prepend the chapter prefix.
 
 ### Section nesting
 
-**Intersection: PROBABLY SMALL.** `acadamarkSectionNesting` operates
+**Intersection: PROBABLY SMALL.** `enscribeSectionNesting` operates
 on a content array (currently `article-body`'s children). For books
 it would need to operate on each book-part's content. The plugin
 shape is general (it nests sections, regardless of containing
@@ -575,8 +575,8 @@ book-parts, run section-nesting inside each one.
 **Intersection: SETTLED disposition.** The current warning at
 `article-structuring.js` L170-173 will be replaced. The book path
 either becomes a sibling branch in the same plugin or a separate
-`acadamarkBookStructuring` plugin. Vocab declares the latter
-(book.md L146 "acadamarkBookStructuring" related_plugins entry), so
+`enscribeBookStructuring` plugin. Vocab declares the latter
+(book.md L146 "enscribeBookStructuring" related_plugins entry), so
 separate plugin is the precedent.
 
 ## Q1.7 — existing book-related vocabulary or scaffolding
@@ -586,7 +586,7 @@ separate plugin is the precedent.
 `packages/layer1-vocabulary/elements/`:
 
 - `book.md` — top-level container, 357 lines including
-  `acadamarkBookStructuring` related_plugin documentation, full
+  `enscribeBookStructuring` related_plugin documentation, full
   JATS mapping, render-mode lowering, multi-file deferral note.
 - `book-part.md` — the recursive divisor, 340 lines including the
   full type table, shorthand expansions (chapter, part, appendix,
@@ -600,14 +600,14 @@ separate plugin is the precedent.
   book-parts.
 
 **The vocab is essentially complete and JATS-aligned.** Phase 4's
-work is implementing the structural plugin (`acadamarkBookStructuring`)
+work is implementing the structural plugin (`enscribeBookStructuring`)
 that the vocab already describes. No new vocab entries should be
 needed unless DD-Q4/DD-Q5/DD-Q6 surface fields not currently
 declared.
 
 ### Plugins / handlers
 
-**No `acadamarkBookStructuring` plugin exists.** The vocab references
+**No `enscribeBookStructuring` plugin exists.** The vocab references
 it (book.md L146-154, book-part.md L141-150) as the intended
 plugin, but the file isn't on disk. No book-related handlers either.
 `article-structuring.js` L170-173 is the only book-aware code: the
@@ -616,7 +616,7 @@ warn-and-skip placeholder.
 ### Specs
 
 - `notes/specs/interpreter.md` §3.3 (L300-336) documents
-  `acadamarkArticleStructuring`'s current behavior including the
+  `enscribeArticleStructuring`'s current behavior including the
   book/book-part skip.
 - `notes/specs/pipeline.md` L284-285 records the same limitation.
 - `notes/specs/multi-file-authoring.md` (L12, L121, L140-150)
@@ -630,10 +630,10 @@ warn-and-skip placeholder.
 - `DESIGN.md` — no book mentions found.
 
 **Spec gaps for Phase 4 to fill:**
-- `interpreter.md` needs a new §3.X for `acadamarkBookStructuring`
+- `interpreter.md` needs a new §3.X for `enscribeBookStructuring`
   paralleling §3.3's article-structuring documentation.
 - `pipeline.md` L284-285 needs updating (the "limitation" becomes
-  "handled by acadamarkBookStructuring").
+  "handled by enscribeBookStructuring").
 - `DESIGN.md` may want a short §"Document structure: articles vs.
   books" — currently DESIGN.md has structural-pattern sections for
   several other concerns (frameable, structured-element, the
@@ -666,7 +666,7 @@ compression; the Phase 0 finding documents the unpacking.
 
 Order: **4a → 4b**.
 
-- **Slice 4a — `acadamarkBookStructuring` plugin + book-shaped
+- **Slice 4a — `enscribeBookStructuring` plugin + book-shaped
   fixture.** Implements the structural plugin per the vocab's
   declared behavior (book.md L146-154, book-part.md L141-150).
   Handles `<meta type=book>` and `<meta type=book-part>`. Generates
@@ -680,7 +680,7 @@ Order: **4a → 4b**.
   title>`/`<book-part-subtitle>` (book-part level). Adapts
   `findTopLevelSections` in `note-placement.js` to work for books
   (per DD-Q5 footnote scope decision — recommended per-book-part).
-  Adapts `acadamarkSectionNesting` to run on book-part bodies.
+  Adapts `enscribeSectionNesting` to run on book-part bodies.
   New book-shaped fixture (likely doc38) exercising
   chapter/part/appendix authoring + cross-references + footnotes.
   Defers DD-Q4 counter scope: ship with global counters
@@ -716,7 +716,7 @@ expected.json. Splitting also lets 4b ship quickly if 4a runs long.
 
 ## Three sibling cleanup items worth filing or bundling
 
-- **`acadamarkBookStructuring` doesn't exist.** The vocab references
+- **`enscribeBookStructuring` doesn't exist.** The vocab references
   it (book.md L146, book-part.md L142). Plugin file creation is in
   scope for 4a, but worth flagging that the related_plugin
   declaration in the vocab is currently a forward-reference.
@@ -732,7 +732,7 @@ expected.json. Splitting also lets 4b ship quickly if 4a runs long.
 
 Recorded (this Phase 0 surfaces):
 - Q1.1 — BACKLOG/ROADMAP entries (verbatim with line numbers)
-- Q1.2 — doc-9 fixture state (.acm + .html exist; no snapshot, no
+- Q1.2 — doc-9 fixture state (.emd + .html exist; no snapshot, no
   test); 168-line fixture content + structure surveyed
 - Q1.3 — current `<article>` structure + pipeline + the warn-and-
   skip placeholder in `article-structuring.js`

@@ -5,12 +5,12 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <meta> is a custom element distinct from HTML's <meta>
+    Enscribe's <meta> is a custom element distinct from HTML's <meta>
     (which is a void element used for character encoding, viewport, etc.).
-    Acadamark's <meta> is a structured container for descriptive metadata —
+    Enscribe's <meta> is a structured container for descriptive metadata —
     information about what the document is. Operational and configuration
     content lives in <data> and <config>, respectively.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -22,7 +22,7 @@ acadamark_attributes:
       default: article
       notes: |
         Declares the document type. Read by the structural plugin
-        (acadamarkArticleStructuring / acadamarkBookStructuring) to
+        (enscribeArticleStructuring / enscribeBookStructuring) to
         decide which Layer 1 wrapper to generate around the document:
         type=article → <article> with <article-front>/<article-body>/<article-back>;
         type=book → <book> with <book-front>/<book-body>/<book-back>;
@@ -145,14 +145,14 @@ shorthand_examples:
       wrapper.
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkArticleStructuring
+  - name: enscribeArticleStructuring
     purpose: |
       When <meta type=article> (or <meta> with no type, defaulting to
       article) is present, generates the <article> wrapper plus
       <article-front>/<article-body>/<article-back> regions; promotes
       <title>/<subtitle> in <meta> to <article-title>/<article-subtitle>;
       places <meta> inside <article-front>. See notes/specs/pipeline.md.
-  - name: acadamarkBookStructuring
+  - name: enscribeBookStructuring
     purpose: |
       When <meta type=book> or <meta type=book-part> is present (or
       via shorthand expansions like <chapter>), generates the
@@ -169,11 +169,11 @@ Document-level descriptive metadata. Holds title, author, date, abstract — con
 
 ## Semantic intent
 
-`<meta>` is acadamark's structured container for descriptive metadata, parallel to HTML's `<head>`, RMarkdown's YAML frontmatter (the descriptive parts), or JATS's `<article-meta>` and `<book-meta>`.
+`<meta>` is enscribe's structured container for descriptive metadata, parallel to HTML's `<head>`, RMarkdown's YAML frontmatter (the descriptive parts), or JATS's `<article-meta>` and `<book-meta>`.
 
 The element is for **descriptive content only**: the document's title, who wrote it, when it was published, what it's about (abstract, keywords). Anything that helps a reader orient before reading.
 
-For other kinds of non-narrative content, acadamark uses dedicated elements:
+For other kinds of non-narrative content, enscribe uses dedicated elements:
 
 - **`<data>`** — referenced resources (inline bibliography blocks, embedded image data, lookup tables). Tells the document where to find supporting material.
 - **`<config>`** — build and render configuration (output format, citation style, stylesheets, themes). Tells the build system how to process the document.
@@ -292,7 +292,7 @@ Putting these in `<meta>` would clutter the descriptive metadata and confuse the
 
 `<meta>` maps to one of three JATS containers depending on the document type (driven by the `type` kwarg or by the surrounding wrapper). The JATS exporter constructs the type-specific JATS container and the surrounding region wrappers at export time.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<meta type=article>` (in `<article>`) | `<article-meta>` (inside `<front>`) |
 | `<meta type=book>` (in `<book>`) | `<book-meta>` (inside `<book-front>`) |

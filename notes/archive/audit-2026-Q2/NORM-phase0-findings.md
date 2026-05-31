@@ -11,7 +11,7 @@ files edited except this document.
 
 The normalization pass is a new pipeline stage that rewrites standard mdast
 nodes produced by remark-math, remark-gfm, and other delegated parsers into
-canonical `acadamarkTag` nodes, before any structural or semantic plugin runs.
+canonical `enscribeTag` nodes, before any structural or semantic plugin runs.
 The settled principle is: **delegate the lexer, own the node identity** — the
 delegated parser finds the construct; the normalization pass converts it to the
 canonical form downstream cannot distinguish from the authored shorthand.
@@ -28,37 +28,37 @@ generalizes to constructs not in the first slice without structural hazards.
 ### Sources read
 
 - `notes/pipeline.md` (full)
-- `packages/acadamark-interpreter/src/index.js` (full)
+- `packages/enscribe-interpreter/src/index.js` (full)
 
 ### The pipeline today
 
-Plugin registration order in `acadamarkInterpreter` (`index.js`):
+Plugin registration order in `enscribeInterpreter` (`index.js`):
 
 | Step | Plugin |
 |------|--------|
-| 1 | `remarkRecursiveContent` — parses `acadamarkTag.content` strings into mdast arrays via an **inner processor** |
-| 2 | `acadamarkConfigDiscovery` — reads `<config>` kwargs; read-only |
-| 3 | `acadamarkArticleStructuring` — wraps root children in `<article>` structure |
-| 4 | `acadamarkSectionNesting` — nests section family nodes |
-| 5 | `acadamarkCitationIndex` — builds citation index |
-| 6 | `acadamarkNotes` — registers note elements, splices markers |
-| 7 | `acadamarkNumbering` — registers numberable elements |
-| 8 | `acadamarkApplyNumbers` — numbers everything; `fillNumbering` |
-| 9 | `acadamarkRefResolution` — replaces `<ref>` nodes |
-| 10 | `acadamarkCiteResolution` — replaces `<cite>` nodes |
-| 11 | `acadamarkNotePlacement` — moves notes to article-back |
-| 12 | `acadamarkBibliography` — renders bibliography |
+| 1 | `remarkRecursiveContent` — parses `enscribeTag.content` strings into mdast arrays via an **inner processor** |
+| 2 | `enscribeConfigDiscovery` — reads `<config>` kwargs; read-only |
+| 3 | `enscribeArticleStructuring` — wraps root children in `<article>` structure |
+| 4 | `enscribeSectionNesting` — nests section family nodes |
+| 5 | `enscribeCitationIndex` — builds citation index |
+| 6 | `enscribeNotes` — registers note elements, splices markers |
+| 7 | `enscribeNumbering` — registers numberable elements |
+| 8 | `enscribeApplyNumbers` — numbers everything; `fillNumbering` |
+| 9 | `enscribeRefResolution` — replaces `<ref>` nodes |
+| 10 | `enscribeCiteResolution` — replaces `<cite>` nodes |
+| 11 | `enscribeNotePlacement` — moves notes to article-back |
+| 12 | `enscribeBibliography` — renders bibliography |
 | 13 | Compiler — mdast → hast → HTML |
 
 The inner processor (`index.js` line ~330):
 ```js
-const innerProcessor = unified().use(remarkParse).use(remarkAcadamark);
+const innerProcessor = unified().use(remarkParse).use(remarkEnscribe);
 ```
 
 ### Insertion point
 
 **Between steps 1 and 2** — immediately after `remarkRecursiveContent`, before
-`acadamarkConfigDiscovery`.
+`enscribeConfigDiscovery`.
 
 Justification against the three constraints:
 
@@ -66,16 +66,16 @@ Justification against the three constraints:
 markdown-form nodes are present in the tree — both those produced by the outer
 processor's `remarkParse` run (top-level prose) and those produced by the inner
 processor's `remarkParse` run inside `remarkRecursiveContent` (content inside
-`acadamarkTag` nodes). Inserting at step 1.5 sees the complete tree.
+`enscribeTag` nodes). Inserting at step 1.5 sees the complete tree.
 
-**"Before structural plugins."** `acadamarkArticleStructuring` (step 3) and
-`acadamarkSectionNesting` (step 4) use `isAcadamarkTag` predicates throughout.
+**"Before structural plugins."** `enscribeArticleStructuring` (step 3) and
+`enscribeSectionNesting` (step 4) use `isEnscribeTag` predicates throughout.
 A `heading` mdast node reaching step 3 is not recognized as a section; it lands
 in article-body as generic content. A `heading` reaching step 4 returns
 `sectionDepth === 0` and is never nested. Normalization before step 2 satisfies
 this constraint for all constructs.
 
-`acadamarkConfigDiscovery` (step 2) reads only `<config>` node kwargs — it does
+`enscribeConfigDiscovery` (step 2) reads only `<config>` node kwargs — it does
 not walk for math or heading nodes and is not harmed by un-normalized nodes
 being present. Placing normalization before step 2 is conservative and keeps
 the rule clean: "no structural pass sees unnormalized nodes."
@@ -86,7 +86,7 @@ The normalization pass itself is **one tree-walk** over the complete post-step-1
 tree. The reason: by the time step 1 finishes, `inlineMath`/`math` nodes from
 both the outer run and the inner run are present in the unified tree. Top-level
 instances sit in `root.children`; inner-processor instances sit in
-`acadamarkTag.content` arrays. A single walk that descends into both handles
+`enscribeTag.content` arrays. A single walk that descends into both handles
 all instances.
 
 However, remark-math and remark-gfm must still be added to **both** processors
@@ -103,7 +103,7 @@ The inner processor construction at `index.js` line ~330 must be updated to:
 ```js
 const innerProcessor = unified()
   .use(remarkParse)
-  .use(remarkAcadamark)
+  .use(remarkEnscribe)
   .use(remarkMath)       // added for G3
   .use(remarkGfm);       // added for G3
 ```
@@ -114,29 +114,29 @@ const innerProcessor = unified()
 
 ### Sources read
 
-- `packages/acadamark-interpreter/src/lib/walk-replace.js` (full)
-- `packages/acadamark-interpreter/src/lib/discover.js` (full)
-- `packages/acadamark-interpreter/src/lib/ast-helpers.js` (full)
-- `packages/remark-acadamark/src/generated/parser.js` (lines 1–90, 390–510)
-- `packages/remark-acadamark/src/from-markdown.js` (lines 1–170)
-- `packages/remark-acadamark/src/sigil-mapping.js` (full)
-- `packages/remark-acadamark/src/dsl-registry.js` (full)
+- `packages/enscribe-interpreter/src/lib/walk-replace.js` (full)
+- `packages/enscribe-interpreter/src/lib/discover.js` (full)
+- `packages/enscribe-interpreter/src/lib/ast-helpers.js` (full)
+- `packages/remark-enscribe/src/generated/parser.js` (lines 1–90, 390–510)
+- `packages/remark-enscribe/src/from-markdown.js` (lines 1–170)
+- `packages/remark-enscribe/src/sigil-mapping.js` (full)
+- `packages/remark-enscribe/src/dsl-registry.js` (full)
 
 ### Is `walkReplace` the right vehicle?
 
 **No.** `walkReplace(nodes, tagname, process)` matches nodes via
-`isAcadamarkTag(node, tagname)` — it finds `acadamarkTag` nodes by
+`isEnscribeTag(node, tagname)` — it finds `enscribeTag` nodes by
 `node.tagname`. The normalization pass must find nodes by `node.type` (e.g.
-`node.type === 'inlineMath'`), which `isAcadamarkTag` never returns true for.
+`node.type === 'inlineMath'`), which `isEnscribeTag` never returns true for.
 
 The descent rules are identical to `walkReplace`'s:
-- Recurse into `acadamarkTag.content` when `!node.isOpaqueContent` (opaque
+- Recurse into `enscribeTag.content` when `!node.isOpaqueContent` (opaque
   content is a raw string or DSL payload, never a tree).
 - Recurse into `node.children` for all mdast block/inline containers.
 
 **Recommendation: a new function `walkNormalize(nodes, predicate, process)`**
-in a new file `packages/acadamark-interpreter/src/lib/walk-normalize.js`.
-Same descent logic; matches by predicate rather than by acadamarkTag tagname.
+in a new file `packages/enscribe-interpreter/src/lib/walk-normalize.js`.
+Same descent logic; matches by predicate rather than by enscribeTag tagname.
 `walkReplace` is NOT changed — that avoids touching its three existing callers
 (cite-resolution, ref-resolution, note-placement).
 
@@ -147,7 +147,7 @@ Same descent logic; matches by predicate rather than by acadamarkTag tagname.
 ```js
 // makeNode(tagname, extra) template — all fields that Peggy-emitted nodes carry:
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   form: 'short',
   tagname,
   positional: [],
@@ -163,7 +163,7 @@ Same descent logic; matches by predicate rather than by acadamarkTag tagname.
 }
 ```
 
-`exitAcadamarkTag` in `from-markdown.js` lines ~104–113 adds `contentHandler`
+`exitEnscribeTag` in `from-markdown.js` lines ~104–113 adds `contentHandler`
 after Peggy parsing:
 ```js
 node.contentHandler = getContentHandler(node.tagname);
@@ -175,7 +175,7 @@ if (node.contentHandler === 'default' && node.content !== null) {
 **Canonical `$` sigil node** (confirmed from `generated/parser.js` `peg$f26`/`peg$f27` at lines 408–421 and `test_result` lines ~903–915):
 ```js
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   form: 'short',
   tagname: '$',
   positional: [],
@@ -194,7 +194,7 @@ if (node.contentHandler === 'default' && node.content !== null) {
 **Canonical `$$` sigil node** (confirmed from `peg$f24`/`peg$f25` at lines 397–407 and `test_result` lines ~818–862):
 ```js
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   form: 'short',
   tagname: '$$',
   positional: [],
@@ -247,7 +247,7 @@ the remark-math BNF grammar):
 `inlineMath { value }` →
 ```js
 {
-  type: 'acadamarkTag',   form: 'short',    tagname: '$',
+  type: 'enscribeTag',   form: 'short',    tagname: '$',
   positional: [],         booleans: {},     kwargs: {},
   id: null,               classes: [],      atRefs: [],
   content: value,         isOpaqueContent: true,   selfClosing: false,
@@ -258,7 +258,7 @@ the remark-math BNF grammar):
 `math { value }` →
 ```js
 {
-  type: 'acadamarkTag',   form: 'short',    tagname: '$$',
+  type: 'enscribeTag',   form: 'short',    tagname: '$$',
   positional: [],         booleans: {},     kwargs: {},
   id: null,               classes: [],      atRefs: [],
   content: value,         isOpaqueContent: true,   selfClosing: false,
@@ -294,10 +294,10 @@ tree, and is downstream of normalization. It remains correct.
 }
 ```
 
-**Canonical acadamark target form (`<table format | data>`):**
+**Canonical enscribe target form (`<table format | data>`):**
 ```js
 {
-  type: 'acadamarkTag',
+  type: 'enscribeTag',
   tagname: 'table',
   positional: ['<format>'],       // 'md', 'csv', 'json', 'yaml', 'tsv'
   content: '<raw data string>',   // opaque string parsed by tableHandler
@@ -309,7 +309,7 @@ tree, and is downstream of normalization. It remains correct.
 
 **The mismatch:** A remark-gfm `table` node has *structured* content —
 `tableRow`/`tableCell` children that may contain inline markup (emphasis, links,
-inline math). The canonical acadamark `table` node carries an *opaque string*
+inline math). The canonical enscribe `table` node carries an *opaque string*
 in a declared format. The table handler (`handlers/table.js`) dispatches on
 `node.positional[0]` and parses the string via `parseCsv`, `parseMd`, etc. All
 parser functions produce `{ headers: string[]|null, rows: string[][] }` — plain
@@ -365,11 +365,11 @@ principle.
 
 Markdown headings produce `{ type: 'heading', depth: 1..6, children: [...] }`.
 
-The acadamark section vocabulary uses named forms `section`, `sub-section`,
+The enscribe section vocabulary uses named forms `section`, `sub-section`,
 `sub-sub-section` — **not** the sigil forms `#`, `##`, `###`. This distinction
 matters for the normalization target:
 
-- `acadamarkSectionNesting` (`section-nesting.js` lines 62, 114) calls
+- `enscribeSectionNesting` (`section-nesting.js` lines 62, 114) calls
   `sectionDepth(node)` from `ast-helpers.js` lines 53–60. `sectionDepth`
   checks `node.tagname === 'section'` (depth 1), `'sub-section'` (depth 2),
   `'sub-sub-section'` (depth 3). Sigil tagnames `'#'`, `'##'`, `'###'` return
@@ -380,7 +380,7 @@ matters for the normalization target:
   reaching `tagHandler` gets an unknown-tag warning today.
 - Fixture documents use `<section #id | Title>` named form exclusively; no test
   exercises `<# Title>` through the full interpreter pipeline.
-- `FLAGGED-1` in `acadamark-session-handoff.md` line 386 explicitly marks
+- `FLAGGED-1` in `enscribe-session-handoff.md` line 386 explicitly marks
   reconciling `##` vs `<#>` as an unresolved design question.
 
 **Implication for NORM heading normalization:** the normalization pass must
@@ -388,9 +388,9 @@ produce `{ tagname: 'section' }` / `{ tagname: 'sub-section' }` /
 `{ tagname: 'sub-sub-section' }` to be recognized by existing plugins — not
 `{ tagname: '#' }`. The content is `heading.children` (inline mdast nodes,
 directly usable as the `content` array of the canonical section node, since
-`acadamarkSectionNesting` extracts the title content from `node.content`).
+`enscribeSectionNesting` extracts the title content from `node.content`).
 
-**Depth 4–6 gap:** `depth: 4`, `5`, `6` have no canonical acadamark form. A
+**Depth 4–6 gap:** `depth: 4`, `5`, `6` have no canonical enscribe form. A
 normalization strategy must decide: pass through as `heading` (unnormalized),
 produce a `sub-sub-section` fallback, or generate an error node. This is a
 design decision deferred to the heading normalization slice.
@@ -408,9 +408,9 @@ Before implementing heading normalization, two preconditions should be verified:
 
 ### Emphasis, strong, link (straightforward)
 
-- `emphasis { children }` → `acadamarkTag { tagname: 'em', content: children, contentHandler: 'default', isOpaqueContent: false }`
-- `strong { children }` → `acadamarkTag { tagname: 'strong', ... }`
-- `link { url, title, children }` → `acadamarkTag { tagname: 'a', kwargs: { href: url }, content: children, ... }`
+- `emphasis { children }` → `enscribeTag { tagname: 'em', content: children, contentHandler: 'default', isOpaqueContent: false }`
+- `strong { children }` → `enscribeTag { tagname: 'strong', ... }`
+- `link { url, title, children }` → `enscribeTag { tagname: 'a', kwargs: { href: url }, content: children, ... }`
 
 No structural mismatch. The content is inline mdast that the existing
 `contentHandler === 'default'` path handles. The normalization sets
@@ -419,9 +419,9 @@ descend into these nodes' content for further normalization if needed.
 
 ### Lists (straightforward structure, one disambiguation needed)
 
-- `list { ordered: false, children: [listItem...] }` → `acadamarkTag { tagname: 'ul', content: children, ... }`
-- `list { ordered: true, children: [listItem...] }` → `acadamarkTag { tagname: 'ol', ... }`
-- `listItem { children }` → `acadamarkTag { tagname: 'li', content: children, ... }`
+- `list { ordered: false, children: [listItem...] }` → `enscribeTag { tagname: 'ul', content: children, ... }`
+- `list { ordered: true, children: [listItem...] }` → `enscribeTag { tagname: 'ol', ... }`
+- `listItem { children }` → `enscribeTag { tagname: 'li', content: children, ... }`
 
 The `list.ordered` boolean determines `ul` vs `ol`. Manageable in the mapping
 table: the predicate matches `node.type === 'list'`, and the process function
@@ -448,7 +448,7 @@ infrastructure.
 No existing test asserts that an `inlineMath` remark-math mdast node survives in
 the tree:
 
-- `numbering.test.js` line 196 constructs an `acadamarkTag { tagname: '$' }`
+- `numbering.test.js` line 196 constructs an `enscribeTag { tagname: '$' }`
   directly — not a raw remark-math `inlineMath` node. Unaffected by normalization.
 - `integration.test.js` line 222 counts `<inline-math` elements in HTML output —
   tests rendered output, not mdast shape. Compatible with normalization (the
@@ -460,15 +460,15 @@ the tree:
 (assuming the normalized node shapes are correct and remark-math is not yet
 installed, so no `inlineMath` nodes currently exist in the tree at all).
 
-### `acadamarkArticleStructuring` and `acadamarkSectionNesting`
+### `enscribeArticleStructuring` and `enscribeSectionNesting`
 
-Both plugins use `isAcadamarkTag` predicates exclusively and do not walk for
+Both plugins use `isEnscribeTag` predicates exclusively and do not walk for
 `heading` nodes. Consequence:
 
-- A `heading` node reaching `acadamarkArticleStructuring` is classified as
+- A `heading` node reaching `enscribeArticleStructuring` is classified as
   body content (not front-matter, not back-matter) and placed in
   `article-body`. No crash; silent misclassification.
-- A `heading` node reaching `acadamarkSectionNesting` returns
+- A `heading` node reaching `enscribeSectionNesting` returns
   `sectionDepth === 0` and is placed as regular body content. No crash; silent
   non-nesting.
 
@@ -488,7 +488,7 @@ Both claims are false as of HEAD:
 - Rendering is via KaTeX directly in `mathHandler`, not `rehype-katex`.
 
 The normalization pass will add a third outdated claim: `inlineMath` nodes will
-not survive in the tree at all; they will be rewritten to `acadamarkTag`
+not survive in the tree at all; they will be rewritten to `enscribeTag`
 immediately after parsing. Fix deferred to a documentation pass after NORM/G3
 land, as filed in `math-coverage-phase0-findings.md`.
 
@@ -498,16 +498,16 @@ land, as filed in `math-coverage-phase0-findings.md`.
 
 ### Pipeline insertion point
 
-**Between steps 1 and 2** in `acadamarkInterpreter` (`index.js`): after
-`this.use(remarkRecursiveContent, ...)` and before `this.use(acadamarkConfigDiscovery)`.
+**Between steps 1 and 2** in `enscribeInterpreter` (`index.js`): after
+`this.use(remarkRecursiveContent, ...)` and before `this.use(enscribeConfigDiscovery)`.
 
 ### Rewrite mechanism
 
 **New function `walkNormalize(nodes, predicate, process)` in a new file
-`packages/acadamark-interpreter/src/lib/walk-normalize.js`.** Same descent
-rules as `walkReplace` (recurse into non-opaque `acadamarkTag.content`; recurse
+`packages/enscribe-interpreter/src/lib/walk-normalize.js`.** Same descent
+rules as `walkReplace` (recurse into non-opaque `enscribeTag.content`; recurse
 into `node.children`). Matches by a predicate on `node.type`, not by
-`acadamarkTag.tagname`. `walkReplace` is not modified.
+`enscribeTag.tagname`. `walkReplace` is not modified.
 
 **Per-construct mapping** lives in the normalization pass module itself
 (e.g. `plugins/normalize-markdown.js`). Imports `getContentHandler` from

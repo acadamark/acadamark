@@ -1,14 +1,14 @@
-# Working with Ariel on acadamark
+# Working with Ariel on enscribe
 
-This file is read by Claude Code at the start of every session in this repository. It encodes the working conventions for the acadamark project so that they don't have to be repeated in every prompt.
+This file is read by Claude Code at the start of every session in this repository. It encodes the working conventions for the enscribe project so that they don't have to be repeated in every prompt.
 
 ## Documentation system
 
-acadamark's documentation operates under the system defined in `CONTRIBUTING.md` — read it once; it is the canonical definition. Two rules govern every document (one job per document; no computable facts), and the Maintenance section names further rules including the limitations rule and the discussion-is-work rule. **Every implementation slice ends with the coherence check defined in `CONTRIBUTING.md`** — perform it and report its result before committing.
+enscribe's documentation operates under the system defined in `CONTRIBUTING.md` — read it once; it is the canonical definition. Two rules govern every document (one job per document; no computable facts), and the Maintenance section names further rules including the limitations rule and the discussion-is-work rule. **Every implementation slice ends with the coherence check defined in `CONTRIBUTING.md`** — perform it and report its result before committing.
 
 ## Project overview
 
-Acadamark is an academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top. The project has two main layers:
+Enscribe is an academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top. The project has two main layers:
 
 - **Layer 1** is a vocabulary of semantic HTML elements for academic content (articles, books, chapters, sections, floats, citations, cross-references, notes, etc.). The Layer 1 spec is the canonical, archival representation of a document.
 - **Layer 2** is the shorthand authoring syntax — a uniform tag form `<tag #id .class attr=value | content>` that compiles to Layer 1 HTML, plus selected markdown idioms accepted as shortcuts.
@@ -22,7 +22,7 @@ The relevant docs are:
 - `BACKLOG-ROADMAP.md` — open work; the single home for backlog and routing.
 - `notes/specs/layer1-naming.md` — Layer 1 vocabulary rules.
 - `notes/specs/shorthand-syntax.md` — parser specification.
-- `notes/specs/idioms.md` — delegation principle (acadamark hands off to existing parsers wherever possible).
+- `notes/specs/idioms.md` — delegation principle (enscribe hands off to existing parsers wherever possible).
 - `notes/specs/recursive-content-spec.md` — recursive parsing of named-tag content.
 
 Read the files relevant to the current task at the start of a session.
@@ -33,7 +33,7 @@ Read the files relevant to the current task at the start of a session.
 
 **Push back rather than agree.** When there's a real concern about something Ariel has asked for — a design issue, a scope problem, an implementation risk — say so before starting work. Disagreement is part of the work, not an interruption. Reflexive agreement is unwanted and erodes trust over time.
 
-**Slow over fast.** Decisions are made deliberately. Acadamark has been worked on intermittently over years; deliberate decisions are what make it resumable. Speed is not a priority.
+**Slow over fast.** Decisions are made deliberately. Enscribe has been worked on intermittently over years; deliberate decisions are what make it resumable. Speed is not a priority.
 
 **Pacing.** Ariel is a physicist and data scientist with strong design instincts but is not a parser engineer or a JATS expert. When explaining technical details, err toward more words and more examples rather than dense compressed prose. If Ariel says "I don't fully understand," slow down and re-explain with examples rather than glossing.
 
@@ -50,7 +50,7 @@ Read the files relevant to the current task at the start of a session.
 
 **Coherence check at the end of each slice.** The check defined in `CONTRIBUTING.md` ends every implementation slice and is reported alongside the diff. It verifies spec ⇄ code, backlog ⇄ roadmap, STATUS, and Rule 2. Drift surfaced by the check is fixed in the same slice; it is not a separate "drift check report" filed for later. (The older single-direction "drift check" — re-reading specs against new code at the end of each slice — is subsumed by the coherence check.)
 
-**Visual verification for visible-output slices.** Tests catch behavioral regressions; they do not catch visual regressions (a note in the wrong place, a code block losing newlines, math rendering as block when it should be inline). When a slice changes visible output, run `npm run verify` in `packages/acadamark-interpreter` — it runs the full test suite and re-renders the fixture HTML files — then open the affected `test/fixtures/document-N-*.html` in a browser and confirm the rendered output is correct. Tests passing is necessary but not sufficient for visible-output slices. When a slice intentionally changes output, regenerate snapshots with `ACADAMARK_UPDATE_SNAPSHOTS=1 node test/run.js` and re-run `npm run verify` to confirm the new snapshots match.
+**Visual verification for visible-output slices.** Tests catch behavioral regressions; they do not catch visual regressions (a note in the wrong place, a code block losing newlines, math rendering as block when it should be inline). When a slice changes visible output, run `npm run verify` in `packages/enscribe-interpreter` — it runs the full test suite and re-renders the fixture HTML files — then open the affected `test/fixtures/document-N-*.html` in a browser and confirm the rendered output is correct. Tests passing is necessary but not sufficient for visible-output slices. When a slice intentionally changes output, regenerate snapshots with `ENSCRIBE_UPDATE_SNAPSHOTS=1 node test/run.js` and re-run `npm run verify` to confirm the new snapshots match.
 
 **Stay within scope.** If something surfaces during the work that's outside the current prompt's scope, surface it as a finding, do not fix it silently. If a finding would conflict with planned future work, flag the conflict before proceeding.
 
@@ -84,7 +84,7 @@ Read the files relevant to the current task at the start of a session.
 
 ## What "tests pass" means
 
-The acadamark parser uses a generated Peggy grammar. Tests run against the generated parser, not the grammar source. If the grammar source changes, the parser must be rebuilt before tests can claim to be valid:
+The enscribe parser uses a generated Peggy grammar. Tests run against the generated parser, not the grammar source. If the grammar source changes, the parser must be rebuilt before tests can claim to be valid:
 
 ```
 npm run build:grammar     # or whatever the project script is

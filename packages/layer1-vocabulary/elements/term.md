@@ -4,7 +4,7 @@ html_output:
   element: term
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
     notes: |
@@ -26,7 +26,7 @@ jats_counterpart:
   notes: |
     JATS uses <named-content content-type="term"> for marked
     terminology. The exporter constructs the named-content element
-    with the content-type attribute from acadamark's <term>.
+    with the content-type attribute from enscribe's <term>.
 shorthand_examples:
   - source: 'An <term | eigenvector> is a non-zero vector that scales under a linear transformation.'
     layer1_html: '<p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>'
@@ -76,7 +76,7 @@ The id-carrying first introduction is the conventional pattern: define once with
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<term>X</term>` | `<named-content content-type="term">X</named-content>` |
 

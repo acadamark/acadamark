@@ -1,0 +1,23 @@
+<meta>
+<title | A Minimal Article for JATS Export>
+<subtitle | Phase 5 slice 5a fixture>
+<author | Test Author>
+<abstract |
+This abstract demonstrates the minimal article scaffolding exported
+to JATS XML. It exercises paragraphs and inline *italic* and **bold**.
+>
+</meta>
+
+<section | Introduction>
+This is the first section. It contains a paragraph with *italic*
+text and **bold** text and `inline code`.
+
+<section | Methods>
+A second section, with one paragraph.
+
+<sub-section | Subsection>
+A nested subsection — JATS nests `<sec>` elements recursively;
+the enscribe three-level cap is enforced by the vocab, not by JATS.
+
+<section | Results>
+A short paragraph in the third section.

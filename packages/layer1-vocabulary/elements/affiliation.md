@@ -4,7 +4,7 @@ html_output:
   element: affiliation
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
     notes: |
@@ -27,7 +27,7 @@ jats_counterpart:
     JATS uses <aff> inside <contrib> (the JATS counterpart of <author>).
     Multiple authors sharing an affiliation reference it by id via
     <xref ref-type="aff" rid="...">; the exporter generates the xref
-    structure from acadamark's affiliation ids.
+    structure from enscribe's affiliation ids.
 shorthand_examples:
   - source: |
       <author>
@@ -107,7 +107,7 @@ When multiple authors share an affiliation, give the first `<affiliation>` an id
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<affiliation>` (with content) | `<aff>` inside `<contrib>` |
 | `<affiliation #aff1 />` (id-only reference) | `<xref ref-type="aff" rid="aff1">` inside `<contrib>` |

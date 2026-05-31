@@ -1,13 +1,13 @@
 # Reading order for understanding the project
 
-This document describes the recommended reading path for understanding acadamark's design and current implementation state. The project has accumulated enough documentation that knowing where to start matters.
+This document describes the recommended reading path for understanding enscribe's design and current implementation state. The project has accumulated enough documentation that knowing where to start matters.
 
 ## For someone new to the project
 
 1. `README.md` (project root) — the project's purpose and high-level approach.
 2. `STATUS.md` — what's done, what's in flight, what's pending.
 3. `DESIGN.md` — design rationale: premise, layered model, JATS section, scope decisions.
-4. `notes/idioms.md` — the delegation principle that underlies acadamark's parser and interpreter.
+4. `notes/idioms.md` — the delegation principle that underlies enscribe's parser and interpreter.
 
 ## For understanding the parser
 
@@ -15,7 +15,7 @@ This document describes the recommended reading path for understanding acadamark
 2. `notes/escape-rules-spec.md` — escape rules in named-tag content and sigil bodies.
 3. `notes/multiline-spec.md` — multi-line construct rules.
 4. `notes/recursive-content-spec.md` — design of the recursive-content plugin that re-parses string content into homogeneous `Node[]`.
-5. `packages/remark-acadamark/` — the parser implementation. The Peggy grammar is in `grammar/acadamark.peggy`; the micromark extension in `src/syntax.js`.
+5. `packages/remark-enscribe/` — the parser implementation. The Peggy grammar is in `grammar/enscribe.peggy`; the micromark extension in `src/syntax.js`.
 
 ## For understanding the vocabulary
 

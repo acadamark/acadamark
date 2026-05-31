@@ -12,7 +12,7 @@ html_output:
     because `interpreter_strategy: handler` routes through the handler
     instead; the handler builds the `<table>` shape directly. `<tsv>`
     itself does not appear in the rendered HTML.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -37,7 +37,7 @@ content:
   becomes: 'parsed TSV rows (rendered as <table>)'
   notes: |
     Content is tab-separated source data, preserved verbatim and parsed
-    by the handler. No acadamark interpretation. Same parser as
+    by the handler. No enscribe interpretation. Same parser as
     `<table tsv>`.
 content_handler: tsv
 jats_counterpart:
@@ -80,7 +80,7 @@ A TSV (tab-separated values) data block. Parses its opaque content as TSV and re
 
 ## Semantic intent
 
-`<tsv>` is a DSL — its content is foreign-language data (TSV), parsed by a delegated processor (the TSV handler) into a rendered table. Acadamark does not interpret the content as prose.
+`<tsv>` is a DSL — its content is foreign-language data (TSV), parsed by a delegated processor (the TSV handler) into a rendered table. Enscribe does not interpret the content as prose.
 
 The element is the natural authoring shape for an unstyled TSV table. For an authored table with explicit format dispatch, use the qualifying form `<table tsv | …>`; both `<tsv>` and `<table tsv>` use the same parser and produce equivalent output.
 
@@ -106,7 +106,7 @@ Cells are separated by literal tab characters. The first row is treated as the h
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<tsv>` (rendered output) | `<table-wrap>/<table>` |
 

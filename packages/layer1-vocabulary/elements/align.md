@@ -8,7 +8,7 @@ html_output:
     `html_output.element` is the vocabulary lookup key (must match the
     tagname). Handler emits `<align>` wrapper directly; the schema
     field is not consulted under `interpreter_strategy: handler`.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:

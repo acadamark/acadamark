@@ -1,10 +1,10 @@
-/* acadamark docs-site chrome (Phase 14 Slice 3a).
+/* enscribe docs-site chrome (Phase 14 Slice 3a).
  *
  * Styles only the site shell — the header/nav, the read-only article
  * container, the footer, and the Quickstart playground panes. The rendered
  * document's own look comes from default.css (the interpreter's theme) plus
  * the CSS it injects (KaTeX, fonts). Minimal by design: the v0.1.0 site looks
- * "acadamark-y" because it ships and demonstrates acadamark's own defaults.
+ * "enscribe-y" because it ships and demonstrates enscribe's own defaults.
  */
 
 :root {

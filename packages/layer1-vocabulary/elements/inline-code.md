@@ -8,7 +8,7 @@ html_output:
     use an <inline-code> wrapping element. The handler emits <code ...>
     directly, matching the output of markdown backtick spans. The element
     field is used only as a dispatch key for the interpreter.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
     notes: |
@@ -20,7 +20,7 @@ acadamark_attributes:
 content:
   type: opaque
   notes: |
-    The pipe content is verbatim code source. No markdown idioms or acadamark
+    The pipe content is verbatim code source. No markdown idioms or enscribe
     constructs are interpreted inside inline code.
 interpreter_strategy: handler
 handler_module: ./handlers/inline-code.js

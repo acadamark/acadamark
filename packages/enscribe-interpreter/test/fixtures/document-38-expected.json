@@ -1,0 +1,1740 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "book",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "book-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "book"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "book-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A Short Book on Enscribe",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 26,
+                          "offset": 25
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "book-subtitle",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Demonstrating Phase 4 Book Structuring",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 40,
+                          "offset": 39
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The Enscribe Team",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 19,
+                          "offset": 18
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "preface"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "About this Book"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This preface introduces the book.",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 170
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 34,
+                          "offset": 203
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-1",
+                        "dataNoteId": "note-1"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-1"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 170
+                    },
+                    "end": {
+                      "line": 8,
+                      "column": 62,
+                      "offset": 231
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-1"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "A preface footnote.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 21,
+                                  "offset": 20
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-1",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "book-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "chapter"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Introduction"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This is the introduction chapter. It contains some figures, equations,\nand footnotes that should collect at the chapter's end.",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 1,
+                          "offset": 258
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 56,
+                          "offset": 384
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 11,
+                      "column": 1,
+                      "offset": 258
+                    },
+                    "end": {
+                      "line": 12,
+                      "column": 56,
+                      "offset": 384
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:intro"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "intro.png",
+                        "alt": "An introductory diagram."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1.1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "An introductory diagram.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 26,
+                              "offset": 25
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "display-math",
+                  "properties": {
+                    "id": "eqn:intro"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "katex-display"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "katex"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "katex-html"
+                                ],
+                                "ariaHidden": "true"
+                              },
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.6833em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ],
+                                        "style": "margin-right:0.0576em;"
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "E"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mrel"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "="
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.8641em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "m"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "element",
+                                          "tagName": "span",
+                                          "properties": {
+                                            "className": [
+                                              "mord",
+                                              "mathnormal"
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "value": "c"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "element",
+                                          "tagName": "span",
+                                          "properties": {
+                                            "className": [
+                                              "msupsub"
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "element",
+                                              "tagName": "span",
+                                              "properties": {
+                                                "className": [
+                                                  "vlist-t"
+                                                ]
+                                              },
+                                              "children": [
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "vlist-r"
+                                                    ]
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "type": "element",
+                                                      "tagName": "span",
+                                                      "properties": {
+                                                        "className": [
+                                                          "vlist"
+                                                        ],
+                                                        "style": "height:0.8641em;"
+                                                      },
+                                                      "children": [
+                                                        {
+                                                          "type": "element",
+                                                          "tagName": "span",
+                                                          "properties": {
+                                                            "style": "top:-3.113em;margin-right:0.05em;"
+                                                          },
+                                                          "children": [
+                                                            {
+                                                              "type": "element",
+                                                              "tagName": "span",
+                                                              "properties": {
+                                                                "className": [
+                                                                  "pstrut"
+                                                                ],
+                                                                "style": "height:2.7em;"
+                                                              },
+                                                              "children": []
+                                                            },
+                                                            {
+                                                              "type": "element",
+                                                              "tagName": "span",
+                                                              "properties": {
+                                                                "className": [
+                                                                  "sizing",
+                                                                  "reset-size6",
+                                                                  "size3",
+                                                                  "mtight"
+                                                                ]
+                                                              },
+                                                              "children": [
+                                                                {
+                                                                  "type": "element",
+                                                                  "tagName": "span",
+                                                                  "properties": {
+                                                                    "className": [
+                                                                      "mord",
+                                                                      "mtight"
+                                                                    ]
+                                                                  },
+                                                                  "children": [
+                                                                    {
+                                                                      "type": "text",
+                                                                      "value": "2"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "equation-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "(1.1)"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A reference to ",
+                      "position": {
+                        "start": {
+                          "line": 18,
+                          "column": 1,
+                          "offset": 476
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 16,
+                          "offset": 491
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:intro",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " should resolve to \"figure 1.1\"\n(chapter 1, figure 1).",
+                      "position": {
+                        "start": {
+                          "line": 18,
+                          "column": 32,
+                          "offset": 507
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 23,
+                          "offset": 561
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-2",
+                        "dataNoteId": "note-2"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-2"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 18,
+                      "column": 1,
+                      "offset": 476
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 57,
+                      "offset": 595
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A second reference to ",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 1,
+                          "offset": 597
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 23,
+                          "offset": 619
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#eqn:intro",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "equation 1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " should resolve to\n\"equation 1.1\".",
+                      "position": {
+                        "start": {
+                          "line": 21,
+                          "column": 39,
+                          "offset": 635
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 16,
+                          "offset": 669
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-3",
+                        "dataNoteId": "note-3"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-3"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 21,
+                      "column": 1,
+                      "offset": 597
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 48,
+                      "offset": 701
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-2"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "An introduction footnote.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 27,
+                                  "offset": 26
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-2",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-3"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Another intro footnote.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 25,
+                                  "offset": 24
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-3",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "chapter"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Methods"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "author",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Guest Author",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 14,
+                              "offset": 13
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This chapter has its own author distinct from the book-level author.\nThe chapter contains its own figure and equation, which should be\nnumbered starting from 1 in this chapter.",
+                      "position": {
+                        "start": {
+                          "line": 26,
+                          "column": 1,
+                          "offset": 747
+                        },
+                        "end": {
+                          "line": 28,
+                          "column": 42,
+                          "offset": 923
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 26,
+                      "column": 1,
+                      "offset": 747
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 42,
+                      "offset": 923
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:method"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "method.png",
+                        "alt": "The methodology diagram."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 2.1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "The methodology diagram.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 26,
+                              "offset": 25
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "display-math",
+                  "properties": {
+                    "id": "eqn:method"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "katex-display"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "katex"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "katex-html"
+                                ],
+                                "ariaHidden": "true"
+                              },
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.6833em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ],
+                                        "style": "margin-right:0.1389em;"
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "F"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mrel"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "="
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.4306em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "ma"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "equation-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "(2.1)"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Cross-reference ",
+                      "position": {
+                        "start": {
+                          "line": 34,
+                          "column": 1,
+                          "offset": 1016
+                        },
+                        "end": {
+                          "line": 34,
+                          "column": 17,
+                          "offset": 1032
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:method",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 2.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " resolves to \"figure 2.1\"\n(chapter 2, figure 1).",
+                      "position": {
+                        "start": {
+                          "line": 34,
+                          "column": 34,
+                          "offset": 1049
+                        },
+                        "end": {
+                          "line": 35,
+                          "column": 23,
+                          "offset": 1097
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-4",
+                        "dataNoteId": "note-4"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-4"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 34,
+                      "column": 1,
+                      "offset": 1016
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 51,
+                      "offset": 1125
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A cross-chapter reference: ",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 1,
+                          "offset": 1127
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 28,
+                          "offset": 1154
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:intro",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " should still resolve\ncorrectly to \"figure 1.1\" from this chapter (the prefix path\nidentifies the target's chapter, not the reference's location).",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 44,
+                          "offset": 1170
+                        },
+                        "end": {
+                          "line": 39,
+                          "column": 64,
+                          "offset": 1316
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 37,
+                      "column": 1,
+                      "offset": 1127
+                    },
+                    "end": {
+                      "line": 39,
+                      "column": 64,
+                      "offset": 1316
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-4"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "4"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "A methods footnote.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 21,
+                                  "offset": 20
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-4",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "book-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "appendix"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Notation"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This appendix appears in book-back. Its footnotes also collect per-\nchapter (per-book-part, more precisely).",
+                      "position": {
+                        "start": {
+                          "line": 42,
+                          "column": 1,
+                          "offset": 1340
+                        },
+                        "end": {
+                          "line": 43,
+                          "column": 41,
+                          "offset": 1448
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-5",
+                        "dataNoteId": "note-5"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-5"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "5"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 42,
+                      "column": 1,
+                      "offset": 1340
+                    },
+                    "end": {
+                      "line": 43,
+                      "column": 71,
+                      "offset": 1478
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-5"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "5"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "An appendix footnote.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 23,
+                                  "offset": 22
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-5",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 44,
+      "column": 1,
+      "offset": 1479
+    }
+  }
+}

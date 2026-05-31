@@ -1,6 +1,6 @@
 # Layer 1 Minimal Vocabulary (Draft)
 
-This is a draft proposal for the minimal set of semantic elements acadamark Layer 1 needs to support the most common rich-document types. It is meant for editing, not as a final spec. The goal is to identify the smallest vocabulary that is genuinely sufficient — what 80% of articles, books, and reports actually use — leaving the rest for later additions.
+This is a draft proposal for the minimal set of semantic elements enscribe Layer 1 needs to support the most common rich-document types. It is meant for editing, not as a final spec. The goal is to identify the smallest vocabulary that is genuinely sufficient — what 80% of articles, books, and reports actually use — leaving the rest for later additions.
 
 The four governing rules from `notes/layer1-naming.md` apply: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult JATS first.
 
@@ -110,7 +110,7 @@ Almost everything block-level is standard HTML. The only thing JATS has that HTM
 | `<abbr>` | HTML | `<abbrev>` | Abbreviation with expansion. |
 | `<term>` | Custom | `<named-content>` | A term being defined or introduced (often italicized in render). |
 
-The `<cite>` vs `<ref>` split: JATS uses `<xref>` for both citations and figure/section refs, distinguished by `ref-type` attribute. Acadamark splits them because citations carry citation-specific semantics (bibliography lookup, formatting per CSL style) while cross-refs are simpler (number lookup, anchor link). They have different behavior and authoring intent; the split clarifies that. JATS export converts both to `<xref>` with appropriate `ref-type`.
+The `<cite>` vs `<ref>` split: JATS uses `<xref>` for both citations and figure/section refs, distinguished by `ref-type` attribute. Enscribe splits them because citations carry citation-specific semantics (bibliography lookup, formatting per CSL style) while cross-refs are simpler (number lookup, anchor link). They have different behavior and authoring intent; the split clarifies that. JATS export converts both to `<xref>` with appropriate `ref-type`.
 
 ### Math and code (delegated; see `notes/idioms.md`)
 
@@ -121,7 +121,7 @@ The `<cite>` vs `<ref>` split: JATS uses `<xref>` for both citations and figure/
 | Inline code | mdast `inlineCode` | Native HTML rendering. |
 | Code block | mdast `code` | Rendered by `rehype-shiki` or similar. |
 
-These don't need new Layer 1 elements. The acadamark sigils convert to existing mdast/hast node types per the delegation principle.
+These don't need new Layer 1 elements. The enscribe sigils convert to existing mdast/hast node types per the delegation principle.
 
 ### Theorem-family (deferred but reserved)
 
@@ -158,7 +158,7 @@ These are real design questions where I have an opinion but the call is yours.
 
 **1. Splitting `<cite>` (HTML) and `<ref>` (custom) for citations vs. cross-refs.**
 
-I propose this above because the two have different semantics and authoring intent. JATS unifies them under `<xref ref-type="...">`. The unified approach would be: `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure refs. Acadamark's authoring shorthand could still distinguish them (`<cite>` vs `<ref>`) at the source level even if Layer 1 unifies them.
+I propose this above because the two have different semantics and authoring intent. JATS unifies them under `<xref ref-type="...">`. The unified approach would be: `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure refs. Enscribe's authoring shorthand could still distinguish them (`<cite>` vs `<ref>`) at the source level even if Layer 1 unifies them.
 
 The trade-off: split = clearer at Layer 1, more JATS divergence to document. Unified = exactly JATS but the element name doesn't tell you what kind of reference it is.
 
@@ -189,7 +189,7 @@ AB> Keep author as simple as possible for now. This is more for making nice publ
 
 **5. Tables.**
 
-Should acadamark add a custom `<table-caption>` for consistency with the container-role rule, or keep HTML's standard `<caption>` inside `<table>`? Rule 2 (defer to HTML) says keep HTML's `<caption>`. But the container-role rule (Rule 1) would suggest `<table-caption>`. The tension is real. I lean toward HTML's `<caption>` since it works fine and doesn't introduce churn, but flag this as a place where the rules pull in different directions.
+Should enscribe add a custom `<table-caption>` for consistency with the container-role rule, or keep HTML's standard `<caption>` inside `<table>`? Rule 2 (defer to HTML) says keep HTML's `<caption>`. But the container-role rule (Rule 1) would suggest `<table-caption>`. The tension is real. I lean toward HTML's `<caption>` since it works fine and doesn't introduce churn, but flag this as a place where the rules pull in different directions.
 
 AB> Maybe all elements of a certain type can have a caption? Tables, display code blocks, images, figures, diagrams, etc.? Where does that take things?
 
@@ -215,7 +215,7 @@ Once you've reviewed and edited this draft:
 2. Settle on the final element list (probably 25–35 elements).
 3. For each custom element, specify its allowed attributes following JATS's attribute conventions where they exist. This becomes the second draft.
 4. Once attributes are settled, the elements can be implemented as W3C custom elements with their JS behavior (mostly nothing — they're semantic markers, not interactive components).
-5. Then the acadamark shorthand vocabulary can target this Layer 1 specification directly. Slice 4 onward of the parser can reference these elements by name in test fixtures and interpreter rules.
+5. Then the enscribe shorthand vocabulary can target this Layer 1 specification directly. Slice 4 onward of the parser can reference these elements by name in test fixtures and interpreter rules.
 
 The ordering matters: settle the elements before the attributes; settle the attributes before the implementation; settle the implementation before the shorthand interpreter targets them.
 
@@ -225,6 +225,6 @@ This draft says nothing about:
 
 - **Validation rules.** What's allowed inside what. JATS DTDs encode hundreds of these. The minimal set should specify only the most important containment rules (e.g., `<article-title>` only inside `<article-front>`).
 - **Processing model.** How custom elements behave when JS is loaded, how they interact with screen readers, how they fall back when CSS is missing. All deferrable.
-- **Serialization details.** Whether acadamark Layer 1 HTML uses self-closing custom elements, how attribute escaping works for content with quotes, etc. Implementation-level.
+- **Serialization details.** Whether enscribe Layer 1 HTML uses self-closing custom elements, how attribute escaping works for content with quotes, etc. Implementation-level.
 - **Render-mode lowerings.** The mapping from each Layer 1 custom element to standard HTML for browser-default rendering. Deferred to the render-mode plugin design.
-- **JATS export mappings.** The exact transform from each Layer 1 element to its JATS counterpart. Deferred to the JATS export plugin (`rehypeAcadamarkToJats`).
+- **JATS export mappings.** The exact transform from each Layer 1 element to its JATS counterpart. Deferred to the JATS export plugin (`rehypeEnscribeToJats`).

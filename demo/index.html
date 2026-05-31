@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>acadamark — live editor</title>
+    <title>enscribe — live editor</title>
 
     <!--
       Document theme for the Layer 1 custom elements. This is the same shell CSS
@@ -12,23 +12,23 @@
     -->
     <link
       rel="stylesheet"
-      href="../packages/acadamark-interpreter/src/assets/default.css"
+      href="../packages/enscribe-interpreter/src/assets/default.css"
     />
     <link rel="stylesheet" href="demo.css" />
 
     <!--
-      acadamark browser library (IIFE build → window.acadamark). Built locally by
-      `npm run build:lib` in packages/acadamark-interpreter and gitignored (dist/);
+      enscribe browser library (IIFE build → window.enscribe). Built locally by
+      `npm run build:lib` in packages/enscribe-interpreter and gitignored (dist/);
       see README.md. A classic <script> so the global is set during parse, before
       the deferred demo module (below) runs.
     -->
-    <script src="../packages/acadamark-interpreter/dist/acadamark.browser.global.js"></script>
+    <script src="../packages/enscribe-interpreter/dist/enscribe.browser.global.js"></script>
   </head>
   <body>
     <header>
-      <h1>acadamark</h1>
+      <h1>enscribe</h1>
       <p class="tagline">
-        Type acadamark source on the left; the rendered output updates on the
+        Type enscribe source on the left; the rendered output updates on the
         right. Runs entirely in your browser — citations, math, footnotes, and
         diagrams included.
       </p>

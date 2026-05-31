@@ -10,7 +10,7 @@ The `#id` notation on a named tag sets `node.id`. For `<ref #eqn:newton>`:
 
 ```json
 {
-  "type": "acadamarkTag",
+  "type": "enscribeTag",
   "tagname": "ref",
   "id": "eqn:newton",
   "kwargs": {},
@@ -44,7 +44,7 @@ the parser, so `numbered: 'false'` not `numbered: false`.
 
 Notes plugin pattern (`src/plugins/notes.js`):
 - `walkAndReplace(nodes, processNote)` — in-place walk, recurses into both
-  `node.content` (for acadamarkTag nodes) and `node.children` (for mdast nodes).
+  `node.content` (for enscribeTag nodes) and `node.children` (for mdast nodes).
   Replaces the visited node with an array of replacement nodes.
 - `processNote(node)` — called per `<note>` node, returns `[marker]`.
 - Creates a LOCAL registry (`createRegistry()`) — not attached to `file.data`.
@@ -53,7 +53,7 @@ Notes plugin pattern (`src/plugins/notes.js`):
 **Key finding:** The notes plugin currently has no access to `file.data`, so it
 cannot write to a shared registry. For cross-reference to work with notes
 (e.g., `<ref #note:galton>`), the notes plugin must be updated to use
-`file.data.acadamarkRegistry` — the same registry that the numbering plugin and
+`file.data.enscribeRegistry` — the same registry that the numbering plugin and
 ref-resolution plugin read from.
 
 The `walkAndReplace` function is NOT exported from `ast-helpers.js`; it is a
@@ -67,9 +67,9 @@ a code quality issue.
 
 ---
 
-## Q3: `file.data.acadamarkConfig` API
+## Q3: `file.data.enscribeConfig` API
 
-Set by `acadamarkConfigDiscovery()` plugin before any other structural plugin
+Set by `enscribeConfigDiscovery()` plugin before any other structural plugin
 runs. It is always a `Map` instance, even if empty. Access: `config.get(key)`,
 `config.has(key)`. Keys come from `<config key=value>` kwargs.
 
@@ -124,8 +124,8 @@ prepend `<span class="figure-label">Figure N:</span>` and a space text node to
 - `registry.findByLabel('eqn:newton')` → entry or null.
 
 **`ensureRegistry(file)`** (new exported helper):
-- `if (file?.data?.acadamarkRegistry) return file.data.acadamarkRegistry`.
-- Otherwise creates a new registry, attaches to `file.data.acadamarkRegistry`,
+- `if (file?.data?.enscribeRegistry) return file.data.enscribeRegistry`.
+- Otherwise creates a new registry, attaches to `file.data.enscribeRegistry`,
   and returns it.
 - If `file` is null/undefined (e.g., in direct test calls), returns a new
   transient registry without attaching.
@@ -143,20 +143,20 @@ prepend `<span class="figure-label">Figure N:</span>` and a space text node to
 
 ### Current pipeline order
 ```
-acadamarkConfigDiscovery()(mdast, { data: {} })
-acadamarkArticleStructuring()(mdast)
-acadamarkSectionNesting()(mdast)
-acadamarkNotes()(mdast)
+enscribeConfigDiscovery()(mdast, { data: {} })
+enscribeArticleStructuring()(mdast)
+enscribeSectionNesting()(mdast)
+enscribeNotes()(mdast)
 ```
 
 ### Required additions
 ```
-acadamarkConfigDiscovery()(mdast, { data: {} })
-acadamarkArticleStructuring()(mdast)
-acadamarkSectionNesting()(mdast)
-acadamarkNotes()(mdast, file)     ← needs file now (for shared registry)
-acadamarkNumbering()(mdast, file)  ← new
-acadamarkRefResolution()(mdast, file) ← new
+enscribeConfigDiscovery()(mdast, { data: {} })
+enscribeArticleStructuring()(mdast)
+enscribeSectionNesting()(mdast)
+enscribeNotes()(mdast, file)     ← needs file now (for shared registry)
+enscribeNumbering()(mdast, file)  ← new
+enscribeRefResolution()(mdast, file) ← new
 ```
 
 Notes must run before numbering: notes claims its numbers first. Numbering
@@ -166,8 +166,8 @@ up all registered entries.
 ### Integration test impact
 
 The integration test's manual pipeline path (`runPipeline()` in
-`integration.test.js`) currently calls `acadamarkNotes()(mdast)` without a file.
-This needs to become `acadamarkNotes()(mdast, file)` where `file = { data: {} }`.
+`integration.test.js`) currently calls `enscribeNotes()(mdast)` without a file.
+This needs to become `enscribeNotes()(mdast, file)` where `file = { data: {} }`.
 The new numbering and ref-resolution plugins also need to be added to the manual
 path. The `runPipeline` function needs a file object created once and threaded
 through all plugin calls.
@@ -184,7 +184,7 @@ authoring form (`#id`) is already supported by the parser.
 **`display-math.md`:** The vocab YAML frontmatter currently has no `kwargs`
 section. The `numbered` kwarg needs to be added:
 ```yaml
-acadamark_attributes:
+enscribe_attributes:
   kwargs:
     numbered:
       handled_by: handler
@@ -219,7 +219,7 @@ the ref handler.
 
 The notes plugin needs to change from:
 ```javascript
-export function acadamarkNotes() {
+export function enscribeNotes() {
   return (tree) => {
     const registry = createRegistry();
     ...
@@ -228,7 +228,7 @@ export function acadamarkNotes() {
 ```
 to:
 ```javascript
-export function acadamarkNotes() {
+export function enscribeNotes() {
   return (tree, file) => {
     const registry = ensureRegistry(file);
     ...
@@ -241,7 +241,7 @@ This change is necessary for `<ref #note:galton>` to work — labeled notes must
 appear in the shared label index so ref-resolution can find them. Without this
 change, refs to notes would always produce error nodes.
 
-The notes test file calls `acadamarkNotes()(tree)` directly (no file). These
+The notes test file calls `enscribeNotes()(tree)` directly (no file). These
 calls will continue to work if `ensureRegistry(null)` returns a transient local
 registry (which doesn't write to file.data). The test assertions don't currently
 test the registry's externally-visible state; they test the resulting tree shape.
@@ -269,7 +269,7 @@ extended to verify registry state after the notes plugin runs.
 | `test/handlers/ref.test.js` | Create |
 | `test/run.js` | Modify: add new test suites |
 | `test/integration.test.js` | Modify: add file object, add numbering + ref-resolution |
-| `test/fixtures/document-5-linear-regression.acm` | Modify: add cross-references |
+| `test/fixtures/document-5-linear-regression.emd` | Modify: add cross-references |
 | `packages/layer1-vocabulary/elements/display-math.md` | Modify: add numbered kwarg |
 | `packages/layer1-vocabulary/elements/figure.md` | Modify: add numbered kwarg |
 | `notes/known-limitations.md` | Modify: add deferred items |

@@ -4,7 +4,7 @@ html_output:
   element: aside
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -65,7 +65,7 @@ The optional `type` kwarg classifies the aside, which:
 
 ## Content
 
-Asides contain prose. Like other prose-bearing elements, content is recursively parsed: nested acadamark constructs, markdown idioms, and inline elements all work normally.
+Asides contain prose. Like other prose-bearing elements, content is recursively parsed: nested enscribe constructs, markdown idioms, and inline elements all work normally.
 
 Asides can be inline (single-line) or block-level (multi-line, multi-paragraph).
 
@@ -87,7 +87,7 @@ If no type is specified, the aside renders as a generic aside without specific s
 
 The mapping depends on the type:
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<aside>` (no type) | `<boxed-text content-type="aside">` |
 | `<aside type=note>` | `<boxed-text content-type="note">` |

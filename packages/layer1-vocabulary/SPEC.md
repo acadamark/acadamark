@@ -1,6 +1,6 @@
 # Layer 1 Vocabulary Specification
 
-The acadamark Layer 1 semantic HTML vocabulary. This is the target for acadamark's interpreter, JATS export, and (optionally) hand-authoring.
+The enscribe Layer 1 semantic HTML vocabulary. This is the target for enscribe's interpreter, JATS export, and (optionally) hand-authoring.
 
 This document is the high-level overview: scope, element list by category, governing rules, design decisions. **Field-level details — canonical kwarg value lists, defaults, content shapes, JATS mappings, render-mode lowering — live in the per-element entries under `elements/`.** When the two disagree, the per-element entries are authoritative.
 
@@ -243,10 +243,10 @@ For future readers and contributors, the load-bearing decisions:
 
 ## Where this fits in the project
 
-- This vocabulary is the target for `acadamarkTagInterpret` (the interpreter) and for `rehypeAcadamarkToJats` (JATS export).
+- This vocabulary is the target for `enscribeTagInterpret` (the interpreter) and for `rehypeEnscribeToJats` (JATS export).
 - It is implementable as W3C custom elements (mostly registration-only, since the elements are semantic markers rather than interactive components).
-- It can be authored directly (any tool producing conformant HTML works) or through acadamark's shorthand (the primary authoring path).
-- It is the deliverable that makes acadamark's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
+- It can be authored directly (any tool producing conformant HTML works) or through enscribe's shorthand (the primary authoring path).
+- It is the deliverable that makes enscribe's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
 
 For current project status see `STATUS.md`; for the open backlog see
 `BACKLOG-ROADMAP.md`. The interpreter that consumes this

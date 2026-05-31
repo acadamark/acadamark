@@ -4,7 +4,7 @@ html_output:
   element: b
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -73,7 +73,7 @@ The keyword <b type=keyword | recursion> means a function calling itself.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<b>` | `<bold toggle="no">` |
 

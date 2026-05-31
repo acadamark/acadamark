@@ -1,8 +1,8 @@
 # Authoring features survey
 
-This document captures authoring features considered for acadamark but deferred. Each section describes a feature, its use case, the proposed mechanism, and the reason for deferral. The point is to ensure that when these features become priorities, the design thinking isn't lost.
+This document captures authoring features considered for enscribe but deferred. Each section describes a feature, its use case, the proposed mechanism, and the reason for deferral. The point is to ensure that when these features become priorities, the design thinking isn't lost.
 
-Several entries in this document are inspired by MyST, Quarto, Typst, or LaTeX. acadamark's coverage of scholarly authoring overlaps substantially with these systems; this document is the record of "we thought about this and chose to defer it."
+Several entries in this document are inspired by MyST, Quarto, Typst, or LaTeX. enscribe's coverage of scholarly authoring overlaps substantially with these systems; this document is the record of "we thought about this and chose to defer it."
 
 ## Inline elements
 
@@ -10,7 +10,7 @@ Several entries in this document are inspired by MyST, Quarto, Typst, or LaTeX. 
 
 **Use case.** Inline abbreviations with hover-revealed full text. Common in technical writing where acronyms need expansion on first use or whenever a reader might be unfamiliar.
 
-**Mechanism.** HTML-native `<abbr>` element. Acadamark vocabulary entry would be a small declarative passthrough similar to other inline HTML-native elements (em, strong, etc.).
+**Mechanism.** HTML-native `<abbr>` element. Enscribe vocabulary entry would be a small declarative passthrough similar to other inline HTML-native elements (em, strong, etc.).
 
 ```
 <abbr title="Markedly Structured Text" | MyST>
@@ -34,7 +34,7 @@ Renders as `<abbr title="Markedly Structured Text">MyST</abbr>`. Browsers displa
 
 **Mechanism.** HTML-native elements with declarative passthroughs.
 
-**Why deferred.** Same as `<kbd>` — niche use cases that don't drive core acadamark adoption.
+**Why deferred.** Same as `<kbd>` — niche use cases that don't drive core enscribe adoption.
 
 ## Block elements
 
@@ -62,7 +62,7 @@ The pipe content becomes the `<summary>`; the body becomes the `<details>` conte
 
 ### Admonitions / callouts beyond `<aside>`
 
-**Use case.** Specific callout types like "tip", "warning", "danger", "note", "important", "caution". Currently acadamark's `<aside type=...>` covers this.
+**Use case.** Specific callout types like "tip", "warning", "danger", "note", "important", "caution". Currently enscribe's `<aside type=...>` covers this.
 
 **Mechanism.** Already supported via `<aside type=tip>`, `<aside type=warning>`, etc. The `type` kwarg discriminates.
 
@@ -74,7 +74,7 @@ The pipe content becomes the `<summary>`; the body becomes the `<details>` conte
 
 **Mechanism.** Web-UI-style elements with specific render-mode behaviors.
 
-**Why deferred.** Out of scope for scholarly-document core. acadamark targets publication-quality documents; web-UI authoring is a different concern. If acadamark grows toward web-application authoring, these become relevant.
+**Why deferred.** Out of scope for scholarly-document core. enscribe targets publication-quality documents; web-UI authoring is a different concern. If enscribe grows toward web-application authoring, these become relevant.
 
 ## Metadata enrichments
 
@@ -222,7 +222,7 @@ See `notes/multi-column-display.md`.
 
 **Mechanism.** Documented in the project's broader plans. Substantial new infrastructure (kernel, output capture, etc.).
 
-**Why deferred.** Major feature beyond core acadamark.
+**Why deferred.** Major feature beyond core enscribe.
 
 ### Interactive widgets
 
@@ -234,7 +234,7 @@ See `notes/multi-column-display.md`.
 
 ## Summary
 
-acadamark's current scope covers:
+enscribe's current scope covers:
 - Document structure (article, sections, sub-sections, paragraphs, asides, blockquotes, figures, lists, tables).
 - Inline content (em, strong, code, citations, cross-references, notes, basic styling elements).
 - Metadata (`<meta>` with title, author, date, abstract).
@@ -252,7 +252,7 @@ The deferral is about prioritization, not feasibility. As slice 1 lands and subs
 - `notes/multi-column-display.md` — multi-column rendering.
 - `archive/hover-previews-deferred-2026-05.md` — hover-preview rendering for references (archived; the rendering substrate shipped, see `notes/interpreter.md` §10.2).
 - `archive/inline-tex-shortcuts-spec-2026-05.md` — inline TeX shortcuts for math (archived; the feature shipped as G1).
-- Slide/presentation elements — design discussion item in `notes/acadamark-backlog-roadmap.md` (formerly DF-6); original placeholder at `archive/slide-element-deferred-2026-05.md`.
+- Slide/presentation elements — design discussion item in `notes/enscribe-backlog-roadmap.md` (formerly DF-6); original placeholder at `archive/slide-element-deferred-2026-05.md`.
 - `packages/layer1-vocabulary/SPEC.md` — what's currently in vocabulary.
 - MyST documentation: https://mystmd.org/
 - Quarto documentation: https://quarto.org/

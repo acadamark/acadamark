@@ -1,14 +1,14 @@
-// acadamark docs-site static build (Phase 14 Slice 3a).
+// enscribe docs-site static build (Phase 14 Slice 3a).
 //
-// Reads the canonical `.acm` sources in docs-site/sources/, renders each through
-// the acadamark Node entry, wraps the result in the shared site template
+// Reads the canonical `.emd` sources in docs-site/sources/, renders each through
+// the enscribe Node entry, wraps the result in the shared site template
 // (template.html — header/nav + body + footer), and writes self-contained HTML
 // into docs-site/dist/ ready to serve or deploy to github.io.
 //
 // Two page kinds:
-//   • page       — a read-only article: rendered acadamark + a "view source on
+//   • page       — a read-only article: rendered enscribe + a "view source on
 //                  GitHub" footer link. Ships no JavaScript.
-//   • playground — the Quickstart: a CodeMirror editor + the acadamark browser
+//   • playground — the Quickstart: a CodeMirror editor + the enscribe browser
 //                  bundle, seeded with the article's own source for live editing.
 //                  Only this page loads the editor/library.
 //
@@ -16,7 +16,7 @@
 // any depth); deployment copies dist/ to wherever github.io serves from. See
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
-import { buildAcadamarkPipeline } from 'acadamark-interpreter';
+import { buildEnscribePipeline } from 'enscribe-interpreter';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,15 +31,15 @@ const TEMPLATE_PATH = join(here, 'template.html');
 const SITE_CSS = join(here, 'site.css');
 const QUICKSTART_JS = join(here, 'quickstart.js');
 
-const INTERPRETER = join(repoRoot, 'packages', 'acadamark-interpreter');
+const INTERPRETER = join(repoRoot, 'packages', 'enscribe-interpreter');
 const DEFAULT_CSS = join(INTERPRETER, 'src', 'assets', 'default.css');
-const BROWSER_BUNDLE = join(INTERPRETER, 'dist', 'acadamark.browser.global.js');
+const BROWSER_BUNDLE = join(INTERPRETER, 'dist', 'enscribe.browser.global.js');
 
 // Where the read-only pages point their "view source" link. blob view (not raw)
 // renders the file with line numbers — better for reading. Repo + branch are
 // build-time constants; the rename, if it happens, updates the repo segment.
 const GITHUB_BLOB_BASE =
-  'https://github.com/acadamark/acadamark/blob/master/docs-site/sources';
+  'https://github.com/enscribejs/enscribe/blob/master/docs-site/sources';
 
 // Render options mirror the browser façade's defaults: lean output that links
 // fonts / KaTeX CSS to CDNs (fine for a static deploy) and renders any live-link
@@ -56,14 +56,14 @@ const RENDER_OPTIONS = {
 // pages); when real content lands in later slices this list grows. A manifest
 // file would be overkill at this size.
 const PAGES = [
-  { slug: 'index',           source: 'index.acm',           title: 'acadamark',                    nav: 'Home',            kind: 'page' },
-  { slug: 'quickstart',      source: 'quickstart.acm',      title: 'Quickstart — acadamark',       nav: 'Quickstart',      kind: 'playground' },
-  { slug: 'example-article', source: 'example-article.acm', title: 'Example article — acadamark',  nav: 'Example article', kind: 'page' },
+  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                    nav: 'Home',            kind: 'page' },
+  { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',       nav: 'Quickstart',      kind: 'playground' },
+  { slug: 'example-article', source: 'example-article.emd', title: 'Example article — enscribe',  nav: 'Example article', kind: 'page' },
 ];
 
-/** Render an acadamark source string to an HTML fragment. */
+/** Render an enscribe source string to an HTML fragment. */
 function renderAcm(source) {
-  return String(buildAcadamarkPipeline(RENDER_OPTIONS).processSync(source));
+  return String(buildEnscribePipeline(RENDER_OPTIONS).processSync(source));
 }
 
 /** Nav links for the header; the active page is marked aria-current. */
@@ -76,7 +76,7 @@ function buildNav(activeSlug) {
 
 // Inline a source string into a <script> as a JS literal. JSON.stringify handles
 // quotes/newlines; escaping every "<" to < makes it impossible to form a
-// closing </script> (or any tag) inside the literal, so arbitrary .acm content is
+// closing </script> (or any tag) inside the literal, so arbitrary .emd content is
 // safe to embed.
 function inlineSource(source) {
   return JSON.stringify(source).replace(/</g, '\\u003c');
@@ -94,7 +94,7 @@ function buildPageBody(page, rendered) {
   return (
     `<main class="article">\n${rendered}\n    </main>\n` +
     `    <footer class="site-footer">\n` +
-    `      Source: <a href="${githubUrl}">view this page's acadamark source on GitHub</a>\n` +
+    `      Source: <a href="${githubUrl}">view this page's enscribe source on GitHub</a>\n` +
     `    </footer>`
   );
 }
@@ -127,12 +127,12 @@ function main() {
   // Copy it in if present so the playground works; if absent, the read-only pages
   // still build and the playground shows an actionable "build the bundle" notice.
   if (existsSync(BROWSER_BUNDLE)) {
-    copyFileSync(BROWSER_BUNDLE, join(ASSETS_DIR, 'acadamark.browser.global.js'));
+    copyFileSync(BROWSER_BUNDLE, join(ASSETS_DIR, 'enscribe.browser.global.js'));
   } else {
     console.warn(
       '[docs:build] browser bundle not found — the Quickstart playground will\n' +
         '             show a "build the bundle" notice until you run:\n' +
-        '               cd packages/acadamark-interpreter && npm run build:lib\n' +
+        '               cd packages/enscribe-interpreter && npm run build:lib\n' +
         '             then rebuild the site.',
     );
   }
@@ -143,7 +143,7 @@ function main() {
     let headExtra = '';
     if (page.kind === 'playground') {
       body = buildPlaygroundBody(source);
-      headExtra = '<script src="assets/acadamark.browser.global.js"></script>';
+      headExtra = '<script src="assets/enscribe.browser.global.js"></script>';
     } else {
       body = buildPageBody(page, renderAcm(source));
     }

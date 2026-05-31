@@ -4,7 +4,7 @@ Inventory of features that are specified in spec documents or vocabulary entries
 but are not yet built in the codebase. Produced by a read-only investigation pass
 (June 2026). Every item is code-verified: the code is the authority.
 
-**Scope:** `packages/remark-acadamark/`, `packages/acadamark-interpreter/`,
+**Scope:** `packages/remark-enscribe/`, `packages/enscribe-interpreter/`,
 `packages/layer1-vocabulary/`, and the spec documents under `notes/`. Does not
 cover test coverage gaps, cosmetic issues, or documentation staleness (those are
 in separate sections at the end).
@@ -53,7 +53,7 @@ idioms… Strict mode is not yet implemented."
 **AUD status:** Untracked.
 
 When enabled, strict mode would disable all markdown pass-through idioms (bullet
-lists, `# Heading`, `**bold**`, etc.) and require explicit acadamark shorthand for
+lists, `# Heading`, `**bold**`, etc.) and require explicit enscribe shorthand for
 everything. Intended for authors who want unambiguous document syntax.
 
 ---
@@ -77,10 +77,10 @@ the intention is documented and the feature name is established.
 
 **Spec:** `notes/multi-file-authoring-deferred.md`  
 **Code checked:** No `<include>` tag in DSL_REGISTRY; no include plugin in
-`acadamark-interpreter/src/plugins/`. No `acadamark.yml` discovery.  
+`enscribe-interpreter/src/plugins/`. No `enscribe.yml` discovery.  
 **AUD status:** Untracked.
 
-Planned mechanism: project-config (`acadamark.yml`) plus `<include src="...">` tag
+Planned mechanism: project-config (`enscribe.yml`) plus `<include src="...">` tag
 for composing multi-file documents. Cross-file cross-references require project-
 wide registries. Explicitly deferred; the spec file describes the design intent.
 
@@ -122,7 +122,7 @@ package test suites green.
 
 The **unbraced-inline `@` form** (prose-grammar change: `@fig:priority` in running
 text without a `<ref>` wrapper) remains deferred — it is parked explicitly in
-`notes/acadamark-backlog-roadmap.md`.
+`notes/enscribe-backlog-roadmap.md`.
 
 **Superseded inventory id:** DF-7.
 
@@ -131,9 +131,9 @@ text without a `<ref>` wrapper) remains deferred — it is parked explicitly in
 ### DF-8: `<csv>` and `<tsv>` standalone shortcut tags
 
 **Spec:** `packages/layer1-vocabulary/elements/table.md` shorthand_examples
-reference `<csv | name,price\n...>`. `packages/remark-acadamark/src/dsl-registry.js`
+reference `<csv | name,price\n...>`. `packages/remark-enscribe/src/dsl-registry.js`
 registers `['csv', 'csv']` and `['tsv', 'tsv']`.  
-**Code checked:** `packages/acadamark-interpreter/src/handlers/` — no `csv.js` or
+**Code checked:** `packages/enscribe-interpreter/src/handlers/` — no `csv.js` or
 `tsv.js` handler. Using `<csv | ...>` falls through to `warnUnknownTag`.  
 **AUD status:** AUD-05 (tracked), AUD-07 (table.md example misleads authors).
 
@@ -144,25 +144,25 @@ standalone `<csv>` form is registered in the parser but has no interpreter handl
 
 ### DF-9: `<mermaid>` and `<abc>` DSL handlers
 
-**Spec:** `packages/remark-acadamark/src/dsl-registry.js` — both registered with
+**Spec:** `packages/remark-enscribe/src/dsl-registry.js` — both registered with
 named handlers (`'mermaid'`, `'abc'`). `notes/dsl-engines.md` lists them as
 planned DSL engines.  
-**Code checked:** `ls packages/acadamark-interpreter/src/handlers/` — no
+**Code checked:** `ls packages/enscribe-interpreter/src/handlers/` — no
 `mermaid.js` or `abc.js`. Using `<mermaid>...</mermaid>` falls through to
 `warnUnknownTag`.  
 **AUD status:** Untracked.
 
-The parser produces valid `acadamarkTag` nodes for these; no interpreter handler
+The parser produces valid `enscribeTag` nodes for these; no interpreter handler
 exists.
 
 ---
 
 ### DF-10: Math environment DSL handlers (`<matrix>`, `<cases>`, `<align>`, `<eqnarray>`)
 
-**Spec:** `packages/remark-acadamark/src/dsl-registry.js` — all four registered.
+**Spec:** `packages/remark-enscribe/src/dsl-registry.js` — all four registered.
 `notes/dsl-engines.md` describes the intended rendering approach (pass content to
 KaTeX within the appropriate environment wrapper).  
-**Code checked:** `ls packages/acadamark-interpreter/src/handlers/` — no handler
+**Code checked:** `ls packages/enscribe-interpreter/src/handlers/` — no handler
 files for these. The existing `math.js` handler handles `<$>` and `<$$>` sigil
 forms only.  
 **AUD status:** Untracked.
@@ -175,10 +175,10 @@ implemented. These multi-line math environment forms are not.
 ### DF-11: `<theorem>` DSL handler and theorem-family vocabulary
 
 **Spec (two parts):**
-- Parser: `packages/remark-acadamark/src/dsl-registry.js` registers `['theorem', 'theorem']`. `notes/dsl-engines.md` describes rendering intent.
+- Parser: `packages/remark-enscribe/src/dsl-registry.js` registers `['theorem', 'theorem']`. `notes/dsl-engines.md` describes rendering intent.
 - Vocabulary: `packages/layer1-vocabulary/SPEC.md` — "Not in the minimal set today. Listed to reserve the slot. To be specified in a separate design pass." `notes/layer1-naming.md` open decisions section: "to be specified."
 
-**Code checked:** No `theorem.js` handler in `acadamark-interpreter/src/handlers/`.
+**Code checked:** No `theorem.js` handler in `enscribe-interpreter/src/handlers/`.
 DSL_REGISTRY comment: "theorem-family elements (proof, lemma, corollary,
 definition, example) omitted pending Layer 1 vocabulary specification."  
 **AUD status:** Untracked.
@@ -195,7 +195,7 @@ a DSL_REGISTRY entry nor vocabulary specs yet.
 `book-body.md`, `book-back.md`, `book-part-title.md`, `book-part-subtitle.md`,
 `book-subtitle.md`, `book-title.md` (confirmed from `elements/` directory listing).
 The vocab entries include content shape definitions.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/article-structuring.js`
+**Code checked:** `packages/enscribe-interpreter/src/plugins/article-structuring.js`
 lines 118–119: `if (docType === 'book' || docType === 'book-part') { warnSkippedDocType(docType); }` — processing stops there; no structural wrapping is done.  
 **AUD status:** Untracked (noted in `notes/known-limitations.md`).
 
@@ -222,7 +222,7 @@ when the relevant slice arrives." `notes/layer1-naming.md` lists `<dl>`, `<dt>`,
 to native HTML elements.  
 **Elements:** `<dl>`, `<dt>`, `<dd>`  
 **Code checked:** No entries in `elements/` directory for these names; no handler
-in `acadamark-interpreter/src/handlers/`.  
+in `enscribe-interpreter/src/handlers/`.  
 **AUD status:** Untracked.
 
 ---
@@ -255,7 +255,7 @@ in `notes/known-limitations.md`.
 **Spec:** `notes/shorthand-syntax.md` example 15 and resolved decisions; `BUILD.md`
 Slice 5 — "Qualifying-tag pattern `<table csv>…</table>` — First-positional DSL
 dispatch works."  
-**Code checked:** `packages/acadamark-interpreter/src/handlers/table.js` dispatches
+**Code checked:** `packages/enscribe-interpreter/src/handlers/table.js` dispatches
 on `node.positional[0]` for `csv`, `tsv`, `json`, `yaml`, `md`. Tests confirm
 `<table csv | ...>` works. No equivalent dispatch logic in any other handler.  
 **AUD status:** Untracked.
@@ -269,7 +269,7 @@ the general pattern is not established beyond the table case.
 
 ---
 
-### DF-18: JATS export (`rehypeAcadamarkToJats`)
+### DF-18: JATS export (`rehypeEnscribeToJats`)
 
 **Spec:** `BUILD.md` Phase 3, section 7; `notes/layer1-naming.md` Rule 4 (JATS-
 first naming); every vocabulary `.md` file has a `jats_counterpart` field.  
@@ -288,7 +288,7 @@ for everything else (archival, conversion, downstream tooling). Render mode is a
 optional downstream plugin, **not yet built**." Every vocabulary entry has a
 `render_mode` or equivalent lowering specification.  
 **Code checked:** `grep -r "renderMode\|render.mode\|lower\|h1.*section-title"` in
-`packages/acadamark-interpreter/src/`. No matches.  
+`packages/enscribe-interpreter/src/`. No matches.  
 **AUD status:** Untracked.
 
 Render-mode lowering converts `<section-title>` → `<h1>`, `<sub-section-title>` →
@@ -314,11 +314,11 @@ format parser.
 ### DF-21: Self-closing tag form for DSL_REGISTRY tags (`<tag />`)
 
 **Spec:** `notes/shorthand-syntax.md` — self-closing form is part of the grammar
-(`SelfClosingNamedTag` rule in `acadamark.peggy`). The form `<library src="file"/>` is
+(`SelfClosingNamedTag` rule in `enscribe.peggy`). The form `<library src="file"/>` is
 a natural authoring pattern.  
-**Code checked:** `packages/remark-acadamark/src/syntax.js` — the long-form
+**Code checked:** `packages/remark-enscribe/src/syntax.js` — the long-form
 tokenizer (activated for all DSL_REGISTRY tags) does not check for `/>` before
-committing to long-form mode, so it produces `acadamarkTagError` for
+committing to long-form mode, so it produces `enscribeTagError` for
 `<library src="file"/>`.  
 **AUD status:** AUD-08 (tracked).
 
@@ -350,7 +350,7 @@ list. Footnotes, endnotes, and sidenotes are all collected.
 **What's missing:** Notes with `placement=foot` are supposed to collect per-section
 (at the bottom of each section) rather than at the end of the document.  
 **Spec:** Implicit in the `placement` kwarg semantics; noted in `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/notes.js` line 11
+**Code checked:** `packages/enscribe-interpreter/src/plugins/notes.js` line 11
 comment: "simplified: per-section footnote collection is deferred."  
 **AUD status:** Untracked.
 
@@ -364,7 +364,7 @@ differently.
 **What's missing:** Sidenotes are supposed to appear in the page margin alongside
 their reference point, not at the end of the document.  
 **Spec:** `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/note-placement.js`
+**Code checked:** `packages/enscribe-interpreter/src/plugins/note-placement.js`
 lines 118–124: `sidenote` kwarg is set but all notes go to `article-back`
 regardless.  
 **AUD status:** Untracked.
@@ -379,7 +379,7 @@ like "figure 3" or "equation 1".
 parser and stored in the node, but the ref-resolution plugin and ref.js handler
 ignore them entirely.  
 **Spec:** `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/ref-resolution.js`
+**Code checked:** `packages/enscribe-interpreter/src/plugins/ref-resolution.js`
 and `src/handlers/ref.js` — no `kwargs.format` or `kwargs.type` logic present.  
 **AUD status:** Untracked.
 
@@ -392,7 +392,7 @@ and `src/handlers/ref.js` — no `kwargs.format` or `kwargs.type` logic present.
 link text) is accepted by the parser, but ref.js ignores `node.content` entirely
 and uses only the pre-computed `text` kwarg from ref-resolution.  
 **Spec:** `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/handlers/ref.js` — handler
+**Code checked:** `packages/enscribe-interpreter/src/handlers/ref.js` — handler
 only reads `node.kwargs.text`.  
 **AUD status:** Untracked.
 
@@ -405,7 +405,7 @@ only reads `node.kwargs.text`.
 in `node.booleans`, but ref.js and ref-resolution.js do not read them. The rendered
 output is identical regardless of which flags are set.  
 **Spec:** `notes/shorthand-syntax.md` examples 18–19 show these flags; `notes/hover-preview-investigation.md` described the hover-preview feature.  
-**Code checked:** `packages/acadamark-interpreter/src/handlers/ref.js` — no
+**Code checked:** `packages/enscribe-interpreter/src/handlers/ref.js` — no
 `node.booleans` access.  
 **AUD status:** Untracked.
 
@@ -453,7 +453,7 @@ by citation-js and rendered.
 **What's missing:** Key order within a multi-key cite is alphabetical (citation-js
 default), not preserved from the author's input order.  
 **Spec:** `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/cite-resolution.js`
+**Code checked:** `packages/enscribe-interpreter/src/plugins/cite-resolution.js`
 — keys passed to `cite.format()` in author order; sorting is by citation-js
 internally.  
 **AUD status:** Untracked.
@@ -467,7 +467,7 @@ document) has its kwargs read.
 **What's missing:** `<config>` nested inside `<meta>` or inside a section is
 silently ignored.  
 **Spec:** `notes/interpreter.md` (pre-R4 description). `notes/known-limitations.md`.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/config-discovery.js`
+**Code checked:** `packages/enscribe-interpreter/src/plugins/config-discovery.js`
 line 20 comment: "Deeply-nested `<config>` blocks are deferred."  
 **AUD status:** Untracked.
 
@@ -480,7 +480,7 @@ line 20 comment: "Deeply-nested `<config>` blocks are deferred."
 is no config kwarg to change it (e.g., `<config bibliography-heading="Bibliography">`).  
 **Spec:** No spec document specifies this as configurable; it is a gap relative to
 the general config-driven design.  
-**Code checked:** `packages/acadamark-interpreter/src/plugins/bibliography.js`
+**Code checked:** `packages/enscribe-interpreter/src/plugins/bibliography.js`
 line 152: `const bibNode = makeBibliographyNode('<h2>References</h2>', bibBodyHtml)`.  
 **AUD status:** Untracked.
 
@@ -494,7 +494,7 @@ trailing whitespace.
 is not recognized as a flow construct; the text tokenizer picks it up as inline
 instead.  
 **Spec:** `notes/known-limitations.md`.  
-**Code checked:** `packages/remark-acadamark/src/syntax.js` — `afterClose` rejects
+**Code checked:** `packages/remark-enscribe/src/syntax.js` — `afterClose` rejects
 when `code !== null && !markdownLineEnding(code)` in flow position; a space
 after `>` is `code !== null` and not a line ending, so `nok` is called.  
 **AUD status:** Untracked.
@@ -505,7 +505,7 @@ after `>` is `code !== null` and not a line ending, so `nok` is called.
 
 **Resolved as part of G1 (commit `b6304a3`).** When G1a implemented inline-TeX
 shortcuts in the Peggy grammar, the four characters `^`, `_`, `{`, `}` were
-moved into the acadamark-consumed escape class. `\^` produces a literal `^`
+moved into the enscribe-consumed escape class. `\^` produces a literal `^`
 (not a superscript trigger); `\_` produces a literal `_`; `\{` and `\}` are
 literal braces. The escape-rules spec (`notes/escape-rules-spec.md`) "not yet
 decided" note is superseded by the G1 implementation.
@@ -541,8 +541,8 @@ Fixing them is a doc-audit slice task, not a code change.
 
 **Resolved (F2 doc-staleness sweep, 2026-06).** `notes/interpreter.md` updated to
 describe the current 12-step pipeline: `buildCitationIndex` at step 5, register-only
-`acadamarkNotes` and `acadamarkNumbering` (steps 6–7), new `acadamarkApplyNumbers`
-(step 8) and `acadamarkNotePlacement` (step 11). File-data table updated.
+`enscribeNotes` and `enscribeNumbering` (steps 6–7), new `enscribeApplyNumbers`
+(step 8) and `enscribeNotePlacement` (step 11). File-data table updated.
 Source file map updated with `note-placement.js`, `discover.js`, `walk-replace.js`.
 
 ---
@@ -551,8 +551,8 @@ Source file map updated with `note-placement.js`, `discover.js`, `walk-replace.j
 
 **Resolved (F2 doc-staleness sweep, 2026-06).** `notes/pipeline.md` updated:
 overview diagram now shows 12 plugins; sections 4.4–4.10 describe the correct
-pipeline including `buildCitationIndex`, `acadamarkApplyNumbers` (4.6.5),
-`acadamarkNotePlacement` (4.9), and `acadamarkBibliography` (4.10). Dependency
+pipeline including `buildCitationIndex`, `enscribeApplyNumbers` (4.6.5),
+`enscribeNotePlacement` (4.9), and `enscribeBibliography` (4.10). Dependency
 table, file.data namespace, config table, data-flow examples, and section 13
 internal-node table all updated.
 

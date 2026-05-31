@@ -160,10 +160,10 @@ unbraced-inline form is explicitly deferred.
 
 ### 2.4 Escape rules: no new mechanism needed
 
-In content positions (inside `|...|` or sigil bodies), `@` is not acadamark-
+In content positions (inside `|...|` or sigil bodies), `@` is not enscribe-
 significant after F1 (the inline form is deferred). The `ContentItem` pass-through
 rule already handles `\@` correctly (passes `\@` to remark → literal `@`). No
-addition to `escape-rules-spec.md`'s acadamark-significant set.
+addition to `escape-rules-spec.md`'s enscribe-significant set.
 
 In attribute positions, `@` becomes a grammar prefix. A literal `@` in an
 unquoted attribute value cannot occur in practice (no realistic attribute value
@@ -304,12 +304,12 @@ which are produced by the resolver unchanged.
 
 | Location | Count | Notes |
 |----------|-------|-------|
-| `packages/acadamark-interpreter/test/fixtures/document-5-linear-regression.acm` | 4 | |
-| `packages/acadamark-interpreter/test/fixtures/document-6-cross-references.acm` | 8 | |
-| `packages/acadamark-interpreter/test/fixtures/document-7-tables.acm` | 4 | |
-| `packages/acadamark-interpreter/test/fixtures/document-9-demo.acm` | 3 | no snapshot test |
-| `packages/remark-acadamark/test/test.js` | 2 | parser tests |
-| `packages/remark-acadamark/test/test-grammar.js` | 2 | grammar tests |
+| `packages/enscribe-interpreter/test/fixtures/document-5-linear-regression.emd` | 4 | |
+| `packages/enscribe-interpreter/test/fixtures/document-6-cross-references.emd` | 8 | |
+| `packages/enscribe-interpreter/test/fixtures/document-7-tables.emd` | 4 | |
+| `packages/enscribe-interpreter/test/fixtures/document-9-demo.emd` | 3 | no snapshot test |
+| `packages/remark-enscribe/test/test.js` | 2 | parser tests |
+| `packages/remark-enscribe/test/test-grammar.js` | 2 | grammar tests |
 | `notes/test.amd` | 3 | informal test doc |
 | `notes/pipeline.md` | 1 | example in data-flow section |
 | `notes/interpreter.md` | ~3 | examples and descriptions |
@@ -324,19 +324,19 @@ judgement needed.
 
 | Location | Count | Form |
 |----------|-------|------|
-| `packages/acadamark-interpreter/test/fixtures/document-8-citations.acm` | 7 | positional single-key |
-| `packages/acadamark-interpreter/test/fixtures/document-8-citations.acm` | 1 | positional multi-key (`Mantzalas2022, Pellicano2014`) |
-| `packages/acadamark-interpreter/test/fixtures/document-9-demo.acm` | 6 | positional (various) |
-| `packages/remark-acadamark/test/test.js` | ~20 | positional + bracketed |
-| `packages/remark-acadamark/test/test-grammar.js` | ~10 | positional + bracketed |
-| `packages/remark-acadamark/test/test-recursive.js` | 1 | positional |
-| `packages/remark-acadamark/test/demo.js` | 3 | positional |
+| `packages/enscribe-interpreter/test/fixtures/document-8-citations.emd` | 7 | positional single-key |
+| `packages/enscribe-interpreter/test/fixtures/document-8-citations.emd` | 1 | positional multi-key (`Mantzalas2022, Pellicano2014`) |
+| `packages/enscribe-interpreter/test/fixtures/document-9-demo.emd` | 6 | positional (various) |
+| `packages/remark-enscribe/test/test.js` | ~20 | positional + bracketed |
+| `packages/remark-enscribe/test/test-grammar.js` | ~10 | positional + bracketed |
+| `packages/remark-enscribe/test/test-recursive.js` | 1 | positional |
+| `packages/remark-enscribe/test/demo.js` | 3 | positional |
 | `notes/test.amd` | ~15 | positional + bracketed + pipe |
 | `notes/shorthand-syntax.md` | ~5 | examples |
 | `notes/escape-rules-spec.md` | 1 | bracketed-list escape example |
 | `notes/interpreter.md` | ~4 | descriptions |
 | `notes/pipeline.md` | ~3 | descriptions/examples |
-| **Bracketed-list form in code/fixtures** | **3** | parser tests only (0 in .acm) |
+| **Bracketed-list form in code/fixtures** | **3** | parser tests only (0 in .emd) |
 
 Migration for positional keys: `<cite Smith2020>` → `<cite @Smith2020>`.
 Migration for multi-key: `<cite Smith2020, Jones2019>` → `<cite @Smith2020, @Jones2019>`.
@@ -356,7 +356,7 @@ embedded in test files, and spec doc examples.
 
 ### 5.1 Intended correctness model
 
-The fixture `.acm` sources change. The rendered HTML output — the HAST snapshots
+The fixture `.emd` sources change. The rendered HTML output — the HAST snapshots
 and the HTML assertions in `integration.test.js` — should be **unchanged**.
 
 Evidence that this holds:
@@ -372,11 +372,11 @@ Evidence that this holds:
 
 **Correctness proof procedure:**
 
-1. Migrate all `.acm` files and resolver code.
-2. Run `node packages/acadamark-interpreter/test/run.js`.
+1. Migrate all `.emd` files and resolver code.
+2. Run `node packages/enscribe-interpreter/test/run.js`.
 3. The 8 existing snapshot files (`document-N-expected.json`) should still pass
-   — no `ACADAMARK_UPDATE_SNAPSHOTS=1` run needed.
-4. Run `node packages/remark-acadamark/test/test.js` (grammar tests have
+   — no `ENSCRIBE_UPDATE_SNAPSHOTS=1` run needed.
+4. Run `node packages/remark-enscribe/test/test.js` (grammar tests have
    updated input strings but same expected AST shape — `node.atRefs` instead of
    `node.id` or `node.positional`, so expected values must be updated).
 
@@ -412,7 +412,7 @@ unchanged, which is the correctness signal.
 **Bug:** `extractCiteKeys` in `cite-resolution.js` crashes with
 `TypeError: k.trim is not a function` when `node.positional = [['smith2017',
 'jones2023']]` (the bracketed-list form). The bracketed path `<cite [...]>` has
-never been tested end-to-end through the interpreter; all `.acm` fixture files use
+never been tested end-to-end through the interpreter; all `.emd` fixture files use
 positional-only form for `<cite>`.
 
 F1 must fix this as part of the `extractCiteKeys` rewrite (the nested-array
@@ -470,25 +470,25 @@ blocking each other.
 
 **Files changed:**
 
-1. `packages/remark-acadamark/grammar/acadamark.peggy` — add `AtRef` rule,
+1. `packages/remark-enscribe/grammar/enscribe.peggy` — add `AtRef` rule,
    update `Attribute`, `emptyAttrs`, `applyAttributes`, `makeNode`
-2. Rebuild: `npm run build:grammar` (in `remark-acadamark`)
-3. `packages/acadamark-interpreter/src/plugins/ref-resolution.js` — 1 line:
+2. Rebuild: `npm run build:grammar` (in `remark-enscribe`)
+3. `packages/enscribe-interpreter/src/plugins/ref-resolution.js` — 1 line:
    `node.atRefs?.[0]` instead of `node.id`
-4. `packages/acadamark-interpreter/src/plugins/cite-resolution.js` —
+4. `packages/enscribe-interpreter/src/plugins/cite-resolution.js` —
    rewrite `extractCiteKeys` (~10 lines)
-5. `packages/acadamark-interpreter/test/fixtures/document-{5,6,7,9}.acm` —
+5. `packages/enscribe-interpreter/test/fixtures/document-{5,6,7,9}.emd` —
    `<ref #X>` → `<ref @X>` (19 occurrences)
-6. `packages/acadamark-interpreter/test/fixtures/document-{8,9}.acm` —
+6. `packages/enscribe-interpreter/test/fixtures/document-{8,9}.emd` —
    `<cite key>` → `<cite @key>` (14 occurrences)
-7. `packages/acadamark-interpreter/test/plugins/ref-resolution.test.js` —
+7. `packages/enscribe-interpreter/test/plugins/ref-resolution.test.js` —
    update `makeRef()` helper, update `node.id` → `node.atRefs` assertions
-8. `packages/acadamark-interpreter/test/plugins/cite-resolution.test.js` —
+8. `packages/enscribe-interpreter/test/plugins/cite-resolution.test.js` —
    update `makeCiteNode()` + test inputs
-9. `packages/remark-acadamark/test/test.js` — update input strings + assertions
+9. `packages/remark-enscribe/test/test.js` — update input strings + assertions
    (~24 cite + 2 ref occurrences)
-10. `packages/remark-acadamark/test/test-grammar.js` — same (~12 cite + 2 ref)
-11. `packages/remark-acadamark/test/test-recursive.js` — 1 cite input
+10. `packages/remark-enscribe/test/test-grammar.js` — same (~12 cite + 2 ref)
+11. `packages/remark-enscribe/test/test-recursive.js` — 1 cite input
 12. `notes/shorthand-syntax.md`, `notes/interpreter.md`, `notes/pipeline.md`,
     `notes/escape-rules-spec.md` — update examples and descriptions (editorial)
 
@@ -517,7 +517,7 @@ be traced and corrected before proceeding to test-file updates.
 `<ref #...>` becomes a parse-time malformed form (the `#` attribute becomes
 `node.id`, which the resolver no longer reads, producing `__ref-error`). No
 deprecation period, no alias. Document the migration in the commit message and
-spec update. Cost: 19 occurrences in `.acm` fixtures + ~4 in parser tests +
+spec update. Cost: 19 occurrences in `.emd` fixtures + ~4 in parser tests +
 editorial examples. All mechanical.
 
 **Q2 — `[@smith2017, @jones2023]`.** The bracketed-list form marks each key with
@@ -532,11 +532,11 @@ The spec update in `shorthand-syntax.md` documents this form.
 **B-1 (cite-resolution latent crash):** `extractCiteKeys` calls
 `.trim()` on `node.positional` entries, but the bracketed-list form stores a
 nested array, not strings. `['smith2017'].trim()` is undefined → TypeError. Not
-triggered today because no `.acm` fixture uses `<cite [...]>`. F1's
+triggered today because no `.emd` fixture uses `<cite [...]>`. F1's
 `extractCiteKeys` rewrite supersedes this code path, effectively fixing it as a
 side effect.
 
-**B-2 (doc-9 snapshot missing):** `document-9-demo.acm` has refs and cites but
+**B-2 (doc-9 snapshot missing):** `document-9-demo.emd` has refs and cites but
 is not in the integration test suite (tests stop at doc8). It has no
 `document-9-expected.json`. Not a correctness issue since it tests features
 already covered by docs 5–8, but the fixture is untested as an integration whole.

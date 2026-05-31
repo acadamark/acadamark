@@ -4,7 +4,7 @@ html_output:
   element: publication-date
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -90,7 +90,7 @@ Both work; both produce the same JATS output for the publication date.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<publication-date>2024-03-15</publication-date>` | `<pub-date>` (with parsed `<year>`/`<month>`/`<day>` children for ISO dates) |
 

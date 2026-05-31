@@ -9,7 +9,7 @@ mdast tree:
       children: [
         {
           type: [32m'text'[39m,
-          value: [32m'Acadamark Feature Test Document'[39m,
+          value: [32m'Enscribe Feature Test Document'[39m,
           position: {
             start: { line: [33m1[39m, column: [33m3[39m, offset: [33m2[39m },
             end: { line: [33m1[39m, column: [33m34[39m, offset: [33m33[39m }
@@ -26,7 +26,7 @@ mdast tree:
       children: [
         {
           type: [32m'text'[39m,
-          value: [32m'This document exercises every authoring feature acadamark currently supports. It serves three purposes: as a smoke test for the parser, as a feature catalog for humans, and as a living example of what acadamark source looks like in practice.'[39m,
+          value: [32m'This document exercises every authoring feature enscribe currently supports. It serves three purposes: as a smoke test for the parser, as a feature catalog for humans, and as a living example of what enscribe source looks like in practice.'[39m,
           position: {
             start: { line: [33m3[39m, column: [33m1[39m, offset: [33m35[39m },
             end: { line: [33m3[39m, column: [33m242[39m, offset: [33m276[39m }
@@ -220,7 +220,7 @@ mdast tree:
       children: [
         {
           type: [32m'text'[39m,
-          value: [32m'These authoring patterns are valid acadamark source and the parser handles them, but the downstream pieces (interpreter, section-nesting bridge) are not yet built. Sections marked with the '[39m,
+          value: [32m'These authoring patterns are valid enscribe source and the parser handles them, but the downstream pieces (interpreter, section-nesting bridge) are not yet built. Sections marked with the '[39m,
           position: {
             start: { line: [33m19[39m, column: [33m1[39m, offset: [33m1064[39m },
             end: { line: [33m19[39m, column: [33m190[39m, offset: [33m1253[39m }
@@ -437,7 +437,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m38[39m, column: [33m1[39m, offset: [33m2304[39m },
         end: { line: [33m38[39m, column: [33m19[39m, offset: [33m2322[39m }
@@ -452,7 +452,7 @@ mdast tree:
       isOpaqueContent: [33mtrue[39m
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m40[39m, column: [33m1[39m, offset: [33m2324[39m },
         end: { line: [33m40[39m, column: [33m34[39m, offset: [33m2357[39m }
@@ -467,7 +467,7 @@ mdast tree:
       isOpaqueContent: [33mtrue[39m
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m42[39m, column: [33m1[39m, offset: [33m2359[39m },
         end: { line: [33m42[39m, column: [33m30[39m, offset: [33m2388[39m }
@@ -533,7 +533,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m48[39m, column: [33m1[39m, offset: [33m2543[39m },
         end: { line: [33m48[39m, column: [33m28[39m, offset: [33m2570[39m }
@@ -548,7 +548,7 @@ mdast tree:
       isOpaqueContent: [33mtrue[39m
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m50[39m, column: [33m1[39m, offset: [33m2572[39m },
         end: { line: [33m50[39m, column: [33m43[39m, offset: [33m2614[39m }
@@ -563,7 +563,7 @@ mdast tree:
       isOpaqueContent: [33mtrue[39m
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m52[39m, column: [33m1[39m, offset: [33m2616[39m },
         end: { line: [33m52[39m, column: [33m71[39m, offset: [33m2686[39m }
@@ -661,7 +661,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m58[39m, column: [33m1[39m, offset: [33m2886[39m },
         end: { line: [33m58[39m, column: [33m96[39m, offset: [33m2981[39m }
@@ -813,7 +813,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m74[39m, column: [33m1[39m, offset: [33m3502[39m },
         end: { line: [33m74[39m, column: [33m41[39m, offset: [33m3542[39m }
@@ -845,7 +845,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m78[39m, column: [33m1[39m, offset: [33m3569[39m },
         end: { line: [33m78[39m, column: [33m60[39m, offset: [33m3628[39m }
@@ -895,7 +895,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m84[39m, column: [33m1[39m, offset: [33m3755[39m },
         end: { line: [33m84[39m, column: [33m47[39m, offset: [33m3801[39m }
@@ -910,7 +910,7 @@ mdast tree:
       isOpaqueContent: [33mtrue[39m
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m86[39m, column: [33m1[39m, offset: [33m3803[39m },
         end: { line: [33m86[39m, column: [33m65[39m, offset: [33m3867[39m }
@@ -1068,7 +1068,7 @@ mdast tree:
       }
     },
     {
-      type: [32m'acadamarkTag'[39m,
+      type: [32m'enscribeTag'[39m,
       position: {
         start: { line: [33m98[39m, column: [33m1[39m, offset: [33m4206[39m },
         end: { line: [33m98[39m, column: [33m65[39m, offset: [33m4270[39m }
@@ -1345,9 +1345,9 @@ mdast tree:
         [32m'\n'[39m +
         [32m'## Part 5: Section-style tags and the implicit-close pattern\n'[39m +
         [32m'\n'[39m +
-        [32m"Acadamark's most distinctive authoring affordance is implicit closing for section-style tags. A new peer-level section ends the previous one without an explicit closing tag, mirroring LaTeX's `\\section{}` and `\\subsection{}`. This is what makes acadamark source dramatically easier to type than raw HTML.\n"[39m +
+        [32m"Enscribe's most distinctive authoring affordance is implicit closing for section-style tags. A new peer-level section ends the previous one without an explicit closing tag, mirroring LaTeX's `\\section{}` and `\\subsection{}`. This is what makes enscribe source dramatically easier to type than raw HTML.\n"[39m +
         [32m'\n'[39m +
-        [32m'**(future pipeline: at Slice 3.5 the parser produces individual `acadamarkTag` nodes for each `<section>`, `<sub-section>`, etc.; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the interpreter that bridges the parser output to the section-nesting plugin is a future slice. The authoring patterns in this part are correct acadamark source today — the structural nesting will be observable end-to-end once the interpreter lands.)**\n'[39m +
+        [32m'**(future pipeline: at Slice 3.5 the parser produces individual `enscribeTag` nodes for each `<section>`, `<sub-section>`, etc.; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the interpreter that bridges the parser output to the section-nesting plugin is a future slice. The authoring patterns in this part are correct enscribe source today — the structural nesting will be observable end-to-end once the interpreter lands.)**\n'[39m +
         [32m'\n'[39m +
         [32m'### 5.1. Flat sections, peer-level\n'[39m +
         [32m'\n'[39m +
@@ -1469,7 +1469,7 @@ mdast tree:
   }
 }
 
-Acadamark tags at block level:
+Enscribe tags at block level:
   <#> {"position":{"start":{"line":38,"column":1,"offset":2304},"end":{"line":38,"column":19,"offset":2322}},"tagname":"#","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" Introduction ","isOpaqueContent":true}
   <##> {"position":{"start":{"line":40,"column":1,"offset":2324},"end":{"line":40,"column":34,"offset":2357}},"tagname":"##","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" Background and motivation ","isOpaqueContent":true}
   <###> {"position":{"start":{"line":42,"column":1,"offset":2359},"end":{"line":42,"column":30,"offset":2388}},"tagname":"###","positional":[],"booleans":{},"kwargs":{},"id":null,"classes":[],"content":" A finer subdivision ","isOpaqueContent":true}

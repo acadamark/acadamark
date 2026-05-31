@@ -4,7 +4,7 @@ html_output:
   element: lemma
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -68,7 +68,7 @@ The element is block-level; its content is body content directly, with no intern
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<lemma>` | `<statement content-type="lemma">` |
 | `name` kwarg | `<title>` inside `<statement>` |

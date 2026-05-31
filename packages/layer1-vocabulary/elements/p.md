@@ -4,7 +4,7 @@ html_output:
   element: p
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -84,7 +84,7 @@ The explicit `<p>` form is reached for in these cases:
 
 ## Content
 
-Paragraphs contain prose. Like other prose-bearing elements, content is recursively parsed: emphasis, citations, cross-references, and inline acadamark constructs all work normally.
+Paragraphs contain prose. Like other prose-bearing elements, content is recursively parsed: emphasis, citations, cross-references, and inline enscribe constructs all work normally.
 
 A paragraph cannot contain block-level elements (other paragraphs, sections, asides, blockquotes). Block-level content needs to be at the document/section level, not nested inside a paragraph.
 
@@ -103,9 +103,9 @@ The classification is informational. The `<p>` element renders the same way rega
 
 ## JATS mapping
 
-Direct mapping to JATS `<p>`. The element name and standard attributes (id, class) preserve. The `data-paragraph-type` attribute is acadamark-specific and not exported to JATS.
+Direct mapping to JATS `<p>`. The element name and standard attributes (id, class) preserve. The `data-paragraph-type` attribute is enscribe-specific and not exported to JATS.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<p>` | `<p>` |
 

@@ -6,7 +6,7 @@ file is the deliverable: it is the document slot for the DSL rendering
 architecture itself, read by the implementation slicer to know what is being
 built and by anyone touching DSL code afterward to understand the design.
 
-**Scope.** Investigates how acadamark renders its two external DSLs — Mermaid
+**Scope.** Investigates how enscribe renders its two external DSLs — Mermaid
 diagrams (`<mermaid>`) and ABC music notation (`<abc>`) — under a **two-mode
 architecture (static + live)** plus the existing **skip** behavior. Answers
 Q1–Q8 from the Phase 0 prompt.
@@ -61,7 +61,7 @@ them.
 
 ### The decision: Path C — internal registry, public API deferred
 
-acadamark's interpreter is structured around a **DSL registry**: an internal
+enscribe's interpreter is structured around a **DSL registry**: an internal
 table that holds, per external DSL, everything the engine needs to render it.
 Mermaid and abc are registered against that table as the initial built-in
 consumers. The registration *function* (`registerDsl`) is **not exposed
@@ -99,8 +99,8 @@ why it is a distinct structure, not an extension of `HANDLER_REGISTRY`.
 ### Q1 — registry shape (chat approves; implementation realizes)
 
 **Two registries, distinct concerns.** `HANDLER_REGISTRY` answers *"what
-function turns a `<mermaid>` acadamarkTag into contract hast?"* — a **parse /
-dispatch** concern, consumed in `acadamarkTagHandler` (`interpret-plugin.js`
+function turns a `<mermaid>` enscribeTag into contract hast?"* — a **parse /
+dispatch** concern, consumed in `enscribeTagHandler` (`interpret-plugin.js`
 line 118). The new **DSL-render registry** answers *"for the external DSL named
 `mermaid`, what is its container tag, its contract class, its live bundle + CDN
 URL + init script, and its optional static renderer?"* — an **asset-emit**
@@ -114,7 +114,7 @@ policy; keeping them separate keeps each single-purpose.
 
 | Field | Type | mermaid | abc |
 |-------|------|---------|-----|
-| `name` | string — the `data-acadamark-dsl` value, registry key | `'mermaid'` | `'abc'` |
+| `name` | string — the `data-enscribe-dsl` value, registry key | `'mermaid'` | `'abc'` |
 | `containerTag` | `'pre'` \| `'div'` — must match the handler's `wrapperEl` | `'pre'` | `'div'` |
 | `contractClass` | string — scanning class the handler emits | `'mermaid'` | `'abc'` |
 | `liveAssets` | `{ bundlePath, cdnUrl, initScript }` | mermaid ESM | abcjs-basic |
@@ -147,7 +147,7 @@ fall out for free — see below.
 
 **One sub-decision surfaced (does not complicate Path C).** Today the handlers
 **hardcode** their contract markers (`mermaid.js` lines 42/47 emit
-`class="mermaid"` + `data-acadamark-dsl="mermaid"`; `abc.js` likewise). With a
+`class="mermaid"` + `data-enscribe-dsl="mermaid"`; `abc.js` likewise). With a
 registry those markers would exist in two places: the handler (emit) and the
 registry (`contractClass`/`name`, used by the detector and init script).
 Options: (a) make the registry the single source and have the handler read its
@@ -162,7 +162,7 @@ choice, this does **not** trip the Q1 stop-and-report.
 
 The deferral is expressed structurally, not just by intent:
 
-- **Not in `exports`.** `acadamark-interpreter/package.json` exposes a single
+- **Not in `exports`.** `enscribe-interpreter/package.json` exposes a single
   entry (`"exports": "./src/index.js"`). The registry module
   (`src/dsl/registry.js`) is **not added to `exports`**, so `registerDsl` /
   `getDsl` are unreachable through the package's public surface. Reachability,
@@ -214,7 +214,7 @@ scope statement** — for the concrete, copy-ready outputs.
 ## 1. The architecture in one picture
 
 Three modes, all of which honor DESIGN.md's "rendering is the publisher's choice
-of tool" stance — the publisher chooses the mode; acadamark never decides to
+of tool" stance — the publisher chooses the mode; enscribe never decides to
 render on its own:
 
 | Mode | What the emitted HTML contains | Rendering happens | Self-contained? | New deps |
@@ -247,7 +247,7 @@ async)** — see §Q8.
 
 ## 2. The existing asset-emit path (verified)
 
-All line references are to `packages/acadamark-interpreter/src/index.js` unless
+All line references are to `packages/enscribe-interpreter/src/index.js` unless
 noted.
 
 **Two mode options exist today, and they are the precedent the prompt names.**
@@ -255,7 +255,7 @@ noted.
 - `katexCss: 'inline' (default) | 'link' | 'skip'` and
   `hoverPreviewMode: 'inline' (default) | 'link' | 'skip'` — documented at the
   options doc-comment (lines 50–62) and read at the top of
-  `acadamarkInterpreter` (lines 340–341). `'inline'` = self-contained, no
+  `enscribeInterpreter` (lines 340–341). `'inline'` = self-contained, no
   external request; `'link'` = CDN `<link>` / `<script src>`; `'skip'` = emit
   nothing, consumer handles it.
 
@@ -286,7 +286,7 @@ raw child), `makeScriptElement(js)` (inline `<script>`, raw child),
 **Detectors** (lines 217–264): `hasMathElements`, `hasNoteMarkers`,
 `hasRefLinks`, `hasCiteLinks` — each walks the hast tree recursively via
 `(node.children ?? []).some(...)`. DSL detectors (`hasMermaid`, `hasAbc`) follow
-the same shape, keying off `class`/`data-acadamark-dsl`.
+the same shape, keying off `class`/`data-enscribe-dsl`.
 
 **The mode builder** `buildHoverPreviewAssets(mode)` (lines 311–328) is the
 template for a `buildDslAssets(...)`:
@@ -327,13 +327,13 @@ live-inline DSL variant would either vendor mermaid/abcjs into `assets/` or
 helper, `wrapperEl: 'pre'`:
 
 ```html
-<pre class="mermaid" data-acadamark-dsl="mermaid">…source…</pre>
+<pre class="mermaid" data-enscribe-dsl="mermaid">…source…</pre>
 ```
 
 `src/handlers/abc.js` (lines 38–62) emits `wrapperEl: 'div'`:
 
 ```html
-<div class="abc" data-acadamark-dsl="abc">…source…</div>
+<div class="abc" data-enscribe-dsl="abc">…source…</div>
 ```
 
 In both, `bodyHast` is a single text node holding `node.content.trim()` — the
@@ -375,27 +375,27 @@ reformats `<div>`.
 
 "render at view time (CDN)" **is** live mode; "a build-time tooling pass may
 pre-render to static SVG" **is** static mode. So the two-mode architecture does
-not *introduce* new paths — it offers acadamark-built ways to exercise the two
+not *introduce* new paths — it offers enscribe-built ways to exercise the two
 paths the design already names. The only shift is **who runs them**: today the
 sentence implies the publisher runs both; the architecture lets the publisher
-opt acadamark into running either, with **skip remaining the default** so
+opt enscribe into running either, with **skip remaining the default** so
 "publisher wires it up" is preserved verbatim for anyone who does nothing.
 
 **The genuine tension (flag for chat).** The "Included vs external" bullets
 (`DESIGN.md` lines 162–164) currently draw the classification line at **render
 timing**: included = "renders source content to final output *during
-interpretation*… acadamark owns the rendering pipeline end-to-end." By that
+interpretation*… enscribe owns the rendering pipeline end-to-end." By that
 wording, **static mode would read as *included*** — it renders to final output
-during interpretation and the output is in acadamark's HTML, working without
+during interpretation and the output is in enscribe's HTML, working without
 client JS. That trips the prompt's own Q1 stop-and-report trigger ("the
 two-mode architecture genuinely shifts mermaid/abc from external to included").
 
 **Resolution (recommended, needs chat ratification).** The prompt's intended
 axis is **semantics-ownership**, not timing: included = the rendering primitive
-lives in acadamark's vocabulary tree (matrix/cases/align are math primitives
-acadamark owns); external = acadamark never parses the DSL's semantics and
+lives in enscribe's vocabulary tree (matrix/cases/align are math primitives
+enscribe owns); external = enscribe never parses the DSL's semantics and
 delegates to an outside library. Under the semantics-ownership axis, **static
-mode stays external** — acadamark shells out to the mermaid/abcjs library (an
+mode stays external** — enscribe shells out to the mermaid/abcjs library (an
 optional dependency) and never learns mermaid/abc semantics; it merely invokes
 the external tool at build time instead of leaving it for view time. This does
 **not** genuinely reclassify the DSLs — but the **current DESIGN.md wording
@@ -412,20 +412,20 @@ This is a wording clarification, not a design reversal.
 chat ratifies, a follow-up slice writes):**
 
 - *Replace the "Included DSLs" bullet* so the axis is ownership, not timing:
-  > **Included DSLs.** The rendering primitive lives in acadamark's own
+  > **Included DSLs.** The rendering primitive lives in enscribe's own
   > vocabulary and pipeline: the handler renders source to final output using
-  > machinery acadamark owns and always bundles, and that output is included in
-  > acadamark's HTML. Examples: `<math>` and the math-environment tags (KaTeX);
+  > machinery enscribe owns and always bundles, and that output is included in
+  > enscribe's HTML. Examples: `<math>` and the math-environment tags (KaTeX);
   > `<csv>`/`<tsv>` (Layer-1 tables); `<code>` and the code sigils. The output
-  > works without client JavaScript and acadamark owns the rendering end-to-end.
+  > works without client JavaScript and enscribe owns the rendering end-to-end.
 
 - *Replace the "External DSLs" bullet* to name the three modes as the
   publisher's choice, with the axis on delegation:
-  > **External DSLs.** acadamark does not own the rendering and never parses the
+  > **External DSLs.** enscribe does not own the rendering and never parses the
   > DSL's semantics into the core; it delegates to an external library. The
   > handler always emits the pass-through markup contract (a wrapper carrying
-  > `class` and `data-acadamark-dsl`). Rendering is the publisher's choice of
-  > tool, and acadamark offers three ways to exercise that choice:
+  > `class` and `data-enscribe-dsl`). Rendering is the publisher's choice of
+  > tool, and enscribe offers three ways to exercise that choice:
   > **skip** (default) — emit only the contract, the publisher wires rendering;
   > **live** — also emit the external library (inlined or CDN-linked) so the
   > browser renders the contract markup at view time; **static** — invoke the
@@ -435,10 +435,10 @@ chat ratifies, a follow-up slice writes):**
   > differ.
 
 - *Add one sentence* reconciling the "don't drag heavyweight browser-shaped
-  dependencies into the acadamark build" point (`DESIGN.md` line 166):
+  dependencies into the enscribe build" point (`DESIGN.md` line 166):
   > The libraries that back live and static mode are optional dependencies; the
   > default build (skip mode) pulls none of them, so the engine stays lean
-  > unless the publisher asks acadamark to do the rendering.
+  > unless the publisher asks enscribe to do the rendering.
 
 No other DESIGN.md section bears on this. The "Embedded DSLs: processor
 delegation" section (lines 146–154) is consistent as written — it already says a
@@ -551,9 +551,9 @@ split.
   ```
 
 The init shape is the same for inline and link variants — only the
-library-source location differs. Live-**link** adds **zero** new acadamark
+library-source location differs. Live-**link** adds **zero** new enscribe
 dependencies (just URL constants); live-**inline** adds `mermaid`/`abcjs` as
-deps (no Chromium, no jsdom). Live mode is **fully synchronous** on acadamark's
+deps (no Chromium, no jsdom). Live mode is **fully synchronous** on enscribe's
 side — the asynchronous work happens in the browser, not in the compiler.
 
 ---
@@ -743,8 +743,8 @@ prose; this is the sketch chat ratifies):
 - **Keep S1** (mermaid `<pre>` styled as a code block) — graceful degradation
   for skip/live before the library runs.
 - **Revise the "Out of spec" clause.** Replace "a CDN `<script>` … is explicitly
-  *not* emitted or enforced by acadamark" with: in **skip** mode (default)
-  acadamark emits only the contract; **live** and **static** are opt-in and emit
+  *not* emitted or enforced by enscribe" with: in **skip** mode (default)
+  enscribe emits only the contract; **live** and **static** are opt-in and emit
   assets / inline SVG per L*/T*/O* above. Update the DESIGN.md cross-reference to
   point at the two-mode architecture.
 
@@ -888,31 +888,31 @@ follow-up slice writes once chat ratifies. It supersedes the inline draft in §Q
 **Current text** (`DESIGN.md` lines 162–164, verbatim, elided with "…"):
 
 > - **Included DSLs.** The handler renders source content to final output during
->   interpretation, and that output is included in acadamark's HTML. Examples:
->   `<math>` … acadamark owns the rendering pipeline end-to-end.
+>   interpretation, and that output is included in enscribe's HTML. Examples:
+>   `<math>` … enscribe owns the rendering pipeline end-to-end.
 >
 > - **External DSLs.** The handler emits pass-through markup preserving source
->   content; rendering happens *external* to acadamark, by downstream tooling.
+>   content; rendering happens *external* to enscribe, by downstream tooling.
 >   The consumer's browser may render at view time … or a build-time tooling pass
 >   may pre-render to static SVG … rendering is the publisher's choice of tool.
 
 **Replacement — Included DSLs bullet:**
 
-> **Included DSLs.** The rendering primitive lives in acadamark's own vocabulary
+> **Included DSLs.** The rendering primitive lives in enscribe's own vocabulary
 > and pipeline: the handler renders source to final output using machinery
-> acadamark owns and always bundles, and that output is included in acadamark's
+> enscribe owns and always bundles, and that output is included in enscribe's
 > HTML. Examples: `<math>` and the math-environment tags (KaTeX); `<csv>`/`<tsv>`
 > (Layer-1 tables); `<code>` and the code sigils. The output works without client
-> JavaScript and acadamark owns the rendering end-to-end.
+> JavaScript and enscribe owns the rendering end-to-end.
 
 **Replacement — External DSLs bullet** (names the registry already introduced two
 paragraphs above, and the three publisher-selected modes):
 
-> **External DSLs.** acadamark does not own the rendering and never parses the
+> **External DSLs.** enscribe does not own the rendering and never parses the
 > DSL's semantics into the core; it delegates to an external library. The handler
 > always emits the pass-through markup contract (a wrapper carrying `class` and
-> `data-acadamark-dsl`). Each external DSL's registry entry additionally declares
-> how acadamark can render it on the publisher's behalf, and the publisher
+> `data-enscribe-dsl`). Each external DSL's registry entry additionally declares
+> how enscribe can render it on the publisher's behalf, and the publisher
 > chooses per DSL among three modes: **skip** (default) — emit only the contract,
 > the publisher wires rendering; **live** — also emit the external library
 > (inlined or CDN-linked) so the browser renders the contract markup at view
@@ -926,16 +926,16 @@ paragraphs above, and the three publisher-selected modes):
 
 > The libraries that back live and static mode are optional dependencies declared
 > per DSL in the registry; the default build (skip mode) pulls none of them, so
-> the engine stays lean unless the publisher asks acadamark to do the rendering.
+> the engine stays lean unless the publisher asks enscribe to do the rendering.
 > Not every DSL offers every mode — Mermaid's only browserless path needs a
-> headless browser, so acadamark registers it live-only; abc registers both.
+> headless browser, so enscribe registers it live-only; abc registers both.
 
 **Why this is coherent with the existing text, not a reversal.** DESIGN.md
 already says (line 150) *"the tag-to-processor mapping is the DSL registry; a new
 processor … is added by extending the registry,"* and already says (line 164)
 the publisher may render at view time **or** pre-render to static SVG. The
 revision (a) corrects the included/external axis to ownership so
-static-as-an-acadamark-option does not read as "included," and (b) names the
+static-as-an-enscribe-option does not read as "included," and (b) names the
 registry — which DESIGN.md already introduced — as the place each external DSL
 declares its render modes. No new concept is added to DESIGN.md; two existing
 ones (the registry, the two render paths) are joined.
@@ -995,7 +995,7 @@ stop-and-report: the change is the token spelling, not the structure.)
 - **Keep `RQ-DSL-S1`** (mermaid `<pre>` styled as a code block) — graceful
   degradation for skip/live before the library runs.
 - **Revise the "Out of spec" clause** — replace "a CDN `<script>` … is explicitly
-  *not* emitted or enforced by acadamark" with: skip (default) emits only the
+  *not* emitted or enforced by enscribe" with: skip (default) emits only the
   contract; live and static are opt-in and emit assets / inline SVG per the
   `RQ-DSL-LIVE-*` / `RQ-DSL-STATIC-*` predicates. Repoint the DESIGN.md
   cross-reference at the registry-based two-mode architecture.
@@ -1107,22 +1107,22 @@ versions):**
 **In-repo (code/design facts; file:line):**
 
 - Mode options + sync compiler + additive injection + node builders + detectors
-  + CDN constants + inline loaders: `packages/acadamark-interpreter/src/index.js`
+  + CDN constants + inline loaders: `packages/enscribe-interpreter/src/index.js`
   (lines 50–62, 121, 146–149, 127–213, 217–302, 311–328, 340–341, 441–486).
 - Handlers: `src/handlers/mermaid.js` (36–62), `src/handlers/abc.js` (38–62).
 - Existing registry idiom (the precedent Path C extends): `HANDLER_REGISTRY` /
   `INTERNAL_REGISTRY` static `Map`s + the dispatcher threading `opts` to handlers:
-  `packages/acadamark-interpreter/src/interpret-plugin.js` (54–92, 101–134;
+  `packages/enscribe-interpreter/src/interpret-plugin.js` (54–92, 101–134;
   handler dispatch at 117–121).
 - Dependencies + single-entry `exports` (Q5 boundary):
-  `packages/acadamark-interpreter/package.json` (`exports` line 8; deps 13–31).
-- Bundled assets: `packages/acadamark-interpreter/src/assets/`.
+  `packages/enscribe-interpreter/package.json` (`exports` line 8; deps 13–31).
+- Bundled assets: `packages/enscribe-interpreter/src/assets/`.
 - Fixture render invocation (`processSync`, default modes):
-  `packages/acadamark-interpreter/test/render-fixtures.js` (77–82).
+  `packages/enscribe-interpreter/test/render-fixtures.js` (77–82).
 - DESIGN.md external/included + embedded-DSL, incl. the **"DSL registry … a new
   processor is added by extending the registry"** sentence Path C builds on:
   `DESIGN.md` (146–168; registry sentence at line 150; external-DSL bullet 164;
-  `data-acadamark-dsl` contract 168).
+  `data-enscribe-dsl` contract 168).
 - Render-quality §9: `notes/specs/render-quality.md` (435–476).
 - RQ-DSL-M2: `BACKLOG.md` (checklist 117–120; detail 428–462).
 - Phase 14: `ROADMAP.md` (435–478).

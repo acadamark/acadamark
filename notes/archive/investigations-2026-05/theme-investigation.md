@@ -24,7 +24,7 @@ hover-preview CSS; the shell wrapper provides display rules.
 
 ### Content
 - `<p>`, `<em>`, `<strong>`, `<blockquote>`, `<hr>`, `<ul>`, `<ol>`, `<li>`
-- `<code>`, `<pre>`, `<code-block>` (acadamark sigil code block)
+- `<code>`, `<pre>`, `<code-block>` (enscribe sigil code block)
 - `<figure>`, `<figcaption>`, `<img>`
 - `<display-math>`, `<inline-math>` (KaTeX content inside)
 - `<table>`, `<thead>`, `<tbody>`, `<caption>`, `<th>`, `<td>`
@@ -71,7 +71,7 @@ hover-preview CSS; the shell wrapper provides display rules.
 Conflict risk: `note-list ol` in hover-preview.css and in theme CSS both target
 the same element. The theme resets padding-left via its own rule. hover-preview
 sets `padding-left: 0`. Since hover-preview.css is injected first (browser reads
-in order), the theme can safely override with `padding-left: var(--acm-space-6)`
+in order), the theme can safely override with `padding-left: var(--enscribe-space-6)`
 if desired, or the two can agree on `0` with a `text-indent` counter.
 
 Resolution: Both agree on `list-style: none; padding-left: 0`. Use `text-indent`

@@ -8,15 +8,15 @@ between them. No code, tests, or documents were modified.
 **Files read at code level:**
 - `notes/idioms.md` (delegation principle, the claim under investigation)
 - `notes/dsl-engines.md` (DSL engine table, `<math>`/environment tags)
-- `packages/remark-acadamark/src/dsl-registry.js` (math DSL registry entries)
-- `packages/remark-acadamark/src/generated/parser.js` (sigil `isOpaqueContent` assignments)
-- `packages/remark-acadamark/src/from-markdown.js` (short/long-form contentHandler assignment)
-- `packages/acadamark-interpreter/src/interpret-plugin.js` (HANDLER_REGISTRY)
-- `packages/acadamark-interpreter/src/handlers/math.js` (mathHandler)
+- `packages/remark-enscribe/src/dsl-registry.js` (math DSL registry entries)
+- `packages/remark-enscribe/src/generated/parser.js` (sigil `isOpaqueContent` assignments)
+- `packages/remark-enscribe/src/from-markdown.js` (short/long-form contentHandler assignment)
+- `packages/enscribe-interpreter/src/interpret-plugin.js` (HANDLER_REGISTRY)
+- `packages/enscribe-interpreter/src/handlers/math.js` (mathHandler)
 - `packages/layer1-vocabulary/elements/inline-math.md` (vocabulary entry)
 - `packages/layer1-vocabulary/elements/display-math.md` (vocabulary entry)
 - `packages/layer1-vocabulary/SPEC.md` (lines 199–208, math section)
-- `packages/acadamark-interpreter/src/index.js` (`hasMathElements` detector)
+- `packages/enscribe-interpreter/src/index.js` (`hasMathElements` detector)
 
 **Documentation read (not code-verified — marked as such in findings):**
 - `remark-math` v6 README (GitHub: `remarkjs/remark-math`)
@@ -27,24 +27,24 @@ between them. No code, tests, or documents were modified.
 
 ## 1. Question and scope
 
-`notes/idioms.md` ("When acadamark supersedes the lexer") states:
+`notes/idioms.md` ("When enscribe supersedes the lexer") states:
 
 > remark-math's tokenizer recognizes delimiter-shaped math: `$...$` and `$$...$$`. It does not
-> recognize environment-shaped math — `\begin{matrix}...\end{matrix}` and similar. Acadamark
+> recognize environment-shaped math — `\begin{matrix}...\end{matrix}` and similar. Enscribe
 > intends to support a wider LaTeX math surface than the delimiter forms. For the environment
-> forms, there is no remark wheel to reuse, so acadamark provides its own: the DSL long-form tags
+> forms, there is no remark wheel to reuse, so enscribe provides its own: the DSL long-form tags
 > (`<matrix>`, `<cases>`, `<align>`, `<eqnarray>`) reserved in the DSL registry.
 
 This Phase 0 verifies that claim, inventories the full math authoring surface, and produces the
 coverage table that decides whether `remark-math` is an adequate wheel for the delimiter cases.
 
-The design decisions — that bare `$x$` normalizes to the acadamark `$` sigil node, that acadamark
+The design decisions — that bare `$x$` normalizes to the enscribe `$` sigil node, that enscribe
 delegates the lexer but owns the node identity — are settled in `idioms.md` and `DESIGN.md` and
 are **not reopened here**. This investigation is a coverage-and-adequacy check, not a design debate.
 
 ---
 
-## 2. Question 1 — Acadamark's existing math authoring surface
+## 2. Question 1 — Enscribe's existing math authoring surface
 
 ### 2.1 Sigil tags (implemented: parser + interpreter)
 
@@ -52,7 +52,7 @@ are **not reopened here**. This investigation is a coverage-and-adequacy check, 
 
 - Parser: Peggy grammar produces `{ tagname: '$', isOpaqueContent: true, content: <string> }`.
   `generated/parser.js` lines 406–412: `makeNode("$", { isOpaqueContent: true, content })`.
-  `from-markdown.js` `exitAcadamarkTag` sets `contentHandler = getContentHandler('$')` → `'math'`
+  `from-markdown.js` `exitEnscribeTag` sets `contentHandler = getContentHandler('$')` → `'math'`
   (from `dsl-registry.js` line 33: `['$', 'math']`). `isOpaqueContent` is already `true` from the
   grammar; the `from-markdown.js` condition `if (node.contentHandler === 'default' ...)` does not
   fire, leaving it unchanged.
@@ -79,7 +79,7 @@ are **not reopened here**. This investigation is a coverage-and-adequacy check, 
 All of the following are in `dsl-registry.js`, giving them a content handler at parse time. None
 have a vocabulary entry in `packages/layer1-vocabulary/elements/` and none appear in
 `interpret-plugin.js`'s `HANDLER_REGISTRY`. The interpreter would hit `warnUnknownTag` and emit
-a `<span data-acadamark-unknown="tagname">` fallback.
+a `<span data-enscribe-unknown="tagname">` fallback.
 
 | Tag | Registry entry (`dsl-registry.js`) | Intended math form | Vocab entry | Handler |
 |-----|-----------------------------------|--------------------|-------------|---------|
@@ -166,16 +166,16 @@ ignored by remark-math's rendering path.
 **HTML output (documented fact):** Via `remark-rehype` (without `rehype-katex`): `inlineMath` →
 `<code class="language-math math-inline">`, `math` → `<pre><code class="language-math math-display">`.
 Via `rehype-katex`: KaTeX-rendered HTML in `<span class="math math-inline">` /
-`<div class="math math-display">`. Acadamark does not use either of these paths; it rewrites
-remark-math's nodes into `acadamarkTag` nodes and renders through its own `mathHandler`.
+`<div class="math math-display">`. Enscribe does not use either of these paths; it rewrites
+remark-math's nodes into `enscribeTag` nodes and renders through its own `mathHandler`.
 
 ---
 
-## 4. Question 3 — Acadamark's coverage of forms remark-math does not tokenize
+## 4. Question 3 — Enscribe's coverage of forms remark-math does not tokenize
 
 For each form remark-math does not recognize:
 
-| Form | remark-math covers | Acadamark DSL coverage |
+| Form | remark-math covers | Enscribe DSL coverage |
 |------|-------------------|------------------------|
 | `\begin{matrix}...\end{matrix}` | No | `<matrix>...</matrix>` — DSL registry entry, not yet implemented in interpreter |
 | `\begin{cases}...\end{cases}` | No | `<cases>...</cases>` — DSL registry entry, not yet implemented |
@@ -186,11 +186,11 @@ For each form remark-math does not recognize:
 | `\[...\]` (LaTeX display delimiters) | No | **Not covered.** No DSL tag, no sigil, no registration. |
 
 **The point of this column:** remark-math's tokenizer gaps for environment-shaped math are not
-acadamark gaps, because acadamark fills them by a different route (DSL long-form tags). An author
+enscribe gaps, because enscribe fills them by a different route (DSL long-form tags). An author
 who writes `\begin{align}...\end{align}` in bare text is currently not supported, but the intended
 route is `<align>\begin{align}...\end{align}</align>` (or a future shorthand that compiles to it).
 
-The `\(...\)` / `\[...\]` gap is different: it is not covered by any existing acadamark mechanism.
+The `\(...\)` / `\[...\]` gap is different: it is not covered by any existing enscribe mechanism.
 See §5 open sub-question.
 
 ---
@@ -202,14 +202,14 @@ See §5 open sub-question.
 **Yes.** For the forms `$x$` (inline) and `$$\n...\n$$` (display block), remark-math's tokenizer
 does exactly what is needed: it finds the delimiter boundaries in a stream of text, extracts the
 LaTeX content, and produces `inlineMath` / `math` mdast nodes. The normalization pass (planned in
-the G3 slice) rewrites those nodes into `acadamarkTag { tagname: '$' }` and
-`acadamarkTag { tagname: '$$' }` respectively — the same nodes the sigil parser produces for
+the G3 slice) rewrites those nodes into `enscribeTag { tagname: '$' }` and
+`enscribeTag { tagname: '$$' }` respectively — the same nodes the sigil parser produces for
 `<$ x $>` and `<$$ x $$>`. Downstream of normalization, `mathHandler` renders both forms via
 KaTeX, and the canonical `<inline-math>` / `<display-math>` element names are produced in both
 cases. The two paths converge fully.
 
 remark-math does not touch the `<$ ... $>` and `<$$ ... $$>` sigil forms at all: those are
-consumed by the acadamark micromark extension before remark-math's tokenizer runs.
+consumed by the enscribe micromark extension before remark-math's tokenizer runs.
 
 ### 5.2 Is the `notes/idioms.md` claim accurate?
 
@@ -221,26 +221,26 @@ consumed by the acadamark micromark extension before remark-math's tokenizer run
 This is accurate as stated. The BNF grammar confirms: only `$` delimiters, no `\begin` rules.
 
 The one thing the claim does not mention: `\(...\)` and `\[...\]` (LaTeX alternative delimiters)
-are also not recognized by remark-math, and are also not covered by any existing acadamark
+are also not recognized by remark-math, and are also not covered by any existing enscribe
 mechanism. The spec does not need to be *corrected* — it says nothing false — but it does not
 acknowledge this gap either. See §5.3.
 
 ### 5.3 Open sub-question: `\(...\)` and `\[...\]`
 
-Neither remark-math nor the current acadamark DSL tags cover the LaTeX alternative delimiters
+Neither remark-math nor the current enscribe DSL tags cover the LaTeX alternative delimiters
 `\(...\)` (inline) and `\[...\]` (display). KaTeX supports them at render time (they are valid
-LaTeX math mode), but the acadamark tokenizer would have to encounter the `\(` boundary explicitly
+LaTeX math mode), but the enscribe tokenizer would have to encounter the `\(` boundary explicitly
 in source to recognize the math span.
 
 Options, stated but not resolved here:
 - (a) **Accept the gap.** Authors who prefer `\(...\)` syntax use `<$ ... $>` instead. No new
   machinery. Academic writing communities that standardize on `$...$` (most) are unaffected.
-- (b) **Cover via a dedicated acadamark tokenizer.** Add a micromark extension that finds `\(...\)`
-  and `\[...\]` and emits `acadamarkTag { tagname: '$' / '$$' }` directly. This is "superseding
+- (b) **Cover via a dedicated enscribe tokenizer.** Add a micromark extension that finds `\(...\)`
+  and `\[...\]` and emits `enscribeTag { tagname: '$' / '$$' }` directly. This is "superseding
   the lexer" in the sense of `idioms.md`, but for a form remark never covered.
 - (c) **Document as a known limitation.** Update `notes/known-limitations.md` with an entry
   stating `\(...\)` and `\[...\]` are not recognized as math delimiters; authors should use the
-  acadamark sigil forms or bare `$...$`.
+  enscribe sigil forms or bare `$...$`.
 
 This is a design sub-question for the chat, not for the G3 implementation prompt. G3 can proceed
 with the `$...$` path and leave this gap explicitly documented.
@@ -249,10 +249,10 @@ with the `$...$` path and leave this gap explicitly documented.
 
 ## 6. Three-column coverage table
 
-| Math form | remark-math tokenizer | Acadamark existing / intended coverage |
+| Math form | remark-math tokenizer | Enscribe existing / intended coverage |
 |---|---|---|
-| `$x$` (inline, bare) | ✅ `inlineMath` node (via `singleDollarTextMath: true`) | Normalization pass rewrites to `acadamarkTag { tagname: '$' }` — same as `<$ x $>` sigil |
-| `$$...$$` (display block, bare) | ✅ `math` node | Normalization pass rewrites to `acadamarkTag { tagname: '$$' }` — same as `<$$ ... $$>` sigil |
+| `$x$` (inline, bare) | ✅ `inlineMath` node (via `singleDollarTextMath: true`) | Normalization pass rewrites to `enscribeTag { tagname: '$' }` — same as `<$ x $>` sigil |
+| `$$...$$` (display block, bare) | ✅ `math` node | Normalization pass rewrites to `enscribeTag { tagname: '$$' }` — same as `<$$ ... $$>` sigil |
 | `<$ ... $>` (sigil, in-tag) | ✅ not consumed (sigil parser claims `<...>`) | Fully implemented: `mathHandler` → `<inline-math>` |
 | `<$$ ... $$>` (sigil, in-tag) | ✅ not consumed | Fully implemented: `mathHandler` + equation numbering → `<display-math>` |
 | `\(...\)` (LaTeX inline delimiters) | ❌ not recognized | ❌ not covered (no DSL tag, no tokenizer) |
@@ -272,12 +272,12 @@ Legend: ✅ covered, ❌ gap, 🔧 registered/planned but not implemented, ⚠�
 
 ### 7.1 `hasMathElements` detector is safe on the canonical path
 
-The `hasMathElements` function in `packages/acadamark-interpreter/src/index.js` (line ~191) checks
+The `hasMathElements` function in `packages/enscribe-interpreter/src/index.js` (line ~191) checks
 for `tagName === 'inline-math'` or `tagName === 'display-math'` in the hast tree to decide whether
 to inject KaTeX CSS. On the canonical normalization path:
 
 1. `remark-math` tokenizes `$x$` → `inlineMath` mdast node.
-2. Normalization pass rewrites it → `acadamarkTag { tagname: '$' }`.
+2. Normalization pass rewrites it → `enscribeTag { tagname: '$' }`.
 3. `mathHandler` renders it → `<inline-math>` hast element.
 
 The element name `inline-math` matches the detector. KaTeX CSS is injected correctly. **This is a
@@ -299,7 +299,7 @@ noting as a test to write: a document that uses bare `$x$` should produce KaTeX-
 ### 7.3 KaTeX options — no conflict with existing mathHandler
 
 `remark-math` v6 is a tokenizer only. It does not call KaTeX. It does not set KaTeX options. The
-normalization pass's job is to rewrite `inlineMath`/`math` nodes → `acadamarkTag` nodes; after
+normalization pass's job is to rewrite `inlineMath`/`math` nodes → `enscribeTag` nodes; after
 that, `mathHandler` drives KaTeX with its existing options (`throwOnError: false`,
 `displayMode: <true|false>`, `output: 'html'`). Nothing in remark-math touches or conflicts
 with these. **The rendering path is unchanged by adding remark-math.**
@@ -325,16 +325,16 @@ directly to `rehype-katex`. The current design and implementation are different 
    both exist in `elements/`. The "don't need new Layer 1 elements" claim is false.
 2. Rendering is via KaTeX directly in `mathHandler`, not via `rehype-katex`.
 3. On the normalization model, `inlineMath` mdast nodes are transient — they exist only between
-   the remark-math tokenizer and the normalization pass, which rewrites them to `acadamarkTag`
+   the remark-math tokenizer and the normalization pass, which rewrites them to `enscribeTag`
    before any downstream plugin sees them.
 
 **This section needs updating.** The correct description of the current design:
 
-> Inline math (`$x$`) and display math (`$$...$$`) are represented as `acadamarkTag` nodes with
+> Inline math (`$x$`) and display math (`$$...$$`) are represented as `enscribeTag` nodes with
 > `tagname: '$'` and `tagname: '$$'` respectively. The vocabulary entries are `inline-math` and
 > `display-math`. The interpreter renders them via KaTeX through `mathHandler`. When the
 > normalization pass is active, bare `$x$` in prose (tokenized by `remark-math` as `inlineMath`)
-> is rewritten to the same `acadamarkTag` form before any structural plugin runs.
+> is rewritten to the same `enscribeTag` form before any structural plugin runs.
 
 Fixing this is outside the scope of this Phase 0 (read-only pass). Recording it here as a finding
 for a future docs-reconciliation commit.
@@ -345,10 +345,10 @@ No normalization pass exists in the codebase today. The `idioms.md` table implie
 bare `$x$` "is" the same node as `<$ x $>`. That is the *intended* state, not the current state.
 Currently, a bare `$x$` in source would reach `remark-math` only if `remark-math` is added to the
 pipeline, and even then it would produce an `inlineMath` mdast node that reaches `toHast` unhandled
-(the interpreter's `toHast` call registers handlers only for `acadamarkTag`).
+(the interpreter's `toHast` call registers handlers only for `enscribeTag`).
 
 G3's math half requires building this normalization pass as part of the implementation — it cannot
 be skipped. The pass is a single `unist-util-visit` walk (analogous to `remarkRecursiveContent`)
-that rewrites `inlineMath` → `acadamarkTag { tagname: '$', ... }` and `math` → `acadamarkTag
+that rewrites `inlineMath` → `enscribeTag { tagname: '$', ... }` and `math` → `enscribeTag
 { tagname: '$$', ... }`. This is straightforward, but it is a deliverable of G3, not a pre-existing
 piece.

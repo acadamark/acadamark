@@ -4,7 +4,7 @@ html_output:
   element: article
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -32,11 +32,11 @@ title_extraction: true
 jats_counterpart:
   element: article
   notes: |
-    JATS <article> wraps <front>, <body>, and <back>. Acadamark uses
+    JATS <article> wraps <front>, <body>, and <back>. Enscribe uses
     <article-front>, <article-body>, <article-back> as parallel custom
     elements. The mapping is direct. JATS's article-type attribute (with
     values like research-article, review-article, editorial, etc.) is
-    not currently set by acadamark — sub-classification within the
+    not currently set by enscribe — sub-classification within the
     article category is deferred until a JATS-export slice needs it.
 shorthand_examples:
   - source: |
@@ -130,8 +130,8 @@ shorthand_examples:
       article. <article-front> is omitted because there's no metadata.
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkArticleStructuring
-    runs_before: acadamarkTagInterpret
+  - name: enscribeArticleStructuring
+    runs_before: enscribeTagInterpret
     purpose: |
       Reads <meta type=article> (or <meta> with no type, defaulting to
       article) and generates the <article> wrapper plus
@@ -144,7 +144,7 @@ related_plugins:
 
 # `<article>`
 
-An article represents a single self-contained piece of writing intended to be read as one document. Research papers, journal articles, blog posts, reports, memos. The most common top-level container in acadamark.
+An article represents a single self-contained piece of writing intended to be read as one document. Research papers, journal articles, blog posts, reports, memos. The most common top-level container in enscribe.
 
 ## Semantic intent
 
@@ -169,7 +169,7 @@ When in doubt, use `<article>`. It's the default for most academic and editorial
 (section content, figures, paragraphs)
 ```
 
-`acadamarkArticleStructuring` reads `<meta type=article>` (or `<meta>` with no type — the default is `article`) and generates:
+`enscribeArticleStructuring` reads `<meta type=article>` (or `<meta>` with no type — the default is `article`) and generates:
 
 - The outer `<article>` element.
 - `<article-front>` wrapping the original `<meta>`.
@@ -214,7 +214,7 @@ Sub-classification within the article category (research-article, review-article
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<article>` | `<article>` |
 | `<article-front>` | `<front>` (specifically `<article-meta>` inside) |
@@ -224,7 +224,7 @@ Sub-classification within the article category (research-article, review-article
 
 JATS's `article-type` attribute (research-article, review-article, etc.) is not currently populated; sub-classification is deferred.
 
-The `numbering-style` and `note-position` kwargs are acadamark-specific (they describe rendering preferences, not JATS-standard metadata). They're preserved as `data-*` attributes for downstream processors but not exported to JATS.
+The `numbering-style` and `note-position` kwargs are enscribe-specific (they describe rendering preferences, not JATS-standard metadata). They're preserved as `data-*` attributes for downstream processors but not exported to JATS.
 
 ## Authoring patterns
 

@@ -8,7 +8,7 @@ html_output:
     `html_output.element` is the vocabulary lookup key (must match the
     tagname). Handler emits `<eqnarray>` wrapper directly; the schema
     field is not consulted under `interpreter_strategy: handler`.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -24,7 +24,7 @@ content:
     multi-line-equation visual output. `<eqnarray>` exists alongside
     `<align>` for LaTeX-source compatibility: an author copying
     `\begin{eqnarray}...\end{eqnarray}` source from a LaTeX document
-    has a target acadamark tag whose name matches.
+    has a target enscribe tag whose name matches.
 content_handler: eqnarray
 jats_counterpart:
   element: disp-formula
@@ -69,7 +69,7 @@ g(x) &=& 2x
 
 The LaTeX `eqnarray` env uses three `&` columns (lhs, op, rhs); KaTeX's `aligned` accepts the same notation and renders equivalently.
 
-For new acadamark documents, prefer `<align>` (the modern LaTeX convention) over `<eqnarray>` (legacy). Both produce the same visual output via the same KaTeX env.
+For new enscribe documents, prefer `<align>` (the modern LaTeX convention) over `<eqnarray>` (legacy). Both produce the same visual output via the same KaTeX env.
 
 ## See also
 

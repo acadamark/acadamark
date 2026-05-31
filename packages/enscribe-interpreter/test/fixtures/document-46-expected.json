@@ -1,0 +1,2606 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "book",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "book-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "book"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "book-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Foundations of Reproducible Research",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 38,
+                          "offset": 37
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "book-subtitle",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A Short Edited Volume",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 23,
+                          "offset": 22
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "editor",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Dana Reed",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 11,
+                          "offset": 10
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "preface"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "About This Volume"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Reproducibility is less a technique than a habit: a set of small, unglamorous\npractices that, taken together, let someone else — including your future self —\nrebuild a result from its inputs. This short volume collects three such habits, one\nper chapter, each written by a different contributor.",
+                      "position": {
+                        "start": {
+                          "line": 40,
+                          "column": 1,
+                          "offset": 955
+                        },
+                        "end": {
+                          "line": 43,
+                          "column": 54,
+                          "offset": 1250
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-1",
+                        "dataNoteId": "note-1"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-1"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 40,
+                      "column": 1,
+                      "offset": 955
+                    },
+                    "end": {
+                      "line": 45,
+                      "column": 46,
+                      "offset": 1403
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-1"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "The chapters were\ncommissioned independently; the editor has imposed only a common notation and the\nshared checklist reproduced in the appendix.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 45,
+                                  "offset": 145
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-1",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "book-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "chapter"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Version Control for Scientific Work"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "author",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Priya Raman",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 13,
+                              "offset": 12
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A version-control system records the history of a project as a sequence of\n",
+                      "position": {
+                        "start": {
+                          "line": 49,
+                          "column": 1,
+                          "offset": 1476
+                        },
+                        "end": {
+                          "line": 50,
+                          "column": 1,
+                          "offset": 1551
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "commits",
+                          "position": {
+                            "start": {
+                              "line": 50,
+                              "column": 2,
+                              "offset": 1552
+                            },
+                            "end": {
+                              "line": 50,
+                              "column": 9,
+                              "offset": 1559
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", each a complete snapshot tied to its parent. The result is a directed\ngraph of states that can be branched, merged, and — crucially for reproducibility —\nreferred to by an immutable identifier.",
+                      "position": {
+                        "start": {
+                          "line": 50,
+                          "column": 10,
+                          "offset": 1560
+                        },
+                        "end": {
+                          "line": 52,
+                          "column": 40,
+                          "offset": 1755
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-2",
+                        "dataNoteId": "note-2"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-2"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 49,
+                      "column": 1,
+                      "offset": 1476
+                    },
+                    "end": {
+                      "line": 54,
+                      "column": 16,
+                      "offset": 1895
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:vcs-graph"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "commit-graph.png",
+                        "alt": "A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1.1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 151,
+                              "offset": 150
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The discipline that matters is not the tool but the granularity: small, frequent,\nwell-described commits, as ",
+                      "position": {
+                        "start": {
+                          "line": 58,
+                          "column": 1,
+                          "offset": 2092
+                        },
+                        "end": {
+                          "line": 59,
+                          "column": 28,
+                          "offset": 2201
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Wilson2014"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Wilson et al., 2014)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " argue. ",
+                      "position": {
+                        "start": {
+                          "line": 59,
+                          "column": 46,
+                          "offset": 2219
+                        },
+                        "end": {
+                          "line": 59,
+                          "column": 54,
+                          "offset": 2227
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:vcs-graph",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " shows the\nshape such a history takes.",
+                      "position": {
+                        "start": {
+                          "line": 59,
+                          "column": 74,
+                          "offset": 2247
+                        },
+                        "end": {
+                          "line": 60,
+                          "column": 28,
+                          "offset": 2285
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 58,
+                      "column": 1,
+                      "offset": 2092
+                    },
+                    "end": {
+                      "line": 60,
+                      "column": 28,
+                      "offset": 2285
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-2"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Distributed systems such as Git give\nevery clone the full history, so the record does not depend on a central server\nstaying alive.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 15,
+                                  "offset": 132
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-2",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "chapter"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Literate Programming and Notebooks"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "author",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Marcus Feld",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 13,
+                              "offset": 12
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Literate programming, introduced by ",
+                      "position": {
+                        "start": {
+                          "line": 64,
+                          "column": 1,
+                          "offset": 2357
+                        },
+                        "end": {
+                          "line": 64,
+                          "column": 37,
+                          "offset": 2393
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Knuth1984"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Knuth, 1984)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", inverts the usual relation\nbetween code and documentation: the program is written as an essay for human\nreaders, with the machine-executable fragments extracted from it. Computational\nnotebooks are its modern, interactive descendant.",
+                      "position": {
+                        "start": {
+                          "line": 64,
+                          "column": 54,
+                          "offset": 2410
+                        },
+                        "end": {
+                          "line": 67,
+                          "column": 50,
+                          "offset": 2645
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 64,
+                      "column": 1,
+                      "offset": 2357
+                    },
+                    "end": {
+                      "line": 67,
+                      "column": 50,
+                      "offset": 2645
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The reproducibility payoff is that narrative, code, and output live in one artifact.\nThe cost is ",
+                      "position": {
+                        "start": {
+                          "line": 69,
+                          "column": 1,
+                          "offset": 2647
+                        },
+                        "end": {
+                          "line": 70,
+                          "column": 13,
+                          "offset": 2744
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "execution-order fragility",
+                          "position": {
+                            "start": {
+                              "line": 70,
+                              "column": 14,
+                              "offset": 2745
+                            },
+                            "end": {
+                              "line": 70,
+                              "column": 39,
+                              "offset": 2770
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ": a notebook's stored output reflects whatever\norder its cells were last run in, which need not be top to bottom. A simple guard is\nto require that the notebook restart-and-run-all cleanly, so the stored state\nsatisfies",
+                      "position": {
+                        "start": {
+                          "line": 70,
+                          "column": 40,
+                          "offset": 2771
+                        },
+                        "end": {
+                          "line": 73,
+                          "column": 10,
+                          "offset": 2990
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 69,
+                      "column": 1,
+                      "offset": 2647
+                    },
+                    "end": {
+                      "line": 73,
+                      "column": 10,
+                      "offset": 2990
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "display-math",
+                  "properties": {
+                    "id": "eqn:nb-invariant"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "katex-display"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "katex"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "katex-html"
+                                ],
+                                "ariaHidden": "true"
+                              },
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:0.8889em;vertical-align:-0.1944em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "text"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "element",
+                                          "tagName": "span",
+                                          "properties": {
+                                            "className": [
+                                              "mord"
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "value": "stored output"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mrel"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "="
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.2778em;"
+                                      },
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "span",
+                                  "properties": {
+                                    "className": [
+                                      "base"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "strut"
+                                        ],
+                                        "style": "height:1em;vertical-align:-0.25em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "mathnormal"
+                                        ],
+                                        "style": "margin-right:0.1076em;"
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "f"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mopen"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": "("
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "text"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "element",
+                                          "tagName": "span",
+                                          "properties": {
+                                            "className": [
+                                              "mord"
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "value": "inputs"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mpunct"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": ","
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mspace"
+                                        ],
+                                        "style": "margin-right:0.1667em;"
+                                      },
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mord",
+                                          "text"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "element",
+                                          "tagName": "span",
+                                          "properties": {
+                                            "className": [
+                                              "mord"
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "value": "cells top to bottom"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "mclose"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "value": ")"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "equation-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "(2.1)"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "before it is committed.",
+                      "position": {
+                        "start": {
+                          "line": 77,
+                          "column": 1,
+                          "offset": 3089
+                        },
+                        "end": {
+                          "line": 77,
+                          "column": 24,
+                          "offset": 3112
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-3",
+                        "dataNoteId": "note-3"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-3"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 77,
+                      "column": 1,
+                      "offset": 3089
+                    },
+                    "end": {
+                      "line": 79,
+                      "column": 29,
+                      "offset": 3274
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:nb-pipeline"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "notebook-ci.png",
+                        "alt": "A notebook passing a restart-and-run-all check in continuous integration before being archived."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 2.1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A notebook passing a restart-and-run-all check in continuous integration before being archived.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 97,
+                              "offset": 96
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Cross-reference ",
+                      "position": {
+                        "start": {
+                          "line": 83,
+                          "column": 1,
+                          "offset": 3418
+                        },
+                        "end": {
+                          "line": 83,
+                          "column": 17,
+                          "offset": 3434
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:nb-pipeline",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 2.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " resolves with a chapter prefix — it is the\nfirst figure of the second chapter — while a reference back to ",
+                      "position": {
+                        "start": {
+                          "line": 83,
+                          "column": 39,
+                          "offset": 3456
+                        },
+                        "end": {
+                          "line": 84,
+                          "column": 64,
+                          "offset": 3563
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:vcs-graph",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "\nstill resolves to the first chapter's figure: the prefix identifies the target's\nchapter, not the citing one. The invariant ",
+                      "position": {
+                        "start": {
+                          "line": 84,
+                          "column": 84,
+                          "offset": 3583
+                        },
+                        "end": {
+                          "line": 86,
+                          "column": 44,
+                          "offset": 3708
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#eqn:nb-invariant",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "equation 2.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " carries the same\nchapter prefix.",
+                      "position": {
+                        "start": {
+                          "line": 86,
+                          "column": 67,
+                          "offset": 3731
+                        },
+                        "end": {
+                          "line": 87,
+                          "column": 16,
+                          "offset": 3764
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 83,
+                      "column": 1,
+                      "offset": 3418
+                    },
+                    "end": {
+                      "line": 87,
+                      "column": 16,
+                      "offset": 3764
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-3"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Many notebook platforms can enforce this in\ncontinuous integration: a notebook that fails restart-and-run-all is rejected the\nsame way a failing test is.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 28,
+                                  "offset": 154
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-3",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "chapter"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Data Provenance and Lineage"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "author",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Sofia Marchetti",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 17,
+                              "offset": 16
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "definition",
+                  "properties": {
+                    "id": "def:provenance"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "definition-label"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Definition 3.1."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
+                      "type": "text",
+                      "value": "The ",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 6,
+                          "offset": 5
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "provenance",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 7,
+                              "offset": 6
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 17,
+                              "offset": 16
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " of a data artifact is the complete record of the inputs and transformations that produced it — enough to recreate the artifact from its raw sources.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 18,
+                          "offset": 17
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 167,
+                          "offset": 166
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Provenance turns a result into a reproducible one by making its derivation explicit.\n",
+                      "position": {
+                        "start": {
+                          "line": 93,
+                          "column": 1,
+                          "offset": 4031
+                        },
+                        "end": {
+                          "line": 94,
+                          "column": 1,
+                          "offset": 4116
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#def:provenance",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "definition 3.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is deliberately strong: a partial record that omits a\ntransformation is not provenance, because the artifact cannot be rebuilt from it. The\nrecommended practice, following ",
+                      "position": {
+                        "start": {
+                          "line": 94,
+                          "column": 22,
+                          "offset": 4137
+                        },
+                        "end": {
+                          "line": 96,
+                          "column": 33,
+                          "offset": 4310
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "cite",
+                      "properties": {
+                        "className": [
+                          "cite"
+                        ],
+                        "dataKeys": "Sandve2013"
+                      },
+                      "children": [
+                        {
+                          "type": "raw",
+                          "value": "(Sandve et al., 2013)"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", is to capture provenance\nautomatically rather than by hand.",
+                      "position": {
+                        "start": {
+                          "line": 96,
+                          "column": 51,
+                          "offset": 4328
+                        },
+                        "end": {
+                          "line": 97,
+                          "column": 35,
+                          "offset": 4389
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 93,
+                      "column": 1,
+                      "offset": 4031
+                    },
+                    "end": {
+                      "line": 97,
+                      "column": 35,
+                      "offset": 4389
+                    }
+                  }
+                },
+                {
+                  "type": "root",
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "pre",
+                      "properties": {
+                        "className": [
+                          "mermaid"
+                        ],
+                        "dataEnscribeDsl": "mermaid",
+                        "id": "fig:lineage"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "graph LR\n  R[Raw survey] --> C[Clean]\n  C --> M[Merge with registry]\n  M --> A[Analysis table]\n  A --> P[Published figure]"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 3.1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A data-lineage graph: raw sources flow through named transformations to derived artifacts."
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A minimal provenance record need capture only three fields per artifact, summarised\nin ",
+                      "position": {
+                        "start": {
+                          "line": 107,
+                          "column": 1,
+                          "offset": 4650
+                        },
+                        "end": {
+                          "line": 108,
+                          "column": 4,
+                          "offset": 4737
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#tab:provenance",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "table 3.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 108,
+                          "column": 25,
+                          "offset": 4758
+                        },
+                        "end": {
+                          "line": 108,
+                          "column": 26,
+                          "offset": 4759
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 107,
+                      "column": 1,
+                      "offset": 4650
+                    },
+                    "end": {
+                      "line": 108,
+                      "column": 26,
+                      "offset": 4759
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "table",
+                  "properties": {
+                    "id": "tab:provenance"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "caption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "table-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Table 3.1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "The minimal provenance record for a derived artifact."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "thead",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "field"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "meaning"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "example"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "tbody",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "inputs"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "identifiers of the source artifacts"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "raw-survey@a1b2c3"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "transform"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "the named and versioned step"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "clean.py@v2"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "output"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "identifier of the produced artifact"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "analysis-table@d4e5f6"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The lineage graph in ",
+                      "position": {
+                        "start": {
+                          "line": 117,
+                          "column": 1,
+                          "offset": 5054
+                        },
+                        "end": {
+                          "line": 117,
+                          "column": 22,
+                          "offset": 5075
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:lineage",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "figure 3.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is the transitive closure of these\nrecords.",
+                      "position": {
+                        "start": {
+                          "line": 117,
+                          "column": 40,
+                          "offset": 5093
+                        },
+                        "end": {
+                          "line": 118,
+                          "column": 9,
+                          "offset": 5137
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-4",
+                        "dataNoteId": "note-4"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-4"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 117,
+                      "column": 1,
+                      "offset": 5054
+                    },
+                    "end": {
+                      "line": 119,
+                      "column": 77,
+                      "offset": 5287
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-4"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "4"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "In practice the record is emitted by the pipeline tool itself, so\nthat provenance cannot drift out of sync with the computation it describes.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 2,
+                                  "column": 76,
+                                  "offset": 142
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-4",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "book-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "book-part-type": "appendix"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A Reproducibility Checklist"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The contributors agreed on a short checklist, applicable regardless of tooling:",
+                      "position": {
+                        "start": {
+                          "line": 122,
+                          "column": 1,
+                          "offset": 5330
+                        },
+                        "end": {
+                          "line": 122,
+                          "column": 80,
+                          "offset": 5409
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 122,
+                      "column": 1,
+                      "offset": 5330
+                    },
+                    "end": {
+                      "line": 122,
+                      "column": 80,
+                      "offset": 5409
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "ol",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "every result traces to a version-controlled commit;",
+                          "position": {
+                            "start": {
+                              "line": 124,
+                              "column": 4,
+                              "offset": 5414
+                            },
+                            "end": {
+                              "line": 124,
+                              "column": 55,
+                              "offset": 5465
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 124,
+                          "column": 1,
+                          "offset": 5411
+                        },
+                        "end": {
+                          "line": 124,
+                          "column": 55,
+                          "offset": 5465
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "every figure regenerates from a script, not by hand;",
+                          "position": {
+                            "start": {
+                              "line": 125,
+                              "column": 4,
+                              "offset": 5469
+                            },
+                            "end": {
+                              "line": 125,
+                              "column": 56,
+                              "offset": 5521
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 125,
+                          "column": 1,
+                          "offset": 5466
+                        },
+                        "end": {
+                          "line": 125,
+                          "column": 56,
+                          "offset": 5521
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "every notebook passes restart-and-run-all in CI;",
+                          "position": {
+                            "start": {
+                              "line": 126,
+                              "column": 4,
+                              "offset": 5525
+                            },
+                            "end": {
+                              "line": 126,
+                              "column": 52,
+                              "offset": 5573
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 126,
+                          "column": 1,
+                          "offset": 5522
+                        },
+                        "end": {
+                          "line": 126,
+                          "column": 52,
+                          "offset": 5573
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "every derived artifact carries a provenance record.",
+                          "position": {
+                            "start": {
+                              "line": 127,
+                              "column": 4,
+                              "offset": 5577
+                            },
+                            "end": {
+                              "line": 127,
+                              "column": 55,
+                              "offset": 5628
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 127,
+                          "column": 1,
+                          "offset": 5574
+                        },
+                        "end": {
+                          "line": 127,
+                          "column": 55,
+                          "offset": 5628
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 124,
+                      "column": 1,
+                      "offset": 5411
+                    },
+                    "end": {
+                      "line": 127,
+                      "column": 55,
+                      "offset": 5628
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A result that satisfies all four can be rebuilt by a stranger.",
+                      "position": {
+                        "start": {
+                          "line": 129,
+                          "column": 1,
+                          "offset": 5630
+                        },
+                        "end": {
+                          "line": 129,
+                          "column": 63,
+                          "offset": 5692
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sup",
+                      "properties": {
+                        "id": "noteref-5",
+                        "dataNoteId": "note-5"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#note-5"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "5"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 129,
+                      "column": 1,
+                      "offset": 5630
+                    },
+                    "end": {
+                      "line": 131,
+                      "column": 32,
+                      "offset": 5828
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "note-list",
+                  "properties": {
+                    "className": [
+                      "endnotes"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "ol",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "li",
+                          "properties": {
+                            "id": "note-5"
+                          },
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "sup",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "5"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "The checklist\nis intentionally tool-agnostic; the chapters give one concrete realisation of each\nitem, but others are possible.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 31,
+                                  "offset": 128
+                                }
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "a",
+                              "properties": {
+                                "href": "#noteref-5",
+                                "className": [
+                                  "note-backref"
+                                ],
+                                "ariaLabel": "back to text"
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "↩"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "bibliography",
+              "properties": {},
+              "children": [
+                {
+                  "type": "raw",
+                  "value": "<h2>References</h2><div class=\"csl-bib-body\">\n  <div id=\"ref-Knuth1984\" data-csl-entry-id=\"Knuth1984\" class=\"csl-entry\">Knuth, D. E. (1984). Literate Programming. <i>The Computer Journal</i>, <i>27</i>(2), 97–111.</div>\n  <div id=\"ref-Sandve2013\" data-csl-entry-id=\"Sandve2013\" class=\"csl-entry\">Sandve, G. K., Nekrutenko, A., Taylor, J., &#38; Hovig, E. (2013). Ten Simple Rules for Reproducible Computational Research. <i>PLoS Computational Biology</i>, <i>9</i>(10), e1003285.</div>\n  <div id=\"ref-Wilson2014\" data-csl-entry-id=\"Wilson2014\" class=\"csl-entry\">Wilson, G., Aruliah, D. A., Brown, C. T., &#38; Chue Hong, N. P. (2014). Best Practices for Scientific Computing. <i>PLoS Biology</i>, <i>12</i>(1), e1001745.</div>\n</div>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 132,
+      "column": 1,
+      "offset": 5829
+    }
+  }
+}

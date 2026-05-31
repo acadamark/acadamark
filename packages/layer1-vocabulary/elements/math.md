@@ -10,7 +10,7 @@ html_output:
     the schema field is not consulted under
     `interpreter_strategy: handler`. (Same pattern slice 2a's csv/tsv
     entries follow.)
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -27,7 +27,7 @@ jats_counterpart:
   notes: |
     JATS `<disp-formula>` wraps a displayed equation, same as the
     counterpart for `<display-math>` (the `<$$>` sigil). The two surfaces
-    are semantic synonyms in acadamark; both map to JATS
+    are semantic synonyms in enscribe; both map to JATS
     `<disp-formula>`.
 shorthand_examples:
   - source: |
@@ -77,7 +77,7 @@ The content between the opening and closing tags is LaTeX math source, passed di
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<math>` | `<disp-formula>` |
 | `id` | `id` attribute on `<disp-formula>` |

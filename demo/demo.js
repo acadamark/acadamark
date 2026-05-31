@@ -1,13 +1,13 @@
-// acadamark in-browser editor demo (Phase 14 Slice 2).
+// enscribe in-browser editor demo (Phase 14 Slice 2).
 //
 // Left pane: a CodeMirror 6 plain-text editor seeded with the doc-46 fixture.
-// Right pane: the rendered acadamark output, refreshed on edit.
+// Right pane: the rendered enscribe output, refreshed on edit.
 //
 // Two moving parts and how they load:
 //
-//   • acadamark library — the IIFE bundle (window.acadamark), pulled in by a
+//   • enscribe library — the IIFE bundle (window.enscribe), pulled in by a
 //     classic <script> in index.html. Because that script is classic and this
-//     file is a deferred module, window.acadamark is guaranteed ready here.
+//     file is a deferred module, window.enscribe is guaranteed ready here.
 //
 //   • CodeMirror 6 — ESM-only, imported below from a pinned CDN. Everything
 //     comes from the single `codemirror` meta-package so there is exactly one
@@ -23,7 +23,7 @@
 import { EditorView, basicSetup } from "https://esm.sh/codemirror@6.0.1";
 
 const SAMPLE_URL =
-  "../packages/acadamark-interpreter/test/fixtures/document-46-reproducible-research.acm";
+  "../packages/enscribe-interpreter/test/fixtures/document-46-reproducible-research.emd";
 const RENDER_DEBOUNCE_MS = 120;
 
 const outputEl = document.querySelector("#output");
@@ -31,13 +31,13 @@ const outputEl = document.querySelector("#output");
 // The library is built locally and gitignored, so a missing global almost
 // always means the bundle wasn't built. Say so, actionably, instead of throwing
 // a cryptic "render is not a function".
-const acadamark = window.acadamark;
-if (!acadamark || typeof acadamark.render !== "function") {
+const enscribe = window.enscribe;
+if (!enscribe || typeof enscribe.render !== "function") {
   outputEl.innerHTML =
-    '<div class="demo-banner">The acadamark browser bundle is not loaded. Build ' +
-    "it first:<br /><code>cd packages/acadamark-interpreter &amp;&amp; npm run " +
+    '<div class="demo-banner">The enscribe browser bundle is not loaded. Build ' +
+    "it first:<br /><code>cd packages/enscribe-interpreter &amp;&amp; npm run " +
     "build:lib</code><br />then reload this page.</div>";
-  throw new Error("acadamark browser bundle not found on window.acadamark");
+  throw new Error("enscribe browser bundle not found on window.enscribe");
 }
 
 function escapeHtml(s) {
@@ -53,7 +53,7 @@ function escapeHtml(s) {
 async function renderNow(source) {
   let html;
   try {
-    html = acadamark.render(source);
+    html = enscribe.render(source);
   } catch (err) {
     // Mid-edit source is often syntactically incomplete; show the error and keep
     // the editor responsive rather than blanking the pane.
@@ -64,7 +64,7 @@ async function renderNow(source) {
   }
   outputEl.innerHTML = html;
   try {
-    await acadamark.executeAssets(outputEl);
+    await enscribe.executeAssets(outputEl);
   } catch (err) {
     console.error("executeAssets failed:", err);
   }
@@ -90,7 +90,7 @@ try {
     String(err) +
     "\n     Serve the repository root over HTTP so the fixture path resolves\n" +
     "     (see demo/README.md). -->\n\n" +
-    "<section | Hello, acadamark. Edit me.>\n";
+    "<section | Hello, enscribe. Edit me.>\n";
 }
 
 const view = new EditorView({

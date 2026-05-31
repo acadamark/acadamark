@@ -11,10 +11,10 @@
       "Bash(node test/test-grammar.js)",
       "Bash(node test/test-recursive.js)",
       "Bash(node test/demo.js)",
-      "Bash(node packages/remark-acadamark/test/test.js)",
-      "Bash(node packages/remark-acadamark/test/test-grammar.js)",
-      "Bash(node packages/remark-acadamark/test/test-recursive.js)",
-      "Bash(node packages/remark-acadamark/test/demo.js)"
+      "Bash(node packages/remark-enscribe/test/test.js)",
+      "Bash(node packages/remark-enscribe/test/test-grammar.js)",
+      "Bash(node packages/remark-enscribe/test/test-recursive.js)",
+      "Bash(node packages/remark-enscribe/test/demo.js)"
     ]
   }
 }

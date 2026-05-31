@@ -7,16 +7,16 @@ later slice; every divergence is provisionally classified `STALE`, `DRIFT?`,
 or `UNCLEAR` based on what the code alone can tell.
 
 Audit scope: `notes/interpreter.md` and `notes/pipeline.md` against the source
-at `packages/acadamark-interpreter/src/` and the imported plugin at
-`packages/remark-acadamark/src/recursive-content.js`.
+at `packages/enscribe-interpreter/src/` and the imported plugin at
+`packages/remark-enscribe/src/recursive-content.js`.
 
 ---
 
 ## 0. Pipeline ground-truth section
 
 The authoritative pipeline as assembled in
-[packages/acadamark-interpreter/src/index.js](packages/acadamark-interpreter/src/index.js)
-inside `acadamarkInterpreter(options)`. Read top-to-bottom; numbering follows
+[packages/enscribe-interpreter/src/index.js](packages/enscribe-interpreter/src/index.js)
+inside `enscribeInterpreter(options)`. Read top-to-bottom; numbering follows
 the order the calls execute.
 
 ```
@@ -27,28 +27,28 @@ Outer-processor extensions registered first (lines 323-328):
 Inner processor constructed (line 339):
   unified()
     .use(remarkParse)
-    .use(remarkAcadamark)
+    .use(remarkEnscribe)
     .use(remarkMath)
     .use(remarkGfm)
   — passed into remarkRecursiveContent as { processor }
 
 mdast-transform plugins registered on the outer processor:
   1.  remarkRecursiveContent          (line 342, with { processor: innerProcessor })
-  2.  acadamarkNormalizeMarkdown      (line 348)
-  3.  acadamarkConfigDiscovery        (line 351)
-  4.  acadamarkArticleStructuring     (line 352)
-  5.  acadamarkSectionNesting         (line 353)
-  6.  acadamarkCitationIndex          (line 359-361, anonymous wrapper around buildCitationIndex; assetsDir closed over)
-  7.  acadamarkNotes                  (line 365)
-  8.  acadamarkNumbering              (line 369)
-  9.  acadamarkApplyNumbers           (line 374-380, anonymous; ensureRegistry → numberRegistry() → fillNumbering(file))
-  10. acadamarkRefResolution          (line 384)
-  11. acadamarkCiteResolution         (line 389)
-  12. acadamarkNotePlacement          (line 395)
-  13. acadamarkBibliography           (line 398)
+  2.  enscribeNormalizeMarkdown      (line 348)
+  3.  enscribeConfigDiscovery        (line 351)
+  4.  enscribeArticleStructuring     (line 352)
+  5.  enscribeSectionNesting         (line 353)
+  6.  enscribeCitationIndex          (line 359-361, anonymous wrapper around buildCitationIndex; assetsDir closed over)
+  7.  enscribeNotes                  (line 365)
+  8.  enscribeNumbering              (line 369)
+  9.  enscribeApplyNumbers           (line 374-380, anonymous; ensureRegistry → numberRegistry() → fillNumbering(file))
+  10. enscribeRefResolution          (line 384)
+  11. enscribeCiteResolution         (line 389)
+  12. enscribeNotePlacement          (line 395)
+  13. enscribeBibliography           (line 398)
 
 Compiler (this.compiler, lines 404-442):
-  toHast(tree, { handlers: { acadamarkTag: tagHandler }, allowDangerousHtml: true })
+  toHast(tree, { handlers: { enscribeTag: tagHandler }, allowDangerousHtml: true })
   unconditionally prepend <style> with getDocumentFontsCss()  (line 413)
   if (cssMode !== 'skip' && hasMathElements(hast)) prepend KaTeX <style>|<link>  (lines 418-424)
   if (hoverMode !== 'skip' && (hasNoteMarkers|hasRefLinks|hasCiteLinks)) prepend hover-preview assets  (lines 428-434)
@@ -58,31 +58,31 @@ Compiler (this.compiler, lines 404-442):
 
 **Total mdast-transform plugins on the outer processor: 13.** (12 if
 `remarkRecursiveContent` is treated as Stage 2 and counted separately from
-Stage 3 transforms, as `pipeline.md` does. 11 if `acadamarkNormalizeMarkdown`
+Stage 3 transforms, as `pipeline.md` does. 11 if `enscribeNormalizeMarkdown`
 is excluded — which is the count both docs use.)
 
 The exported plugin surface of the package
-([src/index.js](packages/acadamark-interpreter/src/index.js):80) is:
+([src/index.js](packages/enscribe-interpreter/src/index.js):80) is:
 
 ```js
 export {
-  acadamarkNormalizeMarkdown,      // NEW; not in either doc
-  acadamarkConfigDiscovery,
-  acadamarkArticleStructuring,
-  acadamarkSectionNesting,
-  acadamarkNotes,
-  acadamarkLibraryLoad,            // public wrapper for buildCitationIndex
+  enscribeNormalizeMarkdown,      // NEW; not in either doc
+  enscribeConfigDiscovery,
+  enscribeArticleStructuring,
+  enscribeSectionNesting,
+  enscribeNotes,
+  enscribeLibraryLoad,            // public wrapper for buildCitationIndex
   buildCitationIndex,              // pipeline uses this directly
-  acadamarkNumbering,
-  acadamarkRefResolution,
-  acadamarkCiteResolution,
-  acadamarkBibliography,
-  acadamarkTagHandler,
-  createAcadamarkTagHandler,
+  enscribeNumbering,
+  enscribeRefResolution,
+  enscribeCiteResolution,
+  enscribeBibliography,
+  enscribeTagHandler,
+  createEnscribeTagHandler,
 };
 ```
 
-`acadamarkNotePlacement` is imported and used internally (line 70, 395) but is
+`enscribeNotePlacement` is imported and used internally (line 70, 395) but is
 NOT in the package's named exports — external callers cannot wire the
 placement step in isolation. (This is in addition to the doc divergences
 below; it is a code-surface observation, not an interpreter.md/pipeline.md
@@ -110,7 +110,7 @@ is internally consistent and the code paths described in the docs all exist
 where the docs say they do (modulo the missing normalize stage). The two docs
 also agree with each other on every claim audited — there are no cross-doc
 contradictions where the two say different things about the same code path,
-only matching omissions (both miss `acadamarkNormalizeMarkdown`, both miss
+only matching omissions (both miss `enscribeNormalizeMarkdown`, both miss
 `remarkMath`/`remarkGfm` registration on outer/inner processors, etc.).
 
 The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
@@ -122,28 +122,28 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
 ### I-1 — Twelve vs. thirteen mdast-transform plugins
 
 - **Claim** ([notes/interpreter.md:42-46](notes/interpreter.md:42)):
-  > "`acadamarkInterpreter` registers twelve mdast-transform plugins and a
+  > "`enscribeInterpreter` registers twelve mdast-transform plugins and a
   > custom compiler on the unified processor."
 - **Ground truth**: 13 plugins are registered on the outer processor with
   `this.use(...)`. The 12-element list at lines 72-88 omits
-  `acadamarkNormalizeMarkdown`, which is registered at
-  [src/index.js:348](packages/acadamark-interpreter/src/index.js:348) between
-  `remarkRecursiveContent` (step 1) and `acadamarkConfigDiscovery` (step 2).
+  `enscribeNormalizeMarkdown`, which is registered at
+  [src/index.js:348](packages/enscribe-interpreter/src/index.js:348) between
+  `remarkRecursiveContent` (step 1) and `enscribeConfigDiscovery` (step 2).
 - **Divergence type**: `STALE`.
 - **Cross-doc note**: `pipeline.md` has the same omission (see P-1, P-2).
 
-### I-2 — Plugin-order block at §2 missing `acadamarkNormalizeMarkdown`
+### I-2 — Plugin-order block at §2 missing `enscribeNormalizeMarkdown`
 
 - **Claim** ([notes/interpreter.md:72-88](notes/interpreter.md:72)): The
-  numbered list "The plugin registration order in `acadamarkInterpreter` is:"
-  goes `1. remarkRecursiveContent` → `2. acadamarkConfigDiscovery` → ... and
+  numbered list "The plugin registration order in `enscribeInterpreter` is:"
+  goes `1. remarkRecursiveContent` → `2. enscribeConfigDiscovery` → ... and
   has no entry for normalize-markdown.
 - **Ground truth**: Real order is
-  `remarkRecursiveContent → acadamarkNormalizeMarkdown → acadamarkConfigDiscovery → ...`.
-  `acadamarkNormalizeMarkdown`
-  ([src/plugins/normalize-markdown.js](packages/acadamark-interpreter/src/plugins/normalize-markdown.js))
+  `remarkRecursiveContent → enscribeNormalizeMarkdown → enscribeConfigDiscovery → ...`.
+  `enscribeNormalizeMarkdown`
+  ([src/plugins/normalize-markdown.js](packages/enscribe-interpreter/src/plugins/normalize-markdown.js))
   rewrites `inlineMath`, `math`, and `table` nodes produced by the delegated
-  parsers (`remark-math`, `remark-gfm`) into canonical `acadamarkTag` nodes
+  parsers (`remark-math`, `remark-gfm`) into canonical `enscribeTag` nodes
   before any structural plugin sees the tree.
 - **Divergence type**: `STALE`.
 - **Cross-doc note**: `pipeline.md` has the same omission (P-2).
@@ -152,16 +152,16 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
 
 - **Claim** (entire doc): `notes/interpreter.md` does not mention
   `remark-math` or `remark-gfm`. §1 frames the consumer-side pipeline as
-  `remarkParse → remarkAcadamark → acadamarkInterpreter` and implies that
+  `remarkParse → remarkEnscribe → enscribeInterpreter` and implies that
   no further parser-level extensions are wired in.
 - **Ground truth**:
-  [src/index.js:323-328](packages/acadamark-interpreter/src/index.js:323)
+  [src/index.js:323-328](packages/enscribe-interpreter/src/index.js:323)
   calls `this.use(remarkMath)` and `this.use(remarkGfm)` on the outer
-  processor *inside* `acadamarkInterpreter`, so bare `$x$` and bare GFM pipe
+  processor *inside* `enscribeInterpreter`, so bare `$x$` and bare GFM pipe
   tables in the top-level source are tokenized. The inner processor passed to
   `remarkRecursiveContent` also gets both extensions
-  ([src/index.js:339](packages/acadamark-interpreter/src/index.js:339)). These
-  are the reason `acadamarkNormalizeMarkdown` exists.
+  ([src/index.js:339](packages/enscribe-interpreter/src/index.js:339)). These
+  are the reason `enscribeNormalizeMarkdown` exists.
 - **Divergence type**: `STALE`.
 - **Cross-doc note**: `pipeline.md` has the same omission (P-3).
 
@@ -170,11 +170,11 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
 - **Claim** ([notes/interpreter.md:112-115](notes/interpreter.md:112)): The
   inner processor "is an independent `unified` instance with only the parsing
   plugins (no structural or compile steps). It is created by
-  `acadamarkInterpreter` and passed to this plugin via the `{ processor }`
+  `enscribeInterpreter` and passed to this plugin via the `{ processor }`
   option."
 - **Ground truth**: The inner processor is
-  `unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)`
-  ([src/index.js:339](packages/acadamark-interpreter/src/index.js:339)). The
+  `unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)`
+  ([src/index.js:339](packages/enscribe-interpreter/src/index.js:339)). The
   phrase "only the parsing plugins" is true in spirit, but the doc never
   identifies what those plugins are, so a reader cannot infer that math and
   GFM-table tokenization also happens inside the recursive-content pass.
@@ -187,7 +187,7 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   > registry, and register `section`, `sub-section`, and `sub-sub-section`
   > nodes for cross-reference lookup."
 - **Ground truth**:
-  [src/plugins/numbering.js:105-107](packages/acadamark-interpreter/src/plugins/numbering.js:105)
+  [src/plugins/numbering.js:105-107](packages/enscribe-interpreter/src/plugins/numbering.js:105)
   also registers a visitor for the code-block sigil tagname `` '```' ``:
   ```js
   visitors.set('```', (node) => {
@@ -198,7 +198,7 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   [audit-findings.md AUD-09](notes/audit-findings.md:188) ("Code-block half
   resolved (G4, 2026-05-23)") and is paired with `code: 'listing'` being added
   to `DEFAULT_PREFIXES` in `ref-resolution.js` (verified at
-  [src/plugins/ref-resolution.js:42](packages/acadamark-interpreter/src/plugins/ref-resolution.js:42)).
+  [src/plugins/ref-resolution.js:42](packages/enscribe-interpreter/src/plugins/ref-resolution.js:42)).
   Section 3.7's purpose paragraph and the "Numbered types and registry keys"
   table (lines 370-372) both omit the `code` type.
 - **Divergence type**: `STALE`.
@@ -211,7 +211,7 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   > `note`, `tab` → `table`, `sec` → `section`, `thm` → `theorem`, `lem` →
   > `lemma`, `def` → `definition`, `ex` → `example`."
 - **Ground truth**: The actual `DEFAULT_PREFIXES` dictionary at
-  [src/plugins/ref-resolution.js:36-47](packages/acadamark-interpreter/src/plugins/ref-resolution.js:36)
+  [src/plugins/ref-resolution.js:36-47](packages/enscribe-interpreter/src/plugins/ref-resolution.js:36)
   includes the same nine prefixes **plus `code: 'listing'`** (added in G4 per
   AUD-09 closure).
 - **Divergence type**: `STALE`.
@@ -226,7 +226,7 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   ([notes/interpreter.md:622-624](notes/interpreter.md:622)) says only "CSS
   and JS assets are conditionally injected."
 - **Ground truth**:
-  [src/index.js:413](packages/acadamark-interpreter/src/index.js:413)
+  [src/index.js:413](packages/enscribe-interpreter/src/index.js:413)
   unconditionally prepends a `<style>` element containing
   `getDocumentFontsCss()` (Inter + Source Code Pro base64 `@font-face` rules)
   to every rendered document, before the conditional KaTeX/hover-preview
@@ -251,12 +251,12 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   `load-vocabulary.js`.
 - **Ground truth**: `plugins/normalize-markdown.js` and
   `lib/walk-normalize.js` exist and are used at runtime
-  ([src/plugins/normalize-markdown.js](packages/acadamark-interpreter/src/plugins/normalize-markdown.js),
-  [src/lib/walk-normalize.js](packages/acadamark-interpreter/src/lib/walk-normalize.js))
+  ([src/plugins/normalize-markdown.js](packages/enscribe-interpreter/src/plugins/normalize-markdown.js),
+  [src/lib/walk-normalize.js](packages/enscribe-interpreter/src/lib/walk-normalize.js))
   but are missing from the map. Separately, `schema/shape-tokens.js` and
   `schema/validate.js` also exist
-  ([src/schema/shape-tokens.js](packages/acadamark-interpreter/src/schema/shape-tokens.js),
-  [src/schema/validate.js](packages/acadamark-interpreter/src/schema/validate.js))
+  ([src/schema/shape-tokens.js](packages/enscribe-interpreter/src/schema/shape-tokens.js),
+  [src/schema/validate.js](packages/enscribe-interpreter/src/schema/validate.js))
   but appear unused by the interpreter runtime (only referenced from tests
   per `grep`). Their omission from the map is defensible if the map is
   "runtime-reachable files only," but the doc does not state that scope.
@@ -280,22 +280,22 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   "Twelve plugins run in sequence" and then numbers them §4.1 through §4.10
   with one intercalated §4.6.5 — 11 actual entries.
 - **Ground truth**: 12 mdast transforms run after `remarkRecursiveContent`
-  if `acadamarkNormalizeMarkdown` is counted. 11 if it is not. The doc's
+  if `enscribeNormalizeMarkdown` is counted. 11 if it is not. The doc's
   "12" matches no reading of the code list it presents (its own list omits
   normalize-markdown).
 - **Divergence type**: `STALE`. The count was likely correct at a prior
   revision and was not updated when one item was inserted or removed.
 
-### P-2 — Stage-3 listing omits `acadamarkNormalizeMarkdown`
+### P-2 — Stage-3 listing omits `enscribeNormalizeMarkdown`
 
 - **Claim** ([notes/pipeline.md:25-28](notes/pipeline.md:25), and the
   numbered §4.1–§4.10 entries): The first transform after recursive content
-  parsing is `acadamarkConfigDiscovery`.
+  parsing is `enscribeConfigDiscovery`.
 - **Ground truth**: The first transform after `remarkRecursiveContent` is
-  `acadamarkNormalizeMarkdown`
-  ([src/index.js:348](packages/acadamark-interpreter/src/index.js:348)). It
+  `enscribeNormalizeMarkdown`
+  ([src/index.js:348](packages/enscribe-interpreter/src/index.js:348)). It
   converts `inlineMath`, `math`, and GFM `table` nodes produced by
-  `remark-math` and `remark-gfm` into canonical `acadamarkTag` nodes before
+  `remark-math` and `remark-gfm` into canonical `enscribeTag` nodes before
   any structural plugin runs. The §8 plugin-ordering table
   ([notes/pipeline.md:456-471](notes/pipeline.md:456)) also has no
   normalize-markdown row.
@@ -306,31 +306,31 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
 
 - **Claim** ([notes/pipeline.md:42-52](notes/pipeline.md:42)): Stage 1's
   consumer-side wiring is described as
-  `remarkParse → remarkAcadamark → acadamarkInterpreter` with no further
+  `remarkParse → remarkEnscribe → enscribeInterpreter` with no further
   parser extensions. Stage 2's "Inner processor" paragraph
   ([line 113-117](notes/pipeline.md:113)) says the inner processor "runs the
   same parser plugins as the outer processor but does NOT include
   `remarkRecursiveContent` (this plugin) or any structural plugins."
-- **Ground truth**: `acadamarkInterpreter` itself calls
+- **Ground truth**: `enscribeInterpreter` itself calls
   `this.use(remarkMath)` and `this.use(remarkGfm)` on the outer processor
-  ([src/index.js:323-328](packages/acadamark-interpreter/src/index.js:323)).
+  ([src/index.js:323-328](packages/enscribe-interpreter/src/index.js:323)).
   The inner processor passed to `remarkRecursiveContent` is
-  `unified().use(remarkParse).use(remarkAcadamark).use(remarkMath).use(remarkGfm)`
-  ([src/index.js:339](packages/acadamark-interpreter/src/index.js:339)).
+  `unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)`
+  ([src/index.js:339](packages/enscribe-interpreter/src/index.js:339)).
   "Same parser plugins as the outer processor" is technically true (both
   surfaces include the same four parser plugins), but the doc never lists
   *what* those plugins are, and the AUD-20 NORM-tables decision that drove
   this wiring is not referenced here.
 - **Divergence type**: `STALE`.
 
-### P-4 — §4.6 `acadamarkNumbering` description: code-block sigil registration not documented
+### P-4 — §4.6 `enscribeNumbering` description: code-block sigil registration not documented
 
 - **Claim** ([notes/pipeline.md:261-264](notes/pipeline.md:261)):
   > "Registers `$$` (display-math), `figure`, and `table` nodes with the
   > registry (record-only), and registers `section`, `sub-section`, and
   > `sub-sub-section` nodes for cross-reference lookup."
 - **Ground truth**:
-  [src/plugins/numbering.js:105-107](packages/acadamark-interpreter/src/plugins/numbering.js:105)
+  [src/plugins/numbering.js:105-107](packages/enscribe-interpreter/src/plugins/numbering.js:105)
   also registers a visitor for the code-block sigil tagname `` '```' `` with
   registry type `'code'` and `numbered: false`. Per
   [audit-findings.md AUD-09](notes/audit-findings.md:238) (G4, 2026-05-23
@@ -346,38 +346,38 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
 
 - **Claim** ([notes/pipeline.md:456-471](notes/pipeline.md:456)): The "Must
   run after / Produces" table has rows for `remarkRecursiveContent`,
-  `acadamarkConfigDiscovery`, `acadamarkArticleStructuring`, ... — no row
-  for `acadamarkNormalizeMarkdown`.
-- **Ground truth**: `acadamarkNormalizeMarkdown` runs between
-  `remarkRecursiveContent` and `acadamarkConfigDiscovery`
-  ([src/index.js:348](packages/acadamark-interpreter/src/index.js:348)). Its
+  `enscribeConfigDiscovery`, `enscribeArticleStructuring`, ... — no row
+  for `enscribeNormalizeMarkdown`.
+- **Ground truth**: `enscribeNormalizeMarkdown` runs between
+  `remarkRecursiveContent` and `enscribeConfigDiscovery`
+  ([src/index.js:348](packages/enscribe-interpreter/src/index.js:348)). Its
   "must run after" is `remarkRecursiveContent` (so both outer and inner
   parses are complete and all delegated-parser nodes are present); its "must
-  run before" is `acadamarkConfigDiscovery` (so structural plugins never see
+  run before" is `enscribeConfigDiscovery` (so structural plugins never see
   un-normalized `inlineMath`/`math`/`table` nodes).
 - **Divergence type**: `STALE`. Same omission as P-2, in table form.
 
-### P-6 — §10.5 data-flow example: order of "Stage 3 — acadamarkApplyNumbers" vs. `<note>` content
+### P-6 — §10.5 data-flow example: order of "Stage 3 — enscribeApplyNumbers" vs. `<note>` content
 
 - **Claim** ([notes/pipeline.md:677-684](notes/pipeline.md:677)): The note
-  example walks "Stage 3 — acadamarkNotes (register-only)" → "Stage 3 —
-  acadamarkApplyNumbers" → "Stage 3 — acadamarkNotePlacement", showing
-  `fillNumbering(file)` as a "(no-op for notes; `acadamarkNumberingPending`
+  example walks "Stage 3 — enscribeNotes (register-only)" → "Stage 3 —
+  enscribeApplyNumbers" → "Stage 3 — enscribeNotePlacement", showing
+  `fillNumbering(file)` as a "(no-op for notes; `enscribeNumberingPending`
   has equations/figures/tables)" step.
 - **Ground truth**: This is accurate as far as it goes — `fillNumbering()`
-  reads `file.data.acadamarkNumberingPending`, which the notes plugin does
+  reads `file.data.enscribeNumberingPending`, which the notes plugin does
   not populate
-  ([src/plugins/notes.js:78](packages/acadamark-interpreter/src/plugins/notes.js:78)
-  sets only `acadamarkNotesPending`; the numbering plugin sets
-  `acadamarkNumberingPending` at
-  [src/plugins/numbering.js:112](packages/acadamark-interpreter/src/plugins/numbering.js:112)).
+  ([src/plugins/notes.js:78](packages/enscribe-interpreter/src/plugins/notes.js:78)
+  sets only `enscribeNotesPending`; the numbering plugin sets
+  `enscribeNumberingPending` at
+  [src/plugins/numbering.js:112](packages/enscribe-interpreter/src/plugins/numbering.js:112)).
   But the example's stated ordering (note registration first, then apply
-  numbers, then placement) skips over `acadamarkNumbering`, `acadamarkRefResolution`,
-  and `acadamarkCiteResolution`, which run between `acadamarkApplyNumbers`
-  (step 4.6.5) and `acadamarkNotePlacement` (step 4.9). The example is not
+  numbers, then placement) skips over `enscribeNumbering`, `enscribeRefResolution`,
+  and `enscribeCiteResolution`, which run between `enscribeApplyNumbers`
+  (step 4.6.5) and `enscribeNotePlacement` (step 4.9). The example is not
   *wrong*, only abbreviated; a reader new to the code could plausibly read
-  "Stage 3 — acadamarkApplyNumbers" immediately followed by "Stage 3 —
-  acadamarkNotePlacement" as implying adjacency.
+  "Stage 3 — enscribeApplyNumbers" immediately followed by "Stage 3 —
+  enscribeNotePlacement" as implying adjacency.
 - **Divergence type**: `STALE`. Borderline — this is presentation drift, not
   a behavioral claim. Flagged because it touches the same R3a
   notes-and-numbering refactor that the doc otherwise describes carefully.
@@ -392,7 +392,7 @@ The `UNCLEAR` finding (I-8) is a counting ambiguity, not a behavior question.
   `related_plugins` sections (filed as
   [AUD-24](notes/audit-findings.md:694)).
 - The micromark/Peggy parser layer
-  ([packages/remark-acadamark/src/syntax.js](packages/remark-acadamark/src/syntax.js)
+  ([packages/remark-enscribe/src/syntax.js](packages/remark-enscribe/src/syntax.js)
   and the grammar) — outside the interpreter scope and covered by
   [AUD-21](notes/audit-findings.md:606)/[AUD-22](notes/audit-findings.md:633)/[AUD-23](notes/audit-findings.md:668).
 - The `schema/shape-tokens.js` and `schema/validate.js` files were skimmed

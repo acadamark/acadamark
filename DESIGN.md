@@ -1,6 +1,6 @@
-# Acadamark Design
+# Enscribe Design
 
-This document captures the design decisions behind acadamark and the reasoning that led to them. It's intended for contributors, for future maintainers, and for the author returning after time away.
+This document captures the design decisions behind enscribe and the reasoning that led to them. It's intended for contributors, for future maintainers, and for the author returning after time away.
 
 ## Summary
 
@@ -8,7 +8,7 @@ Academic writing today means LaTeX, a markdown-extension flavor (Quarto, RMarkdo
 
 HTML is not hard because its model is wrong. It is hard because it is verbose to type and noisy to read: every element a matched pair of tags, every attribute a quoted pair, every nesting opened and closed by hand. Markdown solved exactly that — the typing — but only for a small set of constructs, and it solved it by abandoning HTML's richness rather than compressing it. The moment a document needs a captioned and numbered figure, a citation, a sidenote, a cross-reference, markdown falls back to raw embedded HTML or to an external processor.
 
-Acadamark is the missing authoring layer. It is a uniform shorthand for a manageable vocabulary of semantic HTML — markdown-like in ease of typing, but without markdown's ceiling and without inventing a new adornment for every feature. An acadamark document *is* HTML: the browser renders it directly, with no compile step in the path.
+Enscribe is the missing authoring layer. It is a uniform shorthand for a manageable vocabulary of semantic HTML — markdown-like in ease of typing, but without markdown's ceiling and without inventing a new adornment for every feature. An enscribe document *is* HTML: the browser renders it directly, with no compile step in the path.
 
 The project separates two things:
 
@@ -25,7 +25,7 @@ The shape of the system:
    ┌──────────┐  │  · render mode (lowered)    │
    │  Layer 2 │  └─────────────────────────────┘
    │ shorthand│              ▲
-   │ (.acm)   │              │  display
+   │ (.emd)   │              │  display
    └──────────┘              │
         ▲                    │
         │  lossless          │
@@ -39,13 +39,15 @@ The shape of the system:
                                      (lossy, with simplifications)
 ```
 
-Two relationships matter, and they are not the same. Layer 2 and Layer 1 are a **lossless round-trip**: they are one document in two notations — the shorthand is simply a faster way to type the canonical form, and any Layer 1 document can be written back as shorthand. JATS, by contrast, sits outside that loop: Layer 1 **exports** to JATS as a first-class, clean operation (this is acadamark's bridge to professional scholarly publishing), while JATS **import** into Layer 1 is supported but acknowledged-lossy — a one-way conversion that applies necessary simplifications, not a faithful reconstruction.
+Source files carry the `.emd` extension — the canonical short form — with `.enscribe` accepted as a long-form alias. The extension is a labelling convention only: the parser operates on source text and never dispatches on a file extension, so an enscribe document is recognized by its content, not its filename.
+
+Two relationships matter, and they are not the same. Layer 2 and Layer 1 are a **lossless round-trip**: they are one document in two notations — the shorthand is simply a faster way to type the canonical form, and any Layer 1 document can be written back as shorthand. JATS, by contrast, sits outside that loop: Layer 1 **exports** to JATS as a first-class, clean operation (this is enscribe's bridge to professional scholarly publishing), while JATS **import** into Layer 1 is supported but acknowledged-lossy — a one-way conversion that applies necessary simplifications, not a faithful reconstruction.
 
 Everything below is the *how*. The working principles in `notes/specs/principles.md`, the delegation rules in `notes/specs/idioms.md`, and the Layer 1 vocabulary specs are implementations of what this summary states; when a design decision is in question, it should trace back to here.
 
 ## The problem
 
-The barrier acadamark addresses is an authoring barrier. The rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. What is missing is a layer between "rich enough to express scholarly content" and "simple enough to author and display": a manageable vocabulary of HTML conventions for academic semantics, and an ergonomic authoring syntax on top of it.
+The barrier enscribe addresses is an authoring barrier. The rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. What is missing is a layer between "rich enough to express scholarly content" and "simple enough to author and display": a manageable vocabulary of HTML conventions for academic semantics, and an ergonomic authoring syntax on top of it.
 
 Academic typesetting today splits roughly three ways, and each leaves that authoring layer unbuilt:
 
@@ -61,11 +63,11 @@ There is also a gap on the receiving end. JATS (Journal Article Tag Suite) has b
 
 Treat HTML as the ground truth, not the export target.
 
-Most markdown-extension projects start from "markdown plus features" and the features are shaped by what the parser happened to make easy. Acadamark inverts this: first define the HTML conventions that express academic semantics, then design the shortest authoring path to that HTML.
+Most markdown-extension projects start from "markdown plus features" and the features are shaped by what the parser happened to make easy. Enscribe inverts this: first define the HTML conventions that express academic semantics, then design the shortest authoring path to that HTML.
 
 This produces two layers, independently valuable:
 
-- **Layer 1 (semantic HTML)** is a target anyone can write to. A different authoring tool, a converter from another format, or a hand-author can all produce acadamark-conformant HTML. The downstream ecosystem (rendering, export, accessibility tooling) treats it as ordinary HTML.
+- **Layer 1 (semantic HTML)** is a target anyone can write to. A different authoring tool, a converter from another format, or a hand-author can all produce enscribe-conformant HTML. The downstream ecosystem (rendering, export, accessibility tooling) treats it as ordinary HTML.
 
 - **Layer 2 (shorthand)** is one possible authoring surface for Layer 1. Decoupling them means the shorthand can evolve, be replaced, or coexist with alternatives without disturbing the semantic foundation.
 
@@ -87,29 +89,29 @@ The Layer 1 specification (see `notes/`) defines:
 
 The specification is the deliverable for Layer 1. Anyone can produce conformant HTML by any means.
 
-Layer 1 has one further property that the rest of this document leans on heavily: it is *canonical*. It is the archival representation — custom-element-rich, semantically explicit, lossless. It is the form the JATS export reads. And it is the input to every way of displaying an acadamark document. The "Layer 1 is canonical; display is a downstream ladder" section below states this precisely and explains why it has to be so.
+Layer 1 has one further property that the rest of this document leans on heavily: it is *canonical*. It is the archival representation — custom-element-rich, semantically explicit, lossless. It is the form the JATS export reads. And it is the input to every way of displaying an enscribe document. The "Layer 1 is canonical; display is a downstream ladder" section below states this precisely and explains why it has to be so.
 
 ## JATS as reference and export target
 
-JATS is the established XML schema for academic articles, developed by NIH/NLM and used throughout scholarly publishing. JATS has spent two decades refining a vocabulary for academic content — author lists, affiliations, abstracts, structured references, glossaries, funding statements, and much more. Acadamark does not duplicate this work.
+JATS is the established XML schema for academic articles, developed by NIH/NLM and used throughout scholarly publishing. JATS has spent two decades refining a vocabulary for academic content — author lists, affiliations, abstracts, structured references, glossaries, funding statements, and much more. Enscribe does not duplicate this work.
 
-Two principles govern acadamark's relationship to JATS:
+Two principles govern enscribe's relationship to JATS:
 
-**JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Acadamark adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and acadamark is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/specs/layer1-naming.md` for the binding rule.)
+**JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Enscribe adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and enscribe is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/specs/layer1-naming.md` for the binding rule.)
 
-**JATS as first-class export target.** Acadamark Layer 1 HTML compiles to JATS XML via the `rehype-acadamark-to-jats` plugin. This makes acadamark documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
+**JATS as first-class export target.** Enscribe Layer 1 HTML compiles to JATS XML via the `rehype-enscribe-to-jats` plugin. This makes enscribe documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
 
 JATS import is the weaker, deliberately lossy direction. A JATS document can be converted *into* Layer 1, but the conversion applies necessary simplifications — JATS's vocabulary is far larger than Layer 1's, and constructs with no Layer 1 equivalent are reduced rather than faithfully preserved. Import is a useful on-ramp from the existing scholarly corpus; it is not a round-trip guarantee. The only lossless round-trip in the system is between Layer 2 shorthand and Layer 1, because those two are the same document in two notations.
 
-The relationship is instructive. JATS is the vocabulary acadamark *consults* when growing Layer 1, and the format acadamark *exports* to. In effect, Layer 1 is a small, displayable, authorable projection of JATS: where JATS has 200-plus elements and no display target, Layer 1 has perhaps 30-some elements and renders directly in a browser. The point of acadamark's Layer 1 is to be the manageable set of custom HTML elements that lets most JATS-shaped documents be displayed and authored without the full weight of the XML schema.
+The relationship is instructive. JATS is the vocabulary enscribe *consults* when growing Layer 1, and the format enscribe *exports* to. In effect, Layer 1 is a small, displayable, authorable projection of JATS: where JATS has 200-plus elements and no display target, Layer 1 has perhaps 30-some elements and renders directly in a browser. The point of enscribe's Layer 1 is to be the manageable set of custom HTML elements that lets most JATS-shaped documents be displayed and authored without the full weight of the XML schema.
 
-What acadamark does *not* do, and where it differs from JATS:
+What enscribe does *not* do, and where it differs from JATS:
 
-- JATS is XML; acadamark is HTML. JATS documents require a stylesheet or viewer to be readable. Acadamark documents are directly browser-renderable.
-- JATS has no authoring syntax. Acadamark's shorthand is what humans actually type.
-- JATS rewards completeness; acadamark rewards getting started. Required JATS metadata can be filled with defaults or generated at export time.
+- JATS is XML; enscribe is HTML. JATS documents require a stylesheet or viewer to be readable. Enscribe documents are directly browser-renderable.
+- JATS has no authoring syntax. Enscribe's shorthand is what humans actually type.
+- JATS rewards completeness; enscribe rewards getting started. Required JATS metadata can be filled with defaults or generated at export time.
 
-Acadamark stays a small subset of JATS in vocabulary terms — but a subset that compiles cleanly into JATS for downstream use.
+Enscribe stays a small subset of JATS in vocabulary terms — but a subset that compiles cleanly into JATS for downstream use.
 
 ## The vocabulary-boundary principle
 
@@ -119,11 +121,11 @@ The principle keeps Layer 1 small and JATS-shaped. The vocabulary's job is to be
 
 **Worked example:** `<thumbnail>` was considered during the deferred-vocabulary scoping and ruled out under this principle. A thumbnail image used for social-media link previews is a property of how one channel (a social platform's link unfurler) displays a pointer *to* the document; it is not a property of the document itself. The same author considering "what would my document need?" does not name a thumbnail; only the consideration "what does Twitter need to make this link pretty?" produces one. That distinction is the principle in action.
 
-The principle does not prevent presentation concerns from being addressed by acadamark — they are addressed by the display ladder (next section), by theme CSS, and by per-target export configuration. It only governs the *vocabulary*: what gets a Layer 1 entry, and what does not.
+The principle does not prevent presentation concerns from being addressed by enscribe — they are addressed by the display ladder (next section), by theme CSS, and by per-target export configuration. It only governs the *vocabulary*: what gets a Layer 1 entry, and what does not.
 
 ## Layer 1 is canonical; display is a downstream ladder
 
-A question surfaces naturally once the two-layer model is in place: when an acadamark document is processed, is the output standard HTML+CSS that any browser renders with no help — or is it custom HTML that needs a little JavaScript to come fully to life?
+A question surfaces naturally once the two-layer model is in place: when an enscribe document is processed, is the output standard HTML+CSS that any browser renders with no help — or is it custom HTML that needs a little JavaScript to come fully to life?
 
 The question is real, but it conflates two things that should be kept apart. One is *what canonical artifact does processing produce*. The other is *how does that artifact get displayed*. Standard HTML+CSS seems to answer both at once, because it is both a representation and something a browser renders natively. But that is what makes it a trap. The two questions have different answers, and separating them dissolves the apparent fork.
 
@@ -145,7 +147,7 @@ One honest caveat belongs here. Custom elements styled with CSS carry no built-i
 
 ## Embedded DSLs: processor delegation
 
-Some content cannot be rendered by HTML alone — LaTeX math, ABC music notation, Mermaid diagrams, CSV tables, executable code. Acadamark handles this through a uniform mechanism: tag content the browser cannot render natively is routed, by a tag-to-processor registry, to a specialized processor that returns something the browser *can* render — HTML, SVG, or a rendered code block. The processor delegates the lexer (and the rendering); acadamark owns the tag identity and the routing.
+Some content cannot be rendered by HTML alone — LaTeX math, ABC music notation, Mermaid diagrams, CSV tables, executable code. Enscribe handles this through a uniform mechanism: tag content the browser cannot render natively is routed, by a tag-to-processor registry, to a specialized processor that returns something the browser *can* render — HTML, SVG, or a rendered code block. The processor delegates the lexer (and the rendering); enscribe owns the tag identity and the routing.
 
 The model is in production. Math content inside `<$ … $>` or `<$$ … $$>` is handed to KaTeX, which returns HTML. Fenced code inside `` <` … `> `` and `` <``` … ``` > `` is handed to a syntax highlighter. The tag-to-processor mapping is the DSL registry; a new processor (Mermaid, ABC, executable code) is added by extending the registry — the parser and interpreter do not need to know about the new content type. Each tag's content stays as a verbatim string through the recursive-content pass (its content handler is not `default`), so the processor receives the source exactly as the author wrote it.
 
@@ -153,25 +155,25 @@ Each processor has its own attribute vocabulary. CSV uses `align`, `header`; Mer
 
 Source language and display target are fused in the current model: `<csv>` means both "the source is CSV" and "render as a table"; `<mermaid>` means "the source is Mermaid" and "render as a diagram." This works for the common cases. A future split — `<csv #data> … </csv>` plus `<chart source=#data type=bar>` — would let the same data drive multiple displays; it is a natural extension when the need surfaces, not a redesign.
 
-The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/specs/idioms.md`. There, remark provides the lexer for markdown constructs and acadamark owns the node identity; here, a specialized processor provides the rendering for non-native content and acadamark owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
+The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/specs/idioms.md`. There, remark provides the lexer for markdown constructs and enscribe owns the node identity; here, a specialized processor provides the rendering for non-native content and enscribe owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
 
 ### DSL handlers: included vs external
 
-Acadamark's DSL handlers fall into two categories, distinguished by who owns the rendering — acadamark itself, or an external library:
+Enscribe's DSL handlers fall into two categories, distinguished by who owns the rendering — enscribe itself, or an external library:
 
-- **Included DSLs.** The rendering primitive lives in acadamark's own vocabulary and pipeline: the handler renders source to final output using machinery acadamark owns and always bundles, and that output is included in acadamark's HTML. Examples: `<math>` and the math-environment tags (KaTeX); `<csv>`/`<tsv>` (Layer-1 tables); `<code>` and the code sigils. The output works without client JavaScript and acadamark owns the rendering end-to-end.
+- **Included DSLs.** The rendering primitive lives in enscribe's own vocabulary and pipeline: the handler renders source to final output using machinery enscribe owns and always bundles, and that output is included in enscribe's HTML. Examples: `<math>` and the math-environment tags (KaTeX); `<csv>`/`<tsv>` (Layer-1 tables); `<code>` and the code sigils. The output works without client JavaScript and enscribe owns the rendering end-to-end.
 
-- **External DSLs.** acadamark does not own the rendering and never parses the DSL's semantics into the core; it delegates to an external library. The handler always emits the pass-through markup contract (a wrapper carrying `class` and `data-acadamark-dsl`). Each external DSL's registry entry additionally declares how acadamark can render it on the publisher's behalf, and the publisher chooses per DSL among three modes: **skip** (default) — emit only the contract, the publisher wires rendering; **live** — also emit the external library (inlined or CDN-linked) so the browser renders the contract markup at view time; **static** — invoke the external library at build time (an optional, opt-in dependency) and inline the resulting SVG. Examples: `<mermaid>` (live only) and `<abc>` (live or static). In every mode the semantics stay external; only *when* rendering happens and *who* triggers it differ.
+- **External DSLs.** enscribe does not own the rendering and never parses the DSL's semantics into the core; it delegates to an external library. The handler always emits the pass-through markup contract (a wrapper carrying `class` and `data-enscribe-dsl`). Each external DSL's registry entry additionally declares how enscribe can render it on the publisher's behalf, and the publisher chooses per DSL among three modes: **skip** (default) — emit only the contract, the publisher wires rendering; **live** — also emit the external library (inlined or CDN-linked) so the browser renders the contract markup at view time; **static** — invoke the external library at build time (an optional, opt-in dependency) and inline the resulting SVG. Examples: `<mermaid>` (live only) and `<abc>` (live or static). In every mode the semantics stay external; only *when* rendering happens and *who* triggers it differ.
 
-The distinction reflects an architectural reality: some rendering libraries are designed for the browser (DOM-dependent, layout-aware, SVG-generating) and are awkward to run in Node. External DSLs honestly delegate to those libraries in their native environment rather than dragging heavyweight browser-shaped dependencies into the acadamark build. The libraries that back live and static mode are optional dependencies declared per DSL in the registry; the default build (skip mode) pulls none of them, so the engine stays lean unless the publisher asks acadamark to do the rendering. Not every DSL offers every mode — Mermaid's only browserless path needs a headless browser, so acadamark registers it live-only; abc registers both.
+The distinction reflects an architectural reality: some rendering libraries are designed for the browser (DOM-dependent, layout-aware, SVG-generating) and are awkward to run in Node. External DSLs honestly delegate to those libraries in their native environment rather than dragging heavyweight browser-shaped dependencies into the enscribe build. The libraries that back live and static mode are optional dependencies declared per DSL in the registry; the default build (skip mode) pulls none of them, so the engine stays lean unless the publisher asks enscribe to do the rendering. Not every DSL offers every mode — Mermaid's only browserless path needs a headless browser, so enscribe registers it live-only; abc registers both.
 
-Both categories use `interpreter_strategy: handler` in their vocab entries; the category is a property of what the handler does (resolve to final output vs. wrap source in marked markup), not a separate schema field. External-DSL handlers emit a wrapper element with a `data-acadamark-dsl="<name>"` attribute — the contract for downstream build-time tooling that wants to find external-DSL blocks unambiguously, independent of CDN-specific class conventions. The wrapper's class also matches the upstream library's CDN scanning convention where one exists (e.g. `class="mermaid"` for Mermaid) so a consumer who drops in `<script src="cdn/mermaid">` gets working in-browser rendering with no extra wiring.
+Both categories use `interpreter_strategy: handler` in their vocab entries; the category is a property of what the handler does (resolve to final output vs. wrap source in marked markup), not a separate schema field. External-DSL handlers emit a wrapper element with a `data-enscribe-dsl="<name>"` attribute — the contract for downstream build-time tooling that wants to find external-DSL blocks unambiguously, independent of CDN-specific class conventions. The wrapper's class also matches the upstream library's CDN scanning convention where one exists (e.g. `class="mermaid"` for Mermaid) so a consumer who drops in `<script src="cdn/mermaid">` gets working in-browser rendering with no extra wiring.
 
 ### Citation formatting is delegated to citation-js / CSL
 
-A specific application of the delegation pattern: **citation formatting, ordering, and style questions are delegated to citation-js / CSL — acadamark does not reimplement or override them.** Bibliography rendering, cluster ordering, author-name disambiguation, "ibid" suppression, locale-specific punctuation, and every other citation-presentation concern is the CSL style's job; acadamark hands the citation keys and the chosen style to citation-js and accepts the result. This is what makes "any CSL-compliant processor" interchangeable with citation-js in principle: acadamark holds only the citation keys and the user-chosen style name, both standard CSL inputs.
+A specific application of the delegation pattern: **citation formatting, ordering, and style questions are delegated to citation-js / CSL — enscribe does not reimplement or override them.** Bibliography rendering, cluster ordering, author-name disambiguation, "ibid" suppression, locale-specific punctuation, and every other citation-presentation concern is the CSL style's job; enscribe hands the citation keys and the chosen style to citation-js and accepts the result. This is what makes "any CSL-compliant processor" interchangeable with citation-js in principle: enscribe holds only the citation keys and the user-chosen style name, both standard CSL inputs.
 
-The practical consequence: an authoring-side request that would *override* a CSL convention is not an acadamark concern. The canonical example is within-cluster citation ordering — CSL styles sort cluster items by their own internal rules (typically alphabetical-by-author); preserving author input order against that sort would require either overriding the CSL style's XML or patching citation-js. Both are out of scope by this principle. The author who needs a non-CSL ordering chooses a CSL style that produces it, or hand-formats the cluster as prose rather than as a `<cite>`. Acadamark stays on the CSL side of that boundary.
+The practical consequence: an authoring-side request that would *override* a CSL convention is not an enscribe concern. The canonical example is within-cluster citation ordering — CSL styles sort cluster items by their own internal rules (typically alphabetical-by-author); preserving author input order against that sort would require either overriding the CSL style's XML or patching citation-js. Both are out of scope by this principle. The author who needs a non-CSL ordering chooses a CSL style that produces it, or hand-formats the cluster as prose rather than as a `<cite>`. Enscribe stays on the CSL side of that boundary.
 
 ## Layer 2: Authoring shorthand
 
@@ -179,11 +181,11 @@ Two registers, both compiling to Layer 1.
 
 ### Register A: Markdown-like
 
-Standard CommonMark works for paragraphs, emphasis, links, lists, fenced code, and headings. Where markdown is sufficient, acadamark uses markdown unmodified.
+Standard CommonMark works for paragraphs, emphasis, links, lists, fenced code, and headings. Where markdown is sufficient, enscribe uses markdown unmodified.
 
 ### Register B: Tag shorthand
 
-For anything requiring attributes or academic semantics, acadamark uses a uniform tag form:
+For anything requiring attributes or academic semantics, enscribe uses a uniform tag form:
 
 ```
 <tagname #id .class1 .class2 attribute=value +flag -flag | content>
@@ -200,7 +202,7 @@ Conventions:
 
 ### Tag forms
 
-Acadamark tags appear in three syntactic forms:
+Enscribe tags appear in three syntactic forms:
 
 1. **Pipe form** — `<tag attrs | content>` — short-form with body content. The pipe marks the start of body content; the closing `>` terminates the tag.
 2. **Slash form** — `<tag attrs />` — short-form with no body content. Covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`). The `/` before `>` marks the tag as self-closing.
@@ -253,7 +255,7 @@ Standard markdown paragraph with *emphasis* and a [link](url).
 More markdown prose, with a citation <cite @smith2023>.
 ```
 
-The translation rule is strict: any acadamark document maps to exactly one Layer 1 HTML document. There is no ambiguity. And because the mapping is exact, it runs both ways — Layer 1 can be expressed back as shorthand without loss. This is the lossless round-trip the summary describes.
+The translation rule is strict: any enscribe document maps to exactly one Layer 1 HTML document. There is no ambiguity. And because the mapping is exact, it runs both ways — Layer 1 can be expressed back as shorthand without loss. This is the lossless round-trip the summary describes.
 
 ## Layered model and terminology
 
@@ -261,37 +263,37 @@ The layered model has more names than the two-layer summary suggests, because th
 
 - **Layer 1 (custom-HTML, or semantic HTML).** The canonical, archival representation of a document: the JATS-aligned vocabulary of elements (`<article>`, `<section>`, `<fig>`, `<cite>`, `<ref>`, `<note>`, etc.) catalogued in `packages/layer1-vocabulary/elements/`. A Layer 1 document is the source of truth; every other authoring form reduces to one. Two documents that reduce to the same Layer 1 are equivalent.
 
-- **Canonical acadamark.** The lossless shorthand register — the tag form `<tag #id .class attr=value | content>` and the small set of sigil shorthands defined as canonical (`<#>` / `<##>` / `<###>` for sections; `<$>` / `<$$>` for math; the code-fence sigils). Every canonical-acadamark construct round-trips to and from Layer 1 without loss. The translation is bidirectional; either direction recovers the other.
+- **Canonical enscribe.** The lossless shorthand register — the tag form `<tag #id .class attr=value | content>` and the small set of sigil shorthands defined as canonical (`<#>` / `<##>` / `<###>` for sections; `<$>` / `<$$>` for math; the code-fence sigils). Every canonical-enscribe construct round-trips to and from Layer 1 without loss. The translation is bidirectional; either direction recovers the other.
 
-- **Markdown idioms (lossy convenience shortcuts).** The CommonMark constructs that acadamark also accepts — markdown headings (`#`, `##`, `###`), markdown emphasis (`*`, `_`), markdown lists, markdown tables (via remark-gfm), inline-code backticks, math via `$…$`. These reduce *into* Layer 1 but do not round-trip back from it: Layer 1 → acadamark renders the canonical surface, not the markdown idiom. The relationship is one-way reduction; the markdown surface is a convenience for authoring.
+- **Markdown idioms (lossy convenience shortcuts).** The CommonMark constructs that enscribe also accepts — markdown headings (`#`, `##`, `###`), markdown emphasis (`*`, `_`), markdown lists, markdown tables (via remark-gfm), inline-code backticks, math via `$…$`. These reduce *into* Layer 1 but do not round-trip back from it: Layer 1 → enscribe renders the canonical surface, not the markdown idiom. The relationship is one-way reduction; the markdown surface is a convenience for authoring.
 
-- **Strict mode.** A setting (not yet implemented; reserved as a future configuration switch) that confines accepted input to canonical acadamark only — markdown idioms produce errors rather than silently reducing. The intended use is round-trip-critical pipelines: when an author needs the guarantee that what they wrote will come back unchanged from a Layer 1 → acadamark conversion, strict mode is how they ask for it.
+- **Strict mode.** A setting (not yet implemented; reserved as a future configuration switch) that confines accepted input to canonical enscribe only — markdown idioms produce errors rather than silently reducing. The intended use is round-trip-critical pipelines: when an author needs the guarantee that what they wrote will come back unchanged from a Layer 1 → enscribe conversion, strict mode is how they ask for it.
 
-The ladder is: *markdown idiom* → reduces to → *canonical acadamark* → bidirectionally equivalent to → *Layer 1*. The middle step is what makes the round-trip work. The lossy step (markdown idiom → canonical) is acceptable because it goes in the direction of *more* information, not less — naming what was implicit.
+The ladder is: *markdown idiom* → reduces to → *canonical enscribe* → bidirectionally equivalent to → *Layer 1*. The middle step is what makes the round-trip work. The lossy step (markdown idiom → canonical) is acceptable because it goes in the direction of *more* information, not less — naming what was implicit.
 
 ### The section-form reduction ladder
 
 The same ladder is the substrate for an explicit decision about section heading forms, recorded here because it has been settled and is referenced from the backlog. Three surfaces all denote a section:
 
 - `<section>…<section-title>…</section-title>…</section>` — the named Layer 1 element form.
-- `<#>…<# #>…</#>` (and the `<# | title #>` shorthand) — the sigil-tag form: canonical acadamark.
+- `<#>…<# #>…</#>` (and the `<# | title #>` shorthand) — the sigil-tag form: canonical enscribe.
 - `# Title` — the bare markdown heading.
 
-The decision: the named form and the sigil form are **co-equal canonical** surfaces — both round-trip to Layer 1 losslessly, and a Layer 1 → acadamark conversion may emit either. The bare markdown heading is a **lossy reduction** to the canonical surface — it produces a section but is not what the round-trip emits. The id-bearing variant `<# #sec:intro | … #>` carries its id through the ladder; the bare-markdown form has no surface for an id and is therefore strictly less expressive than the canonical surfaces.
+The decision: the named form and the sigil form are **co-equal canonical** surfaces — both round-trip to Layer 1 losslessly, and a Layer 1 → enscribe conversion may emit either. The bare markdown heading is a **lossy reduction** to the canonical surface — it produces a section but is not what the round-trip emits. The id-bearing variant `<# #sec:intro | … #>` carries its id through the ladder; the bare-markdown form has no surface for an id and is therefore strictly less expressive than the canonical surfaces.
 
-The implementation check that all three forms actually converge to the identical Layer 1 `<section>` node is satisfied as of the normalize-to-canonical gate landing (the `document-16-section-form-convergence.acm` integration fixture is the convergence proof; the three forms produce structurally identical Layer 1 `<section>` nodes, modulo id presence on the two forms that author one).
+The implementation check that all three forms actually converge to the identical Layer 1 `<section>` node is satisfied as of the normalize-to-canonical gate landing (the `document-16-section-form-convergence.emd` integration fixture is the convergence proof; the three forms produce structurally identical Layer 1 `<section>` nodes, modulo id presence on the two forms that author one).
 
 ## Lift and lower: two mechanisms, not one
 
 Converting between syntax levels uses two distinct mechanisms with different contracts — keeping them apart is what lets each one be simple.
 
-**The tagname↔sigil map (a cipher).** Converts between Layer 1's two canonical-acadamark spellings (named tag ↔ sigil). Pure, **bidirectional**, **lossless**, **data**: a literal source-of-truth list of name↔sigil pairs (`section`↔`#`, `sub-section`↔`##`, `sub-sub-section`↔`###`, `inline-math`↔`$`, `display-math`↔`$$`, `inline-code`↔`` ` ``, `code-block`↔` ``` `). The two sides of a pair are structurally identical and differ only in the tagname token — a substitution, not a transform. The map lives at `packages/acadamark-core/src/tagname-sigil-map.js`; both directions are derived from one literal so they cannot drift. The lift direction (`SIGIL_TO_TAGNAME`) is consumed today by the gate (see below); the lower direction (`TAGNAME_TO_SIGIL`) is reserved for the future lowering pass.
+**The tagname↔sigil map (a cipher).** Converts between Layer 1's two canonical-enscribe spellings (named tag ↔ sigil). Pure, **bidirectional**, **lossless**, **data**: a literal source-of-truth list of name↔sigil pairs (`section`↔`#`, `sub-section`↔`##`, `sub-sub-section`↔`###`, `inline-math`↔`$`, `display-math`↔`$$`, `inline-code`↔`` ` ``, `code-block`↔` ``` `). The two sides of a pair are structurally identical and differ only in the tagname token — a substitution, not a transform. The map lives at `packages/enscribe-core/src/tagname-sigil-map.js`; both directions are derived from one literal so they cannot drift. The lift direction (`SIGIL_TO_TAGNAME`) is consumed today by the gate (see below); the lower direction (`TAGNAME_TO_SIGIL`) is reserved for the future lowering pass.
 
 **The lossy lift.** Converts Layer 2 markdown idioms *up* to Layer 1 canonical. **Lift-only** (one-way; Layer 1 lowers to canonical-named-form, not to bare markdown), **lossy** (a markdown idiom may have multiple canonical representations, and one is chosen), a small set of transforms. Each rule is a per-construct rewrite — an mdast `heading` and a canonical section node are different shapes, not the same shape with a different tagname.
 
 ## The single gate
 
-All lifting to canonical happens at one early pipeline stage — the **normalize-to-canonical gate** at `packages/acadamark-interpreter/src/plugins/normalize-to-canonical.js`. The gate runs after both parsers (the acadamark Peggy parser and the remark markdown lexer, including remark-math and remark-gfm) have produced nodes, and before any structural plugin runs. Every stage after the gate sees only canonical Layer 1 nodes; no downstream stage handles, sniffs for, or branches on a non-canonical authored form.
+All lifting to canonical happens at one early pipeline stage — the **normalize-to-canonical gate** at `packages/enscribe-interpreter/src/plugins/normalize-to-canonical.js`. The gate runs after both parsers (the enscribe Peggy parser and the remark markdown lexer, including remark-math and remark-gfm) have produced nodes, and before any structural plugin runs. Every stage after the gate sees only canonical Layer 1 nodes; no downstream stage handles, sniffs for, or branches on a non-canonical authored form.
 
 The gate's job at a glance:
 
@@ -299,15 +301,15 @@ The gate's job at a glance:
 |---|---|
 | Named `<section>` / `<sub-section>` / etc. | itself (already canonical) |
 | Sigil `<#>` / `<##>` / `<###>` (sections), `<$>` / `<$$>` (math), `` <` `` / ` ``` ` (code) | the canonical Layer 1 name (`section` / `inline-math` / etc.) via the tagname↔sigil map |
-| Bare markdown `#` / `##` / `###` (depths 1-3) | a canonical `<section>` / `<sub-section>` / `<sub-sub-section>` acadamarkTag |
+| Bare markdown `#` / `##` / `###` (depths 1-3) | a canonical `<section>` / `<sub-section>` / `<sub-sub-section>` enscribeTag |
 | Bare markdown emphasis (`*foo*`) | `<i>` |
 | Bare markdown strong (`**foo**`) | `<b>` |
 | Bare GFM strikethrough (`~~foo~~`) | `<s>` |
 | Bare inline code (`` `foo` ``) | the canonical `<inline-code>` |
 | Bare markdown link (`[text](url)`) | the canonical `<a>` |
 | Bare markdown image | the canonical `<img>` |
-| Bare `$x$` / `$$x$$` math | a canonical math acadamarkTag (`inline-math` / `display-math`) |
-| GFM pipe table | a canonical `<table md>` acadamarkTag |
+| Bare `$x$` / `$$x$$` math | a canonical math enscribeTag (`inline-math` / `display-math`) |
+| GFM pipe table | a canonical `<table md>` enscribeTag |
 
 **A new authored form is a new rule at the gate — never a new sniff in a downstream plugin.** This rule is the architecture's payoff: one shape downstream means one set of behaviors, no per-form forking, and a new authored convention has an obvious and structurally enforced place to live.
 
@@ -323,7 +325,7 @@ Layer 1's three named section elements (`section` / `sub-section` / `sub-sub-sec
 
 ## Apparatus-tag positioning
 
-A small set of acadamark tags carry information *about* the document rather than the document's body content: `<meta>` (descriptive metadata — title, author, etc.), `<config>` (processing and display settings), `<data>` (referenced resources), `<library>` (bibliography source). These are the **document-apparatus tags**.
+A small set of enscribe tags carry information *about* the document rather than the document's body content: `<meta>` (descriptive metadata — title, author, etc.), `<config>` (processing and display settings), `<data>` (referenced resources), `<library>` (bibliography source). These are the **document-apparatus tags**.
 
 The positioning rule: apparatus tags belong at the **document edges**, not in the middle of body flow. The convention is `<meta>` at the start; `<config>` / `<data>` / `<library>` at the end. The structural plugins assume this — they route apparatus tags from the root level into their appropriate regions (`<article-front>`, `<article-back>`, or to root-level siblings). An apparatus tag found mid-body (inside another tag's content array) cannot be routed coherently; the structural plugin emits an informative diagnostic and leaves the misplaced tag where it is. The document still renders (per the always-renders pattern).
 
@@ -335,7 +337,7 @@ Apparatus tags also have a coupled interface principle. Each apparatus tag can b
 
 ## Document structure: articles vs. books
 
-Acadamark supports two top-level document shapes, distinguished by
+Enscribe supports two top-level document shapes, distinguished by
 `<meta type=...>`: **articles** (the default; `type=article` or
 absent) and **books** (`type=book`, with chapters / parts / appendices
 as recursive `<book-part>` children). The two share most of the
@@ -346,23 +348,23 @@ The distinction matters because the scholarly-publishing ecosystem
 draws it: JATS has two parallel DTDs (the **article DTD** for
 journal articles; **BITS**, the Book Interchange Tag Suite, for
 books). LaTeX has the same split (the `article` document class
-vs. the `book` class). Acadamark inherits the distinction so the
+vs. the `book` class). Enscribe inherits the distinction so the
 Layer 1 output maps cleanly to either DTD without per-document
 restructuring.
 
 The pipeline expression of the distinction: two structural plugins —
-`acadamarkArticleStructuring` and `acadamarkBookStructuring` — sit
+`enscribeArticleStructuring` and `enscribeBookStructuring` — sit
 side-by-side as Stage 3 (post-gate). For each document, exactly one
 of them transforms the tree:
 
-- **`acadamarkBookStructuring` runs first.** If `<meta type=book>` or
+- **`enscribeBookStructuring` runs first.** If `<meta type=book>` or
   `<meta type=book-part>` is at root, it wraps the children into
   `<book>` with `<book-front>` / `<book-body>` / `<book-back>`
   regions, routing each `<book-part>` to its appropriate region by
   `book-part-type` (chapter / part / introduction → body; preface /
   foreword / dedication → front; appendix / glossary / colophon →
   back). Otherwise it's a no-op.
-- **`acadamarkArticleStructuring` runs next.** If the tree is already
+- **`enscribeArticleStructuring` runs next.** If the tree is already
   book-wrapped, it skips silently. Otherwise it does its article
   shape (`<article>` containing `<article-front>` / `<article-body>`
   / `<article-back>`).
@@ -387,19 +389,19 @@ article-vs-book defaults that diverge:
 The two shapes share everything below the structural wrapper. The
 frameable handlers, the theorem family, math, citations, and notes
 all work identically inside an article or a book. The shape divides
-the *outer container*; the *body authoring surface* is one acadamark.
+the *outer container*; the *body authoring surface* is one enscribe.
 
 ## Structured-data-container tags
 
 The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which `<meta>` was the first member and `<author>` is the second. (`<config>` is *not* a structured-data container: its body is processing options, not a record of named document-descriptive fields, and the authoring surface today is kwargs-only.)
 
-A structured-data-container tag is one whose body is *structured acadamark data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside acadamark (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds acadamark's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different.
+A structured-data-container tag is one whose body is *structured enscribe data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside enscribe (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds enscribe's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different.
 
 The interface for every structured-data container is uniform: the tag accepts kwargs for scalar fields *and* child tags for the same fields in their structured form; the normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag spec; the canonical Layer 1 shape carries child tags (plus any boolean-marker kwargs). This is the same single-gate normalization the architecture uses for every other authored form.
 
 ### Infrastructure
 
-The structured-data-container registry is **`STRUCTURED_ELEMENTS`** in `packages/acadamark-core/src/structured-elements.js`. Each entry is a per-tag spec recording its accepted kwargs, the subset that lifts to child tags, boolean-marker kwargs, the child allowlist, an opt-in child-tag-validation flag, and an optional misuse-feedback partner pointer. The registry is **separate from `DSL_REGISTRY`** by design — `DSL_REGISTRY` is the handler-dispatch list for DSLs (foreign-language tags like `<math>` / `<mermaid>` / `<csv>` interpreted by an external processor); `STRUCTURED_ELEMENTS` is the kwarg/child-tag interface registry. Neither registry gates parser-time long-form admission — every named tag is long-form-eligible (see §"Tag forms" above) — so the two registries are independent and serve unrelated downstream concerns.
+The structured-data-container registry is **`STRUCTURED_ELEMENTS`** in `packages/enscribe-core/src/structured-elements.js`. Each entry is a per-tag spec recording its accepted kwargs, the subset that lifts to child tags, boolean-marker kwargs, the child allowlist, an opt-in child-tag-validation flag, and an optional misuse-feedback partner pointer. The registry is **separate from `DSL_REGISTRY`** by design — `DSL_REGISTRY` is the handler-dispatch list for DSLs (foreign-language tags like `<math>` / `<mermaid>` / `<csv>` interpreted by an external processor); `STRUCTURED_ELEMENTS` is the kwarg/child-tag interface registry. Neither registry gates parser-time long-form admission — every named tag is long-form-eligible (see §"Tag forms" above) — so the two registries are independent and serve unrelated downstream concerns.
 
 The lift gate consumes the spec generically in `normalize-to-canonical.js`'s `liftStructuredKwargs(node, file)`. Adding a new structured-data container is a registry-entry edit plus (when the tag is new) a vocabulary entry — no gate-code change.
 
@@ -439,7 +441,7 @@ Frameable is a **capability shared by several distinct elements**, not an umbrel
 
 ### Members
 
-The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; acadamark does not police it (the same posture acadamark takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`).
+The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; enscribe does not police it (the same posture enscribe takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`).
 
 ### `<fig>` is the sole graphical element
 
@@ -461,21 +463,21 @@ The two earlier-open questions inside this design — the existence of a generic
 
 ## Multi-paragraph tag content; unclosed tags terminate at EOF
 
-A blank line inside an open tag is a **paragraph break, not a terminator** — multi-paragraph tag content is allowed (`<aside | First paragraph.\n\nSecond paragraph.>` produces an aside with two paragraph children). A tag terminates only on its **explicit closing `>`** or at **EOF**. An unclosed tag — one whose stream ends without its closer — produces a visible `acadamarkTagError` at the tag's opening position; the consumed span renders as the error node's best-effort content.
+A blank line inside an open tag is a **paragraph break, not a terminator** — multi-paragraph tag content is allowed (`<aside | First paragraph.\n\nSecond paragraph.>` produces an aside with two paragraph children). A tag terminates only on its **explicit closing `>`** or at **EOF**. An unclosed tag — one whose stream ends without its closer — produces a visible `enscribeTagError` at the tag's opening position; the consumed span renders as the error node's best-effort content.
 
 EOF is the **only** terminator besides the explicit `>`. There is no additional "hard structural boundary" terminator (e.g. end of region, start of a new structural construct). This was a deliberate design choice: a structural-boundary terminator would require the tokenizer to detect blank-line-followed-by-a-tag-opener, reintroducing exactly the blank-line-as-signal heuristic this design was chosen to avoid. The bounded cost of EOF-only termination — an unclosed tag near the top of a long document swallows the rest of the document into the error node — is acceptable: the error renders visibly at the open position (so the author sees *where* the problem is) and the conspicuously missing downstream content is itself a strong author signal. Tighter localization, if ever needed, is an incremental future change — not foreclosed by EOF-only.
 
-The design rests on and reinforces the always-renders guarantee in `principles.md`: errors stay bounded enough that the document renders and the author can locate the problem. Multi-paragraph tag content is a desirable feature; it yields to the always-renders guarantee if the two ever conflict, but under EOF-only termination they do not. Integration fixtures `document-23-multi-paragraph-tag-content.acm` and `document-24-unclosed-tag-at-eof.acm` pin both halves against regression.
+The design rests on and reinforces the always-renders guarantee in `principles.md`: errors stay bounded enough that the document renders and the author can locate the problem. Multi-paragraph tag content is a desirable feature; it yields to the always-renders guarantee if the two ever conflict, but under EOF-only termination they do not. Integration fixtures `document-23-multi-paragraph-tag-content.emd` and `document-24-unclosed-tag-at-eof.emd` pin both halves against regression.
 
 ## Why this is not just another markdown extension
 
 Three differences:
 
-1. **The target is specified independently.** Layer 1 stands alone, and it is canonical. Markdown extensions typically conflate syntax and semantics; acadamark separates them, and keeps the semantic form — not a display projection of it — as the source of truth.
+1. **The target is specified independently.** Layer 1 stands alone, and it is canonical. Markdown extensions typically conflate syntax and semantics; enscribe separates them, and keeps the semantic form — not a display projection of it — as the source of truth.
 
 2. **The shorthand is uniform.** One construct (`<tag attrs | content>`) handles all cases that need attributes, instead of accreting per-feature idioms (trailing curly braces for headings, fenced divs for callouts, special prefixes for citations, etc.).
 
-3. **The implementation rides on existing infrastructure.** Acadamark builds on the unified/remark/rehype ecosystem rather than reimplementing parsing, list handling, math rendering, syntax highlighting, etc.
+3. **The implementation rides on existing infrastructure.** Enscribe builds on the unified/remark/rehype ecosystem rather than reimplementing parsing, list handling, math rendering, syntax highlighting, etc.
 
 ### Why the unified ecosystem
 
@@ -483,27 +485,27 @@ The parser-substrate decision had three candidates: continue the original regex 
 
 - **Regex.** Familiar, and existing prototype code worked for some cases. But the approach doesn't scale: edge cases break, list handling has to be rebuilt, every new feature reinvents wheels remark already has.
 - **Hand-written grammar.** Clean grammar file, full control over the syntax. But the cost is rebuilding everything around it — lists, tables, math integration, syntax highlighting — outside the JS ecosystem where rendering ultimately happens.
-- **Unified plugins.** Acadamark inherits markdown parsing, lists, tables, math, syntax highlighting, footnotes, GFM autolinks. The novel work (shorthand syntax, citations, cross-references, section nesting) maps cleanly onto the plugin model. The learning curve is the AST mental model.
+- **Unified plugins.** Enscribe inherits markdown parsing, lists, tables, math, syntax highlighting, footnotes, GFM autolinks. The novel work (shorthand syntax, citations, cross-references, section nesting) maps cleanly onto the plugin model. The learning curve is the AST mental model.
 
-The unified ecosystem is what acadamark uses. The project's surface area shrinks dramatically because most of what acadamark needs already exists as plugins. The "rediscovering the wheel" motto applies directly: unified is the wheel.
+The unified ecosystem is what enscribe uses. The project's surface area shrinks dramatically because most of what enscribe needs already exists as plugins. The "rediscovering the wheel" motto applies directly: unified is the wheel.
 
 ### The JATS export plugin
 
-`rehype-acadamark-to-jats` takes a Layer 1 hast tree and produces JATS XML. Most mappings are 1:1 element renames; a minority require restructuring. For example, acadamark's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but acadamark's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The acadamark-to-JATS mapping table is the heart of the plugin, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes acadamark a credible scholarly-publishing target rather than just "another web markdown."
+`rehype-enscribe-to-jats` takes a Layer 1 hast tree and produces JATS XML. Most mappings are 1:1 element renames; a minority require restructuring. For example, enscribe's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but enscribe's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The enscribe-to-JATS mapping table is the heart of the plugin, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes enscribe a credible scholarly-publishing target rather than just "another web markdown."
 
 ### Package structure
 
-The project is organized as an npm workspace with four packages (a fifth, `acadamark-jats-export`, is planned). The dependency graph points inward through a shared `acadamark-core` package that depends on nothing internal; the parser, the interpreter, the JATS exporter (when it arrives), and `layer1-vocabulary` are independent consumers of core. The build/run-time seam is also the browser-safety boundary — `acadamark-core` and the shippable runtime code paths are filesystem-free by design, so the eventual client-side build does not need to redraw the package boundaries. See `notes/specs/acadamark-core.md` for the full architecture-decision record including the dependency diagram, the per-module inventory, the seam definition, and the standing client-side build constraints rule.
+The project is organized as an npm workspace with four packages (a fifth, `enscribe-jats-export`, is planned). The dependency graph points inward through a shared `enscribe-core` package that depends on nothing internal; the parser, the interpreter, the JATS exporter (when it arrives), and `layer1-vocabulary` are independent consumers of core. The build/run-time seam is also the browser-safety boundary — `enscribe-core` and the shippable runtime code paths are filesystem-free by design, so the eventual client-side build does not need to redraw the package boundaries. See `notes/specs/enscribe-core.md` for the full architecture-decision record including the dependency diagram, the per-module inventory, the seam definition, and the standing client-side build constraints rule.
 
 ## Design tensions and accepted tradeoffs
 
-**Shorthand is less readable than plain markdown.** Acknowledged. The shorthand is more readable than HTML and more readable than markdown plus the trailing-attribute extensions that academic markdown flavors require. Where plain markdown suffices, acadamark uses it. The shorthand is reached for only when needed.
+**Shorthand is less readable than plain markdown.** Acknowledged. The shorthand is more readable than HTML and more readable than markdown plus the trailing-attribute extensions that academic markdown flavors require. Where plain markdown suffices, enscribe uses it. The shorthand is reached for only when needed.
 
-**Implicit closing differs from HTML.** Standard HTML linters may flag acadamark source. This is acceptable because acadamark source is not HTML — it compiles to HTML. Tooling for the shorthand is a separate concern from HTML tooling.
+**Implicit closing differs from HTML.** Standard HTML linters may flag enscribe source. This is acceptable because enscribe source is not HTML — it compiles to HTML. Tooling for the shorthand is a separate concern from HTML tooling.
 
 **`@` for references collides with social-media usage.** Not a real problem in academic prose. Pandoc has used `@key` for citations for years without confusion.
 
-**Custom elements have no built-in semantics without help.** A custom element styled by CSS displays correctly but is, to a screen reader or an outline tool, semantically inert. Acadamark accepts this as the cost of a semantically explicit canonical form, and answers it with the display ladder: the default target adds CSS, and render mode lowers custom elements to their plain-HTML equivalents where real heading semantics are needed. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration. The accessibility gap is met by lowering, not by abandoning the semantic vocabulary.
+**Custom elements have no built-in semantics without help.** A custom element styled by CSS displays correctly but is, to a screen reader or an outline tool, semantically inert. Enscribe accepts this as the cost of a semantically explicit canonical form, and answers it with the display ladder: the default target adds CSS, and render mode lowers custom elements to their plain-HTML equivalents where real heading semantics are needed. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration. The accessibility gap is met by lowering, not by abandoning the semantic vocabulary.
 
 **The interpreter does not call `customElements.define()`.** Layer 1 elements (`<note-list>`, `<article-body>`, `<article-front>`, …) are emitted as raw custom HTML elements; browsers treat them as instances of `HTMLElement` with no built-in behavior. CSS targeting works; ARIA semantics and JavaScript behavior do not exist by default. This is intentional: registering custom elements is an application-layer concern, and the host application or theme is the right place to do it. The interpreter's job is to emit semantically explicit HTML; turning a `<note-list>` into a behaviorally rich element is a downstream choice that depends on the host context.
 
@@ -511,7 +513,7 @@ The project is organized as an npm workspace with four packages (a fifth, `acada
 
 ## Design directions (discovered through implementation)
 
-The sections above describe acadamark's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work. Open items that bear on these directions live in `BACKLOG-ROADMAP.md`; `notes/archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
+The sections above describe enscribe's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work. Open items that bear on these directions live in `BACKLOG-ROADMAP.md`; `notes/archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
 
 **Content gets parsed; arguments don't.** A value's syntactic form — keyword argument, positional, pipe-content, child element — is incidental. What matters is its semantic role. *Arguments* are configuration: `citation-style="apa"`, `placement="end"`, `src="refs.bib"`. They are opaque strings or enumerations and pass through the pipeline uninterpreted. *Content* is authored prose-and-structure that may contain nested tags, citations, math, or emphasis, and must be parsed recursively. The trap is content-shaped values that happen to be written as keyword arguments — a `caption="..."` containing a `<cite>` is content wearing an argument's clothing, and must be parsed as such. The direction: vocabulary entries declare each keyword argument's role, and the interpreter treats `role: content` arguments the same as child nodes.
 
@@ -521,9 +523,9 @@ The sections above describe acadamark's design as it was conceived. Building the
 
 **All tag forms work for every tag where they make sense.** The shorthand grammar admits several tag forms — short, pipe-content, multi-line pipe-content, long-form nesting, self-closing. The principle is that for any given tag, every form that is *semantically* meaningful should *actually* work, and produce equivalent output. Where a form is silently broken for some tags but not others, authors have no way to know the rule, and the uniformity that justifies the shorthand erodes. The direction: vocabulary entries declare which forms each tag supports, tests cover each declared form, and parser-level conflicts that block a declared form are treated as bugs.
 
-**Standalone HTML is the build target; client-side rendering is the future target.** This direction concerns *when* processing happens, a separate axis from the *what form* question settled by the display ladder above. The pipeline produces self-contained HTML at build time — with `embedResources: true`, every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. (Since Phase 14 Slice 1 the *default* links fonts and KaTeX CSS to CDNs for leaner output; full self-containment is opt-in but remains a first-class build target.) That archival target does not change. But a further target is full client-side rendering: an `.acm` source file loaded directly in a browser, parsed and rendered without a build step, in the spirit of JupyterLite. Reaching it means the parser, the plugin pipeline, and the handlers must all run in the browser, not only in Node. This is not current work, but it shapes current decisions — plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so the eventual port is a migration rather than a rewrite.
+**Standalone HTML is the build target; client-side rendering is the future target.** This direction concerns *when* processing happens, a separate axis from the *what form* question settled by the display ladder above. The pipeline produces self-contained HTML at build time — with `embedResources: true`, every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. (Since Phase 14 Slice 1 the *default* links fonts and KaTeX CSS to CDNs for leaner output; full self-containment is opt-in but remains a first-class build target.) That archival target does not change. But a further target is full client-side rendering: an `.emd` source file loaded directly in a browser, parsed and rendered without a build step, in the spirit of JupyterLite. Reaching it means the parser, the plugin pipeline, and the handlers must all run in the browser, not only in Node. This is not current work, but it shapes current decisions — plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so the eventual port is a migration rather than a rewrite.
 
-**Markdown forms are shorthand for the canonical acadamark form.** Several constructs exist in both registers — `$x$` and `<$ x $>`, a GFM pipe table and `<table>`, `# Heading` and `<# ... #>`. Where a construct exists in both, the acadamark form is canonical and the markdown form is *surface shorthand for it*, not an independent parallel path. This refines the delegation principle by drawing a line through the middle of it. Delegation still holds for *tokenizing*: finding `$x$` in a stream of text is hard, remark already does it well, and acadamark does not reimplement it — that would be reinventing a working wheel. But delegation does **not** extend to *node identity*. When remark's tokenizer finds a markdown construct that has an acadamark equivalent, the resulting standard node (`inlineMath`, `table`, `heading`, ...) is rewritten into its canonical `acadamarkTag` form by a normalization pass, before any structural or semantic plugin runs. Downstream of normalization, only the acadamark form exists; every later plugin — numbering, cross-references, asset detection, the eventual JATS export — sees one node type per construct, not two. The markdown spelling is genuinely just a faster way to type the canonical thing. The split is: *delegate the lexer, own the node identity.* Reusing remark's finder is not reinventing the wheel; accepting remark's name for what it found would be ceding the vocabulary, and the vocabulary is the project. This also makes the remark dependency shrink gracefully over time rather than by a hard cut: a markdown construct stays delegated as long as remark's tokenizer is an adequate wheel for it, and acadamark supersedes at the lexer level only for a specific construct, only when remark's coverage is genuinely inadequate and a deliberate decision is made — never reflexively. The principle is universal in intent: it governs every markdown/acadamark overlap. Its implementation is incremental: the normalization pass grows one construct at a time, and a construct not yet covered is a not-yet-done item, never a decision that it was meant to stay a separate path.
+**Markdown forms are shorthand for the canonical enscribe form.** Several constructs exist in both registers — `$x$` and `<$ x $>`, a GFM pipe table and `<table>`, `# Heading` and `<# ... #>`. Where a construct exists in both, the enscribe form is canonical and the markdown form is *surface shorthand for it*, not an independent parallel path. This refines the delegation principle by drawing a line through the middle of it. Delegation still holds for *tokenizing*: finding `$x$` in a stream of text is hard, remark already does it well, and enscribe does not reimplement it — that would be reinventing a working wheel. But delegation does **not** extend to *node identity*. When remark's tokenizer finds a markdown construct that has an enscribe equivalent, the resulting standard node (`inlineMath`, `table`, `heading`, ...) is rewritten into its canonical `enscribeTag` form by a normalization pass, before any structural or semantic plugin runs. Downstream of normalization, only the enscribe form exists; every later plugin — numbering, cross-references, asset detection, the eventual JATS export — sees one node type per construct, not two. The markdown spelling is genuinely just a faster way to type the canonical thing. The split is: *delegate the lexer, own the node identity.* Reusing remark's finder is not reinventing the wheel; accepting remark's name for what it found would be ceding the vocabulary, and the vocabulary is the project. This also makes the remark dependency shrink gracefully over time rather than by a hard cut: a markdown construct stays delegated as long as remark's tokenizer is an adequate wheel for it, and enscribe supersedes at the lexer level only for a specific construct, only when remark's coverage is genuinely inadequate and a deliberate decision is made — never reflexively. The principle is universal in intent: it governs every markdown/enscribe overlap. Its implementation is incremental: the normalization pass grows one construct at a time, and a construct not yet covered is a not-yet-done item, never a decision that it was meant to stay a separate path.
 
 ## What's deliberately out of scope
 

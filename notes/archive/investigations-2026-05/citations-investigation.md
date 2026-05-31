@@ -9,7 +9,7 @@ Initial investigation: May 2026. Updated after parser-maturity slice (see revisi
 - **Version**: 0.7.22 (current as of npm query)
 - **License**: MIT
 - **Unpacked size**: ~6.4 MB (transitive deps add ~97 packages)
-- **Installation**: `npm install citation-js` in `acadamark-interpreter` — succeeded cleanly
+- **Installation**: `npm install citation-js` in `enscribe-interpreter` — succeeded cleanly
 - **Runtime**: Node only; not bundled into HTML output. Used exclusively at interpret time.
 
 **Verdict**: Tractable. Installed and confirmed working.
@@ -103,7 +103,7 @@ Works natively — `new Cite(jsonString)` where the JSON matches the CSL schema 
 | `<library src="refs.bib">\n</library>` | ✅ `kwargs: { src: 'refs.bib' }, content: '\n'` |
 | `<library>\n@article{...}\n</library>` | ✅ long-form, `content: '\n@article{...}\n'`, opaque |
 | `<data>\n<library>...\n</library>\n</data>` | ✅ nesting works after recursive-content step |
-| `<library src="refs.bib" />` | ❌ `acadamarkTagError` — **new critical finding** |
+| `<library src="refs.bib" />` | ❌ `enscribeTagError` — **new critical finding** |
 
 ### RESOLVED: comma-separated positionals now work
 
@@ -122,12 +122,12 @@ After `processor.runSync(parser.parse('<data>\n<library>\n@bib\n</library>\n</da
 
 ### NEW critical finding: `<library src="refs.bib" />` self-closing is broken
 
-`<library src="refs.bib" />` inside `<data>` produces `acadamarkTagError`, not a parsed tag.
+`<library src="refs.bib" />` inside `<data>` produces `enscribeTagError`, not a parsed tag.
 
 **Root cause**: `library` is in DSL_REGISTRY. The long-form tokenizer in `syntax.js` takes
 precedence for all registered tags at block level. After reading the `/>` (the `/` is consumed
 as a regular attribute character, not self-closing signal), the `>` followed by a line ending
-triggers long-form mode. It then fails to find `</library>` and produces `acadamarkTagError`.
+triggers long-form mode. It then fails to find `</library>` and produces `enscribeTagError`.
 
 `syntax.js` has no self-closing awareness — the self-closing recognition happens only in the
 Peggy grammar (parse phase), not the micromark tokenizer (scan phase).
@@ -135,7 +135,7 @@ Peggy grammar (parse phase), not the micromark tokenizer (scan phase).
 **Supported forms for `<library>`:**
 1. `<library>\n@article{...}\n</library>` — long-form with inline BibTeX ✓
 2. `<library src="refs.bib">\n</library>` — long-form with external file via `src=` ✓
-3. `<library src="refs.bib" />` — **broken** (produces acadamarkTagError) ✗
+3. `<library src="refs.bib" />` — **broken** (produces enscribeTagError) ✗
 
 The self-closing `<library />` fix requires modifying `syntax.js` to detect `/>` and suppress
 long-form. Deferred to a future slice.

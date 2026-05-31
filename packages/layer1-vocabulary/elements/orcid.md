@@ -4,7 +4,7 @@ html_output:
   element: orcid
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -77,7 +77,7 @@ The bare 16-digit form with hyphens is canonical. The URL form (`https://orcid.o
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<orcid>0000-0002-1825-0097</orcid>` | `<contrib-id contrib-id-type="orcid">0000-0002-1825-0097</contrib-id>` inside `<contrib>` |
 

@@ -14,21 +14,21 @@ DRIFT and GAP numbering picks up after the existing AUD-01 through AUD-15 sequen
 **What the doc says:**
 The doc describes the interpreter as a rehype plugin running after `remarkRehype`. It shows:
 ```
-remarkRehype → acadamarkTagInterpret → acadamarkSectionNesting → acadamarkNumbering → acadamarkCitations → acadamarkCrossRefs → rehype-katex → rehype-shiki → rehypeStringify
+remarkRehype → enscribeTagInterpret → enscribeSectionNesting → enscribeNumbering → enscribeCitations → enscribeCrossRefs → rehype-katex → rehype-shiki → rehypeStringify
 ```
 
 **What is actually true (ground truth from plugins/ directory):**
 1. The interpreter is NOT a rehype plugin. It is a set of mdast plugins that run before `toHast`, plus handler functions invoked during `toHast`.
 2. Actual plugin names:
-   - `acadamarkConfigDiscovery` (not in the doc's pipeline at all)
-   - `acadamarkLibraryLoad` (not `acadamarkLibraryParsing`)
-   - `acadamarkArticleStructuring` (partially correct; doc doesn't list it explicitly)
-   - `acadamarkSectionNesting` (correct name)
-   - `acadamarkNotes` (not listed in the doc's pipeline)
-   - `acadamarkNumbering` (correct name)
-   - `acadamarkRefResolution` (not `acadamarkCrossRefs`)
-   - `acadamarkCiteResolution` (not `acadamarkCitations`; separate from `acadamarkBibliography`)
-   - `acadamarkBibliography` (not in the doc's pipeline)
+   - `enscribeConfigDiscovery` (not in the doc's pipeline at all)
+   - `enscribeLibraryLoad` (not `enscribeLibraryParsing`)
+   - `enscribeArticleStructuring` (partially correct; doc doesn't list it explicitly)
+   - `enscribeSectionNesting` (correct name)
+   - `enscribeNotes` (not listed in the doc's pipeline)
+   - `enscribeNumbering` (correct name)
+   - `enscribeRefResolution` (not `enscribeCrossRefs`)
+   - `enscribeCiteResolution` (not `enscribeCitations`; separate from `enscribeBibliography`)
+   - `enscribeBibliography` (not in the doc's pipeline)
 3. `rehype-katex` is NOT used. KaTeX is called directly in `handlers/math.js`.
 4. `rehype-shiki` is NOT used. Code highlighting not implemented.
 5. The doc says "interpreter does not yet exist." It is substantially implemented.
@@ -66,17 +66,17 @@ remarkRehype → acadamarkTagInterpret → acadamarkSectionNesting → acadamark
 
 | Doc name | Actual name |
 |----------|-------------|
-| `acadamarkLibraryParsing` | `acadamarkLibraryLoad` |
-| `acadamarkBibEntryRegistration` | not implemented as separate plugin |
-| `acadamarkCitationResolution` | `acadamarkCiteResolution` |
-| `acadamarkCrossReferenceResolution` | `acadamarkRefResolution` |
-| `acadamarkNoteNumbering` | `acadamarkNotes` (numbering + placement merged) |
-| `acadamarkNotePlacement` | merged into `acadamarkNotes` |
-| `acadamarkBibliographyAssembly` | `acadamarkBibliography` |
-| `acadamarkTagInterpret` | not a plugin; implemented as handlers via `toHast` |
-| `acadamarkBookStructuring` | not implemented |
+| `enscribeLibraryParsing` | `enscribeLibraryLoad` |
+| `enscribeBibEntryRegistration` | not implemented as separate plugin |
+| `enscribeCitationResolution` | `enscribeCiteResolution` |
+| `enscribeCrossReferenceResolution` | `enscribeRefResolution` |
+| `enscribeNoteNumbering` | `enscribeNotes` (numbering + placement merged) |
+| `enscribeNotePlacement` | merged into `enscribeNotes` |
+| `enscribeBibliographyAssembly` | `enscribeBibliography` |
+| `enscribeTagInterpret` | not a plugin; implemented as handlers via `toHast` |
+| `enscribeBookStructuring` | not implemented |
 
-Also: the doc describes `acadamarkTagInterpret` as "the last plugin in the pipeline" that "walks the AST" and "dispatches based on interpreter_strategy." The actual architecture is different: the interpreter logic is embedded in `toHast` handler functions, not a post-hast plugin.
+Also: the doc describes `enscribeTagInterpret` as "the last plugin in the pipeline" that "walks the AST" and "dispatches based on interpreter_strategy." The actual architecture is different: the interpreter logic is embedded in `toHast` handler functions, not a post-hast plugin.
 
 The doc's pipeline ordering diagram and all three phase descriptions need updating.
 
@@ -90,9 +90,9 @@ The doc's pipeline ordering diagram and all three phase descriptions need updati
 
 Already captured in DRIFT-1, but calling out separately because it's the single most misleading statement in the notes:
 
-> "The `acadamarkTagInterpret` rehype plugin does not yet exist."
+> "The `enscribeTagInterpret` rehype plugin does not yet exist."
 
-The interpreter is substantially built. Documents 1–9 render. Citations, cross-references, section nesting, notes, numbering, hover previews — all working. The interpreter is not a single plugin but the entire `packages/acadamark-interpreter/` package. This sentence should be removed or replaced.
+The interpreter is substantially built. Documents 1–9 render. Citations, cross-references, section nesting, notes, numbering, hover previews — all working. The interpreter is not a single plugin but the entire `packages/enscribe-interpreter/` package. This sentence should be removed or replaced.
 
 ---
 
@@ -101,10 +101,10 @@ The interpreter is substantially built. Documents 1–9 render. Citations, cross
 **Source:** `STATUS.md` §"What does NOT yet exist"
 
 The doc lists as not-yet-existing:
-- `acadamarkTagInterpret` — exists in a different architectural form
-- `rehypeAcadamarkToJats` — correctly still absent
-- `acadamarkSectionNesting` (markdown-heading version) — still absent (but the named-tag version exists)
-- `acadamarkNumbering`, `acadamarkCitations`, `acadamarkCrossRefs` — all exist under different names
+- `enscribeTagInterpret` — exists in a different architectural form
+- `rehypeEnscribeToJats` — correctly still absent
+- `enscribeSectionNesting` (markdown-heading version) — still absent (but the named-tag version exists)
+- `enscribeNumbering`, `enscribeCitations`, `enscribeCrossRefs` — all exist under different names
 
 The "Just completed" section is also outdated (describes layer1-vocabulary package setup as the most recent work; many slices have landed since then).
 
@@ -116,14 +116,14 @@ The "Just completed" section is also outdated (describes layer1-vocabulary packa
 
 `STATUS.md` § "The pipeline (canonical)" shows:
 ```js
-.use(acadamarkTagInterpret)
-.use(acadamarkCitations)
-.use(acadamarkCrossRefs)
+.use(enscribeTagInterpret)
+.use(enscribeCitations)
+.use(enscribeCrossRefs)
 .use(rehypeKatex)
 .use(rehypeShiki)
 ```
 
-None of these match actual plugin names or architecture. Same issue as DRIFT-1 / DRIFT-3. The canonical pipeline in STATUS.md should be updated to match what is actually in `packages/acadamark-interpreter/src/index.js`.
+None of these match actual plugin names or architecture. Same issue as DRIFT-1 / DRIFT-3. The canonical pipeline in STATUS.md should be updated to match what is actually in `packages/enscribe-interpreter/src/index.js`.
 
 ---
 
@@ -133,10 +133,10 @@ None of these match actual plugin names or architecture. Same issue as DRIFT-1 /
 
 The `related_plugins` section says:
 ```yaml
-- name: acadamarkCitationResolution
+- name: enscribeCitationResolution
 ```
 
-Actual name: `acadamarkCiteResolution`.
+Actual name: `enscribeCiteResolution`.
 
 **→ Status: Migrated (2026-05-23).** Filed as AUD-24 in `notes/audit-findings.md` (covers all three vocabulary entries: `cite.md`, `ref.md`, `note.md`).
 
@@ -148,10 +148,10 @@ Actual name: `acadamarkCiteResolution`.
 
 The `related_plugins` section says:
 ```yaml
-- name: acadamarkCrossReferenceResolution
+- name: enscribeCrossReferenceResolution
 ```
 
-Actual name: `acadamarkRefResolution`.
+Actual name: `enscribeRefResolution`.
 
 Also: the handler responsibilities bullet says "ref-resolution plugin (runs before hast)" — this is correct about the order, but the overall architecture description says it's a "rehype plugin" when it runs as an mdast plugin. Minor but could confuse someone reading both files.
 
@@ -163,7 +163,7 @@ Also: the handler responsibilities bullet says "ref-resolution plugin (runs befo
 
 **Source:** `packages/layer1-vocabulary/elements/note.md`
 
-Says `acadamarkNoteNumbering`. Actual name: `acadamarkNotes` (numbering and placement are merged into one plugin).
+Says `enscribeNoteNumbering`. Actual name: `enscribeNotes` (numbering and placement are merged into one plugin).
 
 **→ Status: Migrated (2026-05-23).** Filed as AUD-24 (see DRIFT-7 note).
 
@@ -173,7 +173,7 @@ Says `acadamarkNoteNumbering`. Actual name: `acadamarkNotes` (numbering and plac
 
 **Source:** `packages/layer1-vocabulary/elements/section.md`
 
-Says `acadamarkSectionNesting` — this name is actually correct! The plugin is named `acadamarkSectionNesting` (confirmed from `section-nesting.js`). No drift here, removing this entry.
+Says `enscribeSectionNesting` — this name is actually correct! The plugin is named `enscribeSectionNesting` (confirmed from `section-nesting.js`). No drift here, removing this entry.
 
 *(Self-correction during writing: verified against actual plugin name. DRIFT-10 is moot.)*
 
@@ -189,7 +189,7 @@ The note says: "If the node shape ever changes (e.g., migration to standard `.ch
 
 This is accurate and correctly filed. However, the `notes/recursive-content-spec.md` describes `node.content` being populated with `Node[]` after recursive parsing — which is the current implementation. It does NOT migrate to `.children`. The note in plugin-pipeline.md is fine but the phrasing "ever changes" slightly overstates the uncertainty.
 
-Not a material drift, but the relationship between `node.content` (which becomes `Node[]`) and `.children` (never used for acadamarkTag nodes) could be stated more clearly for plugin authors.
+Not a material drift, but the relationship between `node.content` (which becomes `Node[]`) and `.children` (never used for enscribeTag nodes) could be stated more clearly for plugin authors.
 
 **→ Status: Dropped (2026-05-23).** A phrasing observation, not an actionable finding; no code or spec impact.
 
@@ -268,7 +268,7 @@ The inline `^{...}` / `_{...}` shortcut spec is fully written in `notes/inline-t
 `notes/parser-newline-investigation.md` documents three parser bugs related to newline handling:
 1. Multi-line content in text-position inline named tags — content silently becomes plain text.
 2. Inline tags at line-start captured as flow constructs — trailing text becomes a separate paragraph.
-3. Code sigil with multi-line content in text position — produces `acadamarkTagError`.
+3. Code sigil with multi-line content in text position — produces `enscribeTagError`.
 
 These are real bugs, not deferred features. None of them appear in `notes/audit-findings.md` or `notes/known-limitations.md`. They were found during an investigation but not filed.
 

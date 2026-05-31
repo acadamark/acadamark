@@ -4,7 +4,7 @@ html_output:
   element: ul
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -30,7 +30,7 @@ jats_counterpart:
     list-type: bullet
   notes: |
     JATS uses <list list-type="bullet"> for unordered lists. The
-    list-type attribute is preserved at export. Acadamark's optional
+    list-type attribute is preserved at export. Enscribe's optional
     type kwarg (checklist, glossary, etc.) is transformed during export:
     type=checklist becomes list-type="bullet" with content-type="checklist".
 shorthand_examples:
@@ -45,7 +45,7 @@ shorthand_examples:
         <li>Third item</li>
       </ul>
     notes: |
-      Plain markdown unordered lists work without explicit acadamark tags.
+      Plain markdown unordered lists work without explicit enscribe tags.
       This is the most common authoring path. Use plain markdown when no
       attributes are needed on the list or items.
   - source: |
@@ -151,7 +151,7 @@ The classification affects rendering. CSS rules can target `ul[data-list-type="c
 
 JATS uses a single `<list>` element with a `list-type` attribute. Unordered lists become `<list list-type="bullet">`.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<ul>` | `<list list-type="bullet">` |
 | `<ul type=checklist>` | `<list list-type="bullet" content-type="checklist">` |

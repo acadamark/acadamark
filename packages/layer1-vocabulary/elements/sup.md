@@ -4,7 +4,7 @@ html_output:
   element: sup
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -61,7 +61,7 @@ The math sigil renders via KaTeX, which handles complex superscript notation.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<sup>` | `<sup>` |
 

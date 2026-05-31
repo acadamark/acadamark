@@ -1,7 +1,7 @@
 # Render Quality
 
-This document specifies what *well-rendered* acadamark HTML output looks like.
-It is the standard a rendered acadamark document is held to: which elements
+This document specifies what *well-rendered* enscribe HTML output looks like.
+It is the standard a rendered enscribe document is held to: which elements
 must wrap which content, which CSS classes must appear, and which typographic
 behaviours the bundled default theme must produce. Each requirement is written
 as a **verifiable predicate** — a statement that can be checked mechanically
@@ -22,7 +22,7 @@ of `DESIGN.md`.
 
 ### 0.1 What this document covers
 
-Acadamark's display model (`DESIGN.md`, the display-ladder section) is a ladder
+Enscribe's display model (`DESIGN.md`, the display-ladder section) is a ladder
 of three targets:
 
 1. **Layer 1 + CSS, no JavaScript.** Custom Layer 1 elements rendered directly
@@ -39,7 +39,7 @@ of three targets:
 
 **This document specifies targets 1 and 2** — the current default output of the
 interpreter: custom-element-rich Layer 1 HTML, the bundled
-`packages/acadamark-interpreter/src/assets/default.css` theme, and the
+`packages/enscribe-interpreter/src/assets/default.css` theme, and the
 conditional hover-preview assets. The class vocabulary referenced throughout is
 the vocabulary that `default.css` defines.
 
@@ -49,25 +49,25 @@ the vocabulary that `default.css` defines.
   is deferred work (`ROADMAP.md`, lift-and-lower phase). When it lands it gets
   its own predicates; the lowering table is not specified here.
 - **JATS export.** JATS output correctness is enforced by DTD validation in
-  `packages/acadamark-jats-export`, not by render predicates. This document is
+  `packages/enscribe-jats-export`, not by render predicates. This document is
   about HTML rendering only.
 - **Theme variation.** Predicates here are stated against the *bundled default
   theme*. Alternate themes (a roadmap release goal) may restyle freely; they
   are conformant if they satisfy the same *structural* predicates (§1.2) and
   provide *some* rule for each semantic class, not necessarily the same values.
-- **External-DSL rendered fidelity.** For `<mermaid>` and `<abc>`, acadamark
+- **External-DSL rendered fidelity.** For `<mermaid>` and `<abc>`, enscribe
   guarantees the *markup contract* (§9) in every mode; the rendered diagram or
-  notation is produced by the external library, not by acadamark. In live mode
-  acadamark may emit that library (opt-in); in static mode it may inline the
+  notation is produced by the external library, not by enscribe. In live mode
+  enscribe may emit that library (opt-in); in static mode it may inline the
   library's SVG output (opt-in, abc only) — but the rendering itself is always
-  the library's, so its fidelity is out of acadamark's spec.
+  the library's, so its fidelity is out of enscribe's spec.
 
 ### 0.3 Relationship to fixtures and to bug-filing
 
 The demonstrative fixtures (the article-shaped and book-shaped documents added
 alongside this spec) are authored to exercise these predicates against
 believable documents. They are rendered to HTML by
-`packages/acadamark-interpreter/test/render-fixtures.js` and their structural
+`packages/enscribe-interpreter/test/render-fixtures.js` and their structural
 output is pinned by snapshot in `test/integration.test.js`.
 
 This document describes the **intended** rendering. The pinned snapshots
@@ -128,7 +128,7 @@ accounted for as one of three dispositions.
   and passes through as the same HTML tag. Its rendering is the browser default
   plus any `data-*` attribute preserved for theme targeting. One blanket
   predicate covers the whole set (§5.3, §6.2); no per-element predicate is
-  written, because there is nothing acadamark-specific to verify beyond
+  written, because there is nothing enscribe-specific to verify beyond
   pass-through.
 - **No-output** — the element is consumed by the pipeline and produces no
   rendered body output by design. The predicate is precisely that it emits
@@ -225,19 +225,19 @@ page; section titles form a visibly descending heading hierarchy.
   (`border-bottom`) and `article-back` a top separation rule (`border-top`), so
   the three regions are visually demarcated.
 - **`RQ-DOC-S2`** — `article-title` renders `display: block`, sans-serif, at the
-  largest heading size (`--acm-h1-size`), `font-weight: 700`; `article-subtitle`
-  renders block, sans, at `--acm-h2-size`, lighter weight, in the secondary
+  largest heading size (`--enscribe-h1-size`), `font-weight: 700`; `article-subtitle`
+  renders block, sans, at `--enscribe-h2-size`, lighter weight, in the secondary
   text colour.
 - **`RQ-DOC-S3`** — section titles render `display: block`, sans, `font-weight:
-  700`, at descending sizes (`section-title` = `--acm-h2-size`,
-  `sub-section-title` = `--acm-h3-size`, `sub-sub-section-title` =
-  `--acm-h4-size`), forming a visible hierarchy.
+  700`, at descending sizes (`section-title` = `--enscribe-h2-size`,
+  `sub-section-title` = `--enscribe-h3-size`, `sub-sub-section-title` =
+  `--enscribe-h4-size`), forming a visible hierarchy.
 - **`RQ-DOC-S4`** — `<meta data-document-type>` is `display: contents`, so its
   children flow as direct descendants of `<article-front>` for layout.
 
 **Out of spec.** Render-mode lowering of titles to `<h1>`/`<h2>` (§0.2);
 visual treatment keyed on `data-sec-type` (theme territory); depth-4+ headings
-(`<h4>`/`<h5>`/`<h6>` pass-through), which carry no acadamark-specific
+(`<h4>`/`<h5>`/`<h6>` pass-through), which carry no enscribe-specific
 rendering.
 
 ---
@@ -438,10 +438,10 @@ contract.
 ## 9. External DSLs — `RQ-DSL`
 
 **What it is.** `<mermaid>` and `<abc>` are *external* DSLs (`DESIGN.md`,
-included-vs-external distinction): acadamark never parses the DSL's semantics
+included-vs-external distinction): enscribe never parses the DSL's semantics
 into the core. The handler always emits the pass-through **markup contract** — a
 wrapper preserving the source verbatim, carrying `class` and
-`data-acadamark-dsl`. How that contract reaches a rendered diagram or notation is
+`data-enscribe-dsl`. How that contract reaches a rendered diagram or notation is
 a per-DSL **mode** the publisher selects (`DESIGN.md`, registry-based
 external-DSL modes); the default is **skip**:
 
@@ -462,10 +462,10 @@ the `RQ-DSL-LIVE-*` prose rather than in a separate MODE token.
 **Expected markup (the contract, mode-independent):**
 
 ```html
-<pre class="mermaid" data-acadamark-dsl="mermaid">graph LR
+<pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
   A --> B</pre>
 
-<pre class="abc" data-acadamark-dsl="abc">X:1
+<pre class="abc" data-enscribe-dsl="abc">X:1
 T:Tune
 …</pre>
 ```
@@ -473,10 +473,10 @@ T:Tune
 **Contract predicates (mode-independent):**
 
 - **`RQ-DSL-M1`** — a `mermaid` block renders `<pre class="mermaid"
-  data-acadamark-dsl="mermaid">` with the Mermaid source preserved verbatim as
+  data-enscribe-dsl="mermaid">` with the Mermaid source preserved verbatim as
   text content.
 - **`RQ-DSL-M2`** — an `abc` block renders `<pre class="abc"
-  data-acadamark-dsl="abc">` with the ABC source preserved verbatim. The wrapper
+  data-enscribe-dsl="abc">` with the ABC source preserved verbatim. The wrapper
   is `<pre>` (matching Mermaid): the HTML formatter leaves `<pre>` content
   untouched, so the line-oriented ABC source survives serialization without
   reflow or indentation.
@@ -508,8 +508,8 @@ live-only (its only browserless render path needs a headless browser);
 requesting `static` for mermaid raises the fail-explicitly build error below.
 
 - **`RQ-DSL-STATIC-M1`** — in abc-static mode each `abc` contract element is
-  **replaced** (not wrapped) by an inline `<svg class="acadamark-abc-rendered">`
-  of the rendered notation: no `<pre class="abc">` / `data-acadamark-dsl="abc"`
+  **replaced** (not wrapped) by an inline `<svg class="enscribe-abc-rendered">`
+  of the rendered notation: no `<pre class="abc">` / `data-enscribe-dsl="abc"`
   wrapper survives, and no client-side abcjs library or init `<script>` is
   emitted (the render already happened at build time).
 - **`RQ-DSL-STATIC-M2`** — an `id` on the `abc` element is carried onto the
@@ -533,11 +533,11 @@ requesting `static` for mermaid raises the fail-explicitly build error below.
   the default theme.
 
 **Out of spec.** Rendered diagram/notation fidelity — that is the external
-library's job, not acadamark's. Skip (the default) emits only the contract; live
+library's job, not enscribe's. Skip (the default) emits only the contract; live
 and static are opt-in and emit assets / inline SVG per the `RQ-DSL-LIVE-*` /
 `RQ-DSL-STATIC-*` predicates above (`DESIGN.md`, registry-based external-DSL
 modes). In skip mode a consumer wires Mermaid (scans `class="mermaid"`) and
-abcjs (keys on `data-acadamark-dsl="abc"`) themselves.
+abcjs (keys on `data-enscribe-dsl="abc"`) themselves.
 
 ---
 
@@ -769,7 +769,7 @@ into the back-matter region.
 
 **Stylesheet predicates:**
 
-- **`RQ-BIB-S1`** — `bibliography h2` renders sans, at `--acm-h3-size`,
+- **`RQ-BIB-S1`** — `bibliography h2` renders sans, at `--enscribe-h3-size`,
   `font-weight: 700`; `.csl-bib-body` renders at small size; `.csl-entry`
   renders with a hanging indent and inter-entry spacing.
 
@@ -849,7 +849,7 @@ work and is out of scope here.
 
 - **`RQ-BOOK-S1`** — the book structural containers and titles render with
   book-appropriate prominence: `book-title` as the most prominent heading on the
-  page (block, at least `--acm-h1-size`), `book-part-title` as a chapter-level
+  page (block, at least `--enscribe-h1-size`), `book-part-title` as a chapter-level
   heading (block, prominent, clearly above section-title scale), and
   `book-front`/`book-body`/`book-back` as block regions. *(The default theme's
   article rules do not currently extend to the book elements; book-appropriate
@@ -887,5 +887,5 @@ the target; the backlog tracks the distance to it.
   resolution, note placement, and bibliography assembly run.
 - `packages/layer1-vocabulary/SPEC.md` and `elements/` — the vocabulary each
   predicate renders.
-- `packages/acadamark-interpreter/src/assets/default.css` — the class vocabulary
+- `packages/enscribe-interpreter/src/assets/default.css` — the class vocabulary
   the `S` predicates are checked against.

@@ -4,7 +4,7 @@ html_output:
   element: code
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -19,14 +19,14 @@ content:
   type: opaque
   becomes: text-content
   notes: |
-    Code content is preserved verbatim. No markdown idioms or acadamark
+    Code content is preserved verbatim. No markdown idioms or enscribe
     constructs are interpreted inside <code> elements.
 content_handler: code
 jats_counterpart:
   element: monospace
   notes: |
     JATS uses <monospace> for inline code-like content. For block-level
-    code, JATS uses <code> wrapped in <preformat>. Acadamark's inline
+    code, JATS uses <code> wrapped in <preformat>. Enscribe's inline
     <code> maps to JATS <monospace>.
 shorthand_examples:
   - source: 'The function is `factorial`.'
@@ -37,7 +37,7 @@ shorthand_examples:
   - source: 'Use `<`code`>` for inline code.'
     layer1_html: '<p>Use <code>code</code> for inline code.</p>'
     notes: |
-      The acadamark sigil form. Equivalent to plain markdown backticks
+      The enscribe sigil form. Equivalent to plain markdown backticks
       but supports attributes.
   - source: '<code language=python | def hello(): print("hi")>'
     layer1_html: '<code class="language-python">def hello(): print("hi")</code>'
@@ -75,13 +75,13 @@ The function is `factorial`.
 
 Single backticks produce `<code>` via remark.
 
-**Acadamark sigil form.**
+**Enscribe sigil form.**
 
 ```
 The function is <`factorial`>.
 ```
 
-Equivalent to backticks but uses acadamark's sigil syntax. Useful when you need attributes.
+Equivalent to backticks but uses enscribe's sigil syntax. Useful when you need attributes.
 
 **Explicit form with attributes.**
 
@@ -93,7 +93,7 @@ Used when language identification (for syntax highlighting) or other attributes 
 
 ## Content
 
-Code content is opaque — preserved verbatim by the parser (contentHandler: "code"), with no markdown or acadamark interpretation. This means:
+Code content is opaque — preserved verbatim by the parser (contentHandler: "code"), with no markdown or enscribe interpretation. This means:
 
 - Special characters (`<`, `>`, `*`, etc.) appear literally.
 - No nested constructs are recognized.
@@ -107,7 +107,7 @@ For block-level code with the same opacity, use the code sigil (`` <`code`> `` f
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<code>` (inline) | `<monospace>` |
 | `<code>` (block, via sigil) | `<preformat><code>...</code></preformat>` |

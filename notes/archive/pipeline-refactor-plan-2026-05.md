@@ -1,7 +1,7 @@
 # Pipeline refactor plan
 
 **Status:** Plan. Not yet implemented. This document is the design input for a
-multi-slice refactor of the acadamark interpreter pipeline. It is the product of
+multi-slice refactor of the enscribe interpreter pipeline. It is the product of
 the 2026-Q2 architecture audit (see `notes/audit-2026-Q2/`).
 
 **Revision note:** This plan was revised after slice R1's Phase 0 investigation.
@@ -33,11 +33,11 @@ problem recurs at several levels:
   shaping) and, after it, **four mutually independent strands** (config,
   cross-references, citations, notes). The strands are interleaved in run
   order for no reason the dependency graph can see.
-- `acadamarkLibraryLoad` is registered as a pipeline plugin — a tree pass —
-  but it mutates no tree. It builds an index (`file.data.acadamarkCitations`).
+- `enscribeLibraryLoad` is registered as a pipeline plugin — a tree pass —
+  but it mutates no tree. It builds an index (`file.data.enscribeCitations`).
   It is an index build masquerading as a transformation.
 - Cross-reference handling currently uses several independent tree walks.
-  The same non-standard traversal of `acadamarkTag.content` arrays is
+  The same non-standard traversal of `enscribeTag.content` arrays is
   hand-rolled in at least three plugins, because `unist-util-visit` only
   follows `.children`.
 - **Numbering is fragmented.** `numbering.js` assigns numbers to equations,
@@ -262,7 +262,7 @@ must be empty.
 `ref-resolution.js`'s tree-walking onto it.
 
 - Write the shared discovery walk: one traversal that handles both
-  `acadamarkTag.content` arrays and mdast `.children`, recording nodes into the
+  `enscribeTag.content` arrays and mdast `.children`, recording nodes into the
   registry by type. This consolidates the hand-rolled walkers.
 - `numbering.js`'s registration half moves onto the shared walk. After R1 it is
   already a pure consumer; after R2 it no longer walks the tree itself — it
@@ -333,7 +333,7 @@ of section 3.
 - `notes/interpreter.md` — current interpreter architecture (pre-refactor).
 - `notes/pipeline.md` — current full data flow (pre-refactor).
 - `notes/audit-2026-Q2/` — the audit that produced this plan.
-- `archive/audit-findings-2026-05.md` — the AUD findings referenced in section 5 (archived 2026-05-23; open items are now in `notes/acadamark-backlog-roadmap.md`).
+- `archive/audit-findings-2026-05.md` — the AUD findings referenced in section 5 (archived 2026-05-23; open items are now in `notes/enscribe-backlog-roadmap.md`).
 - `notes/at-sigil-reference-proposal.md` — the cross-reference sigil redesign
   that becomes cheaper after this refactor.
 - `lib/registry.js` — the registry; the `assign()` split and `numberRegistry`

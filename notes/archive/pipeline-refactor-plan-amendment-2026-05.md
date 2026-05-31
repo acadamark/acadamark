@@ -10,7 +10,7 @@ descriptions in section 6 of `pipeline-refactor-plan.md`. The principle
 The cross-reference strand cannot be migrated as one unit in R2, because it is
 cut in half by the notes strand.
 
-The current `acadamarkNotes` plugin (step 6 of the pipeline) does **placement
+The current `enscribeNotes` plugin (step 6 of the pipeline) does **placement
 by extraction**: it splices `<note>` nodes out of the tree mid-pipeline and
 stashes their content in a `pendingNotes` array. The content — including any
 `<ref>` authored inside a note — is off the tree from step 6 until `fillNotes`
@@ -47,9 +47,9 @@ types. `ref-resolution.js` is **not** touched in R2.
 
 - Write `src/lib/discover.js`: a shared, read-only, document-order traversal
   with a visitor-map interface (`Map<tagname, (node) => void>`). It descends
-  into both acadamarkTag `.content` arrays (guarded by `!node.isOpaqueContent`)
+  into both enscribeTag `.content` arrays (guarded by `!node.isOpaqueContent`)
   and mdast `.children`. It does not write to the registry — visitors do.
-- Rewrite `acadamarkNumbering` to use `discover()`; delete `walkAndCollect`.
+- Rewrite `enscribeNumbering` to use `discover()`; delete `walkAndCollect`.
   Numbering registers `$$`/`figure`/`table` via visitors, exactly as before,
   in the same document order.
 - Add section registration (AUD-09, sections only): the discovery walk visits
@@ -58,7 +58,7 @@ types. `ref-resolution.js` is **not** touched in R2.
   the registry. Visible section numbering ("Section 2.3") is out of scope and
   belongs with the FLAGGED-2 cross-reference redesign.
 - **AUD-09 code blocks: deferred.** Code blocks have a representation question
-  (a code block is only an `acadamarkTag` reachable by `.content` descent when
+  (a code block is only an `enscribeTag` reachable by `.content` descent when
   written in the shorthand-wrapped form with a colon-id). That deserves its own
   small investigation. R2 handles AUD-09 for sections only; a note is filed for
   code blocks.
@@ -81,7 +81,7 @@ It is: re-architect the notes plugin so it implements the corrected model —
 discover notes in place, defer placement to the end of the pipeline — and only
 then migrate notes and ref-resolution onto the shared discovery walk.
 
-- Re-architect `acadamarkNotes` so it no longer extracts `<note>` nodes
+- Re-architect `enscribeNotes` so it no longer extracts `<note>` nodes
   mid-pipeline. Notes stay in the tree at their authored positions through
   discovery. Placement into the display structure (footnote list / sidebar /
   inline per display mode) is deferred to a late pipeline stage. This removes

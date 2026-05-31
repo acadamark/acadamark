@@ -4,7 +4,7 @@ html_output:
   element: hr
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -27,7 +27,7 @@ jats_counterpart:
   notes: |
     JATS has no direct equivalent. The closest is using <break-quote-content>
     for similar visual effects, or simply relying on document structure.
-    For acadamark-to-JATS export, hr elements are typically replaced with
+    For enscribe-to-JATS export, hr elements are typically replaced with
     a structural break (an empty paragraph or visual marker) since JATS
     prefers explicit semantic structure over thematic breaks.
 shorthand_examples:
@@ -86,12 +86,12 @@ The classification mostly affects styling. CSS rules can target `hr[data-hr-type
 
 ## JATS mapping
 
-JATS has no direct equivalent of `<hr>`. The acadamark-to-JATS exporter handles this case by:
+JATS has no direct equivalent of `<hr>`. The enscribe-to-JATS exporter handles this case by:
 
 - Dropping the `<hr>` element if the type is `decorative` (purely visual; not semantically meaningful).
 - Emitting an empty paragraph with a marker class for `scene-break` or `section-break` (preserving the structural intent).
 
-The exporter's behavior is documented in the JATS export plugin; the choice is one of several places acadamark Layer 1 doesn't fully round-trip to JATS without information loss.
+The exporter's behavior is documented in the JATS export plugin; the choice is one of several places enscribe Layer 1 doesn't fully round-trip to JATS without information loss.
 
 ## Authoring patterns
 

@@ -4,7 +4,7 @@ html_output:
   element: li
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -168,7 +168,7 @@ A list item can also contain nested lists:
 
 Direct mapping to JATS `<list-item>`. The `value` attribute is preserved.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<li>` | `<list-item>` |
 | `value` attribute | `value` attribute (on `<list-item>`) |

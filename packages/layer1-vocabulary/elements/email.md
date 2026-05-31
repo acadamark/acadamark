@@ -4,7 +4,7 @@ html_output:
   element: email
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -64,7 +64,7 @@ A separate `+corresponding` boolean kwarg on `<author>` marks an author as the c
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<email>jane@example.org</email>` | `<email>jane@example.org</email>` inside `<contrib>` |
 

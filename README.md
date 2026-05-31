@@ -1,4 +1,4 @@
-# Acadamark
+# Enscribe
 
 An academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top — combining the simplicity of markdown with the expressiveness needed for scholarly work.
 
@@ -18,19 +18,19 @@ If you write in **Quarto, RMarkdown, or Bookdown**, you started with markdown's 
 
 If you write in **Word**, everything is visible and nothing is structured — equation editors fight you, numbering renumbers itself wrong, and the document has no clean path into the scholarly publishing pipeline at all.
 
-All three share one assumption: the rich, finished document is something you *compile to* or *export to*. But the renderer for rich, structured documents already exists, runs on every device, and needs nothing installed — the web browser. HTML is a mature, semantic document format. What's missing isn't the renderer. It's a way to *write* HTML that doesn't make you quit. That's what acadamark is.
+All three share one assumption: the rich, finished document is something you *compile to* or *export to*. But the renderer for rich, structured documents already exists, runs on every device, and needs nothing installed — the web browser. HTML is a mature, semantic document format. What's missing isn't the renderer. It's a way to *write* HTML that doesn't make you quit. That's what enscribe is.
 
 ## The idea in one paragraph
 
-Markdown's success comes from a simple bargain: a small set of typing conventions that map cleanly onto HTML. For academic writing, that bargain breaks down — citations, cross-references, figure numbering, theorems, and structured sections all require extensions, and every project that has tried to add them (RMarkdown, Bookdown, Quarto, Pandoc filters) has invented its own incompatible flavor. Meanwhile, HTML+CSS+JS is already a complete, universally supported typesetting system. Acadamark proposes that the right move isn't another markdown extension — it's a rigorous set of HTML conventions for academic content, plus a uniform shorthand for authoring them that's easier on the fingers than raw HTML.
+Markdown's success comes from a simple bargain: a small set of typing conventions that map cleanly onto HTML. For academic writing, that bargain breaks down — citations, cross-references, figure numbering, theorems, and structured sections all require extensions, and every project that has tried to add them (RMarkdown, Bookdown, Quarto, Pandoc filters) has invented its own incompatible flavor. Meanwhile, HTML+CSS+JS is already a complete, universally supported typesetting system. Enscribe proposes that the right move isn't another markdown extension — it's a rigorous set of HTML conventions for academic content, plus a uniform shorthand for authoring them that's easier on the fingers than raw HTML.
 
 ## Why HTML?
 
-HTML+CSS+JS already does most of what academic typesetting needs. It's universally rendered (every browser, every platform). It's exportable to nearly anything via existing tools (Pandoc going *outward* from HTML is mature and reliable). It composes — every JS library, every CSS framework, every web component slots in. The only things HTML lacks are (1) a standard vocabulary for academic semantics like citations and cross-references, and (2) an authoring syntax that doesn't make humans want to quit. Acadamark adds both.
+HTML+CSS+JS already does most of what academic typesetting needs. It's universally rendered (every browser, every platform). It's exportable to nearly anything via existing tools (Pandoc going *outward* from HTML is mature and reliable). It composes — every JS library, every CSS framework, every web component slots in. The only things HTML lacks are (1) a standard vocabulary for academic semantics like citations and cross-references, and (2) an authoring syntax that doesn't make humans want to quit. Enscribe adds both.
 
-## What acadamark is, in two layers
+## What enscribe is, in two layers
 
-**Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, captioned figures, citations, cross-references, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). This layer is independently valuable — you can author it directly if you want, and any tool that produces acadamark-conformant HTML benefits from the rest of the ecosystem.
+**Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, captioned figures, citations, cross-references, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
 
 **Layer 2 — Authoring shorthand.** A compact syntax that translates losslessly into Layer 1 HTML. It comes in two registers:
 
@@ -61,7 +61,7 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 ## Status
 
-Acadamark is implemented. The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML.
+Enscribe is implemented. The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML.
 
 The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for a current snapshot of what works and what doesn't, [`DESIGN.md`](DESIGN.md) for the design rationale, [`BUILD.md`](BUILD.md) for the implementation plan, and [`notes/specs/interpreter.md`](notes/specs/interpreter.md) and [`notes/specs/pipeline.md`](notes/specs/pipeline.md) for the architecture.
 
@@ -71,12 +71,12 @@ The project has accumulated enough documentation that knowing where to start mat
 
 ## Project goals
 
-Acadamark's purpose, in four parts:
+Enscribe's purpose, in four parts:
 
 1. **Specify** a complete vocabulary of HTML conventions for academic publishing (Layer 1).
 2. **Author** that vocabulary efficiently via a uniform shorthand (Layer 2).
 3. **Build** the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.
-4. **Demonstrate** that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from acadamark source through HTML to PDF and other formats using only off-the-shelf tools downstream.
+4. **Demonstrate** that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from enscribe source through HTML to PDF and other formats using only off-the-shelf tools downstream.
 
 Goals 1 through 3 are substantially achieved; goal 4 is demonstrated for HTML output, with JATS export and other downstream targets still ahead. See [`STATUS.md`](STATUS.md) for detail.
 

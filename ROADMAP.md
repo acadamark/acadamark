@@ -1,4 +1,4 @@
-# acadamark — roadmap
+# enscribe — roadmap
 
 The roadmap is the project's **linear narrative**. It names the phases the
 project moves through, the items inside each phase in build order, and
@@ -22,17 +22,17 @@ agreeing, see the coherence check in `CONTRIBUTING.md`.
 The alpha release demonstrably includes five things:
 
 1. The **Layer 1 custom-HTML elements** that render a rich document.
-2. **Canonical acadamark shorthand** authoring that form.
+2. **Canonical enscribe shorthand** authoring that form.
 3. **Further shorthands (sigils) and markdown idioms** reducing to it.
 4. **JATS ⇔ Layer 1** conversion.
-5. **Acadamark ⇔ Layer 1** conversion.
+5. **Enscribe ⇔ Layer 1** conversion.
 
 Each of the five lines above is a literal acceptance criterion. The
 phases that follow are organized so that finishing them satisfies the
 five-point definition; the final phase (Alpha integration check) is the
 moment that compact is verified end-to-end.
 
-Terminology used here (Layer 1, canonical acadamark, sigils, markdown
+Terminology used here (Layer 1, canonical enscribe, sigils, markdown
 idioms, strict mode) is defined in `DESIGN.md` §"Layered model and
 terminology."
 
@@ -140,7 +140,7 @@ scoped-number helper shared by the render and resolver paths (HTML-only — the
 JATS exporter reads the unchanged bare number, so its output is byte-identical).
 A follow-on **JATS slice** then completed that correction on the JATS export
 side: the JATS `<label>` emitter derives its number through the same shared
-helper (re-exported from `acadamark-interpreter`), so a book's `<label>` and the
+helper (re-exported from `enscribe-interpreter`), so a book's `<label>` and the
 `<xref>` resolving to it agree — `RQ-BOOK-M4` now holds across both the HTML and
 JATS targets, with the book JATS fixtures gaining the prefix and articles
 holding zero-diff. **Slice C** then closed the arc's last deviation — the
@@ -159,19 +159,22 @@ document, or the small believable set the spec slice started (see
 The active release-blocking arc is now **Phase 14 packaging** (the
 client-side rendering library). **Slice 1 (library packaging)** and **Slice 2
 (in-browser editor demo)** are done — the `src/browser.js`
-`render` / `renderInto` / `executeAssets` façade, the tsup `acadamark.browser`
+`render` / `renderInto` / `executeAssets` façade, the tsup `enscribe.browser`
 bundle, and a `demo/` page pairing a CodeMirror editor with live in-browser
 rendering. Slice 2 also fixed a Slice 1 defect that left the IIFE bundle
 unable to load in a browser, and a small interstitial **Slice 1.5** then closed
 that defect's whole class (symmetric node-builtin aliasing + a bundle-load smoke
 test). **Slice 3a (docs-site framework)** is also done — a `docs-site/` static
-build (`npm run docs:build`) that renders `.acm` sources into a multi-page site
+build (`npm run docs:build`) that renders `.emd` sources into a multi-page site
 with a Quickstart playground, with placeholder content. (It diverges from the
 Phase 0 plan per the slice's locked inputs: the site is `docs-site/` at the repo
-root rather than `packages/demo-site/`, and the **project rename is deferred** to
-a separate later decision rather than forced here.) The next slice is 3b —
-translating the README and DESIGN into canonical acadamark as articles. Nothing
-else is in flight.
+root rather than `packages/demo-site/`, and the **project rename** was deferred to
+a separate later decision rather than forced here.) That **project rename has
+since landed as its own slice** — the project is now *enscribe*, the source
+extension is `.emd` (`.enscribe` accepted as an alias), with package names, the
+CSS theme namespace, and GitHub URLs updated to match (see the `STATUS.md`
+milestone). The next slice is 3b — translating the README and DESIGN into
+canonical enscribe as articles. Nothing else is in flight.
 
 ---
 
@@ -183,24 +186,24 @@ line 4, the payoff for vocabulary being JATS-aligned from the start
 lossy direction and is post-alpha.
 
 This phase has its own **Phase 0** because JATS export is a large arc
-and the package boundary (`acadamark-jats-export`, not yet present)
-needs siting against the inward-pointing `acadamark-core`.
+and the package boundary (`enscribe-jats-export`, not yet present)
+needs siting against the inward-pointing `enscribe-core`.
 
 **Items, in order:**
 
 - **JATS-export Phase 0** *(done `f6bb311`, 2026-05-29)*.
   `notes/phase5-jats-export-findings.md`: package siting (Option A —
-  new `acadamark-jats-export` package); attribute-mapper lift
+  new `enscribe-jats-export` package); attribute-mapper lift
   recommendation (do it in slice 5a — JATS export is the second
   consumer the deferral waited for); JATS section-model decision
   (Option I — map named sections to `<sec>` per JATS convention);
   vocabulary mapping inventory by JATS section; SPLIT-into-4-slices
   recommendation (5a → 5b → 5c → 5d).
-- **Build JATS export (`rehypeAcadamarkToJats`)** *(formerly DF-18)*.
+- **Build JATS export (`rehypeEnscribeToJats`)** *(formerly DF-18)*.
   Per Phase 0 SPLIT recommendation:
   - **Slice 5a — package + lift + minimal article export**
-    *(done 2026-05-29)*. New `acadamark-jats-export` package;
-    `mapAttributes` lift to `acadamark-core` (deferred lift from
+    *(done 2026-05-29)*. New `enscribe-jats-export` package;
+    `mapAttributes` lift to `enscribe-core` (deferred lift from
     `6ae6844` resolved); vocab `maps_to` migrated to target-keyed
     form; article scaffolding + paragraphs + inline text export.
     Existing snapshots zero-diff (HTML behavior preserved).
@@ -219,7 +222,7 @@ needs siting against the inward-pointing `acadamark-core`.
     abstract limitation from 5a fixed (synthetic-paragraph
     pre-pass `groupInlineRuns` wraps loose inline runs into
     paragraphs before block dispatch). New fixture doc-40.
-    `fillNumbering` added to `acadamark-interpreter`'s exports
+    `fillNumbering` added to `enscribe-interpreter`'s exports
     so the JATS test pipeline can replicate numbering.
   - **Slice 5c — cross-references + footnotes + BITS book + table
     rows** *(done 2026-05-28)*. Cross-references → `<xref
@@ -249,7 +252,7 @@ needs siting against the inward-pointing `acadamark-core`.
     in the JATS path). Two new fixtures: doc-41 (article with
     cross-refs/footnotes/tables) and doc-42 (BITS book with
     edited-volume). `parseCsv` / `parseTsv` and
-    `acadamarkNotePlacement` added to `acadamark-interpreter`'s
+    `enscribeNotePlacement` added to `enscribe-interpreter`'s
     exports so the JATS test pipeline can reuse the parsers and
     note-placement plugin. Internal-marker inline-shape fix:
     `__ref-marker` / `__cite-marker` / `__note-marker` /
@@ -263,15 +266,15 @@ needs siting against the inward-pointing `acadamark-core`.
     `<volume>`/`<issue>`/`<fpage>`/`<lpage>`/`<pub-id>`/
     `<publisher-name>`/`<publisher-loc>`/`<ext-link>`). CSL-JSON
     from citation-js is the structured intermediate (already in
-    `file.data.acadamarkCitations`); slice 5d threads it through
+    `file.data.enscribeCitations`); slice 5d threads it through
     `__bibliography` markers so the JATS emitter consumes it
     directly without re-parsing. External DSLs (`<mermaid>` /
-    `<abc>`) → `<fig specific-use="acadamark-dsl-{type}">` with
+    `<abc>`) → `<fig specific-use="enscribe-dsl-{type}">` with
     `<alt-text>` + `<preformat content-type="{type}-source">`
     preserving the verbatim DSL source. DTD bundling: JATS 1.3
     Archiving + BITS 2.0 + W3C ISO/MathML dependencies fetched
     via `scripts/fetch-dtds.mjs` and bundled in
-    `packages/acadamark-jats-export/dtd/` (~3.6 MB, 129 files);
+    `packages/enscribe-jats-export/dtd/` (~3.6 MB, 129 files);
     test runner validates fixtures with `xmllint --noout
     --valid --nonet` when xmllint is on PATH (skips with log
     message otherwise). BITS doctype URL bug fixed (was
@@ -295,7 +298,7 @@ the acceptance criteria.
 
 - **Five-point verification fixtures.** One acceptance fixture per
   line of the alpha definition: Layer 1 elements render; canonical
-  acadamark authors them; sigils and markdown idioms reduce to them;
+  enscribe authors them; sigils and markdown idioms reduce to them;
   JATS export round-trips; Layer 2 ⇔ Layer 1 round-trips losslessly
   for canonical-form fixtures.
 - **Resolve any gaps surfaced by the five-point verification.** Filed
@@ -314,16 +317,16 @@ corpora. **Alpha milestone reached.**
 
 ## Phase 7 — Lift-and-lower completeness *(post-alpha)*
 
-The lift gate at `packages/acadamark-interpreter/src/plugins/normalize-to-canonical.js`
+The lift gate at `packages/enscribe-interpreter/src/plugins/normalize-to-canonical.js`
 is the single home for normalizing all authored forms to canonical.
 Alpha covered the authoring direction; this phase fills in the lowering
 direction (Layer 1 → canonical-named or canonical-sigil) for
-round-trip and authoring tooling that emits acadamark from Layer 1.
+round-trip and authoring tooling that emits enscribe from Layer 1.
 
 **Items:**
 
 - **Lowering pass implementation.** The reverse direction of the
-  tagname↔sigil cipher, plus the Layer 1 → canonical-acadamark
+  tagname↔sigil cipher, plus the Layer 1 → canonical-enscribe
   rendering.
 - **Strict mode** *(formerly DF-2)*. The configuration switch in
   which the normalization pass has nothing to do; markdown idioms
@@ -374,7 +377,7 @@ the UI code sits and how themes are structured before the build.
 
 ## Phase 9 — Multi-file authoring *(post-alpha)*
 
-A real architectural extension: `acadamark.yml` + `<include>`,
+A real architectural extension: `enscribe.yml` + `<include>`,
 project-wide registries.
 
 **Items:**
@@ -467,7 +470,7 @@ existing scholarly corpus, not a round-trip guarantee.
 First-class work now, not a someday-phase. It has substantial design
 questions to settle — which JATS features map to Layer 1, where the
 lossy boundary sits, how the importer handles JATS content with no
-acadamark counterpart — so it will get its own **Phase 0** before the
+enscribe counterpart — so it will get its own **Phase 0** before the
 build begins.
 
 ---
@@ -484,7 +487,7 @@ both are release-blocking.
   in-browser editor demo; see STATUS.md's Phase 14 milestones)*. Layer 1
   rendering packaged for browser use — a document rendered in-browser with no
   Node build step.
-  The `acadamark-core` extraction already drew the build/run-time seam
+  The `enscribe-core` extraction already drew the build/run-time seam
   as a browser-safety boundary for exactly this. The library carries
   **no JATS capability** — JATS export and import stay Node-side. An
   in-browser editor/viewer (CodeMirror source left, rendered output
@@ -492,7 +495,7 @@ both are release-blocking.
   and documented in the library's README; it is deliberately **not** a
   standalone roadmap phase. Slice 1 delivered the packaging spine: the
   `src/browser.js` `render` / `renderInto` façade, the tsup
-  `acadamark.browser` bundle (ESM + IIFE), the external-by-default
+  `enscribe.browser` bundle (ESM + IIFE), the external-by-default
   `embedResources` flip, and the browser-safety work (lazy-ified `fs`
   reads, the `registry.js` → `node-assets.js` split, node-builtin
   stubbing). Slice 2 added the in-browser editor demo (`demo/` — CodeMirror
@@ -507,7 +510,7 @@ both are release-blocking.
   `removeNodeProtocol: false`), so either import form is safe, and a
   `bundle-load` smoke test loads the IIFE in jsdom on every run as the standing
   guard. Slice 3a then built the **docs-site framework** (`docs-site/` at the
-  repo root — a static `npm run docs:build` that renders `.acm` sources into a
+  repo root — a static `npm run docs:build` that renders `.emd` sources into a
   multi-page site, with a Quickstart playground and placeholder content; it
   diverges from the Phase 0 `packages/demo-site/` siting and **defers the
   rename**, both per its locked inputs). The remaining slices (docs-site content

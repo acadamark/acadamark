@@ -5,11 +5,11 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <data> is a custom element. It does not produce inline
+    Enscribe's <data> is a custom element. It does not produce inline
     output; it holds resources that other parts of the document reference.
     The element is parsed and processed for its contents but does not
     render visibly in the document body.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -24,7 +24,7 @@ content:
     - element: bib-entry
       required: false
       multiple: true
-      notes: 'Structured bibliography entries authored in acadamark form.'
+      notes: 'Structured bibliography entries authored in enscribe form.'
     - element: embedded-image
       required: false
       multiple: true
@@ -37,7 +37,7 @@ content_handler: default
 jats_counterpart:
   element: 'no direct equivalent'
   notes: |
-    JATS doesn't have a single resource-block element. Acadamark's <data>
+    JATS doesn't have a single resource-block element. Enscribe's <data>
     is decomposed at JATS export: <library> entries are merged into
     <ref-list>; <bib-entry> entries become <ref> elements; embedded image
     data becomes <graphic> with embedded data; etc. The <data> wrapper
@@ -88,12 +88,12 @@ shorthand_examples:
         </bib-entry>
       </data>
     notes: |
-      Inline structured bibliography entry. Acadamark-native form.
+      Inline structured bibliography entry. Enscribe-native form.
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkLibraryParsing
+  - name: enscribeLibraryParsing
     purpose: 'Phase 1 discovery — parses <library> blocks into the citation registry. See notes/specs/pipeline.md for the full pipeline.'
-  - name: acadamarkResourceCollection
+  - name: enscribeResourceCollection
     purpose: 'Phase 1 discovery — collects <data> blocks regardless of source position. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
@@ -115,7 +115,7 @@ The placement convention is back-of-document, because reading shouldn't be inter
 Resources that are **referenced by other elements** but don't render inline:
 
 - **Inline bibliography blocks**: `<library format=bibtex>...</library>` to paste BibTeX content from a reference manager.
-- **Structured bibliography entries**: `<bib-entry>` for acadamark-native bibliography records.
+- **Structured bibliography entries**: `<bib-entry>` for enscribe-native bibliography records.
 - **Hardcoded image data** (future): base64-encoded image data that figures reference by id.
 - **Datasets** (future): tabular data that tables or figures reference.
 - **Other resource types** (future): anything that fits the "reference, not display" pattern.

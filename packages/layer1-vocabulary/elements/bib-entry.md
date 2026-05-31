@@ -5,11 +5,11 @@ html_output:
   is_html_native: false
   default_attributes: {}
   notes: |
-    Acadamark's <bib-entry> is a custom element representing a single
-    bibliography entry in structured acadamark form. Distinct from
+    Enscribe's <bib-entry> is a custom element representing a single
+    bibliography entry in structured enscribe form. Distinct from
     <library> (opaque format) and external file references — this is
-    the acadamark-native way to write a bibliography entry.
-acadamark_attributes:
+    the enscribe-native way to write a bibliography entry.
+enscribe_attributes:
   id:
     maps_to: id
     required: true
@@ -108,25 +108,25 @@ shorthand_examples:
       </bib-entry>
 interpreter_strategy: schema
 related_plugins:
-  - name: acadamarkBibEntryRegistration
-    runs_before: acadamarkCitationResolution
+  - name: enscribeBibEntryRegistration
+    runs_before: enscribeCitationResolution
     purpose: 'Registers <bib-entry> elements in the citation registry. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
 
 # `<bib-entry>`
 
-A structured bibliography entry in acadamark-native form. The author writes structured child elements (author, title, year, etc.) for one bibliography entry. Distinct from `<library>` (opaque format like BibTeX) and external file references.
+A structured bibliography entry in enscribe-native form. The author writes structured child elements (author, title, year, etc.) for one bibliography entry. Distinct from `<library>` (opaque format like BibTeX) and external file references.
 
 ## Semantic intent
 
-`<bib-entry>` is the way to write a bibliography entry directly in acadamark using structured elements rather than an external format. Each bib-entry has an id (the citation key) and a type, plus content elements appropriate to the type.
+`<bib-entry>` is the way to write a bibliography entry directly in enscribe using structured elements rather than an external format. Each bib-entry has an id (the citation key) and a type, plus content elements appropriate to the type.
 
 This is the most explicit path for bibliography entries — every field is its own element. Useful when:
 
 - Writing a small number of entries that don't exist elsewhere.
 - Authors want full control over how each field is represented.
-- The bibliography is part of a fully acadamark-native workflow without external dependencies.
+- The bibliography is part of a fully enscribe-native workflow without external dependencies.
 
 For most authoring, the alternatives are easier:
 
@@ -222,7 +222,7 @@ The rendering happens in the `<bibliography>` element's processing, not in `<bib
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<bib-entry id="..." type="...">` | `<ref id="..."><element-citation publication-type="...">...</element-citation></ref>` |
 | `<author>` | `<person-group person-group-type="author"><name>...</name></person-group>` |

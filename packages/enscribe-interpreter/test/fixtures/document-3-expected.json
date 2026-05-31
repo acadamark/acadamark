@@ -1,0 +1,763 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Edge Cases in Enscribe",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 24,
+                          "offset": 23
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Test Author",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 13,
+                          "offset": 12
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The ",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 6,
+                          "offset": 5
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "em",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "important",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 11,
+                              "offset": 10
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " finding",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 22,
+                          "offset": 21
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 30,
+                          "offset": 29
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A paragraph in the outer section with some ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 1,
+                          "offset": 130
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 44,
+                          "offset": 173
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "emphasis",
+                          "position": {
+                            "start": {
+                              "line": 7,
+                              "column": 45,
+                              "offset": 174
+                            },
+                            "end": {
+                              "line": 7,
+                              "column": 53,
+                              "offset": 182
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " and ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 54,
+                          "offset": 183
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 59,
+                          "offset": 188
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "inline code"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 72,
+                          "offset": 201
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 73,
+                          "offset": 202
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 7,
+                      "column": 1,
+                      "offset": 130
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 73,
+                      "offset": 202
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Sub-section title",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 19,
+                              "offset": 18
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A paragraph in the middle section.",
+                          "position": {
+                            "start": {
+                              "line": 10,
+                              "column": 1,
+                              "offset": 238
+                            },
+                            "end": {
+                              "line": 10,
+                              "column": 35,
+                              "offset": 272
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 1,
+                          "offset": 238
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 35,
+                          "offset": 272
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub-sub-section",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "sub-sub-section-title",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Deepest nesting",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 17,
+                                  "offset": 16
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A paragraph in the inner section.",
+                              "position": {
+                                "start": {
+                                  "line": 13,
+                                  "column": 1,
+                                  "offset": 310
+                                },
+                                "end": {
+                                  "line": 13,
+                                  "column": 34,
+                                  "offset": 343
+                                }
+                              }
+                            }
+                          ],
+                          "position": {
+                            "start": {
+                              "line": 13,
+                              "column": 1,
+                              "offset": 310
+                            },
+                            "end": {
+                              "line": 13,
+                              "column": 34,
+                              "offset": 343
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Second top-level section",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 26,
+                          "offset": 25
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Body of the second section.",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 382
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 28,
+                          "offset": 409
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 16,
+                      "column": 1,
+                      "offset": 382
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 28,
+                      "offset": 409
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "data-figure-type": "code"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A code listing as a figure with no src.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 41,
+                              "offset": 40
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "First paragraph of the aside.",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 1,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 2,
+                              "column": 30,
+                              "offset": 30
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 2,
+                          "column": 1,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 2,
+                          "column": 30,
+                          "offset": 30
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Second paragraph of the aside.",
+                          "position": {
+                            "start": {
+                              "line": 4,
+                              "column": 1,
+                              "offset": 32
+                            },
+                            "end": {
+                              "line": 4,
+                              "column": 31,
+                              "offset": 62
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 4,
+                          "column": 1,
+                          "offset": 32
+                        },
+                        "end": {
+                          "line": 4,
+                          "column": 31,
+                          "offset": 62
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A paragraph between aside and rule.",
+                      "position": {
+                        "start": {
+                          "line": 26,
+                          "column": 1,
+                          "offset": 553
+                        },
+                        "end": {
+                          "line": 26,
+                          "column": 36,
+                          "offset": 588
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 26,
+                      "column": 1,
+                      "offset": 553
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 36,
+                      "offset": 588
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "hr",
+                  "properties": {},
+                  "children": []
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A paragraph after the thematic break.",
+                      "position": {
+                        "start": {
+                          "line": 30,
+                          "column": 1,
+                          "offset": 598
+                        },
+                        "end": {
+                          "line": 30,
+                          "column": 38,
+                          "offset": 635
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 30,
+                      "column": 1,
+                      "offset": 598
+                    },
+                    "end": {
+                      "line": 30,
+                      "column": 38,
+                      "offset": 635
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "ul",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "First list item.",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 3,
+                              "offset": 639
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 19,
+                              "offset": 655
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 32,
+                          "column": 1,
+                          "offset": 637
+                        },
+                        "end": {
+                          "line": 32,
+                          "column": 19,
+                          "offset": 655
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "li",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Second list item.",
+                          "position": {
+                            "start": {
+                              "line": 33,
+                              "column": 3,
+                              "offset": 658
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 20,
+                              "offset": 675
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 33,
+                          "column": 1,
+                          "offset": 656
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 20,
+                          "offset": 675
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 32,
+                      "column": 1,
+                      "offset": 637
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 20,
+                      "offset": 675
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 34,
+      "column": 1,
+      "offset": 676
+    }
+  }
+}

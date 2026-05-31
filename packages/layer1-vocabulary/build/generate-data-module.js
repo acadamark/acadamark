@@ -3,11 +3,11 @@
 // Walks `packages/layer1-vocabulary/elements/*.md`, parses the YAML
 // frontmatter of each, and emits a frozen plain-object ES module at
 // `packages/layer1-vocabulary/src/data.js` that downstream consumers
-// (the acadamark interpreter today; the forthcoming JATS exporter
+// (the enscribe interpreter today; the forthcoming JATS exporter
 // tomorrow) import statically. The runtime module has NO dependencies
 // on `fs`, `path`, or `js-yaml` — it ships as pure data.
 //
-// This logic is the former `acadamark-interpreter/src/schema/load-vocabulary.js`
+// This logic is the former `enscribe-interpreter/src/schema/load-vocabulary.js`
 // loader, moved here and adapted to write a module instead of returning a
 // Map. The behavior — file discovery, frontmatter parsing, keying by
 // `html_output.element`, duplicate-key warning, `_sourceFile` annotation,
@@ -15,7 +15,7 @@
 // alias keys sharing the spec object) — is reproduced faithfully so that
 // the generated module is content-identical to what the live loader
 // produced. The equivalence-check test
-// (`acadamark-interpreter/test/schema/vocab-equivalence.test.js`, added in
+// (`enscribe-interpreter/test/schema/vocab-equivalence.test.js`, added in
 // Slice 4 Step 2 and deleted in Step 6) proves that equivalence before
 // the consumer is switched.
 //
@@ -53,11 +53,11 @@ function parseFrontmatter(source) {
  * common case (HTML-only or HTML+JATS-same-name) while supporting the
  * explicit target-keyed form when names differ across output targets.
  *
- * Touches `spec.acadamark_attributes.id.maps_to`,
+ * Touches `spec.enscribe_attributes.id.maps_to`,
  * `.classes.maps_to`, and every entry of `.kwargs.*.maps_to`.
  */
 function liftMapsToToTargetForm(spec) {
-  const attrs = spec?.acadamark_attributes;
+  const attrs = spec?.enscribe_attributes;
   if (!attrs) return;
   liftField(attrs.id);
   liftField(attrs.classes);

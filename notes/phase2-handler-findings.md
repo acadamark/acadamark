@@ -81,7 +81,7 @@ Two-stage dispatch model, separately decided per registry:
 
 **Stage 1 — Parser-time `contentHandler` assignment** (sets opacity).
 Driven by `DSL_REGISTRY` via `getContentHandler(tagname)`. Consumed in
-`packages/remark-acadamark/src/from-markdown.js` at L103 (short-form) and
+`packages/remark-enscribe/src/from-markdown.js` at L103 (short-form) and
 L203 (long-form):
 
 ```js
@@ -91,13 +91,13 @@ node.isOpaqueContent = node.contentHandler !== 'default'
 
 For a DSL tag like `<mermaid>`, the parser sets
 `contentHandler='mermaid'` and `isOpaqueContent=true`. The
-recursive-content plugin (in remark-acadamark) skips opaque-content
+recursive-content plugin (in remark-enscribe) skips opaque-content
 nodes, so `node.content` stays as a raw string.
 
 **Stage 2 — Interpreter-time handler dispatch** (produces hast/HTML).
 Driven by the vocabulary entry's `interpreter_strategy` and
 `handler_module` fields, consumed in
-`packages/acadamark-interpreter/src/interpret-plugin.js`:
+`packages/enscribe-interpreter/src/interpret-plugin.js`:
 
 ```js
 // L64
@@ -112,7 +112,7 @@ const HANDLER_REGISTRY = new Map([
   ['./handlers/table.js', tableHandler],
 ]);
 
-// L84-114  (the dispatch path inside acadamarkTagHandler)
+// L84-114  (the dispatch path inside enscribeTagHandler)
 const vocab = vocabulary.get(node.tagname);
 if (!vocab) { warnUnknownTag(...); return makeUnknownElement(state, node); }
 if (vocab.interpreter_strategy === 'handler') {
@@ -130,7 +130,7 @@ return schemaDispatch(state, node, vocab);
 
 **Handler signature**: `handlerFn(state, node, vocab, opts) → hast element`.
 The `state` is the mdast-util-to-hast state; `node` is the parsed
-acadamarkTag (with `node.content` either an opaque string or a parsed
+enscribeTag (with `node.content` either an opaque string or a parsed
 child array depending on `contentHandler`); `vocab` is the vocabulary
 entry; `opts` are interpreter options (e.g. `{ assetsDir }`).
 
@@ -142,7 +142,7 @@ registered, the dispatcher logs a warning and falls through to
 opaque-content tag renders as an empty element with attributes only.
 
 **To add a new handler the implementation slice must:**
-1. Create `packages/acadamark-interpreter/src/handlers/<name>.js`
+1. Create `packages/enscribe-interpreter/src/handlers/<name>.js`
    exporting a handler function with the signature above.
 2. Add the import + `HANDLER_REGISTRY` entry in `interpret-plugin.js`.
 3. The vocabulary entry must declare
@@ -164,11 +164,11 @@ opaque-content tag renders as an empty element with attributes only.
   positional). This is *not* the same as a standalone `<csv>` / `<tsv>`
   handler — `<csv>` and `<tsv>` are independent tags that should render to
   Layer 1 table structure on their own.
-- **No `<csv>` or `<tsv>` test fixture** in `packages/acadamark-interpreter/test/fixtures/`
-  (the existing `document-7-tables.acm` uses `<table csv | …>` qualifying
+- **No `<csv>` or `<tsv>` test fixture** in `packages/enscribe-interpreter/test/fixtures/`
+  (the existing `document-7-tables.emd` uses `<table csv | …>` qualifying
   form, exercising `table.js`'s csv path — not the standalone `<csv>` tag).
 - **No `<csv>` or `<tsv>` vocab entry.** Without a vocab entry,
-  `<csv>...</csv>` renders as `<span data-acadamark-unknown="csv">`.
+  `<csv>...</csv>` renders as `<span data-enscribe-unknown="csv">`.
 
 **Possible implementation simplification:** since `table.js` already
 contains the CSV/TSV parsers, the standalone `<csv>` / `<tsv>` handlers
@@ -202,7 +202,7 @@ chat-side resolution before implementation).
   `node.tagname === 'display-math'` for display mode; otherwise inline.
 - The **long-form `<math>` tag** is in `DSL_REGISTRY` (`['math', 'math']`)
   but has **no vocab entry**. Currently would render as
-  `<span data-acadamark-unknown="math">` if authored.
+  `<span data-enscribe-unknown="math">` if authored.
 - The **environment tags** `<matrix>`, `<cases>`, `<align>`, `<eqnarray>`
   are in `DSL_REGISTRY` but have **no vocab entries** and **no handler
   coverage** in `math.js` (the handler only dispatches on
@@ -301,7 +301,7 @@ handler is a small natural addition.
 
 - Vocab entry: `interpreter_strategy: handler` + `handler_module:
   ./handlers/library.js`.
-- **`handlers/library.js` does not exist** in `packages/acadamark-interpreter/src/handlers/`.
+- **`handlers/library.js` does not exist** in `packages/enscribe-interpreter/src/handlers/`.
 - Library content (BibTeX, CSL-JSON) is consumed by `library-load.js`
   PLUGIN at index-build time — not by an interpreter-time handler. The
   vocab's handler_module declaration is **stale / aspirational**; the

@@ -1,6 +1,6 @@
 # Recursive content parsing
 
-The acadamark parser produces AST nodes whose content, for prose-bearing constructs, is initially a raw string. Recursive content parsing transforms those strings into structured child nodes by re-feeding them through the same parsing pipeline that produced the outer construct. After this stage, content is `Node[]` — an array of structured AST nodes — for parseable tags, and remains opaque for tags whose content is intended for embedded languages.
+The enscribe parser produces AST nodes whose content, for prose-bearing constructs, is initially a raw string. Recursive content parsing transforms those strings into structured child nodes by re-feeding them through the same parsing pipeline that produced the outer construct. After this stage, content is `Node[]` — an array of structured AST nodes — for parseable tags, and remains opaque for tags whose content is intended for embedded languages.
 
 ## What recursive parsing does
 
@@ -8,7 +8,7 @@ Before recursive parsing, a named-tag node looks like:
 
 ```
 {
-  type: "acadamarkTag",
+  type: "enscribeTag",
   tagname: "aside",
   contentHandler: "default",
   content: "Text with <ref fig:elephant> and *emphasis*."
@@ -22,12 +22,12 @@ After recursive parsing, the same node's content is structured:
 
 ```
 {
-  type: "acadamarkTag",
+  type: "enscribeTag",
   tagname: "aside",
   contentHandler: "default",
   content: [
     { type: "text", value: "Text with " },
-    { type: "acadamarkTag", tagname: "ref", positional: ["fig:elephant"], ... },
+    { type: "enscribeTag", tagname: "ref", positional: ["fig:elephant"], ... },
     { type: "text", value: " and " },
     { type: "emphasis", children: [{ type: "text", value: "emphasis" }] },
     { type: "text", value: "." }
@@ -36,7 +36,7 @@ After recursive parsing, the same node's content is structured:
 }
 ```
 
-The string has been parsed; markdown idioms, nested acadamark constructs, and plain text are all represented as proper AST nodes.
+The string has been parsed; markdown idioms, nested enscribe constructs, and plain text are all represented as proper AST nodes.
 
 ## Which tags get recursively parsed
 
@@ -59,7 +59,7 @@ When the recursive-content plugin encounters a node with string content and `con
 use(remarkRecursiveContent, { processor: innerProcessor })
 ```
 
-The caller constructs `innerProcessor` with the appropriate plugins (e.g., `remarkParse`, `remark-acadamark`, `remark-math`, `remark-gfm`) and passes it in. This keeps the plugin agnostic about which plugins the outer pipeline uses, and makes the plugin independently testable.
+The caller constructs `innerProcessor` with the appropriate plugins (e.g., `remarkParse`, `remark-enscribe`, `remark-math`, `remark-gfm`) and passes it in. This keeps the plugin agnostic about which plugins the outer pipeline uses, and makes the plugin independently testable.
 
 The inner processor should NOT include `remarkRecursiveContent` itself — recursion into nested content is handled by the plugin's own tree walk, not by nesting plugin instances.
 
@@ -67,11 +67,11 @@ The inner parse produces an mdast subtree. The plugin replaces the original stri
 
 ## Recursion bottom-out
 
-The plugin walks the tree depth-first. For each node with string content and `contentHandler: "default"`, it re-parses. The result may contain new nested `acadamarkTag` nodes, which themselves have string content. The plugin recurses into these.
+The plugin walks the tree depth-first. For each node with string content and `contentHandler: "default"`, it re-parses. The result may contain new nested `enscribeTag` nodes, which themselves have string content. The plugin recurses into these.
 
-Eventually, content strings contain only plain text (no nested acadamark constructs and no markdown idioms with their own substructure), and the recursion bottoms out.
+Eventually, content strings contain only plain text (no nested enscribe constructs and no markdown idioms with their own substructure), and the recursion bottoms out.
 
-A maximum recursion depth of 10 is enforced as a sanity check. If a document somehow produces deeper recursion, the plugin emits an `acadamarkParseError` at the deepest node and stops descending. This should never trigger in practice; it exists to prevent infinite loops from malformed input or future bugs.
+A maximum recursion depth of 10 is enforced as a sanity check. If a document somehow produces deeper recursion, the plugin emits an `enscribeParseError` at the deepest node and stops descending. This should never trigger in practice; it exists to prevent infinite loops from malformed input or future bugs.
 
 ## The `isOpaqueContent` flag
 
@@ -88,7 +88,7 @@ This may evolve. There may come a time when a finer distinction is useful — "i
 
 Recursive parsing introduces a content model where paragraphs and blank lines have semantic meaning. This is the architecturally correct moment for localized error recovery on unterminated constructs. The design described below is the **intended end state**; the current behavior is EOF-consumption, as described in `notes/specs/multiline-spec.md` (a tracked gap against the core always-renders guarantee in `notes/specs/principles.md`).
 
-**Intended behavior.** A blank line — a line that contains only whitespace, between two non-blank lines — would terminate any open multi-line construct that has not yet found its closer. The unterminated construct would emit `acadamarkTagError` at its opener position; parsing would resume from after the blank line.
+**Intended behavior.** A blank line — a line that contains only whitespace, between two non-blank lines — would terminate any open multi-line construct that has not yet found its closer. The unterminated construct would emit `enscribeTagError` at its opener position; parsing would resume from after the blank line.
 
 Worked example illustrating the intended behavior:
 
@@ -113,9 +113,9 @@ The work to close this gap is filed in `BACKLOG-ROADMAP.md` as the blank-line-te
 
 ## Implementation note
 
-The recursive-content plugin is a remark plugin (mdast-level transform). It runs after `remark-acadamark` produces the initial AST and before any rehype plugins.
+The recursive-content plugin is a remark plugin (mdast-level transform). It runs after `remark-enscribe` produces the initial AST and before any rehype plugins.
 
-The plugin walks the tree using `unist-util-visit`. For each `acadamarkTag` node with string content and `contentHandler: "default"`:
+The plugin walks the tree using `unist-util-visit`. For each `enscribeTag` node with string content and `contentHandler: "default"`:
 
 1. The content string is fed through the unified pipeline passed as the `{ processor }` option (constructed once by the caller, reused for all inner parses).
 2. The resulting mdast subtree's children become the node's new content.
@@ -123,7 +123,7 @@ The plugin walks the tree using `unist-util-visit`. For each `acadamarkTag` node
 
 The pipeline construction needs to be careful not to introduce circular references. The recursive-content plugin itself does not appear in the inner pipeline; recursion is handled by the outer walk, not by an inner application of the plugin.
 
-The blank-line termination logic, when implemented, will live in the micromark finder. The intended design: when scanning a multi-line construct's content, the finder will check each line ending; if the next line is empty or whitespace-only, the construct will terminate with `acadamarkTagError` and the grammar will receive the truncated content and parse what it can. **This logic does not yet exist in the finder** — the current micromark finder consumes through blank lines to EOF for unterminated constructs (the tracked gap described in the *Error recovery: blank-line termination* section above and in `notes/specs/multiline-spec.md`).
+The blank-line termination logic, when implemented, will live in the micromark finder. The intended design: when scanning a multi-line construct's content, the finder will check each line ending; if the next line is empty or whitespace-only, the construct will terminate with `enscribeTagError` and the grammar will receive the truncated content and parse what it can. **This logic does not yet exist in the finder** — the current micromark finder consumes through blank lines to EOF for unterminated constructs (the tracked gap described in the *Error recovery: blank-line termination* section above and in `notes/specs/multiline-spec.md`).
 
 ## What's not changed
 

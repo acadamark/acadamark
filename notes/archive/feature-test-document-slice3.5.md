@@ -1,6 +1,6 @@
-# Acadamark Feature Test Document
+# Enscribe Feature Test Document
 
-This document exercises every authoring feature acadamark currently supports. It serves three purposes: as a smoke test for the parser, as a feature catalog for humans, and as a living example of what acadamark source looks like in practice.
+This document exercises every authoring feature enscribe currently supports. It serves three purposes: as a smoke test for the parser, as a feature catalog for humans, and as a living example of what enscribe source looks like in practice.
 
 ## What runs end-to-end today
 
@@ -11,12 +11,12 @@ These features run from source through to their structured representation as of 
 - Named tags in short form, with and without content.
 - All attribute forms: positionals, bracketed lists, boolean flags (`+flag`, `-flag`), ids (`#id`), classes (`.class`), keyword arguments (`key=value`, `key="quoted"`).
 - Permissive identifiers: hyphens, colons, dots, slashes mid-identifier (paths, URLs, colon-prefixed ids).
-- Markdown coexisting with acadamark constructs in the same document.
+- Markdown coexisting with enscribe constructs in the same document.
 - Nested constructs inside named-tag content, as far as boundary detection goes.
 
 ## What is exercised here but does not yet render fully
 
-These authoring patterns are valid acadamark source and the parser handles them, but the downstream pieces (interpreter, section-nesting bridge) are not yet built. Sections marked with the **(future pipeline)** annotation are exercising correct authoring patterns whose end-to-end rendering is a future slice.
+These authoring patterns are valid enscribe source and the parser handles them, but the downstream pieces (interpreter, section-nesting bridge) are not yet built. Sections marked with the **(future pipeline)** annotation are exercising correct authoring patterns whose end-to-end rendering is a future slice.
 
 - Implicit section nesting. The parser produces correctly-shaped tags for `<section>`, `<sub-section>`, `<sub-sub-section>` without explicit closing; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the bridge between them (the interpreter) is not yet built.
 - Recursive parsing of named-tag content. Constructs nested inside named-tag content are bounded correctly by the parser, but the inner constructs are part of an opaque content string and not yet structured as child nodes. The recursive-content slice resolves this.
@@ -297,9 +297,9 @@ Features: `-` is allowed in keyword values (after `=`). Note: `-` remains exclud
 
 ## Part 5: Section-style tags and the implicit-close pattern
 
-Acadamark's most distinctive authoring affordance is implicit closing for section-style tags. A new peer-level section ends the previous one without an explicit closing tag, mirroring LaTeX's `\section{}` and `\subsection{}`. This is what makes acadamark source dramatically easier to type than raw HTML.
+Enscribe's most distinctive authoring affordance is implicit closing for section-style tags. A new peer-level section ends the previous one without an explicit closing tag, mirroring LaTeX's `\section{}` and `\subsection{}`. This is what makes enscribe source dramatically easier to type than raw HTML.
 
-**(future pipeline: at Slice 3.5 the parser produces individual `acadamarkTag` nodes for each `<section>`, `<sub-section>`, etc.; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the interpreter that bridges the parser output to the section-nesting plugin is a future slice. The authoring patterns in this part are correct acadamark source today — the structural nesting will be observable end-to-end once the interpreter lands.)**
+**(future pipeline: at Slice 3.5 the parser produces individual `enscribeTag` nodes for each `<section>`, `<sub-section>`, etc.; the existing `rehype-section-nesting` plugin nests flat section markers correctly; the interpreter that bridges the parser output to the section-nesting plugin is a future slice. The authoring patterns in this part are correct enscribe source today — the structural nesting will be observable end-to-end once the interpreter lands.)**
 
 ### 5.1. Flat sections, peer-level
 
@@ -474,7 +474,7 @@ Features: markdown emphasis (`*architecture*`) and a nested inline-code sigil in
 
 ## Part 8: Lists
 
-Acadamark allows lists via either standard markdown (the bare idiom) or via the `<list>` tag (when attributes are needed).
+Enscribe allows lists via either standard markdown (the bare idiom) or via the `<list>` tag (when attributes are needed).
 
 ### 8.1. Bare markdown list (delegated to remark)
 
@@ -505,15 +505,15 @@ Features: id, class, flag on a list. The `+ordered` flag distinguishes from unor
 
 ---
 
-## Part 9: Markdown coexisting with acadamark
+## Part 9: Markdown coexisting with enscribe
 
-Per the delegation principle, markdown idioms are accepted inline alongside acadamark constructs. The two registers mix freely.
+Per the delegation principle, markdown idioms are accepted inline alongside enscribe constructs. The two registers mix freely.
 
 ### 9.1. Bold, italic, and links in prose
 
 This paragraph has *emphasized* text, **strong** text, and a [link](https://example.com).
 
-The same paragraph mixed with acadamark: <em | emphasized>, <strong | strong>, and <a https://example.com | link>.
+The same paragraph mixed with enscribe: <em | emphasized>, <strong | strong>, and <a https://example.com | link>.
 
 Features: both registers produce equivalent Layer 1 output. Use markdown when sufficient; reach for shorthand when attributes are needed.
 
@@ -521,7 +521,7 @@ Features: both registers produce equivalent Layer 1 output. Use markdown when su
 
 The famous formula $E = mc^2$ is also writeable as <$ E = mc^2 $>. The tagged form supports attributes: <$ #mass-energy .featured | E = mc^2 $>.
 
-Features: bare `$x$` is delegated to `remark-math`; tagged `<$x$>` is acadamark. Both produce equivalent semantics; only the tagged form supports attributes.
+Features: bare `$x$` is delegated to `remark-math`; tagged `<$x$>` is enscribe. Both produce equivalent semantics; only the tagged form supports attributes.
 
 ### 9.3. Bare code spans alongside tagged code sigils
 
@@ -531,7 +531,7 @@ The bare form `code` is delegated to remark. The tagged form <` code `> supports
 
 # This is a markdown heading
 
-<# #intro | This is an acadamark heading sigil #>
+<# #intro | This is an enscribe heading sigil #>
 
 Features: both produce headings at Layer 1. The tagged form supports attributes; the bare form does not. **(future pipeline: bare markdown headings produce flat `<h1>` etc., while sigil headings produce `<section-title>` inside a `<section>` once the interpreter and section-wrapping behavior are settled. See open question in `notes/layer1-naming.md`.)**
 
@@ -602,7 +602,7 @@ Features: `|` followed by only whitespace and `>` produces empty content.
 
 ## Part 11: A small worked document
 
-A sketch of what a real acadamark document looks like, putting many features together.
+A sketch of what a real enscribe document looks like, putting many features together.
 
 <article-title | Numerical Estimates of Elephant Reaction Times>
 <article-subtitle | A Pilot Study>

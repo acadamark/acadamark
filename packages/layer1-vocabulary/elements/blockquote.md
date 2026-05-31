@@ -4,7 +4,7 @@ html_output:
   element: blockquote
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -108,7 +108,7 @@ is equivalent to:
 
 Blockquotes contain prose. Multi-paragraph blockquotes get their paragraphs structured automatically (each paragraph becomes a `<p>` child of the blockquote).
 
-Blockquotes can contain inline elements (emphasis, citations, references), nested acadamark constructs, and markdown idioms. They can also contain attribution as a separate paragraph or as a `<cite>` element.
+Blockquotes can contain inline elements (emphasis, citations, references), nested enscribe constructs, and markdown idioms. They can also contain attribution as a separate paragraph or as a `<cite>` element.
 
 ## Attributes
 
@@ -124,7 +124,7 @@ Blockquotes can contain inline elements (emphasis, citations, references), neste
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<blockquote>` (no type) | `<disp-quote>` |
 | `<blockquote type=epigraph>` | `<epigraph>` |

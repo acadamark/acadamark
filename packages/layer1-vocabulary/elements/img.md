@@ -4,7 +4,7 @@ html_output:
   element: img
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -112,7 +112,7 @@ For images with detailed captions where the caption already describes the image,
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<img src="..." alt="...">` | `<graphic xlink:href="..."><alt-text>...</alt-text></graphic>` |
 

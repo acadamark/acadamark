@@ -1,6 +1,6 @@
 # DSL Engines
 
-This document describes how acadamark handles content that is processed by an embedded engine — math, diagrams, tabular data, executable code, and any other case where a region of source is transformed into rendered output by a specialized processor.
+This document describes how enscribe handles content that is processed by an embedded engine — math, diagrams, tabular data, executable code, and any other case where a region of source is transformed into rendered output by a specialized processor.
 
 ## The shape of the problem
 
@@ -15,7 +15,7 @@ The differences between cases (math vs. CSV vs. mermaid vs. Python) are:
 - The output format the engine produces.
 - The engine-specific options that control processing or display.
 
-Acadamark unifies these as a single mechanism: the DSL registry plus tag attributes.
+Enscribe unifies these as a single mechanism: the DSL registry plus tag attributes.
 
 ## The model
 
@@ -32,13 +32,13 @@ A --> B>
 <math | \frac{x}{y} = \alpha>
 ```
 
-The DSL registry maps tag names to handler identifiers. The parser tags each acadamarkTag node with `contentHandler: "csv"` (or `"math"`, `"mermaid"`, etc.) based on the registry. The content stays as a string; the recursive-content plugin skips it because the handler is not `"default"`.
+The DSL registry maps tag names to handler identifiers. The parser tags each enscribeTag node with `contentHandler: "csv"` (or `"math"`, `"mermaid"`, etc.) based on the registry. The content stays as a string; the recursive-content plugin skips it because the handler is not `"default"`.
 
-The interpreter (a future plugin) reads each acadamarkTag node, looks up the handler, calls the appropriate engine with the content as input, and embeds the engine's output in the rendered HTML.
+The interpreter (a future plugin) reads each enscribeTag node, looks up the handler, calls the appropriate engine with the content as input, and embeds the engine's output in the rendered HTML.
 
 ## Attributes for engine options
 
-Engine-specific options are expressed as acadamark attributes on the tag. The parser preserves attributes verbatim; the interpreter passes them to the engine.
+Engine-specific options are expressed as enscribe attributes on the tag. The parser preserves attributes verbatim; the interpreter passes them to the engine.
 
 Examples:
 
@@ -86,7 +86,7 @@ Executable chunks (Python, R, Julia, JavaScript, etc.) have a class of attribute
 
 These match the conventions established by RMarkdown, Quarto, and Jupyter. The interpreter or a downstream execution plugin reads these and behaves accordingly.
 
-Execution adds significant complexity (kernels, sandboxing, security, caching). Initial acadamark implementations may not include execution; the attributes are recognized and preserved, but the engine simply emits the source code as a code block until execution support is built.
+Execution adds significant complexity (kernels, sandboxing, security, caching). Initial enscribe implementations may not include execution; the attributes are recognized and preserved, but the engine simply emits the source code as a code block until execution support is built.
 
 ## Source vs. display: kept fused for now
 
@@ -128,11 +128,11 @@ This list is the registry's authoritative source for "what does this DSL produce
 
 1. **Parser.** Recognizes the tag, identifies it via the DSL registry, sets `contentHandler` on the AST node. Content is preserved as a string. Attributes are parsed and stored on the node.
 
-2. **Recursive-content plugin.** Skips DSL tags (their contentHandler is not `"default"`). Their content stays a string and is not parsed as acadamark prose.
+2. **Recursive-content plugin.** Skips DSL tags (their contentHandler is not `"default"`). Their content stays a string and is not parsed as enscribe prose.
 
-3. **Interpreter (future).** For each acadamarkTag node, looks up the contentHandler in the registry to find the engine. Calls the engine with the content string and the attributes. Receives output (HTML, SVG, etc.) and embeds it in the rendered tree.
+3. **Interpreter (future).** For each enscribeTag node, looks up the contentHandler in the registry to find the engine. Calls the engine with the content string and the attributes. Receives output (HTML, SVG, etc.) and embeds it in the rendered tree.
 
-4. **Engine.** Processes its source according to its attributes. Returns rendered output. The engine knows nothing about acadamark; it just consumes source and options.
+4. **Engine.** Processes its source according to its attributes. Returns rendered output. The engine knows nothing about enscribe; it just consumes source and options.
 
 ## Implementation status
 
@@ -143,7 +143,7 @@ This list is the registry's authoritative source for "what does this DSL produce
 
 ## What's not changed by this model
 
-- Markdown idioms (` ```python `, ` ```mermaid `, etc. as fenced code blocks) continue to work via remark's existing handling. Acadamark's DSL tags are an alternative authoring path, not a replacement.
+- Markdown idioms (` ```python `, ` ```mermaid `, etc. as fenced code blocks) continue to work via remark's existing handling. Enscribe's DSL tags are an alternative authoring path, not a replacement.
 - Custom engines can be added by extending the registry. The model is open-ended.
 - The execution-control attribute conventions match existing tooling (Quarto, RMarkdown, Jupyter), so authors familiar with those tools can transfer their habits.
 
@@ -156,6 +156,6 @@ This list is the registry's authoritative source for "what does this DSL produce
 
 ## Why this matters
 
-The DSL engine model is what makes acadamark a usable academic publishing system. Math, diagrams, data tables, and executable code are all critical for real academic content. By unifying them under a single mechanism (DSL tag + attributes + engine), acadamark gives authors one rule to learn ("write the DSL tag with appropriate attributes") instead of separate idioms for each kind of embedded content.
+The DSL engine model is what makes enscribe a usable academic publishing system. Math, diagrams, data tables, and executable code are all critical for real academic content. By unifying them under a single mechanism (DSL tag + attributes + engine), enscribe gives authors one rule to learn ("write the DSL tag with appropriate attributes") instead of separate idioms for each kind of embedded content.
 
 The simplicity is the point. The same shape handles every embedded language. New engines slot in by adding registry entries. Existing engines evolve their attribute vocabularies independently. The parser, registry, and interpreter form a stable foundation.

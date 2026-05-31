@@ -1,27 +1,27 @@
 # Escape rules
 
-Acadamark uses `\` as the escape character for syntactically-significant characters. The user-facing rule is uniform: in prose content, `\X` produces literal `X` if `X` is a syntactically-significant character. The implementation cooperates with downstream parsers (remark, etc.) so authors do not have to think about which layer owns which character.
+Enscribe uses `\` as the escape character for syntactically-significant characters. The user-facing rule is uniform: in prose content, `\X` produces literal `X` if `X` is a syntactically-significant character. The implementation cooperates with downstream parsers (remark, etc.) so authors do not have to think about which layer owns which character.
 
 ## The user-facing rule
 
 In prose content, write `\X` to produce a literal `X` for any character `X` that has syntactic meaning. Significant characters include:
 
-- **Acadamark constructs in content positions:** `<`, `|`, `\`, `^`, `_`, `{`, `}`
-- **Markdown idioms acadamark accepts:** `*`, `_` (emphasis), `` ` `` (code spans), `#` (heading at start of line), `$` (math when bounded by `$...$`)
+- **Enscribe constructs in content positions:** `<`, `|`, `\`, `^`, `_`, `{`, `}`
+- **Markdown idioms enscribe accepts:** `*`, `_` (emphasis), `` ` `` (code spans), `#` (heading at start of line), `$` (math when bounded by `$...$`)
 
-The escape character itself is escaped as `\\`. The four additional content-position characters `^`, `_`, `{`, `}` are acadamark-consumed so that `\^` and `\_` suppress the inline TeX shortcut interpretation (`^{...}` for superscript and `_{...}` for subscript — see `notes/specs/shorthand-syntax.md` §"Inline TeX shortcuts") even before a `{`, and `\{` and `\}` produce literal braces inside content.
+The escape character itself is escaped as `\\`. The four additional content-position characters `^`, `_`, `{`, `}` are enscribe-consumed so that `\^` and `\_` suppress the inline TeX shortcut interpretation (`^{...}` for superscript and `_{...}` for subscript — see `notes/specs/shorthand-syntax.md` §"Inline TeX shortcuts") even before a `{`, and `\{` and `\}` produce literal braces inside content.
 
-**Sigil characters (`#`, `$`, `` ` ``) are syntactically meaningful only at sigil-tag opening positions (`<#`, `<$`, `` <` ``), not in prose content.** In prose, `\#`, `\$`, `` \` `` are markdown pass-through sequences, not acadamark escapes — they pass through to remark, which processes them as CommonMark escapes.
+**Sigil characters (`#`, `$`, `` ` ``) are syntactically meaningful only at sigil-tag opening positions (`<#`, `<$`, `` <` ``), not in prose content.** In prose, `\#`, `\$`, `` \` `` are markdown pass-through sequences, not enscribe escapes — they pass through to remark, which processes them as CommonMark escapes.
 
 **`>` is not escapable inside named-tag content.** The micromark boundary finder closes named-tag content at any unbalanced `>`, before escape processing can apply. Use `&gt;` for a literal `>` inside named-tag content. `\>` works in prose (where remark handles it via CommonMark), but is not reliable inside named-tag content.
 
-The principle: any character that has syntactic meaning in some position can be escaped to produce its literal value. Authors who know acadamark's syntactic surface automatically know what to escape. There are no per-character special rules.
+The principle: any character that has syntactic meaning in some position can be escaped to produce its literal value. Authors who know enscribe's syntactic surface automatically know what to escape. There are no per-character special rules.
 
 ## Where escape rules apply
 
-Acadamark content is one of two types:
+Enscribe content is one of two types:
 
-- **Prose** is parsed as acadamark source with markdown idioms. Escape rules apply.
+- **Prose** is parsed as enscribe source with markdown idioms. Escape rules apply.
 - **Opaque** is preserved verbatim with no parser interpretation; embedded languages handle their own conventions. Escape rules do not apply.
 
 The construct determines which type applies:
@@ -36,9 +36,9 @@ The construct determines which type applies:
 | DSL-tag content (`<csv>...</csv>`, `<math>...</math>`, etc.) | Opaque | No escape processing |
 | Attribute section of named tag (before `\|`) | Prose-like | Escape rules apply (see "Escapes in attributes" below) |
 
-The rule is: if a region is parsed as prose by acadamark, escape rules apply. If a region is preserved verbatim for an embedded language, escape rules do not apply — the embedded language has its own conventions.
+The rule is: if a region is parsed as prose by enscribe, escape rules apply. If a region is preserved verbatim for an embedded language, escape rules do not apply — the embedded language has its own conventions.
 
-**Prose outside named-tag constructs** is handled entirely by remark (CommonMark). Acadamark adds no special escape processing there — remark already handles `\<`, `\>`, `\|`, `\*`, `\\`, and all other CommonMark escapes. The escape rules described in this document apply to regions that the Peggy grammar processes: named-tag content and hash sigil-tag content.
+**Prose outside named-tag constructs** is handled entirely by remark (CommonMark). Enscribe adds no special escape processing there — remark already handles `\<`, `\>`, `\|`, `\*`, `\\`, and all other CommonMark escapes. The escape rules described in this document apply to regions that the Peggy grammar processes: named-tag content and hash sigil-tag content.
 
 ## Opaque inline spans within prose content
 
@@ -58,38 +58,38 @@ Two scopes are deliberately excluded:
 
 ## Strict mode
 
-`\X` where `X` is not a recognized special character is an error. The parser produces an `acadamarkParseError` node and continues. The error renders as visible warning text in the output document, making the mistake unmissable.
+`\X` where `X` is not a recognized special character is an error. The parser produces an `enscribeParseError` node and continues. The error renders as visible warning text in the output document, making the mistake unmissable.
 
 This is deliberate. Silent dropping of `\` would mask author mistakes; permissive interpretation (`\x` → `x`) would forgive errors but also confuse users who expect their escapes to mean something. Strict mode catches both intentional escapes (correct usage) and accidents (visible feedback).
 
 A trailing `\` at the end of content (before `>`) is the same error: `unknown escape sequence: \`.
 
 The precise rule: `\X` is processed as follows, in order:
-1. If `X` is an acadamark-significant character in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), acadamark consumes the escape and emits literal `X`.
-2. If `X` is any other ASCII punctuation character (CommonMark's escapable set), acadamark passes `\X` through unchanged for remark to consume.
-3. Otherwise, acadamark emits an `acadamarkParseError` node.
+1. If `X` is an enscribe-significant character in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), enscribe consumes the escape and emits literal `X`.
+2. If `X` is any other ASCII punctuation character (CommonMark's escapable set), enscribe passes `\X` through unchanged for remark to consume.
+3. Otherwise, enscribe emits an `enscribeParseError` node.
 
 "ASCII punctuation" here is the CommonMark definition: characters in the ranges `!`–`/`, `:`–`@`, `[`–`` ` ``, `{`–`~`.
 
-## How acadamark and remark cooperate
+## How enscribe and remark cooperate
 
-The user-facing rule says "escape any syntactically-significant character." The implementation respects the layer boundary between acadamark and remark.
+The user-facing rule says "escape any syntactically-significant character." The implementation respects the layer boundary between enscribe and remark.
 
-**In prose outside any construct:** Remark (CommonMark) handles all escapes. Any `\X` where `X` is ASCII punctuation produces literal `X`. Acadamark adds no processing here.
+**In prose outside any construct:** Remark (CommonMark) handles all escapes. Any `\X` where `X` is ASCII punctuation produces literal `X`. Enscribe adds no processing here.
 
 **Inside named-tag content and hash sigil-tag content** (the regions the Peggy grammar processes), when the parser encounters `\X`:
 
-- If `X` is an acadamark-significant character in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), acadamark consumes the escape and emits literal `X` in the AST.
-- If `X` is any other ASCII punctuation, acadamark passes the escape sequence `\X` through unchanged. Remark consumes the escape when recursive content parsing is implemented.
-- If `X` is neither, acadamark emits an `acadamarkParseError` node.
+- If `X` is an enscribe-significant character in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), enscribe consumes the escape and emits literal `X` in the AST.
+- If `X` is any other ASCII punctuation, enscribe passes the escape sequence `\X` through unchanged. Remark consumes the escape when recursive content parsing is implemented.
+- If `X` is neither, enscribe emits an `enscribeParseError` node.
 
 The user does not need to know which layer owns which character. They escape; the right layer consumes the escape; the right thing happens.
 
-Markdown pass-through escapes (`\*`, `\_`, etc.) inside named-tag content and hash sigil-tag content are stored verbatim by acadamark and consumed by remark during the recursive-content pass. After that pass runs, `\*` in the source produces a literal `*` in the rendered output via remark's standard CommonMark escape handling, the same as `\*` in prose outside any construct.
+Markdown pass-through escapes (`\*`, `\_`, etc.) inside named-tag content and hash sigil-tag content are stored verbatim by enscribe and consumed by remark during the recursive-content pass. After that pass runs, `\*` in the source produces a literal `*` in the rendered output via remark's standard CommonMark escape handling, the same as `\*` in prose outside any construct.
 
 ## Escapes in attributes
 
-**Quoted attribute values** are stored verbatim by acadamark. Escape processing is deferred to the recursive-content stage. The grammar rule for quoted values is `[^"\n]*` (or `[^'\n]*` for single-quoted), so the value closes at the first matching quote character regardless of any preceding backslash. A `\"` inside a double-quoted value closes the value prematurely and causes the tag to fail to parse. Authors who need a literal double-quote inside a double-quoted value must switch quote types:
+**Quoted attribute values** are stored verbatim by enscribe. Escape processing is deferred to the recursive-content stage. The grammar rule for quoted values is `[^"\n]*` (or `[^'\n]*` for single-quoted), so the value closes at the first matching quote character regardless of any preceding backslash. A `\"` inside a double-quoted value closes the value prematurely and causes the tag to fail to parse. Authors who need a literal double-quote inside a double-quoted value must switch quote types:
 
 ```
 <figure caption='An adult "elephant"'>
@@ -155,9 +155,9 @@ Result: `She wrote *emphasis* literally, not as italics.`
 <aside | She wrote \*emphasis\* literally, not as italics.>
 ```
 
-Acadamark passes `\*` through unchanged in the stored content string. Until recursive content parsing is implemented, the content contains the literal `\*`. After recursive parsing, remark will process `\*` → `*`.
+Enscribe passes `\*` through unchanged in the stored content string. Until recursive content parsing is implemented, the content contains the literal `\*`. After recursive parsing, remark will process `\*` → `*`.
 
-### Mixing acadamark and markdown escapes (prose)
+### Mixing enscribe and markdown escapes (prose)
 
 ```
 The tag \<aside\> contains \*emphasized\* text.
@@ -167,7 +167,7 @@ In prose, remark handles all of these. `\<`, `\>`, and `\*` all produce their li
 
 Result: `The tag <aside> contains *emphasized* text.`
 
-### Mixing acadamark and markdown escapes (in named-tag content)
+### Mixing enscribe and markdown escapes (in named-tag content)
 
 ```
 <aside | The tag \<aside\> text.>
@@ -179,7 +179,7 @@ Wait — `\>` inside named-tag content is not supported. The micromark boundary 
 <aside | The tag \<aside&gt; text.>
 ```
 
-Here acadamark converts `\<` → `<`; the `&gt;` is passed through to the HTML renderer as `>`. Result: the aside contains `The tag <aside> text.`
+Here enscribe converts `\<` → `<`; the `&gt;` is passed through to the HTML renderer as `>`. Result: the aside contains `The tag <aside> text.`
 
 ### Unknown escape (in named-tag content)
 
@@ -187,7 +187,7 @@ Here acadamark converts `\<` → `<`; the `&gt;` is passed through to the HTML r
 <aside | The path is C:\new\folder.>
 ```
 
-`\n` and `\f` are not recognized special characters (neither acadamark-significant nor ASCII punctuation). The parser emits two `acadamarkParseError` nodes for `\n` and `\f`. The output renders the errors visibly.
+`\n` and `\f` are not recognized special characters (neither enscribe-significant nor ASCII punctuation). The parser emits two `enscribeParseError` nodes for `\n` and `\f`. The output renders the errors visibly.
 
 **Unknown escapes only produce error nodes inside named-tag content and hash sigil-tag content** — the regions the Peggy grammar processes. In prose outside constructs, remark applies CommonMark rules: `\n` → `\n` (backslash preserved, `n` literal), no error node.
 
@@ -205,7 +205,7 @@ For paths inside named-tag content, use a code span (opaque — no escape proces
 </math>
 ```
 
-Inside `<math>...</math>`, the content is opaque. `\frac` and `\alpha` are LaTeX commands, not acadamark escapes. The parser preserves them verbatim for KaTeX to process.
+Inside `<math>...</math>`, the content is opaque. `\frac` and `\alpha` are LaTeX commands, not enscribe escapes. The parser preserves them verbatim for KaTeX to process.
 
 ```
 <csv>
@@ -214,22 +214,22 @@ name,price
 </csv>
 ```
 
-Same here. Inside `<csv>`, the content is CSV source. The CSV parser handles its own quote-escaping conventions; acadamark does not interpret `\"`.
+Same here. Inside `<csv>`, the content is CSV source. The CSV parser handles its own quote-escaping conventions; enscribe does not interpret `\"`.
 
 ## Implementation note
 
-The escape rules are implemented in the grammar (Peggy) by extending the relevant content rules to recognize `\X` sequences. The grammar consumes `\X` and emits `X` for acadamark-significant `X` in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), passes `\X` through unchanged for other ASCII punctuation, and emits `acadamarkParseError` for unrecognized `X`.
+The escape rules are implemented in the grammar (Peggy) by extending the relevant content rules to recognize `\X` sequences. The grammar consumes `\X` and emits `X` for enscribe-significant `X` in content positions (`<`, `|`, `\`, `^`, `_`, `{`, `}`), passes `\X` through unchanged for other ASCII punctuation, and emits `enscribeParseError` for unrecognized `X`.
 
 **The micromark finder is unaffected.** The finder does not know about backslash escaping. For `\<tagname>` in named-tag content, the finder sees `\` as a regular char, then `<tagname>` increments depth — so the depth tracking works correctly even with an escaped `<`. The grammar then processes `\<` as an escape unit (the escape alternative is tried before the nested-construct alternative), consuming `\<` as literal `<` and leaving `tagname>` as regular text.
 
 **`\>` is not a grammar-level escape in named-tag content.** The finder closes on any `>` at depth 0, before the grammar runs. Authors should use `&gt;` for literal `>` inside named-tag content.
 
-**Content model change.** Named-tag content and hash sigil-tag content have changed from a single opaque string to a `(string | acadamarkParseError)[]` array. When there are no escape errors, `processContentItems()` collapses the array to a plain string (backward-compatible with existing code). When errors exist, the content is a mixed array with error nodes interleaved at the positions where the unknown escapes occurred.
+**Content model change.** Named-tag content and hash sigil-tag content have changed from a single opaque string to a `(string | enscribeParseError)[]` array. When there are no escape errors, `processContentItems()` collapses the array to a plain string (backward-compatible with existing code). When errors exist, the content is a mixed array with error nodes interleaved at the positions where the unknown escapes occurred.
 
 The `isOpaqueContent` field retains its meaning: "content has not been recursively re-parsed through remark." Before recursive parsing, content may be a plain string, a mixed array, or (after recursive parsing) a full structured mdast `Node[]`. The field describes the pipeline stage, not the data shape.
 
 Escape rules apply to:
-- Named-tag content rules in `acadamark.peggy`: `ContentItem` (replaces `$ContentChar*`)
+- Named-tag content rules in `enscribe.peggy`: `ContentItem` (replaces `$ContentChar*`)
 - Hash sigil-tag body rules: `HashSigilBodyItem1/2/3` (replaces `$SigilBody1/2/3`)
 - Bracketed list items: `EscapedListItem` (replaces `Identifier` inside `ListItem`)
 

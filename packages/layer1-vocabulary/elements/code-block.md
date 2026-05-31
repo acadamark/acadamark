@@ -8,7 +8,7 @@ html_output:
     use a <code-block> wrapping element. The handler emits <pre><code ...>
     directly, matching the output of markdown fenced code blocks. The element
     field is used only as a dispatch key for the interpreter.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
     notes: |
@@ -20,7 +20,7 @@ acadamark_attributes:
 content:
   type: opaque
   notes: |
-    The pipe content is verbatim code source. No markdown idioms or acadamark
+    The pipe content is verbatim code source. No markdown idioms or enscribe
     constructs are interpreted inside the code block. Newlines are preserved.
 interpreter_strategy: handler
 handler_module: ./handlers/code-block.js

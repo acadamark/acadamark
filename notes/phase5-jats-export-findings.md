@@ -18,7 +18,7 @@ JATS-aligned from the start (`jats_counterpart` on every entry)."
 Two items in ROADMAP order:
 1. **JATS-export Phase 0** (this slice) — package siting, attribute-
    mapper question, JATS section-model deferred-design.
-2. **Build JATS export (`rehypeAcadamarkToJats`)** *(formerly DF-18)*.
+2. **Build JATS export (`rehypeEnscribeToJats`)** *(formerly DF-18)*.
 
 Exit: "a Layer 1 document round-trips to JATS XML cleanly enough for
 journal submission."
@@ -43,8 +43,8 @@ line 4, the payoff for vocabulary being JATS-aligned from the start
 lossy direction and is post-alpha.
 
 This phase has its own **Phase 0** because JATS export is a large arc
-and the package boundary (`acadamark-jats-export`, not yet present)
-needs siting against the inward-pointing `acadamark-core`.
+and the package boundary (`enscribe-jats-export`, not yet present)
+needs siting against the inward-pointing `enscribe-core`.
 
 **Items, in order:**
 
@@ -52,7 +52,7 @@ needs siting against the inward-pointing `acadamark-core`.
   mapper (whether it lifts to core's `mapAttributes(node, vocab,
   emit)` shape now or later); the JATS section-model question recorded
   as deferred in `DESIGN.md`.
-- **Build JATS export (`rehypeAcadamarkToJats`)** *(formerly DF-18)*.
+- **Build JATS export (`rehypeEnscribeToJats`)** *(formerly DF-18)*.
   The mapping is mostly mechanical because Layer 1 is JATS-shaped; the
   metadata-defaults policy and the few restructuring cases are the
   real design work.
@@ -66,21 +66,21 @@ for journal submission.
 **Checklist (L143-144):**
 
 ```
-- [ ] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
+- [ ] **Build JATS export (`rehypeEnscribeToJats`)** `[interpreter]`
   `[alpha]` *(→ roadmap: Phase 5)* *(formerly DF-18)*
 ```
 
 **Detailed entry (L521-532):**
 
 ```
-### Build JATS export (`rehypeAcadamarkToJats`)
+### Build JATS export (`rehypeEnscribeToJats`)
 `[interpreter]` `[alpha]` *(→ roadmap: Phase 5)*
 
 The vocabulary is JATS-aligned by design (`jats_counterpart` on every
 entry); this is the payoff. *(formerly DF-18)*
 
-Needs a Phase 0 first to site the `acadamark-jats-export` package
-against the inward-pointing `acadamark-core`, decide the
+Needs a Phase 0 first to site the `enscribe-jats-export` package
+against the inward-pointing `enscribe-core`, decide the
 export-stage attribute mapper's shape (whether the iteration shape
 lifts to core's `mapAttributes(node, vocab, emit)` callback API now
 or stays local), and address the JATS section-model question
@@ -93,14 +93,14 @@ recorded as deferred in `DESIGN.md`.
   acknowledged-lossy direction; not in Phase 5's scope.
 - **Render-mode lowering** (`[post-alpha]`, → Phase 8) —
   display-target-three; orthogonal to JATS.
-- **Build the lowering pass (Layer 1 → canonical acadamark)**
+- **Build the lowering pass (Layer 1 → canonical enscribe)**
   (`[post-alpha]`, → Phase 7) — different lowering target.
 
 ### Phase 6 framing (Phase 5's downstream)
 
 ROADMAP.md L338-354. Phase 6 is the alpha integration check: "Five-
 point verification fixtures. One acceptance fixture per line of the
-alpha definition: Layer 1 elements render; canonical acadamark
+alpha definition: Layer 1 elements render; canonical enscribe
 authors them; sigils and markdown idioms reduce to them; JATS export
 round-trips; Layer 2 ⇔ Layer 1 round-trips losslessly for canonical-
 form fixtures."
@@ -116,8 +116,8 @@ five-point verification will exercise this.
 - **L25-50 — Layered model** (the diagram with "Layer 1 ──► JATS XML"
   as the export arrow).
 - **L92-110 — "JATS as reference and export target"** — JATS is
-  both the vocabulary acadamark consults when growing Layer 1 AND
-  the format acadamark exports to. "Layer 1 is a small, displayable,
+  both the vocabulary enscribe consults when growing Layer 1 AND
+  the format enscribe exports to. "Layer 1 is a small, displayable,
   authorable projection of JATS: where JATS has 200-plus elements
   and no display target, Layer 1 has perhaps 30-some elements" (the
   30-some is an old number; current count is 109 — see Q1.6).
@@ -127,18 +127,18 @@ five-point verification will exercise this.
   decision was recorded as "reconsidered in the JATS export arc."
   Phase 5 implementation must address this (see Q1.7).
 - **L434-436 — "The JATS export plugin"** — names
-  `rehype-acadamark-to-jats` as the planned plugin (note the lower-
-  case naming; the ROADMAP uses both `rehypeAcadamarkToJats` and
-  `acadamark-jats-export` — see Q1.4 on package naming).
+  `rehype-enscribe-to-jats` as the planned plugin (note the lower-
+  case naming; the ROADMAP uses both `rehypeEnscribeToJats` and
+  `enscribe-jats-export` — see Q1.4 on package naming).
 - **L438-440 — "Package structure"** — "The project is organized as
   an npm workspace with four packages (a fifth,
-  `acadamark-jats-export`, is planned)."
+  `enscribe-jats-export`, is planned)."
 
 ## Q1.2 — existing JATS scaffolding or prior work
 
 **Scaffolding: NONE.**
 
-- No `acadamark-jats-export` package or directory.
+- No `enscribe-jats-export` package or directory.
 - No plugin/module with `jats` in its name in any package's `src/`.
 - No git commits with "jats" or "JATS" in the subject.
 - The `data.js` file regenerated from vocab references JATS
@@ -203,8 +203,8 @@ JATS itself targets journal articles. Books use the parallel
   still relatively new. Most journal submission pipelines accept
   1.3.
 - **Archiving and Interchange Tag Set** is the right tag set for
-  acadamark's use case — most permissive, designed to preserve
-  content as authored, no required elements that acadamark can't
+  enscribe's use case — most permissive, designed to preserve
+  content as authored, no required elements that enscribe can't
   always provide (publisher metadata, etc.).
 
 ### DTD constraints worth flagging
@@ -216,67 +216,67 @@ elements. The ones that DO require attention:
   attributes. Phase 5 supplies defaults (e.g. `en` lang, `1.3`
   dtd-version).
 - **`<article-meta>`** is required inside `<front>`. It contains
-  the article's descriptive metadata. Acadamark's `<meta>` lifts
+  the article's descriptive metadata. Enscribe's `<meta>` lifts
   to this naturally per the Phase 4 structuring plugin's article
   shape.
 - **`<book>`** in BITS requires `dtd-version` similarly.
 - **`<table-wrap>`** requires either `<label>` (the table number)
-  or `<caption>`. Acadamark's numbered tables provide both naturally.
+  or `<caption>`. Enscribe's numbered tables provide both naturally.
 - **`<fig>`** requires `<graphic>` OR alternative content. For
   `<svg>`/`<mermaid>`/`<abc>` non-image figures, Phase 5 needs an
   approach (likely emit `<graphic>` with the source preserved in
   the alt path or as a separate file reference).
 - **`<contrib-group>`** holds author/editor contributors. The
-  acadamark `<author>` element lifts to a JATS `<contrib>` inside
-  `<contrib-group>` (per acadamark's existing structured-element
+  enscribe `<author>` element lifts to a JATS `<contrib>` inside
+  `<contrib-group>` (per enscribe's existing structured-element
   shape for `<author>`).
 
 **No fundamental conflicts** between JATS Archiving 1.3 / BITS 2.0
-and acadamark's current vocabulary.
+and enscribe's current vocabulary.
 
 ## Q1.4 — package boundary
 
 ### Current packages (`packages/`)
 
-- `acadamark-core` — inward-pointing shared foundation; depends on
+- `enscribe-core` — inward-pointing shared foundation; depends on
   nothing internal; fs-free, browser-safe.
 - `layer1-vocabulary` — build-time-generated vocab `data.js`;
   consumers import the static module.
-- `remark-acadamark` — the shorthand parser (Peggy + micromark
+- `remark-enscribe` — the shorthand parser (Peggy + micromark
   hybrid).
-- `acadamark-interpreter` — the full mdast→HTML interpreter
-  pipeline. Depends on `acadamark-core` + `layer1-vocabulary` +
-  `remark-acadamark`.
+- `enscribe-interpreter` — the full mdast→HTML interpreter
+  pipeline. Depends on `enscribe-core` + `layer1-vocabulary` +
+  `remark-enscribe`.
 
 ### Pattern for new packages
 
-Per `notes/specs/acadamark-core.md` and DESIGN.md L438-440:
+Per `notes/specs/enscribe-core.md` and DESIGN.md L438-440:
 
 - **Outward-pointing packages** (parser, interpreter, jats-export
-  when it lands) depend on `acadamark-core` and `layer1-vocabulary`
+  when it lands) depend on `enscribe-core` and `layer1-vocabulary`
   but not on each other.
-- **`acadamark-core` is the only inward dependency** — everything
+- **`enscribe-core` is the only inward dependency** — everything
   depends on it; it depends on nothing internal.
 - **Build/run-time seam** doubles as the browser-safety boundary —
-  `acadamark-core` and shippable runtime code are fs-free.
+  `enscribe-core` and shippable runtime code are fs-free.
 
 The pattern is clean: a new output target (HTML today, JATS
 tomorrow, render-mode/print after) goes in its own package, and
 the shared bits (vocab, AST utilities, tag construction) stay in
-`acadamark-core` (+ `layer1-vocabulary`).
+`enscribe-core` (+ `layer1-vocabulary`).
 
 ### Candidate fits for JATS export
 
-**A. New package `acadamark-jats-export`.** Matches DESIGN.md's
-   stated plan ("a fifth, `acadamark-jats-export`, is planned").
-   Parallels `acadamark-interpreter`: depends on core + vocab + the
+**A. New package `enscribe-jats-export`.** Matches DESIGN.md's
+   stated plan ("a fifth, `enscribe-jats-export`, is planned").
+   Parallels `enscribe-interpreter`: depends on core + vocab + the
    structural-plugin output (which comes from the interpreter's
    mdast pipeline). Clean separation; the JATS export has its own
    dependencies (probably an XML serializer, possibly `mathml-tex`
    for math conversion, possibly a JATS validator for testing).
    **The matched precedent.**
 
-**B. New module within `acadamark-interpreter`.** Lower friction
+**B. New module within `enscribe-interpreter`.** Lower friction
    (no new package boilerplate); but couples JATS export to the
    interpreter's runtime in a way the package separation explicitly
    avoids. Adds JATS-specific dependencies (XML serializer, etc.)
@@ -284,47 +284,47 @@ the shared bits (vocab, AST utilities, tag construction) stay in
    runtime with JATS concerns.
 
 **C. New utility package alongside the interpreter** (e.g.
-   `acadamark-export-helpers` shared by future render-mode lowering
+   `enscribe-export-helpers` shared by future render-mode lowering
    too). Premature: there's no second consumer yet. Per
-   `acadamark-core`'s "wait for the second consumer before
+   `enscribe-core`'s "wait for the second consumer before
    abstracting" rule, this isn't right today.
 
-**D. Other.** Could be a sub-package or `acadamark-interpreter/jats/`
+**D. Other.** Could be a sub-package or `enscribe-interpreter/jats/`
    subdirectory; same coupling concerns as B but more concealed.
 
 ### Recommendation
 
-**Option A** — `acadamark-jats-export` as a new package — matches
+**Option A** — `enscribe-jats-export` as a new package — matches
 the explicit DESIGN.md plan and the established outward-package
 pattern. The JATS-specific dependencies (XML serializer, math
 conversion, optional DTD validator) stay scoped to the new package.
-The `acadamark-interpreter` runtime stays HTML-focused.
+The `enscribe-interpreter` runtime stays HTML-focused.
 
 ### Package-naming nuance
 
 DESIGN.md L434 and the ROADMAP entry use slightly different naming:
 
-- DESIGN.md L434: `rehype-acadamark-to-jats` (plugin name)
-- DESIGN.md L440 / ROADMAP L319 / BACKLOG L527: `acadamark-jats-export` (package name)
+- DESIGN.md L434: `rehype-enscribe-to-jats` (plugin name)
+- DESIGN.md L440 / ROADMAP L319 / BACKLOG L527: `enscribe-jats-export` (package name)
 
-These are consistent: the package is `acadamark-jats-export`; the
-unified plugin it exports is `rehypeAcadamarkToJats` (or the
-`rehype-acadamark-to-jats` kebab-case form). Phase 5 picks the
+These are consistent: the package is `enscribe-jats-export`; the
+unified plugin it exports is `rehypeEnscribeToJats` (or the
+`rehype-enscribe-to-jats` kebab-case form). Phase 5 picks the
 camelCase JS function name + the kebab-case package name.
 
 ### Attribute-mapper question (the ROADMAP-specified Phase 0 item)
 
-Per `notes/specs/acadamark-core.md` L100-117: the HTML attribute
-mapper (`acadamark-interpreter/src/lib/build-properties.js`) and the
+Per `notes/specs/enscribe-core.md` L100-117: the HTML attribute
+mapper (`enscribe-interpreter/src/lib/build-properties.js`) and the
 forthcoming JATS attribute mapper are stage-specific. The deferred
 question is whether the *iteration shape* lifts to
-`acadamark-core` as a `mapAttributes(node, vocab, emit)` callback
+`enscribe-core` as a `mapAttributes(node, vocab, emit)` callback
 API.
 
 **Decision for Phase 5:** lift the iteration shape to
-`acadamark-core` when JATS export is built — JATS export IS the
+`enscribe-core` when JATS export is built — JATS export IS the
 second consumer the deferred question was waiting for. The lift
-becomes a small `acadamark-core` API addition + a refactor of
+becomes a small `enscribe-core` API addition + a refactor of
 `build-properties.js` to call into it + the JATS attribute mapper
 calls the same API with its own emission callback. **Recommend
 including this lift in slice 5a's package setup.**
@@ -336,7 +336,7 @@ including this lift in slice 5a's package setup.**
 Per `notes/specs/pipeline.md`:
 
 ```
-Stage 1: source → mdast            (remarkParse + remarkAcadamark)
+Stage 1: source → mdast            (remarkParse + remarkEnscribe)
 Stage 2: recursive content parsing (remarkRecursiveContent)
 Stage 3: mdast transforms          (normalize-to-canonical, config
                                     discovery, article/book structuring,
@@ -344,7 +344,7 @@ Stage 3: mdast transforms          (normalize-to-canonical, config
                                     notes, numbering, apply numbers,
                                     ref/cite resolution, note placement,
                                     bibliography)
-Stage 4: mdast → hast              (toHast with acadamarkTag handler)
+Stage 4: mdast → hast              (toHast with enscribeTag handler)
 Stage 5: asset injection           (CSS/JS prepended to hast)
 Stage 6: serialization             (rehypeFormat + toHtml)
 ```
@@ -372,15 +372,15 @@ At this point:
   `node.computedNumber`).
 
 The remaining post-stage-3 transformations are HTML-shape-specific:
-- Stage 4 converts custom-element mdast acadamarkTag nodes to
+- Stage 4 converts custom-element mdast enscribeTag nodes to
   hast elements with HTML tag names (via the
-  `acadamarkTagHandler` consulting vocab `html_output.element`).
+  `enscribeTagHandler` consulting vocab `html_output.element`).
 - Stage 5 injects HTML/CSS assets.
 - Stage 6 serializes to HTML.
 
 **JATS export does the parallel work for the JATS target:**
 
-- Stage 4' (JATS-shape): convert acadamarkTag nodes to JATS-XML-
+- Stage 4' (JATS-shape): convert enscribeTag nodes to JATS-XML-
   shaped tree (likely xast — the XML AST cousin of hast).
 - Stage 5' (JATS metadata padding): supply required-by-DTD
   metadata defaults (`<article-id>`, `dtd-version`, etc.) per the
@@ -389,7 +389,7 @@ The remaining post-stage-3 transformations are HTML-shape-specific:
 
 ### Why post-stage-3, not earlier
 
-- **Stage 1-2 (raw mdast / acadamarkTag after parsing):** structure
+- **Stage 1-2 (raw mdast / enscribeTag after parsing):** structure
   is the author's flat list; not yet JATS-shaped. JATS export would
   have to redo the structural work article-structuring already does.
   Wasteful.
@@ -412,17 +412,17 @@ via a parallel pipeline or by re-running the structural plugins
 from a shared module.
 
 **Cleanest approach:** the structural plugins themselves live in
-`acadamark-interpreter` today, but Phase 5 can either:
+`enscribe-interpreter` today, but Phase 5 can either:
 
-- **(i)** Re-import them in `acadamark-jats-export` and run them on
+- **(i)** Re-import them in `enscribe-jats-export` and run them on
   a parallel pipeline. The interpreter exports them already
-  (`acadamark-interpreter/src/index.js` exports
-  `acadamarkConfigDiscovery`, `acadamarkArticleStructuring`,
-  `acadamarkBookStructuring`, `acadamarkSectionNesting`,
-  `acadamarkNotes`, `acadamarkNumbering`, `acadamarkRefResolution`,
-  `acadamarkCiteResolution`, `acadamarkBibliography`,
-  `acadamarkNotePlacement`).
-- **(ii)** Lift the structural plugins to `acadamark-core` so
+  (`enscribe-interpreter/src/index.js` exports
+  `enscribeConfigDiscovery`, `enscribeArticleStructuring`,
+  `enscribeBookStructuring`, `enscribeSectionNesting`,
+  `enscribeNotes`, `enscribeNumbering`, `enscribeRefResolution`,
+  `enscribeCiteResolution`, `enscribeBibliography`,
+  `enscribeNotePlacement`).
+- **(ii)** Lift the structural plugins to `enscribe-core` so
   both packages can consume them. Bigger refactor; not needed
   unless render-mode lowering (Phase 8) ALSO wants them.
 
@@ -430,7 +430,7 @@ from a shared module.
 allow it. The lift to core (option ii) is a "lift when second
 consumer arrives" decision — render-mode is a candidate, but it's
 post-alpha; we can defer the lift until then. The current setup
-keeps `acadamark-jats-export` depending on `acadamark-interpreter`
+keeps `enscribe-jats-export` depending on `enscribe-interpreter`
 for its structural plugins, but its own code only emits JATS XML.
 
 A reader might object that this couples jats-export to interpreter.
@@ -447,7 +447,7 @@ etc.) and title elements — their JATS mappings are obvious by name
 
 ### Group A — Document containers (5 entries)
 
-| Acadamark | JATS | Mapping shape |
+| Enscribe | JATS | Mapping shape |
 |---|---|---|
 | `<article>` | `<article>` | Direct rename; add `xml:lang` + `dtd-version` defaults |
 | `<book>` | `<book>` (BITS) | Direct rename; add `dtd-version` default |
@@ -457,7 +457,7 @@ etc.) and title elements — their JATS mappings are obvious by name
 
 ### Group B — Structural regions (8 entries)
 
-| Acadamark | JATS | Mapping shape |
+| Enscribe | JATS | Mapping shape |
 |---|---|---|
 | `<article-front>` | `<front>` | Rename; not declared in vocab — obvious |
 | `<article-body>` | `<body>` | Rename; not declared — obvious |
@@ -474,7 +474,7 @@ All eight (article/book/book-part/section/sub-section/sub-sub-section
 title + subtitle) lack explicit `jats_counterpart` but have obvious
 mappings:
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<article-title>` | `<article-title>` inside `<title-group>` |
 | `<article-subtitle>` | `<subtitle>` inside `<title-group>` |
@@ -489,7 +489,7 @@ synthesize the wrapper.
 
 ### Group D — Sections (3 entries)
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<section>` | `<sec>` |
 | `<sub-section>` | `<sec>` nested |
@@ -499,7 +499,7 @@ synthesize the wrapper.
 named section elements; JATS has one recursive `<sec>` with depth-
 typed nesting. Phase 5 must decide whether to:
 
-- **Option I:** Map each named acadamark section to `<sec>` (JATS
+- **Option I:** Map each named enscribe section to `<sec>` (JATS
   inherits the depth from nesting). Cleanest; matches JATS's
   recursive model. Author's three-level cap is preserved as a JATS
   depth-three nesting.
@@ -508,12 +508,12 @@ typed nesting. Phase 5 must decide whether to:
   use it.
 
 **Recommend Option I.** Matches JATS conventions; the depth-typed
-form is optional. The cap-at-three constraint is acadamark's, not
+form is optional. The cap-at-three constraint is enscribe's, not
 JATS's; the JATS output is just three-deep `<sec>` recursion.
 
 ### Group E — Metadata containers (3 entries + structured-element bits)
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<meta>` (in article) | `<article-meta>` inside `<front>` |
 | `<meta>` (in book) | `<book-meta>` inside `<book-front>` |
@@ -538,15 +538,15 @@ JATS's; the JATS output is just three-deep `<sec>` recursion.
   `<meta><lang>en</lang></meta>` and emits `xml:lang="en"` on
   `<article>`/`<book>`.
 - `<name>` needs parsing to split into surname + given-names. JATS
-  is strict about this; acadamark currently allows flat name text.
+  is strict about this; enscribe currently allows flat name text.
   Phase 5 needs a name-parsing heuristic (or accept the flat text
   in a JATS `<string-name>` element as a fallback).
-- `<contrib-group>` wrapper needs synthesizing — acadamark has
+- `<contrib-group>` wrapper needs synthesizing — enscribe has
   multiple `<author>` siblings; JATS wraps them.
 
 ### Group F — Frameables (8 entries — fig, table, csv, tsv, mermaid, abc, svg, frame)
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<fig>` | `<fig>` |
 | `<table>` | `<table-wrap>` containing `<table>` |
@@ -558,9 +558,9 @@ JATS's; the JATS output is just three-deep `<sec>` recursion.
 | `<frame>` | `<boxed-text>` |
 
 **Restructuring cases:**
-- `<table>` (acadamark) is an HTML `<table>` element. JATS wraps
+- `<table>` (enscribe) is an HTML `<table>` element. JATS wraps
   the data table in `<table-wrap>` (which carries id, label,
-  caption) containing the HTML-shaped `<table>`. So acadamark's
+  caption) containing the HTML-shaped `<table>`. So enscribe's
   `<table id=...>` exports as `<table-wrap id=...>` + inner
   `<table>`. The caption (slice 3c child-tag form) lifts into
   `<table-wrap>`'s `<caption>`.
@@ -580,7 +580,7 @@ JATS's; the JATS output is just three-deep `<sec>` recursion.
 
 Most have direct JATS counterparts:
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<i>` / `<em>` | `<italic>` |
 | `<b>` / `<strong>` | `<bold>` |
@@ -609,7 +609,7 @@ entries).
 
 ### Group H — Block-level (theorem family, blockquote, lists, code-block)
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<theorem>` / `<lemma>` / `<corollary>` / `<proposition>` | `<statement content-type="theorem">` (etc., per type) |
 | `<definition>` | `<statement content-type="definition">` |
@@ -644,7 +644,7 @@ entries).
 
 Already covered above plus envs:
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<inline-math>` | `<inline-formula>` → `<tex-math>` |
 | `<display-math>` | `<disp-formula>` → `<tex-math>` |
@@ -666,7 +666,7 @@ optional `<mml:math>` MathML alternative.
 
 ### Group J — Internal / metadata-only
 
-| Acadamark | JATS |
+| Enscribe | JATS |
 |---|---|
 | `<config>` | (Not exported; processing options stay client-side) |
 | `<data>` | (Not exported; source bibliography stays client-side) |
@@ -691,7 +691,7 @@ optional `<mml:math>` MathML alternative.
 
 ### Numbering and cross-references
 
-- Acadamark: `node.computedNumber` set per the slice 3a/4a
+- Enscribe: `node.computedNumber` set per the slice 3a/4a
   numbering machinery. Cross-references render as text strings
   ("Figure 1.3", "Theorem 2") via `ref-resolution.js`.
 - JATS: numbered floats carry `<label>` containing the number; cross-
@@ -707,13 +707,13 @@ optional `<mml:math>` MathML alternative.
 
 ### Footnotes
 
-- Acadamark: per-section (article default) or per-chapter (book
+- Enscribe: per-section (article default) or per-chapter (book
   default) `__note-list` injection per slice 4a. Renders as
   `<note-list>` containing `<note-list-item>`s.
 - JATS: footnotes live in `<fn-group>` containing `<fn>`s. JATS
   permits `<fn-group>` at multiple positions: inside a `<sec>` (per-
   section footnotes), inside `<back>` (document-level), or inside
-  `<book-part>` (per-chapter). Acadamark's existing collection
+  `<book-part>` (per-chapter). Enscribe's existing collection
   scopes map 1:1.
 - **Required Phase 5 work:** map `__note-list` → `<fn-group>`;
   `__note-list-item` → `<fn id="..."><label>N</label><p>…</p></fn>`.
@@ -721,14 +721,14 @@ optional `<mml:math>` MathML alternative.
 
 ### Bibliography
 
-- Acadamark: `<library>` parses `.bib` (or YAML/JSON) at build
+- Enscribe: `<library>` parses `.bib` (or YAML/JSON) at build
   time; cite-resolution emits `__cite-marker`s; `<bibliography>` is
   rendered with the formatted-citation entries via citation-js.
 - JATS: `<ref-list>` containing `<ref id="..."><element-citation>…
   </element-citation></ref>` per entry. The citation data is
   structured (`<person-group>`, `<article-title>`, `<source>`,
   `<year>`, etc.) — significantly more structured than the
-  formatted-string-only output acadamark renders today.
+  formatted-string-only output enscribe renders today.
 - **Required Phase 5 work:** read the citation-js source data
   (which has structured fields per entry) and emit
   `<element-citation>` shapes. This is the JATS export's biggest
@@ -794,8 +794,8 @@ Bundle the JATS Archiving 1.3 + BITS 2.0 DTDs in the package
 
 ### Test fixture pattern
 
-The existing fixtures (`packages/acadamark-interpreter/test/
-fixtures/document-N-*.acm`) each have a `.html` (current rendered)
+The existing fixtures (`packages/enscribe-interpreter/test/
+fixtures/document-N-*.emd`) each have a `.html` (current rendered)
 and a `.json` (snapshot). Phase 5 adds a parallel `.jats.xml` (or
 `.xml`) per fixture exercising JATS-export-relevant features.
 
@@ -838,10 +838,10 @@ JATS-only restructuring cases (e.g. `<title-group>` wrapping,
 Order: **5a → 5b → 5c → 5d.**
 
 - **Slice 5a — Package + scaffolding + minimal article export.**
-  Create `packages/acadamark-jats-export/` per Q1.4 Option A.
+  Create `packages/enscribe-jats-export/` per Q1.4 Option A.
   Wire package.json, exports, deps. Set up the JATS attribute
   mapper following the same iteration shape as
-  `build-properties.js` (lift the iteration to `acadamark-core`
+  `build-properties.js` (lift the iteration to `enscribe-core`
   per Q1.4 — JATS export IS the second consumer the deferred
   question was waiting for). Implement the article-shape JATS
   export for the simplest fixtures (doc-1, doc-2 — basic article
@@ -907,10 +907,10 @@ Recorded:
 - Q1.3 — JATS 1.3 + BITS 2.0 + Archiving and Interchange Tag Set
   recommended; DTD constraints surveyed; no fundamental conflicts
 - Q1.4 — package boundary Option A
-  (`packages/acadamark-jats-export/`) recommended; attribute-
-  mapper lift to `acadamark-core` recommended in slice 5a
+  (`packages/enscribe-jats-export/`) recommended; attribute-
+  mapper lift to `enscribe-core` recommended in slice 5a
 - Q1.5 — post-stage-3 mdast tree is the right input; structural
-  plugins re-imported from `acadamark-interpreter` (defer the lift
+  plugins re-imported from `enscribe-interpreter` (defer the lift
   to core until render-mode is the second consumer)
 - Q1.6 — vocabulary mapping inventory grouped by JATS section
   (A–J: containers, regions, titles, sections, metadata,
@@ -925,7 +925,7 @@ Open (decisions deferred to implementation slices or chat):
   1.4 + BITS 2.2 (current). Defer; can revisit.
 - MathML alternative emission (slice 5e, conditional).
 - Whether the structural-plugin re-import in 5a (Q1.5 option (i))
-  is the long-term shape or whether the lift to `acadamark-core`
+  is the long-term shape or whether the lift to `enscribe-core`
   (Q1.5 option (ii)) happens with render-mode (Phase 8). Recorded;
   decided when Phase 8 starts.
 - The five design-call vocab entries (`<lang>` attr lift,

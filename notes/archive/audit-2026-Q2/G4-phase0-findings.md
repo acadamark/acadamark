@@ -21,11 +21,11 @@ the actual code.
 
 ### Files read
 
-- `packages/acadamark-interpreter/src/lib/registry.js` (full)
-- `packages/acadamark-interpreter/src/lib/discover.js` (full)
-- `packages/acadamark-interpreter/src/plugins/numbering.js` (full)
-- `packages/acadamark-interpreter/src/plugins/ref-resolution.js` (full)
-- `packages/acadamark-interpreter/src/plugins/notes.js` (full)
+- `packages/enscribe-interpreter/src/lib/registry.js` (full)
+- `packages/enscribe-interpreter/src/lib/discover.js` (full)
+- `packages/enscribe-interpreter/src/plugins/numbering.js` (full)
+- `packages/enscribe-interpreter/src/plugins/ref-resolution.js` (full)
+- `packages/enscribe-interpreter/src/plugins/notes.js` (full)
 
 ### 1.1 Registry colon-id rule
 
@@ -41,7 +41,7 @@ registry header and its test file. This is intentional, not a bug.
 
 ### 1.2 What the numbering plugin registers
 
-`acadamarkNumbering` uses `discover()` to walk the tree and calls
+`enscribeNumbering` uses `discover()` to walk the tree and calls
 `registry.assign()` for each matched node. Registered types and how:
 
 | Tagname | Registry type | `numbered` | Notes |
@@ -56,7 +56,7 @@ for notes; §Q2 for code blocks.
 
 ### 1.3 How notes register themselves
 
-Notes are registered by `acadamarkNotes` in `plugins/notes.js`, **not** by
+Notes are registered by `enscribeNotes` in `plugins/notes.js`, **not** by
 `numbering.js`. This runs before numbering in the pipeline:
 
 ```js
@@ -77,7 +77,7 @@ For a note with explicit colon-id (`<note #note:fn1>`), `node.id` is
 
 ### 1.4 How ref-resolution resolves targets
 
-`acadamarkRefResolution` does one thing: `registry.findByLabel(targetId)`. If
+`enscribeRefResolution` does one thing: `registry.findByLabel(targetId)`. If
 `null`, emits `__ref-error`. No type-based fallback; no non-colon path.
 
 ```js
@@ -107,16 +107,16 @@ defect independent of registration.
 
 ### 1.6 What `discover()` can and cannot see
 
-`discover()` only visits `acadamarkTag` nodes (via `isAcadamarkTag` check). It
+`discover()` only visits `enscribeTag` nodes (via `isEnscribeTag` check). It
 recurses into:
 
-- `node.content` (for acadamarkTag nodes, guarded by `!node.isOpaqueContent`)
+- `node.content` (for enscribeTag nodes, guarded by `!node.isOpaqueContent`)
 - `node.children` (for mdast block nodes — paragraphs, lists, etc.)
 
 It does **not** visit native mdast nodes like `code` (fenced code block), `math`
 (display math), or `table` (GFM table). Those only survive to this point as mdast
 if the normalization pass has not converted them — and after the NORM-tables
-slice, GFM tables are normalized to acadamarkTag nodes before discovery runs.
+slice, GFM tables are normalized to enscribeTag nodes before discovery runs.
 Display math and inline math are also normalized. Plain fenced code blocks are
 **not** normalized; they remain native mdast `code` nodes.
 
@@ -126,9 +126,9 @@ Display math and inline math are also normalized. Plain fenced code blocks are
 
 ### Files read
 
-- `packages/remark-acadamark/src/dsl-registry.js`
-- `packages/remark-acadamark/src/sigil-mapping.js`
-- `packages/acadamark-interpreter/src/handlers/code-block.js`
+- `packages/remark-enscribe/src/dsl-registry.js`
+- `packages/remark-enscribe/src/sigil-mapping.js`
+- `packages/enscribe-interpreter/src/handlers/code-block.js`
 - `packages/layer1-vocabulary/elements/code-block.md`
 - `packages/layer1-vocabulary/elements/code.md`
 - `notes/shorthand-syntax.md` (code-related sections)
@@ -150,7 +150,7 @@ fenced block).
 ```
 <``` python #code:snippet | def hello(): print("hello") ```>
 ```
-Parser produces `acadamarkTag` with:
+Parser produces `enscribeTag` with:
 - `tagname: '```'`
 - `id: 'code:snippet'` (from `#code:snippet` attribute)
 - `positional: ['python']`
@@ -166,7 +166,7 @@ is the only missing piece.
 ```
 <code #code:snippet language=python | def hello(): ...>
 ```
-Parser produces `acadamarkTag` with `tagname: 'code'`. Dispatches via
+Parser produces `enscribeTag` with `tagname: 'code'`. Dispatches via
 `interpreter_strategy: schema` (not a custom handler). Vocabulary entry
 `code.md` shows `id` maps to the HTML `id` attribute. `discover()` **can** see
 this node; again, no registration visitor exists.

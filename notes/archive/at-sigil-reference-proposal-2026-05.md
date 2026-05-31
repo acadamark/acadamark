@@ -6,7 +6,7 @@ This note records a proposed sigil change and the reasoning behind it, so the id
 
 ## The proposal
 
-Acadamark currently uses `#` for two distinct operations:
+Enscribe currently uses `#` for two distinct operations:
 
 - **Assigning** an identifier to an element: `<figure #fig:priority src=... | ...>`.
 - **Referring** to an identified element: `<ref #fig:priority>`.
@@ -22,9 +22,9 @@ Under the proposal:
 
 ## Why
 
-**It makes a real distinction explicit.** Assigning an identifier and referring to one are different operations. Acadamark's guiding principle is that the source should be explicit, consistent, and as simple as possible but no simpler — and one sigil doing two jobs is a place where the source is *less* explicit than the concepts behind it. With `#` for definition and `@` for use, a reader scanning a document can see every definition site and every reference site by sigil alone.
+**It makes a real distinction explicit.** Assigning an identifier and referring to one are different operations. Enscribe's guiding principle is that the source should be explicit, consistent, and as simple as possible but no simpler — and one sigil doing two jobs is a place where the source is *less* explicit than the concepts behind it. With `#` for definition and `@` for use, a reader scanning a document can see every definition site and every reference site by sigil alone.
 
-**`@` already reads as "reference."** Pandoc and Quarto have used `@key` for citation references for years. Anyone coming from that world reads `@` as "refer to a keyed thing" without instruction. The convention is borrowed, not invented — consistent with acadamark's stance of re-discovering existing conventions rather than minting new ones.
+**`@` already reads as "reference."** Pandoc and Quarto have used `@key` for citation references for years. Anyone coming from that world reads `@` as "refer to a keyed thing" without instruction. The convention is borrowed, not invented — consistent with enscribe's stance of re-discovering existing conventions rather than minting new ones.
 
 **It unifies citations and cross-references.** Today `<cite smith2023>` and `<ref #fig:priority>` are separate constructs, but they are the same gesture: refer to something by key. The key resolves to a bibliography entry in one case and a numbered element in the other, but the authoring act is identical. Under an `@` convention both become `@key` — `@smith2023`, `@fig:priority` — differing only in what the key resolves to. That is a consolidation toward a single concept, which is the simplicity principle working in the right direction.
 
@@ -47,9 +47,9 @@ This is a syntax change, not a tweak. It touches:
 - **Every fixture document** — all current `<ref #...>` and `<cite ...>` forms would change.
 - **The shorthand spec, escape-rules spec, and vocabulary entries** — all reference the current forms.
 
-**Escape rule.** Literal at-signs occur in prose — email addresses, social handles. `@` joining the significant-character set means `\@` must produce a literal `@`. Acadamark already has a uniform escape mechanism, so this is an application of an existing pattern, not a new mechanism — but it must be specified.
+**Escape rule.** Literal at-signs occur in prose — email addresses, social handles. `@` joining the significant-character set means `\@` must produce a literal `@`. Enscribe already has a uniform escape mechanism, so this is an application of an existing pattern, not a new mechanism — but it must be specified.
 
-**Migration vs. coexistence.** Decide whether `#`-for-reference is removed outright (clean, but a breaking change to every existing document) or accepted as a deprecated alias for a transition period. The simplicity principle argues for a clean break once the system is small enough that migration is cheap — and acadamark is still that small.
+**Migration vs. coexistence.** Decide whether `#`-for-reference is removed outright (clean, but a breaking change to every existing document) or accepted as a deprecated alias for a transition period. The simplicity principle argues for a clean break once the system is small enough that migration is cheap — and enscribe is still that small.
 
 **Relationship to AUD-09.** Section ids are not currently registered for cross-reference at all. If the `@` redesign is taken on, it is the natural moment to also resolve AUD-09 — the cross-reference system would be under active work anyway.
 

@@ -1,0 +1,34 @@
+{
+  "name": "remark-enscribe",
+  "version": "0.2.0",
+  "description": "Remark plugin for the enscribe shorthand syntax. Hybrid architecture: micromark finds construct boundaries, Peggy parses grammar semantics.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./recursive-content": "./src/recursive-content.js"
+  },
+  "scripts": {
+    "build:grammar": "node build/compile-grammar.js",
+    "pretest": "node build/compile-grammar.js",
+    "test": "node test/test-grammar.js && node test/test.js",
+    "demo": "node test/demo.js"
+  },
+  "dependencies": {
+    "enscribe-core": "*",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "peggy": "^4.2.0"
+  },
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "unified",
+    "micromark",
+    "enscribe",
+    "markdown"
+  ]
+}

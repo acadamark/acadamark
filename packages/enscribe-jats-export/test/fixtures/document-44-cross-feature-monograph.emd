@@ -1,0 +1,105 @@
+<meta type=book>
+<title | A Short Monograph on the Mathematics of Music>
+<subtitle | A Cross-Feature Stress Fixture for the Alpha Milestone>
+<author | The Enscribe Team>
+</meta>
+
+<data>
+<library |
+@book{Benson2007,
+  author = {Benson, Dave},
+  title  = {Music: A Mathematical Offering},
+  publisher = {Cambridge University Press},
+  year   = 2007,
+  address = {Cambridge}
+}
+@article{Sethares1993,
+  author = {Sethares, William A.},
+  title  = {Local Consonance and the Relationship Between Timbre and Scale},
+  journal = {Journal of the Acoustical Society of America},
+  year   = 1993,
+  volume = 94,
+  number = 3,
+  pages  = {1218--1228},
+  doi    = {10.1121/1.408175}
+}
+>
+</data>
+
+<preface | About this Monograph>
+This monograph is a believable miniature: it exercises every alpha feature in
+one document so the alpha integration check has a single cross-feature artifact
+to point at.<note | A preface footnote — it collects at the end of the preface book-part under the book's default note-scope=chapter.>
+
+<chapter | Foundations>
+The pitch of a note is its fundamental frequency, measured in hertz. Concert A
+is $440$ Hz, and the perfect fifth above it stands in the ratio $3/2$.
+
+<definition #def:interval | An *interval* is the ratio $f_2/f_1$ of the frequencies of two pitches.>
+
+<theorem #thm:octave | Doubling a frequency raises a pitch by exactly one octave.>
+
+<proof | An octave is the 2:1 frequency ratio, so doubling a frequency is one octave by definition. ∎>
+
+The equal-tempered scale divides the octave into twelve equal ratios:
+
+<$$ #eqn:equal | f_n = f_0 \cdot 2^{n/12} $$>
+
+Benson's treatment <cite @Benson2007> develops this from first principles. A
+reference to <ref @thm:octave> resolves to the theorem above.<note | A foundations footnote, collected at the end of chapter 1.>
+
+<fig #fig:keyboard src=keyboard.png | One octave of a piano keyboard.>
+
+<chapter | Consonance and Ratios>
+<author | Guest Author>
+This chapter has its own author — the edited-volume case — distinct from the
+book-level author.
+
+Small whole-number ratios sound consonant. The just-intonation intervals are
+collected in <ref @tab:ratios>.
+
+<csv #tab:ratios caption="Just-intonation interval ratios.">
+interval,ratio,cents
+unison,1/1,0
+fifth,3/2,702
+fourth,4/3,498
+octave,2/1,1200
+</csv>
+
+The fifth and the fourth are the two principal consonances:
+
+<align #eqn:ratios>
+r_{fifth} &= 3/2 \\
+r_{fourth} &= 4/3
+</align>
+
+Sethares <cite @Sethares1993> ties consonance to timbre rather than to ratios
+alone.<note | A consonance footnote, collected at the end of chapter 2.>
+
+<chapter | Visual and Aural Structure>
+Two external notations close the body. A flow of the analysis pipeline:
+
+<mermaid #fig:circle caption="From pitch to perceived interval.">
+graph LR
+  A[Pitch pair] --> B[Frequency ratio]
+  B --> C[Cents]
+  C --> D[Perceived interval]
+</mermaid>
+
+And a short tune in ABC notation:
+
+<abc #fig:tune caption="Twinkle, Twinkle, Little Star.">
+X:1
+T:Twinkle Twinkle
+M:4/4
+L:1/4
+K:C
+C C G G | A A G2 | F F E E | D D C2 |
+</abc>
+
+Cross-references <ref @fig:circle> and <ref @fig:tune> resolve to the two
+figures in this chapter.<note | A structure footnote, collected at the end of chapter 3.>
+
+<appendix | Notation and Sources>
+This appendix lives in book-back. The interval names follow the usual Western
+convention; the frequency model is the equal-tempered one of <ref @eqn:equal>.<note | An appendix footnote, collected at the end of the appendix book-part.>

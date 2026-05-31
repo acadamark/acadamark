@@ -1,12 +1,12 @@
-# Acadamark project principles
+# Enscribe project principles
 
-This document records the core working principles that govern design decisions in the acadamark project. Future slices should reference this document when a decision requires grounding in a principle.
+This document records the core working principles that govern design decisions in the enscribe project. Future slices should reference this document when a decision requires grounding in a principle.
 
 ## The always-renders principle
 
 **The parser always produces a tree. The document always renders to something. Every error is reported visibly at the location in the rendered output where it occurred. The author never sees a "compilation failed, no output" state with raw error messages, and the author never has to hunt for where an error happened.**
 
-This is the hard requirement, and it is one requirement with two inseparable halves: the document renders, *and* the rendered output is where the author finds out about errors. Errors are represented as `acadamarkTagError` or `acadamarkParseError` nodes inline in the AST. These nodes render visibly — as error markers in the document at their source location, in the same house style the interpreter uses for the other "the author wrote a reference the system couldn't resolve" cases (`??ref: id??` for an unresolved cross-reference, `??cite: key??` for an unresolved citation, an inline table-parse-error marker for a malformed table body). Surrounding content continues to render normally; the error marker localizes the problem to where it occurred.
+This is the hard requirement, and it is one requirement with two inseparable halves: the document renders, *and* the rendered output is where the author finds out about errors. Errors are represented as `enscribeTagError` or `enscribeParseError` nodes inline in the AST. These nodes render visibly — as error markers in the document at their source location, in the same house style the interpreter uses for the other "the author wrote a reference the system couldn't resolve" cases (`??ref: id??` for an unresolved cross-reference, `??cite: key??` for an unresolved citation, an inline table-parse-error marker for a malformed table body). Surrounding content continues to render normally; the error marker localizes the problem to where it occurred.
 
 The principle holds throughout the pipeline: parse errors, grammar errors, and semantic errors all produce AST nodes, never exceptions that halt output, and every such node has a visible rendering in the document at its location.
 
@@ -20,9 +20,9 @@ Where localized recovery is hard to implement — for instance, blank-line termi
 
 **No gaps remain open against the guarantee at the time of this writing.** The previously-tracked gaps are closed:
 
-- **The parser-error-node renderer** — closed as of the alpha Phase 2 slice 1 (commit `e17a892`). `acadamarkParseError` and `acadamarkTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/acadamark-interpreter/src/handlers/parser-errors.js`.
+- **The parser-error-node renderer** — closed as of the alpha Phase 2 slice 1 (commit `e17a892`). `enscribeParseError` and `enscribeTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/enscribe-interpreter/src/handlers/parser-errors.js`.
 
-- **Blank-line / EOF consumption** — resolved per the Option A design (decided 2026-05-26). A blank line inside an open tag is a paragraph break, not a terminator; multi-paragraph tag content is allowed; a tag terminates only on its explicit closing `>` or at EOF; an unclosed tag is detected at EOF and produces a visible `acadamarkTagError` at its opening position. The previous "the tag consumes across the blank line" framing was based on the opposite design (blank-line-terminates) being assumed correct — the Option A ruling resolved the open question and confirmed the existing tokenizer behavior is the right behavior. Integration fixtures `document-23-multi-paragraph-tag-content.acm` and `document-24-unclosed-tag-at-eof.acm` pin both halves against regression. The design itself is recorded in `DESIGN.md`.
+- **Blank-line / EOF consumption** — resolved per the Option A design (decided 2026-05-26). A blank line inside an open tag is a paragraph break, not a terminator; multi-paragraph tag content is allowed; a tag terminates only on its explicit closing `>` or at EOF; an unclosed tag is detected at EOF and produces a visible `enscribeTagError` at its opening position. The previous "the tag consumes across the blank line" framing was based on the opposite design (blank-line-terminates) being assumed correct — the Option A ruling resolved the open question and confirmed the existing tokenizer behavior is the right behavior. Integration fixtures `document-23-multi-paragraph-tag-content.emd` and `document-24-unclosed-tag-at-eof.emd` pin both halves against regression. The design itself is recorded in `DESIGN.md`.
 
 **One acknowledged bounded tradeoff** of the EOF-only design (not a gap): an unclosed tag near the top of a long document swallows the rest of the document into the error node's source. The error still renders visibly at the open position, and the conspicuously missing downstream content is itself a strong author signal — so the always-renders guarantee holds. Tighter localization (a structural-boundary terminator earlier than EOF) was considered and rejected: it would require detecting blank-line-followed-by-a-tag-opener, reintroducing exactly the blank-line-as-signal heuristic Option A was chosen to avoid. If tighter localization is ever needed, it remains an incremental future change — not foreclosed by EOF-only.
 
@@ -30,7 +30,7 @@ With both gaps closed, the always-renders guarantee is fully honored in the curr
 
 ## The delegation principle
 
-Acadamark does not re-implement what existing parsers already do well. Wherever an existing parser can handle work acadamark would otherwise need to do, acadamark delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Acadamark only does novel work — the tagged shorthand and the Layer 1 vocabulary.
+Enscribe does not re-implement what existing parsers already do well. Wherever an existing parser can handle work enscribe would otherwise need to do, enscribe delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Enscribe only does novel work — the tagged shorthand and the Layer 1 vocabulary.
 
 See `notes/specs/idioms.md` for the full statement of this principle including its two-layer form.
 
@@ -48,7 +48,7 @@ This principle is the counterpart of the always-renders guarantee viewed from th
 
 ## The parser-knows-nothing-about-meaning principle
 
-The shorthand parser produces generic `acadamarkTag` nodes. A separate interpretation pass converts those nodes into specific HTML based on tag name and the Layer 1 vocabulary entry for that tag. Parsing and interpretation are kept separate because:
+The shorthand parser produces generic `enscribeTag` nodes. A separate interpretation pass converts those nodes into specific HTML based on tag name and the Layer 1 vocabulary entry for that tag. Parsing and interpretation are kept separate because:
 
 - New tags can be added without touching the parser.
 - Tag semantics can evolve without parser changes.

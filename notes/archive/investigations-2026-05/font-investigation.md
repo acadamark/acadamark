@@ -16,7 +16,7 @@ Two distinct font-rendering failures observed in browser when viewing rendered f
 
 ## Approach chosen: base64 inline (Approach A)
 
-Self-contained HTML is acadamark's output philosophy. Two alternatives were considered:
+Self-contained HTML is enscribe's output philosophy. Two alternatives were considered:
 
 - **Approach A**: Base64-encode all font data into CSS `@font-face` / `url()` declarations.
   Single-file HTML, works from `file://` without a web server, no CORS issues.
@@ -37,7 +37,7 @@ Self-contained HTML is acadamark's output philosophy. Two alternatives were cons
 ### Monospace (code): Source Code Pro
 
 - Source: `/home/balter/micromamba/fonts/SourceCodePro-Regular.ttf`
-- Only Regular 400 bundled; code blocks in acadamark do not currently use italic or bold mono.
+- Only Regular 400 bundled; code blocks in enscribe do not currently use italic or bold mono.
 - Alternative considered: JetBrains Mono (preferred) — not installed on this system.
   Source Code Pro is an excellent pairing with Inter.
 
@@ -119,8 +119,8 @@ to the shell `<style>` block, before `default.css`.
 
 Font tokens updated:
 ```css
---acm-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...;
---acm-font-mono: 'Source Code Pro', ui-monospace, SFMono-Regular, ...;
+--enscribe-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...;
+--enscribe-font-mono: 'Source Code Pro', ui-monospace, SFMono-Regular, ...;
 ```
 System font fallbacks remain for consumers that use `default.css` without the font loader.
 

@@ -4,7 +4,7 @@ html_output:
   element: doi
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -79,7 +79,7 @@ The bare DOI (`10.1234/example.2024`) is preferred over the URL form (`https://d
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<doi>10.1234/example.2024</doi>` | `<article-id pub-id-type="doi">10.1234/example.2024</article-id>` (inside `<article-meta>`) |
 

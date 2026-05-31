@@ -4,7 +4,7 @@ html_output:
   element: subject
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -95,7 +95,7 @@ Multiple `<subject>` elements are allowed for documents with multiple subject cl
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<subject>VALUE</subject>` | `<subj-group><subject>VALUE</subject></subj-group>` (inside `<article-meta>`) |
 | `<subject scheme=X>VALUE</subject>` | `<subj-group subj-group-type="X"><subject>VALUE</subject></subj-group>` |

@@ -4,7 +4,7 @@ html_output:
   element: ol
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -54,7 +54,7 @@ shorthand_examples:
         <li>Third step</li>
       </ol>
     notes: |
-      Plain markdown ordered lists work without explicit acadamark tags.
+      Plain markdown ordered lists work without explicit enscribe tags.
       This is the most common authoring path.
   - source: |
       <ol #procedure type=arabic start=5>
@@ -153,7 +153,7 @@ An `<ol>` contains a sequence of `<li>` elements. Same content model as `<ul>`.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<ol>` (default) | `<list list-type="order">` |
 | `<ol type=alpha>` | `<list list-type="alpha-lower">` |

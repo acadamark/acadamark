@@ -4,7 +4,7 @@ html_output:
   element: dt
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -23,8 +23,8 @@ jats_counterpart:
     one-to-one mapping at the term-text level; the JATS exporter
     wraps the <dt>/<dd> pair in <def-item> at export.
 shorthand_examples:
-  - source: '<dt | acadamark>'
-    layer1_html: '<dt>acadamark</dt>'
+  - source: '<dt | enscribe>'
+    layer1_html: '<dt>enscribe</dt>'
     notes: |
       A definition-list term. Appears as a child of <dl>.
   - source: '<dt | <code | strict-mode>>'
@@ -49,7 +49,7 @@ A definition-list term. The "key" half of a definition pair within a `<dl>` (or,
 
 ```
 <dl>
-  <dt | acadamark>
+  <dt | enscribe>
   <dd | An academic publishing system.>
 </dl>
 ```
@@ -58,7 +58,7 @@ The pipe content is the term text.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<dt>` (within `<dl>`) | `<term>` (inside `<def-item>` inside `<def-list>`) |
 

@@ -152,7 +152,7 @@ record explicitly.**
 
 ## Q1.3 — existing infrastructure survey
 
-### Numbering registry — `packages/acadamark-core/src/registry.js`
+### Numbering registry — `packages/enscribe-core/src/registry.js`
 
 The registry is a generic per-type counter. From the header (L1-22):
 
@@ -171,7 +171,7 @@ registry doesn't care which tagnames go to which types.
 
 ### NUMBERED_TAGNAMES — the tagname→type mapping
 
-In `packages/acadamark-interpreter/src/plugins/numbering.js:43-47`:
+In `packages/enscribe-interpreter/src/plugins/numbering.js:43-47`:
 
 ```js
 const NUMBERED_TAGNAMES = new Map([
@@ -349,7 +349,7 @@ The two architectural options from L445-451:
 >   parsing handles citations naturally. Matches Pandoc/Quarto
 >   conventions where captions are markdown blocks.
 > - **Option B:** attribute values get recursive parsing —
->   `caption="text <cite key>"` would parse the value as acadamark
+>   `caption="text <cite key>"` would parse the value as enscribe
 >   content. More invasive parser change; affects all attribute values,
 >   not just captions.
 

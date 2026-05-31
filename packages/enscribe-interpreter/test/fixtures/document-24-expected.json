@@ -1,0 +1,301 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Unclosed-tag-at-EOF fixture",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 29,
+                          "offset": 28
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Test Author",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 13,
+                          "offset": 12
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Document body before the unclosed tag",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 39,
+                          "offset": 38
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The aside below opens but never closes. Under Option A's EOF-only\nterminator rule, the tag consumes content all the way to EOF and\nproduces a visible ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 145
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 20,
+                          "offset": 295
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "enscribeTagError"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " at its opening position. The\ncontent past the unclosed tag becomes part of the error node's\nsource as best-effort content. The author sees the error marker and\nthe conspicuously missing downstream content — itself a signal that\nthe document has an unclosed tag.",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 38,
+                          "offset": 313
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 34,
+                          "offset": 575
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 145
+                    },
+                    "end": {
+                      "line": 14,
+                      "column": 34,
+                      "offset": 575
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This fixture pins the EOF-terminator half of Option A against\nregression. ML-8 in ",
+                      "position": {
+                        "start": {
+                          "line": 16,
+                          "column": 1,
+                          "offset": 577
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 21,
+                          "offset": 659
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "remark-enscribe/test/test.js"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " covers the\nEOF-without-closer → ",
+                      "position": {
+                        "start": {
+                          "line": 17,
+                          "column": 51,
+                          "offset": 689
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 22,
+                          "offset": 722
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "enscribeTagError"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " path at the parser level;\nthis fixture covers the visible-rendering end-to-end.",
+                      "position": {
+                        "start": {
+                          "line": 18,
+                          "column": 40,
+                          "offset": 740
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 54,
+                          "offset": 820
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 16,
+                      "column": 1,
+                      "offset": 577
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 54,
+                      "offset": 820
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "tag-error"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "??tag: <aside | This aside opens with a pipe and never closes.\n\nAuthor-intended body text that follows, never visible as body in\nthe rendered output — by Option A's EOF-only design, this content\nis swallowed into the error node's source. The bounded cost is\nacceptable: the error renders visibly at the open position, and\nthe missing post-tag content is itself a strong author signal.\n — Expected \"$\", \"$$\", \"<\", \">\", \"\\\\\", \"^\", \"_\", \"`\", \"``\", or [^>\\\\] but end of input found.??"
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 21,
+                      "column": 1,
+                      "offset": 822
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 1,
+                      "offset": 1200
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 28,
+      "column": 1,
+      "offset": 1200
+    }
+  }
+}

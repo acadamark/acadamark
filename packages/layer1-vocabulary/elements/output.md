@@ -4,7 +4,7 @@ html_output:
   element: output
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -41,7 +41,7 @@ The result of a calculation. HTML-native inline element. Semantically distinct f
 
 ## Semantic intent
 
-`<output>` marks a computed result in prose. The HTML5 specification treats `<output>` as a form-output element with form-control semantics; in technical prose, the lighter "this is a computed value" reading is what acadamark adopts. The distinction from `<samp>` is fine but real:
+`<output>` marks a computed result in prose. The HTML5 specification treats `<output>` as a form-output element with form-control semantics; in technical prose, the lighter "this is a computed value" reading is what enscribe adopts. The distinction from `<samp>` is fine but real:
 
 - `<samp>` — *the program printed `Hello, world!`*. A display artifact.
 - `<output>` — *the function returned `42`*. A computed value.

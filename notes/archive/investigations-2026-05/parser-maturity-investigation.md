@@ -2,7 +2,7 @@
 
 Scope: long-form tag nesting, comma-separated positionals, self-closing
 form `<tag />`.  Tests are run against the generated parser; all counts are from
-the 97-test baseline in `packages/remark-acadamark/test/test.js`.
+the 97-test baseline in `packages/remark-enscribe/test/test.js`.
 
 ---
 
@@ -26,7 +26,7 @@ Verified in REPL:
 
 Nested tags inside long-form content are preserved verbatim in `node.content`
 and are re-parsed by `remarkRecursiveContent` (an interpreter plugin that uses
-`unist-util-visit` to find `default`-handler `acadamarkTag` nodes with a
+`unist-util-visit` to find `default`-handler `enscribeTag` nodes with a
 `content` string and re-parses that string through an inner remark processor).
 This is the nesting mechanism.
 
@@ -53,7 +53,7 @@ Reasons:
    nodes). Changing `content: null` for default-handler long-form tags would
    give every existing handler an empty child list.
 
-2. `remarkRecursiveContent` itself looks for `acadamarkTag` nodes where
+2. `remarkRecursiveContent` itself looks for `enscribeTag` nodes where
    `isOpaqueContent === false` and `typeof node.content === 'string'`. It would
    skip nodes that already have `children`, leaving content unparsed.
 
@@ -140,7 +140,7 @@ Option A — Grammar-only, modify `IdentifierStart`:
 1. Add `/` to `IdentifierStart` exclusion:
    `[^ \t\n<>|+\-#.="'\[\],/]`
 
-2. Add `SelfClosingNamedTag` rule before `NamedTag` in `AcadamarkConstruct`:
+2. Add `SelfClosingNamedTag` rule before `NamedTag` in `EnscribeConstruct`:
    ```peggy
    SelfClosingNamedTag
      = "<" name:TagName attrs:Attributes "/" ">" {
@@ -203,7 +203,7 @@ registered tags. Adding `data` to the registry does not affect those tests.
 
 ## Q6  DSL_REGISTRY entries needed
 
-File: `packages/remark-acadamark/src/dsl-registry.js`
+File: `packages/remark-enscribe/src/dsl-registry.js`
 
 | Tag       | Handler value | Reason                                              |
 |-----------|---------------|-----------------------------------------------------|
@@ -225,8 +225,8 @@ as `data` is registered:
 1. Long-form tokenizer captures everything between `<data>` and `</data>` as
    `node.content = '\n<library | bibtex content>\n'`.
 2. `remarkRecursiveContent` re-parses this string through the inner processor,
-   which includes `remarkAcadamark`, so `<library | bibtex content>` becomes
-   an `acadamarkTag` node.
+   which includes `remarkEnscribe`, so `<library | bibtex content>` becomes
+   an `enscribeTag` node.
 3. The `library` handler receives the node normally.
 
 For multi-line BibTeX inside `<library>`:
@@ -246,8 +246,8 @@ existing ML-* multi-line support.
 | Item                         | Files             | Risk   | Scope?    |
 |------------------------------|-------------------|--------|-----------|
 | Add `data` to DSL_REGISTRY   | dsl-registry.js   | low    | yes       |
-| Comma separator in grammar   | acadamark.peggy   | low    | yes       |
-| Self-closing `<tag />`       | acadamark.peggy   | medium | **design question** — see below |
+| Comma separator in grammar   | enscribe.peggy   | low    | yes       |
+| Self-closing `<tag />`       | enscribe.peggy   | medium | **design question** — see below |
 | `node.children` model        | (do not implement)| high   | no        |
 
 ### Design question for Ariel

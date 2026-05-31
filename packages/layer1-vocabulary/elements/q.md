@@ -4,7 +4,7 @@ html_output:
   element: q
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -83,12 +83,12 @@ The result is functionally similar. Use `<q>` when you specifically want:
 
 JATS has no direct equivalent for inline quotations. The exporter typically renders `<q>` as the quoted text wrapped in Unicode quotation marks (left/right double quotes) without a JATS element wrapper.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<q>` | quoted text wrapped in `"..."` (Unicode) |
 | `cite` attribute | not exported (no JATS equivalent for inline quote sources) |
 
-This is one of several places acadamark Layer 1 doesn't fully round-trip to JATS.
+This is one of several places enscribe Layer 1 doesn't fully round-trip to JATS.
 
 ## Render-mode lowering
 

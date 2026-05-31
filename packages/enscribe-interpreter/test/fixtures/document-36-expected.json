@@ -1,0 +1,2065 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Frameable build fixture (Phase 3 slice 3b)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The frameable class",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 21,
+                          "offset": 20
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Phase 3 slice 3b builds the frameable shared capability. Three new vocab\nentries (",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 113
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 10,
+                          "offset": 195
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<fig>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 17,
+                          "offset": 202
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 19,
+                          "offset": 204
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<svg>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 26,
+                          "offset": 211
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 28,
+                          "offset": 213
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<frame>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ") join the existing handlers\n(",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 37,
+                          "offset": 222
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 2,
+                          "offset": 252
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<table>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 11,
+                          "offset": 261
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 13,
+                          "offset": 263
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<csv>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 20,
+                          "offset": 270
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 22,
+                          "offset": 272
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<tsv>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 29,
+                          "offset": 279
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 31,
+                          "offset": 281
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<mermaid>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 42,
+                          "offset": 292
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 44,
+                          "offset": 294
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<abc>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ") in the frameable\nclass. They share a frameable surface (id, title, caption, border,\nnumbered) and the same ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 51,
+                          "offset": 301
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 24,
+                          "offset": 410
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "formatLabel"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " primitive for their number-label\nrendering.",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 37,
+                          "offset": 423
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 11,
+                          "offset": 467
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 113
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 11,
+                      "offset": 467
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The ",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 6,
+                              "offset": 5
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " canonical form",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 13,
+                              "offset": 12
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 28,
+                              "offset": 27
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " is the canonical Layer 1 name; ",
+                          "position": {
+                            "start": {
+                              "line": 15,
+                              "column": 8,
+                              "offset": 520
+                            },
+                            "end": {
+                              "line": 15,
+                              "column": 40,
+                              "offset": 552
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<figure>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " is an authoring alias\nthat rewrites to ",
+                          "position": {
+                            "start": {
+                              "line": 15,
+                              "column": 50,
+                              "offset": 562
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 18,
+                              "offset": 602
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " at the normalize-to-canonical gate.",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 25,
+                              "offset": 609
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 61,
+                              "offset": 645
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 15,
+                          "column": 1,
+                          "offset": 513
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 61,
+                          "offset": 645
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figure",
+                      "properties": {
+                        "id": "fig:elephant"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "img",
+                          "properties": {
+                            "src": "elephant.jpg",
+                            "alt": "An African elephant."
+                          },
+                          "children": []
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "figcaption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 1."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "An African elephant.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 22,
+                                  "offset": 21
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The alias form:",
+                          "position": {
+                            "start": {
+                              "line": 20,
+                              "column": 1,
+                              "offset": 708
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 16,
+                              "offset": 723
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "offset": 708
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 16,
+                          "offset": 723
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figure",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "img",
+                          "properties": {
+                            "src": "zebra.jpg",
+                            "alt": "A zebra in the savanna."
+                          },
+                          "children": []
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "figcaption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 2."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "A zebra in the savanna.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 25,
+                                  "offset": 24
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Both render as HTML-native ",
+                          "position": {
+                            "start": {
+                              "line": 24,
+                              "column": 1,
+                              "offset": 775
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 28,
+                              "offset": 802
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<figure>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " elements. The handler decides the\noutput tagname; the vocab key (and the AST tagname after the gate\nrewrite) is ",
+                          "position": {
+                            "start": {
+                              "line": 24,
+                              "column": 38,
+                              "offset": 812
+                            },
+                            "end": {
+                              "line": 26,
+                              "column": 13,
+                              "offset": 925
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "fig"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " regardless.",
+                          "position": {
+                            "start": {
+                              "line": 26,
+                              "column": 18,
+                              "offset": 930
+                            },
+                            "end": {
+                              "line": 26,
+                              "column": 30,
+                              "offset": 942
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 24,
+                          "column": 1,
+                          "offset": 775
+                        },
+                        "end": {
+                          "line": 26,
+                          "column": 30,
+                          "offset": 942
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "DSL counter assignments",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 25,
+                              "offset": 24
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Slice 3a wired the math envs into the equation counter. Slice 3b\nextends NUMBERED_TAGNAMES with the DSL handlers' counter assignments:\n",
+                          "position": {
+                            "start": {
+                              "line": 30,
+                              "column": 1,
+                              "offset": 985
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 1,
+                              "offset": 1120
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<csv>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " and ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 8,
+                              "offset": 1127
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 13,
+                              "offset": 1132
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<tsv>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " share the ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 20,
+                              "offset": 1139
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 31,
+                              "offset": 1150
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "table"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " counter with ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 38,
+                              "offset": 1157
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 52,
+                              "offset": 1171
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<table>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "; ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 61,
+                              "offset": 1180
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 63,
+                              "offset": 1182
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<mermaid>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "\nand ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 74,
+                              "offset": 1193
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 5,
+                              "offset": 1198
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<abc>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " share the ",
+                          "position": {
+                            "start": {
+                              "line": 33,
+                              "column": 12,
+                              "offset": 1205
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 23,
+                              "offset": 1216
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "figure"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " counter with ",
+                          "position": {
+                            "start": {
+                              "line": 33,
+                              "column": 31,
+                              "offset": 1224
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 45,
+                              "offset": 1238
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ".",
+                          "position": {
+                            "start": {
+                              "line": 33,
+                              "column": 52,
+                              "offset": 1245
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 53,
+                              "offset": 1246
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 30,
+                          "column": 1,
+                          "offset": 985
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 53,
+                          "offset": 1246
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A standalone CSV with a table cross-reference:",
+                          "position": {
+                            "start": {
+                              "line": 35,
+                              "column": 1,
+                              "offset": 1248
+                            },
+                            "end": {
+                              "line": 35,
+                              "column": 47,
+                              "offset": 1294
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 35,
+                          "column": 1,
+                          "offset": 1248
+                        },
+                        "end": {
+                          "line": 35,
+                          "column": 47,
+                          "offset": 1294
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "table",
+                      "properties": {
+                        "id": "tab:salaries"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "caption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "table-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Table 1."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Software engineer salary by level"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "thead",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "th",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "level"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "th",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "median"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "th",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "p90"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tbody",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "junior"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "90000"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "120000"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "senior"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "160000"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "210000"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "staff"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "260000"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "340000"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A mermaid diagram on the figure counter:",
+                          "position": {
+                            "start": {
+                              "line": 44,
+                              "column": 1,
+                              "offset": 1446
+                            },
+                            "end": {
+                              "line": 44,
+                              "column": 41,
+                              "offset": 1486
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 44,
+                          "column": 1,
+                          "offset": 1446
+                        },
+                        "end": {
+                          "line": 44,
+                          "column": 41,
+                          "offset": 1486
+                        }
+                      }
+                    },
+                    {
+                      "type": "root",
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "pre",
+                          "properties": {
+                            "className": [
+                              "mermaid"
+                            ],
+                            "dataEnscribeDsl": "mermaid",
+                            "id": "fig:flow"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "graph LR\n  A[Source] --> B[Parser]\n  B --> C[AST]\n  C --> D[HTML]"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "figcaption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 3."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "Compilation flow"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Cross-references resolve with the right prefixes — ",
+                          "position": {
+                            "start": {
+                              "line": 53,
+                              "column": 1,
+                              "offset": 1613
+                            },
+                            "end": {
+                              "line": 53,
+                              "column": 52,
+                              "offset": 1664
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#tab:salaries",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "table 1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "\nresolves to \"table 3\" (1: the ",
+                          "position": {
+                            "start": {
+                              "line": 53,
+                              "column": 71,
+                              "offset": 1683
+                            },
+                            "end": {
+                              "line": 54,
+                              "column": 31,
+                              "offset": 1714
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig src=elephant.jpg>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " aliased above\ncounts as a ",
+                          "position": {
+                            "start": {
+                              "line": 54,
+                              "column": 55,
+                              "offset": 1738
+                            },
+                            "end": {
+                              "line": 55,
+                              "column": 13,
+                              "offset": 1765
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " registration; 2: the zebra; ... actually wait,\nthe table counter is independent — this is \"table 1\"). And\n",
+                          "position": {
+                            "start": {
+                              "line": 55,
+                              "column": 20,
+                              "offset": 1772
+                            },
+                            "end": {
+                              "line": 57,
+                              "column": 1,
+                              "offset": 1879
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#fig:flow",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "figure 3"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " resolves to \"figure 3\" (1: elephant, 2: zebra, 3: flow).",
+                          "position": {
+                            "start": {
+                              "line": 57,
+                              "column": 16,
+                              "offset": 1894
+                            },
+                            "end": {
+                              "line": 57,
+                              "column": 73,
+                              "offset": 1951
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 53,
+                          "column": 1,
+                          "offset": 1613
+                        },
+                        "end": {
+                          "line": 57,
+                          "column": 73,
+                          "offset": 1951
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Theorem-family label rendering",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 32,
+                              "offset": 31
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Slice 3b's theorem-family handler renders the \"Theorem N (Name).\" label\nspans that slice 3a left deferred (the registry-side numbering landed in\n3a; the visible labels in 3b).",
+                          "position": {
+                            "start": {
+                              "line": 61,
+                              "column": 1,
+                              "offset": 2001
+                            },
+                            "end": {
+                              "line": 63,
+                              "column": 31,
+                              "offset": 2176
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 61,
+                          "column": 1,
+                          "offset": 2001
+                        },
+                        "end": {
+                          "line": 63,
+                          "column": 31,
+                          "offset": 2176
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "theorem",
+                      "properties": {
+                        "id": "thm:fundamental",
+                        "data-name": "Fundamental Theorem of Arithmetic"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "theorem-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Theorem 1 (Fundamental Theorem of Arithmetic)."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "Every integer greater than 1 either is prime itself or is the product\nof prime numbers, and that this product is unique up to ordering.",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 1,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 3,
+                              "column": 66,
+                              "offset": 136
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "lemma",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "lemma-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Lemma 2."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "Every nonempty subset of the natural numbers has a least element.",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 1,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 2,
+                              "column": 66,
+                              "offset": 66
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "proof",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "proof-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Proof."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "By induction on the size of the subset.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 41,
+                              "offset": 40
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Cross-reference to ",
+                          "position": {
+                            "start": {
+                              "line": 76,
+                              "column": 1,
+                              "offset": 2529
+                            },
+                            "end": {
+                              "line": 76,
+                              "column": 20,
+                              "offset": 2548
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#thm:fundamental",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "theorem 1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " resolves to \"theorem 1\".",
+                          "position": {
+                            "start": {
+                              "line": 76,
+                              "column": 42,
+                              "offset": 2570
+                            },
+                            "end": {
+                              "line": 76,
+                              "column": 67,
+                              "offset": 2595
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 76,
+                          "column": 1,
+                          "offset": 2529
+                        },
+                        "end": {
+                          "line": 76,
+                          "column": 67,
+                          "offset": 2595
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The +border frameable surface",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 31,
+                              "offset": 30
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The ",
+                          "position": {
+                            "start": {
+                              "line": 80,
+                              "column": 1,
+                              "offset": 2644
+                            },
+                            "end": {
+                              "line": 80,
+                              "column": 5,
+                              "offset": 2648
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "+border"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " flag opts a ",
+                          "position": {
+                            "start": {
+                              "line": 80,
+                              "column": 14,
+                              "offset": 2657
+                            },
+                            "end": {
+                              "line": 80,
+                              "column": 27,
+                              "offset": 2670
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " into the frameable-border class. Off\nby default for ",
+                          "position": {
+                            "start": {
+                              "line": 80,
+                              "column": 34,
+                              "offset": 2677
+                            },
+                            "end": {
+                              "line": 81,
+                              "column": 16,
+                              "offset": 2730
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<fig>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ".",
+                          "position": {
+                            "start": {
+                              "line": 81,
+                              "column": 23,
+                              "offset": 2737
+                            },
+                            "end": {
+                              "line": 81,
+                              "column": 24,
+                              "offset": 2738
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 80,
+                          "column": 1,
+                          "offset": 2644
+                        },
+                        "end": {
+                          "line": 81,
+                          "column": 24,
+                          "offset": 2738
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figure",
+                      "properties": {
+                        "className": [
+                          "frameable-border"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "img",
+                          "properties": {
+                            "src": "plot.png",
+                            "alt": "A plot with a frame around it."
+                          },
+                          "children": []
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "figcaption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 4."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "A plot with a frame around it.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 32,
+                                  "offset": 31
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The class flows through to the rendered ",
+                          "position": {
+                            "start": {
+                              "line": 85,
+                              "column": 1,
+                              "offset": 2801
+                            },
+                            "end": {
+                              "line": 85,
+                              "column": 41,
+                              "offset": 2841
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<figure>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " so theme stylesheets\ncan target it.",
+                          "position": {
+                            "start": {
+                              "line": 85,
+                              "column": 51,
+                              "offset": 2851
+                            },
+                            "end": {
+                              "line": 86,
+                              "column": 15,
+                              "offset": 2887
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 85,
+                          "column": 1,
+                          "offset": 2801
+                        },
+                        "end": {
+                          "line": 86,
+                          "column": 15,
+                          "offset": 2887
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 87,
+      "column": 1,
+      "offset": 2888
+    }
+  }
+}

@@ -18,7 +18,7 @@ const _a = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -74,7 +74,7 @@ const _a = Object.freeze({
         "ext-link-type": "uri",
         "xlink:href": "from href",
       },
-      "notes": "JATS uses <ext-link> for external links and <xref> for internal\ncross-references. Acadamark's <a> maps to <ext-link> for external\nURLs; for internal references (acadamark id targets), the JATS\nexporter typically transforms the link into an <xref> instead.\n",
+      "notes": "JATS uses <ext-link> for external links and <xref> for internal\ncross-references. Enscribe's <a> maps to <ext-link> for external\nURLs; for internal references (enscribe id targets), the JATS\nexporter typically transforms the link into an <xref> instead.\n",
     },
     "shorthand_examples": [
       {
@@ -107,7 +107,7 @@ const _abbr = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -135,7 +135,7 @@ const _abbr = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "abbrev",
-      "notes": "JATS uses <abbrev> with the expansion typically supplied either\nas the content of a child <def> element or as the title-like\nattribute, depending on the JATS version. The exporter maps\nacadamark's title kwarg to the JATS form the target schema expects.\n",
+      "notes": "JATS uses <abbrev> with the expansion typically supplied either\nas the content of a child <def> element or as the title-like\nattribute, depending on the JATS version. The exporter maps\nenscribe's title kwarg to the JATS form the target schema expects.\n",
     },
     "shorthand_examples": [
       {
@@ -159,9 +159,9 @@ const _abc = Object.freeze({
       "element": "abc",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"abc\" data-acadamark-dsl=\"abc\">…</pre>` — `<pre>`,\nmatching Mermaid, so the line-oriented ABC source survives HTML\nserialization verbatim); the schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<abc>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Acadamark preserves the source as marked\nmarkup; rendering to SVG happens external to acadamark — at view\ntime in the browser (the consumer initializes abcjs with a small\nscript calling `ABCJS.renderAbc` on each marked block) or at\nbuild time via a headless pre-render pass.\n",
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"abc\" data-enscribe-dsl=\"abc\">…</pre>` — `<pre>`,\nmatching Mermaid, so the line-oriented ABC source survives HTML\nserialization verbatim); the schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<abc>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Enscribe preserves the source as marked\nmarkup; rendering to SVG happens external to enscribe — at view\ntime in the browser (the consumer initializes abcjs with a small\nscript calling `ABCJS.renderAbc` on each marked block) or at\nbuild time via a headless pre-render pass.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -181,17 +181,17 @@ const _abc = Object.freeze({
     },
     "content": {
       "type": "opaque",
-      "notes": "Author writes ABC notation source verbatim. Acadamark preserves the\ncontent unmodified inside the wrapper element. abcjs's rendering\nlibrary (loaded from CDN at view time, or run at build time)\nparses the source.\n",
+      "notes": "Author writes ABC notation source verbatim. Enscribe preserves the\ncontent unmodified inside the wrapper element. abcjs's rendering\nlibrary (loaded from CDN at view time, or run at build time)\nparses the source.\n",
     },
     "content_handler": "abc",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; rendered as <graphic>/<inline-graphic> at export)",
-      "notes": "JATS has no ABC-notation counterpart. At JATS export the rendered\nnotation (SVG or staff image, produced by the consumer's tooling)\nis embedded as a `<graphic>` element. The acadamark source itself\nis preserved in the canonical Layer 1 form for round-trip; export\nemits the rendered notation instead of the source.\n",
+      "notes": "JATS has no ABC-notation counterpart. At JATS export the rendered\nnotation (SVG or staff image, produced by the consumer's tooling)\nis embedded as a `<graphic>` element. The enscribe source itself\nis preserved in the canonical Layer 1 form for round-trip; export\nemits the rendered notation instead of the source.\n",
     },
     "shorthand_examples": [
       {
         "source": "<abc>\nX:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |\n</abc>\n",
-        "layer1_html": "<pre class=\"abc\" data-acadamark-dsl=\"abc\">X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |</pre>\n",
+        "layer1_html": "<pre class=\"abc\" data-enscribe-dsl=\"abc\">X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |</pre>\n",
         "notes": "An ABC notation excerpt. The wrapper preserves the source verbatim\nfor the consumer's abcjs initialization to find and render.\n",
       },
     ],
@@ -199,8 +199,8 @@ const _abc = Object.freeze({
     "handler_module": "./handlers/abc.js",
     "handler_responsibilities": [
       "Read the opaque content as ABC notation source.",
-      "Emit a `<pre class=\"abc\" data-acadamark-dsl=\"abc\">…</pre>` wrapper preserving the source verbatim.",
-      "Apply id / classes from the node (the `abc` class is added by the handler alongside any author-supplied classes; the `data-acadamark-dsl` attribute is always present).",
+      "Emit a `<pre class=\"abc\" data-enscribe-dsl=\"abc\">…</pre>` wrapper preserving the source verbatim.",
+      "Apply id / classes from the node (the `abc` class is added by the handler alongside any author-supplied classes; the `data-enscribe-dsl` attribute is always present).",
       "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
     ],
     "_sourceFile": "abc.md",
@@ -213,7 +213,7 @@ const _abstract = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -286,7 +286,7 @@ const _affiliation = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -307,7 +307,7 @@ const _affiliation = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "aff",
-      "notes": "JATS uses <aff> inside <contrib> (the JATS counterpart of <author>).\nMultiple authors sharing an affiliation reference it by id via\n<xref ref-type=\"aff\" rid=\"...\">; the exporter generates the xref\nstructure from acadamark's affiliation ids.\n",
+      "notes": "JATS uses <aff> inside <contrib> (the JATS counterpart of <author>).\nMultiple authors sharing an affiliation reference it by id via\n<xref ref-type=\"aff\" rid=\"...\">; the exporter generates the xref\nstructure from enscribe's affiliation ids.\n",
     },
     "shorthand_examples": [
       {
@@ -333,7 +333,7 @@ const _align = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<align>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -382,7 +382,7 @@ const _article_back = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -417,7 +417,7 @@ const _article_body = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -450,7 +450,7 @@ const _article_front = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -488,7 +488,7 @@ const _article_subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -520,7 +520,7 @@ const _article_title = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -552,7 +552,7 @@ const _article = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -609,7 +609,7 @@ const _article = Object.freeze({
     "title_extraction": true,
     "jats_counterpart": {
       "element": "article",
-      "notes": "JATS <article> wraps <front>, <body>, and <back>. Acadamark uses\n<article-front>, <article-body>, <article-back> as parallel custom\nelements. The mapping is direct. JATS's article-type attribute (with\nvalues like research-article, review-article, editorial, etc.) is\nnot currently set by acadamark — sub-classification within the\narticle category is deferred until a JATS-export slice needs it.\n",
+      "notes": "JATS <article> wraps <front>, <body>, and <back>. Enscribe uses\n<article-front>, <article-body>, <article-back> as parallel custom\nelements. The mapping is direct. JATS's article-type attribute (with\nvalues like research-article, review-article, editorial, etc.) is\nnot currently set by enscribe — sub-classification within the\narticle category is deferred until a JATS-export slice needs it.\n",
     },
     "shorthand_examples": [
       {
@@ -631,8 +631,8 @@ const _article = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkArticleStructuring",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeArticleStructuring",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Reads <meta type=article> (or <meta> with no type, defaulting to\narticle) and generates the <article> wrapper plus\n<article-front>/<article-body>/<article-back> regions. Promotes\n<title>/<subtitle> in <meta> to <article-title>/<article-subtitle>.\nHonors explicit <article> if the author wrote it. See\nnotes/specs/pipeline.md for the full pipeline.\n",
       },
     ],
@@ -646,7 +646,7 @@ const _aside = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -709,7 +709,7 @@ const _author = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -774,12 +774,12 @@ const _author = Object.freeze({
           "multiple": true,
         },
       ],
-      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\nacadamark-core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
+      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\nenscribe-core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
     },
     "content_handler": "default",
     "jats_counterpart": {
       "element": "contrib contrib-type=\"author\"",
-      "notes": "JATS uses <contrib contrib-type=\"author\"> for authors. The structural\nJATS form uses <name><given-names>...</given-names><surname>...</surname></name>\ninside <contrib>. Acadamark's <name> is a single unparsed string\nmatching JATS's <string-name>; the exporter elects to emit\n<string-name> verbatim or decompose it into <surname>/<given-names>\nper the target schema's requirements. <affiliation>, <orcid>,\n<email> map to JATS <aff>, <contrib-id contrib-id-type=\"orcid\">,\nand <email> respectively. +corresponding becomes corresp=\"yes\" on\nthe <contrib> element.\n",
+      "notes": "JATS uses <contrib contrib-type=\"author\"> for authors. The structural\nJATS form uses <name><given-names>...</given-names><surname>...</surname></name>\ninside <contrib>. Enscribe's <name> is a single unparsed string\nmatching JATS's <string-name>; the exporter elects to emit\n<string-name> verbatim or decompose it into <surname>/<given-names>\nper the target schema's requirements. <affiliation>, <orcid>,\n<email> map to JATS <aff>, <contrib-id contrib-id-type=\"orcid\">,\nand <email> respectively. +corresponding becomes corresp=\"yes\" on\nthe <contrib> element.\n",
     },
     "shorthand_examples": [
       {
@@ -814,7 +814,7 @@ const _b = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -871,9 +871,9 @@ const _bib_entry = Object.freeze({
       "element": "bib-entry",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <bib-entry> is a custom element representing a single\nbibliography entry in structured acadamark form. Distinct from\n<library> (opaque format) and external file references — this is\nthe acadamark-native way to write a bibliography entry.\n",
+      "notes": "Enscribe's <bib-entry> is a custom element representing a single\nbibliography entry in structured enscribe form. Distinct from\n<library> (opaque format) and external file references — this is\nthe enscribe-native way to write a bibliography entry.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -984,8 +984,8 @@ const _bib_entry = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkBibEntryRegistration",
-        "runs_before": "acadamarkCitationResolution",
+        "name": "enscribeBibEntryRegistration",
+        "runs_before": "enscribeCitationResolution",
         "purpose": "Registers <bib-entry> elements in the citation registry. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -998,9 +998,9 @@ const _bibliography = Object.freeze({
       "element": "bibliography",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <bibliography> is the rendered bibliography container.\nDistinct from JATS's <ref-list>; the elements correspond but the names differ.\n",
+      "notes": "Enscribe's <bibliography> is the rendered bibliography container.\nDistinct from JATS's <ref-list>; the elements correspond but the names differ.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1093,14 +1093,14 @@ const _bibliography = Object.freeze({
     "interpreter_strategy": "schema",
     "generated_by": [
       {
-        "plugin": "acadamarkBibliographyAssembly",
+        "plugin": "enscribeBibliographyAssembly",
         "when": "The document has citations or bibliography entries. The plugin\ncollects all cited entries from the citation registry and renders\nthem as children of <bibliography>. Auto-placed in article-back\nor book-back unless explicitly written by the author.\n",
       },
     ],
     "related_plugins": [
       {
-        "name": "acadamarkBibliographyAssembly",
-        "runs_after": "acadamarkCitationResolution",
+        "name": "enscribeBibliographyAssembly",
+        "runs_after": "enscribeCitationResolution",
         "purpose": "Assembles cited entries into <bibliography> per the configured style. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -1114,7 +1114,7 @@ const _blockquote = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1194,7 +1194,7 @@ const _book_back = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1230,7 +1230,7 @@ const _book_body = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1262,7 +1262,7 @@ const _book_front = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1301,7 +1301,7 @@ const _book_part_subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1333,7 +1333,7 @@ const _book_part_title = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1365,7 +1365,7 @@ const _book_part = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1516,8 +1516,8 @@ const _book_part = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkBookStructuring",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeBookStructuring",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Generates <book-part> from <meta type=book-part> or from book-part\nshorthand expansions (<chapter>, <part>, <appendix>, etc.). Inside\neach <book-part>, <meta> and body content sit directly — no nested\nfront/body/back wrappers. Promotes <title>/<subtitle> in <meta> to\n<book-part-title>/<book-part-subtitle>. At the book level, places\nbook-parts into the appropriate region (<book-front>, <book-body>,\n<book-back>) based on book-part-type. See notes/specs/pipeline.md.\n",
       },
     ],
@@ -1537,7 +1537,7 @@ const _book_subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1569,7 +1569,7 @@ const _book_title = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1601,7 +1601,7 @@ const _book = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1659,7 +1659,7 @@ const _book = Object.freeze({
     "title_extraction": true,
     "jats_counterpart": {
       "element": "book",
-      "notes": "JATS <book> wraps <book-front>, <book-body>, and <book-back>. Acadamark's\nstructural elements map directly. JATS uses <book-part> recursively for\nall major divisions discriminated by the book-part-type attribute.\nJATS's book-type attribute (with values like monograph, edited-volume,\ntextbook, etc.) is not currently set by acadamark — sub-classification\nwithin the book category is deferred until a JATS-export slice needs it.\n",
+      "notes": "JATS <book> wraps <book-front>, <book-body>, and <book-back>. Enscribe's\nstructural elements map directly. JATS uses <book-part> recursively for\nall major divisions discriminated by the book-part-type attribute.\nJATS's book-type attribute (with values like monograph, edited-volume,\ntextbook, etc.) is not currently set by enscribe — sub-classification\nwithin the book category is deferred until a JATS-export slice needs it.\n",
     },
     "shorthand_examples": [
       {
@@ -1675,8 +1675,8 @@ const _book = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkBookStructuring",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeBookStructuring",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Reads <meta type=book> and generates the <book> wrapper plus\n<book-front>/<book-body>/<book-back> regions. Promotes\n<title>/<subtitle> in <meta> to <book-title>/<book-subtitle>.\nExpands book-part shorthands (<chapter>, <part>, <appendix>, etc.)\nto <book-part book-part-type=\"...\">. Honors explicit <book> if\nthe author wrote it. See notes/specs/pipeline.md for the full pipeline.\n",
       },
     ],
@@ -1697,7 +1697,7 @@ const _cases = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<cases>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1745,9 +1745,9 @@ const _cite = Object.freeze({
       "element": "cite",
       "is_html_native": true,
       "default_attributes": {},
-      "notes": "Acadamark's <cite> overlaps with HTML's <cite> (which marks \"the title\nof a work\"). Acadamark uses the element more broadly: it represents a\ncitation to a bibliography entry, with the rendered output determined\nby the citation style. The semantic intent is similar (referencing\nother work) but acadamark's version carries citation-resolver semantics\nthat HTML's plain <cite> doesn't.\n",
+      "notes": "Enscribe's <cite> overlaps with HTML's <cite> (which marks \"the title\nof a work\"). Enscribe uses the element more broadly: it represents a\ncitation to a bibliography entry, with the rendered output determined\nby the citation style. The semantic intent is similar (referencing\nother work) but enscribe's version carries citation-resolver semantics\nthat HTML's plain <cite> doesn't.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1811,7 +1811,7 @@ const _cite = Object.freeze({
       "attributes": {
         "rid": "from cite key",
       },
-      "notes": "JATS uses <xref ref-type=\"bibr\" rid=\"...\"> for inline citations.\nThe rendered text inside the JATS xref is the citation marker\n(typically a number or author-year string). Acadamark's <cite>\nmaps directly. Multiple keys produce multiple <xref> elements\ngrouped together.\n",
+      "notes": "JATS uses <xref ref-type=\"bibr\" rid=\"...\"> for inline citations.\nThe rendered text inside the JATS xref is the citation marker\n(typically a number or author-year string). Enscribe's <cite>\nmaps directly. Multiple keys produce multiple <xref> elements\ngrouped together.\n",
     },
     "shorthand_examples": [
       {
@@ -1854,8 +1854,8 @@ const _cite = Object.freeze({
     ],
     "related_plugins": [
       {
-        "name": "acadamarkCiteResolution",
-        "runs_after": "acadamarkLibraryLoad, acadamarkArticleStructuring",
+        "name": "enscribeCiteResolution",
+        "runs_after": "enscribeLibraryLoad, enscribeArticleStructuring",
         "purpose": "Resolves <cite> elements against the citation registry; generates rendered markers. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -1869,7 +1869,7 @@ const _code_block = Object.freeze({
       "is_html_native": false,
       "notes": "The vocabulary entry key is \"code-block\", but the rendered HTML does NOT\nuse a <code-block> wrapping element. The handler emits <pre><code ...>\ndirectly, matching the output of markdown fenced code blocks. The element\nfield is used only as a dispatch key for the interpreter.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1885,7 +1885,7 @@ const _code_block = Object.freeze({
     },
     "content": {
       "type": "opaque",
-      "notes": "The pipe content is verbatim code source. No markdown idioms or acadamark\nconstructs are interpreted inside the code block. Newlines are preserved.\n",
+      "notes": "The pipe content is verbatim code source. No markdown idioms or enscribe\nconstructs are interpreted inside the code block. Newlines are preserved.\n",
     },
     "interpreter_strategy": "handler",
     "handler_module": "./handlers/code-block.js",
@@ -1903,7 +1903,7 @@ const _code = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1926,12 +1926,12 @@ const _code = Object.freeze({
     "content": {
       "type": "opaque",
       "becomes": "text-content",
-      "notes": "Code content is preserved verbatim. No markdown idioms or acadamark\nconstructs are interpreted inside <code> elements.\n",
+      "notes": "Code content is preserved verbatim. No markdown idioms or enscribe\nconstructs are interpreted inside <code> elements.\n",
     },
     "content_handler": "code",
     "jats_counterpart": {
       "element": "monospace",
-      "notes": "JATS uses <monospace> for inline code-like content. For block-level\ncode, JATS uses <code> wrapped in <preformat>. Acadamark's inline\n<code> maps to JATS <monospace>.\n",
+      "notes": "JATS uses <monospace> for inline code-like content. For block-level\ncode, JATS uses <code> wrapped in <preformat>. Enscribe's inline\n<code> maps to JATS <monospace>.\n",
     },
     "shorthand_examples": [
       {
@@ -1942,7 +1942,7 @@ const _code = Object.freeze({
       {
         "source": "Use `<`code`>` for inline code.",
         "layer1_html": "<p>Use <code>code</code> for inline code.</p>",
-        "notes": "The acadamark sigil form. Equivalent to plain markdown backticks\nbut supports attributes.\n",
+        "notes": "The enscribe sigil form. Equivalent to plain markdown backticks\nbut supports attributes.\n",
       },
       {
         "source": "<code language=python | def hello(): print(\"hi\")>",
@@ -1971,9 +1971,9 @@ const _config = Object.freeze({
       "element": "config",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <config> is a custom element. It does not produce inline\noutput; it carries build-time and render-time configuration that the\npipeline reads to determine how to process the document. The element\nis parsed during a discovery pass before body rendering.\n",
+      "notes": "Enscribe's <config> is a custom element. It does not produce inline\noutput; it carries build-time and render-time configuration that the\npipeline reads to determine how to process the document. The element\nis parsed during a discovery pass before body rendering.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -1985,7 +1985,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/acadamark-interpreter/src/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe-interpreter/src/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
       },
     },
     "content": {
@@ -2033,7 +2033,7 @@ const _config = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "no direct equivalent",
-      "notes": "JATS doesn't have a single configuration element. Most configuration\nis handled at the publication-system level, not in JATS. Acadamark's\n<config> is decomposed at JATS export — relevant settings affect how\nthe export is generated; they don't appear in JATS output.\n",
+      "notes": "JATS doesn't have a single configuration element. Most configuration\nis handled at the publication-system level, not in JATS. Enscribe's\n<config> is decomposed at JATS export — relevant settings affect how\nthe export is generated; they don't appear in JATS output.\n",
     },
     "shorthand_examples": [
       {
@@ -2049,8 +2049,8 @@ const _config = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkConfigDiscovery",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeConfigDiscovery",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Phase 1 discovery — extracts <config> values into the configuration registry. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -2064,7 +2064,7 @@ const _corollary = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2126,7 +2126,7 @@ const _csv = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). `<csv>` is a DSL — its content is comma-separated\nsource data, parsed by the CSV handler and rendered as a real HTML\n`<table>` element. The schema `html_output.element` field is ignored\nbecause `interpreter_strategy: handler` routes through the handler\ninstead; the handler builds the `<table>` shape directly. `<csv>`\nitself does not appear in the rendered HTML.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2154,7 +2154,7 @@ const _csv = Object.freeze({
     "content": {
       "type": "opaque",
       "becomes": "parsed CSV rows (rendered as <table>)",
-      "notes": "Content is comma-separated source data, preserved verbatim and parsed\nby the handler. No acadamark interpretation. Quoted fields with RFC\n4180 escaping are supported (same parser as `<table csv>`).\n",
+      "notes": "Content is comma-separated source data, preserved verbatim and parsed\nby the handler. No enscribe interpretation. Quoted fields with RFC\n4180 escaping are supported (same parser as `<table csv>`).\n",
     },
     "content_handler": "csv",
     "jats_counterpart": {
@@ -2190,9 +2190,9 @@ const _data = Object.freeze({
       "element": "data",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <data> is a custom element. It does not produce inline\noutput; it holds resources that other parts of the document reference.\nThe element is parsed and processed for its contents but does not\nrender visibly in the document body.\n",
+      "notes": "Enscribe's <data> is a custom element. It does not produce inline\noutput; it holds resources that other parts of the document reference.\nThe element is parsed and processed for its contents but does not\nrender visibly in the document body.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2217,7 +2217,7 @@ const _data = Object.freeze({
           "element": "bib-entry",
           "required": false,
           "multiple": true,
-          "notes": "Structured bibliography entries authored in acadamark form.",
+          "notes": "Structured bibliography entries authored in enscribe form.",
         },
         {
           "element": "embedded-image",
@@ -2236,7 +2236,7 @@ const _data = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "no direct equivalent",
-      "notes": "JATS doesn't have a single resource-block element. Acadamark's <data>\nis decomposed at JATS export: <library> entries are merged into\n<ref-list>; <bib-entry> entries become <ref> elements; embedded image\ndata becomes <graphic> with embedded data; etc. The <data> wrapper\nitself does not appear in JATS output.\n",
+      "notes": "JATS doesn't have a single resource-block element. Enscribe's <data>\nis decomposed at JATS export: <library> entries are merged into\n<ref-list>; <bib-entry> entries become <ref> elements; embedded image\ndata becomes <graphic> with embedded data; etc. The <data> wrapper\nitself does not appear in JATS output.\n",
     },
     "shorthand_examples": [
       {
@@ -2247,17 +2247,17 @@ const _data = Object.freeze({
       {
         "source": "<data>\n  <bib-entry id=goodall2024>\n    <author | Jane Goodall>\n    <year | 2024>\n    <title | The Effect of Elephants on Climate>\n    <journal | Nature>\n  </bib-entry>\n</data>\n",
         "layer1_html": "<data>\n  <bib-entry id=\"goodall2024\">\n    <author>Jane Goodall</author>\n    <year>2024</year>\n    <title>The Effect of Elephants on Climate</title>\n    <journal>Nature</journal>\n  </bib-entry>\n</data>\n",
-        "notes": "Inline structured bibliography entry. Acadamark-native form.\n",
+        "notes": "Inline structured bibliography entry. Enscribe-native form.\n",
       },
     ],
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkLibraryParsing",
+        "name": "enscribeLibraryParsing",
         "purpose": "Phase 1 discovery — parses <library> blocks into the citation registry. See notes/specs/pipeline.md for the full pipeline.",
       },
       {
-        "name": "acadamarkResourceCollection",
+        "name": "enscribeResourceCollection",
         "purpose": "Phase 1 discovery — collects <data> blocks regardless of source position. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -2271,7 +2271,7 @@ const _date = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2357,7 +2357,7 @@ const _dd = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2402,7 +2402,7 @@ const _definition = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2463,7 +2463,7 @@ const _details = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2536,7 +2536,7 @@ const _display_math = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2576,7 +2576,7 @@ const _dl = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2614,12 +2614,12 @@ const _dl = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "def-list",
-      "notes": "JATS uses <def-list> for definition lists, with <def-item> wrapping\neach term/definition pair: <def-list><def-item><term/><def/>\n</def-item>...</def-list>. Acadamark's <dl> follows HTML's flatter\npattern (alternating <dt>/<dd> siblings); the JATS exporter groups\nadjacent <dt>/<dd> pairs into <def-item> wrappers at export.\n",
+      "notes": "JATS uses <def-list> for definition lists, with <def-item> wrapping\neach term/definition pair: <def-list><def-item><term/><def/>\n</def-item>...</def-list>. Enscribe's <dl> follows HTML's flatter\npattern (alternating <dt>/<dd> siblings); the JATS exporter groups\nadjacent <dt>/<dd> pairs into <def-item> wrappers at export.\n",
     },
     "shorthand_examples": [
       {
-        "source": "<dl>\n  <dt | acadamark>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n  <dt | Layer 1>\n  <dd | The canonical semantic HTML vocabulary.>\n  <dt | Layer 2>\n  <dd | The shorthand authoring syntax that compiles to Layer 1.>\n</dl>\n",
-        "layer1_html": "<dl>\n  <dt>acadamark</dt>\n  <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n  <dt>Layer 1</dt>\n  <dd>The canonical semantic HTML vocabulary.</dd>\n  <dt>Layer 2</dt>\n  <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>\n</dl>\n",
+        "source": "<dl>\n  <dt | enscribe>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n  <dt | Layer 1>\n  <dd | The canonical semantic HTML vocabulary.>\n  <dt | Layer 2>\n  <dd | The shorthand authoring syntax that compiles to Layer 1.>\n</dl>\n",
+        "layer1_html": "<dl>\n  <dt>enscribe</dt>\n  <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n  <dt>Layer 1</dt>\n  <dd>The canonical semantic HTML vocabulary.</dd>\n  <dt>Layer 2</dt>\n  <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>\n</dl>\n",
         "notes": "Long-form <dl> with short-form <dt>/<dd> children. The natural\nauthoring pattern.\n",
       },
       {
@@ -2639,7 +2639,7 @@ const _doi = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2687,7 +2687,7 @@ const _dt = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2711,8 +2711,8 @@ const _dt = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "<dt | acadamark>",
-        "layer1_html": "<dt>acadamark</dt>",
+        "source": "<dt | enscribe>",
+        "layer1_html": "<dt>enscribe</dt>",
         "notes": "A definition-list term. Appears as a child of <dl>.\n",
       },
       {
@@ -2732,7 +2732,7 @@ const _editor = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2805,7 +2805,7 @@ const _em = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2856,7 +2856,7 @@ const _email = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2897,7 +2897,7 @@ const _eqnarray = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<eqnarray>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -2911,7 +2911,7 @@ const _eqnarray = Object.freeze({
     },
     "content": {
       "type": "opaque",
-      "notes": "Author writes pure environment body (each line `lhs & op & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. KaTeX\ndoes not implement the LaTeX `eqnarray` environment standalone;\n`aligned` is the supported KaTeX equivalent and renders the same\nmulti-line-equation visual output. `<eqnarray>` exists alongside\n`<align>` for LaTeX-source compatibility: an author copying\n`\\begin{eqnarray}...\\end{eqnarray}` source from a LaTeX document\nhas a target acadamark tag whose name matches.\n",
+      "notes": "Author writes pure environment body (each line `lhs & op & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. KaTeX\ndoes not implement the LaTeX `eqnarray` environment standalone;\n`aligned` is the supported KaTeX equivalent and renders the same\nmulti-line-equation visual output. `<eqnarray>` exists alongside\n`<align>` for LaTeX-source compatibility: an author copying\n`\\begin{eqnarray}...\\end{eqnarray}` source from a LaTeX document\nhas a target enscribe tag whose name matches.\n",
     },
     "content_handler": "eqnarray",
     "jats_counterpart": {
@@ -2946,7 +2946,7 @@ const _example = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3008,7 +3008,7 @@ const _fig = Object.freeze({
       "default_attributes": {},
       "notes": "The vocab key (the VOCABULARY map's key) is `fig` — the canonical\nLayer 1 tagname. The rendered HTML, however, uses the HTML5-native\n`<figure>` element: the figure handler (`handlers/figure.js`)\nhardcodes its output tagName to `'figure'`, so the value of\n`html_output.element` here is only the vocab keying signal, not the\nHTML output element. (Schema-strategy entries derive output\ntagName from this field; handler-strategy entries control output\ntagName in the handler. `<fig>` is handler-strategy, so this\nfield's value selects the vocab key only.)\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3090,7 +3090,7 @@ const _fig = Object.freeze({
       "attributes": {
         "fig-type": "from type",
       },
-      "notes": "JATS <fig> wraps <graphic> (the image) and <caption>. When src is\npresent, the exporter generates <graphic xlink:href=\"...\"> from the\nsrc kwarg. The figcaption becomes <caption>. The fig-type attribute\nmaps from acadamark's type kwarg.\n",
+      "notes": "JATS <fig> wraps <graphic> (the image) and <caption>. When src is\npresent, the exporter generates <graphic xlink:href=\"...\"> from the\nsrc kwarg. The figcaption becomes <caption>. The fig-type attribute\nmaps from enscribe's type kwarg.\n",
     },
     "shorthand_expansions": [
       {
@@ -3103,7 +3103,7 @@ const _fig = Object.freeze({
       {
         "source": "<fig src=elephant.jpg | An adult African elephant.>",
         "layer1_html": "<figure>\n  <img src=\"elephant.jpg\" alt=\"An adult African elephant.\" />\n  <figcaption>An adult African elephant.</figcaption>\n</figure>\n",
-        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly. The Layer 1\nelement is HTML-native <figure> (not the custom-element <fig>)\nbecause the HTML rendering surface is the HTML5 native element\nwhile the acadamark canonical name follows JATS's shorter <fig>.\n",
+        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly. The Layer 1\nelement is HTML-native <figure> (not the custom-element <fig>)\nbecause the HTML rendering surface is the HTML5 native element\nwhile the enscribe canonical name follows JATS's shorter <fig>.\n",
       },
       {
         "source": "<figure src=elephant.jpg | An adult African elephant.>",
@@ -3142,7 +3142,7 @@ const _frame = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3229,7 +3229,7 @@ const _glossary_entry = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3266,13 +3266,13 @@ const _glossary_entry = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "def-item",
-      "notes": "JATS uses <def-item> inside <glossary> (or inside <def-list>) to\nwrap a term/definition pair. Acadamark's <glossary-entry> maps\ndirectly to JATS <def-item> — the envelope around the <term>/<def>\npair. (JATS does not have a separate \"glossary-entry\" name; the\npairing structure is provided by <def-item>.)\n",
+      "notes": "JATS uses <def-item> inside <glossary> (or inside <def-list>) to\nwrap a term/definition pair. Enscribe's <glossary-entry> maps\ndirectly to JATS <def-item> — the envelope around the <term>/<def>\npair. (JATS does not have a separate \"glossary-entry\" name; the\npairing structure is provided by <def-item>.)\n",
     },
     "shorthand_examples": [
       {
-        "source": "<glossary-entry #term:acadamark>\n  <dt | acadamark>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n</glossary-entry>\n",
-        "layer1_html": "<glossary-entry id=\"term:acadamark\">\n  <dt>acadamark</dt>\n  <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n</glossary-entry>\n",
-        "notes": "A single glossary entry. The id uses the \"term:\" colon-prefix\nconvention so cross-references like <ref @term:acadamark> can\nresolve into the entry.\n",
+        "source": "<glossary-entry #term:enscribe>\n  <dt | enscribe>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n</glossary-entry>\n",
+        "layer1_html": "<glossary-entry id=\"term:enscribe\">\n  <dt>enscribe</dt>\n  <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n</glossary-entry>\n",
+        "notes": "A single glossary entry. The id uses the \"term:\" colon-prefix\nconvention so cross-references like <ref @term:enscribe> can\nresolve into the entry.\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -3286,7 +3286,7 @@ const _glossary = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3312,12 +3312,12 @@ const _glossary = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "glossary",
-      "notes": "JATS has a <glossary> element. Acadamark's <glossary> maps directly,\nwith children mapping per <glossary-entry>'s entry. JATS's <glossary>\ncan also wrap a <def-list>; the exporter chooses the structure based\non whether the source uses <glossary> or <dl>.\n",
+      "notes": "JATS has a <glossary> element. Enscribe's <glossary> maps directly,\nwith children mapping per <glossary-entry>'s entry. JATS's <glossary>\ncan also wrap a <def-list>; the exporter chooses the structure based\non whether the source uses <glossary> or <dl>.\n",
     },
     "shorthand_examples": [
       {
-        "source": "<glossary #project-terms>\n  <glossary-entry>\n    <dt | acadamark>\n    <dd | An academic publishing system built on HTML+CSS+JS.>\n  </glossary-entry>\n  <glossary-entry>\n    <dt | Layer 1>\n    <dd | The canonical semantic HTML vocabulary.>\n  </glossary-entry>\n</glossary>\n",
-        "layer1_html": "<glossary id=\"project-terms\">\n  <glossary-entry>\n    <dt>acadamark</dt>\n    <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n  </glossary-entry>\n  <glossary-entry>\n    <dt>Layer 1</dt>\n    <dd>The canonical semantic HTML vocabulary.</dd>\n  </glossary-entry>\n</glossary>\n",
+        "source": "<glossary #project-terms>\n  <glossary-entry>\n    <dt | enscribe>\n    <dd | An academic publishing system built on HTML+CSS+JS.>\n  </glossary-entry>\n  <glossary-entry>\n    <dt | Layer 1>\n    <dd | The canonical semantic HTML vocabulary.>\n  </glossary-entry>\n</glossary>\n",
+        "layer1_html": "<glossary id=\"project-terms\">\n  <glossary-entry>\n    <dt>enscribe</dt>\n    <dd>An academic publishing system built on HTML+CSS+JS.</dd>\n  </glossary-entry>\n  <glossary-entry>\n    <dt>Layer 1</dt>\n    <dd>The canonical semantic HTML vocabulary.</dd>\n  </glossary-entry>\n</glossary>\n",
         "notes": "A glossary with two entries. Each <glossary-entry> uses <dt>/<dd>\nfor its term and definition (the same shapes <dl> uses), wrapped\nin the entry's own envelope for cross-reference / styling.\n",
       },
     ],
@@ -3332,7 +3332,7 @@ const _hr = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3366,7 +3366,7 @@ const _hr = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "hr",
-      "notes": "JATS has no direct equivalent. The closest is using <break-quote-content>\nfor similar visual effects, or simply relying on document structure.\nFor acadamark-to-JATS export, hr elements are typically replaced with\na structural break (an empty paragraph or visual marker) since JATS\nprefers explicit semantic structure over thematic breaks.\n",
+      "notes": "JATS has no direct equivalent. The closest is using <break-quote-content>\nfor similar visual effects, or simply relying on document structure.\nFor enscribe-to-JATS export, hr elements are typically replaced with\na structural break (an empty paragraph or visual marker) since JATS\nprefers explicit semantic structure over thematic breaks.\n",
     },
     "shorthand_examples": [
       {
@@ -3393,7 +3393,7 @@ const _i = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3458,7 +3458,7 @@ const _img = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3539,7 +3539,7 @@ const _inline_code = Object.freeze({
       "is_html_native": false,
       "notes": "The vocabulary entry key is \"inline-code\", but the rendered HTML does NOT\nuse an <inline-code> wrapping element. The handler emits <code ...>\ndirectly, matching the output of markdown backtick spans. The element\nfield is used only as a dispatch key for the interpreter.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3555,7 +3555,7 @@ const _inline_code = Object.freeze({
     },
     "content": {
       "type": "opaque",
-      "notes": "The pipe content is verbatim code source. No markdown idioms or acadamark\nconstructs are interpreted inside inline code.\n",
+      "notes": "The pipe content is verbatim code source. No markdown idioms or enscribe\nconstructs are interpreted inside inline code.\n",
     },
     "interpreter_strategy": "handler",
     "handler_module": "./handlers/inline-code.js",
@@ -3573,7 +3573,7 @@ const _inline_math = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3606,7 +3606,7 @@ const _kbd = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3651,7 +3651,7 @@ const _keywords = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3671,7 +3671,7 @@ const _keywords = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "kwd-group",
-      "notes": "JATS uses <kwd-group> containing <kwd> elements, inside\n<article-meta>. Comma-separated acadamark content splits on\ncommas at export time; structured <keyword> children map\ndirectly to <kwd>. Multiple <kwd-group> elements (each with a\nkwd-group-type attribute) are allowed in JATS for multi-language\nkeyword sets — acadamark does not currently model that distinction\nat the authoring layer.\n",
+      "notes": "JATS uses <kwd-group> containing <kwd> elements, inside\n<article-meta>. Comma-separated enscribe content splits on\ncommas at export time; structured <keyword> children map\ndirectly to <kwd>. Multiple <kwd-group> elements (each with a\nkwd-group-type attribute) are allowed in JATS for multi-language\nkeyword sets — enscribe does not currently model that distinction\nat the authoring layer.\n",
     },
     "shorthand_examples": [
       {
@@ -3696,7 +3696,7 @@ const _lang = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3741,7 +3741,7 @@ const _lemma = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3803,7 +3803,7 @@ const _li = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3867,9 +3867,9 @@ const _library = Object.freeze({
       "element": "library",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <library> is a custom element. It is a data block: opaque\ncontent processed by a format-specific parser, registers entries with\nthe citation system, produces no inline rendered output.\n",
+      "notes": "Enscribe's <library> is a custom element. It is a data block: opaque\ncontent processed by a format-specific parser, registers entries with\nthe citation system, produces no inline rendered output.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3901,7 +3901,7 @@ const _library = Object.freeze({
     "content": {
       "type": "opaque",
       "becomes": "parsed entries (registered in citation system)",
-      "notes": "Content is preserved verbatim and parsed by a format-specific parser.\nNo acadamark interpretation of the content. Authors typically copy\nthe content directly from a reference manager (Zotero, JabRef, etc.)\nor a text editor.\n",
+      "notes": "Content is preserved verbatim and parsed by a format-specific parser.\nNo enscribe interpretation of the content. Authors typically copy\nthe content directly from a reference manager (Zotero, JabRef, etc.)\nor a text editor.\n",
     },
     "content_handler": "library",
     "jats_counterpart": {
@@ -3922,10 +3922,10 @@ const _library = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkLibraryLoad",
-        "location": "packages/acadamark-interpreter/src/plugins/library-load.js",
-        "runs_before": "acadamarkCiteResolution",
-        "purpose": "The actual library processing happens at PLUGIN time, not at handler\ntime. `acadamarkLibraryLoad` walks `<data>` root siblings, reads each\ncontained `<library>` node's opaque content, dispatches to the\nformat-specific parser (BibTeX via citation-js, etc.), and registers\nevery entry in the citation registry. By the time interpreter\nrendering runs, the library entries are already in the registry; the\n`<library>` element itself produces no inline output (the structural\npipeline routes `<data>` into `<article-back>` where the empty\n`<library>` element is filtered from the rendered HTML).\n\nThe interpreter_strategy is `schema` (not `handler`) because no\nhandler-time work is needed — the upstream plugin has already done\neverything. A handler module entry was previously declared\n(`handler_module: ./handlers/library.js`) but pointed at a file\nthat does not exist; the declaration was stale aspirational text\nand was removed by Phase 2 slice 2a (2026-05-27). If `<library>`\never needs handler-time work in the future (e.g. a render-mode\nthat shows library content inline), the entry can be re-elevated\nto handler strategy at that time.\n",
+        "name": "enscribeLibraryLoad",
+        "location": "packages/enscribe-interpreter/src/plugins/library-load.js",
+        "runs_before": "enscribeCiteResolution",
+        "purpose": "The actual library processing happens at PLUGIN time, not at handler\ntime. `enscribeLibraryLoad` walks `<data>` root siblings, reads each\ncontained `<library>` node's opaque content, dispatches to the\nformat-specific parser (BibTeX via citation-js, etc.), and registers\nevery entry in the citation registry. By the time interpreter\nrendering runs, the library entries are already in the registry; the\n`<library>` element itself produces no inline output (the structural\npipeline routes `<data>` into `<article-back>` where the empty\n`<library>` element is filtered from the rendered HTML).\n\nThe interpreter_strategy is `schema` (not `handler`) because no\nhandler-time work is needed — the upstream plugin has already done\neverything. A handler module entry was previously declared\n(`handler_module: ./handlers/library.js`) but pointed at a file\nthat does not exist; the declaration was stale aspirational text\nand was removed by Phase 2 slice 2a (2026-05-27). If `<library>`\never needs handler-time work in the future (e.g. a render-mode\nthat shows library content inline), the entry can be re-elevated\nto handler strategy at that time.\n",
       },
     ],
     "_sourceFile": "library.md",
@@ -3938,7 +3938,7 @@ const _license = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -3969,7 +3969,7 @@ const _license = Object.freeze({
       "attributes": {
         "xlink:href": "from href",
       },
-      "notes": "JATS uses <license xlink:href=\"...\"> inside <permissions> inside\n<article-meta>. The license content can be free-form text or a\nstructured <license-p>. Acadamark's <license> maps to JATS's\n<license> directly; the href kwarg maps to xlink:href.\n",
+      "notes": "JATS uses <license xlink:href=\"...\"> inside <permissions> inside\n<article-meta>. The license content can be free-form text or a\nstructured <license-p>. Enscribe's <license> maps to JATS's\n<license> directly; the href kwarg maps to xlink:href.\n",
     },
     "shorthand_examples": [
       {
@@ -3995,7 +3995,7 @@ const _math = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits a `<math>` wrapper element directly;\nthe schema field is not consulted under\n`interpreter_strategy: handler`. (Same pattern slice 2a's csv/tsv\nentries follow.)\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4014,7 +4014,7 @@ const _math = Object.freeze({
     "content_handler": "math",
     "jats_counterpart": {
       "element": "disp-formula",
-      "notes": "JATS `<disp-formula>` wraps a displayed equation, same as the\ncounterpart for `<display-math>` (the `<$$>` sigil). The two surfaces\nare semantic synonyms in acadamark; both map to JATS\n`<disp-formula>`.\n",
+      "notes": "JATS `<disp-formula>` wraps a displayed equation, same as the\ncounterpart for `<display-math>` (the `<$$>` sigil). The two surfaces\nare semantic synonyms in enscribe; both map to JATS\n`<disp-formula>`.\n",
     },
     "shorthand_examples": [
       {
@@ -4044,7 +4044,7 @@ const _matrix = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` is the vocabulary lookup key (must match the\ntagname). Handler emits `<matrix>` wrapper directly; the schema\nfield is not consulted under `interpreter_strategy: handler`.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4092,9 +4092,9 @@ const _mermaid = Object.freeze({
       "element": "mermaid",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"mermaid\" data-acadamark-dsl=\"mermaid\">…</pre>`) so\nthe schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<mermaid>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Acadamark preserves the source as marked\nmarkup; rendering to SVG happens external to acadamark — at view\ntime in the browser (Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and renders in-place) or at build time via a\nheadless pre-render pass that finds blocks by their\n`data-acadamark-dsl=\"mermaid\"` attribute.\n",
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">…</pre>`) so\nthe schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<mermaid>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Enscribe preserves the source as marked\nmarkup; rendering to SVG happens external to enscribe — at view\ntime in the browser (Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and renders in-place) or at build time via a\nheadless pre-render pass that finds blocks by their\n`data-enscribe-dsl=\"mermaid\"` attribute.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4114,26 +4114,26 @@ const _mermaid = Object.freeze({
     },
     "content": {
       "type": "opaque",
-      "notes": "Author writes Mermaid diagram source verbatim. Acadamark preserves\nthe content unmodified inside the wrapper element. Mermaid's\nrendering library (loaded from CDN at view time, or run at build\ntime) parses the source.\n",
+      "notes": "Author writes Mermaid diagram source verbatim. Enscribe preserves\nthe content unmodified inside the wrapper element. Mermaid's\nrendering library (loaded from CDN at view time, or run at build\ntime) parses the source.\n",
     },
     "content_handler": "mermaid",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; rendered as <graphic>/<inline-graphic> at export)",
-      "notes": "JATS has no Mermaid-source counterpart. At JATS export the rendered\nSVG (produced by the consumer's view-time or build-time tooling) is\nembedded as a `<graphic>` element. The acadamark source itself\n(Mermaid notation) is preserved in the canonical Layer 1 form for\nround-trip; export emits the rendered SVG instead of the source.\n",
+      "notes": "JATS has no Mermaid-source counterpart. At JATS export the rendered\nSVG (produced by the consumer's view-time or build-time tooling) is\nembedded as a `<graphic>` element. The enscribe source itself\n(Mermaid notation) is preserved in the canonical Layer 1 form for\nround-trip; export emits the rendered SVG instead of the source.\n",
     },
     "shorthand_examples": [
       {
         "source": "<mermaid>\ngraph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]\n</mermaid>\n",
-        "layer1_html": "<pre class=\"mermaid\" data-acadamark-dsl=\"mermaid\">graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]</pre>\n",
-        "notes": "A simple flowchart. Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and replaces the `<pre>` content with rendered\nSVG. The `data-acadamark-dsl=\"mermaid\"` attribute lets build-time\ntooling find the same blocks unambiguously, independent of the\nCDN-specific class convention.\n",
+        "layer1_html": "<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]</pre>\n",
+        "notes": "A simple flowchart. Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and replaces the `<pre>` content with rendered\nSVG. The `data-enscribe-dsl=\"mermaid\"` attribute lets build-time\ntooling find the same blocks unambiguously, independent of the\nCDN-specific class convention.\n",
       },
     ],
     "interpreter_strategy": "handler",
     "handler_module": "./handlers/mermaid.js",
     "handler_responsibilities": [
       "Read the opaque content as Mermaid source.",
-      "Emit a `<pre class=\"mermaid\" data-acadamark-dsl=\"mermaid\">…</pre>` wrapper preserving the source verbatim.",
-      "Apply id / classes from the node (the `mermaid` class is added by the handler in addition to any author-supplied classes; the `data-acadamark-dsl` attribute is always present).",
+      "Emit a `<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">…</pre>` wrapper preserving the source verbatim.",
+      "Apply id / classes from the node (the `mermaid` class is added by the handler in addition to any author-supplied classes; the `data-enscribe-dsl` attribute is always present).",
       "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
     ],
     "_sourceFile": "mermaid.md",
@@ -4145,9 +4145,9 @@ const _meta = Object.freeze({
       "element": "meta",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <meta> is a custom element distinct from HTML's <meta>\n(which is a void element used for character encoding, viewport, etc.).\nAcadamark's <meta> is a structured container for descriptive metadata —\ninformation about what the document is. Operational and configuration\ncontent lives in <data> and <config>, respectively.\n",
+      "notes": "Enscribe's <meta> is a custom element distinct from HTML's <meta>\n(which is a void element used for character encoding, viewport, etc.).\nEnscribe's <meta> is a structured container for descriptive metadata —\ninformation about what the document is. Operational and configuration\ncontent lives in <data> and <config>, respectively.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4169,7 +4169,7 @@ const _meta = Object.freeze({
             "book-part",
           ],
           "default": "article",
-          "notes": "Declares the document type. Read by the structural plugin\n(acadamarkArticleStructuring / acadamarkBookStructuring) to\ndecide which Layer 1 wrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. If <meta> has no type\nkwarg the structural plugin treats the document as article-shaped.\n",
+          "notes": "Declares the document type. Read by the structural plugin\n(enscribeArticleStructuring / enscribeBookStructuring) to\ndecide which Layer 1 wrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. If <meta> has no type\nkwarg the structural plugin treats the document as article-shaped.\n",
         },
       },
     },
@@ -4232,11 +4232,11 @@ const _meta = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkArticleStructuring",
+        "name": "enscribeArticleStructuring",
         "purpose": "When <meta type=article> (or <meta> with no type, defaulting to\narticle) is present, generates the <article> wrapper plus\n<article-front>/<article-body>/<article-back> regions; promotes\n<title>/<subtitle> in <meta> to <article-title>/<article-subtitle>;\nplaces <meta> inside <article-front>. See notes/specs/pipeline.md.\n",
       },
       {
-        "name": "acadamarkBookStructuring",
+        "name": "enscribeBookStructuring",
         "purpose": "When <meta type=book> or <meta type=book-part> is present (or\nvia shorthand expansions like <chapter>), generates the\n<book>/<book-part> wrapper. For books: also generates\n<book-front>/<book-body>/<book-back>. For book-parts: <meta> and\nbody content sit directly inside <book-part> with no nested region\nwrappers. See notes/specs/pipeline.md.\n",
       },
     ],
@@ -4250,7 +4250,7 @@ const _name = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4270,7 +4270,7 @@ const _name = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "string-name",
-      "notes": "JATS uses <string-name> inside <name> as the \"unparsed name\"\nform — the full name string when the document does not commit to\na surname/given-names split. JATS's structured <name> wraps\n<surname>/<given-names>; <string-name> is the unparsed sibling.\nAcadamark's <name> matches <string-name> directly because Layer 1\npreserves the author-written form without imposing a name-model.\nThe exporter chooses between emitting <string-name> verbatim or\nparsing it into <surname>/<given-names> per the target schema's\nrequirements.\n",
+      "notes": "JATS uses <string-name> inside <name> as the \"unparsed name\"\nform — the full name string when the document does not commit to\na surname/given-names split. JATS's structured <name> wraps\n<surname>/<given-names>; <string-name> is the unparsed sibling.\nEnscribe's <name> matches <string-name> directly because Layer 1\npreserves the author-written form without imposing a name-model.\nThe exporter chooses between emitting <string-name> verbatim or\nparsing it into <surname>/<given-names> per the target schema's\nrequirements.\n",
     },
     "shorthand_examples": [
       {
@@ -4295,7 +4295,7 @@ const _note_list = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4328,7 +4328,7 @@ const _note_list = Object.freeze({
           "element": "note",
           "required": false,
           "multiple": true,
-          "notes": "Notes are typically not authored directly inside <note-list>.\nThey are placed there by the acadamarkNotePlacement plugin\nbased on the document's note-position setting.\n",
+          "notes": "Notes are typically not authored directly inside <note-list>.\nThey are placed there by the enscribeNotePlacement plugin\nbased on the document's note-position setting.\n",
         },
       ],
     },
@@ -4341,13 +4341,13 @@ const _note_list = Object.freeze({
       {
         "source": "<note-list #endnotes>\n  <note id=\"note-1\" | First collected note.>\n  <note id=\"note-2\" | Second collected note.>\n</note-list>\n",
         "layer1_html": "<note-list id=\"endnotes\">\n  <note id=\"note-1\">First collected note.</note>\n  <note id=\"note-2\">Second collected note.</note>\n</note-list>\n",
-        "notes": "Authors rarely write <note-list> directly. The element is more\ncommonly generated by the acadamarkNotePlacement plugin, which\ncollects notes from throughout the document into a <note-list>\nat the appropriate location.\n",
+        "notes": "Authors rarely write <note-list> directly. The element is more\ncommonly generated by the enscribeNotePlacement plugin, which\ncollects notes from throughout the document into a <note-list>\nat the appropriate location.\n",
       },
     ],
     "interpreter_strategy": "schema",
     "generated_by": [
       {
-        "plugin": "acadamarkNotePlacement",
+        "plugin": "enscribeNotePlacement",
         "when": "Document-level note-position is \"end\" or \"chapter-end\".\nThe plugin collects notes from throughout the document and\nplaces them in a <note-list> at the back-matter location\n(for end notes) or at the end of each chapter (for chapter\nnotes).\n",
       },
     ],
@@ -4361,7 +4361,7 @@ const _note = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4441,8 +4441,8 @@ const _note = Object.freeze({
     ],
     "related_plugins": [
       {
-        "name": "acadamarkNotes",
-        "runs_after": "acadamarkSectionNesting",
+        "name": "enscribeNotes",
+        "runs_after": "enscribeSectionNesting",
         "purpose": "Assigns sequential numbers, replaces <note> nodes with markers,\ncollects content into <note-list> at the appropriate location.\n",
       },
     ],
@@ -4456,7 +4456,7 @@ const _ol = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4523,7 +4523,7 @@ const _ol = Object.freeze({
       {
         "source": "1. First step\n2. Second step\n3. Third step\n",
         "layer1_html": "<ol>\n  <li>First step</li>\n  <li>Second step</li>\n  <li>Third step</li>\n</ol>\n",
-        "notes": "Plain markdown ordered lists work without explicit acadamark tags.\nThis is the most common authoring path.\n",
+        "notes": "Plain markdown ordered lists work without explicit enscribe tags.\nThis is the most common authoring path.\n",
       },
       {
         "source": "<ol #procedure type=arabic start=5>\n1. Fifth step\n2. Sixth step\n3. Seventh step\n</ol>\n",
@@ -4546,7 +4546,7 @@ const _orcid = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4594,7 +4594,7 @@ const _output = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4634,7 +4634,7 @@ const _p = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4697,7 +4697,7 @@ const _proof = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4735,7 +4735,7 @@ const _proof = Object.freeze({
       "attributes": {
         "content-type": "proof",
       },
-      "notes": "JATS <statement content-type=\"proof\">. <proof> is a peer-level\nelement in both JATS and acadamark, not nested inside the\ntheorem it proves.\n",
+      "notes": "JATS <statement content-type=\"proof\">. <proof> is a peer-level\nelement in both JATS and enscribe, not nested inside the\ntheorem it proves.\n",
     },
     "shorthand_examples": [
       {
@@ -4761,7 +4761,7 @@ const _proposition = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4822,7 +4822,7 @@ const _publication_date = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4883,7 +4883,7 @@ const _q = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -4933,9 +4933,9 @@ const _ref = Object.freeze({
       "element": "ref",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <ref> is a custom element for cross-references. Distinct\nfrom JATS's <ref> (which represents a bibliography reference; in\nacadamark, that's <bib-entry>). Renders as a link to the target with\nappropriate text generated by the resolver.\n",
+      "notes": "Enscribe's <ref> is a custom element for cross-references. Distinct\nfrom JATS's <ref> (which represents a bibliography reference; in\nenscribe, that's <bib-entry>). Renders as a link to the target with\nappropriate text generated by the resolver.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5008,7 +5008,7 @@ const _ref = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "xref ref-type=\"...\"",
-      "notes": "JATS uses <xref> with ref-type indicating the kind of target\n(fig, table, sec, equation, fn, etc.). Acadamark's <ref> maps\nto <xref> with the appropriate ref-type derived from the target.\n",
+      "notes": "JATS uses <xref> with ref-type indicating the kind of target\n(fig, table, sec, equation, fn, etc.). Enscribe's <ref> maps\nto <xref> with the appropriate ref-type derived from the target.\n",
     },
     "shorthand_examples": [
       {
@@ -5036,8 +5036,8 @@ const _ref = Object.freeze({
     ],
     "related_plugins": [
       {
-        "name": "acadamarkRefResolution",
-        "runs_after": "acadamarkArticleStructuring, numbering plugins",
+        "name": "enscribeRefResolution",
+        "runs_after": "enscribeArticleStructuring, numbering plugins",
         "purpose": "Resolves <ref> elements against the numbered-elements registry; generates link text. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5051,7 +5051,7 @@ const _remark = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5112,7 +5112,7 @@ const _s = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5168,7 +5168,7 @@ const _samp = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5213,7 +5213,7 @@ const _section_subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5245,7 +5245,7 @@ const _section_title = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5277,7 +5277,7 @@ const _section = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5354,7 +5354,7 @@ const _section = Object.freeze({
       "attributes": {
         "sec-type": "from sec-type",
       },
-      "notes": "JATS uses recursive <sec> for all section depths. Acadamark uses named\ndepth (<section>, <sub-section>, <sub-sub-section>) for explicit\nsemantic clarity. The JATS exporter maps acadamark's depth ladder to\nnested <sec> elements.\n",
+      "notes": "JATS uses recursive <sec> for all section depths. Enscribe uses named\ndepth (<section>, <sub-section>, <sub-sub-section>) for explicit\nsemantic clarity. The JATS exporter maps enscribe's depth ladder to\nnested <sec> elements.\n",
     },
     "shorthand_examples": [
       {
@@ -5373,8 +5373,8 @@ const _section = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkSectionNesting",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeSectionNesting",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Phase 2 — implicit closing of peer sections. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5388,7 +5388,7 @@ const _span = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5447,7 +5447,7 @@ const _strong = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5496,7 +5496,7 @@ const _sub_section_subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5528,7 +5528,7 @@ const _sub_section_title = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5560,7 +5560,7 @@ const _sub_section = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5636,7 +5636,7 @@ const _sub_section = Object.freeze({
       "attributes": {
         "sec-type": "from sec-type",
       },
-      "notes": "JATS uses recursive <sec>; acadamark's <sub-section> becomes a nested\n<sec> at depth 2 inside its parent <sec>.\n",
+      "notes": "JATS uses recursive <sec>; enscribe's <sub-section> becomes a nested\n<sec> at depth 2 inside its parent <sec>.\n",
     },
     "shorthand_examples": [
       {
@@ -5651,8 +5651,8 @@ const _sub_section = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkSectionNesting",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeSectionNesting",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Phase 2 — implicit closing of peer sub-sections. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5666,7 +5666,7 @@ const _sub_sub_section_subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5698,7 +5698,7 @@ const _sub_sub_section_title = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5730,7 +5730,7 @@ const _sub_sub_section = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5805,7 +5805,7 @@ const _sub_sub_section = Object.freeze({
       "attributes": {
         "sec-type": "from sec-type",
       },
-      "notes": "JATS uses recursive <sec>; acadamark's <sub-sub-section> becomes a nested\n<sec> at depth 3 inside its parent.\n",
+      "notes": "JATS uses recursive <sec>; enscribe's <sub-sub-section> becomes a nested\n<sec> at depth 3 inside its parent.\n",
     },
     "shorthand_examples": [
       {
@@ -5820,8 +5820,8 @@ const _sub_sub_section = Object.freeze({
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
-        "name": "acadamarkSectionNesting",
-        "runs_before": "acadamarkTagInterpret",
+        "name": "enscribeSectionNesting",
+        "runs_before": "enscribeTagInterpret",
         "purpose": "Phase 2 — implicit closing of peer sub-sub-sections. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5835,7 +5835,7 @@ const _sub = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5876,7 +5876,7 @@ const _subject = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5929,7 +5929,7 @@ const _subtitle = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -5967,7 +5967,7 @@ const _summary = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6012,7 +6012,7 @@ const _sup = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6057,7 +6057,7 @@ const _svg = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6114,7 +6114,7 @@ const _svg = Object.freeze({
     "jats_counterpart": {
       "element": "graphic",
       "attributes": {},
-      "notes": "JATS uses <graphic> for embedded images (raster or vector). Inline\nSVG in acadamark exports as <graphic xlink:href=\"#svg-N\"> with the\nSVG content placed in the article's resource bundle, or — when the\nexport target supports it — as <graphic> with the SVG inline.\nWrapping in <fig>...</fig> is the captioned form for JATS.\n",
+      "notes": "JATS uses <graphic> for embedded images (raster or vector). Inline\nSVG in enscribe exports as <graphic xlink:href=\"#svg-N\"> with the\nSVG content placed in the article's resource bundle, or — when the\nexport target supports it — as <graphic> with the SVG inline.\nWrapping in <fig>...</fig> is the captioned form for JATS.\n",
     },
     "shorthand_examples": [
       {
@@ -6148,7 +6148,7 @@ const _table = Object.freeze({
     },
     "interpreter_strategy": "handler",
     "handler_module": "./handlers/table.js",
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6215,18 +6215,18 @@ const _table = Object.freeze({
       "attributes": {
         "table-type": "from type",
       },
-      "notes": "JATS uses <table-wrap> as the container, with <table> nested inside.\nThe acadamark <table> maps to JATS's nested <table>; the wrapping\n<table-wrap> is generated at export to provide JATS's expected structure.\n",
+      "notes": "JATS uses <table-wrap> as the container, with <table> nested inside.\nThe enscribe <table> maps to JATS's nested <table>; the wrapping\n<table-wrap> is generated at export to provide JATS's expected structure.\n",
     },
     "shorthand_examples": [
       {
         "source": "| Name | Price |\n|------|-------|\n| foo  | 1     |\n| bar  | 2     |\n",
         "layer1_html": "<table>\n  <thead>\n    <tr><th>Name</th><th>Price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>foo</td><td>1</td></tr>\n    <tr><td>bar</td><td>2</td></tr>\n  </tbody>\n</table>\n",
-        "notes": "Plain markdown table syntax (via remark-gfm). The most common\nauthoring path for simple tables. No explicit acadamark tags needed.\n",
+        "notes": "Plain markdown table syntax (via remark-gfm). The most common\nauthoring path for simple tables. No explicit enscribe tags needed.\n",
       },
       {
         "source": "<csv | name,price\nfoo,1\nbar,2\n>\n",
         "layer1_html": "<table>\n  <thead>\n    <tr><th>name</th><th>price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>foo</td><td>1</td></tr>\n    <tr><td>bar</td><td>2</td></tr>\n  </tbody>\n</table>\n",
-        "notes": "**Planned — the `<csv>` standalone-handler is not yet implemented**\n(it is registered in `acadamark-core/dsl-registry` but no handler\nexists yet; an authored `<csv | ...>` today falls through to the\nunknown-element fallback). The example is preserved here as\ndocumentation of the intended form. Today's working CSV authoring\npath is the qualifying form: `<table csv | ... >` — see the\ntable-with-data-format examples below and the DSL-handlers\nbacklog item.\n\nWhen implemented, the `<csv>` DSL engine will produce a table\nfrom CSV source. See the `<csv>` vocabulary entry for details on\nengine attributes (header control, alignment, etc.).\n",
+        "notes": "**Planned — the `<csv>` standalone-handler is not yet implemented**\n(it is registered in `enscribe-core/dsl-registry` but no handler\nexists yet; an authored `<csv | ...>` today falls through to the\nunknown-element fallback). The example is preserved here as\ndocumentation of the intended form. Today's working CSV authoring\npath is the qualifying form: `<table csv | ... >` — see the\ntable-with-data-format examples below and the DSL-handlers\nbacklog item.\n\nWhen implemented, the `<csv>` DSL engine will produce a table\nfrom CSV source. See the `<csv>` vocabulary entry for details on\nengine attributes (header control, alignment, etc.).\n",
       },
       {
         "source": "<table #revenue type=results>\n  <caption | Quarterly revenue>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\n",
@@ -6244,7 +6244,7 @@ const _term = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6268,7 +6268,7 @@ const _term = Object.freeze({
       "attributes": {
         "content-type": "term",
       },
-      "notes": "JATS uses <named-content content-type=\"term\"> for marked\nterminology. The exporter constructs the named-content element\nwith the content-type attribute from acadamark's <term>.\n",
+      "notes": "JATS uses <named-content content-type=\"term\"> for marked\nterminology. The exporter constructs the named-content element\nwith the content-type attribute from enscribe's <term>.\n",
     },
     "shorthand_examples": [
       {
@@ -6293,7 +6293,7 @@ const _theorem = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6342,7 +6342,7 @@ const _theorem = Object.freeze({
       {
         "source": "<theorem name=\"Pythagoras\" #thm:pyth>\nIf $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$\nis right-angled.\n</theorem>\n",
         "layer1_html": "<theorem id=\"thm:pyth\" data-name=\"Pythagoras\">If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$ is right-angled.</theorem>\n",
-        "notes": "Long-form with the optional name kwarg. Cross-referenceable\nvia id (the \"thm:\" colon-prefix convention is consistent with\n\"fig:\", \"eqn:\", \"sec:\" elsewhere in acadamark). The name\nkwarg lifts to `data-name`; the Phase-2 handler will render\nit as the \"(Pythagoras)\" suffix to the label \"Theorem N\".\n",
+        "notes": "Long-form with the optional name kwarg. Cross-referenceable\nvia id (the \"thm:\" colon-prefix convention is consistent with\n\"fig:\", \"eqn:\", \"sec:\" elsewhere in enscribe). The name\nkwarg lifts to `data-name`; the Phase-2 handler will render\nit as the \"(Pythagoras)\" suffix to the label \"Theorem N\".\n",
       },
     ],
     "interpreter_strategy": "handler",
@@ -6356,9 +6356,9 @@ const _title = Object.freeze({
       "element": "title",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Acadamark's <title> inside <meta> is a custom element distinct from\nHTML's <title> (which goes in <head> and represents the browser tab title).\nThe render-mode plugin maps acadamark's metadata <title> to HTML's\n<title> in the rendered <head>. The structural plugin promotes\nacadamark's metadata <title> to <article-title> or <book-title> at\nLayer 1 based on the surrounding container.\n",
+      "notes": "Enscribe's <title> inside <meta> is a custom element distinct from\nHTML's <title> (which goes in <head> and represents the browser tab title).\nThe render-mode plugin maps enscribe's metadata <title> to HTML's\n<title> in the rendered <head>. The structural plugin promotes\nenscribe's metadata <title> to <article-title> or <book-title> at\nLayer 1 based on the surrounding container.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6378,7 +6378,7 @@ const _title = Object.freeze({
     "content_handler": "default",
     "jats_counterpart": {
       "element": "article-title or book-title (inside title-group inside article-meta or book-meta)",
-      "notes": "JATS represents document titles via <article-title> inside <title-group>\ninside <article-meta>, or via <book-title> inside <book-meta>. Acadamark's\nmetadata <title> gets promoted to the appropriate JATS structure at\nexport time based on the surrounding container.\n",
+      "notes": "JATS represents document titles via <article-title> inside <title-group>\ninside <article-meta>, or via <book-title> inside <book-meta>. Enscribe's\nmetadata <title> gets promoted to the appropriate JATS structure at\nexport time based on the surrounding container.\n",
     },
     "shorthand_examples": [
       {
@@ -6409,7 +6409,7 @@ const _tsv = Object.freeze({
       "default_attributes": {},
       "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). `<tsv>` is a DSL — its content is tab-separated source\ndata, parsed by the TSV handler and rendered as a real HTML\n`<table>` element. The schema `html_output.element` field is ignored\nbecause `interpreter_strategy: handler` routes through the handler\ninstead; the handler builds the `<table>` shape directly. `<tsv>`\nitself does not appear in the rendered HTML.\n",
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6437,7 +6437,7 @@ const _tsv = Object.freeze({
     "content": {
       "type": "opaque",
       "becomes": "parsed TSV rows (rendered as <table>)",
-      "notes": "Content is tab-separated source data, preserved verbatim and parsed\nby the handler. No acadamark interpretation. Same parser as\n`<table tsv>`.\n",
+      "notes": "Content is tab-separated source data, preserved verbatim and parsed\nby the handler. No enscribe interpretation. Same parser as\n`<table tsv>`.\n",
     },
     "content_handler": "tsv",
     "jats_counterpart": {
@@ -6469,7 +6469,7 @@ const _u = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6524,7 +6524,7 @@ const _ul = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6571,13 +6571,13 @@ const _ul = Object.freeze({
       "attributes": {
         "list-type": "bullet",
       },
-      "notes": "JATS uses <list list-type=\"bullet\"> for unordered lists. The\nlist-type attribute is preserved at export. Acadamark's optional\ntype kwarg (checklist, glossary, etc.) is transformed during export:\ntype=checklist becomes list-type=\"bullet\" with content-type=\"checklist\".\n",
+      "notes": "JATS uses <list list-type=\"bullet\"> for unordered lists. The\nlist-type attribute is preserved at export. Enscribe's optional\ntype kwarg (checklist, glossary, etc.) is transformed during export:\ntype=checklist becomes list-type=\"bullet\" with content-type=\"checklist\".\n",
     },
     "shorthand_examples": [
       {
         "source": "- First item\n- Second item\n- Third item\n",
         "layer1_html": "<ul>\n  <li>First item</li>\n  <li>Second item</li>\n  <li>Third item</li>\n</ul>\n",
-        "notes": "Plain markdown unordered lists work without explicit acadamark tags.\nThis is the most common authoring path. Use plain markdown when no\nattributes are needed on the list or items.\n",
+        "notes": "Plain markdown unordered lists work without explicit enscribe tags.\nThis is the most common authoring path. Use plain markdown when no\nattributes are needed on the list or items.\n",
       },
       {
         "source": "<ul #key-points type=checklist>\n- First item\n- Second item\n- Third item\n</ul>\n",
@@ -6599,7 +6599,7 @@ const _var = Object.freeze({
       "is_html_native": true,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",
@@ -6644,7 +6644,7 @@ const _version = Object.freeze({
       "is_html_native": false,
       "default_attributes": {},
     },
-    "acadamark_attributes": {
+    "enscribe_attributes": {
       "id": {
         "maps_to": {
           "html": "id",

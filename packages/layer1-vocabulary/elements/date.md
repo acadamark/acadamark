@@ -4,7 +4,7 @@ html_output:
   element: date
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -138,7 +138,7 @@ The format kwarg helps the JATS exporter and downstream tooling interpret the da
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<date type=publication>` | `<pub-date>` (with parsed `<year>`, `<month>`, `<day>` children) |
 | `<date type=submission>` | `<date date-type="received">` (inside `<history>`) |

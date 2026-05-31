@@ -5,13 +5,13 @@ html_output:
   is_html_native: true
   default_attributes: {}
   notes: |
-    Acadamark's <cite> overlaps with HTML's <cite> (which marks "the title
-    of a work"). Acadamark uses the element more broadly: it represents a
+    Enscribe's <cite> overlaps with HTML's <cite> (which marks "the title
+    of a work"). Enscribe uses the element more broadly: it represents a
     citation to a bibliography entry, with the rendered output determined
     by the citation style. The semantic intent is similar (referencing
-    other work) but acadamark's version carries citation-resolver semantics
+    other work) but enscribe's version carries citation-resolver semantics
     that HTML's plain <cite> doesn't.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -68,7 +68,7 @@ jats_counterpart:
   notes: |
     JATS uses <xref ref-type="bibr" rid="..."> for inline citations.
     The rendered text inside the JATS xref is the citation marker
-    (typically a number or author-year string). Acadamark's <cite>
+    (typically a number or author-year string). Enscribe's <cite>
     maps directly. Multiple keys produce multiple <xref> elements
     grouped together.
 shorthand_examples:
@@ -110,8 +110,8 @@ handler_responsibilities:
   - Handle prefix and suffix text.
   - For unresolved keys, render an error marker (e.g., "[?key]") that's visible in output.
 related_plugins:
-  - name: acadamarkCiteResolution
-    runs_after: 'acadamarkLibraryLoad, acadamarkArticleStructuring'
+  - name: enscribeCiteResolution
+    runs_after: 'enscribeLibraryLoad, enscribeArticleStructuring'
     purpose: 'Resolves <cite> elements against the citation registry; generates rendered markers. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
@@ -122,7 +122,7 @@ An inline citation reference to a bibliography entry. The author writes the cita
 
 ## Semantic intent
 
-`<cite>` is for citations to scholarly bibliography entries — references to other works in the document's bibliography. The element is HTML-native (HTML's `<cite>` represents "the title of a work") but acadamark uses it more broadly to mean "a citation to a bibliography entry, rendered according to the citation style."
+`<cite>` is for citations to scholarly bibliography entries — references to other works in the document's bibliography. The element is HTML-native (HTML's `<cite>` represents "the title of a work") but enscribe uses it more broadly to mean "a citation to a bibliography entry, rendered according to the citation style."
 
 For cross-references to numbered elements within the document (figures, equations, sections, notes), use `<ref>` instead. Citations point at external works; cross-references point at content within the document.
 
@@ -208,7 +208,7 @@ If a key resolves to an entry, the citation renders normally. If a key doesn't r
 <cite badkey>  →  [?badkey]
 ```
 
-The error appears in the output rather than failing silently or breaking the build. This matches acadamark's principle that documents always render to something even when there are errors.
+The error appears in the output rather than failing silently or breaking the build. This matches enscribe's principle that documents always render to something even when there are errors.
 
 ## Content
 
@@ -230,13 +230,13 @@ This is rare. The resolver-generated text is usually preferred because it stays 
 
 `style` — override the document-level citation style for this citation.
 
-The handler reads these and produces the appropriate output. They are not standard HTML attributes; they're acadamark-specific.
+The handler reads these and produces the appropriate output. They are not standard HTML attributes; they're enscribe-specific.
 
 ## JATS mapping
 
 JATS uses `<xref ref-type="bibr" rid="...">` for inline citations.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<cite goodall2024>` | `<xref ref-type="bibr" rid="goodall2024">(Goodall 2024)</xref>` |
 | Multiple keys | Multiple `<xref>` elements grouped together |

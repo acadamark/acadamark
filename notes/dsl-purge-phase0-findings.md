@@ -27,7 +27,7 @@ that regular mechanism.
 **There is no separate regular-vocabulary long-form mechanism. `DSL_REGISTRY`
 is the only mechanism for long-form-tag eligibility, alongside
 `STRUCTURED_ELEMENTS` (which carries `<meta>` and `<author>` only).** The
-parser's `acadamarkSyntax` builds `LONG_FORM_TAGS = DSL_REGISTRY ∪
+parser's `enscribeSyntax` builds `LONG_FORM_TAGS = DSL_REGISTRY ∪
 STRUCTURED_ELEMENTS` at module load and rejects long-form admission for any
 tag not in the union (`makeLongFormTokenizer`'s
 `if (!registry.has(tagName)) return nok(code)` at `syntax.js:583`).
@@ -121,14 +121,14 @@ The other "not implemented" DSL entries (`mermaid`, `abc`, `matrix`, `cases`,
 
 Three consumers in live product code:
 
-1. **`packages/remark-acadamark/src/syntax.js`** (parser). `acadamarkSyntax`'s
+1. **`packages/remark-enscribe/src/syntax.js`** (parser). `enscribeSyntax`'s
    `options.dslRegistry` defaults to `LONG_FORM_TAGS` (the union, exposed by
-   `acadamark-core/structured-elements.js`). Passed to
+   `enscribe-core/structured-elements.js`). Passed to
    `makeLongFormTokenizer`, whose only registry call is
    `if (!registry.has(tagName)) return nok(code)` at L583. Registry membership
    confers long-form parsing eligibility — nothing more, nothing less.
 
-2. **`packages/remark-acadamark/src/from-markdown.js`** (parser). Calls
+2. **`packages/remark-enscribe/src/from-markdown.js`** (parser). Calls
    `getContentHandler(tagname)` to set `node.contentHandler` on both short-form
    (L103) and long-form (L203) nodes. Drives `isOpaqueContent`
    (`contentHandler !== 'default'` → opaque). For a tag not in the registry,
@@ -136,7 +136,7 @@ Three consumers in live product code:
    so a tag's *absence* from the registry is well-defined: it is short-form-
    only and gets the default handler.
 
-3. **`packages/acadamark-interpreter/src/plugins/normalize-to-canonical.js`**
+3. **`packages/enscribe-interpreter/src/plugins/normalize-to-canonical.js`**
    (interpreter). Three load-time drift guards assert specific handler values:
    `getContentHandler('$') === 'math'`, `getContentHandler('$$') === 'math-
    display'`, `getContentHandler('table') === 'table'`. Plus `liftInlineCode`
@@ -161,7 +161,7 @@ The original slice prompt assumed one of these existed; Q1.3 found none does.
 The rewritten slice prompt has to pick among them or pick a fourth.
 
 **A1 — Build a separate `LONG_FORM_VOCAB` registry.** A new Map (or Set) in
-`acadamark-core` parallel to `DSL_REGISTRY` and `STRUCTURED_ELEMENTS`. The 21
+`enscribe-core` parallel to `DSL_REGISTRY` and `STRUCTURED_ELEMENTS`. The 21
 displaced regular-vocab entries move from `DSL_REGISTRY` to `LONG_FORM_VOCAB`.
 `LONG_FORM_TAGS` becomes the three-way union. Medium-sized refactor; preserves
 snapshot zero-diff because the parser still picks the tags up via the union.
@@ -170,7 +170,7 @@ The conceptual split (DSL / structured-data / regular-long-form-vocab) maps
 making the data structures match the rubric.
 
 **A2 — Derive long-form-eligibility from `layer1-vocabulary` entries.** Make
-`acadamark-core` read the generated `layer1-vocabulary/src/data.js` and derive
+`enscribe-core` read the generated `layer1-vocabulary/src/data.js` and derive
 the long-form-eligible set from per-entry schema fields (any entry with
 `content.type: structured`, `content.shape: …`, or similar opts in). Vocab
 entries become the single source of truth for long-form-eligibility. Larger
@@ -222,7 +222,7 @@ the gate at `syntax.js:583` creates a grammar ambiguity between
 short-form-void/empty (`<hr>`, `<config attrs>`, etc.) and long-form opener
 (`<aside>…</aside>`). The registry gate currently masks this ambiguity by
 deciding via registry membership. Existing fixtures depend on the masking
-(e.g. `document-3-edge-cases.acm:28` `<hr>`; `document-18-config-edge-cases.acm:6`
+(e.g. `document-3-edge-cases.emd:28` `<hr>`; `document-18-config-edge-cases.emd:6`
 `<config ref-prefix-eqn="Eq.">`).
 
 Four disambiguators were considered:
@@ -262,7 +262,7 @@ D1's authoring change). But the parser-test surface exposed a **broader
 D1 footprint** than the question I'd posed:
 
 **Inline tags at flow position also need `/>`.** Examples from
-`packages/remark-acadamark/test/test.js` (the parser test suite, line
+`packages/remark-enscribe/test/test.js` (the parser test suite, line
 references against the pre-slice state):
 
 - `<cite @jones2001>` at line-start (no pipe, no slash) — under D1, this
@@ -281,14 +281,14 @@ flow position* (a tag at column 0 of its own line, no body, no pipe).
 `^<[a-z][a-z0-9-]*([[:space:]][^|/<>]*)?>$` (a tag at line-start with no
 pipe, no slash, ending its line at `>`):
 
-- **27 instances across integration fixtures** (`packages/acadamark-
-  interpreter/test/fixtures/document-*.acm`). Many are long-form openers
+- **27 instances across integration fixtures** (`packages/enscribe-
+  interpreter/test/fixtures/document-*.emd`). Many are long-form openers
   with a matching `</tag>` later — those stay bare. Some are short-form-
   void/empty — those need `/>`. Per-line categorization is required
   (each line: does `</tag>` exist later? if yes, leave bare; if no, add
   `/>`).
 - **Several instances in parser test sources**
-  (`packages/remark-acadamark/test/test.js`). Same per-instance
+  (`packages/remark-enscribe/test/test.js`). Same per-instance
   categorization.
 
 The fixture migration is not 27 mechanical edits — it's 27 per-line

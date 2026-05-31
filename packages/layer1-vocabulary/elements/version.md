@@ -4,7 +4,7 @@ html_output:
   element: version
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -82,11 +82,11 @@ The value is a free-form string. Common conventions:
 - **Revision label**: `v2`, `rev 3`, `final-draft` — used for less formal versioning.
 - **Preprint round**: `v1`, `v2`, `v3` — the bioRxiv/arXiv convention for versioned preprints.
 
-Acadamark does not impose a scheme; whatever the author writes is preserved as-is.
+Enscribe does not impose a scheme; whatever the author writes is preserved as-is.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<version>1.0.0</version>` | `<article-version>1.0.0</article-version>` (where supported by the schema variant) or `<custom-meta meta-name="version">1.0.0</custom-meta>` (fallback) |
 

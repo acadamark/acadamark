@@ -4,7 +4,7 @@ html_output:
   element: proof
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -38,7 +38,7 @@ jats_counterpart:
     content-type: proof
   notes: |
     JATS <statement content-type="proof">. <proof> is a peer-level
-    element in both JATS and acadamark, not nested inside the
+    element in both JATS and enscribe, not nested inside the
     theorem it proves.
 shorthand_examples:
   - source: |
@@ -74,7 +74,7 @@ A proof — the argument establishing a theorem, lemma, or other propositional s
 
 ## Semantic intent
 
-`<proof>` is the LaTeX/amsthm equivalent for the `proof` environment. In LaTeX amsthm, `\begin{proof}…\end{proof}` is independent of any theorem-like environment — it can follow any theorem-family element or stand alone. In JATS, `<statement content-type="proof">` is just another statement at the same level as the theorem. Acadamark follows this convention.
+`<proof>` is the LaTeX/amsthm equivalent for the `proof` environment. In LaTeX amsthm, `\begin{proof}…\end{proof}` is independent of any theorem-like environment — it can follow any theorem-family element or stand alone. In JATS, `<statement content-type="proof">` is just another statement at the same level as the theorem. Enscribe follows this convention.
 
 The element is block-level. Its content is the proof body — paragraphs, math, lists, intermediate justifications. The Phase-2 handler renders the leading "Proof." label and the trailing QED symbol; the body itself is not adorned in source.
 
@@ -109,7 +109,7 @@ The optional `name` kwarg lets the proof identify what it proves (e.g. `<proof n
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<proof>` | `<statement content-type="proof">` |
 | `name` kwarg | `<title>` inside `<statement>` |

@@ -4,7 +4,7 @@ html_output:
   element: lang
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -59,7 +59,7 @@ The document's primary language. Carries a language tag (preferably BCP 47 / ISO
 
 `<lang>` records the document's primary language. Used by HTML's `<html lang="…">` attribute (for accessibility tools, browser hyphenation, search engines), JATS's `xml:lang` attribute, and any other format that distinguishes languages.
 
-Acadamark records language as a Layer 1 *element* rather than an attribute because the apparatus-tag architecture treats `<meta>` content as structured child elements. Downstream lowerings project the value to whatever attribute or element the target format uses.
+Enscribe records language as a Layer 1 *element* rather than an attribute because the apparatus-tag architecture treats `<meta>` content as structured child elements. Downstream lowerings project the value to whatever attribute or element the target format uses.
 
 ## Authoring
 
@@ -81,7 +81,7 @@ BCP 47 / ISO 639-1 tags are preferred: `en`, `en-US`, `en-GB`, `fr`, `de`, `ja`,
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<lang>en-US</lang>` | `xml:lang="en-US"` attribute on the appropriate container (typically the `<article>` root) |
 

@@ -26,7 +26,7 @@ collapse it. No edits applied. No recommendations made.
 | `CLAUDE.md` | 108 | 2026-04-26 | Working conventions for Claude Code sessions. | Doc governance (working method), backlog hints (deferred features) |
 | `claude.md` | 24 | 2026-04-26 | Older / shorter working-conventions file. **Lowercase twin of CLAUDE.md.** | Doc governance (duplicate of CLAUDE.md material) |
 | `audit-shape.md` | 148 | 2026-05-14 | A chat transcript / planning note titled like an audit doc — discusses audit-shape options (A/B/C) before the 2026-Q2 audit ran. | Audit (historical planning), session continuity (one-off) |
-| `acadamark-session-handoff.md` | 416 | 2026-05-22 | Cross-session orientation: where things stand, working method, decided design calls, full backlog. Explicitly calls itself "one of three tracking documents." | Status, WIP, backlog, handoff, milestones, working method |
+| `enscribe-session-handoff.md` | 416 | 2026-05-22 | Cross-session orientation: where things stand, working method, decided design calls, full backlog. Explicitly calls itself "one of three tracking documents." | Status, WIP, backlog, handoff, milestones, working method |
 
 ### `notes/` — live documents
 
@@ -34,7 +34,7 @@ collapse it. No edits applied. No recommendations made.
 
 | Path | Lines | Last modified | Apparent purpose | Categories |
 |---|---:|---|---|---|
-| `notes/acadamark-backlog-roadmap.md` | 371 | 2026-05-22 | Dependency-ordered roadmap in four layers (Layer 0/1/2/3) + Architecture tier + Deferred. Companion to `specified-not-implemented.md` and the session handoff. | Backlog (primary), WIP, milestones (per-layer ticks) |
+| `notes/enscribe-backlog-roadmap.md` | 371 | 2026-05-22 | Dependency-ordered roadmap in four layers (Layer 0/1/2/3) + Architecture tier + Deferred. Companion to `specified-not-implemented.md` and the session handoff. | Backlog (primary), WIP, milestones (per-layer ticks) |
 | `notes/specified-not-implemented.md` | 620 | 2026-05-23 | Full inventory of every specified-but-unbuilt item: DF-1..22, PG-1..13, DS-1..5, OQ-1..2 — each with code-verification notes and AUD cross-refs. | Backlog (inventory), audit cross-references, status per item |
 | `notes/audit-findings.md` | 784 | 2026-05-23 | Rolling AUD findings list: AUD-01 through AUD-26 (plus GAP-8/9), each with status (Open/Resolved/Fixed). | Audit (primary), backlog (per-finding status), history (closure notes) |
 | `notes/audit-cleanup-stopping-point.md` | 134 | 2026-05-21 | Snapshot of where a 6-step "audit cleanup" arc paused. Has its own AUD checklist + FLAGGED-1/FLAGGED-2 design conversations. | Audit (historical), WIP (Step 4 still listed open), backlog (per-AUD checklist) |
@@ -85,12 +85,12 @@ participate in the same web of cross-references.
 
 | Path | Lines | Last modified | Apparent purpose | Categories |
 |---|---:|---|---|---|
-| `packages/acadamark-interpreter/README.md` | 45 | 2026-05-12 | **Severely stale**: says "Slice 1 in progress (May 2026)"; lists the dispatcher, structural plugins, figure handler as "pending". All shipped. | Status (stale), plan (stale) |
+| `packages/enscribe-interpreter/README.md` | 45 | 2026-05-12 | **Severely stale**: says "Slice 1 in progress (May 2026)"; lists the dispatcher, structural plugins, figure handler as "pending". All shipped. | Status (stale), plan (stale) |
 | `packages/layer1-vocabulary/README.md` | 43 | 2026-05-07 | Vocabulary intro. Says "currently contains the vocabulary specification only" and pending list includes the interpreter integration (now landed). | Status (stale), plan (stale) |
 | `packages/layer1-vocabulary/SPEC.md` | 255 | 2026-05-12 | Vocabulary spec. States "62 per-element entries" — actually 66 vocabulary keys today (67 after blockquote shorthand alias). | Spec, status (drifted count) |
 | `packages/layer1-vocabulary/docs/README.md` | 5 | — | Stub. | (placeholder) |
 | `packages/layer1-vocabulary/src/README.md` | 5 | — | Stub. | (placeholder) |
-| `packages/remark-acadamark-pure-micromark-archive/README.md` | 25 | 2026-04-26 | Marks itself as archived; explains why the live parser switched to Peggy hybrid. | History |
+| `packages/remark-enscribe-pure-micromark-archive/README.md` | 25 | 2026-04-26 | Marks itself as archived; explains why the live parser switched to Peggy hybrid. | History |
 
 **Distinct project-state documents identified: 22** (the eight root-level
 candidates + the twelve `notes/` tracking docs + the two stale `packages/*`
@@ -115,7 +115,7 @@ The closest matches — what the chat side most likely remembers as "the L1/L2/L
 slices" — are in two documents, with two different conventions. Both are
 quoted below. **The most likely intended referent is the first.**
 
-### Candidate A (most likely): `notes/acadamark-backlog-roadmap.md` — the four-layer dependency model
+### Candidate A (most likely): `notes/enscribe-backlog-roadmap.md` — the four-layer dependency model
 
 This document is dated 2026-05-22 and is the project's authoritative
 forward roadmap; the session handoff and `doc-ownership.md` both name it as
@@ -215,7 +215,7 @@ is (done / in progress / not started)."
 
 The exact term "L1/L2/L3 slices" appears in no file. The most plausible
 referent is the **Layer 0/1/2/3** scheme in
-`notes/acadamark-backlog-roadmap.md` — the user's "L" is almost certainly a
+`notes/enscribe-backlog-roadmap.md` — the user's "L" is almost certainly a
 shortening of "Layer". On that reading, the answer is:
 
 - **Layer 0**: done (1 item, closed).
@@ -244,9 +244,9 @@ descending order of severity.
 
 1. `notes/audit-findings.md` — AUD-01..26 + GAP-8/9.
 2. `notes/specified-not-implemented.md` — DF/PG/DS/OQ items.
-3. `notes/acadamark-backlog-roadmap.md` — layered roadmap referencing both
+3. `notes/enscribe-backlog-roadmap.md` — layered roadmap referencing both
    above series.
-4. `acadamark-session-handoff.md` §3 — "The backlog" section listing AUD
+4. `enscribe-session-handoff.md` §3 — "The backlog" section listing AUD
    items, bugs to file/fix, AUD-09 remainder, theme slice, older deferred
    items.
 5. `notes/audit-cleanup-stopping-point.md` §"The AUD checklist (snapshot)" —
@@ -261,14 +261,14 @@ the same items:
 
 - AUD-09 status is stated in `audit-findings.md` (resolved), in
   `audit-cleanup-stopping-point.md` (open, flagged to be resolved with the
-  cross-reference redesign), in `acadamark-session-handoff.md` (partially
+  cross-reference redesign), in `enscribe-session-handoff.md` (partially
   resolved + code-block-half deferred), in `specified-not-implemented.md`
   PG-6 (closed), and in `notes/known-limitations.md` "Note cross-references"
   (closed-by-design). These four formulations are not contradictory in
   spirit but they each say "the status" — and only `audit-findings.md` is
   the doc-ownership-declared owner.
 - F1 status (landed at commit `c86da33`) is restated in
-  `acadamark-session-handoff.md`, `acadamark-backlog-roadmap.md`,
+  `enscribe-session-handoff.md`, `enscribe-backlog-roadmap.md`,
   `specified-not-implemented.md` DF-7, and the handoff's "decided design
   calls" section.
 - G1 status is restated in three places (handoff, roadmap,
@@ -280,7 +280,7 @@ correction round):
 
 - `notes/pipeline.md` — the doc-ownership-declared owner.
 - `notes/interpreter.md` — a parallel description.
-- `acadamark-session-handoff.md` §2 "The architecture, as it now stands" —
+- `enscribe-session-handoff.md` §2 "The architecture, as it now stands" —
   "shape → index → number → resolve" with an enumerated plugin breakdown.
 - `BUILD.md` — has a planning-era pipeline diagram (explicitly marked stale
   at the top, but the diagram is still in the body).
@@ -290,7 +290,7 @@ correction round):
 **Milestones / project history appear in three places:**
 
 - `STATUS.md` "Milestones" — the explicit arc-level history list.
-- `acadamark-session-handoff.md` §1 "Where things stand" — slice tables for
+- `enscribe-session-handoff.md` §1 "Where things stand" — slice tables for
   R1..R4 and post-R4 work.
 - `audit-cleanup-stopping-point.md` "Where we stopped" — completed Steps 1–6
   with dates and commits.
@@ -301,7 +301,7 @@ correction round):
   script and snapshot updates.
 - `CLAUDE.md` — slice-cadence, drift checks, two-surface workflow,
   output-verbosity rules.
-- `acadamark-session-handoff.md` §0 / §2 — "the slice rhythm", "both
+- `enscribe-session-handoff.md` §0 / §2 — "the slice rhythm", "both
   correctness models", "working patterns that held through the whole
   refactor".
 
@@ -309,7 +309,7 @@ correction round):
 
 - `DESIGN.md` "Design directions (discovered through implementation)"
   (DD-1..DD-5) — the doc-ownership-declared owner.
-- `acadamark-session-handoff.md` §"Decided design calls" — restates F1
+- `enscribe-session-handoff.md` §"Decided design calls" — restates F1
   (sigil semantics) and G1 (braced shortcuts only).
 - `audit-cleanup-stopping-point.md` FLAGGED-1 / FLAGGED-2 — pre-decision
   versions of what became F1 and PG-13/G1.
@@ -331,8 +331,8 @@ completeness.)
 |---|---|---|
 | `notes/process.md` line 43 | "22 suites as of 2026-Q2 audit" | 25 suites |
 | `notes/audit-cleanup-stopping-point.md` line 31 | "228 parser tests, 208 interpreter tests across 22 suites, 436 total" | Stale on all three numbers |
-| `acadamark-session-handoff.md` line 34 | "→ expect `23/23 suites passed`" | 25 |
-| `acadamark-session-handoff.md` line 133 | "(23 suites)" | 25 |
+| `enscribe-session-handoff.md` line 34 | "→ expect `23/23 suites passed`" | 25 |
+| `enscribe-session-handoff.md` line 133 | "(23 suites)" | 25 |
 
 `STATUS.md` line 55 explicitly says STATUS.md "deliberately states no test
 count" — and `doc-ownership.md` line 70 says "Not owned by any committed
@@ -353,10 +353,10 @@ docs, still drifted elsewhere):**
 
 - `notes/interpreter.md` and `notes/pipeline.md`: both now describe the
   13-plugin pipeline (post-AUD-26 fix).
-- `acadamark-session-handoff.md` §2 "The architecture, as it now stands":
+- `enscribe-session-handoff.md` §2 "The architecture, as it now stands":
   describes the same shape but does not enumerate normalize-markdown.
 - `BUILD.md` § "The pipeline": shows a planning-era diagram with
-  `acadamarkTagInterpret`, `acadamarkCitations`, `acadamarkCrossRefs`,
+  `enscribeTagInterpret`, `enscribeCitations`, `enscribeCrossRefs`,
   `rehypeKatex`, `rehypeShiki` — names that never existed in code. The
   document's top banner flags this, but the diagram is still in the body.
 
@@ -374,12 +374,12 @@ disagrees with `audit-findings.md` on every item that has moved since
 **`notes/pipeline-refactor-plan.md` self-status:**
 
 - Header (line 3): "Status: Plan. Not yet implemented."
-- `acadamark-session-handoff.md` §1: "The pipeline refactor — R1 through R4 —
+- `enscribe-session-handoff.md` §1: "The pipeline refactor — R1 through R4 —
   is complete."
 
 R1..R4 are landed; the plan's "Plan. Not yet implemented." header is stale.
 
-**`packages/acadamark-interpreter/README.md`:**
+**`packages/enscribe-interpreter/README.md`:**
 
 - Says "Slice 1 in progress (May 2026)".
 - Lists the dispatcher, structural plugins, handlers, and expected-output
@@ -409,7 +409,7 @@ Facts copied into multiple files, each a future-drift hazard:
    interpreter.md, BUILD.md, handoff).
 4. **Slice/item commit hashes** (F1 = `c86da33`, G1a = `b6304a3`, G1b =
    `99aaa0b`, F2 = `f00c877`, etc.) — restated in
-   `acadamark-session-handoff.md`, `acadamark-backlog-roadmap.md`, and
+   `enscribe-session-handoff.md`, `enscribe-backlog-roadmap.md`, and
    `specified-not-implemented.md`. Each next slice adds another set of
    hashes in (at minimum) the same three places.
 5. **"What the system supports" lists.** `STATUS.md` has a capability
@@ -419,8 +419,8 @@ Facts copied into multiple files, each a future-drift hazard:
 6. **Working method.** Slice rhythm, Phase 0 prerequisite, `git commit -F`
    habit — present in CLAUDE.md, `notes/process.md`, and the handoff.
 7. **Decided design calls.** F1 description and G1 braced-only decision are
-   restated in `DESIGN.md` (DD section), `acadamark-session-handoff.md`,
-   `notes/acadamark-backlog-roadmap.md`, and
+   restated in `DESIGN.md` (DD section), `enscribe-session-handoff.md`,
+   `notes/enscribe-backlog-roadmap.md`, and
    `notes/specified-not-implemented.md` (DF-7, DF-1).
 
 ### §3.4 Gaps — categories without a clear home
@@ -447,7 +447,7 @@ Facts copied into multiple files, each a future-drift hazard:
   arc's actual completion, and `audit-findings.md` does not subsume it
   cleanly because the stopping-point doc also carries FLAGGED-1 / FLAGGED-2
   design conversations and a 6-step process plan.
-- **Multi-document ownership ambiguity.** `acadamark-session-handoff.md`
+- **Multi-document ownership ambiguity.** `enscribe-session-handoff.md`
   doc-ownership entry says "Session orientation — where things stand,
   working method, the slice rhythm" — but it also carries the backlog,
   the architecture description, the milestones, decided design calls, and
@@ -472,7 +472,7 @@ Stale cross-references identified:
   `../../notes/plugin-pipeline.md` and `../../notes/interpreter-design.md`.
   Both files were archived in the 2026-Q2 cleanup (`archive/plugin-pipeline-2026-05.md`
   and `archive/interpreter-design-2026-05.md`).
-- `acadamark-session-handoff.md` line 222 points at `notes/audit-2026-Q2/`
+- `enscribe-session-handoff.md` line 222 points at `notes/audit-2026-Q2/`
   (no leading `archive/`); the directory's real path is
   `archive/audit-2026-Q2/`.
 - `audit-cleanup-stopping-point.md` describes "Steps 1–3 / Step 4 / Steps
@@ -502,10 +502,10 @@ The table maps fact categories to owning documents:
 | Shorthand syntax — grammar, attribute forms, closing rules, node shapes | `notes/shorthand-syntax.md` |
 | Layer 1 vocabulary — element entries, attributes, JATS mappings | `packages/layer1-vocabulary/SPEC.md` + `elements/*.md` |
 | Layer 1 naming rules, render-mode lowering map, compilation targets | `notes/layer1-naming.md` |
-| Backlog — what to build, dependency order, layer structure | `notes/acadamark-backlog-roadmap.md` |
+| Backlog — what to build, dependency order, layer structure | `notes/enscribe-backlog-roadmap.md` |
 | Specified-but-unbuilt inventory — DF/PG/DS/OQ items | `notes/specified-not-implemented.md` |
 | Audit findings — AUD/DRIFT/GAP items | `notes/audit-findings.md` |
-| Session orientation — where things stand, working method, slice rhythm | `acadamark-session-handoff.md` |
+| Session orientation — where things stand, working method, slice rhythm | `enscribe-session-handoff.md` |
 | Build plan — phases, BUILD-era slice map | `BUILD.md` |
 | Core principles — always-renders, delegation, spec-first, max-correct-output | `notes/principles.md` |
 | Delegation principle in detail, two-layer rule, accepted bare idioms | `notes/idioms.md` |
@@ -538,7 +538,7 @@ ownership table:
    statements that overlap with PG/AUD items (owned by
    `specified-not-implemented.md` and `audit-findings.md`). The
    relationship to those owners is undefined.
-5. **`packages/acadamark-interpreter/README.md`** and
+5. **`packages/enscribe-interpreter/README.md`** and
    **`packages/layer1-vocabulary/README.md`** — not in the table. Both carry
    status claims; both are severely drifted.
 6. **`CLAUDE.md`** and **`claude.md`** — not in the table. Both carry
@@ -559,7 +559,7 @@ ownership table:
   documents have stale copies (see §3.2).
 - The doc-ownership rule says `notes/pipeline.md` owns the plugin chain
   order; `BUILD.md` still presents its own (planning-era, never-existed)
-  chain as a diagram, and `acadamark-session-handoff.md` §2 enumerates a
+  chain as a diagram, and `enscribe-session-handoff.md` §2 enumerates a
   parallel one.
 - The doc-ownership rule says `notes/specified-not-implemented.md` and
   `notes/audit-findings.md` own item status; the
@@ -586,13 +586,13 @@ content.** Breakdown:
 
 - Repo root: 8 documents (`README.md`, `DESIGN.md`, `BUILD.md`, `STATUS.md`,
   `CLAUDE.md`, `claude.md`, `audit-shape.md`,
-  `acadamark-session-handoff.md`).
+  `enscribe-session-handoff.md`).
 - `notes/` tracking layer: 12 documents (backlog-roadmap,
   specified-not-implemented, audit-findings, audit-cleanup-stopping-point,
   doc-ownership, process, reading-order, principles, pipeline-refactor-plan
   + 2 amendments, known-limitations).
 - `packages/*/README.md` with material status content: 2 documents
-  (acadamark-interpreter, layer1-vocabulary).
+  (enscribe-interpreter, layer1-vocabulary).
 
 If specs that carry embedded status are counted, add another 6+ (interpreter,
 pipeline, shorthand-syntax, layer1-naming, at-sigil-reference-proposal, the
@@ -614,7 +614,7 @@ Ranked by how much confusion they currently cause.
 3. **Two stale `packages/*/README.md` files** that say the system is
    pre-implementation when it is post-implementation. These are likely the
    first thing a third-party consumer of the npm packages would read.
-4. **The roadmap is out of date.** `acadamark-backlog-roadmap.md` describes
+4. **The roadmap is out of date.** `enscribe-backlog-roadmap.md` describes
    NORM, G3, and G4 as Layer-2 work to be done; all three have landed in
    code (commits including `ec0d071` NORM-tables and the G4 closure noted
    in `audit-findings.md` AUD-09). The roadmap has not been updated since

@@ -7,15 +7,15 @@ and an implementation-slicing recommendation; chat ratifies before any slice run
 **Scope.** Phase 14 — the largest v0.1.0 release-blocking phase — covers five
 workstreams: (1) the client-side rendering library (Layer 1 only, browser, no
 JATS); (2) the bundle/build architecture for that library; (3) a github.io demo
-site authored in acadamark itself; (4) the package org-split (monorepo → scoped,
+site authored in enscribe itself; (4) the package org-split (monorepo → scoped,
 separately-versioned packages) at release time; (5) demonstrative-fixture polish
 and corpus consolidation. The project rename rides on top of (3): building the
 demo site is the forcing function. This document investigates the architecture of
 all five before implementation begins.
 
 **Naming caveat.** The project rename is undecided (Q6). Every package name and
-scope below is written with the **current** name `acadamark` as a placeholder.
-Read every `@acadamark/…` and bare `acadamark` as **`@<final-name>/…`** and
+scope below is written with the **current** name `enscribe` as a placeholder.
+Read every `@enscribe/…` and bare `enscribe` as **`@<final-name>/…`** and
 **`<final-name>`** — the scope token is the project name, and the project name is
 a Q6 decision. No name is decided here; this document schedules the decision.
 
@@ -34,7 +34,7 @@ shape is `notes/dsl-rendering-architecture-findings.md`.
 
 The decisive fact for Phase 14 is that **the hard architectural work is already
 done.** The package boundaries and the browser-safety seam were drawn — in the
-`acadamark-core` ADR (`notes/specs/acadamark-core.md`) and in DESIGN.md — *for*
+`enscribe-core` ADR (`notes/specs/enscribe-core.md`) and in DESIGN.md — *for*
 the client-side build, before it was attempted. DESIGN.md states the seam "is also
 the browser-safety boundary … so the eventual client-side build does not need to
 redraw the package boundaries" (DESIGN.md line 496). Phase 14 is therefore mostly
@@ -45,17 +45,17 @@ The dependency graph (verified against every `package.json`) points inward, with
 no cycles and no sideways edges:
 
 ```
-                      acadamark-core  (v0.1.0, private)
+                      enscribe-core  (v0.1.0, private)
                       no internal deps; browser-safe foundation
                           ▲      ▲      ▲          ▲
             ┌─────────────┘      │      │          └──────────────┐
-   layer1-vocabulary   remark-acadamark │              acadamark-jats-export
+   layer1-vocabulary   remark-enscribe │              enscribe-jats-export
    (v0.1.0, private)   (v0.2.0, PUBLIC) │              (v0.0.1, private)
    build-time js-yaml  +unified/remark  │              ──────────────┘ │
    only; browser-safe  micromark+Peggy  │       (depends on interpreter + remark
                           ▲             │        + core + layer1 + remark-parse)
                           │             │              │
-                          └──── acadamark-interpreter ─┘
+                          └──── enscribe-interpreter ─┘
                                 (v0.0.1, private)
                                 heavy/Node deps: katex, mermaid, abcjs,
                                 citation-js, jsdom, tippy, popper, js-yaml,
@@ -64,26 +64,26 @@ no cycles and no sideways edges:
 
 Three observations fall straight out of this graph:
 
-1. **The JATS boundary is automatic.** `acadamark-jats-export` is a *downstream
+1. **The JATS boundary is automatic.** `enscribe-jats-export` is a *downstream
    consumer* of the interpreter (it depends on it), not a dependency of it. A
    bundle entry that targets the interpreter's render path never reaches
    jats-export. "Layer 1 only, no JATS in the browser" is not a constraint the
    bundle must enforce — it is a property of the existing arrow directions. The
-   future `acadamark-jats-import` sits in the same downstream position and is
+   future `enscribe-jats-import` sits in the same downstream position and is
    equally out of the browser bundle by construction.
 
 2. **The heavy/Node-coupled mass is concentrated in one package** — the
    interpreter. That is where the browser bundle does its work: it ships the
    interpreter's *browser-safe subset* and replaces or excludes the handful of
    server-only code paths (Section 2). Core, layer1-vocabulary, and the
-   remark-acadamark parser are already browser-safe wholesale.
+   remark-enscribe parser are already browser-safe wholesale.
 
-3. **Only `remark-acadamark` is non-private today** (v0.2.0); the other four are
+3. **Only `remark-enscribe` is non-private today** (v0.2.0); the other four are
    `private: true`. The org-split (Q4) is in large part a decision about which of
    the remaining four (plus the new browser package) go public, and under what
    scope.
 
-The new client-side library is a **new package** — call it the bare `acadamark`
+The new client-side library is a **new package** — call it the bare `enscribe`
 headline package — built by the bundler from the interpreter's browser-safe
 modules, carrying only browser-safe dependencies. It depends (at build time) on
 the interpreter's source but ships a self-contained bundle, so a browser consumer
@@ -95,20 +95,20 @@ never installs jsdom or the file-loading code paths.
 
 Everything Phase 14 builds on already exists and was read for this document.
 
-**The public API foundation.** `packages/acadamark-interpreter/src/index.js` line
-697 exports `buildAcadamarkPipeline(options = {})`, which returns
-`unified().use(remarkParse).use(remarkAcadamark).use(acadamarkInterpreter,
+**The public API foundation.** `packages/enscribe-interpreter/src/index.js` line
+697 exports `buildEnscribePipeline(options = {})`, which returns
+`unified().use(remarkParse).use(remarkEnscribe).use(enscribeInterpreter,
 options)` — a **synchronous** unified `Processor`. A browser `render()` is one
-wrapper away: `buildAcadamarkPipeline(options).processSync(source).toString()`.
+wrapper away: `buildEnscribePipeline(options).processSync(source).toString()`.
 The options the pipeline already forwards (index.js lines 693–695) are
 `katexCss`, `hoverPreviewMode`, `assetsDir`, plus the DSL-mode options added by
 the DSL slice. No new pipeline is needed — the browser library is a thin
 source-in/HTML-out façade over this factory.
 
-**The browser-safety seam** (canonical: `notes/specs/acadamark-core.md`). The ADR
+**The browser-safety seam** (canonical: `notes/specs/enscribe-core.md`). The ADR
 classifies every runtime module as BROWSER-SAFE or SERVER-OR-BUILD-ONLY and names
 the seam as the browser-safety boundary. The browser-safe set is: the whole of
-`acadamark-core`; `remark-acadamark/src/{syntax,from-markdown,recursive-content,
+`enscribe-core`; `remark-enscribe/src/{syntax,from-markdown,recursive-content,
 index,generated/parser}.js` (the micromark extension + the generated Peggy
 parser); the interpreter's `src/lib/*`, `src/plugins/*` (except `library-load.js`),
 `src/handlers/*` (except `table.js`'s `src=` branch), `src/schema/{shape-tokens,
@@ -141,21 +141,21 @@ for the abc-static path (lines 135–136). The coupling is entirely in the
 `<script src>` + an init call) touches none of it and is browser-safe. The browser
 library therefore defaults DSL rendering to **live-link** (Q1).
 
-**The standing rule** (acadamark-core.md): "Runtime code that may ship to a
+**The standing rule** (enscribe-core.md): "Runtime code that may ship to a
 browser stays free of `fs`, `path`, `url`, and other Node built-ins… no new
 runtime code should add to this list. Cross-check new slices against the rule."
 `dsl/registry.js` added to the list without the cross-check — Section 10b.
 
 **The demonstrative fixtures.** `notes/specs/render-quality.md` lines 65–79: the
 article-shaped (`document-45`) and book-shaped (`document-46`) fixtures are
-rendered by `packages/acadamark-interpreter/test/render-fixtures.js` and pinned by
+rendered by `packages/enscribe-interpreter/test/render-fixtures.js` and pinned by
 snapshot in `test/integration.test.js`. They serve the demonstration role *and*
 the regression-pin role simultaneously — relevant to Q5.
 
 **The internal version protocol.** Every internal dependency is `"*"` (the
-workspace protocol): interpreter's `package.json` lines 16/23/27 (`acadamark-core`,
-`layer1-vocabulary`, `remark-acadamark` all `"*"`); same pattern in jats-export
-and remark-acadamark. Publishing requires turning each `"*"` into a real semver
+workspace protocol): interpreter's `package.json` lines 16/23/27 (`enscribe-core`,
+`layer1-vocabulary`, `remark-enscribe` all `"*"`); same pattern in jats-export
+and remark-enscribe. Publishing requires turning each `"*"` into a real semver
 range (Q4 migration cost).
 
 ---
@@ -163,13 +163,13 @@ range (Q4 migration cost).
 ## 3. Q1 — client-side library scope and surface
 
 **What "client-side library, Layer 1 only" means as an API.** The library takes
-acadamark source and returns rendered Layer 1 HTML, in the browser, with no build
-step. It is a thin façade over `buildAcadamarkPipeline` (Section 2):
+enscribe source and returns rendered Layer 1 HTML, in the browser, with no build
+step. It is a thin façade over `buildEnscribePipeline` (Section 2):
 
 ```js
-import { render } from 'acadamark';            // @<final-name> headline package
+import { render } from 'enscribe';            // @<final-name> headline package
 
-const html = render(acadamarkSource, {
+const html = render(enscribeSource, {
   dslMode: 'live-link',   // mermaid/abc via CDN <script src> (browser default)
   inlineStyles: false,    // app imports the CSS; true → self-contained HTML
 });
@@ -184,8 +184,8 @@ selects the asset strategy below.
 
 **Which dependencies survive the browser bundle.**
 
-- **Survive as-is (browser-safe):** `acadamark-core` (whole); the
-  remark-acadamark parser (micromark extension + generated Peggy parser); the
+- **Survive as-is (browser-safe):** `enscribe-core` (whole); the
+  remark-enscribe parser (micromark extension + generated Peggy parser); the
   isomorphic remark/unified/micromark/mdast/hast stack (`unified`, `remark-parse`,
   `remark-gfm`, `remark-math`, `mdast-util-to-hast`, `hast-util-to-html`,
   `hast-util-from-html`); `katex` (a browser library); `tippy.js` + `@popperjs/core`
@@ -212,7 +212,7 @@ selects the asset strategy below.
 
 **The JATS boundary** is drawn by the dependency graph, not by the bundle
 (Section 1, observation 1). The browser package depends on the interpreter's
-browser-safe subset and never on `acadamark-jats-export`; JATS code is
+browser-safe subset and never on `enscribe-jats-export`; JATS code is
 unreachable from the render entry. No bundle-level exclusion rule is needed — the
 arrow directions already guarantee it. This is the cleanest possible realization
 of "JATS is Node-side only," and it is free.
@@ -227,7 +227,7 @@ defensible strategies are:
   the design value "standalone HTML is the build target" (DESIGN.md line 524).
   Cost: a large bundle (fonts dominate).
 - **(B) App-provides** — the library returns HTML referencing CSS classes; the
-  consuming app imports `acadamark/styles.css` and KaTeX's own CSS. Smaller
+  consuming app imports `enscribe/styles.css` and KaTeX's own CSS. Smaller
   bundle; this is the conventional library shape (KaTeX, CodeMirror ship CSS as a
   separate artifact). Cost: the consumer wires two stylesheets.
 
@@ -235,7 +235,7 @@ defensible strategies are:
 `inlineStyles: true`** for the self-contained use-case (e.g. emitting a single
 copy-paste HTML file). This mirrors the existing asset-mode toggle philosophy and
 keeps the default JS bundle small. The CSS becomes a published artifact
-(`acadamark/styles.css`) regardless.
+(`enscribe/styles.css`) regardless.
 
 **DSL rendering in the browser.** The browser is the natural home for live DSL
 rendering — the libraries load at view time anyway (the BACKLOG note, L815–817).
@@ -244,7 +244,7 @@ init call (browser-safe; touches none of `dsl/registry.js`'s `fs`/`jsdom`
 coupling). Live-inline (bundled mermaid/abc source) is possible but bloats the
 bundle by megabytes and is left as a non-default opt-in. Static mode (jsdom) is
 Node-only and absent from the browser library entirely. The existing registry
-plumbs through `buildAcadamarkPipeline` unchanged; the browser library only fixes
+plumbs through `buildEnscribePipeline` unchanged; the browser library only fixes
 the *default* mode to live-link.
 
 **Q1 chat-ratify:** the API surface (`render` / `renderInto`, the `inlineStyles`
@@ -298,7 +298,7 @@ external library sizes the prompt cites (KaTeX ≈ 300 KB; mermaid live-inline
 defaults — they are the items deliberately kept out of the default bundle.
 
 **Tree-shaking and code-splitting.** The inward dependency graph and ESM output
-already support tree-shaking. Sub-path entries like `acadamark/math` are
+already support tree-shaking. Sub-path entries like `enscribe/math` are
 **overkill for v0.1.0** — the single `render` entry is the whole public surface.
 Note the option for later; do not build it now.
 
@@ -309,39 +309,39 @@ Note the option for later; do not build it now.
 
 ## 5. Q3 — demo-site architecture
 
-The github.io site is authored in acadamark and dogfoods the toolchain.
+The github.io site is authored in enscribe and dogfoods the toolchain.
 
 **Hosting model.** github.io serves static files. The modern conventional choice
 is a **GitHub Actions workflow that builds to a Pages artifact** (no committed
 build output, no `gh-pages` branch to maintain by hand). The site is
-**pre-rendered**: the Node-side pipeline renders the `.acm` sources to static HTML
+**pre-rendered**: the Node-side pipeline renders the `.emd` sources to static HTML
 at build time, so the demo site does *not* need the client-side library at view
 time — except the one **Playground** page, which loads the UMD bundle for live
 rendering.
 
 **Source layout.** A **new workspace package `packages/demo-site/`** holds the
-`.acm` sources plus a build script. Keeping it in the monorepo (until the
+`.emd` sources plus a build script. Keeping it in the monorepo (until the
 release-time org-split) means the site is a *living regression surface*: if the
 pipeline breaks, the site build breaks in CI. Dogfooding is structural, not
-cosmetic — the site content is acadamark source rendered by the real interpreter.
+cosmetic — the site content is enscribe source rendered by the real interpreter.
 
 > **Slice 3a update (revised siting).** The framework was implemented at
 > **`docs-site/` at the repo root**, not as a `packages/demo-site/` workspace
 > package, per the Slice 3a locked inputs (`docs-site/` distinct from the
 > standalone `demo/` editor showcase). Its `build.js` still imports
-> `buildAcadamarkPipeline` from the interpreter workspace and renders the real
+> `buildEnscribePipeline` from the interpreter workspace and renders the real
 > pipeline, so the dogfooding/regression-surface rationale holds; only the
 > directory location and name differ from this Phase 0 recommendation.
 
-**Build pipeline.** A Node script in `packages/demo-site/` reads the `.acm`
-sources, runs `buildAcadamarkPipeline(options).processSync(source).toString()`
+**Build pipeline.** A Node script in `packages/demo-site/` reads the `.emd`
+sources, runs `buildEnscribePipeline(options).processSync(source).toString()`
 (Section 2) per page, writes HTML + the published CSS to a build directory, and
 GitHub Actions publishes that directory to Pages on push to the default branch.
 CI-driven, not manual.
 
 **Site structure** (the prompt's minimum, refined):
 
-- **Home** — what acadamark is. *The single most name-bearing surface* (Q6).
+- **Home** — what enscribe is. *The single most name-bearing surface* (Q6).
 - **Examples** — `document-45` (article) and `document-46` (book) as live
   rendered pages. These are the demonstrative anchors (Section 2); the Examples
   page is their public home and the reason corpus consolidation (Q5) and the demo
@@ -390,20 +390,20 @@ not relocating code.
 
 | today (private unless noted)    | published as            | audience            |
 |---------------------------------|-------------------------|---------------------|
-| (new) browser library           | `acadamark` (bare)      | browser app authors |
-| `remark-acadamark` (public 0.2) | `@acadamark/remark`     | unified-pipeline authors |
-| `acadamark-interpreter`         | `@acadamark/interpreter`| Node full-HTML build |
-| `acadamark-jats-export`         | `@acadamark/jats-export`| Node JATS consumers |
-| `acadamark-core`                | `@acadamark/core`       | transitive (dep of the above) |
-| `layer1-vocabulary`             | `@acadamark/layer1-vocabulary` | transitive |
+| (new) browser library           | `enscribe` (bare)      | browser app authors |
+| `remark-enscribe` (public 0.2) | `@enscribe/remark`     | unified-pipeline authors |
+| `enscribe-interpreter`         | `@enscribe/interpreter`| Node full-HTML build |
+| `enscribe-jats-export`         | `@enscribe/jats-export`| Node JATS consumers |
+| `enscribe-core`                | `@enscribe/core`       | transitive (dep of the above) |
+| `layer1-vocabulary`             | `@enscribe/layer1-vocabulary` | transitive |
 
-The **bare `acadamark`** package is the headline client-side library (matching
-`import { render } from 'acadamark'`); the rest live under `@acadamark/*`. The
+The **bare `enscribe`** package is the headline client-side library (matching
+`import { render } from 'enscribe'`); the rest live under `@enscribe/*`. The
 scope token is the Q6 name.
 
 **Public vs internal.** At release, the dependency graph must be installable, so
 every package a published package depends on must itself be published —
-`acadamark-core` and `layer1-vocabulary` cannot stay `private`. "Internal" becomes
+`enscribe-core` and `layer1-vocabulary` cannot stay `private`. "Internal" becomes
 a *documentation* distinction, not a `private` flag: external authors are expected
 to import the **browser library**, **remark**, **interpreter**, and **jats-export**
 directly; **core** and **layer1-vocabulary** are transitive plumbing they get
@@ -413,7 +413,7 @@ four-direct / two-transitive split rather than encoding it as `private`.
 **Versioning.** For the v0.1.0 release, ship all packages at **0.1.0 together**
 (synchronized) — cleanest for the headline. Post-release, **independent semver per
 package** (the conventional pattern; `changesets` is the conventional tool).
-Caveat surfaced for chat: `remark-acadamark` is already at **0.2.0** while core
+Caveat surfaced for chat: `remark-enscribe` is already at **0.2.0** while core
 and layer1 are at 0.1.0 and interpreter/jats are at 0.0.1, so the lineage is
 *already* independent — synchronizing everything to 0.1.0 would move remark
 *backward* in appearance. The cleaner reading may be to let remark keep its
@@ -421,10 +421,10 @@ independent line and synchronize only the rest. **Chat ratifies synchronized-at-
 release vs. independent-from-the-start.**
 
 **Migration impact** (mechanical, but broad): (1) rename each package
-(`acadamark-core` → `@acadamark/core`, etc.); (2) replace every internal `"*"`
+(`enscribe-core` → `@enscribe/core`, etc.); (2) replace every internal `"*"`
 ref (Section 2) with a real semver range; (3) flip `private: false` on the
 to-publish packages; (4) update every cross-package import string
-(`from 'acadamark-core'` → `from '@acadamark/core'`) — this is the **largest
+(`from 'enscribe-core'` → `from '@enscribe/core'`) — this is the **largest
 mechanical surface**, touching many files; (5) stand up per-package publishing
 (an Actions matrix or `changesets`). The work is contained and output-neutral
 (tests pass post-rename), but it is its own slice and should land **after** the
@@ -516,7 +516,7 @@ that is: *after* the client-side library (which can be built under the current
 name as an unpublished placeholder — no public commitment) and *before* the
 demo-site content slice and the org-split slice.
 
-**Candidate names** (recorded as standing, not adjudicated here): `acadamark`
+**Candidate names** (recorded as standing, not adjudicated here): `enscribe`
 (current); `RDF` — **ruled out** (collision with the W3C Resource Description
 Framework); "Rich Document"-family variants in discussion. No new candidate is
 proposed by this document.
@@ -541,9 +541,9 @@ does not make it** (out of scope). Chat picks the name when the home page is
 drafted.
 
 > **Slice 3a update (rename deferred).** The Slice 3a locked inputs **deferred
-> the rename** — "Project name: acadamark for v0.1.0. Rename is a separate later
+> the rename** — "Project name: enscribe for v0.1.0. Rename is a separate later
 > decision" — so the framework slice did *not* force it as scheduled above. The
-> placeholder home page is titled "acadamark"; the rename gate now sits at a
+> placeholder home page is titled "enscribe"; the rename gate now sits at a
 > separate later decision before the org-split, not inside the framework slice.
 
 ---
@@ -571,7 +571,7 @@ dependency) with a library-first spine** — recommended slices:
 1. **Library packaging** (foundation). Browser entry (`render`/`renderInto`); the
    bundle config (tsup, ESM+UMD, `.d.ts`); the asset-replacement work (the four
    `✗` paths + the live-link DSL default); CSS as a separate artifact. Output: a
-   publishable-but-unpublished `acadamark` browser package under the placeholder
+   publishable-but-unpublished `enscribe` browser package under the placeholder
    name. *This is the slice the BACKLOG already says "gets a Phase 0"; this
    document is most of that Phase 0 — the slice can proceed to an implementation
    prompt.*
@@ -606,18 +606,18 @@ Three drift items surfaced during the read. All are **pre-existing** (none
 introduced by this investigation), and all are **propose-only** — this slice
 edits none of these surfaces.
 
-**(a) `acadamark-jats-export` described as planned/future, though it is built.**
+**(a) `enscribe-jats-export` described as planned/future, though it is built.**
 DESIGN.md lines 494–496 say the workspace has "four packages (a fifth,
-`acadamark-jats-export`, is planned)" and refers to "the JATS exporter (when it
-arrives)." `notes/specs/acadamark-core.md` similarly tags jats-export "(FUTURE)" /
-"forthcoming." The package exists: `packages/acadamark-jats-export/package.json`
+`enscribe-jats-export`, is planned)" and refers to "the JATS exporter (when it
+arrives)." `notes/specs/enscribe-core.md` similarly tags jats-export "(FUTURE)" /
+"forthcoming." The package exists: `packages/enscribe-jats-export/package.json`
 (v0.0.1, with a real dependency list). **Propose:** a documentation slice updates
 both to present tense — five packages; jats-export is built. Bears on Q1/Q4
 because the JATS boundary reasoning depends on jats-export being a *real*
 downstream package.
 
 **(b) The ADR's server-only (`✗`) list omits `src/dsl/registry.js`.**
-`acadamark-core.md` names four server-only paths; `dsl/registry.js` (added by DSL
+`enscribe-core.md` names four server-only paths; `dsl/registry.js` (added by DSL
 Slice 2) is a fifth, with `fs`/`createRequire`/`jsdom` coupling in its inline and
 static modes (Section 2, file:line). The ADR's standing rule says to "cross-check
 new slices against the rule" — that cross-check did not happen when DSL Slice 2
@@ -648,7 +648,7 @@ these.
 - **DESIGN.md "Package structure" (lines 494–496):** "four packages (a fifth …
   planned)" → "five packages"; drop "when it arrives" for jats-export; the
   browser library is a *sixth* package once Phase 14 ships. (Drift 10a.)
-- **`notes/specs/acadamark-core.md`:** present-tense jats-export; **add
+- **`notes/specs/enscribe-core.md`:** present-tense jats-export; **add
   `src/dsl/registry.js` (inline + static modes) to the server-only `✗` list**;
   note live-link as the browser-safe DSL path. (Drift 10b.)
 - **ROADMAP Phase 14 section:** name the demo site, org-split, and rename
@@ -665,14 +665,14 @@ Copy-ready for the implementation prompts that follow this Phase 0. Each is
 scoped here; only slice 1 was given a Phase 0 by the BACKLOG, and this document
 is most of it.
 
-**Slice 1 — Library packaging.** *Goal:* a browser package (`acadamark`, bare,
+**Slice 1 — Library packaging.** *Goal:* a browser package (`enscribe`, bare,
 placeholder name) exporting `render(source, options)` / `renderInto(el, source,
-options)` over `buildAcadamarkPipeline`, built by **tsup** to **ESM + minified
+options)` over `buildEnscribePipeline`, built by **tsup** to **ESM + minified
 UMD** with **`.d.ts`**. *In scope:* the browser entry; the bundle config; the
 asset replacement for the four `✗` paths (inline KaTeX CSS + `default.css` as
 strings; fonts deferred to the app by default, `inlineStyles: true` for
 self-contained); the **live-link DSL default**; CSS shipped as
-`acadamark/styles.css`. *Out of scope:* publishing (Q4); live-inline DSL bundling;
+`enscribe/styles.css`. *Out of scope:* publishing (Q4); live-inline DSL bundling;
 the jsdom/static path; TypeScript-in-source. *Correctness:* output-adding (new
 package); output-neutral on the Node side (existing fixtures render identically).
 
@@ -697,8 +697,8 @@ minimal covering set + the demonstrative anchors; archive the rest to
 *Out of scope:* deleting anything; changing kept snapshots. *Correctness:*
 output-neutral on the kept set; each removed block proven redundant.
 
-**Slice 6 — Org-split (release time).** *Goal:* scope rename (`@acadamark/*` +
-bare `acadamark`), `"*"` → semver, `private` flips, per-package publishing.
+**Slice 6 — Org-split (release time).** *Goal:* scope rename (`@enscribe/*` +
+bare `enscribe`), `"*"` → semver, `private` flips, per-package publishing.
 *In scope:* the renames; the import-string updates; the publish config.
 *Out of scope:* any behavior change. *Correctness:* output-neutral (tests pass
 after the mechanical rename).
@@ -736,19 +736,19 @@ file; each gates the corresponding implementation slice.
 
 **In-repo (code/design/doc facts; file:line) — all read for this document:**
 
-- Public API foundation (`buildAcadamarkPipeline`, sync `Processor`, forwarded
-  options): `packages/acadamark-interpreter/src/index.js` (697; 693–695).
+- Public API foundation (`buildEnscribePipeline`, sync `Processor`, forwarded
+  options): `packages/enscribe-interpreter/src/index.js` (697; 693–695).
 - Dependency graph + internal `"*"` protocol + single-entry `exports`:
-  `packages/acadamark-interpreter/package.json` (exports line 8; deps 13–34;
-  internal `"*"` at 16/23/27); `packages/acadamark-jats-export/package.json`;
-  `packages/remark-acadamark/package.json` (the only non-private, v0.2.0);
-  `packages/acadamark-core/package.json` (v0.1.0, private, no internal deps);
+  `packages/enscribe-interpreter/package.json` (exports line 8; deps 13–34;
+  internal `"*"` at 16/23/27); `packages/enscribe-jats-export/package.json`;
+  `packages/remark-enscribe/package.json` (the only non-private, v0.2.0);
+  `packages/enscribe-core/package.json` (v0.1.0, private, no internal deps);
   `packages/layer1-vocabulary/package.json`.
 - Browser-safety seam, browser-safe set, the four `✗` server-only paths, the
   standing client-side-build-constraints rule:
-  `notes/specs/acadamark-core.md` (whole).
+  `notes/specs/enscribe-core.md` (whole).
 - The fifth server-only site (`dsl/registry.js` `fs`/`createRequire`/`jsdom`
-  coupling; live-link is clean): `packages/acadamark-interpreter/src/dsl/registry.js`
+  coupling; live-link is clean): `packages/enscribe-interpreter/src/dsl/registry.js`
   (27, 32, 37–38, 61–62, 70–71, 135–136).
 - Package-structure position + the seam-as-browser-boundary claim + the
   client-side-rendering future direction + the out-of-scope (no new parsers)

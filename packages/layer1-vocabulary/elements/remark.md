@@ -4,7 +4,7 @@ html_output:
   element: remark
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -68,7 +68,7 @@ The element is block-level; its content is body content directly.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<remark>` | `<statement content-type="remark">` |
 

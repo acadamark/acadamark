@@ -7,18 +7,18 @@ html_output:
   notes: |
     `html_output.element` here is the vocabulary lookup key (must match
     the tagname). The handler emits the wrapper element shape directly
-    (a `<pre class="abc" data-acadamark-dsl="abc">…</pre>` — `<pre>`,
+    (a `<pre class="abc" data-enscribe-dsl="abc">…</pre>` — `<pre>`,
     matching Mermaid, so the line-oriented ABC source survives HTML
     serialization verbatim); the schema field is not consulted under
     `interpreter_strategy: handler`.
 
     `<abc>` is an **external DSL** per `DESIGN.md` §"DSL handlers:
-    included vs external". Acadamark preserves the source as marked
-    markup; rendering to SVG happens external to acadamark — at view
+    included vs external". Enscribe preserves the source as marked
+    markup; rendering to SVG happens external to enscribe — at view
     time in the browser (the consumer initializes abcjs with a small
     script calling `ABCJS.renderAbc` on each marked block) or at
     build time via a headless pre-render pass.
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -32,7 +32,7 @@ acadamark_attributes:
 content:
   type: opaque
   notes: |
-    Author writes ABC notation source verbatim. Acadamark preserves the
+    Author writes ABC notation source verbatim. Enscribe preserves the
     content unmodified inside the wrapper element. abcjs's rendering
     library (loaded from CDN at view time, or run at build time)
     parses the source.
@@ -42,7 +42,7 @@ jats_counterpart:
   notes: |
     JATS has no ABC-notation counterpart. At JATS export the rendered
     notation (SVG or staff image, produced by the consumer's tooling)
-    is embedded as a `<graphic>` element. The acadamark source itself
+    is embedded as a `<graphic>` element. The enscribe source itself
     is preserved in the canonical Layer 1 form for round-trip; export
     emits the rendered notation instead of the source.
 shorthand_examples:
@@ -56,7 +56,7 @@ shorthand_examples:
       C C G G | A A G2 | F F E E | D D C2 |
       </abc>
     layer1_html: |
-      <pre class="abc" data-acadamark-dsl="abc">X:1
+      <pre class="abc" data-enscribe-dsl="abc">X:1
       T:Twinkle, Twinkle, Little Star
       M:4/4
       L:1/4
@@ -69,29 +69,29 @@ interpreter_strategy: handler
 handler_module: ./handlers/abc.js
 handler_responsibilities:
   - Read the opaque content as ABC notation source.
-  - Emit a `<pre class="abc" data-acadamark-dsl="abc">…</pre>` wrapper
+  - Emit a `<pre class="abc" data-enscribe-dsl="abc">…</pre>` wrapper
     preserving the source verbatim.
   - Apply id / classes from the node (the `abc` class is added by the
     handler alongside any author-supplied classes; the
-    `data-acadamark-dsl` attribute is always present).
+    `data-enscribe-dsl` attribute is always present).
   - Honor the optional `caption` kwarg by emitting a sibling
     `<figcaption>`.
 ---
 
 # `<abc>`
 
-An ABC music notation block. External DSL — source preserved as marked markup; rendering to SVG happens external to acadamark.
+An ABC music notation block. External DSL — source preserved as marked markup; rendering to SVG happens external to enscribe.
 
 ## Semantic intent
 
-`<abc>` is acadamark's tag for ABC notation source. The handler emits a `<pre class="abc" data-acadamark-dsl="abc">…</pre>` wrapper preserving the source.
+`<abc>` is enscribe's tag for ABC notation source. The handler emits a `<pre class="abc" data-enscribe-dsl="abc">…</pre>` wrapper preserving the source.
 
-Unlike Mermaid (which has a documented DOM-scanning initialization), abcjs requires explicit `ABCJS.renderAbc(target, source)` calls. The consumer's page needs a small initialization script that finds each `data-acadamark-dsl="abc"` element and calls abcjs on its content. A typical consumer script:
+Unlike Mermaid (which has a documented DOM-scanning initialization), abcjs requires explicit `ABCJS.renderAbc(target, source)` calls. The consumer's page needs a small initialization script that finds each `data-enscribe-dsl="abc"` element and calls abcjs on its content. A typical consumer script:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/abcjs/dist/abcjs-basic-min.js"></script>
 <script>
-  for (const el of document.querySelectorAll('[data-acadamark-dsl="abc"]')) {
+  for (const el of document.querySelectorAll('[data-enscribe-dsl="abc"]')) {
     const source = el.textContent;
     el.textContent = '';
     ABCJS.renderAbc(el, source);

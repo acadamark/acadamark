@@ -4,7 +4,7 @@ html_output:
   element: a
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -42,8 +42,8 @@ jats_counterpart:
     'xlink:href': from href
   notes: |
     JATS uses <ext-link> for external links and <xref> for internal
-    cross-references. Acadamark's <a> maps to <ext-link> for external
-    URLs; for internal references (acadamark id targets), the JATS
+    cross-references. Enscribe's <a> maps to <ext-link> for external
+    URLs; for internal references (enscribe id targets), the JATS
     exporter typically transforms the link into an <xref> instead.
 shorthand_examples:
   - source: 'See [the documentation](https://example.com/docs).'
@@ -123,7 +123,7 @@ Use `<a href=#id>` when you want a generic link that doesn't participate in the 
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<a href="https://...">` | `<ext-link ext-link-type="uri" xlink:href="...">` |
 | `<a href="#id">` | typically transformed to `<xref rid="id">` if the target is a numbered element |

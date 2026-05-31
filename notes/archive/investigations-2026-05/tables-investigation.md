@@ -17,7 +17,7 @@ The existing frontmatter does NOT include `interpreter_strategy: handler`, nor p
 
 ### Handler files
 
-No `table.js` handler exists in `packages/acadamark-interpreter/src/handlers/`. Start from scratch.
+No `table.js` handler exists in `packages/enscribe-interpreter/src/handlers/`. Start from scratch.
 
 ---
 
@@ -63,7 +63,7 @@ No existing infrastructure for loading files during interpretation. The figure h
 
 **For this slice**: `src=` is implemented in the table handler using `readFileSync` at handler time, relative to a base directory. The base directory can be passed as an option to the interpreter, defaulting to `process.cwd()` or the file's directory. For Document 7 fixture tests, the handler will use the fixture directory.
 
-Specifically: `acadamarkInterpreter` will accept an option `{ assetsDir }`. When `assetsDir` is set, `src=` paths resolve relative to it. When not set, `src=` produces an error. Tests that use `src=` must pass `assetsDir`.
+Specifically: `enscribeInterpreter` will accept an option `{ assetsDir }`. When `assetsDir` is set, `src=` paths resolve relative to it. When not set, `src=` produces an error. Tests that use `src=` must pass `assetsDir`.
 
 **Design note**: File reading at handler time is unusual for unified pipelines but works for synchronous processing (which is the current pattern — `processSync`). This is noted as a known limitation.
 
@@ -120,7 +120,7 @@ This change also correctly handles the long-form `<table>...</table>` case: with
 
 ## Available dependencies
 
-- `js-yaml` ✓ — already in acadamark-interpreter package.json
+- `js-yaml` ✓ — already in enscribe-interpreter package.json
 - `remark-gfm` ✗ — not installed
 - CSV parser ✗ — no existing CSV parser; will write a minimal RFC 4180 parser
 

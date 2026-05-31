@@ -1,7 +1,7 @@
-# acadamark docs-site
+# enscribe docs-site
 
-The acadamark documentation + articles website. Each canonical `.acm` source in
-`sources/` is rendered through acadamark and wrapped in a shared site template,
+The enscribe documentation + articles website. Each canonical `.emd` source in
+`sources/` is rendered through enscribe and wrapped in a shared site template,
 producing a multi-page static site in `dist/` — ready to serve locally or deploy
 to GitHub Pages.
 
@@ -14,14 +14,14 @@ slices.
 
 | Source                      | Page                  | Kind       |
 | --------------------------- | --------------------- | ---------- |
-| `sources/index.acm`         | `index.html`          | read-only  |
-| `sources/quickstart.acm`    | `quickstart.html`     | playground |
-| `sources/example-article.acm` | `example-article.html` | read-only |
+| `sources/index.emd`         | `index.html`          | read-only  |
+| `sources/quickstart.emd`    | `quickstart.html`     | playground |
+| `sources/example-article.emd` | `example-article.html` | read-only |
 
-- **Read-only pages** render the acadamark source to a static HTML article and
+- **Read-only pages** render the enscribe source to a static HTML article and
   carry a "view source on GitHub" link in the footer. They ship no JavaScript.
-- **The Quickstart playground** loads CodeMirror and the acadamark browser
-  bundle and seeds the editor with its own source, so you can edit acadamark and
+- **The Quickstart playground** loads CodeMirror and the enscribe browser
+  bundle and seeds the editor with its own source, so you can edit enscribe and
   watch it render live. It is the only page that loads the editor or the library.
 
 ## Build and preview
@@ -29,7 +29,7 @@ slices.
 ```sh
 # 1. Build the browser bundle the Quickstart playground loads (gitignored, so
 #    build it locally). Skip this if you only care about the read-only pages.
-cd packages/acadamark-interpreter
+cd packages/enscribe-interpreter
 npm run build:lib
 
 # 2. Build the site (from the repo root).
@@ -45,20 +45,20 @@ python3 -m http.server 8000 --directory docs-site/dist
 
 If the Quickstart shows a yellow "bundle is not loaded" notice, step 1 hasn't
 been run (or wasn't re-run after a clean checkout): the bundle lives only in
-`packages/acadamark-interpreter/dist/`, which is gitignored, and `docs:build`
+`packages/enscribe-interpreter/dist/`, which is gitignored, and `docs:build`
 copies it into the site's `dist/assets/` when present.
 
 ## How the build works
 
 `build.js` (a small Node script, run via `npm run docs:build`):
 
-1. Renders each read-only source with `buildAcadamarkPipeline` (the acadamark
+1. Renders each read-only source with `buildEnscribePipeline` (the enscribe
    Node entry) to an HTML fragment.
 2. Wraps it in `template.html` — the shared header/nav, the article body, and
    the GitHub-source footer.
 3. For the Quickstart, emits a different body (editor + output panes) and inlines
    the source so the playground is self-contained.
-4. Copies the static assets (`default.css` — acadamark's theme; `site.css` — the
+4. Copies the static assets (`default.css` — enscribe's theme; `site.css` — the
    site chrome; `quickstart.js`; and the browser bundle if built) into
    `dist/assets/`.
 

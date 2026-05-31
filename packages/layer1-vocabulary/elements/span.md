@@ -4,7 +4,7 @@ html_output:
   element: span
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -68,7 +68,7 @@ Authors can attach any data attribute via the kwargs mechanism (though for the s
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<span class="X">` | `<styled-content style-type="X">` |
 

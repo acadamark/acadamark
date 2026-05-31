@@ -1,4 +1,4 @@
-# Acadamark Documentation System — Design (final)
+# Enscribe Documentation System — Design (final)
 
 > The settled design of a minimal, enforceable documentation system. Three
 > parts: (1) the system; (2) the proposed full content of the new
@@ -126,7 +126,7 @@ that discrepancy is visible at commit time and can be caught.
 ```markdown
 # Documentation ownership
 
-How acadamark's documentation is organized, so that every piece of information
+How enscribe's documentation is organized, so that every piece of information
 has one home and the documentation stays coherent with the code.
 
 ## The coherence principle
@@ -156,7 +156,7 @@ recording it in the spec.
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/interpreter.md`, `notes/pipeline.md`, `notes/*-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, … | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
-| `notes/acadamark-backlog-roadmap.md` | Backlog / Roadmap | ALL open work — bugs, gaps, limitations, planned features, open questions — listed and routed by Layer 0-3. The only home for open work. |
+| `notes/enscribe-backlog-roadmap.md` | Backlog / Roadmap | ALL open work — bugs, gaps, limitations, planned features, open questions — listed and routed by Layer 0-3. The only home for open work. |
 | `STATUS.md` | Status | Current-state checklist; in-flight/next; milestones (append-only). |
 | `doc-ownership.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
@@ -232,7 +232,7 @@ slices to run under the new system and a fair test of it.
 1. **Collapse all open work into the backlog/roadmap.** Every open item in
    `audit-findings.md` (AUD-21..27), `specified-not-implemented.md`
    (DF/DS/OQ/PG series), and `known-limitations.md` moves into
-   `acadamark-backlog-roadmap.md`, placed in its Layer 0-3 section. Resolved
+   `enscribe-backlog-roadmap.md`, placed in its Layer 0-3 section. Resolved
    items from those files become STATUS.md milestone lines, not backlog
    entries. The three source files are then archived.
 
@@ -248,7 +248,7 @@ slices to run under the new system and a fair test of it.
    milestones). Describing an unbuilt *design* stays — that is the spec's job;
    only *progress tracking* is removed.
 
-4. **Fix the two package READMEs.** `packages/acadamark-interpreter/README.md`
+4. **Fix the two package READMEs.** `packages/enscribe-interpreter/README.md`
    ("Slice 1 in progress" — the interpreter ships) and
    `packages/layer1-vocabulary/README.md` ("specification only" — the vocab is
    consumed end-to-end) describe current reality briefly and point at STATUS.md.
@@ -281,13 +281,13 @@ slices to run under the new system and a fair test of it.
      becomes tracked open work, never limbo.
    - The remainder — chiefly the implementation history (Phase 1–3, the slice
      map) — is **archived** as `archive/BUILD-2026-05.md`, a valuable record of
-     how acadamark was built.
+     how enscribe was built.
    `BUILD.md` is not retired until its unique architectural content has already
    arrived in a spec (or been filed as a backlog item). The name `BUILD.md`
    does not survive: under this system there is no separate "how to build it"
    plan — design is in the specs, work is in the roadmap.
 
-7. **Retire `acadamark-session-handoff.md`.** Live content folds into STATUS.md
+7. **Retire `enscribe-session-handoff.md`.** Live content folds into STATUS.md
    (current state, in-flight/next); the file is archived.
 
 8. **Update the roadmap to current reality.** The inventory found L2 marked

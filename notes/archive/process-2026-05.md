@@ -1,4 +1,4 @@
-# Acadamark development process
+# Enscribe development process
 
 ## Slice verification
 
@@ -9,7 +9,7 @@ For visible-output slices:
 
 1. After implementation, run `npm run verify` from the interpreter package:
    ```
-   cd packages/acadamark-interpreter
+   cd packages/enscribe-interpreter
    npm run verify
    ```
    This runs tests AND regenerates fixture HTML files. If tests fail, the
@@ -38,10 +38,10 @@ Build verification into the slice cadence; do not leave it to the last step.
 
 ## The verify script
 
-`npm run verify` in `packages/acadamark-interpreter` runs:
+`npm run verify` in `packages/enscribe-interpreter` runs:
 
 1. `node test/run.js` — the full interpreter test suite (22 suites as of 2026-Q2 audit)
-2. `node test/render-fixtures.js` — re-renders all `.acm` fixture documents
+2. `node test/render-fixtures.js` — re-renders all `.emd` fixture documents
    to `.html`
 
 Running verify produces a clean, verified state: tests pass and the rendered
@@ -52,7 +52,7 @@ HTML is fresh.
 If a parser or interpreter change intentionally changes the output:
 
 ```
-ACADAMARK_UPDATE_SNAPSHOTS=1 node test/run.js
+ENSCRIBE_UPDATE_SNAPSHOTS=1 node test/run.js
 ```
 
 Then re-run `npm run verify` to confirm the updated snapshots match and the

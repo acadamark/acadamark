@@ -4,7 +4,7 @@ html_output:
   element: abstract
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -152,7 +152,7 @@ The word limit is informational. Useful for authors writing toward a journal's s
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<abstract>` | `<abstract>` |
 | `type=structured` | `<abstract abstract-type="structured">` (with `<sec>` children for sub-sections) |

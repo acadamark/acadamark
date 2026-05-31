@@ -4,7 +4,7 @@ html_output:
   element: theorem
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -68,7 +68,7 @@ shorthand_examples:
     notes: |
       Long-form with the optional name kwarg. Cross-referenceable
       via id (the "thm:" colon-prefix convention is consistent with
-      "fig:", "eqn:", "sec:" elsewhere in acadamark). The name
+      "fig:", "eqn:", "sec:" elsewhere in enscribe). The name
       kwarg lifts to `data-name`; the Phase-2 handler will render
       it as the "(Pythagoras)" suffix to the label "Theorem N".
 interpreter_strategy: handler
@@ -81,9 +81,9 @@ A theorem — a formally-stated mathematical assertion meant to be proved. The f
 
 ## Semantic intent
 
-`<theorem>` is the LaTeX/amsthm equivalent for the canonical theorem-style environment. The acadamark theorem family includes `<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`, `<example>`, `<remark>`, and `<proof>` — the standard amsthm vocabulary; all map to JATS's `<statement>` with a `content-type` attribute identifying the role.
+`<theorem>` is the LaTeX/amsthm equivalent for the canonical theorem-style environment. The enscribe theorem family includes `<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`, `<example>`, `<remark>`, and `<proof>` — the standard amsthm vocabulary; all map to JATS's `<statement>` with a `content-type` attribute identifying the role.
 
-The element is block-level. Its content is body content (paragraphs, math, lists, etc.) — there are no internal element parts (no `<theorem-statement>` or `<theorem-body>` wrapper). LaTeX amsthm and JATS prior art both place body content directly; acadamark follows.
+The element is block-level. Its content is body content (paragraphs, math, lists, etc.) — there are no internal element parts (no `<theorem-statement>` or `<theorem-body>` wrapper). LaTeX amsthm and JATS prior art both place body content directly; enscribe follows.
 
 ## Authoring
 
@@ -104,7 +104,7 @@ The shared-counter wiring is a Phase-2 handler concern (the vocab schema has no 
 
 ## Proof is a peer, not a child
 
-`<proof>` is a peer block element, not a child of `<theorem>`. In LaTeX amsthm `\begin{proof}…\end{proof}` is independent of any theorem-like environment; in JATS `<statement content-type="proof">` is just another statement. Acadamark follows:
+`<proof>` is a peer block element, not a child of `<theorem>`. In LaTeX amsthm `\begin{proof}…\end{proof}` is independent of any theorem-like environment; in JATS `<statement content-type="proof">` is just another statement. Enscribe follows:
 
 ```
 <theorem name="Pythagoras">…</theorem>
@@ -118,7 +118,7 @@ The proof sits at sibling level and may follow any theorem-family element or sta
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |---|---|
 | `<theorem>` | `<statement content-type="theorem">` |
 | `name` kwarg | `<title>` inside `<statement>` |

@@ -1,6 +1,6 @@
 # Archive
 
-This directory contains materials from acadamark's earlier phases, preserved for historical context. **Nothing here reflects the current architecture.** For current documentation, see:
+This directory contains materials from enscribe's earlier phases, preserved for historical context. **Nothing here reflects the current architecture.** For current documentation, see:
 
 - [`/README.md`](../README.md) — project overview
 - [`/DESIGN.md`](../DESIGN.md) — design rationale
@@ -10,7 +10,7 @@ This directory contains materials from acadamark's earlier phases, preserved for
 
 ## Why this material is archived, not deleted
 
-Acadamark went through several false starts before settling on the current approach (HTML+CSS+JS as the substrate, unified/remark/rehype as the implementation ecosystem, JATS as the export target). The exploratory work that led there is genuinely useful:
+Enscribe went through several false starts before settling on the current approach (HTML+CSS+JS as the substrate, unified/remark/rehype as the implementation ecosystem, JATS as the export target). The exploratory work that led there is genuinely useful:
 
 - It documents *why* certain dead ends are dead ends, which prevents re-litigating them.
 - It captures the original problem framing, which sometimes drifts as a project matures.
@@ -44,9 +44,9 @@ The most consequential single document is `claude/parse_hierarchical_tags.md` (a
 
 Four notes documents were moved here during the 2026-Q2 audit because their content described a system that no longer matches what was built.
 
-- **`interpreter-design-2026-05.md`** — Pre-implementation interpreter architecture: `acadamarkTagInterpret` as a single rehype plugin doing schema-driven dispatch. The actual interpreter is a chain of mdast plugins plus toHast handlers. Replaced by `notes/interpreter.md` (to be written in audit Step 2).
+- **`interpreter-design-2026-05.md`** — Pre-implementation interpreter architecture: `enscribeTagInterpret` as a single rehype plugin doing schema-driven dispatch. The actual interpreter is a chain of mdast plugins plus toHast handlers. Replaced by `notes/interpreter.md` (to be written in audit Step 2).
 
-- **`plugin-pipeline-2026-05.md`** — Planning-era pipeline design using plugin names (`acadamarkLibraryParsing`, `acadamarkCitationResolution`, etc.) that diverged from implementation (`acadamarkLibraryLoad`, `acadamarkCiteResolution`, etc.). Replaced by `notes/pipeline.md` (to be written in audit Step 2).
+- **`plugin-pipeline-2026-05.md`** — Planning-era pipeline design using plugin names (`enscribeLibraryParsing`, `enscribeCitationResolution`, etc.) that diverged from implementation (`enscribeLibraryLoad`, `enscribeCiteResolution`, etc.). Replaced by `notes/pipeline.md` (to be written in audit Step 2).
 
 - **`hover-previews-deferred-2026-05.md`** — Pre-implementation hover preview design exploration. Frames the feature as deferred; the feature is now implemented (Tippy.js + Popper.js). See `notes/hover-preview-investigation.md` for the post-implementation record.
 
@@ -54,19 +54,19 @@ Four notes documents were moved here during the 2026-Q2 audit because their cont
 
 ## 2026-Q2 documentation-system reconciliation (2026-05-23): two tracking files retired
 
-The first of two reconciliation slices installing the new documentation system (per `notes/audit/documentation-system-design-final.md`) collapsed all open work into `notes/acadamark-backlog-roadmap.md` as the single home. The previous practice of tracking open work across three files violated the new "one job per document" rule; these two were retired once their content had landed elsewhere. (`notes/known-limitations.md` was intentionally retained — see note below.)
+The first of two reconciliation slices installing the new documentation system (per `notes/audit/documentation-system-design-final.md`) collapsed all open work into `notes/enscribe-backlog-roadmap.md` as the single home. The previous practice of tracking open work across three files violated the new "one job per document" rule; these two were retired once their content had landed elsewhere. (`notes/known-limitations.md` was intentionally retained — see note below.)
 
-- **`audit-findings-2026-05.md`** — The rolling AUD / GAP / DRIFT findings list (AUD-01 through AUD-26, plus GAP-8 and GAP-9). Open entries migrated to `notes/acadamark-backlog-roadmap.md`, placed into the appropriate Layer 0–3 section (with the original AUD ids preserved as "formerly AUD-N" markers). Resolved entries — AUD-01, -02, -03, -09, -10, -11, -12, -16, -20, -26 — recorded as a milestone paragraph in `STATUS.md`. Four entries (AUD-06, formerly DF-20, formerly DF-22, formerly OQ-1) were filed in Layer 0 as **SUSPECTED CLOSED** verification items, awaiting code confirmation against the NORM-tables / math-normalization arc.
+- **`audit-findings-2026-05.md`** — The rolling AUD / GAP / DRIFT findings list (AUD-01 through AUD-26, plus GAP-8 and GAP-9). Open entries migrated to `notes/enscribe-backlog-roadmap.md`, placed into the appropriate Layer 0–3 section (with the original AUD ids preserved as "formerly AUD-N" markers). Resolved entries — AUD-01, -02, -03, -09, -10, -11, -12, -16, -20, -26 — recorded as a milestone paragraph in `STATUS.md`. Four entries (AUD-06, formerly DF-20, formerly DF-22, formerly OQ-1) were filed in Layer 0 as **SUSPECTED CLOSED** verification items, awaiting code confirmation against the NORM-tables / math-normalization arc.
 
-- **`specified-not-implemented-2026-05.md`** — The full inventory of specified-but-unbuilt features (DF-1..DF-22, PG-1..PG-13, DS-1..DS-5, OQ-1..OQ-2), each with code-verification notes. Open entries migrated to `notes/acadamark-backlog-roadmap.md` with the same "formerly DF-N" / "formerly PG-N" / "formerly OQ-N" preservation; resolved entries (DF-1, DF-7, PG-6, PG-7, PG-12, PG-13, DS-1..DS-5) recorded as the same milestone paragraph in `STATUS.md`.
+- **`specified-not-implemented-2026-05.md`** — The full inventory of specified-but-unbuilt features (DF-1..DF-22, PG-1..PG-13, DS-1..DS-5, OQ-1..OQ-2), each with code-verification notes. Open entries migrated to `notes/enscribe-backlog-roadmap.md` with the same "formerly DF-N" / "formerly PG-N" / "formerly OQ-N" preservation; resolved entries (DF-1, DF-7, PG-6, PG-7, PG-12, PG-13, DS-1..DS-5) recorded as the same milestone paragraph in `STATUS.md`.
 
 **`notes/known-limitations.md` is intentionally retained for the second reconciliation slice.** Most of its entries duplicated PG/AUD items and were migrated under their canonical ids; two entries ("custom elements not registered with the browser" and "only colon-ids are referenceable") are by-design constraints — spec content, not open work — and remain in `known-limitations.md` until reconciliation 2 migrates them into the relevant specs and then archives the file.
 
-- **`known-limitations-2026-05.md`** (added by Reconciliation 2, 2026-05-23) — The previous "Known Limitations" document. Its two by-design entries (custom elements not registered with the browser; cross-references resolve only to colon-ids) were migrated into `DESIGN.md`'s "Design tensions and accepted tradeoffs" section as accepted-tradeoff entries. The remaining entries were already duplicates of items tracked elsewhere (the canonical PG / AUD / DF ids are in `notes/acadamark-backlog-roadmap.md` or closed in `STATUS.md` Milestones); they are preserved here in the archived copy as historical context.
+- **`known-limitations-2026-05.md`** (added by Reconciliation 2, 2026-05-23) — The previous "Known Limitations" document. Its two by-design entries (custom elements not registered with the browser; cross-references resolve only to colon-ids) were migrated into `DESIGN.md`'s "Design tensions and accepted tradeoffs" section as accepted-tradeoff entries. The remaining entries were already duplicates of items tracked elsewhere (the canonical PG / AUD / DF ids are in `notes/enscribe-backlog-roadmap.md` or closed in `STATUS.md` Milestones); they are preserved here in the archived copy as historical context.
 
-- **`BUILD-2026-05.md`** (added by Reconciliation 2, 2026-05-23) — The previous "Building Acadamark" document. The stale "Where the project is now" status section was overtaken; the project's current state lives in `STATUS.md`. Four pieces of architectural content were migrated into the specs as deliberate additions (not pasted): the parser-substrate decision rationale (regex / hand-grammar / unified comparison) and the JATS export plugin shape went into `DESIGN.md`; the "mental model" preamble (trees-not-strings; mdast/hast; remark/rehype/micromark) went into `notes/pipeline.md` as a new §0; the parser-knows-nothing-about-meaning principle went into `notes/principles.md`. The remaining content — the original Phase 1 / Phase 2 / Phase 3 implementation plan and the shorthand parser slice map — is preserved here as implementation history.
+- **`BUILD-2026-05.md`** (added by Reconciliation 2, 2026-05-23) — The previous "Building Enscribe" document. The stale "Where the project is now" status section was overtaken; the project's current state lives in `STATUS.md`. Four pieces of architectural content were migrated into the specs as deliberate additions (not pasted): the parser-substrate decision rationale (regex / hand-grammar / unified comparison) and the JATS export plugin shape went into `DESIGN.md`; the "mental model" preamble (trees-not-strings; mdast/hast; remark/rehype/micromark) went into `notes/pipeline.md` as a new §0; the parser-knows-nothing-about-meaning principle went into `notes/principles.md`. The remaining content — the original Phase 1 / Phase 2 / Phase 3 implementation plan and the shorthand parser slice map — is preserved here as implementation history.
 
-- **`acadamark-session-handoff-2026-05.md`** (added by Reconciliation 2, 2026-05-23) — The previous cross-session orientation document ("where things stand, working method, decided design calls, full backlog"). Retired because the new documentation system does not need a separate handoff document — `STATUS.md` (current state + in flight/next) plus `notes/acadamark-backlog-roadmap.md` is the handoff. The handoff's "decided design calls" content was checked against the live specs: F1's `@`-as-reference / `#`-as-assignment rule is already captured in `DESIGN.md` (§"Layer 2: Authoring shorthand"); G1's braced-only `^{` / `_{` rule was missing from any live spec and was migrated into `notes/shorthand-syntax.md` (new "Inline TeX shortcuts" section). The handoff's slice-rhythm / Phase 0 discipline / correctness-models content was condensed into `CLAUDE.md` under "Slice cadence" and "Correctness models". The slice-by-slice tables and the discursive backlog tour are preserved here as historical context.
+- **`enscribe-session-handoff-2026-05.md`** (added by Reconciliation 2, 2026-05-23) — The previous cross-session orientation document ("where things stand, working method, decided design calls, full backlog"). Retired because the new documentation system does not need a separate handoff document — `STATUS.md` (current state + in flight/next) plus `notes/enscribe-backlog-roadmap.md` is the handoff. The handoff's "decided design calls" content was checked against the live specs: F1's `@`-as-reference / `#`-as-assignment rule is already captured in `DESIGN.md` (§"Layer 2: Authoring shorthand"); G1's braced-only `^{` / `_{` rule was missing from any live spec and was migrated into `notes/shorthand-syntax.md` (new "Inline TeX shortcuts" section). The handoff's slice-rhythm / Phase 0 discipline / correctness-models content was condensed into `CLAUDE.md` under "Slice cadence" and "Correctness models". The slice-by-slice tables and the discursive backlog tour are preserved here as historical context.
 
 ## 2026-Q2 documentation-system reconciliation (2026-05-23): final cleanup
 
@@ -92,7 +92,7 @@ The follow-on slice after the three-slice reconciliation arc audited the legacy 
 
 - **`reading-order-2026-05.md`** (added by the legacy sweep, 2026-05-23) — The previous "Reading order" document. A reading path is navigation of the spec set, so it belongs in governance; the path was harvested into `notes/doc-ownership.md` as a new "Reading order (for newcomers)" section built from the document table and reconciled against current paths (its two stale references — to the now-migrated `dsl-engines.md` and to `future-interpreter-sketches/` — did not carry forward). The README's pointer was repointed accordingly.
 
-- **`process-2026-05.md`** (added by the legacy sweep, 2026-05-23) — The previous "Acadamark development process" document, predating the reconciliation arc (commits `82ebb10`, `ff5163d`). Its unique operational content — the `npm run verify` command, the browser-verification discipline for visible-output slices, and the `ACADAMARK_UPDATE_SNAPSHOTS=1` snapshot-regeneration command — was condensed into `CLAUDE.md` as a new "Visual verification" subsection. A Rule 2 violation ("22 suites as of 2026-Q2 audit") was dropped, not migrated. Historical bug anecdotes (justification for the discipline) were also dropped — `CLAUDE.md` carries operating instructions, not justification.
+- **`process-2026-05.md`** (added by the legacy sweep, 2026-05-23) — The previous "Enscribe development process" document, predating the reconciliation arc (commits `82ebb10`, `ff5163d`). Its unique operational content — the `npm run verify` command, the browser-verification discipline for visible-output slices, and the `ENSCRIBE_UPDATE_SNAPSHOTS=1` snapshot-regeneration command — was condensed into `CLAUDE.md` as a new "Visual verification" subsection. A Rule 2 violation ("22 suites as of 2026-Q2 audit") was dropped, not migrated. Historical bug anecdotes (justification for the discipline) were also dropped — `CLAUDE.md` carries operating instructions, not justification.
 
 - **`at-sigil-reference-proposal-2026-05.md`** (added by the legacy sweep, 2026-05-23) — The original `@`/`#` sigil-semantics proposal. Its main thrust shipped as F1 (commit `c86da33`); its unadopted unbraced-inline-`@` form is in the roadmap's Explicitly-deferred section; its rationale is captured in DESIGN.md §"Layer 2: Authoring shorthand". One previously-un-captured idea — the type-prefix-mismatch warning ("`@fig:priority` resolving to an equation could be a detectable mismatch worth warning") — was filed as a Layer 3 discussion item in the roadmap (per the discussion-is-work rule). The "prefix inference was considered and rejected" rationale rides inside that discussion item as context.
 
@@ -131,8 +131,8 @@ Spent Phase-0-style investigations whose conclusions have all landed in code or 
 - **`parser-maturity-investigation.md`** — Parser ecosystem survey (micromark, Peggy, tree-sitter alternatives).
 - **`tables-investigation.md`** — Table DSL options; pipe-table normalization decision.
 - **`theme-investigation.md`** — CSS theming approach; variable naming conventions.
-- **`parser-newline-investigation.md`** — Root-cause analysis of three parser bugs: (1) text-position named-tag multi-line content silently lost (nok backtrack), (2) inline tag at line-start captured as flow construct causing paragraph splitting (highest-impact), (3) code-sigil multi-line text position produces `acadamarkTagError`. All three filed as AUD-21/22/23 in `notes/audit-findings.md`; this file is the root-cause record.
-- **`acadamark_pipeline_runorder_vs_dependency.svg`** — Visual diagram of plugin run-order vs. dependency graph.
+- **`parser-newline-investigation.md`** — Root-cause analysis of three parser bugs: (1) text-position named-tag multi-line content silently lost (nok backtrack), (2) inline tag at line-start captured as flow construct causing paragraph splitting (highest-impact), (3) code-sigil multi-line text position produces `enscribeTagError`. All three filed as AUD-21/22/23 in `notes/audit-findings.md`; this file is the root-cause record.
+- **`enscribe_pipeline_runorder_vs_dependency.svg`** — Visual diagram of plugin run-order vs. dependency graph.
 - **`document_elements_sources_display_processing.csv`** — Element-to-processing-strategy mapping table.
 
 ## Single archived documents (2026-05)
@@ -146,13 +146,13 @@ Spent Phase-0-style investigations whose conclusions have all landed in code or 
 
 Code that's still part of the active project lives outside `archive/`:
 
-- The current parser implementation is in `/packages/remark-acadamark/`.
-- The pure-micromark parser predecessor (Slices 1–2 of the current parser, before the Peggy hybrid switch) previously lived at `/packages/remark-acadamark-pure-micromark-archive/` and has been removed from the working tree. Its full implementation is in the git commit graph (retired in `373c4b7`, "Switch to Peggy hybrid parser architecture"); the design rationale for choosing the Peggy hybrid is in `notes/specs/shorthand-syntax.md` §"Parser architecture".
+- The current parser implementation is in `/packages/remark-enscribe/`.
+- The pure-micromark parser predecessor (Slices 1–2 of the current parser, before the Peggy hybrid switch) previously lived at `/packages/remark-enscribe-pure-micromark-archive/` and has been removed from the working tree. Its full implementation is in the git commit graph (retired in `373c4b7`, "Switch to Peggy hybrid parser architecture"); the design rationale for choosing the Peggy hybrid is in `notes/specs/shorthand-syntax.md` §"Parser architecture".
 - The current section-nesting plugin is in `/packages/rehype-section-nesting/`.
 
 ## Reading order, if you're curious
 
-For someone trying to understand how acadamark got here:
+For someone trying to understand how enscribe got here:
 
 1. `pre-rewrite-ideas/12-23-2023.md` — the original problem statement.
 2. `pre-rewrite-ideas/4-7-2024.md` — the first prototype that worked.

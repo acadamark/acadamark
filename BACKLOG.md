@@ -1,4 +1,4 @@
-# acadamark — backlog
+# enscribe — backlog
 
 The backlog is the project's **unordered pool of open work** — every
 open item, queryable by tag, with full detail. Sequence and milestones
@@ -149,7 +149,7 @@ A flat scannable index of every open item. Detailed entries below.
   *(→ roadmap: Phase 14; render-quality RQ-DSL-M2; filed by the
   render-quality bug-fix arc, DSL verification slice)* — **CLOSED
   2026-05-29** by DSL Slice 1 (registry + live mode): the `<abc>` handler
-  now emits `<pre class="abc" data-acadamark-dsl="abc">` (matching
+  now emits `<pre class="abc" data-enscribe-dsl="abc">` (matching
   `<mermaid>`) instead of `<div>`; `<pre>` is whitespace-preserving, so the
   HTML formatter leaves the line-oriented ABC source verbatim. The
   canonical vocab entry (`abc.md` → generated `data.js`) was synced in the
@@ -182,7 +182,7 @@ A flat scannable index of every open item. Detailed entries below.
   written first `[parser]` `[post-alpha]` *(formerly DF-3)*
 - [ ] **Implement multi-column display rendering** `[interpreter]`
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
-- [ ] **Build the lowering pass (Layer 1 → canonical acadamark)**
+- [ ] **Build the lowering pass (Layer 1 → canonical enscribe)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
 - [ ] **Table-of-contents sidebar** `[interpreter]` `[release]`
   *(→ roadmap: Phase 8)*
@@ -198,7 +198,7 @@ A flat scannable index of every open item. Detailed entries below.
 
 ### Architecture tier
 
-- [x] **Build JATS export (`rehypeAcadamarkToJats`)** `[interpreter]`
+- [x] **Build JATS export (`rehypeEnscribeToJats`)** `[interpreter]`
   `[alpha]` *(→ roadmap: Phase 5 — CLOSED)* *(formerly DF-18)* —
   **Phase 5 CLOSED 2026-05-28.** Slices 5a (`98f2d7f`) package
   + `mapAttributes` lift + minimal article export; 5b (`0ea915e`)
@@ -211,7 +211,7 @@ A flat scannable index of every open item. Detailed entries below.
   DTD-validated output when xmllint is on PATH.
 - [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
   *(→ roadmap: Phase 8)* *(formerly DF-19)*
-- [ ] **Build multi-file authoring** (`acadamark.yml` + `<include>`)
+- [ ] **Build multi-file authoring** (`enscribe.yml` + `<include>`)
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 9)* *(formerly
   DF-4)*
 - [ ] **Build pagination and print formatting** `[cross-cutting]`
@@ -274,8 +274,8 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Write a print-requirements spec** `[specs/docs]`
   `[post-alpha]` — companion to the pagination work in Phase 8
 - [ ] **Reconcile stale doc cross-references** (`BACKLOG-ROADMAP.md`
-  → `BACKLOG.md` / `ROADMAP.md`; `rehypeAcadamarkToJats` →
-  `acadamarkToJats`) `[specs/docs]` `[post-alpha]`
+  → `BACKLOG.md` / `ROADMAP.md`; `rehypeEnscribeToJats` →
+  `enscribeToJats`) `[specs/docs]` `[post-alpha]`
 
 ### Deferred — explicitly parked
 
@@ -289,9 +289,9 @@ A flat scannable index of every open item. Detailed entries below.
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`
 
-`packages/acadamark-interpreter/src/lib/build-properties.js` iterates
+`packages/enscribe-interpreter/src/lib/build-properties.js` iterates
 `node.kwargs` and maps each through the vocabulary's
-`acadamark_attributes.kwargs` definitions, but it does not iterate
+`enscribe_attributes.kwargs` definitions, but it does not iterate
 `node.booleans`. A tag's `+flag` boolean attributes therefore silently
 drop on render for any tag that does not lift them to kwargs at the
 gate. The `<author>` reconciliation (`beb2fb3`) worked around this for
@@ -309,12 +309,12 @@ Filed by sub-slice 2 of the deferred-vocab work.
 ### doc-46 references figure images that do not exist
 `[tests/build]` `[release]` *(→ roadmap: Phase 14)*
 
-The demonstrative book fixture `document-46-reproducible-research.acm`
+The demonstrative book fixture `document-46-reproducible-research.emd`
 declares two figures with external image sources —
 `<fig #fig:vcs-graph src=commit-graph.png …>` and
 `<fig #fig:nb-pipeline src=notebook-ci.png …>` — but neither
 `commit-graph.png` nor `notebook-ci.png` exists anywhere in the
-repository. The `.acm` source, the expected hast (`…-expected.json`),
+repository. The `.emd` source, the expected hast (`…-expected.json`),
 and the rendered `…-reproducible-research.html` all carry the `src`, so
 the rendered document shows two broken-image placeholders. Harmless to
 the test suite (snapshots compare structure, not fetched bytes) but
@@ -336,7 +336,7 @@ Slice 1 tsup bundle externalized the Node built-ins (`fs` / `path` /
 `url` / `module`) that the interpreter's server-only code paths import at
 module top level. In the IIFE form that externalization became a
 top-level `__require("fs")`, which threw the instant the IIFE evaluated —
-*before* it could assign `window.acadamark`. So the committed Slice 1
+*before* it could assign `window.enscribe`. So the committed Slice 1
 bundle, though it built and passed its byte-level safety checks, **never
 actually loaded in a browser**; the defect was invisible until a real
 page (the editor demo) tried to use the global. The earlier
@@ -505,7 +505,7 @@ rendered the bare per-chapter ordinal (`<label>1</label>` on a `<fig>`,
 `<statement>`) while its `<xref>`s were chapter-prefixed (`figure 3.1`,
 `theorem 1.1`), because the `<label>` emitters read the bare
 `node.computedNumber` directly. The JATS slice routes them through the same
-`formatScopedNumber` helper (re-exported from `acadamark-interpreter`), so a
+`formatScopedNumber` helper (re-exported from `enscribe-interpreter`), so a
 chapter-scoped book's `<label>` and the `<xref>` resolving to it now agree by
 construction (`<label>3.1</label>` / `<xref … >figure 3.1</xref>`). This
 intentionally changes the book JATS fixtures — slice B's "the JATS `.xml` is
@@ -567,7 +567,7 @@ not fixed, per the render-quality slice's scope. Author workaround: use
 block form, or keep backslash LaTeX out of pipe-form inline math.
 
 **CLOSED 2026-05-29 — render-quality bug-fix arc, slice C.** A shared
-`OpaqueSpan` grammar rule in `packages/remark-acadamark/grammar/acadamark.peggy`
+`OpaqueSpan` grammar rule in `packages/remark-enscribe/grammar/enscribe.peggy`
 now recognises inline math (`$…$`), display math (`$$…$$`), and markdown code
 spans (`` `…` ``, `` ``…`` ``) inside the `ContentItem` rule and returns them
 verbatim, so the inner parser's escape processing never sees the LaTeX backslash
@@ -578,10 +578,10 @@ behaviour changes. Backslash escape rules stay *first* in `ContentItem`, so
 `\$` / `` \` `` still pass through as markdown literals and never open a span.
 The scope was widened from math-only to **math + code spans**, bringing the
 parser in line with `escape-rules-spec.md` §"Opaque inline spans within prose
-content." New regression fixture `document-48-pipe-form-inline-math.acm`
+content." New regression fixture `document-48-pipe-form-inline-math.emd`
 exercises inline, display-fence, and single/double-backtick code-span backslash
 content in pipe form. The fix also corrected latent parse-errors an existing
-fixture — `document-35-numbering-extension.acm` (lines 21 `\sum`/`\le`, 25
+fixture — `document-35-numbering-extension.emd` (lines 21 `\sum`/`\le`, 25
 `\mathbb`) — had silently carried in its snapshot: its propositions and example
 now render their math instead of `??parse: unknown-escape-sequence` markers,
 real-world proof the bug existed in the corpus and the fix resolves it.
@@ -599,7 +599,7 @@ escape-rules spec).
 
 **CLOSED 2026-05-29 — DSL Slice 1 (registry + live mode).** Fixed via
 candidate three below: the `<abc>` handler now emits `<pre class="abc"
-data-acadamark-dsl="abc">` instead of `<div>`. `<pre>` is one of the
+data-enscribe-dsl="abc">` instead of `<div>`. `<pre>` is one of the
 serializer's whitespace-sensitive elements (like `<mermaid>`'s wrapper), so
 the line-oriented ABC source survives verbatim — no per-line indentation,
 no inserted leading/trailing newline (`RQ-DSL-M2`). abcjs replaces the
@@ -612,9 +612,9 @@ change (doc-36 is mermaid-only — its snapshot was unchanged, as noted
 below).
 
 `RQ-DSL-M2` requires an `<abc>` block to render `<div class="abc"
-data-acadamark-dsl="abc">` with the ABC source **preserved verbatim**, so
+data-enscribe-dsl="abc">` with the ABC source **preserved verbatim**, so
 a consumer-side renderer (abcjs, reading `element.textContent`) sees the
-source the author wrote. The class, the `data-acadamark-dsl` marker, and
+source the author wrote. The class, the `data-enscribe-dsl` marker, and
 the `id` are all correct, but the source is **not** verbatim in the
 rendered HTML: the hast→HTML serializer pretty-prints the `<div>`'s text
 child, prefixing every line with the element's indentation — the abc block
@@ -682,7 +682,7 @@ Hardcoded bibliography heading — a config kwarg, very small.
 `[interpreter]` `[post-alpha]`
 
 The structured-element infrastructure
-(`packages/acadamark-core/src/structured-elements.js`, landed in
+(`packages/enscribe-core/src/structured-elements.js`, landed in
 `beb2fb3`) currently carries `<meta>` and `<author>`. `<data>` was
 considered for migration in the same slice and deferred: its content
 is a list-of-resources, not a field-record, so the kwarg ↔ child-tag
@@ -695,7 +695,7 @@ resource-list containers becomes worth abstracting. *(filed by
 ### Ship generated `.d.ts` types for the browser library
 `[tests/build]` `[release]`
 
-The Phase 14 Slice 1 tsup config builds the `acadamark.browser` bundle
+The Phase 14 Slice 1 tsup config builds the `enscribe.browser` bundle
 (ESM + IIFE) but defers type declarations (`dts` is off, commented
 "deferred until the bundle itself is verified"). A consumer importing
 `render` / `renderInto` therefore gets no editor types. This item: turn on
@@ -767,14 +767,14 @@ Gated by MC-Q1 through MC-Q4 (in the Discussions group).
 this work: the margin is another column, and the multi-column layout
 engine is the machinery a margin needs.
 
-### Build the lowering pass (Layer 1 → canonical acadamark)
+### Build the lowering pass (Layer 1 → canonical enscribe)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
 
 The reverse direction of the bidirectional tagname↔sigil cipher,
-plus the Layer 1 → canonical-acadamark serialization for authoring
-tooling that emits acadamark from Layer 1. The `TAGNAME_TO_SIGIL`
+plus the Layer 1 → canonical-enscribe serialization for authoring
+tooling that emits enscribe from Layer 1. The `TAGNAME_TO_SIGIL`
 lookup direction is already present in
-`packages/acadamark-core/src/tagname-sigil-map.js` (reserved for
+`packages/enscribe-core/src/tagname-sigil-map.js` (reserved for
 this work); the lowering pass itself is the missing piece.
 
 ### Table-of-contents sidebar
@@ -854,14 +854,14 @@ Release-blocking for v0.1.0.
 
 ## Detailed entries — Architecture tier
 
-### Build JATS export (`rehypeAcadamarkToJats`)
+### Build JATS export (`rehypeEnscribeToJats`)
 `[interpreter]` `[alpha]` *(→ roadmap: Phase 5)*
 
 The vocabulary is JATS-aligned by design (`jats_counterpart` on every
 entry); this is the payoff. *(formerly DF-18)*
 
-Needs a Phase 0 first to site the `acadamark-jats-export` package
-against the inward-pointing `acadamark-core`, decide the
+Needs a Phase 0 first to site the `enscribe-jats-export` package
+against the inward-pointing `enscribe-core`, decide the
 export-stage attribute mapper's shape (whether the iteration shape
 lifts to core's `mapAttributes(node, vocab, emit)` callback API now
 or stays local), and address the JATS section-model question
@@ -878,7 +878,7 @@ heading-level question must be decided when render mode is scoped.
 ### Build multi-file authoring
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 9)*
 
-`acadamark.yml` + `<include>`; project-wide registries. A real
+`enscribe.yml` + `<include>`; project-wide registries. A real
 architectural extension. Spec at
 `notes/specs/multi-file-authoring.md`. *(formerly DF-4)* —
 Effort-scoping (2026-05-25) found this is a multi-slice arc with
@@ -908,7 +908,7 @@ Authors annotate a code block to mark it for execution; the build
 runs the code and embeds the result. Ruled post-alpha in the Phase 6
 alpha integration check: the alpha milestone is the five-line
 acceptance definition (rich-document rendering, canonical authoring,
-idiom reduction, JATS export, acadamark ⇄ Layer 1), and executable
+idiom reduction, JATS export, enscribe ⇄ Layer 1), and executable
 code is orthogonal to all five — it adds a build-time runtime, not a
 markup or conversion capability. The first-target scope is in-browser
 JavaScript execution, with Arquero as the dataframe library and
@@ -941,10 +941,10 @@ policy before any code.
 ### Build the client-side rendering library
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
 
-Layer 1 rendering packaged for browser use — `.acm` and Layer 1 HTML
+Layer 1 rendering packaged for browser use — `.emd` and Layer 1 HTML
 rendered in-browser with no build step. **Carries no JATS capability:**
 the JATS bridge (export in Phase 5, import in Phase 13) stays Node-side;
-the browser library renders only. The acadamark-core build/run-time seam
+the browser library renders only. The enscribe-core build/run-time seam
 was drawn as a browser-safety boundary specifically to enable this build
 — core carries no Node-only dependencies, so it can ship to the browser.
 An **in-browser editor/viewer** — CodeMirror source on the left,
@@ -954,7 +954,7 @@ README, **not as a standalone roadmap phase**. A multi-slice arc
 (packaging, the browser entry point, the demo app). **Phase 0 is done**
 (`aaa7e5c` — API surface, bundle toolchain, six-slice plan) and **Slices 1–2
 are done**. **Slice 1 (library packaging):** the `src/browser.js` `render` /
-`renderInto` façade, the tsup `acadamark.browser` bundle (ESM + IIFE), the
+`renderInto` façade, the tsup `enscribe.browser` bundle (ESM + IIFE), the
 external-by-default `embedResources` flip (breaking for the Node entry;
 `embedResources: true` restores self-contained output), and the
 browser-safety work (lazy-ified `fs` reads, the `registry.js` →
@@ -973,17 +973,19 @@ safe and the four files Slice 2 had converted to bare were restored to modern
 `node:` form; a `bundle-load` smoke test (loads the IIFE in jsdom each run) is
 the standing guard. **Slice 3a (docs-site framework)** built the static-site
 machinery at `docs-site/` (repo root): a `npm run docs:build` that renders
-`.acm` sources through the Node entry into a multi-page site (shared
+`.emd` sources through the Node entry into a multi-page site (shared
 header/nav + a "view source on GitHub" footer), with a Quickstart playground
 page (CodeMirror + the browser bundle, seeded with its own source) and three
 placeholder pages. Two deliberate divergences from the Phase 0 findings, per the
 slice's locked inputs: the site is `docs-site/` at the repo root, not the
 ratified `packages/demo-site/` workspace package; and the **project rename is
 deferred** to a separate later decision rather than forced by this slice (so the
-framework slice no longer "lands the rename"). Remaining slices — docs-site
-content (3b: README + DESIGN as articles; 3c: a written Quickstart; 3d: a
-JATS-relationship article), the deferred rename decision, fixture consolidation,
-and the release-time org-split — stay open (this checkbox tracks the whole arc).
+framework slice no longer "lands the rename"). The **project rename has since
+landed as its own slice** (now *enscribe*; `.emd` source extension; package
+names, the CSS theme namespace, and GitHub URLs updated). Remaining slices —
+docs-site content (3b: README + DESIGN as articles; 3c: a written Quickstart;
+3d: a JATS-relationship article), fixture consolidation, and the release-time
+org-split — stay open (this checkbox tracks the whole arc).
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by
@@ -1210,7 +1212,7 @@ same identifiers.
   multi-column-display spec previously illustrated a nested-element
   form (`<config><columns count=2></config>`) which is not
   supported by `<config>` as it currently works —
-  `acadamarkConfigDiscovery` (`notes/specs/interpreter.md` §3.2)
+  `enscribeConfigDiscovery` (`notes/specs/interpreter.md` §3.2)
   reads kwargs and does not walk nested children (the gap is also
   tracked as the formerly-PG-9 "nested `<config>` not read" item;
   that bug landed in alpha Phase 2 slice 2). The fork: adopt the
@@ -1248,18 +1250,18 @@ same identifiers.
 `[parser]` `[post-alpha]`
 
 Markdown extensions convert `--` to en-dash and `---` to em-dash.
-Whether acadamark's pipeline accepts such a plugin — and what the
+Whether enscribe's pipeline accepts such a plugin — and what the
 escape conventions for those sequences look like if it does — is
 open. Filed from the spent "what is not yet decided" section of
 `escape-rules-spec.md` (Reconciliation 2). If adopted, the escape
-rules for `--` / `---` follow whatever plugin acadamark accepts;
-acadamark does not own these escapes natively.
+rules for `--` / `---` follow whatever plugin enscribe accepts;
+enscribe does not own these escapes natively.
 
 ### Discuss bare-idiom shortcuts for underline and strikethrough
 `[parser]` `[post-alpha]`
 
 Markdown lacks clean conventions for underline and strikethrough.
-Acadamark currently uses `<u | text>` and `<s | text>` tagged forms.
+Enscribe currently uses `<u | text>` and `<s | text>` tagged forms.
 Whether to add bare-idiom shortcuts (and what they would be) is
 open. Filed from the spent "what is not yet decided" section of
 `escape-rules-spec.md` (Reconciliation 2). If shortcuts are added,
@@ -1273,7 +1275,7 @@ describes cross-references as `type:name` form with examples
 (`fig:scatter`, `eqn:model`, `sec:methods`), and interpreter.md
 §3.9 describes "the id prefix" being used for reference text — but
 the spec never names the exact rule (`prefix:tail` with non-empty
-prefix). Slice 3 of the acadamark-core extraction arc surfaced this
+prefix). Slice 3 of the enscribe-core extraction arc surfaced this
 gap when consolidating two pre-existing ad-hoc inline checks that
 disagreed (`registry.js` used `id.includes(':')` — would have
 indexed a leading-colon `:foo`; `ref-resolution.js` used
@@ -1289,10 +1291,10 @@ the discussion-is-work rule.
 ### Discuss the sigil as a first-class category
 `[cross-cutting]` `[post-alpha]`
 
-Acadamark uses a small set of sigils — `#`/`##`/`###` for sections,
+Enscribe uses a small set of sigils — `#`/`##`/`###` for sections,
 `$`/`$$` for math, `` ` ``/` ``` ` for code — as non-alphabetic
 shorthands for Layer 1 constructs. The bidirectional tagname↔sigil
-map (`packages/acadamark-core/src/tagname-sigil-map.js`) is the
+map (`packages/enscribe-core/src/tagname-sigil-map.js`) is the
 operational substrate for them, but the *category* itself is not
 explicitly defined: there is no canonical sigil registry recording,
 per sigil, its parser tagname, its content handler, its vocabulary
@@ -1308,7 +1310,7 @@ The hash-sigil heading is documented in the spec
 (`shorthand-syntax.md` Example 9), described as a fully working
 form — but zero test fixtures exercise `<#>`/`<##>`/`<###>`. That
 coverage gap is why the hash-sigil dispatch bug stayed latent
-through the acadamark-core extraction arc and was only discovered
+through the enscribe-core extraction arc and was only discovered
 through static reading during the Slice 4 Phase 0's Q7
 investigation. This discussion item: decide whether and how to
 systematically audit spec-documented language features against the
@@ -1410,13 +1412,13 @@ artifacts of a rename that did not sweep its references:
   header pointer (since corrected in the Phase 6 slice) and a number
   of other live docs still naming the old combined file —
   `CLAUDE.md`, `DESIGN.md`, several `notes/specs/*.md`,
-  `packages/acadamark-interpreter/README.md`,
+  `packages/enscribe-interpreter/README.md`,
   `packages/layer1-vocabulary/SPEC.md` and some of its
   `elements/*.md`, and the root `ghc-prompt-file-and-push.md`.
-- **`rehypeAcadamarkToJats` → `acadamarkToJats`.** JATS export was
-  planned as a rehype plugin named `rehypeAcadamarkToJats` but
-  implemented in Phase 5 as a tree function `acadamarkToJats`
-  (`packages/acadamark-jats-export/src/index.js`). The planned name
+- **`rehypeEnscribeToJats` → `enscribeToJats`.** JATS export was
+  planned as a rehype plugin named `rehypeEnscribeToJats` but
+  implemented in Phase 5 as a tree function `enscribeToJats`
+  (`packages/enscribe-jats-export/src/index.js`). The planned name
   survives in `ROADMAP.md`, this file's closed JATS-export entry, and
   `packages/layer1-vocabulary/SPEC.md`. The Phase 5 Phase 0 findings
   noted the inconsistency but did not reconcile it.

@@ -1,0 +1,18 @@
+<meta type=article title="Meta allowlist elements fixture" author="Test Author" doi="10.5555/test.2024" license="CC BY 4.0" lang="en-US" version="1.0.0" keywords="elephants, conservation, climate">
+</meta>
+
+<section | The lifted meta kwargs now render as real elements>
+
+This fixture exercises the five `<meta>` allowlist members that previously
+rendered as `<span data-enscribe-unknown="…">` for want of vocabulary
+entries: `doi`, `license`, `lang`, `version`, `keywords`. The kwargs lift
+to child tags at the normalize-to-canonical gate (per the apparatus-tag
+reconciliation), and now that the vocabulary entries exist, they render
+as real Layer 1 elements: `<doi>`, `<license>`, `<lang>`, `<version>`,
+`<keywords>`.
+
+<abstract |
+A short abstract for the document, included to confirm `<abstract>` —
+which was already in the vocabulary, contrary to the backlog claim —
+continues to render correctly.
+>

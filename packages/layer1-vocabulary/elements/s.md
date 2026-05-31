@@ -4,7 +4,7 @@ html_output:
   element: s
   is_html_native: true
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -79,7 +79,7 @@ Used when attributes (id, class, type) are needed.
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<s>` | `<strike>` |
 

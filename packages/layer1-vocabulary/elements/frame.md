@@ -4,7 +4,7 @@ html_output:
   element: frame
   is_html_native: false
   default_attributes: {}
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -161,7 +161,7 @@ Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure
 
 ## JATS mapping
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<frame>` | `<boxed-text>` |
 | `type` kwarg | `content-type` attribute |

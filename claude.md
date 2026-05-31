@@ -1,4 +1,4 @@
-# Working with Ariel on acadamark
+# Working with Ariel on enscribe
 
 ## Communication style
 - Surface reasoning explicitly. Why a choice was made matters as much as what was done.

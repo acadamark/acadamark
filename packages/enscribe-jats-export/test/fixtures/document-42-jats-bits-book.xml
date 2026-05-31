@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//NLM//DTD BITS Book Interchange DTD v2.0 20151225//EN" "https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2.dtd">
+<book book-type="book" xml:lang="en" dtd-version="2.0">
+  <book-meta>
+    <book-title-group>
+      <book-title>A BITS Book for JATS Export</book-title>
+      <subtitle>Demonstrating Phase 5 slice 5c book path</subtitle>
+    </book-title-group>
+    <contrib-group>
+      <contrib contrib-type="author">
+        <string-name>The Enscribe Team</string-name>
+      </contrib>
+    </contrib-group>
+  </book-meta>
+  <front-matter>
+    <book-part book-part-type="preface">
+      <book-part-meta>
+        <title-group>
+          <title>About this Book</title>
+        </title-group>
+      </book-part-meta>
+      <body>
+        <p>This preface sits in <monospace>&lt;front-matter&gt;</monospace> per BITS convention.<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref></p>
+      </body>
+      <back>
+        <fn-group content-type="endnotes">
+          <fn id="note-1">
+            <label>1</label>
+            <p>A preface footnote.</p>
+          </fn>
+        </fn-group>
+      </back>
+    </book-part>
+  </front-matter>
+  <body>
+    <book-part book-part-type="chapter">
+      <book-part-meta>
+        <title-group>
+          <title>Introduction</title>
+        </title-group>
+      </book-part-meta>
+      <body>
+        <p>The introduction chapter. It contains a figure and an equation; chapter-
+scope numbering renders cross-references with the chapter prefix.</p>
+        <fig id="fig:intro">
+          <label>1.1</label>
+          <caption>
+            <p>An introductory diagram.</p>
+          </caption>
+          <graphic xlink:href="intro.png"/>
+        </fig>
+        <disp-formula id="eqn:intro">
+          <label>(1.1)</label>
+          <tex-math><![CDATA[E = mc^2]]></tex-math>
+        </disp-formula>
+        <p>A reference to <xref ref-type="fig" rid="fig:intro">figure 1.1</xref> renders chapter-prefixed (the
+exact prefix depends on book-part numbering — preface counts as
+chapter 1 in current behavior).<xref ref-type="fn" id="noteref-2" rid="note-2">2</xref></p>
+      </body>
+      <back>
+        <fn-group content-type="footnotes">
+          <fn id="note-2">
+            <label>2</label>
+            <p>A chapter-1 foot-placed footnote that collects per-book-part.</p>
+          </fn>
+        </fn-group>
+      </back>
+    </book-part>
+    <book-part book-part-type="chapter">
+      <book-part-meta>
+        <title-group>
+          <title>Methods</title>
+        </title-group>
+        <contrib-group>
+          <contrib contrib-type="author">
+            <string-name>Guest Author</string-name>
+          </contrib>
+        </contrib-group>
+      </book-part-meta>
+      <body>
+        <p>The edited-volume case — this chapter has its own author distinct from
+the book-level author. The per-book-part <monospace>&lt;contrib-group&gt;</monospace> carries that.</p>
+        <fig id="fig:method">
+          <label>2.1</label>
+          <caption>
+            <p>The methodology diagram.</p>
+          </caption>
+          <graphic xlink:href="method.png"/>
+        </fig>
+        <p>Cross-reference <xref ref-type="fig" rid="fig:method">figure 2.1</xref> resolves with the chapter prefix.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
+      </body>
+      <back>
+        <fn-group content-type="footnotes">
+          <fn id="note-3">
+            <label>3</label>
+            <p>A chapter-2 foot-placed footnote.</p>
+          </fn>
+        </fn-group>
+      </back>
+    </book-part>
+  </body>
+  <book-back>
+    <book-part book-part-type="appendix">
+      <book-part-meta>
+        <title-group>
+          <title>Notation</title>
+        </title-group>
+      </book-part-meta>
+      <body>
+        <p>This appendix lives in <monospace>&lt;book-back&gt;</monospace> per BITS convention.<xref ref-type="fn" id="noteref-4" rid="note-4">4</xref></p>
+      </body>
+      <back>
+        <fn-group content-type="endnotes">
+          <fn id="note-4">
+            <label>4</label>
+            <p>An appendix footnote.</p>
+          </fn>
+        </fn-group>
+      </back>
+    </book-part>
+  </book-back>
+</book>

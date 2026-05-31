@@ -1,0 +1,27 @@
+<meta type=article>
+  <title | Unclosed-tag-at-EOF fixture>
+  <author | Test Author>
+</meta>
+
+<section | Document body before the unclosed tag>
+
+The aside below opens but never closes. Under Option A's EOF-only
+terminator rule, the tag consumes content all the way to EOF and
+produces a visible `enscribeTagError` at its opening position. The
+content past the unclosed tag becomes part of the error node's
+source as best-effort content. The author sees the error marker and
+the conspicuously missing downstream content — itself a signal that
+the document has an unclosed tag.
+
+This fixture pins the EOF-terminator half of Option A against
+regression. ML-8 in `remark-enscribe/test/test.js` covers the
+EOF-without-closer → `enscribeTagError` path at the parser level;
+this fixture covers the visible-rendering end-to-end.
+
+<aside | This aside opens with a pipe and never closes.
+
+Author-intended body text that follows, never visible as body in
+the rendered output — by Option A's EOF-only design, this content
+is swallowed into the error node's source. The bounded cost is
+acceptable: the error renders visibly at the open position, and
+the missing post-tag content is itself a strong author signal.

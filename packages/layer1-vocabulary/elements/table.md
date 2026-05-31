@@ -6,7 +6,7 @@ html_output:
   default_attributes: {}
 interpreter_strategy: handler
 handler_module: ./handlers/table.js
-acadamark_attributes:
+enscribe_attributes:
   id:
     maps_to: id
   classes:
@@ -61,7 +61,7 @@ jats_counterpart:
     table-type: from type
   notes: |
     JATS uses <table-wrap> as the container, with <table> nested inside.
-    The acadamark <table> maps to JATS's nested <table>; the wrapping
+    The enscribe <table> maps to JATS's nested <table>; the wrapping
     <table-wrap> is generated at export to provide JATS's expected structure.
 shorthand_examples:
   - source: |
@@ -81,7 +81,7 @@ shorthand_examples:
       </table>
     notes: |
       Plain markdown table syntax (via remark-gfm). The most common
-      authoring path for simple tables. No explicit acadamark tags needed.
+      authoring path for simple tables. No explicit enscribe tags needed.
   - source: |
       <csv | name,price
       foo,1
@@ -99,7 +99,7 @@ shorthand_examples:
       </table>
     notes: |
       **Planned — the `<csv>` standalone-handler is not yet implemented**
-      (it is registered in `acadamark-core/dsl-registry` but no handler
+      (it is registered in `enscribe-core/dsl-registry` but no handler
       exists yet; an authored `<csv | ...>` today falls through to the
       unknown-element fallback). The example is preserved here as
       documentation of the intended form. Today's working CSV authoring
@@ -135,9 +135,9 @@ A table represents tabular data — rows and columns of values, headers, and pos
 
 ## Semantic intent
 
-Tables in acadamark are reached through three authoring paths, each appropriate for different cases:
+Tables in enscribe are reached through three authoring paths, each appropriate for different cases:
 
-**Plain markdown** for simple tables in flowing prose. Standard pipe-and-dash syntax (via remark-gfm) produces `<table>` output without any explicit acadamark tags.
+**Plain markdown** for simple tables in flowing prose. Standard pipe-and-dash syntax (via remark-gfm) produces `<table>` output without any explicit enscribe tags.
 
 **DSL engine tags** like `<csv>`, `<tsv>`, `<json>` for tabular data that exists in a structured file format. The engine parses the data and generates the appropriate `<table>` structure. This is the primary path for data-driven tables.
 
@@ -183,11 +183,11 @@ Use when you need a specific id, custom classes, particular cell attributes, or 
 
 ## Future: richer table tooling
 
-Tables are an area where acadamark deliberately stays minimal in the current iteration. Rich table support — multi-row headers, complex column groupings, cell merging, conditional formatting — is best handled by purpose-built tools rather than by extending acadamark's table vocabulary.
+Tables are an area where enscribe deliberately stays minimal in the current iteration. Rich table support — multi-row headers, complex column groupings, cell merging, conditional formatting — is best handled by purpose-built tools rather than by extending enscribe's table vocabulary.
 
-When acadamark gains executable code blocks (`<python>`, `<r>`, `<julia>`), tools like R's `gt`, Python's `tabulate`, and Quarto's table generation become available through the engine pattern. Authors who need rich tables will use code to generate them rather than hand-writing complex `<table>` markup.
+When enscribe gains executable code blocks (`<python>`, `<r>`, `<julia>`), tools like R's `gt`, Python's `tabulate`, and Quarto's table generation become available through the engine pattern. Authors who need rich tables will use code to generate them rather than hand-writing complex `<table>` markup.
 
-LaTeX's `tabular` environment and similar table packages are valuable references for the design space but acadamark doesn't aim to reproduce them. The combination of "simple cases via markdown/CSV" and "rich cases via executable engines" covers the practical authoring needs without requiring acadamark to grow a complex table grammar.
+LaTeX's `tabular` environment and similar table packages are valuable references for the design space but enscribe doesn't aim to reproduce them. The combination of "simple cases via markdown/CSV" and "rich cases via executable engines" covers the practical authoring needs without requiring enscribe to grow a complex table grammar.
 
 ## Structural elements
 
@@ -256,7 +256,7 @@ The classification mostly affects styling and JATS export.
 
 JATS uses `<table-wrap>` as the container with `<table>` nested inside, plus optional `<caption>` and `<table-wrap-foot>` for table footnotes.
 
-| acadamark | JATS |
+| enscribe | JATS |
 |-----------|------|
 | `<table>` | `<table-wrap><table>...</table></table-wrap>` |
 | `<caption>` | `<caption>` (inside `<table-wrap>`, not inside `<table>`) |

@@ -1,13 +1,13 @@
 # layer1-vocabulary
 
-The Layer 1 semantic-HTML vocabulary for acadamark. A defined set of HTML
+The Layer 1 semantic-HTML vocabulary for enscribe. A defined set of HTML
 custom elements for academic content: articles, books, chapters, sections,
 floats (figures, tables, equations, listings), citations, cross-references,
-notes, and apparatus. Layer 1 is the archival representation that acadamark's
-shorthand syntax compiles to, and the source format for acadamark's JATS
+notes, and apparatus. Layer 1 is the archival representation that enscribe's
+shorthand syntax compiles to, and the source format for enscribe's JATS
 export.
 
-The vocabulary is designed to be usable independently of acadamark. Any tool
+The vocabulary is designed to be usable independently of enscribe. Any tool
 that produces conformant Layer 1 HTML can feed into the same JATS export and
 rendering pipeline. The shorthand parser is the primary authoring path, not
 the only one.
@@ -18,7 +18,7 @@ the only one.
   list by category, governing rules, design decisions).
 - [`elements/*.md`](elements/) — per-element entries with attribute lists,
   content shapes, JATS mappings, and render-mode lowering specified. The
-  interpreter (`acadamark-interpreter`) consumes these entries at load
+  interpreter (`enscribe-interpreter`) consumes these entries at load
   time.
 
 ## Governing rules
