@@ -4189,3 +4189,24 @@ that). One line gets added every few months, not every slice.
   test suite covers the cases; the only fixture diff is one stray `</content>`
   that now escapes to visible literal text. All suites pass. Next: Slice 3d
   (JATS relationship article).
+- **2026-05-31 — vocabulary correction: links and images through enscribe's own
+  tags.** Link and image authoring now goes entirely through enscribe's
+  vocabulary. **`<a>` takes its target as a positional URL** — `<a URL | text>`
+  — promoted to the `href` kwarg at the normalize-to-canonical gate (the
+  `href=` kwarg form still works and wins; fragment-only targets and URLs with
+  `>`/spaces use `href=`). **`<fig>` and `<figure>` are equivalent** (already
+  true — `<figure>` aliases canonical `<fig>` at the gate; confirmed, no change).
+  **Markdown bracket links `[text](url)` and images `![alt](url)` are no longer
+  authoring idioms** — they render as their literal source (the link text's own
+  inline formatting still renders), distinguished from *autolinks* (a bare URL
+  or email, which still lift to `<a>` because their visible text is their
+  target). **`<img>` was removed from the vocabulary** (108 primary entries):
+  with the markdown image lift gone, `<img>` is reachable by no path, so an
+  author-written `<img>` escapes to literal text per the unknown-tag rule. The
+  docs-site Home and Quickstart links were converted from markdown to `<a>`
+  tags; the Design article's links were already code-fence examples. Specs
+  updated (`DESIGN.md` gate table, `a.md` vocab, `shorthand-syntax.md`); new
+  `links-images` test suite; no fixture output changed (no fixture used the
+  removed idioms). All suites pass; the bundle and docs build. This corrects the
+  `<img>`-removal cascade surfaced (and deferred) in the previous JATS-slice
+  attempt. Next: resume Slice 3d (JATS relationship article).

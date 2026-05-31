@@ -15,7 +15,6 @@ export const INLINE_ELEMENTS = new Set([
   'code',
   'i', 'b', 'u', 's',
   'a',
-  'img',
   'span',
   'q',
   'sub', 'sup',

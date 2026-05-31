@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 109 primary + 2 aliases ('quote', 'figure') = 111.
+// Entry count: 108 primary + 2 aliases ('quote', 'figure') = 110.
 // Recent additions:
 // - 2026-Q2: Phase 3 slice 3b — `fig.md`, `svg.md`, `frame.md` added
 //   as the three settled frameable members that lacked vocab entries
@@ -63,9 +63,12 @@ function check(label, cond) {
 //   (external DSLs; handlers emit pass-through markup with a
 //   `data-enscribe-dsl` marker for downstream tooling).
 //   Brought count from 105 → 107 primary.
+// - 2026-05-31: `<img>` removed (vocabulary-correction slice) — images are
+//   `<fig>` / `<figure>`, and the markdown image lift was removed, so `<img>`
+//   is reachable by no path. Brought count from 109 → 108 primary.
 check(
-  `VOCABULARY has 111 entries (109 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 111,
+  `VOCABULARY has 110 entries (108 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 110,
 );
 
 // Build-time loader has nothing to report in normal state.

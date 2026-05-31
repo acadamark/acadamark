@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 109 vocabulary entries.
+// Source files: 108 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -61,6 +61,12 @@ const _a = Object.freeze({
           "notes": "Tooltip text shown on hover.\n",
         },
       },
+      "positional": [
+        {
+          "name": "href",
+          "notes": "The link target as the first positional argument:\n`<a https://example.com | text>`. The normalize-to-canonical gate\npromotes it to the `href` kwarg (the explicit `href=` form wins if\nboth are given). Covers ordinary absolute/relative URLs and query\nstrings unquoted; a fragment-only target (`#sec`) must use\n`href=\"#sec\"` because a leading `#` is the id sigil, and a URL\ncontaining `>` or spaces must use the `href=\"...\"` kwarg (there is no\nquoted-positional form).\n",
+        },
+      ],
     },
     "content": {
       "type": "prose",
@@ -78,9 +84,9 @@ const _a = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "See [the documentation](https://example.com/docs).",
+        "source": "See <a https://example.com/docs | the documentation>.",
         "layer1_html": "<p>See <a href=\"https://example.com/docs\">the documentation</a>.</p>",
-        "notes": "Plain markdown link syntax produces <a> elements. The most common\nauthoring path.\n",
+        "notes": "The positional URL form — the target is the first argument, the pipe\ncontent is the link text. The most common authoring path. (Markdown\n`[text](url)` is not an enscribe idiom; it renders as literal text.)\n",
       },
       {
         "source": "<a href=https://example.com | the example site>",
@@ -3451,87 +3457,6 @@ const _i = Object.freeze({
     "_sourceFile": "i.md",
   });
 
-const _img = Object.freeze({
-    "semantic_role": "img",
-    "html_output": {
-      "element": "img",
-      "is_html_native": true,
-      "default_attributes": {},
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "src": {
-          "maps_to": {
-            "html": "src",
-          },
-          "required": true,
-          "notes": "URL of the image. Required.\n",
-        },
-        "alt": {
-          "maps_to": {
-            "html": "alt",
-          },
-          "required": true,
-          "notes": "Alternative text for accessibility. Required for images that\nconvey meaning. Use empty alt=\"\" for purely decorative images.\n",
-        },
-        "width": {
-          "maps_to": {
-            "html": "width",
-          },
-        },
-        "height": {
-          "maps_to": {
-            "html": "height",
-          },
-        },
-        "title": {
-          "maps_to": {
-            "html": "title",
-          },
-        },
-      },
-    },
-    "content": {
-      "type": "none",
-      "notes": "The img element is void; it has no content. The alt text is set\nvia the alt kwarg, not via content.\n",
-    },
-    "content_handler": "default",
-    "jats_counterpart": {
-      "element": "graphic",
-      "attributes": {
-        "xlink:href": "from src",
-      },
-      "notes": "JATS uses <graphic> for images, with xlink:href for the URL. The\nalt text maps to <alt-text> child element in JATS, not an attribute.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "![An adult elephant](elephant.jpg)",
-        "layer1_html": "<img src=\"elephant.jpg\" alt=\"An adult elephant\" />",
-        "notes": "Plain markdown image syntax produces <img> elements via remark.\n",
-      },
-      {
-        "source": "<img src=elephant.jpg alt=\"An adult elephant\">",
-        "layer1_html": "<img src=\"elephant.jpg\" alt=\"An adult elephant\" />",
-      },
-      {
-        "source": "<img #elephant src=elephant.jpg alt=\"An adult African elephant\" width=400>",
-        "layer1_html": "<img id=\"elephant\" src=\"elephant.jpg\" alt=\"An adult African elephant\" width=\"400\" />",
-      },
-    ],
-    "interpreter_strategy": "schema",
-    "_sourceFile": "img.md",
-  });
-
 const _inline_code = Object.freeze({
     "semantic_role": "inline-code",
     "html_output": {
@@ -6737,7 +6662,6 @@ export const VOCABULARY = Object.freeze({
   "glossary": _glossary,
   "hr": _hr,
   "i": _i,
-  "img": _img,
   "inline-code": _inline_code,
   "inline-math": _inline_math,
   "kbd": _kbd,

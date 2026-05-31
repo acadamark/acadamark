@@ -907,6 +907,17 @@ non-vocabulary tags now display literally rather than passing through, an
 author who types unsupported raw HTML simply sees it as text; raw HTML for a
 *vocabulary* element still works.
 
+## Markdown links and images are not idioms
+
+Two CommonMark constructs that enscribe parses but does **not** accept as
+authoring idioms are bracket links and images. `[text](url)` renders as the
+literal text `[text](url)` (the link text's own inline formatting still
+renders); the link form is the `<a>` tag, whose target is its first positional
+argument — `<a https://example.com | text>` — or the `href=` kwarg. `![alt](url)`
+likewise renders literally; images are `<fig>` / `<figure>`. An *autolinked*
+bare URL or email (remark-gfm) is **not** affected — it still becomes an `<a>`,
+because its visible text is its target. (See `DESIGN.md` §"The single gate".)
+
 ## What this enables
 
 The parser has a clear target: a micromark extension recognizes the syntax above and produces the structured nodes described; a remark plugin wraps it and emits mdast nodes. The interpreter consumes those nodes against a per-tag vocabulary schema, turning generic `enscribeTag` nodes into specific HTML. New tags are added by registering vocabulary entries, never by modifying the parser.

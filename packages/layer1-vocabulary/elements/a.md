@@ -29,6 +29,17 @@ enscribe_attributes:
       maps_to: title
       notes: |
         Tooltip text shown on hover.
+  positional:
+    - name: href
+      notes: |
+        The link target as the first positional argument:
+        `<a https://example.com | text>`. The normalize-to-canonical gate
+        promotes it to the `href` kwarg (the explicit `href=` form wins if
+        both are given). Covers ordinary absolute/relative URLs and query
+        strings unquoted; a fragment-only target (`#sec`) must use
+        `href="#sec"` because a leading `#` is the id sigil, and a URL
+        containing `>` or spaces must use the `href="..."` kwarg (there is no
+        quoted-positional form).
 content:
   type: prose
   becomes: children
@@ -46,11 +57,12 @@ jats_counterpart:
     URLs; for internal references (enscribe id targets), the JATS
     exporter typically transforms the link into an <xref> instead.
 shorthand_examples:
-  - source: 'See [the documentation](https://example.com/docs).'
+  - source: 'See <a https://example.com/docs | the documentation>.'
     layer1_html: '<p>See <a href="https://example.com/docs">the documentation</a>.</p>'
     notes: |
-      Plain markdown link syntax produces <a> elements. The most common
-      authoring path.
+      The positional URL form — the target is the first argument, the pipe
+      content is the link text. The most common authoring path. (Markdown
+      `[text](url)` is not an enscribe idiom; it renders as literal text.)
   - source: '<a href=https://example.com | the example site>'
     layer1_html: '<a href="https://example.com">the example site</a>'
   - source: '<a href=https://example.com target=_blank rel=noopener | external link>'

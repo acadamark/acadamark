@@ -236,7 +236,7 @@ writing, in a single source file you can read, edit, and archive.
 
 For the architecture behind the two-layer model — why Layer 1 is canonical, how
 the shorthand lifts to it, and where JATS fits — read the
-[Design article](design.html). The **Authoring Guide**, covering every element in
+<a href="design.html" | Design article>. The **Authoring Guide**, covering every element in
 depth, and the **Layer 1 Reference**, cataloguing the output vocabulary, are the
 next documents to land on this site. Until then, the best next step is the one
 right beside this text: keep editing, and watch what changes.

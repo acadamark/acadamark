@@ -306,8 +306,8 @@ The gate's job at a glance:
 | Bare markdown strong (`**foo**`) | `<b>` |
 | Bare GFM strikethrough (`~~foo~~`) | `<s>` |
 | Bare inline code (`` `foo` ``) | the canonical `<inline-code>` |
-| Bare markdown link (`[text](url)`) | the canonical `<a>` |
-| Bare markdown image | the canonical `<img>` |
+| Bare markdown link (`[text](url)`) | **literal text** — `[text](url)` is no longer an authoring idiom; the `<a>` tag (`<a URL \| text>`) is the only link form. An *autolinked* bare URL or email (remark-gfm) still lifts to `<a>`, since its text is its target. |
+| Bare markdown image (`![alt](url)`) | **literal text** — no longer an idiom; images are `<fig>` / `<figure>`. |
 | Bare `$x$` / `$$x$$` math | a canonical math enscribeTag (`inline-math` / `display-math`) |
 | GFM pipe table | a canonical `<table md>` enscribeTag |
 

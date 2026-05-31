@@ -366,20 +366,49 @@ function liftInlineCode(node) {
   });
 }
 
-function liftLink(node) {
-  const kwargs = {};
-  if (node.url) kwargs.href = node.url;
-  if (node.title) kwargs.title = node.title;
-  return makeTag('a', node.children ?? [], { kwargs });
+// An autolink — `<https://x>`, or a bare URL / email that remark-gfm links —
+// is NOT a removed idiom: it still lifts to `<a>` (so, e.g., an `<email>`
+// value stays a `mailto:` link). It is distinguishable from an explicit
+// bracket link by structure: an autolink's visible text equals its URL
+// (modulo a `mailto:` / `tel:` scheme), since the author never typed separate
+// link text. (mdast does not otherwise flag the two apart.)
+function isAutolink(node) {
+  const kids = node.children ?? [];
+  if (kids.length !== 1 || kids[0].type !== 'text') return false;
+  const url = node.url ?? '';
+  return url === kids[0].value || url.replace(/^(mailto:|tel:)/, '') === kids[0].value;
 }
 
+// Explicit markdown links `[text](url)` are no longer an authoring idiom —
+// authors write the `<a>` tag (`<a URL | text>`). An explicit link therefore
+// renders as its literal source: the brackets and parens show as text, while
+// the link text's own inline formatting (e.g. emphasis) still renders. The
+// literal is wrapped in a `<span>` so this stays the 1-to-1 normalization
+// walkNormalize requires; the span is inert inline and the gate still emits
+// only canonical nodes (a `<span>` plus text). The URL inside the literal is
+// built after parsing, so remark-gfm never re-autolinks it.
+function liftLink(node) {
+  if (isAutolink(node)) {
+    const kwargs = {};
+    if (node.url) kwargs.href = node.url;
+    if (node.title) kwargs.title = node.title;
+    return makeTag('a', node.children ?? [], { kwargs });
+  }
+  const title = node.title ? ` "${node.title}"` : '';
+  return makeTag('span', [
+    { type: 'text', value: '[' },
+    ...(node.children ?? []),
+    { type: 'text', value: `](${node.url ?? ''}${title})` },
+  ]);
+}
+
+// Markdown images are no longer an authoring idiom — authors write `<fig>` /
+// `<figure>`. A `![alt](url)` markdown image renders as its literal source
+// text. Image alt is plain text with no inline children, so a single text node
+// suffices (1-to-1).
 function liftImage(node) {
-  const kwargs = {};
-  if (node.url) kwargs.src = node.url;
-  if (node.alt != null) kwargs.alt = node.alt;
-  if (node.title) kwargs.title = node.title;
-  // <img> is void in HTML; canonical shape has empty content array.
-  return makeTag('img', [], { kwargs });
+  const title = node.title ? ` "${node.title}"` : '';
+  return { type: 'text', value: `![${node.alt ?? ''}](${node.url ?? ''}${title})` };
 }
 
 function liftHardBreak(_node) {
@@ -736,6 +765,30 @@ const NORMALIZATIONS = [
     predicate: (node) => isEnscribeTag(node) && node.tagname === 'figure',
     normalize: (node) => {
       node.tagname = 'fig';
+      return node;
+    },
+  },
+
+  // ─── Group A1.6: <a> positional URL → href ────────────────────────────
+  //
+  // `<a>` takes the link target as its first positional argument:
+  // `<a https://example.com | text>`. Promote that positional to the
+  // canonical `href` kwarg so downstream schema dispatch maps it like any
+  // other attribute (the `href=` kwarg form remains the explicit alternative
+  // and wins if both are present). The positional form covers ordinary
+  // absolute/relative URLs and query strings unquoted (`?a=1&b=2` parses fine).
+  // It does NOT cover: fragment-only targets (`#sec` is parsed as an id, so use
+  // `href="#sec"`); and URLs containing `>` or spaces (the parser has no quoted-
+  // positional form — use the `href="..."` kwarg).
+  {
+    predicate: (node) =>
+      isEnscribeTag(node) &&
+      node.tagname === 'a' &&
+      (node.positional?.length ?? 0) > 0 &&
+      node.kwargs?.href == null,
+    normalize: (node) => {
+      node.kwargs = { ...node.kwargs, href: node.positional[0] };
+      node.positional = node.positional.slice(1);
       return node;
     },
   },
