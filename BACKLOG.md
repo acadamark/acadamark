@@ -1092,7 +1092,15 @@ reduced rather than faithfully preserved. A useful on-ramp from the
 existing scholarly corpus, not a round-trip guarantee. Promoted from
 post-alpha to release-blocking — first-class now rather than deferred.
 Gets its own Phase 0 to scope the mapping and the lossy-reduction
-policy before any code.
+policy before any code. **Phase 0 done (2026-05-31)** — findings at
+`notes/phase13-jats-import-findings.md`: verdict *proceed*; new package
+`@enscribejs/jats-import` (mapping tables shared with the export so they
+cannot diverge); `importJats(xml) → canonical mdast → existing pipeline`; the
+reduction policy (map / comment / drop / raw) is the center of gravity for real
+articles; math is mostly trivial (`<tex-math>`), with `mathml-to-latex` as the
+MathML-only fallback; the round-trip (`import → re-export ≈ original`) is the
+headline test; 7-step slicing (optionally 13a/b/c), built against the export
+fixtures before one CC-BY PMC article. Next: slice 13a.
 
 ### Build the client-side rendering library
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*

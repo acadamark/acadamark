@@ -4424,3 +4424,25 @@ that). One line gets added every few months, not every slice.
   ASCII art (GitHub-facing, plain markdown). BACKLOG `<svg>` bug CLOSED. Builds:
   six pages, no error nodes; all suites pass (core, remark, interpreter — the
   last with the new svg-content test). Next: Phase 13 Phase 0 (JATS import).
+- **2026-05-31 — Phase 13 Phase 0: JATS import findings.** Read-only investigation
+  (`notes/phase13-jats-import-findings.md`) scoping JATS XML → Enscribe import, the
+  reverse of Phase 5's lossless export. Covered Q1–Q8: the JATS→Enscribe element
+  mapping (reversed from the export emitter and verified against it), the lossy-
+  reduction policy for non-representable elements (a four-way map/comment/drop/raw
+  table — the import's center of gravity for real articles), MathML→LaTeX, the
+  structured-citation mapping, PMC test data, output shape, package structure, and
+  slicing. Key findings: (1) **import is not "run the export backwards"** — the
+  export is a pure string emitter with no XML parser, so import is a new capability
+  (XML parser dependency + tree transform), sharing only the mapping *tables*; (2)
+  the **math problem is small** — Enscribe's export emits `<tex-math>` (verified:
+  all 12 fixture formulas are tex-math, zero MathML), and real JATS often carries a
+  tex-math alternative, so MathML→LaTeX (via `mathml-to-latex`, MIT) is only the
+  residual MathML-only case, degrading gracefully; (3) two regimes — round-trip of
+  Enscribe-exported JATS is near-mechanical and high-fidelity, real PMC import is
+  the core mapping plus a long reduction tail. Recommends **proceed**: new package
+  `@enscribejs/jats-import` (shared tables extracted so export/import can't
+  diverge), `importJats(xml) → canonical mdast → existing pipeline → HTML`, the
+  round-trip (`import → re-export ≈ original`) as the headline test, and a 7-step
+  slicing (optionally 13a/b/c) building against the export fixtures before one
+  carefully-chosen CC-BY PMC article. Neither discipline stop-condition fired. No
+  code changed. Next: Phase 13 implementation (slice 13a — skeleton + citations).
