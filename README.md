@@ -63,7 +63,7 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 Enscribe is implemented. The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML.
 
-The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for a current snapshot of what works and what doesn't, [`DESIGN.md`](DESIGN.md) for the design rationale, [`BUILD.md`](BUILD.md) for the implementation plan, and [`notes/specs/interpreter.md`](notes/specs/interpreter.md) and [`notes/specs/pipeline.md`](notes/specs/pipeline.md) for the architecture.
+The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for a current snapshot of what works and what doesn't, [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/interpreter.md`](notes/specs/interpreter.md) and [`notes/specs/pipeline.md`](notes/specs/pipeline.md) for the architecture.
 
 ## Reading order
 
@@ -89,4 +89,4 @@ Goals 1 through 3 are substantially achieved; goal 4 is demonstrated for HTML ou
 
 ## License
 
-TBD.
+MIT License. See [`LICENSE`](LICENSE) for details.
