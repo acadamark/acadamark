@@ -452,16 +452,14 @@ booleans `headers`, `numbered`. **Id:** `#tab:name`.
 (raw SVG). An inline vector graphic sharing the frameable surface. **Attributes:**
 `width`, `height`, `viewBox`, `caption`; booleans `numbered`, `border`.
 
+The SVG markup is the element's (long-form) content and passes through verbatim;
+the `width`/`height`/`viewBox` kwargs land on the rendered `<svg>`.
+
 ```html
 <svg viewBox="0 0 100 100" width="200" height="200">
   <circle cx="50" cy="50" r="40" fill="blue" />
 </svg>
 ```
-
-> **Note — inline SVG source is not yet rendered.** The wrapper and its attributes
-> are emitted, but the inner SVG source is currently dropped (a tracked bug). For
-> vector graphics today, reference an external file as an image:
-> `<fig src="diagram.svg" | …>`.
 
 <## #el:frame | `<frame>` ##>
 **Category** frameable · **renders** `<frame>` · **content** prose. A generic

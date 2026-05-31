@@ -17,27 +17,17 @@ The project separates two things:
 
 The shape of the system:
 
-```
-                 ┌─────────────────────────────┐
-                 │  display targets            │
-                 │  · Layer 1 + CSS            │
-                 │  · Layer 1 + CSS + JS       │
-   ┌──────────┐  │  · render mode (lowered)    │
-   │  Layer 2 │  └─────────────────────────────┘
-   │ shorthand│              ▲
-   │ (.emd)   │              │  display
-   └──────────┘              │
-        ▲                    │
-        │  lossless          │
-        │  round-trip        │
-        ▼                    │
-   ┌─────────────────────────────────┐         ┌──────────────┐
-   │  Layer 1                        │ ──────► │  JATS XML    │
-   │  canonical semantic HTML        │  export │  (scholarly  │
-   │  (the source of truth)          │ ◄┄┄┄┄┄┄ │   interchange)│
-   └─────────────────────────────────┘  import └──────────────┘
-                                     (lossy, with simplifications)
-```
+<mermaid -numbered>
+graph TD
+  L2["Layer 2 — authoring shorthand (.emd)"]
+  L1["Layer 1 — canonical semantic HTML (the source of truth)"]
+  D["display targets: Layer 1 + CSS · + CSS + JS · render mode (lowered)"]
+  J["JATS XML (scholarly interchange)"]
+  L2 <-->|"lossless round-trip"| L1
+  L1 -->|"display"| D
+  L1 -->|"export"| J
+  J -.->|"import (lossy, with simplifications)"| L1
+</mermaid>
 
 Source files carry the `.emd` extension — the canonical short form — with `.enscribe` accepted as a long-form alias. The extension is a labelling convention only: the parser operates on source text and never dispatches on a file extension, so an enscribe document is recognized by its content, not its filename.
 

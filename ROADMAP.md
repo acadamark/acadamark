@@ -183,9 +183,8 @@ demonstrations throughout. **Slice 3f then added the Layer 1 Vocabulary
 Reference** (a sixth page) — an MDN-style element-by-element reference for the
 output vocabulary — which **completes the docs-site content arc (3b–3f)**. The
 docs-site documentation is done for v0.1.0; only residual Phase 14 housekeeping
-(generated types, fixture consolidation, the `design.emd` Mermaid diagram)
-remains, and the release-blocking phases beyond it are Phase 8 (display features)
-and Phase 13 (JATS import).
+(generated types, fixture consolidation) remains, and the release-blocking
+phases beyond it are Phase 8 (display features) and Phase 13 (JATS import).
 Nothing else is in flight.
 
 ---

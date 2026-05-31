@@ -393,11 +393,19 @@ number follows.
 > numbered figure, that is a plain inline image — a different need Enscribe does
 > not fold into `<fig>`.
 
-For vector graphics, the simplest path today is to reference an external SVG file
-as the image: `<fig src="diagram.svg" | …>` renders it like any other image.
-Enscribe also has a dedicated `<svg>` element that shares this same frameable
-surface; embedding inline SVG source through it is still being finished, so prefer
-the `<fig src="…svg">` route for now.
+For vector graphics, Enscribe has a dedicated `<svg>` element that embeds inline
+SVG source directly and shares this same frameable surface (caption, number,
+border). Write the SVG markup as the element's content, in long form:
+
+```
+<svg viewBox="0 0 100 100" caption="A simple diagram.">
+  <circle cx="50" cy="50" r="40" fill="teal" />
+</svg>
+```
+
+The `viewBox`, `width`, and `height` kwargs pass through to the rendered `<svg>`.
+To reference an external SVG file instead of inlining it, treat it as any other
+image: `<fig src="diagram.svg" | …>`.
 
 *Related:* <a href="#sec:tab" | Tables> (Chapter 6) — the other common frameable;
 <a href="#sec:xref" | Cross-references> (Chapter 9) to point at a figure by id.

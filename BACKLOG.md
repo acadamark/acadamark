@@ -94,18 +94,21 @@ A flat scannable index of every open item. Detailed entries below.
   references in the same section still showed `##` as the section markdown form
   (the playground "try it" sentence, the "muscle memory" sentence, and the
   lossy-heading note). All three corrected to `#`.
-- [ ] **`<svg>` renders empty — inner SVG source dropped**
-  `[interpreter]` `[post-alpha]` — a `<svg>…</svg>` (long-form or pipe) renders
-  `<svg></svg>`: the passthrough attributes (`viewBox`/`width`/`height`) survive
-  but the inner SVG source is lost. Root cause: `svg` is missing from
+- [x] **`<svg>` renders empty — inner SVG source dropped**
+  `[interpreter]` `[post-alpha]` — a `<svg>…</svg>` (long-form or pipe) rendered
+  `<svg></svg>`: the passthrough attributes (`viewBox`/`width`/`height`) survived
+  but the inner SVG source was lost. Root cause: `svg` was missing from
   `DSL_REGISTRY` (`enscribe-core/src/dsl-registry.js`), so `getContentHandler`
-  returns `'default'` and the content is recursively re-parsed into an mdast
+  returned `'default'` and the content was recursively re-parsed into an mdast
   array; `handlers/svg.js` reads `node.content` only when it is a string
-  (`typeof node.content === 'string' ? … : ''`) and so drops the array. Likely
-  fix: register `['svg','svg']` (svg's content is raw SVG XML — opaque, like
-  `table`/`library`), or serialize array content in the handler. Workaround
-  today: reference an external SVG file as an image, `<fig src="diagram.svg">`.
-  *(Found while render-verifying Authoring Guide chapter 5, 3e-ii.)*
+  (`typeof node.content === 'string' ? … : ''`) and so dropped the array.
+  *(Found while render-verifying Authoring Guide chapter 5, 3e-ii.)* — **CLOSED
+  2026-05-31** by the housekeeping slice: registered `['svg','svg']` in
+  `DSL_REGISTRY` (opaque, like `table`/`library`), so the content stays a
+  verbatim string and the handler emits it. Long- and pipe-form `<svg>` now
+  preserve their inner source; guarded by `test/svg-content.test.js`. The
+  Authoring Guide (ch. 5) and Layer 1 Reference (`<svg>` card) limitation notes
+  were removed.
 - [x] **Same-line long-form `<tag>content</tag>` produces an empty element**
   `[parser]` `[post-alpha]` — decided: add same-line long-form support,
   Phase 0 first *(filed by the parser/handler-fixes slice)* — **CLOSED
@@ -1142,8 +1145,9 @@ cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). **The docs-site
-content arc (Slices 3b–3f) is now complete** — only fixture consolidation and the
-residual `design.emd` Mermaid diagram remain as docs-site housekeeping;
+content arc (Slices 3b–3f) is now complete** — only fixture consolidation remains
+as docs-site housekeeping (the `design.emd` Mermaid diagram and the `<svg>`
+content bug were both cleared by the 2026-05-31 housekeeping slice);
 **Slices 3c, 3d, 3e (i/ii/iii), and 3f have since landed** — the Quickstart guide
 (authored in canonical enscribe, 13 features in its own content), the
 JATS-relationship article (the export mapping, a real worked example, a workflow

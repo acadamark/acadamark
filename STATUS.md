@@ -98,7 +98,7 @@ element-by-element reference for the output vocabulary — which **completes the
 docs-site content arc (Slices 3b–3f)**. **Next:** Ariel runs `npm publish` per
 package (out of band); the remaining release-blocking work is Phase 8 (display
 features) and Phase 13 (JATS import), plus the residual Phase 14 housekeeping
-(generated types, fixture consolidation, the `design.emd` Mermaid diagram).
+(generated types, fixture consolidation).
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -4404,3 +4404,23 @@ that). One line gets added every few months, not every slice.
   voice; trivial variants cross-reference their canonical sibling). Next: the
   release-blocking phases — Phase 8 (display features) and Phase 13 (JATS import) —
   plus residual Phase 14 housekeeping.
+- **2026-05-31 — Housekeeping: `<svg>` content fix + `design.emd` Mermaid diagram.**
+  Two small items before the Phase 13 arc. (1) **Fixed the `<svg>` empty-render
+  bug** (filed 3e-ii): registered `['svg','svg']` in `DSL_REGISTRY`
+  (`enscribe-core/src/dsl-registry.js`), making svg content opaque like
+  `table`/`library`. Before, `getContentHandler('svg')` returned `'default'`, so
+  the recursive-content plugin re-parsed the SVG source into an mdast array while
+  `handlers/svg.js` reads only string content — dropping the inner source. Now
+  long- and pipe-form `<svg>` preserve their inner markup; the `viewBox`/`width`/
+  `height` kwargs pass through. The interpreter's render-DSL registry
+  (`dsl/registry.js`, mermaid/abc CDN) is independent and unaffected. Guarded by a
+  new `test/svg-content.test.js` (end-to-end: registry → opaque content →
+  handler). Output-neutral for existing fixtures (none author `<svg>` with
+  content — empty fixture diff). The Authoring Guide (ch. 5) and Layer 1 Reference
+  (`<svg>` card) limitation notes were removed and now document the working inline
+  form. (2) **Converted `design.emd`'s ASCII architecture diagram to a live
+  `<mermaid>` flowchart** (`-numbered`, so it stays an unnumbered illustration),
+  rendering as an SVG in the docs site's `live-link` build; `DESIGN.md` keeps its
+  ASCII art (GitHub-facing, plain markdown). BACKLOG `<svg>` bug CLOSED. Builds:
+  six pages, no error nodes; all suites pass (core, remark, interpreter — the
+  last with the new svg-content test). Next: Phase 13 Phase 0 (JATS import).

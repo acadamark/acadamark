@@ -83,6 +83,15 @@ export const DSL_REGISTRY = new Map([
   // the citation-resolution plugin. The 'library' handler value makes
   // isOpaqueContent: true; the data string passes through unchanged.
   ['library',    'library'],
+  // `<svg>` holds raw SVG XML source — opaque, like `table`/`library`. The
+  // 'svg' handler value makes isOpaqueContent: true so the recursive-content
+  // plugin does NOT re-parse the source into an mdast array; handlers/svg.js
+  // reads the verbatim string and emits it inside the rendered <svg>. Without
+  // this entry the content defaulted to recursive parsing (an array), which
+  // handlers/svg.js read as '' — dropping the inner source entirely. <svg> is
+  // not a CDN-rendered DSL (no entry in the interpreter's dsl/registry.js); it
+  // is HTML-native and just needs its content kept verbatim.
+  ['svg',        'svg'],
 ])
 
 /**

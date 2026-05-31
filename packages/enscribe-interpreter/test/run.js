@@ -30,6 +30,7 @@ import { run as runCdnVersions } from './cdn-versions.test.js';
 import { run as runBundleLoad } from './bundle-load.test.js';
 import { run as runRawHtmlComments } from './raw-html-comments.test.js';
 import { run as runSameLineLongForm } from './same-line-long-form.test.js';
+import { run as runSvgContent } from './svg-content.test.js';
 import { run as runLinksImages } from './links-images.test.js';
 import { run as runIntegration } from './integration.test.js';
 
@@ -62,6 +63,7 @@ const suites = [
   ['bundle-load',                  runBundleLoad],
   ['raw-html-comments',            runRawHtmlComments],
   ['same-line-long-form',          runSameLineLongForm],
+  ['svg-content',                  runSvgContent],
   ['links-images',                 runLinksImages],
   ['integration',                  runIntegration],
 ];
