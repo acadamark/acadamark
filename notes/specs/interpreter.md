@@ -885,8 +885,13 @@ const hast = toHast(tree, {
 
 `toHast` from `mdast-util-to-hast` converts standard mdast nodes via built-in
 rules. The `enscribeTag` handler is called for every `enscribeTag` node in
-the tree. `allowDangerousHtml: true` is required for raw HTML passthrough
-(used for KaTeX output, citation HTML, and table raw mode).
+the tree. A custom `html` handler (`htmlNodeHandler`) processes author-written
+raw HTML: a tag in the vocabulary passes through, a non-vocabulary tag is
+escaped to literal text (no HTML passthrough), and an HTML comment
+(`<!-- … -->`) is stripped entirely. `allowDangerousHtml: true` remains set so
+the interpreter's own injected raw nodes (KaTeX output, citation HTML, table
+raw mode) emit verbatim — it does not re-enable passthrough of author HTML,
+which the `html` handler has already converted.
 
 ### 4.2 Asset injection
 
@@ -935,7 +940,13 @@ For each node, the handler performs this sequence:
 
 3. If the vocabulary lookup did not find an entry:
    - Emit `warnUnknownTag(tagname)` to console.
-   - Return `makeUnknownElement()`: `<span data-enscribe-unknown="tagname">`.
+   - Return `makeUnknownElement()`, which renders the tag as the **literal
+     text the author typed** — the opener is reconstructed from the node's
+     parsed parts and emitted as text nodes, so the serializer escapes
+     `<`/`>`. An unrecognized tag is not an error and is not passed through as
+     HTML; the reader sees the angle brackets. (The matching close tag of a
+     broken same-line long form arrives as a separate `html` node and is
+     escaped by `htmlNodeHandler` — see §4.1.)
 
 4. If `vocab.interpreter_strategy === 'handler'`:
    - Look up `vocab.handler_module` in HANDLER_REGISTRY.
@@ -1437,13 +1448,14 @@ not yet render visibly.
 
 | condition | visible marker |
 |-----------|---------------|
-| Unknown vocabulary tag | `<span data-enscribe-unknown="tagname">` |
 | Unresolved `<ref>` | `<a class="ref-error" href="#id">??ref: id??</a>` |
 | Missing citation key | `<cite class="cite-error" data-keys="k">??cite: k??</cite>` |
 | Table parse failure | `<table class="table-parse-error">??table-error: msg??</table>` |
 
-Unknown-tag elements pass through their pipe content (text nodes or converted
-mdast) as best-effort children.
+An unknown / non-vocabulary tag is **not** in this table: it is no longer an
+error marker. It renders as the literal source text the author typed, with
+`<`/`>` escaped (see §5.1). Where its pipe content was re-parsed into mdast, a
+recognized tag nested inside it still renders; everything else shows literally.
 
 ### 11.3 VFile messages (`file.message()`)
 

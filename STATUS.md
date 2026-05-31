@@ -4169,3 +4169,23 @@ that). One line gets added every few months, not every slice.
   spec-precision finding: single-line `$$...$$` lifts to inline-math, so the
   display equation uses the canonical `<$$ | ... $$>` tag (filed to BACKLOG).
   Next: Slice 3d (JATS relationship article).
+- **2026-05-31 — parser/handler fixes: literal unknown tags, comment stripping.**
+  Three issues surfaced in playground testing were diagnosed; two were fixed and
+  the third was deferred with a decision. **Unrecognized / non-vocabulary tags
+  now render as the literal text the author typed** (escaped angle brackets)
+  instead of a `<span data-enscribe-unknown>` placeholder — there is no HTML
+  passthrough for tags enscribe does not recognize. **Author raw HTML** is
+  resolved at a new `html` handler in the mdast→hast compile step: a vocabulary
+  tag passes through, a non-vocabulary tag (`<div>`, a stray `</glurp>`) is
+  escaped to literal text, and an **HTML comment (`<!-- … -->`) is stripped**
+  entirely. The diagnosis corrected the slice's premises: `<b>/<i>/<s>/<u>` were
+  never mis-wired — they render via the pipe form `<b | hello>` and the
+  multi-line long form; only the *same-line* long form `<b>hello</b>` is
+  unsupported (the grammar requires a line ending after the opening `>`). Making
+  same-line long form work is a load-bearing grammar change, so it was
+  **deferred** to its own Phase-0-first parser slice (filed to `BACKLOG.md`)
+  rather than forced here. Specs updated (`interpreter.md` §4.1/§5.1/§11.2,
+  `shorthand-syntax.md` "Coexistence with raw HTML"); a new `raw-html-comments`
+  test suite covers the cases; the only fixture diff is one stray `</content>`
+  that now escapes to visible literal text. All suites pass. Next: Slice 3d
+  (JATS relationship article).

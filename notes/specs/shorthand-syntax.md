@@ -889,12 +889,23 @@ Enscribe's text-position (inline) tokenizers — for both named tags and sigil t
 
 - **Bare HTML boolean attributes.** `<input type="checkbox" disabled>` — enscribe parses `disabled` as a positional, not as a boolean attribute flag. Use `+disabled` for enscribe boolean flags instead.
 - **Self-closing syntax.** `<br />`, `<img src="x" />` — the trailing `/>` is recognized as a self-closing marker. The parser emits a `selfClosing: true` flag on the AST node. The content field is `null`; no pipe content is allowed in self-closing form. Self-closing is valid for any named tag. Example: `<library src="refs.bib" />` → `{ tagname: 'library', selfClosing: true, kwargs: { src: 'refs.bib' } }`. The slash must be the last character before `>` with no pipe. Technically, `<br/>` (no space before `/`) is also valid. The lookahead that recognizes self-closing is precise: a bare `/` positional is still accepted when it is not in the `/ >` position — e.g., `<tag /path>` parses `positional: ['/path']` without `selfClosing: true`.
-- **Closing tags as standalone constructs.** `</em>` starts with `</`. The enscribe tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it. This means closing tags are passed through as raw HTML, which can produce mismatched structure.
+- **Closing tags as standalone constructs.** `</em>` starts with `</`. The enscribe tokenizer rejects this (requires an alpha char after `<`, not `/`), so the built-in HTML tokenizer handles it, producing a raw `html` node. What that node becomes is decided by the interpreter (next paragraph): a closing tag for a vocabulary element (`</em>`) passes through; a closing tag for a non-vocabulary tag (`</glurp>`) is escaped to literal text.
 
-**Guidance for authors:** Use enscribe shorthand for semantic markup. A
-verbatim-passthrough mechanism (`<html-passthrough>...</html-passthrough>`)
-for the rare case where authors need to drop into raw HTML that enscribe
-cannot express is open design work in the backlog.
+**Interpreter-level resolution of raw HTML.** The notes above describe what the
+*parser* claims; the *interpreter* then decides what each author-written raw
+`html` node becomes (the `html` handler in `interpret-plugin.js`; see
+`interpreter.md` §4.1). A tag **in the vocabulary** passes through as HTML; a
+**non-vocabulary** tag (`<div>`, `<glurp>`, a stray `</glurp>`) is **escaped to
+literal text** — there is no HTML passthrough for tags enscribe does not
+recognize; and an **HTML comment** (`<!-- … -->`) is **stripped** from the
+output entirely. An unrecognized opening tag that enscribe *did* tokenize
+(e.g. `<glurp>`) is likewise escaped to literal text by the unknown-tag
+fallback, rather than rendering an error or a placeholder span.
+
+**Guidance for authors:** Use enscribe shorthand for semantic markup. Because
+non-vocabulary tags now display literally rather than passing through, an
+author who types unsupported raw HTML simply sees it as text; raw HTML for a
+*vocabulary* element still works.
 
 ## What this enables
 

@@ -83,6 +83,9 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
+- [ ] **Same-line long-form `<tag>content</tag>` produces an empty element**
+  `[parser]` `[post-alpha]` — decided: add same-line long-form support,
+  Phase 0 first *(filed by the parser/handler-fixes slice)*
 - [ ] **doc-46 references figure images that do not exist**
   (`commit-graph.png`, `notebook-ci.png`) `[tests/build]` `[release]`
   *(→ roadmap: Phase 14; filed by Phase 14 Slice 2)*
@@ -297,6 +300,29 @@ A flat scannable index of every open item. Detailed entries below.
 ---
 
 ## Detailed entries — Bugs
+
+### Same-line long-form `<tag>content</tag>` produces an empty element
+`[parser]` `[post-alpha]`
+
+A long-form tag written entirely on one line — `<b>hello</b>`, `<aside>x</aside>`
+— does not capture its content. The micromark long-form opener requires a line
+ending after the opening `>` (`packages/remark-enscribe/src/syntax.js`,
+`afterOpenGt`), so a same-line opener is rejected; the text-position tokenizer
+then claims a bare empty `<b>`, and `hello</b>` falls through as text plus a raw
+`</b>` html node — the rendered result is an empty `<b></b>` followed by stray
+text. The working inline forms today are the **pipe form** `<b | hello>` and the
+**multi-line** long form (`<b>` ⏎ `hello` ⏎ `</b>`).
+
+**Decision (parser/handler-fixes slice): add same-line long-form support** — the
+slice that surfaced this chose to make `<b>hello</b>` work rather than accept the
+pipe form as the only inline form. This is a load-bearing change to the
+long-form/pipe-form disambiguation and to text-position tokenization, so it runs
+a read-only **Phase 0** first (scope: matching-close detection, nesting, the
+interaction with the existing multi-line long form and pipe form, and the fixture
+impact), then an implementation slice. Until it lands, the unknown-tag-escaping
+fix means a same-line *unknown* tag (`<glurp>hi</glurp>`) at least renders as
+clean literal text, while a same-line *known* tag still shows its empty-element
+artifact. *(Filed by the parser/handler-fixes slice.)*
 
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`

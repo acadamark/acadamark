@@ -128,7 +128,7 @@ import { enscribeNumbering, fillNumbering } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
 import { enscribeCiteResolution } from './plugins/cite-resolution.js';
 import { enscribeBibliography } from './plugins/bibliography.js';
-import { enscribeTagHandler, createEnscribeTagHandler } from './interpret-plugin.js';
+import { enscribeTagHandler, createEnscribeTagHandler, htmlNodeHandler } from './interpret-plugin.js';
 import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js';
 import { getDocumentFontsCss, patchKatexFontUrls, DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
 // Re-exported so consumers using documentFontsCss:'link' can reference the same
@@ -604,6 +604,9 @@ export function enscribeInterpreter(options = {}) {
     const hast = toHast(tree, {
       handlers: {
         enscribeTag: tagHandler,
+        // Author raw HTML: vocab tags pass through, non-vocab tags are escaped
+        // to literal text (no HTML passthrough), and HTML comments are stripped.
+        html: htmlNodeHandler,
         // Parser-error node renderers — the always-renders guarantee
         // (notes/specs/principles.md) requires enscribeParseError and
         // enscribeTagError nodes to render visibly at their source location.

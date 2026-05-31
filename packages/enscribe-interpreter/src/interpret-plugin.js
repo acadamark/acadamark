@@ -8,8 +8,11 @@
 //             and attribute mappings; children come from node.content.
 //   handler → handlerDispatch: calls a dedicated handler module.
 //
-// Unknown tags produce a <span data-enscribe-unknown="tagname"> with a
-// warning; content is passed through best-effort.
+// Unknown tags (tagname not in the vocabulary) are not errors and are not
+// passed through as HTML — they render as the literal text the author typed
+// (angle brackets escaped), with a dev-time console warning. Author-written raw
+// HTML is handled by htmlNodeHandler: vocabulary tags pass through, non-vocab
+// tags are escaped literally, and HTML comments are stripped.
 //
 // PARAGRAPH UNWRAPPING
 // After remarkRecursiveContent, an element's pipe text has been parsed through
@@ -197,24 +200,80 @@ function convertContent(state, node, vocab) {
 // + the figure/svg/frame/theorem handlers) each do the
 // `aggregateHtmlProps(mapAttributes(...))` pair directly.
 
-// ─── Unknown-tag fallback ─────────────────────────────────────────────────────
+// ─── Unknown-tag fallback: escape to literal text ─────────────────────────────
+// A tag whose name is not in the vocabulary is not an error and is not passed
+// through as HTML — it renders as the literal text the author typed, angle
+// brackets and all (the HTML serializer escapes `<`/`>` to `&lt;`/`&gt;`). See
+// notes/specs/interpreter.md §"Unknown tags and raw HTML". The matching close
+// tag of a broken same-line long form (`<glurp>hi</glurp>`) arrives as a
+// separate `html` node and is escaped by `htmlNodeHandler` below.
+
+/**
+ * Reconstruct the opening-tag source of an enscribeTag node from its parsed
+ * parts. Used to show an unrecognized tag literally. Not byte-exact with the
+ * original (attribute order/quoting are canonicalized), but faithful enough
+ * that the reader sees the tag they wrote.
+ */
+function reconstructOpener(node) {
+  let s = '<' + node.tagname;
+  if (node.id) s += ' #' + node.id;
+  for (const c of node.classes ?? []) s += ' .' + c;
+  for (const [k, v] of Object.entries(node.kwargs ?? {})) s += ` ${k}="${v}"`;
+  for (const [k, v] of Object.entries(node.booleans ?? {})) s += ' ' + (v === false ? '-' : '+') + k;
+  for (const p of node.positional ?? []) s += ' ' + p;
+  return s;
+}
 
 function makeUnknownElement(state, node) {
-  let children;
-  if (typeof node.content === 'string') {
-    // Opaque content — wrap as a text node. Empty string → no children.
-    children = node.content.length > 0 ? [{ type: 'text', value: node.content }] : [];
-  } else {
-    children = (node.content ?? []).flatMap(child => {
-      const h = state.one(child, node);
-      if (h == null) return [];
-      return Array.isArray(h) ? h : [h];
-    });
+  const opener = reconstructOpener(node);
+
+  if (node.selfClosing) {
+    return { type: 'text', value: opener + ' />' };
   }
-  return {
-    type: 'element',
-    tagName: 'span',
-    properties: { 'data-enscribe-unknown': node.tagname },
-    children,
-  };
+  const content = node.content;
+  if (content == null) {
+    // Bare opener (e.g. a same-line long-form `<glurp>` whose `hi</glurp>` fell
+    // through as text + a raw `</glurp>` html node). Emit just the opener; the
+    // separate `</glurp>` html node is escaped by htmlNodeHandler.
+    return { type: 'text', value: opener + '>' };
+  }
+  if (typeof content === 'string') {
+    // Opaque / not-yet-reparsed pipe content: show it verbatim.
+    return { type: 'text', value: opener + ' |' + content + '>' };
+  }
+  // Re-parsed pipe content (an array of nodes): show the opener and closing
+  // angle bracket literally, but still render the inner content so a recognized
+  // tag nested inside an unrecognized one keeps rendering (per the spec's
+  // mixed-nesting edge case).
+  const kids = content.flatMap(child => {
+    const h = state.one(child, node);
+    if (h == null) return [];
+    return Array.isArray(h) ? h : [h];
+  });
+  return [{ type: 'text', value: opener + ' | ' }, ...kids, { type: 'text', value: '>' }];
+}
+
+// ─── Author raw-HTML handler: escape non-vocab tags, strip comments ───────────
+// Registered as the `html` handler in the toHast call (index.js). It only ever
+// sees AUTHOR-written raw HTML (mdast `html` nodes from parsing the source) —
+// interpreter-injected HTML (KaTeX, citations, assets) is added as hast `raw`
+// nodes after toHast, so it never passes through here.
+//
+//   • HTML comment (`<!-- … -->`)      → stripped (no output)
+//   • a tag IN the vocabulary          → raw passthrough (unchanged behavior)
+//   • anything else (`<div>`, `</glurp>`) → escaped to literal text
+const HTML_COMMENT = /^[ \t\r\n]*<!--[\s\S]*-->[ \t\r\n]*$/;
+const LEADING_TAG = /^[ \t\r\n]*<\/?([a-zA-Z][a-zA-Z0-9-]*)/;
+
+export function htmlNodeHandler(state, node) {
+  const value = node.value ?? '';
+  if (HTML_COMMENT.test(value)) return undefined; // Issue 3: strip comments
+  const m = LEADING_TAG.exec(value);
+  const tag = m ? m[1].toLowerCase() : null;
+  if (tag && vocabulary.has(tag)) {
+    // Vocabulary element authored as raw HTML — keep its current passthrough.
+    return { type: 'raw', value };
+  }
+  // Non-vocabulary tag (or unparseable): no HTML passthrough — escape literally.
+  return { type: 'text', value };
 }

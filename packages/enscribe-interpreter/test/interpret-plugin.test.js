@@ -91,13 +91,22 @@ export function run() {
     console.log('PASS: interpret-plugin: id, class, kwarg attribute mapping');
   }
 
-  // --- unknown tag → span with data-enscribe-unknown ---
+  // --- unknown tag → escaped literal text (no span, no HTML passthrough) ---
   {
     const node = makeAcadaTag('not-a-real-tag', [para('content')]);
     const h = hast(node);
-    assert.equal(h.tagName, 'span');
-    assert.equal(h.properties['data-enscribe-unknown'], 'not-a-real-tag');
-    console.log('PASS: interpret-plugin: unknown tag → fallback span');
+    const arr = Array.isArray(h) ? h : [h];
+    // Renders as literal text nodes (the serializer escapes `<`/`>`), opener
+    // first, no data-enscribe-unknown span anywhere.
+    assert.ok(
+      arr.some(n => n.type === 'text' && n.value.startsWith('<not-a-real-tag')),
+      'unknown tag renders its opener as literal text',
+    );
+    assert.ok(
+      !arr.some(n => n.type === 'element' && n.properties?.['data-enscribe-unknown']),
+      'unknown tag no longer produces a data-enscribe-unknown span',
+    );
+    console.log('PASS: interpret-plugin: unknown tag → escaped literal text');
   }
 
   // --- handler dispatch: <figure> with src ---
