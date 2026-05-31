@@ -18,9 +18,9 @@
 // so <em | text> becomes <em>text</em>, not <em><p>text</p></em>.
 // Multi-paragraph content (content.length > 1) is never unwrapped.
 
-import { unwrapSingleParagraph } from 'enscribe-core/paragraph-unwrap';
-import { mapAttributes } from 'enscribe-core/map-attributes';
-import { VOCABULARY } from 'layer1-vocabulary';
+import { unwrapSingleParagraph } from '@enscribejs/core/paragraph-unwrap';
+import { mapAttributes } from '@enscribejs/core/map-attributes';
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { htmlEmit, aggregateHtmlProps } from './lib/html-emit.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 import { figureHandler } from './handlers/figure.js';

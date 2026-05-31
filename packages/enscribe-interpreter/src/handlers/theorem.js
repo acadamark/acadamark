@@ -34,8 +34,8 @@
 // element matching the source tagname (preserves the source-intent
 // distinction — `<theorem>` vs `<lemma>` vs etc. in the Layer 1 output).
 
-import { unwrapSingleParagraph } from 'enscribe-core/paragraph-unwrap';
-import { mapAttributes } from 'enscribe-core/map-attributes';
+import { unwrapSingleParagraph } from '@enscribejs/core/paragraph-unwrap';
+import { mapAttributes } from '@enscribejs/core/map-attributes';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { formatLabel } from '../lib/frameable.js';
 import { formatScopedNumber } from '../lib/scoped-number.js';

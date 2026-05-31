@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { enscribeSectionNesting } from '../../src/plugins/section-nesting.js';
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 
 function para(value) {
   return { type: 'paragraph', children: [{ type: 'text', value }] };

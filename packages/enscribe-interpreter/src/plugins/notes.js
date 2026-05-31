@@ -37,9 +37,9 @@
 //
 // enscribeNotePlacement must be called after registry.numberRegistry() has run.
 
-import { ensureRegistry } from 'enscribe-core/registry';
-import { discover } from 'enscribe-core/walkers/discover';
-import { ENSCRIBE_NOTES_PENDING } from 'enscribe-core/file-data-keys';
+import { ensureRegistry } from '@enscribejs/core/registry';
+import { discover } from '@enscribejs/core/walkers/discover';
+import { ENSCRIBE_NOTES_PENDING } from '@enscribejs/core/file-data-keys';
 
 /**
  * Read the placement kwarg from a note node.

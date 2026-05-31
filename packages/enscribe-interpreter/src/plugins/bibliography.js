@@ -21,8 +21,8 @@
 // into each entry's div via a string replace. This gives the hover-preview
 // getCiteContent() something to look up with document.getElementById('ref-KEY').
 
-import { makeTag, makeInternalMarker } from 'enscribe-core/tag';
-import { ENSCRIBE_CITATIONS } from 'enscribe-core/file-data-keys';
+import { makeTag, makeInternalMarker } from '@enscribejs/core/tag';
+import { ENSCRIBE_CITATIONS } from '@enscribejs/core/file-data-keys';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 
 // ─── Deep-search helpers (same pattern as notes.js) ──────────────────────────

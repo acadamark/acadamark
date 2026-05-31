@@ -5,8 +5,8 @@
 // `makeInternalMarker`, `isEnscribeTag`). `isEnscribeTag` is re-exported
 // here so existing interpreter-side import sites continue to work.
 
-export { isEnscribeTag } from 'enscribe-core/tag';
-import { isEnscribeTag } from 'enscribe-core/tag';
+export { isEnscribeTag } from '@enscribejs/core/tag';
+import { isEnscribeTag } from '@enscribejs/core/tag';
 
 /**
  * Return the section nesting depth of a node: 1 for section, 2 for

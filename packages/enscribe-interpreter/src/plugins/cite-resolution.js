@@ -21,9 +21,9 @@
 // __cite-marker.keys = all keys (found+missing when mixed; found-only when all found).
 // __cite-error.keys  = only the missing keys (or all if all missing).
 
-import { makeInternalMarker } from 'enscribe-core/tag';
-import { walkReplace } from 'enscribe-core/walkers/walk-replace';
-import { ENSCRIBE_CITATIONS } from 'enscribe-core/file-data-keys';
+import { makeInternalMarker } from '@enscribejs/core/tag';
+import { walkReplace } from '@enscribejs/core/walkers/walk-replace';
+import { ENSCRIBE_CITATIONS } from '@enscribejs/core/file-data-keys';
 
 // ─── Key extraction ───────────────────────────────────────────────────────────
 

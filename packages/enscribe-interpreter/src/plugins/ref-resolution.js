@@ -25,11 +25,11 @@
 // When the entry.number is null (target registered but unnumbered), the
 // label-tail of the id is used as link text: #eqn:energy → "energy".
 
-import { makeInternalMarker } from 'enscribe-core/tag';
-import { ensureRegistry } from 'enscribe-core/registry';
-import { walkReplace } from 'enscribe-core/walkers/walk-replace';
-import { parseColonId } from 'enscribe-core/colon-id';
-import { ENSCRIBE_CONFIG } from 'enscribe-core/file-data-keys';
+import { makeInternalMarker } from '@enscribejs/core/tag';
+import { ensureRegistry } from '@enscribejs/core/registry';
+import { walkReplace } from '@enscribejs/core/walkers/walk-replace';
+import { parseColonId } from '@enscribejs/core/colon-id';
+import { ENSCRIBE_CONFIG } from '@enscribejs/core/file-data-keys';
 import { formatScopedNumber } from '../lib/scoped-number.js';
 
 /**

@@ -23,8 +23,8 @@ import { enscribeNotePlacement } from '../../src/plugins/note-placement.js';
 import { enscribeNumbering, fillNumbering } from '../../src/plugins/numbering.js';
 import { enscribeRefResolution } from '../../src/plugins/ref-resolution.js';
 import { enscribeCiteResolution } from '../../src/plugins/cite-resolution.js';
-import { ensureRegistry } from 'enscribe-core/registry';
-import { makeTag } from 'enscribe-core/tag';
+import { ensureRegistry } from '@enscribejs/core/registry';
+import { makeTag } from '@enscribejs/core/tag';
 import { isEnscribeTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

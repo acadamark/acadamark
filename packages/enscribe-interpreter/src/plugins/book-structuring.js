@@ -39,7 +39,7 @@
 // flat list of root children at gate-output time; a tree with <book> at root
 // doesn't match).
 
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
 
 // Book-part-type → region routing.

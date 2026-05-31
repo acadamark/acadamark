@@ -27,8 +27,8 @@ and `remark-enscribe`:
 ```js
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
-import { enscribeInterpreter } from 'enscribe-interpreter';
+import remarkEnscribe from '@enscribejs/remark';
+import { enscribeInterpreter } from '@enscribejs/interpreter';
 
 const result = await unified()
   .use(remarkParse)
@@ -987,7 +987,7 @@ imports `VOCABULARY` from the `layer1-vocabulary` package and wraps it in a
 dispatch sites use):
 
 ```js
-import { VOCABULARY } from 'layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 const vocabulary = new Map(Object.entries(VOCABULARY));
 ```
 

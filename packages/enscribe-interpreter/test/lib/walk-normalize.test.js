@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { walkNormalize } from 'enscribe-core/walkers/walk-normalize';
+import { walkNormalize } from '@enscribejs/core/walkers/walk-normalize';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

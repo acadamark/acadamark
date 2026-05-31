@@ -30,7 +30,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Cite from 'citation-js';
-import { ENSCRIBE_CONFIG, ENSCRIBE_CITATIONS } from 'enscribe-core/file-data-keys';
+import { ENSCRIBE_CONFIG, ENSCRIBE_CITATIONS } from '@enscribejs/core/file-data-keys';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 
 /**

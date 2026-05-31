@@ -14,7 +14,7 @@
 import assert from 'node:assert/strict';
 import Cite from 'citation-js';
 import { enscribeCiteResolution } from '../../src/plugins/cite-resolution.js';
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 import { isEnscribeTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

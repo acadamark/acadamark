@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, resolve } from 'node:path';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
+import remarkEnscribe from '@enscribejs/remark';
 import { enscribeInterpreter } from '../src/index.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');

@@ -1,9 +1,29 @@
 {
-  "name": "enscribe-interpreter",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@enscribejs/interpreter",
+  "version": "0.1.0",
   "description": "The enscribe interpreter: schema-driven dispatch from enscribeTag nodes to Layer 1 HTML, plus structural plugins (config discovery, article structuring, section nesting).",
+  "keywords": [
+    "enscribe",
+    "academic-publishing",
+    "interpreter",
+    "unified",
+    "layer1",
+    "katex",
+    "html"
+  ],
+  "homepage": "https://github.com/enscribejs/enscribe",
+  "bugs": "https://github.com/enscribejs/enscribe/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enscribejs/enscribe.git",
+    "directory": "packages/enscribe-interpreter"
+  },
+  "license": "MIT",
+  "author": "Ariel Balter <ariel@arielbalter.com>",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "src/index.js",
   "browser": {
     "./src/assets/hover-preview-assets.js": "./src/assets/hover-preview-assets.browser.js"
@@ -13,6 +33,12 @@
     "./browser": "./dist/enscribe.browser.js",
     "./package.json": "./package.json"
   },
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node test/run.js",
     "verify": "node test/run.js && node test/render-fixtures.js",
@@ -22,18 +48,18 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "abcjs": "^6.6.3",
-    "enscribe-core": "*",
+    "@enscribejs/core": "^0.1.0",
     "citation-js": "^0.7.22",
     "hast-util-from-html": "^2.0.3",
     "hast-util-to-html": "^9.0.0",
     "js-yaml": "^4.1.1",
     "jsdom": "^25.0.1",
     "katex": "^0.16.45",
-    "layer1-vocabulary": "*",
+    "@enscribejs/layer1-vocabulary": "^0.1.0",
     "mdast-util-to-hast": "^13.0.0",
     "mermaid": "^10.9.6",
     "rehype-format": "^5.0.1",
-    "remark-enscribe": "*",
+    "@enscribejs/remark": "^0.1.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "remark-parse": "^11.0.0",
@@ -41,14 +67,6 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.0.0"
   },
-  "keywords": [
-    "enscribe",
-    "rehype",
-    "rehype-plugin",
-    "unified",
-    "interpreter",
-    "layer1"
-  ],
   "devDependencies": {
     "tsup": "^8.5.1",
     "typescript": "^6.0.3"

@@ -17,8 +17,8 @@ correctly from `file://` and offline.
 ```js
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
-import { enscribeInterpreter } from 'enscribe-interpreter';
+import remarkEnscribe from '@enscribejs/remark';
+import { enscribeInterpreter } from '@enscribejs/interpreter';
 
 const result = await unified()
   .use(remarkParse)

@@ -170,6 +170,8 @@ A flat scannable index of every open item. Detailed entries below.
   Slice 1)*
 - [ ] **Trim the browser bundle's citation-js weight** `[interpreter]`
   `[post-alpha]` *(filed by Phase 14 Slice 1)*
+- [ ] **Resolve the transitive `tmp` path-traversal advisory**
+  `[interpreter]` `[post-alpha]` *(filed by the v0.1.0 prep-for-publish slice)*
 - [ ] **Reconcile and de-duplicate the interpreter options
   documentation** `[specs/docs]` `[post-alpha]` *(filed by Phase 14
   Slice 1)*
@@ -719,6 +721,20 @@ plugin subset, without losing client-side citation support. Not
 release-blocking (the bundle works); an optimization lead surfaced while
 measuring the Slice 1 bundle. *(filed by Phase 14 Slice 1)*
 
+### Resolve the transitive `tmp` path-traversal advisory
+`[interpreter]` `[post-alpha]`
+
+`npm audit` reports one high-severity advisory: `tmp` `<0.2.6` (path traversal
+via unsanitized prefix/postfix, GHSA-ph9p-34f9-6g65), reachable through a
+published runtime path — `@enscribejs/interpreter` → `citation-js@0.7.22` →
+`patch-package@8.0.1` → `tmp@0.2.5`. Pre-existing (not introduced by the
+prep-for-publish slice) and non-blocking for publish, but it ships in a
+consumer's install tree. A fix is available (`npm audit fix`, or pin
+`tmp ^0.2.6` via a root `package.json` `overrides`); deferred out of the
+metadata-only prep slice because it changes the dependency graph and wants a
+test pass to confirm citation-js is unaffected. *(filed by the v0.1.0
+prep-for-publish slice)*
+
 ### Reconcile and de-duplicate the interpreter options documentation
 `[specs/docs]` `[post-alpha]`
 
@@ -982,10 +998,13 @@ ratified `packages/demo-site/` workspace package; and the **project rename is
 deferred** to a separate later decision rather than forced by this slice (so the
 framework slice no longer "lands the rename"). The **project rename has since
 landed as its own slice** (now *enscribe*; `.emd` source extension; package
-names, the CSS theme namespace, and GitHub URLs updated). Remaining slices —
-docs-site content (3b: README + DESIGN as articles; 3c: a written Quickstart;
-3d: a JATS-relationship article), fixture consolidation, and the release-time
-org-split — stay open (this checkbox tracks the whole arc).
+names, the CSS theme namespace, and GitHub URLs updated). The release-time
+**org-split has since landed** (the v0.1.0 prep-for-publish slice: the five
+packages publish under `@enscribejs/*`, coordinated at 0.1.0 with `^0.1.0`
+cross-deps, an MIT license, publish-ready metadata, and a clean
+`npm pack --dry-run` each). Remaining slices — docs-site content (3b: README +
+DESIGN as articles; 3c: a written Quickstart; 3d: a JATS-relationship article)
+and fixture consolidation — stay open (this checkbox tracks the whole arc).
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by

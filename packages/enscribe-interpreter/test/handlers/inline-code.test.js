@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
+import remarkEnscribe from '@enscribejs/remark';
 import { inlineCodeHandler } from '../../src/handlers/inline-code.js';
 
 // The inline code handler does not use the state object — content is opaque.

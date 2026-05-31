@@ -22,8 +22,8 @@
 // Multiple <config> blocks merge; later entries override earlier ones for
 // the same key. Document-order traversal is preserved.
 
-import { isEnscribeTag } from 'enscribe-core/tag';
-import { ENSCRIBE_CONFIG } from 'enscribe-core/file-data-keys';
+import { isEnscribeTag } from '@enscribejs/core/tag';
+import { ENSCRIBE_CONFIG } from '@enscribejs/core/file-data-keys';
 
 /**
  * Recursively visit every enscribeTag with tagname 'config' in the tree,

@@ -11,7 +11,7 @@
 import assert from 'node:assert/strict';
 import Cite from 'citation-js';
 import { enscribeBibliography } from '../../src/plugins/bibliography.js';
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 import { isEnscribeTag } from '../../src/lib/ast-helpers.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

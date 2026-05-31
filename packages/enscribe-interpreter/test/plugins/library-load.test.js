@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { enscribeLibraryLoad } from '../../src/plugins/library-load.js';
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, '../fixtures');

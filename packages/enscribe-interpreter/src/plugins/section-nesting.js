@@ -19,7 +19,7 @@
 // child array by remarkRecursiveContent) is promoted to a <section-title>
 // (or <sub-section-title>, <sub-sub-section-title>) as the first child.
 
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 import { isEnscribeTag, sectionDepth } from '../lib/ast-helpers.js';
 
 // Map from section tagname to its title element name.

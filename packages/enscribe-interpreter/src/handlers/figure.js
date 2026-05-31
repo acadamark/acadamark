@@ -17,10 +17,10 @@
 // Schema-mapped attributes (align, width, type) flow through the same
 // `buildProperties` helper used by the schema dispatcher.
 
-import { mapAttributes } from 'enscribe-core/map-attributes';
+import { mapAttributes } from '@enscribejs/core/map-attributes';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractPlainText } from '../lib/ast-helpers.js';
-import { unwrapSingleParagraph } from 'enscribe-core/paragraph-unwrap';
+import { unwrapSingleParagraph } from '@enscribejs/core/paragraph-unwrap';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
 /**

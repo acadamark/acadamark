@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { enscribeNumbering, fillNumbering } from '../../src/plugins/numbering.js';
 import { enscribeRefResolution } from '../../src/plugins/ref-resolution.js';
-import { ensureRegistry } from 'enscribe-core/registry';
-import { makeTag } from 'enscribe-core/tag';
+import { ensureRegistry } from '@enscribejs/core/registry';
+import { makeTag } from '@enscribejs/core/tag';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

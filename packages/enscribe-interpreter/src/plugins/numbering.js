@@ -31,9 +31,9 @@
 // fillNumbering(file) (exported):
 //   - Reads enscribeNumberingPending and sets node.computedNumber from entry.number
 
-import { ensureRegistry } from 'enscribe-core/registry';
-import { discover } from 'enscribe-core/walkers/discover';
-import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING } from 'enscribe-core/file-data-keys';
+import { ensureRegistry } from '@enscribejs/core/registry';
+import { discover } from '@enscribejs/core/walkers/discover';
+import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING } from '@enscribejs/core/file-data-keys';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 

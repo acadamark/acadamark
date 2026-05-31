@@ -513,9 +513,11 @@ both are release-blocking.
   repo root — a static `npm run docs:build` that renders `.emd` sources into a
   multi-page site, with a Quickstart playground and placeholder content; it
   diverges from the Phase 0 `packages/demo-site/` siting and **defers the
-  rename**, both per its locked inputs). The remaining slices (docs-site content
-  in 3b–3d, the deferred rename decision, fixture consolidation, org-split) per
-  the Phase 0 slicing continue.
+  rename**, both per its locked inputs). The rename and the release-time
+  org-split have since landed as their own slices (the project is *enscribe*;
+  the packages publish under `@enscribejs/*` at v0.1.0); the remaining slices
+  (docs-site content in 3b–3d, fixture consolidation) per the Phase 0 slicing
+  continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —
   the standard the display work (Phase 8) and the demonstrative fixture
@@ -546,10 +548,13 @@ both are release-blocking.
   display math and code spans made opaque to escape processing in pipe-form
   named-tag content), so the render-quality bug-fix arc is complete and no
   longer gates Phase 14. See `BACKLOG.md`.
-- **Release housekeeping.** Version-stamping at `0.1.0`, repository
-  tidying, and the doc-hygiene already filed under Standing (e.g. the
-  stale-cross-reference reconciliation) folded in as release prep where
-  it fits.
+- **Release housekeeping** *(version-stamping + org-split done — the
+  prep-for-publish slice)*. The five packages are scoped under `@enscribejs/*`
+  and coordinated at `0.1.0` with an MIT license and publish-ready metadata
+  (`files`, `repository`, `engines`, …); `npm pack --dry-run` is clean for each,
+  and Ariel runs `npm publish` per package. Remaining housekeeping — repository
+  tidying and the doc-hygiene already filed under Standing (e.g. the
+  stale-cross-reference reconciliation) — folds in as release prep where it fits.
 
 **Dependencies:** the render-quality spec precedes the display
 (Phase 8) and demonstrative-fixture work — it is the standard they are

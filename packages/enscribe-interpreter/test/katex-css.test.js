@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
+import remarkEnscribe from '@enscribejs/remark';
 import { enscribeInterpreter, KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../src/index.js';
 
 function processHtml(source, options = {}) {

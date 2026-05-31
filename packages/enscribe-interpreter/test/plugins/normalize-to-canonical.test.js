@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
+import remarkEnscribe from '@enscribejs/remark';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import { enscribeNormalizeToCanonical, gfmTableToPipeString } from '../../src/plugins/normalize-to-canonical.js';

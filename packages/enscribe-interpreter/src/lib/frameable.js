@@ -59,7 +59,7 @@
 // AND by handlers/theorem.js (theorem family is structurally parallel,
 // not a frameable consumer).
 
-import { unwrapSingleParagraph } from 'enscribe-core/paragraph-unwrap';
+import { unwrapSingleParagraph } from '@enscribejs/core/paragraph-unwrap';
 import { formatScopedNumber } from './scoped-number.js';
 
 // ─── Internal primitive: label span ────────────────────────────────────────

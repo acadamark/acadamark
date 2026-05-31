@@ -46,9 +46,9 @@
 // are structurally identical to what fillNotes produced previously. The handlers
 // in handlers/notes.js are unchanged.
 
-import { makeTag, makeInternalMarker, isEnscribeTag } from 'enscribe-core/tag';
-import { walkReplace } from 'enscribe-core/walkers/walk-replace';
-import { ENSCRIBE_NOTES_PENDING, ENSCRIBE_CONFIG } from 'enscribe-core/file-data-keys';
+import { makeTag, makeInternalMarker, isEnscribeTag } from '@enscribejs/core/tag';
+import { walkReplace } from '@enscribejs/core/walkers/walk-replace';
+import { ENSCRIBE_NOTES_PENDING, ENSCRIBE_CONFIG } from '@enscribejs/core/file-data-keys';
 import { findTag } from '../lib/ast-helpers.js';
 import { notePlacement } from './notes.js';
 

@@ -47,19 +47,19 @@
 // reading order: delegated-parser nodes first (the historical job), then
 // the lift-direction cipher (group A), then mdast lift rules (groups B/C).
 
-import { getContentHandler } from 'enscribe-core/dsl-registry';
-import { makeTag, makeOpaqueTag, isEnscribeTag } from 'enscribe-core/tag';
-import { walkNormalize } from 'enscribe-core/walkers/walk-normalize';
-import { SIGIL_TO_TAGNAME, isSigilTagname } from 'enscribe-core/tagname-sigil-map';
+import { getContentHandler } from '@enscribejs/core/dsl-registry';
+import { makeTag, makeOpaqueTag, isEnscribeTag } from '@enscribejs/core/tag';
+import { walkNormalize } from '@enscribejs/core/walkers/walk-normalize';
+import { SIGIL_TO_TAGNAME, isSigilTagname } from '@enscribejs/core/tagname-sigil-map';
 import {
   STRUCTURED_ELEMENTS,
   isStructuredElement,
   getStructuredSpec,
-} from 'enscribe-core/structured-elements';
+} from '@enscribejs/core/structured-elements';
 import {
   isFrameableLiftable,
   getFrameableLiftSpec,
-} from 'enscribe-core/frameable-elements';
+} from '@enscribejs/core/frameable-elements';
 import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';

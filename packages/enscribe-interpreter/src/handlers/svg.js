@@ -19,7 +19,7 @@
 // <figure> wrapper around the <svg>, with <figcaption> inside the
 // wrapper.
 
-import { mapAttributes } from 'enscribe-core/map-attributes';
+import { mapAttributes } from '@enscribejs/core/map-attributes';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 

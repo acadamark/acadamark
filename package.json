@@ -1,9 +1,17 @@
 {
   "name": "enscribe",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax.",
   "type": "module",
+  "license": "MIT",
+  "author": "Ariel Balter <ariel@arielbalter.com>",
+  "homepage": "https://github.com/enscribejs/enscribe",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enscribejs/enscribe.git"
+  },
+  "bugs": "https://github.com/enscribejs/enscribe/issues",
   "workspaces": [
     "packages/*"
   ],

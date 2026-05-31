@@ -433,6 +433,16 @@ rename decision (Q6) so the scope token is final.
 **Q4 chat-ratify:** monorepo-with-separate-publishing (vs multi-repo); the bare-
 headline + `@scope/*` naming; synchronized-vs-independent versioning.
 
+> **Prep-for-publish update (org-split landed).** The v0.1.0 prep-for-publish
+> slice executed this org-split. Final decisions: the scope is **`@enscribejs`**
+> (matching the GitHub org), not the `@enscribe` used illustratively above; **all
+> five packages publish** (no bare-`enscribe` headline) as `@enscribejs/core`,
+> `@enscribejs/interpreter`, `@enscribejs/jats-export`,
+> `@enscribejs/layer1-vocabulary`, and `@enscribejs/remark`; versions are
+> **synchronized at 0.1.0** (remark aligned down from 0.2.0) with cross-package
+> deps pinned to `^0.1.0`. Workspace directory names are unchanged
+> (`packages/enscribe-core`, etc.); only the published names are scoped.
+
 ---
 
 ## 7. Q5 — fixture consolidation

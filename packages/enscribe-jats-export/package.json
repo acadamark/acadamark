@@ -1,25 +1,44 @@
 {
-  "name": "enscribe-jats-export",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@enscribejs/jats-export",
+  "version": "0.1.0",
   "description": "JATS XML export for enscribe — consumes the post-stage-3 mdast tree produced by enscribe-interpreter's structural plugins and emits JATS Archiving and Interchange Tag Set XML.",
+  "keywords": [
+    "enscribe",
+    "jats",
+    "xml",
+    "export",
+    "academic-publishing",
+    "scholarly-publishing"
+  ],
+  "homepage": "https://github.com/enscribejs/enscribe",
+  "bugs": "https://github.com/enscribejs/enscribe/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enscribejs/enscribe.git",
+    "directory": "packages/enscribe-jats-export"
+  },
+  "license": "MIT",
+  "author": "Ariel Balter <ariel@arielbalter.com>",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "src/index.js",
   "exports": "./src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node test/run.js"
   },
   "dependencies": {
-    "enscribe-core": "*",
-    "enscribe-interpreter": "*",
-    "layer1-vocabulary": "*",
-    "remark-enscribe": "*",
+    "@enscribejs/core": "^0.1.0",
+    "@enscribejs/interpreter": "^0.1.0",
+    "@enscribejs/layer1-vocabulary": "^0.1.0",
+    "@enscribejs/remark": "^0.1.0",
     "remark-parse": "^11.0.0",
     "unified": "^11.0.5"
-  },
-  "keywords": [
-    "enscribe",
-    "jats",
-    "export"
-  ]
+  }
 }

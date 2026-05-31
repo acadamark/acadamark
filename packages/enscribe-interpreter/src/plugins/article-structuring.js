@@ -27,7 +27,7 @@
 // The three regions are emitted only when they have content. Empty regions
 // are suppressed entirely. This matches the plugin-pipeline.md contract.
 
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
 import { warnSkippedDocType, warnTitlePrecedence } from '../lib/errors.js';
 

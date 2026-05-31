@@ -35,8 +35,8 @@
 // Consumer usage:
 //   import { unified } from 'unified';
 //   import remarkParse from 'remark-parse';
-//   import remarkEnscribe from 'remark-enscribe';
-//   import { enscribeInterpreter } from 'enscribe-interpreter';
+//   import remarkEnscribe from '@enscribejs/remark';
+//   import { enscribeInterpreter } from '@enscribejs/interpreter';
 //
 //   const result = await unified()
 //     .use(remarkParse)
@@ -103,12 +103,12 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'remark-enscribe';
+import remarkEnscribe from '@enscribejs/remark';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 // Relative path import: remark-enscribe does not re-export this module via
 // its package exports field; we access it directly within the workspace.
-import remarkRecursiveContent from 'remark-enscribe/recursive-content';
+import remarkRecursiveContent from '@enscribejs/remark/recursive-content';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 import rehypeFormat from 'rehype-format';
@@ -143,7 +143,7 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 // DSLs (mermaid, abc). Distinct concern from enscribe-core's vocabulary
 // registry imported immediately below.
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
-import { ensureRegistry } from 'enscribe-core/registry';
+import { ensureRegistry } from '@enscribejs/core/registry';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // enscribe-jats-export can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export

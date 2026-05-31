@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createRegistry, ensureRegistry } from 'enscribe-core/registry';
+import { createRegistry, ensureRegistry } from '@enscribejs/core/registry';
 
 export function run() {
   // --- assign is record-only; numberRegistry fills numbers ---

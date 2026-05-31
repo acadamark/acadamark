@@ -78,9 +78,12 @@ library, render-quality spec, comprehensive demonstrative fixture).
 Phases 7, 9, 10, 11, and 12 are post-release.
 
 The **project rename** has landed as a standalone slice (see Milestones): the
-project is now *enscribe*, with the `.emd` source extension. Version
-coordination, a license file, and the metadata audit are the **prep-for-publish**
-slice that follows.
+project is now *enscribe*, with the `.emd` source extension. The
+**prep-for-publish** slice has since landed too (see Milestones): the five
+workspace packages are scoped under `@enscribejs/*`, coordinated at **v0.1.0**
+with an MIT license and publish-ready metadata, and `npm pack --dry-run` is
+clean for each. **Next:** Ariel runs `npm publish` per package (out of band),
+and Slice 3b translates the README and DESIGN into canonical enscribe.
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -4100,3 +4103,28 @@ that). One line gets added every few months, not every slice.
   test suites green; the library bundle and the docs site build. License,
   version coordination, and the metadata audit are deliberately untouched — they
   belong to the prep-for-publish slice that follows.
+- **2026-05-30 — prep for publish: v0.1.0 under the `@enscribejs` scope.** The
+  five workspace packages were made publishable and scoped: `enscribe-core` →
+  `@enscribejs/core`, `enscribe-interpreter` → `@enscribejs/interpreter`,
+  `enscribe-jats-export` → `@enscribejs/jats-export`, `layer1-vocabulary` →
+  `@enscribejs/layer1-vocabulary`, `remark-enscribe` → `@enscribejs/remark`
+  (workspace directory names unchanged — only the published names are scoped).
+  The npm `@enscribejs` scope was confirmed unregistered before proceeding (no
+  published packages; `npm org ls enscribejs` → "Scope not found"); final org
+  creation is Ariel's authenticated step at publish time. All five
+  `package.json` files were set to a coordinated **v0.1.0** (remark aligned down
+  from 0.2.0), `private: true` was removed from the four that carried it, every
+  cross-package dependency was pinned to `^0.1.0`, and the 88 cross-package
+  import strings were rewritten to the scoped specifiers (the root manifest
+  aligned to 0.1.0, stays private). An **MIT `LICENSE`** (Ariel Balter, 2026)
+  was added at the repo root and copied into each package. Per-package metadata
+  was filled in — `description`, refined `keywords`, `homepage`, `bugs`,
+  `repository` (with per-package `directory`), `license`, `author`, `engines`
+  (`node >=18`), and a `files` allowlist that ships only what a consumer needs
+  (`src`; plus `dist` for the interpreter bundle and `elements` for the
+  vocabulary; tests, fixtures, DTDs, and grammar excluded). Placeholder READMEs
+  were added for the two packages that lacked one (`@enscribejs/jats-export`,
+  `@enscribejs/remark`). `npm install` refreshed the lockfile; all test suites
+  stay green and the library / docs builds pass; `npm pack --dry-run` is clean
+  for all five packages. **No publish performed** — Ariel runs `npm publish` per
+  package. Next: Slice 3b (translate README + DESIGN into canonical enscribe).

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { enscribeArticleStructuring } from '../../src/plugins/article-structuring.js';
-import { makeTag } from 'enscribe-core/tag';
+import { makeTag } from '@enscribejs/core/tag';
 
 function para(value) {
   return { type: 'paragraph', children: [{ type: 'text', value }] };

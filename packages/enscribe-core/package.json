@@ -1,9 +1,28 @@
 {
-  "name": "enscribe-core",
+  "name": "@enscribejs/core",
   "version": "0.1.0",
-  "private": true,
   "description": "The inward-pointing shared foundation that enscribe's parser, interpreter, and future output generators depend on. Filesystem-free and browser-safe by design. Depends on nothing internal.",
+  "keywords": [
+    "enscribe",
+    "academic-publishing",
+    "semantic-html",
+    "layer1",
+    "unified",
+    "core"
+  ],
+  "homepage": "https://github.com/enscribejs/enscribe",
+  "bugs": "https://github.com/enscribejs/enscribe/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enscribejs/enscribe.git",
+    "directory": "packages/enscribe-core"
+  },
+  "license": "MIT",
+  "author": "Ariel Balter <ariel@arielbalter.com>",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
@@ -22,11 +41,12 @@
     "./paragraph-unwrap": "./src/paragraph-unwrap.js",
     "./file-data-keys": "./src/file-data-keys.js"
   },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node test/colon-id.test.js && node test/tagname-sigil-map.test.js"
-  },
-  "keywords": [
-    "enscribe",
-    "core"
-  ]
+  }
 }

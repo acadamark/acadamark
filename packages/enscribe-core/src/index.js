@@ -1,9 +1,9 @@
 // enscribe-core — the inward-pointing shared foundation.
 //
 // This barrel re-exports the package's public surface. Consumers may import
-// either via the barrel (`import { ... } from 'enscribe-core'`) or via the
+// either via the barrel (`import { ... } from '@enscribejs/core'`) or via the
 // per-module subpath exports declared in package.json (e.g.
-// `import { DSL_REGISTRY } from 'enscribe-core/dsl-registry'`).
+// `import { DSL_REGISTRY } from '@enscribejs/core/dsl-registry'`).
 //
 // The package's contents grow as the enscribe-core extraction arc proceeds.
 

@@ -21,7 +21,7 @@
 //
 // Phase 3 slice 3c (2026-05-28). Vocab entry declared in slice 3b.
 
-import { mapAttributes } from 'enscribe-core/map-attributes';
+import { mapAttributes } from '@enscribejs/core/map-attributes';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 

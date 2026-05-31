@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { enscribeRefResolution } from '../../src/plugins/ref-resolution.js';
-import { ensureRegistry } from 'enscribe-core/registry';
-import { makeTag } from 'enscribe-core/tag';
+import { ensureRegistry } from '@enscribejs/core/registry';
+import { makeTag } from '@enscribejs/core/tag';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
