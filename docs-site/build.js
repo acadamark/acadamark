@@ -54,14 +54,15 @@ const RENDER_OPTIONS = {
 
 // The site's pages, in nav order. Hardcoded for v0.1.0; when more content lands
 // in later slices this list grows. A manifest file would be overkill at this
-// size. Home, Design, Quickstart, and JATS carry real content; only Quickstart
-// is a playground (editable). The Authoring Guide and Layer 1 Reference (Slices
-// 3e–3f) are still to come.
+// size. All carry real content; only Quickstart is a playground (editable). The
+// Authoring Guide ships its first four chapters (Slice 3e-i); later sub-slices
+// extend it. The Layer 1 Reference (Slice 3f) is still to come.
 const PAGES = [
-  { slug: 'index',      source: 'index.emd',      title: 'enscribe',              nav: 'Home',       kind: 'page' },
-  { slug: 'design',     source: 'design.emd',     title: 'Design — enscribe',     nav: 'Design',     kind: 'page' },
-  { slug: 'quickstart', source: 'quickstart.emd', title: 'Quickstart — enscribe', nav: 'Quickstart', kind: 'playground' },
-  { slug: 'jats',       source: 'jats.emd',       title: 'JATS — enscribe',       nav: 'JATS',       kind: 'page' },
+  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                   nav: 'Home',            kind: 'page' },
+  { slug: 'design',          source: 'design.emd',          title: 'Design — enscribe',          nav: 'Design',          kind: 'page' },
+  { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',      nav: 'Quickstart',      kind: 'playground' },
+  { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe', nav: 'Authoring Guide', kind: 'page' },
+  { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',            nav: 'JATS',            kind: 'page' },
 ];
 
 /** Render an enscribe source string to an HTML fragment. */

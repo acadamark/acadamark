@@ -83,6 +83,12 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
+- [ ] **Quickstart shows `## Methods` as the markdown form for a section**
+  `[docs]` `[content]` — `quickstart.emd` (the "Sections come in three forms"
+  block) presents `## Methods` as equivalent to `<# Methods #>`, but `##` lifts
+  to `<sub-section>`, not `<section>`; the markdown form for a section is a
+  single `#`. One-line fix in the example. *(Found while verifying the
+  Authoring Guide 3e-i heading mapping.)*
 - [x] **Same-line long-form `<tag>content</tag>` produces an empty element**
   `[parser]` `[post-alpha]` — decided: add same-line long-form support,
   Phase 0 first *(filed by the parser/handler-fixes slice)* — **CLOSED
@@ -1119,11 +1125,13 @@ cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). Remaining slices —
-docs-site content (3e: an Authoring Guide; 3f: a Layer 1 Reference) and fixture
-consolidation stay open; **Slices 3c and 3d have since landed** — the Quickstart
-guide (authored in canonical enscribe, 13 features in its own content) and the
-JATS-relationship article (the export mapping, a real worked example, a workflow
-comparison). This checkbox tracks the whole arc.
+docs-site content (the rest of the Authoring Guide, 3e-ii/3e-iii; and 3f: a
+Layer 1 Reference) and fixture consolidation stay open; **Slices 3c, 3d, and
+3e-i have since landed** — the Quickstart guide (authored in canonical enscribe,
+13 features in its own content), the JATS-relationship article (the export
+mapping, a real worked example, a workflow comparison), and the Authoring Guide's
+first four chapters (document structure, sections, inline elements, block
+elements — a fifth docs-site page). This checkbox tracks the whole arc.
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by

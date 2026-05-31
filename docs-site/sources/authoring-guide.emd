@@ -1,0 +1,341 @@
+<meta type=article>
+  <title | Enscribe Authoring Guide>
+  <author | The Enscribe Project>
+</meta>
+
+This is the reference you keep open while writing. It answers "how do I do X" —
+the exact syntax, the available arguments, the edge cases — for every element
+Enscribe offers. It assumes you have done the
+<a href="quickstart.html" | Quickstart> (or have equivalent familiarity) and
+understand Enscribe's three-layer idea: most elements can be written three ways —
+a **canonical** named tag, a **sigil** shorthand, and a **markdown** idiom — and
+all of them compile to the same Layer 1 HTML. Where three forms exist, this guide
+shows all three; where an element has only one form, it says so.
+
+Each section is self-contained: you can read "Inline elements" without reading
+anything before it. Jump to what you need. This first installment covers the four
+foundational chapters — document structure, sections, inline elements, and block
+elements. The remaining chapters are listed at the end.
+
+<# #sec:structure | Chapter 1. Document structure #>
+
+Every Enscribe document opens with a `<meta>` block declaring its type, and may
+carry a `<config>` block of document-level settings. These are *apparatus* — they
+describe the document rather than belong to its body — so by convention `<meta>`
+sits at the very top and `<config>` (with `<data>`) sits at the end.
+
+**The `<meta>` block.** `<meta>` carries the document's identity and front
+matter. Its `type` attribute picks the document shape — `article` (flat) or
+`book` (chaptered):
+
+```
+<meta type=article>
+  <title | A Short Account of Calibration>
+  <author | Dana Okonkwo>
+  <date | 2026-05-31>
+</meta>
+```
+
+The child tags — `<title>`, `<author>`, `<date>` — are written in **pipe form**
+(`<tag | content>`). `<meta>` and its children are canonical-only: there is no
+sigil or markdown shorthand for them, because document metadata is explicit by
+nature. The block renders into the document's front matter (`<article-front>` for
+an article, `<book-front>` for a book), and `<title>` becomes the document title
+(`<article-title>` or `<book-title>` accordingly). A document may carry more front
+matter than this — abstracts, affiliations — but title, author, and date are the
+core three.
+
+**Article versus book.** `type=article` produces a flat document: body content,
+then back matter. `type=book` expects chapters and parts and produces a chaptered
+document. The choice is structural, not cosmetic — it changes how counters reset
+(figures and equations number within each chapter in a book), where footnotes
+collect, and where the bibliography lands. Book structure has its own chapter
+(forthcoming); for a journal-style article, `type=article` is what you want.
+
+**The `<config>` block.** `<config>` sets document-level options as keyword
+attributes. It is apparatus, so it goes at the end of the document:
+
+```
+<config citation-style="apa" number-figures=false>
+</config>
+```
+
+The settings that are live today control citations, numbering, and scoping:
+`citation-style` (the CSL style name passed to the citation engine);
+`number-equations`, `number-figures`, `number-tables`, `number-theorems`,
+`number-definitions`, `number-examples` (set any to `false` to suppress that
+counter); `counter-reset-scope` and `note-scope` (how counters and footnotes
+reset in books); and any `ref-prefix-*` key (to customize cross-reference
+prefixes). Further keys — `theme`, `display-style`, and others — are reserved:
+accepted but not yet consumed.
+
+> **Gotcha — `<config>` is not the rendering API.** Options like
+> `embedResources` and `dslMode` are passed to the renderer when you process a
+> document (covered in the Rendering chapter, forthcoming); they are *not*
+> `<config>` keys. A kwarg `<config>` does not recognize is dropped with a console
+> warning rather than rendered, so a misplaced `embedResources=false` inside
+> `<config>` silently does nothing.
+
+*Related:* <a href="#sec:sections" | Sections and headings> (Chapter 2);
+book structure and the `<data>`/`<library>` block are covered in later chapters.
+
+<# #sec:sections | Chapter 2. Sections and headings #>
+
+Section headings divide the body. Enscribe has three heading levels, each
+available in all three forms, and all forms compile to the same Layer 1
+`<section>` (or `<sub-section>`, `<sub-sub-section>`) wrapping a matching title
+element.
+
+**The three forms, side by side.** These three lines produce identical output —
+a `<section>` titled "Methods":
+
+```
+<# Methods #>           sigil form: the fewest keystrokes
+<section | Methods>     canonical form: explicit; what the others become
+# Methods               markdown form: a single leading hash
+```
+
+The level is the number of hashes, and it is the same across the sigil and
+markdown forms:
+
+```
+<# Title #>     # Title       →  <section>           (level 1)
+<## Title ##>   ## Title       →  <sub-section>       (level 2)
+<### Title ###> ### Title      →  <sub-sub-section>   (level 3)
+```
+
+The sigil form (`<# … #>`) is the recommended default for most authoring: it is
+the lightest to type and still carries ids and attributes. The canonical
+`<section>` is the explicit form — exactly what you would read if you converted
+the finished HTML back to shorthand. The markdown `#` is there so muscle memory
+works on day one; it lifts to the canonical section automatically, but it is a
+*lossy* convenience — it has nowhere to put an id, so Layer 1 never round-trips
+back to it.
+
+**Section ids.** Give a section an id when something will cross-reference it, by
+placing `#name` before the pipe:
+
+```
+<# #sec:methods | Methods #>
+```
+
+This renders `<section id="sec:methods">`, which a `<ref>` or an
+`<a href="#sec:methods" | …>` link can target. Ids on sections use the same `#id`
+syntax used everywhere else in Enscribe.
+
+**Deeper headings.** The ladder stops at three section levels on purpose — three
+is what a journal article needs. A fourth-level markdown heading and beyond do not
+create sections; they pass through as plain HTML heading elements:
+
+```
+#### Subhead       →  <h4>Subhead</h4>
+##### Subhead       →  <h5>Subhead</h5>
+```
+
+These are ordinary headings with no sectioning semantics, no id slot, and no role
+in numbering. If a document genuinely needs to nest deeper than three levels, it
+usually wants to be a *book* — chapters and parts, a different top-level shape —
+rather than a fourth heading level. In books, sections number automatically within
+each chapter; the details are in the cross-references and book-structure chapters.
+
+> **Gotcha — hash count is the level, not the importance.** In ordinary Markdown
+> `#` is the document's top title. In Enscribe the title comes from `<meta>`, so
+> `#` is the first *body* section, `##` a sub-section, `###` a sub-sub-section.
+> Match the sigil hash count to the markdown hash count: `<# … #>` and `# …` are
+> both level 1.
+
+*Related:* <a href="#sec:structure" | Document structure> (Chapter 1);
+cross-references and book numbering are covered in later chapters.
+
+<# #sec:inline | Chapter 3. Inline elements #>
+
+Inline elements format a run of text inside a paragraph. The formatting tags each
+support two Enscribe spellings — **same-line long form** (`<b>bold</b>`) and
+**pipe form** (`<b | bold>`) — and both produce the same output, so use whichever
+reads better. Bold, italic, and strikethrough additionally have markdown idioms.
+
+**Bold and italic.** These have familiar markdown forms most authors will reach
+for; the tags are for when you want the element explicit:
+
+```
+**bold**   <b>bold</b>    <b | bold>      →  <b>bold</b>
+*italic*   <i>italic</i>  <i | italic>    →  <i>italic</i>
+```
+
+Markdown `_underscores_` also produce italic, identically to `*asterisks*`.
+
+**Strikethrough, underline, quotation.** Strikethrough has a markdown form
+(`~~text~~`); underline and inline quotation do not, so use the tag:
+
+```
+~~struck~~   <s>struck</s>   <s | struck>     →  <s>struck</s>
+             <u>under</u>    <u | under>      →  <u>under</u>
+             <q>quoted</q>   <q | quoted>     →  <q>quoted</q>
+```
+
+`<q>` is HTML's inline-quotation element (a browser renders it with quotation
+marks); reserve it for short in-line quotes, and use a blockquote (Chapter 4) for
+anything that stands on its own.
+
+**Inline code.** Backticks are the markdown form, and a sigil form exists for
+symmetry with the other sigils:
+
+```
+`code()`        <` code() `>      →  <code>code()</code>
+```
+
+Backticks are almost always what you want. Content inside inline code is verbatim —
+no idioms or tags are interpreted within it.
+
+**Inline math.** Mathematics inside a run of text uses LaTeX dollar signs, handed
+to KaTeX <cite @katex>; the sigil form is the canonical spelling:
+
+```
+$\varphi = (1+\sqrt5)/2$        <$ \varphi = (1+\sqrt5)/2 $>
+```
+
+Both render the same selectable, scalable HTML math. Everything between the
+delimiters is LaTeX, passed through verbatim.
+
+**Superscript and subscript.** Brace-delimited sigils set super- and subscripts:
+
+```
+x^{2}     →  x<sup>2</sup>
+H_{2}O    →  H<sub>2</sub>O
+```
+
+The braces are required — `x^2` without them is literal text. These compose, so
+`x^{y_{1}}` nests a subscript inside a superscript.
+
+**Links.** Enscribe uses the `<a>` tag, not the markdown `[text](url)` form (which
+Enscribe does not support). The URL is the first positional argument, or the
+`href` keyword; the text is the body:
+
+```
+<a https://example.com | Example>
+<a href="https://example.com" | Example>
+<a href="https://example.com">Example</a>   →  <a href="https://example.com">Example</a>
+```
+
+> **Gotcha — when to use `href=`.** The bare positional URL is fine for ordinary
+> URLs, but a URL that is *just* a fragment (`#sec:methods`) collides with the
+> `#id` syntax, and a URL containing spaces or a `>` will end the tag early. In
+> those cases use the quoted `href` keyword form:
+> `<a href="#sec:methods" | jump to Methods>`.
+
+*Related:* <a href="#sec:block" | Block elements> (Chapter 4) for display math and
+code blocks; cross-references (which link by name rather than URL) are a later
+chapter.
+
+<# #sec:block | Chapter 4. Block elements #>
+
+Block elements stand on their own between paragraphs.
+
+**Paragraphs** are implicit, exactly as in Markdown <cite @commonmark>: write
+prose, and separate paragraphs with a blank line. There is no paragraph tag to
+type in ordinary writing.
+
+**Blockquotes.** The markdown `>` works; the canonical `<blockquote>` works
+same-line or multi-line:
+
+```
+> A quoted line.
+
+<blockquote>A quoted line.</blockquote>
+
+<blockquote | A quoted line.>
+```
+
+The markdown form wraps its content in a paragraph (`<blockquote><p>…</p>`); the
+tag forms with inline content do not. A blockquote's content is ordinary
+Enscribe — formatting, math, and references inside it are interpreted normally.
+
+**Code blocks.** A fenced block is the standard form; add a language name after
+the opening fence for syntax highlighting. The triple-backtick *sigil* is the
+canonical equivalent. Both appear below — the outer fence here is four backticks
+so the three-backtick examples inside it display literally:
+
+````
+```python
+def f(x):
+    return x + 1
+```
+
+<``` python | def f(x): return x + 1 ```>
+````
+
+Both render `<pre><code class="language-python">…</code></pre>`. Code-block content
+is verbatim — no idioms or tags are interpreted inside it — and the block can take
+an id (an `#code:f` token after the language) for cross-referencing. There is no
+`<code-block>` named tag to author directly; the fenced block and the
+triple-backtick sigil are the two forms.
+
+**Display math.** Mathematics that deserves its own centered, numbered line is
+*display* math. Write it as a `$$` fence with the delimiters on their own lines,
+or with the canonical doubled-dollar sigil:
+
+```
+$$
+\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
+$$
+
+<$$ | \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi} $$>
+```
+
+Like a figure, display math can take an id (`<$$ #eqn:gauss | … $$>`) so prose can
+refer back to it, and it is numbered automatically.
+
+> **Gotcha — `$$x$$` on one line is *inline*, not display.** The `$$` fence only
+> produces display math when the delimiters are on their own lines. A single-line
+> `$$x = y$$` renders as inline math. If you want display math without a multi-line
+> fence, use the sigil `<$$ | x = y $$>`, which is always display regardless of
+> line placement.
+
+**Math environments.** LaTeX-style multi-line math environments are available as
+tags: `<align>`, `<eqnarray>`, `<cases>`, and `<matrix>`. They carry verbatim
+LaTeX and render through KaTeX as display blocks:
+
+```
+<align>
+a &= b + c \\
+d &= e + f
+</align>
+```
+
+Use the long form (opener and closer on their own lines) for multi-row content;
+the pipe form works for short cases. The aligned block is numbered like other
+display math.
+
+*Related:* <a href="#sec:inline" | Inline elements> (Chapter 3) for inline math
+and inline code; figures and tables are the next chapter to land.
+
+<# What's next #>
+
+This installment covers document structure, sections, inline elements, and block
+elements. Chapters on **figures and images**, **tables**, **citations and
+bibliography**, **footnotes**, **cross-references**, the **theorem family**,
+**external DSLs** (Mermaid, ABC), **book structure**, **arguments and the pipe**,
+and **rendering and output** are coming in subsequent updates. For the
+architecture behind the canonical-form model, read the
+<a href="design.html" | Design article>; for a guided tour of the whole feature
+set in one page, see the <a href="quickstart.html" | Quickstart>.
+
+<data>
+<library |
+@misc{katex,
+  author = {Khan Academy and {KaTeX contributors}},
+  title  = {KaTeX: The fastest math typesetting library for the web},
+  year   = {2024},
+  url    = {https://katex.org/}
+}
+@misc{commonmark,
+  author = {MacFarlane, John},
+  title  = {CommonMark: A strongly defined, highly compatible specification of Markdown},
+  year   = {2024},
+  url    = {https://commonmark.org/}
+}
+>
+</data>
+
+<bibliography>
+</bibliography>

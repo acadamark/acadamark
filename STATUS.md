@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), and the JATS article (3d) plus generated types are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d) and the Authoring Guide's first four chapters (3e-i) landed, and the remaining Authoring Guide chapters (3e-ii/iii), the Layer 1 Reference (3f), plus generated types are follow-up slices
 
 ### Components
 
@@ -87,9 +87,12 @@ translated to canonical enscribe and ship as the docs-site Home and Design
 articles, and **Slice 3c** landed the Quickstart guide (authored in canonical
 enscribe, exercising 13 features in its own content), and **Slice 3d** landed the
 JATS-relationship article. The **Issue 1 same-line-long-form** support has since
-landed (`<b>bold</b>` and the same-line long form work for every vocab tag).
-**Next:** Ariel runs `npm publish` per package (out of band); the remaining
-docs-site content is Slices 3e (Authoring Guide) and 3f (Layer 1 Reference).
+landed (`<b>bold</b>` and the same-line long form work for every vocab tag), and
+**Slice 3e-i** landed the Authoring Guide's first four chapters (document
+structure, sections, inline elements, block elements). **Next:** Ariel runs
+`npm publish` per package (out of band); the remaining docs-site content is
+Slices 3e-ii / 3e-iii (the rest of the Authoring Guide) and 3f (Layer 1
+Reference).
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -4287,3 +4290,27 @@ that). One line gets added every few months, not every slice.
   entry's "canonical pipe-form" detail). No fixture/snapshot changes; all suites
   pass; docs site builds. Next: Phase 14 Slices 3e / 3f, or the optional `<q>`
   sigil.
+- **2026-05-31 — Authoring Guide 3e-i: chapters 1–4.** New docs-site article
+  `docs-site/sources/authoring-guide.emd` (authored in canonical enscribe) with
+  its first four chapters: Document structure (`<meta>`/`<title>`/`<author>`/
+  `<date>`/`<config>`, article vs book), Sections and headings (the three forms
+  side by side, ids, `####`+→`<h4>`), Inline elements (b/i/s/u/q, inline code,
+  inline math, links, sup/sub — same-line long form and pipe form), and Block
+  elements (paragraphs, blockquotes, code blocks, display math, math envs).
+  `build.js` PAGES gains the page (nav: Home / Design / Quickstart / Authoring
+  Guide / JATS — five pages). Every documented feature was render-verified
+  first; the guide builds with no error nodes; all suites pass (no code changes).
+  Drift surfaced while verifying (documented accurately in the guide, not
+  silently): (a) `<config>` block kwargs are document settings (`citation-style`,
+  `number-*`, `counter-reset-scope`, `note-scope`, `ref-prefix-*`) — `embed-
+  Resources`/`dslMode` are render-API options, NOT `<config>` keys, and a bad
+  `<config>` kwarg is dropped with a warning; (b) markdown `~~strike~~` DOES
+  produce `<s>` (the slice brief said no markdown equivalent — corrected in the
+  guide); (c) there is no `<code-block>` named authoring tag — the canonical form
+  is the triple-backtick sigil `<``` lang | code ```>` (a `<code-block>…</code-
+  block>` long-form renders empty); (d) `gather` is not a math environment (only
+  `align`/`eqnarray`/`cases`/`matrix` exist). Separately, a pre-existing
+  **Quickstart error** was found (out of scope, not fixed): `quickstart.emd`
+  shows `## Methods` as the markdown form for a section, but `##`→`<sub-section>`;
+  the section form is single `#`. Filed as a finding for a Quickstart fix. Next:
+  3e-ii (Figures, Tables, Citations, Footnotes, Cross-references).
