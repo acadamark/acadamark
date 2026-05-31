@@ -940,13 +940,16 @@ For each node, the handler performs this sequence:
 
 3. If the vocabulary lookup did not find an entry:
    - Emit `warnUnknownTag(tagname)` to console.
-   - Return `makeUnknownElement()`, which renders the tag as the **literal
-     text the author typed** — the opener is reconstructed from the node's
-     parsed parts and emitted as text nodes, so the serializer escapes
-     `<`/`>`. An unrecognized tag is not an error and is not passed through as
-     HTML; the reader sees the angle brackets. (The matching close tag of a
-     broken same-line long form arrives as a separate `html` node and is
-     escaped by `htmlNodeHandler` — see §4.1.)
+   - Return `makeUnknownElement()`, which renders the tag as **literal text**
+     reconstructed from the node's parsed parts and emitted as text nodes, so
+     the serializer escapes `<`/`>`. An unrecognized tag is not an error and is
+     not passed through as HTML; the reader sees the angle brackets. The
+     reconstruction uses the canonical serialization: an unknown tag with
+     content (whether the author wrote it pipe-form `<glurp | hi>` or same-line
+     long-form `<glurp>hi</glurp>`) renders the same literal `<glurp | hi>`,
+     because both spellings parse to the same node. (Same-line long form is a
+     recognized authoring spelling — see `shorthand-syntax.md` §"Long-form
+     tags"; only the *tagname* is unknown here, not the syntax.)
 
 4. If `vocab.interpreter_strategy === 'handler'`:
    - Look up `vocab.handler_module` in HANDLER_REGISTRY.

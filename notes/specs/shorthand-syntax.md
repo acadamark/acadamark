@@ -52,9 +52,15 @@ sigil           ::= "#" | "##" | "###" | "$" | "$$" | "`" | "```"
 
 named_tag       ::= short_form | long_form
 short_form      ::= "<" tag_name [ws+ attributes] ["|" content] ">"
-long_form       ::= "<" tag_name [ws+ attributes] ">" line_ending content "</" tag_name ">"
-                    (* opener must end at a line boundary; content may span
-                       multiple lines; line endings inside content are preserved *)
+long_form       ::= multiline_long_form | sameline_long_form
+multiline_long_form ::= "<" tag_name [ws+ attributes] ">" line_ending content "</" tag_name ">"
+                    (* opener ends at a line boundary; content may span
+                       multiple lines; line endings inside content are preserved.
+                       Flow (block) position only. *)
+sameline_long_form  ::= "<" tag_name [ws+ attributes] ">" line_content "</" tag_name ">"
+                    (* opener and matching closer on one line; line_content
+                       contains no line ending. Recognized in both flow and
+                       text (inline) position. *)
 
 tag_name         ::= [a-zA-Z] [a-zA-Z0-9_-]*
                      (* strict: for the word immediately after `<` and keyword keys *)
@@ -212,9 +218,17 @@ content line 2
 </tagname>
 ```
 
-The opening tag follows the same attribute syntax as short-form named tags (positionals, ids, classes, kwargs, flags all permitted). The closing tag is `</tagname>` with the tag name matching the opener exactly; no whitespace is permitted inside the angle brackets of the closer. Content between the opening and closing tags is preserved verbatim, including newlines, indentation, and any characters that look like enscribe constructs. At Slice 4, all long-form content is an opaque string regardless of `contentHandler`. When recursive content parsing is implemented (a future slice), nodes with `contentHandler: "default"` will have their content re-fed through remark; DSL-handler nodes remain permanently opaque.
+The same tag may also be written **same-line** — opener and matching closer on one line:
 
-**Long-form tags are recognized in flow (block) position only.** They are not recognized inside paragraphs.
+```
+<tagname attrs>content</tagname>
+```
+
+This is the natural inline spelling: `<b>bold</b>`, `<q>a short quote</q>`, `<a href="...">link text</a>`. It produces the same node as the multi-line form (same `tagname`, attributes, and `content`), so the two spellings render identically. Same-line is the only long-form spelling recognized inside paragraphs; multi-line long-form is block-position only.
+
+The opening tag follows the same attribute syntax as short-form named tags (positionals, ids, classes, kwargs, flags all permitted). The closing tag is `</tagname>` with the tag name matching the opener exactly; no whitespace is permitted inside the angle brackets of the closer. Content between the opening and closing tags is preserved verbatim, including newlines, indentation, and any characters that look like enscribe constructs. Nodes with `contentHandler: "default"` have their content re-fed through remark by the recursive-content plugin (so `<b>$x$</b>` renders the math, `<blockquote>see <ref @fig>.</blockquote>` resolves the reference); DSL-handler nodes (`contentHandler` other than `"default"`) keep their content permanently opaque.
+
+**Position.** Multi-line long-form is recognized in flow (block) position only — never inside paragraphs. Same-line long-form is recognized in **both** flow and text (inline) position: as a block on its own line (`<blockquote>…</blockquote>`) and inline within a paragraph (`text with <b>bold</b> here`).
 
 **Three-form grammar; local disambiguation.** Updated 2026-05-27 by the DSL/long-form parser bug fix. An opening tag `<tagname attrs>` at the end of a line was previously syntactically identical to a long-form opener, and the finder used registry membership as a gate: registered tags became long-form openers, unregistered tags fell through to short-form. That conflated long-form-authoring with handler-dispatch eligibility, forced regular Layer 1 vocabulary tags like `<aside>` into the DSL registry as a workaround, and is now removed. The grammar has three locally-unambiguous syntactic forms:
 
@@ -222,13 +236,18 @@ The opening tag follows the same attribute syntax as short-form named tags (posi
 |-------------|------------------------------------|----------------------------------------------|
 | Pipe form   | `<tag attrs | content>`            | The `|` rejects long-form at `scanOpenAttrs` |
 | Slash form  | `<tag attrs />`                    | The `/` before `>` (via `prevWasSlash`) rejects long-form |
-| Long form   | `<tag attrs>content</tag>`         | No `|` and no `/` — unambiguously long-form opener |
+| Long form (multi-line) | `<tag attrs>`⏎`content`⏎`</tag>` | Opener `>` followed by a line ending |
+| Long form (same-line)  | `<tag attrs>content</tag>`        | Opener `>` followed by same-line content, with a matching `</tag>` later on the line |
 
-The finder decides locally — no registry consultation, no vocabulary lookup, no lookahead. A tag with neither `|` nor `/` before `>` is a long-form opener, regardless of tag name. For every long-form opener, the finder consumes content until it encounters a matching `</tagname>`. If end-of-document is reached without a closer, the node is emitted as `enscribeTagError` — there is no fallback to short-form. This is deliberate: lookahead (scanning forward before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` with no `</csv>` (or any `<tag>` with no `</tag>`) is almost certainly an authoring mistake.
+The finder decides locally — no registry consultation, no vocabulary lookup. A tag with neither `|` nor `/` before `>` is a long-form opener, regardless of tag name. What the finder does next depends on the character after the opening `>`:
+
+- **Multi-line** (opener `>` immediately followed by a line ending). The finder commits and consumes content until it encounters a matching `</tagname>` at a line start. If end-of-document is reached without a closer, the node is emitted as `enscribeTagError` — there is no fallback to short-form. This is deliberate: unbounded lookahead (scanning forward across the whole document before committing) would be expensive in micromark's streaming model, and the error gives authors clearer feedback than a silent short-form fallback would. A `<csv>` opened on its own line with no `</csv>` is almost certainly an authoring mistake. Multi-line long-form is recognized in flow (block) position only.
+
+- **Same-line** (opener `>` followed by non-line-ending content). The finder scans the **remainder of the current line** for a matching `</tagname>`. This lookahead is bounded — it never crosses a line ending — so it is cheap, unlike the unbounded multi-line scan. If a matching closer is found on the line, the construct is same-line long-form. If the line ends (or EOF is reached) first, the finder rejects (`nok`) and the named-tag tokenizer claims `<tag attrs>` as an **empty short-form** tag — `<b>` with no same-line `</b>` is a bare empty tag, not an error. Same-line long-form is recognized in both flow and text (inline) position; in flow position a same-line tag followed by non-whitespace trailing content on the line is rejected so the paragraph forms and the inline (text-position) tokenizer claims it, keeping `<b>bold</b> and more` a single paragraph.
 
 Authors who want a short-form empty tag (the slash form) write `<tag />` — covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`, `<config attrs />`).
 
-**Nested same-name tags.** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outermost `<tagname>`. Depth is not tracked inside long-form content at Slice 4 since content is opaque. For example, `<aside>outer<aside>inner</aside>more</aside>` produces one `<aside>` with content `outer<aside>inner`; the trailing `more</aside>` is not consumed and falls through to remark. When recursive content parsing lands, nodes with `contentHandler: "default"` will re-parse their content, at which point nested same-name tags are handled correctly by the inner pipeline.
+**Nested same-name tags (known limitation).** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outer `<tagname>`. Depth is not tracked inside long-form content — same-line or multi-line. For example, `<b>a<b>b</b>c</b>` produces one `<b>` with content `a<b>b`; the trailing `c</b>` is not consumed and falls through as literal text. Re-parsing the captured content does **not** recover the nesting: `a<b>b` re-parses to `a` plus an empty `<b>` (the inner opener has no same-line closer of its own), so the inner tag is lost rather than nested. Different-name nesting is unaffected — `<b>x<i>i</i>y</b>` captures `x<i>i</i>y` verbatim and re-parses the inner `<i>` correctly, because the scan only matches the outer tag's own name. Same-name nesting via depth-counting is deferred; authors who need a same-name tag inside another should use the multi-line form for the outer tag or rename one level.
 
 **Defensive error.** If the finder encounters a long-form opener but reaches end-of-document without finding a matching `</tagname>`, it emits `enscribeTagError` rather than producing a partial node. The long-form error node retains the `enscribeTag` fields populated from the opener (`tagname`, `form`, `content`, `kwargs`, etc.) and adds an `error` field — see the **Long-form error node** shape under "What the parser produces". This is a distinct shape from the sigil-opener error node (which is sparse, with `source` instead of `tagname`/`content`); the two error paths reach their failure points at different stages and carry different information.
 
@@ -834,7 +853,7 @@ These were open questions that were settled during implementation.
 
 - **`-` allowed in keyword values (after `=`).** The naked token in keyword value position allows `-`. In positional or attribute-name position, `-` remains excluded (it disambiguates `-flag`). This permits `src=my-file.jpg` without quoting. There are effectively two naked-token rules: one for names/positionals, one for values.
 
-- **Long-form restricted to DSL-registry tags.** Long-form (`<name>...</name>`) is only valid for tags listed in the DSL registry. Non-registry named tags are always short-form: `<tag>` (no content) or `<tag | content>`. The parser checks the registry immediately after reading the tag name — if the name is not in the registry the long-form tokenizer calls `nok` and the flow hook falls through to the short-form named-tag tokenizer. This check is LL(1) at the tag-name level and has no rollback cost. Registered tags with `contentHandler: "default"` are long-form eligible; the "default" handler is a real registry entry, not a fallback for unregistered tags.
+- **Long-form restricted to DSL-registry tags.** *Superseded 2026-05-27 by the DSL/long-form parser bug fix (see "Three-form grammar; local disambiguation" above). The registry gate described here was removed: every named tag is long-form-eligible at the parser level, regardless of registry membership, and the registry no longer gates long-form admission — see "DSL registry purpose" below. The original (now-historical) decision read: long-form (`<name>...</name>`) is only valid for tags listed in the DSL registry; the parser checked the registry immediately after reading the tag name and fell through to short-form for non-registry names. This conflated long-form authoring with handler dispatch and is no longer how the parser works.*
 
 - **Multi-word positionals: comma or space separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. Both spaces and commas (with optional surrounding whitespace) are valid separators. `<cite jones2001 smith2022>`, `<cite jones2001,smith2022>`, and `<cite jones2001, smith2022>` all produce `positional: ["jones2001", "smith2022"]`. Commas are never part of identifier values; they act purely as separators. The comma separator applies universally between all attribute types, not just positionals — `<fig #id, caption="...">` also works.
 

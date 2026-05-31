@@ -8954,20 +8954,27 @@
                   ]
                 },
                 {
-                  "type": "raw",
-                  "value": "<blockquote>A low ECE is necessary but not sufficient. Because it averages over bins, ECE can hide compensating errors — over-confidence in one region cancelling under-confidence in another. Always read the reliability diagram alongside the single number.</blockquote>",
-                  "position": {
-                    "start": {
-                      "line": 176,
-                      "column": 1,
-                      "offset": 7746
-                    },
-                    "end": {
-                      "line": 176,
-                      "column": 269,
-                      "offset": 8014
+                  "type": "element",
+                  "tagName": "blockquote",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A low ECE is necessary but not sufficient. Because it averages over bins, ECE can hide compensating errors — over-confidence in one region cancelling under-confidence in another. Always read the reliability diagram alongside the single number.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "offset": 0
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 244,
+                          "offset": 243
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               ]
             },

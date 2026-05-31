@@ -14,7 +14,10 @@ element semantically supports. The general three-form grammar
   (void tags and attribute-only tags).
 - **Long form** — `<tag attrs>content</tag>`. Content bounded by an
   explicit closing tag. The general default for content-bearing
-  block elements.
+  block elements. Two spellings: **multi-line** (closer on a later
+  line, block position only) and **same-line** (opener and closer on
+  one line, e.g. `<b>bold</b>` — recognized inline within a paragraph
+  as well as on its own line). See `shorthand-syntax.md` §"Long-form tags".
 
 | Marker | Meaning |
 |---|---|

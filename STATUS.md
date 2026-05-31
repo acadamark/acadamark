@@ -86,9 +86,10 @@ clean for each. **Slice 3b** has since landed too: the README and DESIGN are
 translated to canonical enscribe and ship as the docs-site Home and Design
 articles, and **Slice 3c** landed the Quickstart guide (authored in canonical
 enscribe, exercising 13 features in its own content), and **Slice 3d** landed the
-JATS-relationship article. **Next:** Ariel runs `npm publish` per package (out of
-band); the remaining docs-site content is Slices 3e (Authoring Guide) and 3f
-(Layer 1 Reference), and the Issue 1 same-line-long-form Phase 0 is queued.
+JATS-relationship article. The **Issue 1 same-line-long-form** support has since
+landed (`<b>bold</b>` and the same-line long form work for every vocab tag).
+**Next:** Ariel runs `npm publish` per package (out of band); the remaining
+docs-site content is Slices 3e (Authoring Guide) and 3f (Layer 1 Reference).
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -199,10 +200,11 @@ than `packages/demo-site/`, and the **project rename is deferred** to a separate
 later decision rather than being forced by this slice. **Slice 3b has since
 landed** (the README and DESIGN are translated to canonical enscribe and ship as
 the docs-site Home and Design articles), as have the rename and the org-split.
-Slices 3c (Quickstart) and 3d (JATS article) have since landed too. **Next:**
-Phase 14 Slices 3e (Authoring Guide) and 3f (Layer 1 Reference), the Issue 1
-Phase 0, and the remaining packaging slices (fixture consolidation) plus the
-demonstrative-fixture work. Nothing else is in flight.
+Slices 3c (Quickstart) and 3d (JATS article) have since landed too, as has the
+Issue 1 same-line-long-form implementation. **Next:** Phase 14 Slices 3e
+(Authoring Guide) and 3f (Layer 1 Reference), and the remaining packaging slices
+(fixture consolidation) plus the demonstrative-fixture work. Nothing else is in
+flight.
 
 ## Milestones
 
@@ -4243,3 +4245,28 @@ that). One line gets added every few months, not every slice.
   implementation slice. Slicing: same-line long-form first; the `""…""`-for-`<q>`
   sigil a separate optional follow-up. No code changed. Next: the Issue 1
   implementation slice.
+- **2026-05-31 — Issue 1 (same-line long-form): implemented (approach A).**
+  `<b>bold</b>` and same-line `<tag attrs>content</tag>` now work for every vocab
+  tag, in both flow and inline position. `makeLongFormTokenizer` in
+  `remark-enscribe/src/syntax.js` is parameterized `{ multiLine }` and registered
+  in flow **and** text position; when the opener `>` is followed by same-line
+  content it scans the remainder of the line for a matching `</tag>` (bounded,
+  cheap lookahead) and emits the same Open/Content/Close tokens as the multi-line
+  form, so content flows through `remarkRecursiveContent` unchanged (`<b>$x$</b>`
+  renders the math; `<blockquote>see <ref @fig>.</blockquote>` resolves). No
+  same-line close → `nok` and the named tokenizer claims an empty short-form
+  (`<b>` stays a bare tag). The multi-line line-ending branch is flow-only, so
+  multi-line long-form is byte-identical and inline `<ref @x>`-ending-a-line still
+  short-forms. **Decision B resolved:** Enscribe's vocabulary wins over remark's
+  HTML-block passthrough — same-line `<blockquote>` is a real element now (one
+  snapshot change, `document-45`, content recursively parsed). New suite
+  `same-line-long-form.test.js`; `raw-html-comments.test.js` updated
+  (unknown same-line tags escape to the canonical pipe-form literal, matching
+  multi-line). Specs: `shorthand-syntax.md` §"Long-form tags" (multi-line vs
+  same-line, EBNF, bounded-scan rule, corrected same-name-nesting limitation,
+  superseded the stale registry-gate decision), `interpreter.md` §5.1,
+  `tag-forms-reference.md` legend. All remark and interpreter suites pass.
+  Deferred-and-documented: same-name inline nesting (first-closer-wins; depth
+  counting unbuilt), content that starts same-line but closes later, and the
+  optional `""…""`-for-`<q>` sigil (Slice 2). BACKLOG Issue 1 CLOSED. Next: Phase
+  14 Slices 3e / 3f, or the optional `<q>` sigil.

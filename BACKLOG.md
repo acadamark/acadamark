@@ -83,9 +83,11 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
-- [ ] **Same-line long-form `<tag>content</tag>` produces an empty element**
+- [x] **Same-line long-form `<tag>content</tag>` produces an empty element**
   `[parser]` `[post-alpha]` — decided: add same-line long-form support,
-  Phase 0 first *(filed by the parser/handler-fixes slice)*
+  Phase 0 first *(filed by the parser/handler-fixes slice)* — **CLOSED
+  2026-05-31** by the Issue 1 same-line-long-form implementation slice
+  (approach A; see detailed entry)
 - [ ] **doc-46 references figure images that do not exist**
   (`commit-graph.png`, `notebook-ci.png`) `[tests/build]` `[release]`
   *(→ roadmap: Phase 14; filed by Phase 14 Slice 2)*
@@ -361,6 +363,42 @@ vocab tag that is also an HTML block element (`<blockquote>`, exercised by
 **Slice 2 (optional) = the `""…""`-for-`<q>` sigil** — separate machinery, lower
 priority, `<q>quoted</q>` covers `<q>` without it. *(Phase 0 by the Issue 1 Phase 0
 slice.)*
+
+**CLOSED 2026-05-31 — Slice 1 (same-line long-form) implemented (approach A).**
+`makeLongFormTokenizer` is now parameterized `{ multiLine }` and registered in
+**both** flow and text position (`src/syntax.js`). When the opener's `>` is
+followed by same-line content, the tokenizer scans the **remainder of the line**
+for a matching `</tagname>` (a bounded, cheap lookahead, unlike the unbounded
+multi-line scan); found → it emits the same Open/Content/Close tokens as the
+multi-line form, so the content flows through `remarkRecursiveContent` unchanged;
+not found before the line ending/EOF → `nok`, and the named-tag tokenizer claims
+the opener as an empty short-form (`<b>` with no same-line close is a bare tag,
+not an error). Multi-line long-form is byte-identical (the line-ending branch is
+flow-only; in text position a `>`-then-line-ending opener rejects to short-form,
+which is what keeps inline `<ref @x>`-ending-a-line working). **Decision B
+(resolved): Enscribe's vocabulary wins** — a same-line `<blockquote>…</blockquote>`
+is claimed by the flow long-form tokenizer before remark's HTML-block construct,
+so its content is recursively parsed rather than passed through as raw HTML
+(the one snapshot change, `document-45`). Tests: `same-line-long-form.test.js`
+(covers `<b>/<i>/<s>/<u>/<q>`, `<a href>`, math-in-bold, different-name
+nesting, flow-trailing→one-paragraph, blockquote decision-B, multi-line guard);
+`raw-html-comments.test.js` updated (an unknown same-line tag now escapes to the
+canonical pipe-form literal `<glurp | hi>`, identical to how a multi-line unknown
+long-form tag has always escaped). Spec: `shorthand-syntax.md` §"Long-form tags"
+(multi-line vs same-line, EBNF, bounded-scan rule, same-name limitation),
+`interpreter.md` §5.1, `tag-forms-reference.md` legend.
+
+**Still deferred (documented edges, not closed by Slice 1):**
+- **Same-name inline nesting** — `<b>a<b>b</b>c</b>` uses first-closer-wins: the
+  first `</b>` closes the outer tag, the captured content `a<b>b` re-parses to an
+  empty inner `<b>`, and `c</b>` trails as literal. Depth-counting is the fix;
+  not built. Different-name nesting (`<b>x<i>i</i>y</b>`) works.
+- **Content that starts same-line but closes on a later line** — `<b>bold⏎more</b>`
+  is neither same-line (no close on the opener's line) nor multi-line (opener `>`
+  not immediately followed by a line ending), so it falls back to an empty `<b>`.
+  Authors use fully-inline or fully-multi-line.
+- **Slice 2 (optional): the `""…""`-for-`<q>` sigil** — separate machinery, lower
+  priority; `<q>quoted</q>` now covers `<q>` without it.
 
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`

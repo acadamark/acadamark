@@ -64,13 +64,19 @@ export function enscribeSyntax() {
   return {
     flow: {
       [LT]: [
-        { tokenize: makeLongFormTokenizer(), concrete: true },
+        { tokenize: makeLongFormTokenizer({ multiLine: true }), concrete: true },
         { tokenize: tokenizeSigilTagFlow, concrete: true },
         { tokenize: tokenizeNamedTagFlow, concrete: true },
       ],
     },
     text: {
       [LT]: [
+        // Same-line long-form (`<b>bold</b>` on one line) must be tried before
+        // the named-tag tokenizer, which would otherwise claim `<b>` as an empty
+        // short-form and leave `bold</b>` as literal text. The text-position
+        // long-form tokenizer rejects (nok) when no same-line `</tag>` follows,
+        // so the empty-short-form fallback is preserved for bare `<b>`.
+        { tokenize: makeLongFormTokenizer({ multiLine: false }) },
         { tokenize: tokenizeSigilTagText },
         { tokenize: tokenizeNamedTagText },
       ],
@@ -526,9 +532,28 @@ function tokenizeShortcutTag(effects, ok, nok) {
  * Missing closer: if no `</tagname>` is found before EOF, the tokenizer
  * calls ok and from-markdown.js converts the node to enscribeTagError.
  *
+ * Same-line long-form (`<tagname attrs>content</tagname>` on one line) is
+ * handled additively. When the opener's `>` is followed by non-line-ending
+ * content, the tokenizer scans the remainder of the line for a matching
+ * `</tagname>`; if found it emits the same Open/Content/Close token structure
+ * as the multi-line form, so from-markdown.js handles both identically. If no
+ * same-line close is found before the line ending or EOF, the tokenizer
+ * rejects (nok) and the named-tag tokenizer claims the opener as an empty
+ * short-form. The multi-line path (opener `>` immediately followed by a line
+ * ending) is untouched and byte-identical.
+ *
+ * Same-name nesting is NOT depth-counted: in `<b>a<b>b</b>c</b>` the first
+ * `</b>` closes the outer tag. Different-name nesting (`<b>x<i>i</i>y</b>`) is
+ * free — the inner `<i>…</i>` is captured verbatim as content and re-parsed
+ * downstream by remarkRecursiveContent. See DESIGN.md §"Tag forms".
+ *
+ * @param {{ multiLine: boolean }} opts
+ *   multiLine: flow position (true) rejects a same-line tag with trailing
+ *              non-whitespace content after the close, so the paragraph forms
+ *              and the text-position tokenizer (false) claims it inline.
  * @returns {Tokenizer}
  */
-function makeLongFormTokenizer() {
+function makeLongFormTokenizer({ multiLine }) {
   return function tokenizeLongFormTag(effects, ok, nok) {
     /** @type {number[]} */
     const tagNameCodes = []
@@ -644,14 +669,126 @@ function makeLongFormTokenizer() {
 
     /** @param {Code} code — the char AFTER the opening `>` */
     function afterOpenGt(code) {
-      // Must be followed by a line ending; same-line `>` means short-form.
-      if (!markdownLineEnding(code)) return nok(code)
+      if (markdownLineEnding(code)) {
+        // Multi-line long-form is a block construct — flow position only. In
+        // text (inline) position, `>` followed by a line ending is a short-form
+        // opener (e.g. `<ref @tab:x>` ending a line); reject so the named-tag
+        // tokenizer claims it. Without this guard the inline long-form would
+        // scan across line endings and swallow the rest of the document.
+        if (!multiLine) return nok(code)
+        // Multi-line path (unchanged): opener `>` immediately followed by a
+        // line ending. Close detection happens at each subsequent line start.
+        effects.exit('enscribeLongFormOpen')
+        return effects.attempt(
+          { tokenize: tokenizeClose, partial: true },
+          afterClose,
+          notClose,
+        )(code)
+      }
+      if (code === null) return nok(code)
+      // Same-line path: content begins on the opener's line. Scan it for a
+      // matching `</tagname>` (see sameLineContent). If none is found before
+      // the line ending/EOF, sameLineContent rejects and the named-tag
+      // tokenizer claims `<tagname attrs>` as an empty short-form.
       effects.exit('enscribeLongFormOpen')
-      return effects.attempt(
-        { tokenize: tokenizeClose, partial: true },
-        afterClose,
-        notClose,
-      )(code)
+      effects.enter('enscribeLongFormContent')
+      return sameLineContent(code)
+    }
+
+    /** @param {Code} code — a char of same-line content */
+    function sameLineContent(code) {
+      if (code === null || markdownLineEnding(code)) {
+        // No matching `</tagname>` on this line — not same-line long-form.
+        // Reject so the named-tag tokenizer can claim the opener. (nok rewinds
+        // the entered-but-unbalanced LongFormContent; micromark discards it.)
+        return nok(code)
+      }
+      if (code === LT) {
+        // Potential close. Exit content and attempt the same-line closer; on
+        // failure sameLineNotClose re-enters content and consumes the `<`.
+        effects.exit('enscribeLongFormContent')
+        return effects.attempt(
+          { tokenize: tokenizeSameLineClose, partial: true },
+          afterSameLineClose,
+          sameLineNotClose,
+        )(code)
+      }
+      effects.consume(code)
+      return sameLineContent
+    }
+
+    /** @param {Code} code — the char AFTER the same-line `</tagname>` */
+    function afterSameLineClose(code) {
+      // Flow position (multiLine): reject a same-line tag with trailing
+      // non-whitespace content after the close, so the paragraph forms and the
+      // text-position tokenizer claims `<b>bold</b> rest` as a single inline
+      // run. Trailing whitespace before the line ending is tolerated. Mirrors
+      // the named-tag tokenizer's afterGt (Issue 2 fix).
+      if (multiLine && code !== null && !markdownLineEnding(code)) {
+        if (code === 32 || code === 9) {
+          effects.consume(code)
+          return afterSameLineClose
+        }
+        return nok(code)
+      }
+      effects.exit('enscribeLongFormTag')
+      return ok(code)
+    }
+
+    /** @param {Code} code — the `<` that did not begin a matching close */
+    function sameLineNotClose(code) {
+      // The `<` did not open `</tagname>`. Resume content, consuming the `<`
+      // verbatim. Different-name nested tags (`<i>…</i>`) are part of content
+      // and re-parsed downstream; same-name nesting is not depth-counted.
+      effects.enter('enscribeLongFormContent')
+      effects.consume(code)
+      return sameLineContent
+    }
+
+    /**
+     * Same-line closer partial: like tokenizeClose but expects `<` directly
+     * (no leading line ending). Matches `</tagname>` by name char-for-char.
+     * @type {Tokenizer}
+     */
+    function tokenizeSameLineClose(closeEffects, closeOk, closeNok) {
+      let nameIndex = 0
+
+      return startClose
+
+      /** @param {Code} code */
+      function startClose(code) {
+        if (code !== LT) return closeNok(code)
+        closeEffects.enter('enscribeLongFormClose')
+        closeEffects.consume(code)
+        return expectSlash
+      }
+
+      /** @param {Code} code */
+      function expectSlash(code) {
+        if (code !== SLASH) return closeNok(code)
+        closeEffects.consume(code)
+        nameIndex = 0
+        return matchName
+      }
+
+      /** @param {Code} code */
+      function matchName(code) {
+        if (nameIndex < tagNameCodes.length) {
+          if (code !== tagNameCodes[nameIndex]) return closeNok(code)
+          closeEffects.consume(code)
+          nameIndex++
+          return matchName
+        }
+        return expectCloseGt(code)
+      }
+
+      /** @param {Code} code */
+      function expectCloseGt(code) {
+        if (code !== GT) return closeNok(code)
+        closeEffects.consume(code)
+        closeEffects.exit('enscribeLongFormClose')
+        return closeOk(code)
+      }
     }
 
     /** @param {Code} code */

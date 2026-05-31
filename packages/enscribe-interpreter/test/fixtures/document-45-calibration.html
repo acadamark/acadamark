@@ -3235,7 +3235,8 @@ def expected_calibration_error(probs, labels, n_bins=10):
       <figure id="fig:reliability">
         <img src="reliability-diagram.png" alt="Reliability diagram for the uncalibrated model (grey) and after Platt scaling (blue). Points on the diagonal are perfectly calibrated; points below it are over-confident.">
         <figcaption><span class="figure-label">Figure 2.</span> Reliability diagram for the uncalibrated model (grey) and after Platt scaling (blue). Points on the diagonal are perfectly calibrated; points below it are over-confident.</figcaption>
-      </figure><blockquote>A low ECE is necessary but not sufficient. Because it averages over bins, ECE can hide compensating errors — over-confidence in one region cancelling under-confidence in another. Always read the reliability diagram alongside the single number.</blockquote>
+      </figure>
+      <blockquote>A low ECE is necessary but not sufficient. Because it averages over bins, ECE can hide compensating errors — over-confidence in one region cancelling under-confidence in another. Always read the reliability diagram alongside the single number.</blockquote>
     </section>
     <section>
       <section-title>Discussion</section-title>
