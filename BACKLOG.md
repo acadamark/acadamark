@@ -345,6 +345,23 @@ specified): if a sigil covers `<q>`, that is one fewer tag depending on
 same-line long form, so the Issue 1 Phase 0 should weigh it alongside the
 grammar work. *(Both notes added by the JATS-article + housekeeping slice.)*
 
+**Phase 0 done — findings at `notes/issue1-same-line-long-form-findings.md`.** The
+constraint is a *bounded micromark-tokenizer* change (three line-ending gates plus
+flow-only registration in `src/syntax.js`), not a Peggy-grammar or
+parser-architecture change. Recommended approach **A** (additive: a same-line
+`</tag>`-by-name close scan, the long-form tokenizer also registered in text
+position, reusing the verbatim-string → `remarkRecursiveContent` content path —
+multi-line behaviour and the empty-tag fallback untouched). Inline constructs,
+math, and **different-tag** nesting come free; **same-name** inline nesting (needs
+depth counting) and content that *starts* same-line but closes on a later line are
+deferred-and-documented edges. **One decision the implementation slice must make:**
+the priority of same-line long-form vs remark's HTML-**block** passthrough for a
+vocab tag that is also an HTML block element (`<blockquote>`, exercised by
+`document-45`). Slicing: **Slice 1 = same-line long-form** (broadly needed);
+**Slice 2 (optional) = the `""…""`-for-`<q>` sigil** — separate machinery, lower
+priority, `<q>quoted</q>` covers `<q>` without it. *(Phase 0 by the Issue 1 Phase 0
+slice.)*
+
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`
 

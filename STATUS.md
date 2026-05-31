@@ -4232,3 +4232,14 @@ that). One line gets added every few months, not every slice.
   four pages (Home / Design / Quickstart / JATS); all suites pass, 0 error nodes.
   Next: Slices 3e (Authoring Guide) / 3f (Layer 1 Reference), or the Issue 1
   Phase 0.
+- **2026-05-31 — Issue 1 Phase 0 (same-line long-form): findings.** Read-only
+  investigation (`notes/issue1-same-line-long-form-findings.md`): the same-line
+  constraint is a bounded micromark-tokenizer change (line-ending gates + flow-only
+  registration in `remark-enscribe/src/syntax.js`), not a Peggy-grammar or
+  architecture change. Recommends approach A (additive same-line `</tag>`-by-name
+  close scan reusing the verbatim-string → recursive-content path); inline
+  constructs, math, and different-tag nesting come free, with same-name nesting and
+  the `<b>` HTML-block-priority question (`<blockquote>`, doc-45) flagged for the
+  implementation slice. Slicing: same-line long-form first; the `""…""`-for-`<q>`
+  sigil a separate optional follow-up. No code changed. Next: the Issue 1
+  implementation slice.
