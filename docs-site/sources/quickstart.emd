@@ -44,7 +44,7 @@ a Layer 1 `<section>` wrapping a `<section-title>`:
 ```
 <# Methods #>           — sigil form: the fewest keystrokes
 <section | Methods>     — canonical form: explicit; what the others become
-## Methods              — Markdown form: familiar, and it works
+# Methods               — Markdown form: familiar, and it works
 ```
 
 If you are in the playground, try it: change one of this guide's `<# ... #>`

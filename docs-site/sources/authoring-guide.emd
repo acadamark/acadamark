@@ -13,9 +13,10 @@ all of them compile to the same Layer 1 HTML. Where three forms exist, this guid
 shows all three; where an element has only one form, it says so.
 
 Each section is self-contained: you can read "Inline elements" without reading
-anything before it. Jump to what you need. This first installment covers the four
-foundational chapters — document structure, sections, inline elements, and block
-elements. The remaining chapters are listed at the end.
+anything before it. Jump to what you need. This guide is itself an Enscribe
+document, so wherever it is useful it does not just describe an element — it
+*uses* it, and the rendered result sits right below the source. This installment
+covers chapters 1–9; the remaining chapters are listed at the end.
 
 <# #sec:structure | Chapter 1. Document structure #>
 
@@ -39,11 +40,25 @@ matter. Its `type` attribute picks the document shape — `article` (flat) or
 The child tags — `<title>`, `<author>`, `<date>` — are written in **pipe form**
 (`<tag | content>`). `<meta>` and its children are canonical-only: there is no
 sigil or markdown shorthand for them, because document metadata is explicit by
-nature. The block renders into the document's front matter (`<article-front>` for
-an article, `<book-front>` for a book), and `<title>` becomes the document title
-(`<article-title>` or `<book-title>` accordingly). A document may carry more front
-matter than this — abstracts, affiliations — but title, author, and date are the
-core three.
+nature. Rendering a `<meta>` block mid-page would be disruptive, so here is its
+Layer 1 output instead — the block becomes the document's front matter, and
+`<title>` becomes `<article-title>` (or `<book-title>` in a book):
+
+```
+<article>
+  <article-front>
+    <meta data-document-type="article">
+      <article-title>A Short Account of Calibration</article-title>
+      <author>Dana Okonkwo</author>
+      <date>2026-05-31</date>
+    </meta>
+  </article-front>
+  …
+```
+
+A document may carry more front matter than this — abstracts, affiliations — but
+title, author, and date are the core three. This very page opens with a `<meta>`
+block carrying the title and author you saw at the top.
 
 **Article versus book.** `type=article` produces a flat document: body content,
 then back matter. `type=book` expects chapters and parts and produces a chaptered
@@ -95,8 +110,18 @@ a `<section>` titled "Methods":
 # Methods               markdown form: a single leading hash
 ```
 
-The level is the number of hashes, and it is the same across the sigil and
-markdown forms:
+All three reduce to the same Layer 1:
+
+```
+<section id="sec:methods">
+  <section-title>Methods</section-title>
+</section>
+```
+
+You are looking at the rendered result right now: every "Chapter N" heading in
+this guide is a `<# … #>` section, and the bold heading text is a
+`<section-title>`. The level is the number of hashes, and it is the same across
+the sigil and markdown forms:
 
 ```
 <# Title #>     # Title       →  <section>           (level 1)
@@ -145,7 +170,7 @@ each chapter; the details are in the cross-references and book-structure chapter
 > both level 1.
 
 *Related:* <a href="#sec:structure" | Document structure> (Chapter 1);
-cross-references and book numbering are covered in later chapters.
+<a href="#sec:xref" | Cross-references> (Chapter 9) and book numbering.
 
 <# #sec:inline | Chapter 3. Inline elements #>
 
@@ -162,7 +187,8 @@ for; the tags are for when you want the element explicit:
 *italic*   <i>italic</i>  <i | italic>    →  <i>italic</i>
 ```
 
-Markdown `_underscores_` also produce italic, identically to `*asterisks*`.
+For example: **bold** and *italic* render as you would expect, and markdown
+`_underscores_` produce italic identically to `*asterisks*`.
 
 **Strikethrough, underline, quotation.** Strikethrough has a markdown form
 (`~~text~~`); underline and inline quotation do not, so use the tag:
@@ -173,9 +199,10 @@ Markdown `_underscores_` also produce italic, identically to `*asterisks*`.
              <q>quoted</q>   <q | quoted>     →  <q>quoted</q>
 ```
 
-`<q>` is HTML's inline-quotation element (a browser renders it with quotation
-marks); reserve it for short in-line quotes, and use a blockquote (Chapter 4) for
-anything that stands on its own.
+Rendered, those are <s>struck through</s>, <u>underlined</u>, and
+<q>a short quotation</q>, set inline. `<q>` is HTML's inline-quotation element (a
+browser renders it with quotation marks); reserve it for short in-line quotes, and
+use a blockquote (Chapter 4) for anything that stands on its own.
 
 **Inline code.** Backticks are the markdown form, and a sigil form exists for
 symmetry with the other sigils:
@@ -184,8 +211,9 @@ symmetry with the other sigils:
 `code()`        <` code() `>      →  <code>code()</code>
 ```
 
-Backticks are almost always what you want. Content inside inline code is verbatim —
-no idioms or tags are interpreted within it.
+Backticks are almost always what you want — rendered, `code()` sets in a monospace
+run. Content inside inline code is verbatim: no idioms or tags are interpreted
+within it.
 
 **Inline math.** Mathematics inside a run of text uses LaTeX dollar signs, handed
 to KaTeX <cite @katex>; the sigil form is the canonical spelling:
@@ -194,8 +222,9 @@ to KaTeX <cite @katex>; the sigil form is the canonical spelling:
 $\varphi = (1+\sqrt5)/2$        <$ \varphi = (1+\sqrt5)/2 $>
 ```
 
-Both render the same selectable, scalable HTML math. Everything between the
-delimiters is LaTeX, passed through verbatim.
+Rendered inline, that is the golden ratio $\varphi = (1+\sqrt5)/2$, set right in
+the run of text. Both forms produce the same selectable, scalable HTML math;
+everything between the delimiters is LaTeX, passed through verbatim.
 
 **Superscript and subscript.** Brace-delimited sigils set super- and subscripts:
 
@@ -204,8 +233,9 @@ x^{2}     →  x<sup>2</sup>
 H_{2}O    →  H<sub>2</sub>O
 ```
 
-The braces are required — `x^2` without them is literal text. These compose, so
-`x^{y_{1}}` nests a subscript inside a superscript.
+Rendered, those are x^{2} and H_{2}O. The braces are required — `x^2` without them
+is literal text — and they compose, so `x^{y_{1}}` nests a subscript inside a
+superscript.
 
 **Links.** Enscribe uses the `<a>` tag, not the markdown `[text](url)` form (which
 Enscribe does not support). The URL is the first positional argument, or the
@@ -217,6 +247,8 @@ Enscribe does not support). The URL is the first positional argument, or the
 <a href="https://example.com">Example</a>   →  <a href="https://example.com">Example</a>
 ```
 
+Rendered, that is a link to <a href="https://example.com" | example.com>.
+
 > **Gotcha — when to use `href=`.** The bare positional URL is fine for ordinary
 > URLs, but a URL that is *just* a fragment (`#sec:methods`) collides with the
 > `#id` syntax, and a URL containing spaces or a `>` will end the tag early. In
@@ -224,8 +256,8 @@ Enscribe does not support). The URL is the first positional argument, or the
 > `<a href="#sec:methods" | jump to Methods>`.
 
 *Related:* <a href="#sec:block" | Block elements> (Chapter 4) for display math and
-code blocks; cross-references (which link by name rather than URL) are a later
-chapter.
+code blocks; <a href="#sec:xref" | Cross-references> (Chapter 9) link by name
+rather than URL.
 
 <# #sec:block | Chapter 4. Block elements #>
 
@@ -246,9 +278,13 @@ same-line or multi-line:
 <blockquote | A quoted line.>
 ```
 
+Rendered, the markdown form produces:
+
+> A blockquote, set off from the body. Its content is ordinary Enscribe, so
+> formatting like *italic* and inline math $e^{i\pi}+1=0$ are interpreted normally.
+
 The markdown form wraps its content in a paragraph (`<blockquote><p>…</p>`); the
-tag forms with inline content do not. A blockquote's content is ordinary
-Enscribe — formatting, math, and references inside it are interpreted normally.
+tag forms with inline content do not.
 
 **Code blocks.** A fenced block is the standard form; add a language name after
 the opening fence for syntax highlighting. The triple-backtick *sigil* is the
@@ -279,11 +315,16 @@ $$
 \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
 $$
 
-<$$ | \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi} $$>
+<$$ #eqn:gauss | \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi} $$>
 ```
 
-Like a figure, display math can take an id (`<$$ #eqn:gauss | … $$>`) so prose can
-refer back to it, and it is numbered automatically.
+Rendered, with an id so <a href="#sec:xref" | Chapter 9> can point back at it, the
+Gaussian integral sets on its own numbered line:
+
+<$$ #eqn:gauss | \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi} $$>
+
+Display math is numbered automatically; give it an id (`#eqn:name`) when prose
+will refer back to it.
 
 > **Gotcha — `$$x$$` on one line is *inline*, not display.** The `$$` fence only
 > produces display math when the delimiters are on their own lines. A single-line
@@ -307,16 +348,244 @@ the pipe form works for short cases. The aligned block is numbered like other
 display math.
 
 *Related:* <a href="#sec:inline" | Inline elements> (Chapter 3) for inline math
-and inline code; figures and tables are the next chapter to land.
+and inline code; <a href="#sec:fig" | Figures> (Chapter 5).
+
+<# #sec:fig | Chapter 5. Figures and images #>
+
+A figure is a numbered, captioned block for an image or other graphic. The element
+is `<fig>`; `<figure>` is an authoring alias that rewrites to it, so both names
+work and produce the same output. Figures are *frameable* — like tables and the
+math environments, they get an automatic number, an optional caption, and an
+optional border from one shared mechanism.
+
+**Forms.** Figures are canonical-only — there is no sigil or markdown shorthand.
+Markdown's `![alt](url)` inline-image form is deliberately *not* supported: a
+figure in scholarly writing is a numbered, cross-referenceable block, not an inline
+image, so Enscribe models it as a structured element. The `src` kwarg names the
+image; the pipe content is the caption:
+
+```
+<fig src="diagram.png" | The pipeline in one breath.>
+<figure src="diagram.png" | The pipeline in one breath.>   (alias — identical)
+<fig #fig:flow src="diagram.png" | The pipeline in one breath.>   (with an id)
+<fig src="diagram.png" />   (self-closing — an image with no caption)
+```
+
+**Arguments.** `src` is the image URL or path. The caption is the pipe content
+(and also becomes the image's `alt` text unless you set `alt=` explicitly). `#id`
+(conventionally `#fig:name`) makes the figure a cross-reference target. `width`
+sets a suggested display width (a CSS length like `width="60%"` or `width="400px"`),
+emitted as `data-width` for the theme to honor; figures do not take a separate
+height — the image's aspect ratio is preserved. `+border` opts into a framed
+border.
+
+Here is a rendered figure, with an id Chapter 9 refers to:
+
+<fig #fig:example src="https://picsum.photos/seed/enscribe-guide/640/360" | A placeholder image standing in for a real diagram. The caption is numbered automatically — you never type "Figure 1".>
+
+The label ("Figure 1.") and the number are added for you; move the figure and the
+number follows.
+
+> **Gotcha — captionless figures still number.** A self-closing
+> `<fig src="…" />` with no caption is still a numbered figure and still
+> participates in the figure sequence. If you want an image that is *not* a
+> numbered figure, that is a plain inline image — a different need Enscribe does
+> not fold into `<fig>`.
+
+For vector graphics, the simplest path today is to reference an external SVG file
+as the image: `<fig src="diagram.svg" | …>` renders it like any other image.
+Enscribe also has a dedicated `<svg>` element that shares this same frameable
+surface; embedding inline SVG source through it is still being finished, so prefer
+the `<fig src="…svg">` route for now.
+
+*Related:* <a href="#sec:tab" | Tables> (Chapter 6) — the other common frameable;
+<a href="#sec:xref" | Cross-references> (Chapter 9) to point at a figure by id.
+
+<# #sec:tab | Chapter 6. Tables #>
+
+Academic tables are mostly *data*, and writing data as HTML rows is miserable.
+Enscribe lets you write the rows as CSV or TSV and supplies the table scaffolding —
+the element, the header row, the cells — for you. Tables are frameable, so they
+take a caption and an automatic number like figures.
+
+**Forms.** The data formats — CSV and TSV — are canonical Enscribe; the markdown
+**pipe table** is the markdown form. All three produce the same Layer 1 `<table>`.
+`csv` and `tsv` are *positional qualifiers* on `<table>` (a bare token, no
+`key=`), naming how to read the pipe content:
+
+```
+<table csv | Name,Score
+Ada,10
+Bo,7>
+
+<table tsv | Name<TAB>Score
+Ada<TAB>10>
+
+| Name | Score |     ← markdown pipe table
+| ---- | ----- |
+| Ada  | 10    |
+```
+
+The first row is the header (rendered as `<th>` cells); each line after it is a
+data row.
+
+**Arguments.** `caption=` sets the caption text. `#id` (conventionally
+`#tab:name`) makes the table a cross-reference target. Here is a rendered CSV
+table, with an id and a caption, that Chapter 9 refers to:
+
+<table #tab:comparison csv caption="The three section forms compared — the same data this guide describes in prose, written as four lines of CSV." |
+Form,Keystrokes,Carries an id
+Sigil,fewest,yes
+Canonical,most,yes
+Markdown,few,no
+>
+
+The "Table 1." label and number are supplied for you, exactly as with figures.
+
+> **Gotcha — commas and tabs are the delimiters.** In a `csv` table a literal
+> comma in a cell needs quoting (standard CSV rules); if your data is full of
+> commas, `tsv` (tab-separated) is often cleaner. The markdown pipe form is handy
+> for a small hand-written table but has no place to put an id or a caption kwarg,
+> so reach for `csv`/`tsv` when the table needs to be referenced or captioned.
+
+*Related:* <a href="#sec:fig" | Figures> (Chapter 5) — the sibling frameable;
+<a href="#sec:xref" | Cross-references> (Chapter 9).
+
+<# #sec:cite | Chapter 7. Citations and bibliography #>
+
+Citations are keys into a bibliography you supply. You hold the *keys* and the
+chosen *style*; the formatting, ordering, and disambiguation are delegated to a
+citation engine and the CSL styles the rest of scholarly publishing uses.
+
+**Forms.** Citations are canonical-only. Three pieces work together:
+
+```
+<data>
+<library |
+@article{smith2020, author = {Smith, A.}, title = {On Calibration}, year = {2020}}
+>
+</data>
+
+… in the prose:  as Smith showed <cite @smith2020> …
+
+<bibliography>
+</bibliography>
+```
+
+The `<library>` block holds BibTeX entries and lives inside the `<data>` apparatus
+block at the foot of the document. `<cite @key>` places an in-text citation.
+`<bibliography></bibliography>` marks where the formatted reference list renders
+(end of an article; per the book back matter in a book). An external library is
+written `<library src="refs.bib">` instead of inline content, for when the
+bibliography lives in a separate file.
+
+**Arguments and multiple keys.** One `<cite>` can carry several comma-separated
+keys, which render as a single grouped citation:
+
+```
+<cite @smith2020>                 single
+<cite @smith2020, @jones2019>     grouped
+```
+
+This guide already cites as it goes — the KaTeX reference in
+<a href="#sec:inline" | Chapter 3> and the CommonMark reference in
+<a href="#sec:block" | Chapter 4> are `<cite @katex>` and `<cite @commonmark>`,
+both resolving against the `<library>` in the `<data>` block at the foot of this
+page. Grouped, those two are <cite @katex, @commonmark>, and the formatted list of
+everything cited appears under "References" at the very bottom.
+
+> **Gotcha — a `<cite>` needs its key in the library.** A `<cite @missing>` whose
+> key is not in any `<library>` renders a visible "missing citation" marker rather
+> than silently vanishing, so unresolved keys are easy to catch. Keep the `<data>`
+> block's BibTeX keys and your `<cite>` keys in sync.
+
+*Related:* <a href="#sec:foot" | Footnotes> (Chapter 8) — the other apparatus that
+collects at the document's foot; <a href="#sec:xref" | Cross-references>
+(Chapter 9).
+
+<# #sec:foot | Chapter 8. Footnotes #>
+
+A footnote attaches a numbered aside to a point in the text. The element is
+`<note>`, written in pipe form immediately after the word it attaches to, with no
+space.
+
+**Forms.** Footnotes are canonical-only:
+
+```
+… the procedure is standard.<note | But see the appendix for the edge case.>
+```
+
+The marker is numbered automatically; the note's content collects into a list at
+the end of the article (or per-chapter in a book — see `note-scope` in
+<a href="#sec:structure" | Chapter 1>). This sentence carries a
+footnote<note | Here is the footnote body. On the docs site the marker is a hover
+target — hover or tap it to read this without losing your place — and the same
+text also collects in the list at the foot of the page.> you can try right now.
+
+On surfaces that support it the marker shows a **hover preview**; in print, or
+where hover is unavailable, the note falls back to the numbered list at the foot of
+the document. Same source, different surfaces.
+
+> **Gotcha — attach the note with no space.** Write the `<note | …>` flush against
+> the word it annotates (`standard.<note | …>`, not `standard. <note | …>`); a
+> space before the marker reads as a space between the word and its footnote
+> number.
+
+*Related:* <a href="#sec:cite" | Citations> (Chapter 7);
+<a href="#sec:xref" | Cross-references> (Chapter 9).
+
+<# #sec:xref | Chapter 9. Cross-references #>
+
+A cross-reference points at a numbered element by its id and renders the right
+word and number — "figure 1", "table 2" — computed after the whole document is
+parsed, so it is always the number the target actually received. Move the target,
+renumber nothing.
+
+**Forms.** Cross-references are canonical-only. `<ref @id>` names a target by its
+typed id; the prefix of the id selects the word:
+
+```
+<ref @fig:flow>    →  figure N
+<ref @tab:data>    →  table N
+<ref @eqn:gauss>   →  equation N
+<ref @thm:main>    →  theorem N
+```
+
+The id-prefix conventions are `#fig:` (figures), `#tab:` (tables), `#eqn:`
+(equations), `#thm:`/`#lem:`/`#cor:`/`#prop:` (the theorem family), `#def:`
+(definitions), `#ex:` (examples), and `#sec:` (sections). The reference resolves
+forward or backward freely.
+
+Here it is at work. This guide gave its figure the id `#fig:example`, its table
+`#tab:comparison`, and its display equation `#eqn:gauss`; referring to them —
+<ref @fig:example>, <ref @tab:comparison>, and <ref @eqn:gauss> — resolves to the
+numbers they received above, each a link you can follow.
+
+> **Gotcha — sections are unnumbered in a flat article.** Figures, tables,
+> equations, and theorems carry numbers, so a `<ref>` to them reads "figure 1",
+> "table 1". Sections in an article are *not* numbered, so `<ref @sec:methods>`
+> falls back to the id's tail ("methods") rather than "section 1". Numbered section
+> references are a book feature: with chapter/section counter scoping a book
+> numbers its sections and the references follow. To link to a section by custom
+> text in any document, use a plain anchor — `<a href="#sec:methods" | the Methods
+> section>`.
+
+In a **book**, numbering is *scoped*: a figure in Chapter 3 numbers as "Figure 3.1"
+and a cross-reference to it renders the chapter-prefixed number. Scoped numbering
+and the book counters are covered in the book-structure chapter (forthcoming).
+
+*Related:* <a href="#sec:fig" | Figures> (Chapter 5),
+<a href="#sec:tab" | Tables> (Chapter 6), and
+<a href="#sec:block" | Block elements> (Chapter 4) for the equation referenced
+above.
 
 <# What's next #>
 
-This installment covers document structure, sections, inline elements, and block
-elements. Chapters on **figures and images**, **tables**, **citations and
-bibliography**, **footnotes**, **cross-references**, the **theorem family**,
-**external DSLs** (Mermaid, ABC), **book structure**, **arguments and the pipe**,
-and **rendering and output** are coming in subsequent updates. For the
-architecture behind the canonical-form model, read the
+This installment covers document structure, sections, inline and block elements,
+figures, tables, citations, footnotes, and cross-references. Chapters on the
+**theorem family**, **external DSLs** (Mermaid, ABC), **book structure**,
+**arguments and the pipe**, and **rendering and output** are coming in subsequent
+updates. For the architecture behind the canonical-form model, read the
 <a href="design.html" | Design article>; for a guided tour of the whole feature
 set in one page, see the <a href="quickstart.html" | Quickstart>.
 

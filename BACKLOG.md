@@ -83,12 +83,25 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
-- [ ] **Quickstart shows `## Methods` as the markdown form for a section**
+- [x] **Quickstart shows `## Methods` as the markdown form for a section**
   `[docs]` `[content]` — `quickstart.emd` (the "Sections come in three forms"
-  block) presents `## Methods` as equivalent to `<# Methods #>`, but `##` lifts
-  to `<sub-section>`, not `<section>`; the markdown form for a section is a
-  single `#`. One-line fix in the example. *(Found while verifying the
-  Authoring Guide 3e-i heading mapping.)*
+  block) presented `## Methods` as equivalent to `<# Methods #>`, but `##` lifts
+  to `<sub-section>`, not `<section>`; the section markdown form is a single `#`.
+  *(Found while verifying the Authoring Guide 3e-i heading mapping.)* — **CLOSED
+  2026-05-31**: `## Methods` → `# Methods` in the example (carried in the 3e-ii
+  commit alongside the working-tree fix Ariel had already applied).
+- [ ] **`<svg>` renders empty — inner SVG source dropped**
+  `[interpreter]` `[post-alpha]` — a `<svg>…</svg>` (long-form or pipe) renders
+  `<svg></svg>`: the passthrough attributes (`viewBox`/`width`/`height`) survive
+  but the inner SVG source is lost. Root cause: `svg` is missing from
+  `DSL_REGISTRY` (`enscribe-core/src/dsl-registry.js`), so `getContentHandler`
+  returns `'default'` and the content is recursively re-parsed into an mdast
+  array; `handlers/svg.js` reads `node.content` only when it is a string
+  (`typeof node.content === 'string' ? … : ''`) and so drops the array. Likely
+  fix: register `['svg','svg']` (svg's content is raw SVG XML — opaque, like
+  `table`/`library`), or serialize array content in the handler. Workaround
+  today: reference an external SVG file as an image, `<fig src="diagram.svg">`.
+  *(Found while render-verifying Authoring Guide chapter 5, 3e-ii.)*
 - [x] **Same-line long-form `<tag>content</tag>` produces an empty element**
   `[parser]` `[post-alpha]` — decided: add same-line long-form support,
   Phase 0 first *(filed by the parser/handler-fixes slice)* — **CLOSED
@@ -1125,13 +1138,16 @@ cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). Remaining slices —
-docs-site content (the rest of the Authoring Guide, 3e-ii/3e-iii; and 3f: a
-Layer 1 Reference) and fixture consolidation stay open; **Slices 3c, 3d, and
-3e-i have since landed** — the Quickstart guide (authored in canonical enscribe,
+docs-site content (the rest of the Authoring Guide, 3e-iii; and 3f: a Layer 1
+Reference) and fixture consolidation stay open; **Slices 3c, 3d, 3e-i, and
+3e-ii have since landed** — the Quickstart guide (authored in canonical enscribe,
 13 features in its own content), the JATS-relationship article (the export
-mapping, a real worked example, a workflow comparison), and the Authoring Guide's
-first four chapters (document structure, sections, inline elements, block
-elements — a fifth docs-site page). This checkbox tracks the whole arc.
+mapping, a real worked example, a workflow comparison), and the Authoring Guide
+(a fifth docs-site page): 3e-i wrote chapters 1–4 (document structure, sections,
+inline, block); 3e-ii added rendered demonstrations to chapters 1–4 and wrote
+chapters 5–9 (figures, tables, citations, footnotes, cross-references) with
+cross-references resolving inside the document. 3e-iii (theorem family, DSLs,
+book structure, arguments, rendering) remains. This checkbox tracks the whole arc.
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by

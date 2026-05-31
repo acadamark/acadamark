@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d) and the Authoring Guide's first four chapters (3e-i) landed, and the remaining Authoring Guide chapters (3e-ii/iii), the Layer 1 Reference (3f), plus generated types are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d) and the Authoring Guide chapters 1–9 (3e-i + 3e-ii) landed, and the rest of the Authoring Guide (3e-iii), the Layer 1 Reference (3f), plus generated types are follow-up slices
 
 ### Components
 
@@ -88,10 +88,12 @@ articles, and **Slice 3c** landed the Quickstart guide (authored in canonical
 enscribe, exercising 13 features in its own content), and **Slice 3d** landed the
 JATS-relationship article. The **Issue 1 same-line-long-form** support has since
 landed (`<b>bold</b>` and the same-line long form work for every vocab tag), and
-**Slice 3e-i** landed the Authoring Guide's first four chapters (document
-structure, sections, inline elements, block elements). **Next:** Ariel runs
-`npm publish` per package (out of band); the remaining docs-site content is
-Slices 3e-ii / 3e-iii (the rest of the Authoring Guide) and 3f (Layer 1
+**Slices 3e-i and 3e-ii** built the Authoring Guide: chapters 1–4 (document
+structure, sections, inline, block), then rendered demonstrations across those
+chapters plus chapters 5–9 (figures, tables, citations, footnotes,
+cross-references). **Next:** Ariel runs `npm publish` per package (out of band);
+the remaining docs-site content is Slice 3e-iii (the rest of the Authoring Guide)
+and 3f (Layer 1
 Reference).
 
 The **render-quality spec** is written
@@ -4314,3 +4316,29 @@ that). One line gets added every few months, not every slice.
   shows `## Methods` as the markdown form for a section, but `##`→`<sub-section>`;
   the section form is single `#`. Filed as a finding for a Quickstart fix. Next:
   3e-ii (Figures, Tables, Citations, Footnotes, Cross-references).
+- **2026-05-31 — Authoring Guide 3e-ii: rendered examples + chapters 5–9.** Two
+  jobs in `docs-site/sources/authoring-guide.emd`. (1) Added rendered
+  demonstrations across chapters 1–4: Layer 1 HTML for `<meta>`/`<section>` (the
+  structural ones), and live inline renders for `<s>`/`<u>`/`<q>`, inline math,
+  links, sup/sub, a rendered blockquote, and a numbered display equation
+  (`#eqn:gauss`). (2) Wrote chapters 5–9 — Figures (`<fig>`/`<figure>`, `src`,
+  caption, `#fig:`, `width`, self-closing), Tables (CSV/TSV/markdown-pipe,
+  caption, `#tab:`), Citations (`<library>` in `<data>`, `<cite @key>`, grouped
+  keys, `<bibliography>`), Footnotes (`<note>`), Cross-references (`<ref @id>` by
+  typed-id prefix) — each with a rendered demonstration. The guide now renders
+  one figure (Figure 1), one table (Table 1), one equation (1), and a footnote,
+  and Chapter 9's `<ref>`s resolve to "figure 1" / "table 1" / "equation 1"
+  inside the document; three citations resolve with a bibliography. Builds with
+  no error nodes; all suites pass (no code changes). The Quickstart `##`→`#`
+  section-form fix (Ariel's working-tree change) is carried here, its BACKLOG
+  item ticked, and the example re-aligned. Findings surfaced while
+  render-verifying (documented honestly in the guide): `<ref @sec:name>` in an
+  article renders the id's label-tail, not "section N" (sections are unnumbered
+  in flat articles; numbered section refs are a book feature); `<fig>` takes
+  `width` (→ `data-width`) but no `height` (aspect ratio preserved); the
+  equation ref prefix is `eqn:`, not `eq:`. Plus a real bug filed in BACKLOG:
+  **`<svg>` renders empty** — inner SVG source is dropped because `svg` is
+  missing from `DSL_REGISTRY` (content re-parsed to an array; `handlers/svg.js`
+  reads only string content). Guide uses the working `<fig src="…svg">` route
+  instead. Next: 3e-iii (Theorem family, DSLs, Book structure, Arguments,
+  Rendering).
