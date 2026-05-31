@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "demo",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": [
+        "-d",
+        "ubuntu-24.04",
+        "--",
+        "bash",
+        "-lc",
+        "cd ~/academark && exec python3 -m http.server 8767"
+      ],
+      "port": 8767
+    }
+  ]
+}
