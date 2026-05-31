@@ -173,8 +173,10 @@ a separate later decision rather than forced here.) That **project rename has
 since landed as its own slice** — the project is now *enscribe*, the source
 extension is `.emd` (`.enscribe` accepted as an alias), with package names, the
 CSS theme namespace, and GitHub URLs updated to match (see the `STATUS.md`
-milestone). The next slice is 3b — translating the README and DESIGN into
-canonical enscribe as articles. Nothing else is in flight.
+milestone). Slice 3b has since landed too — the README and DESIGN are
+translated to canonical enscribe and ship as the docs-site Home and Design
+articles (the `example-article` placeholder retired); the next slice is 3c (the
+Quickstart guide). Nothing else is in flight.
 
 ---
 
@@ -516,8 +518,8 @@ both are release-blocking.
   rename**, both per its locked inputs). The rename and the release-time
   org-split have since landed as their own slices (the project is *enscribe*;
   the packages publish under `@enscribejs/*` at v0.1.0); the remaining slices
-  (docs-site content in 3b–3d, fixture consolidation) per the Phase 0 slicing
-  continue.
+  (docs-site content in 3c–3d — 3b having landed README + DESIGN as articles —
+  and fixture consolidation) per the Phase 0 slicing continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —
   the standard the display work (Phase 8) and the demonstrative fixture

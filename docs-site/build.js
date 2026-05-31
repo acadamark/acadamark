@@ -52,13 +52,14 @@ const RENDER_OPTIONS = {
   assetsDir: SOURCES_DIR,
 };
 
-// The site's pages, in nav order. Hardcoded for v0.1.0 (three placeholder
-// pages); when real content lands in later slices this list grows. A manifest
-// file would be overkill at this size.
+// The site's pages, in nav order. Hardcoded for v0.1.0; when more content lands
+// in later slices this list grows. A manifest file would be overkill at this
+// size. Home and Design carry real content (Slice 3b, translated from README
+// and DESIGN); Quickstart is still placeholder (real content lands in Slice 3c).
 const PAGES = [
-  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                    nav: 'Home',            kind: 'page' },
-  { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',       nav: 'Quickstart',      kind: 'playground' },
-  { slug: 'example-article', source: 'example-article.emd', title: 'Example article — enscribe',  nav: 'Example article', kind: 'page' },
+  { slug: 'index',      source: 'index.emd',      title: 'enscribe',              nav: 'Home',       kind: 'page' },
+  { slug: 'design',     source: 'design.emd',     title: 'Design — enscribe',     nav: 'Design',     kind: 'page' },
+  { slug: 'quickstart', source: 'quickstart.emd', title: 'Quickstart — enscribe', nav: 'Quickstart', kind: 'playground' },
 ];
 
 /** Render an enscribe source string to an HTML fragment. */

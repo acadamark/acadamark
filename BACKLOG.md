@@ -275,9 +275,13 @@ A flat scannable index of every open item. Detailed entries below.
   passes will be ordinary per-slice coherence checks
 - [ ] **Write a print-requirements spec** `[specs/docs]`
   `[post-alpha]` — companion to the pagination work in Phase 8
-- [ ] **Reconcile stale doc cross-references** (`BACKLOG-ROADMAP.md`
+- [ ] **Reconcile stale doc cross-references and claims** (`BACKLOG-ROADMAP.md`
   → `BACKLOG.md` / `ROADMAP.md`; `rehypeEnscribeToJats` →
-  `enscribeToJats`) `[specs/docs]` `[post-alpha]`
+  `enscribeToJats`; `README.md`'s License section says "TBD" though MIT now
+  ships; `README.md` links a non-existent `BUILD.md` — both surfaced while
+  translating the README for the docs-site Home page in Slice 3b, and handled
+  in the derived `.emd` but not the `README.md` source) `[specs/docs]`
+  `[post-alpha]`
 
 ### Deferred — explicitly parked
 
@@ -1002,8 +1006,10 @@ names, the CSS theme namespace, and GitHub URLs updated). The release-time
 **org-split has since landed** (the v0.1.0 prep-for-publish slice: the five
 packages publish under `@enscribejs/*`, coordinated at 0.1.0 with `^0.1.0`
 cross-deps, an MIT license, publish-ready metadata, and a clean
-`npm pack --dry-run` each). Remaining slices — docs-site content (3b: README +
-DESIGN as articles; 3c: a written Quickstart; 3d: a JATS-relationship article)
+`npm pack --dry-run` each). **Slice 3b has since landed** — the README and
+DESIGN are translated to canonical enscribe and ship as the docs-site Home and
+Design articles (the `example-article` placeholder retired). Remaining slices —
+docs-site content (3c: a written Quickstart; 3d: a JATS-relationship article)
 and fixture consolidation — stay open (this checkbox tracks the whole arc).
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images

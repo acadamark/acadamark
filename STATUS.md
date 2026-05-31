@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); docs-site content, types, and the rename are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design content landed (Slice 3b), and the Quickstart/JATS articles (3c–3d) plus generated types are follow-up slices
 
 ### Components
 
@@ -82,8 +82,10 @@ project is now *enscribe*, with the `.emd` source extension. The
 **prep-for-publish** slice has since landed too (see Milestones): the five
 workspace packages are scoped under `@enscribejs/*`, coordinated at **v0.1.0**
 with an MIT license and publish-ready metadata, and `npm pack --dry-run` is
-clean for each. **Next:** Ariel runs `npm publish` per package (out of band),
-and Slice 3b translates the README and DESIGN into canonical enscribe.
+clean for each. **Slice 3b** has since landed too: the README and DESIGN are
+translated to canonical enscribe and ship as the docs-site Home and Design
+articles. **Next:** Ariel runs `npm publish` per package (out of band), and
+Slice 3c authors the Quickstart guide.
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -191,12 +193,12 @@ the editor with its own source for live editing (the read-only pages ship no
 JavaScript). Two deliberate divergences from the Phase 0 plan, both per the
 slice's locked inputs: the site lives at `docs-site/` at the repo root rather
 than `packages/demo-site/`, and the **project rename is deferred** to a separate
-later decision rather than being forced by this slice. **Next:** Phase 14
-Slice 3b — translate the README and DESIGN into canonical enscribe and land
-them as articles — then Slice 3c (Quickstart guide), Slice 3d (JATS-relationship
-article), the rename decision, and the remaining packaging slices (fixture
-consolidation, org-split) plus the demonstrative-fixture work. Nothing else is
-in flight.
+later decision rather than being forced by this slice. **Slice 3b has since
+landed** (the README and DESIGN are translated to canonical enscribe and ship as
+the docs-site Home and Design articles), as have the rename and the org-split.
+**Next:** Phase 14 Slice 3c (Quickstart guide), then Slice 3d
+(JATS-relationship article) and the remaining packaging slices (fixture
+consolidation) plus the demonstrative-fixture work. Nothing else is in flight.
 
 ## Milestones
 
@@ -4128,3 +4130,20 @@ that). One line gets added every few months, not every slice.
   stay green and the library / docs builds pass; `npm pack --dry-run` is clean
   for all five packages. **No publish performed** — Ariel runs `npm publish` per
   package. Next: Slice 3b (translate README + DESIGN into canonical enscribe).
+- **2026-05-30 — Phase 14 Slice 3b: README + DESIGN as docs-site articles.** The
+  first docs-site content slice. `README.md` and `DESIGN.md` were translated to
+  canonical enscribe (`.emd`) and now ship as the site's **Home** (`index.emd`,
+  from the README) and **Design** (`design.emd`, from DESIGN) pages, replacing
+  the Slice 3a placeholders; the `example-article.emd` placeholder was retired
+  and the build script's page list / dynamic nav updated to Home / Design /
+  Quickstart. Because enscribe accepts markdown idioms, the translation is
+  faithful: prose, markdown headings (`#`/`##`/`###`, which lift to the section
+  ladder), code fences (the architecture diagram and the literal enscribe
+  syntax examples render verbatim), and the one gate table carry over unchanged;
+  no `<meta>` block is added (the docs-site convention supplies page titles from
+  the build script). The homepage's relative doc links were repointed —
+  `DESIGN.md` to the new local `design.html`, the rest to GitHub `blob` URLs —
+  and a dead `BUILD.md` link dropped (no such file). The README and DESIGN
+  **source files are untouched** (the `.emd` pages are derived artifacts).
+  `docs:build` emits the three pages cleanly with no error nodes; all test
+  suites stay green. Next: Slice 3c (Quickstart guide authoring).
