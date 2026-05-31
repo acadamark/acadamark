@@ -85,9 +85,10 @@ with an MIT license and publish-ready metadata, and `npm pack --dry-run` is
 clean for each. **Slice 3b** has since landed too: the README and DESIGN are
 translated to canonical enscribe and ship as the docs-site Home and Design
 articles, and **Slice 3c** landed the Quickstart guide (authored in canonical
-enscribe, exercising 13 features in its own content). **Next:** Ariel runs
-`npm publish` per package (out of band), and Slice 3d authors the JATS
-relationship article.
+enscribe, exercising 13 features in its own content), and **Slice 3d** landed the
+JATS-relationship article. **Next:** Ariel runs `npm publish` per package (out of
+band); the remaining docs-site content is Slices 3e (Authoring Guide) and 3f
+(Layer 1 Reference), and the Issue 1 same-line-long-form Phase 0 is queued.
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -198,10 +199,10 @@ than `packages/demo-site/`, and the **project rename is deferred** to a separate
 later decision rather than being forced by this slice. **Slice 3b has since
 landed** (the README and DESIGN are translated to canonical enscribe and ship as
 the docs-site Home and Design articles), as have the rename and the org-split.
-Slice 3c (the Quickstart guide) has since landed too. **Next:** Phase 14
-Slice 3d (the JATS-relationship article), then the remaining packaging slices
-(fixture consolidation) plus the demonstrative-fixture work. Nothing else is in
-flight.
+Slices 3c (Quickstart) and 3d (JATS article) have since landed too. **Next:**
+Phase 14 Slices 3e (Authoring Guide) and 3f (Layer 1 Reference), the Issue 1
+Phase 0, and the remaining packaging slices (fixture consolidation) plus the
+demonstrative-fixture work. Nothing else is in flight.
 
 ## Milestones
 
@@ -4210,3 +4211,24 @@ that). One line gets added every few months, not every slice.
   removed idioms). All suites pass; the bundle and docs build. This corrects the
   `<img>`-removal cascade surfaced (and deferred) in the previous JATS-slice
   attempt. Next: resume Slice 3d (JATS relationship article).
+- **2026-05-31 — Phase 14 Slice 3d: JATS relationship article + housekeeping.**
+  The docs site's fourth page (`docs-site/sources/jats.emd`, ~1,500 words) explains
+  what JATS is (the NISO archival/interchange standard), what Enscribe's export
+  does, and answers "can I submit to a JATS journal?" — yes. Its claims are
+  grounded in the real exporter: the **worked example** shows an Enscribe fragment
+  and the *actual* JATS the exporter produced for it (rendered through the
+  interpreter pipeline + `enscribeToJats`, not hand-written) — `<sec>`/`<title>`,
+  `<inline-formula><tex-math>`, a footnote split into an `<xref ref-type="fn">`
+  marker plus a `<back><fn-group>`, an `<xref ref-type="fig">`, and a
+  `<fig>`/`<graphic>`. It is honest about the DSL caveat (`<preformat>` source),
+  the article-vs-book split (JATS 1.3 vs BITS 2.0), and that **import is planned,
+  not built**. It uses enscribe's own `<a>` links and three real citations from a
+  `<data><library>` at the document end. **Housekeeping:** the Quickstart's
+  `<data>` block was moved to the end per the apparatus convention (citations
+  still resolve); the Issue 1 backlog entry was extended with its motivating
+  inline tags (`<b>`/`<i>`/`<s>`/`<u>`/`<q>`) and a `""…""`-for-`<q>` sigil
+  proposal for its Phase 0; and the demonstrative fixtures' start-placed `<data>`
+  was filed as a convention-alignment chore (not moved). `build.js` now serves
+  four pages (Home / Design / Quickstart / JATS); all suites pass, 0 error nodes.
+  Next: Slices 3e (Authoring Guide) / 3f (Layer 1 Reference), or the Issue 1
+  Phase 0.

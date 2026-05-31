@@ -273,6 +273,12 @@ A flat scannable index of every open item. Detailed entries below.
 
 ### Standing
 
+- [ ] **Align demonstrative fixtures' `<data>` placement to the end-convention**
+  `[tests]` `[post-alpha]` — `document-9`, `-44`, `-45`, `-46` place their
+  `<data>` block at the *start*; the convention (now followed by the docs-site
+  Quickstart) is apparatus at the document's end. Moving them is a separate
+  chore because each needs snapshot regeneration and a diff audit. *(Noted by
+  the JATS-article + housekeeping slice.)*
 - [ ] **Run a spec-completeness audit against the rebuild-from-docs
   standard** `[specs/docs]` `[post-alpha]` — one-time large; future
   passes will be ordinary per-slice coherence checks
@@ -323,6 +329,21 @@ impact), then an implementation slice. Until it lands, the unknown-tag-escaping
 fix means a same-line *unknown* tag (`<glurp>hi</glurp>`) at least renders as
 clean literal text, while a same-line *known* tag still shows its empty-element
 artifact. *(Filed by the parser/handler-fixes slice.)*
+
+**Primary motivating tags.** The inline styling / semantic tags `<b>`, `<i>`,
+`<s>`, `<u>`, and `<q>` are the main beneficiaries: they carry no id or
+arguments and wrap a short run of inline text, so the same-line long form
+(`<b>hello</b>`) is their most natural authoring shape — closer to HTML and to
+how authors expect emphasis-like markup to read. The Phase 0 should weight its
+disambiguation design toward these.
+
+**Sigil proposal to evaluate in the Phase 0 — `""…""` for `<q>`.** A doubled-
+straight-quote inline sigil (`""quoted text""` → `<q>quoted text</q>`) would
+parallel `$…$` for math and the other inline sigils, giving quotation a
+lightweight form that needs no same-line long form at all. Filed here (not
+specified): if a sigil covers `<q>`, that is one fewer tag depending on
+same-line long form, so the Issue 1 Phase 0 should weigh it alongside the
+grammar work. *(Both notes added by the JATS-article + housekeeping slice.)*
 
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`
@@ -1041,10 +1062,11 @@ cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). Remaining slices —
-docs-site content (3d: a JATS-relationship article) and fixture consolidation —
-stay open; **Slice 3c has since landed** (the Quickstart guide, authored in
-canonical enscribe and exercising 13 features in its own content, replacing the
-placeholder). This checkbox tracks the whole arc.
+docs-site content (3e: an Authoring Guide; 3f: a Layer 1 Reference) and fixture
+consolidation stay open; **Slices 3c and 3d have since landed** — the Quickstart
+guide (authored in canonical enscribe, 13 features in its own content) and the
+JATS-relationship article (the export mapping, a real worked example, a workflow
+comparison). This checkbox tracks the whole arc.
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by

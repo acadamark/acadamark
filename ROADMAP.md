@@ -175,9 +175,10 @@ extension is `.emd` (`.enscribe` accepted as an alias), with package names, the
 CSS theme namespace, and GitHub URLs updated to match (see the `STATUS.md`
 milestone). Slice 3b has since landed too — the README and DESIGN are
 translated to canonical enscribe and ship as the docs-site Home and Design
-articles (the `example-article` placeholder retired). Slice 3c has since landed
-too — the Quickstart guide, authored in canonical enscribe; the next slice is 3d
-(the JATS-relationship article). Nothing else is in flight.
+articles (the `example-article` placeholder retired). Slices 3c and 3d have since
+landed too — the Quickstart guide and the JATS-relationship article, both
+authored in canonical enscribe; the next docs-site slices are 3e (Authoring
+Guide) and 3f (Layer 1 Reference). Nothing else is in flight.
 
 ---
 
@@ -519,8 +520,9 @@ both are release-blocking.
   rename**, both per its locked inputs). The rename and the release-time
   org-split have since landed as their own slices (the project is *enscribe*;
   the packages publish under `@enscribejs/*` at v0.1.0); the remaining slices
-  (docs-site content in 3d — 3b and 3c having landed the README, DESIGN, and
-  Quickstart articles — and fixture consolidation) per the Phase 0 slicing
+  (docs-site content in 3e–3f — 3b–3d having landed the README, DESIGN,
+  Quickstart, and JATS articles — and fixture consolidation) per the Phase 0
+  slicing
   continue.
 - **Render-quality spec** *(done — `notes/specs/render-quality.md`)*. A
   spec defining what "rendered correctly" means for the visible output —

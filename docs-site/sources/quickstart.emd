@@ -3,31 +3,6 @@
   <author | The Enscribe Project>
 </meta>
 
-<data>
-<library |
-@misc{gruber2004,
-  author = {Gruber, John},
-  title  = {Markdown},
-  year   = {2004},
-  url    = {https://daringfireball.net/projects/markdown/}
-}
-@misc{whatwg2024,
-  author = {{WHATWG}},
-  title  = {HTML Living Standard},
-  year   = {2024},
-  url    = {https://html.spec.whatwg.org/}
-}
-@techreport{jats2021,
-  author      = {{National Information Standards Organization}},
-  title       = {JATS: Journal Article Tag Suite, version 1.3},
-  number      = {ANSI/NISO Z39.96-2021},
-  institution = {NISO},
-  year        = {2021},
-  url         = {https://www.niso.org/standards-committees/jats}
-}
->
-</data>
-
 You are reading an Enscribe document — not a description of one, but the actual
 source rendered to HTML in your browser. If you are on the docs site, the panel
 beside this text holds that source; change anything and the output re-renders as
@@ -185,9 +160,10 @@ site they render as small markers you can **hover** to read in place, without
 losing your spot; in print they fall to the foot of the page or the end of the
 section. Same source, different surfaces.
 
-Citations work against a bibliography you supply. The `<data>` block at the top
-of this page holds a `<library>` of BibTeX entries — nothing is fetched from
-disk, so the whole document stays self-contained and editable right here in the
+Citations work against a bibliography you supply. The `<data>` block at the end
+of this page holds a `<library>` of BibTeX entries — apparatus like `<data>` and
+`<config>` goes at the document's edges, by convention at the end. Nothing is
+fetched from disk, so the whole document stays self-contained and editable in the
 browser. You cite an entry by its key, and the formatting is not Enscribe's job:
 it is delegated to citation-js and the CSL styles the rest of scholarly
 publishing uses, so switching from one journal's style to another's is a
@@ -240,6 +216,31 @@ the shorthand lifts to it, and where JATS fits — read the
 depth, and the **Layer 1 Reference**, cataloguing the output vocabulary, are the
 next documents to land on this site. Until then, the best next step is the one
 right beside this text: keep editing, and watch what changes.
+
+<data>
+<library |
+@misc{gruber2004,
+  author = {Gruber, John},
+  title  = {Markdown},
+  year   = {2004},
+  url    = {https://daringfireball.net/projects/markdown/}
+}
+@misc{whatwg2024,
+  author = {{WHATWG}},
+  title  = {HTML Living Standard},
+  year   = {2024},
+  url    = {https://html.spec.whatwg.org/}
+}
+@techreport{jats2021,
+  author      = {{National Information Standards Organization}},
+  title       = {JATS: Journal Article Tag Suite, version 1.3},
+  number      = {ANSI/NISO Z39.96-2021},
+  institution = {NISO},
+  year        = {2021},
+  url         = {https://www.niso.org/standards-committees/jats}
+}
+>
+</data>
 
 <bibliography>
 </bibliography>
