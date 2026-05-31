@@ -275,6 +275,12 @@ A flat scannable index of every open item. Detailed entries below.
   passes will be ordinary per-slice coherence checks
 - [ ] **Write a print-requirements spec** `[specs/docs]`
   `[post-alpha]` — companion to the pagination work in Phase 8
+- [ ] **Clarify display-math notation in `DESIGN.md`'s gate table**
+  `[specs/docs]` `[post-alpha]` — the gate table writes "`$$x$$` → display-math",
+  but a single-line `$$...$$` actually lifts to *inline*-math; display-math
+  requires the `$$` fences on their own lines (remark-math's block rule) or the
+  canonical `<$$ | ... $$>` tag. Surfaced while authoring the Quickstart
+  (Slice 3c), which uses the canonical tag form.
 - [ ] **Reconcile stale doc cross-references and claims** (`BACKLOG-ROADMAP.md`
   → `BACKLOG.md` / `ROADMAP.md`; `rehypeEnscribeToJats` →
   `enscribeToJats`; `README.md`'s License section says "TBD" though MIT now
@@ -1009,8 +1015,10 @@ cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). Remaining slices —
-docs-site content (3c: a written Quickstart; 3d: a JATS-relationship article)
-and fixture consolidation — stay open (this checkbox tracks the whole arc).
+docs-site content (3d: a JATS-relationship article) and fixture consolidation —
+stay open; **Slice 3c has since landed** (the Quickstart guide, authored in
+canonical enscribe and exercising 13 features in its own content, replacing the
+placeholder). This checkbox tracks the whole arc.
 Follow-up findings are filed as their own entries: the `.d.ts` types item and
 the citation-js bundle-weight item (Slice 1); the doc-46 missing-figure-images
 bug (Slice 2). (Slice 2's bare-import drift-guard enhancement was retired by

@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design content landed (Slice 3b), and the Quickstart/JATS articles (3c–3d) plus generated types are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), and the JATS article (3d) plus generated types are follow-up slices
 
 ### Components
 
@@ -84,8 +84,10 @@ workspace packages are scoped under `@enscribejs/*`, coordinated at **v0.1.0**
 with an MIT license and publish-ready metadata, and `npm pack --dry-run` is
 clean for each. **Slice 3b** has since landed too: the README and DESIGN are
 translated to canonical enscribe and ship as the docs-site Home and Design
-articles. **Next:** Ariel runs `npm publish` per package (out of band), and
-Slice 3c authors the Quickstart guide.
+articles, and **Slice 3c** landed the Quickstart guide (authored in canonical
+enscribe, exercising 13 features in its own content). **Next:** Ariel runs
+`npm publish` per package (out of band), and Slice 3d authors the JATS
+relationship article.
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -196,9 +198,10 @@ than `packages/demo-site/`, and the **project rename is deferred** to a separate
 later decision rather than being forced by this slice. **Slice 3b has since
 landed** (the README and DESIGN are translated to canonical enscribe and ship as
 the docs-site Home and Design articles), as have the rename and the org-split.
-**Next:** Phase 14 Slice 3c (Quickstart guide), then Slice 3d
-(JATS-relationship article) and the remaining packaging slices (fixture
-consolidation) plus the demonstrative-fixture work. Nothing else is in flight.
+Slice 3c (the Quickstart guide) has since landed too. **Next:** Phase 14
+Slice 3d (the JATS-relationship article), then the remaining packaging slices
+(fixture consolidation) plus the demonstrative-fixture work. Nothing else is in
+flight.
 
 ## Milestones
 
@@ -4147,3 +4150,22 @@ that). One line gets added every few months, not every slice.
   **source files are untouched** (the `.emd` pages are derived artifacts).
   `docs:build` emits the three pages cleanly with no error nodes; all test
   suites stay green. Next: Slice 3c (Quickstart guide authoring).
+- **2026-05-30 — Phase 14 Slice 3c: Quickstart guide authored.** The docs site's
+  Quickstart (`docs-site/sources/quickstart.emd`) is now a real, ~1,900-word
+  guide that introduces Enscribe by *being* an Enscribe document — every feature
+  is exercised in the act of introducing it (the self-referential principle from
+  `notes/documentation-plan.md`). It covers the 13-feature checklist: the
+  document `<meta>` block; sigil sections shown in all three forms (sigil /
+  named / Markdown); inline (`$...$`) and display (`<$$ | ... $$>`) math via
+  KaTeX; a CSV `<table>`; a captioned `<figure>` (placeholder image); two
+  hover-preview `<note>` footnotes; three real citations (the Markdown, HTML, and
+  JATS specifications) from an inline BibTeX `<library>` with an auto-formatted
+  `<bibliography>`; cross-references (`<ref>`) that resolve to "Table 1" /
+  "Figure 1"; a code block; a `<definition>`; and bold/italic. Verified by
+  rendering the source through the interpreter pipeline — zero error nodes, all
+  citations and cross-references resolve — and `docs:build` emits the three
+  pages. (The guide is the editable playground page, so it renders client-side;
+  the server-side pipeline render is the verification proxy.) Surfaced a
+  spec-precision finding: single-line `$$...$$` lifts to inline-math, so the
+  display equation uses the canonical `<$$ | ... $$>` tag (filed to BACKLOG).
+  Next: Slice 3d (JATS relationship article).
