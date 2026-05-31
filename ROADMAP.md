@@ -177,13 +177,15 @@ milestone). Slice 3b has since landed too — the README and DESIGN are
 translated to canonical enscribe and ship as the docs-site Home and Design
 articles (the `example-article` placeholder retired). Slices 3c and 3d have since
 landed too — the Quickstart guide and the JATS-relationship article, both
-authored in canonical enscribe. **The Authoring Guide is now complete** (Slices
-3e-i/ii/iii, a fifth docs-site page): all fourteen chapters — document structure,
-sections, inline, block, figures, tables, citations, footnotes, cross-references,
-theorem family, external DSLs, book structure, arguments-and-the-pipe, and
-rendering — authored in canonical enscribe with rendered demonstrations
-throughout and cross-references resolving inside the document. The next docs-site
-slice is 3f (Layer 1 Reference).
+authored in canonical enscribe. The **Authoring Guide is complete** (Slices
+3e-i/ii/iii, a fifth docs-site page): all fourteen chapters with rendered
+demonstrations throughout. **Slice 3f then added the Layer 1 Vocabulary
+Reference** (a sixth page) — an MDN-style element-by-element reference for the
+output vocabulary — which **completes the docs-site content arc (3b–3f)**. The
+docs-site documentation is done for v0.1.0; only residual Phase 14 housekeeping
+(generated types, fixture consolidation, the `design.emd` Mermaid diagram)
+remains, and the release-blocking phases beyond it are Phase 8 (display features)
+and Phase 13 (JATS import).
 Nothing else is in flight.
 
 ---

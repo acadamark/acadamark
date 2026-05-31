@@ -1,0 +1,652 @@
+<meta type=article>
+  <title | Layer 1 Vocabulary Reference>
+  <author | The Enscribe Project>
+</meta>
+
+**Layer 1** is the stable output vocabulary every Enscribe document compiles to: a
+small set of semantic, mostly custom HTML <cite @whatwg-html> elements that record
+what each piece of content *is*. This is the element-by-element reference for that vocabulary — what
+each element means, what attributes it accepts, what it can contain, and the
+canonical HTML it produces. It is a lookup, not a read-through; jump to the element
+you need. For tutorial-style explanations and the shorthand that produces these
+elements, see the <a href="authoring-guide.html" | Authoring Guide>.
+
+**How to read the HTML examples.** Each entry shows the *canonical* Layer 1 — the
+archival structure. At render time, handlers add presentation that is not part of
+the canonical form: numbered blocks (`<figure>`, `<table>`, the theorem family)
+gain a label span like `<span class="figure-label">Figure 1.</span>`, a `<note>`
+splits into an inline marker plus a collected list at the document's foot, and math
+elements fill with KaTeX output. The examples below show the canonical structure;
+the label and number are added when the document is rendered. Every element is
+custom-element-styleable: CSS can target `<theorem>`, `<section-title>`, and the
+rest directly.
+
+The catalog is organized by category: <a href="#cat:struct" | Structural>,
+<a href="#cat:meta" | Metadata>, <a href="#cat:inline" | Inline>,
+<a href="#cat:block" | Block>, <a href="#cat:math" | Math environments>,
+<a href="#cat:frame" | Frameable>, <a href="#cat:thm" | Theorem family>,
+<a href="#cat:cite" | Citation>, <a href="#cat:note" | Footnote>,
+<a href="#cat:ref" | Cross-reference>, and <a href="#cat:dsl" | DSL> elements.
+
+<# #cat:struct | Structural elements #>
+
+The containers that give a document its shape. Most are produced by the structuring
+pass rather than authored directly.
+
+<## #el:article | `<article>` ##>
+**Category** structural · **renders** `<article>` · **content** structured. The
+root of an article-type document. Produced from `<meta type=article>` plus the body
+content; wraps an `<article-front>` (front matter) and an `<article-body>`.
+**Attributes:** `numbering-style`, `note-position`, `id`, `class`.
+
+```html
+<article>
+  <article-front>
+    <meta data-document-type="article">
+      <article-title>The Effect of Elephants on Climate</article-title>
+      <author>Jane Goodall</author>
+    </meta>
+  </article-front>
+  <article-body> … </article-body>
+</article>
+```
+
+*Related:* <a href="#el:book" | `<book>`>, <a href="#el:meta" | `<meta>`>,
+<a href="#el:section" | `<section>`>.
+
+<## #el:book | `<book>` ##>
+**Category** structural · **renders** `<book>` · **content** structured. The root of
+a book-type document, from `<meta type=book>`. Wraps `<book-front>`, `<book-body>`,
+and `<book-back>`. **Attributes:** `numbering-style`, `note-position`, `id`, `class`.
+
+```html
+<book>
+  <book-front> … </book-front>
+  <book-body>
+    <book-part book-part-type="chapter"> … </book-part>
+  </book-body>
+  <book-back> … </book-back>
+</book>
+```
+
+*Related:* <a href="#el:book-part" | `<book-part>`>,
+<a href="authoring-guide.html#sec:book" | Authoring Guide ch. 12>.
+
+<## #el:book-front | `<book-front>` ##>
+**Category** structural · **renders** `<book-front>` · **content** structured.
+A book's front matter. Generated from a `<preface>` authoring tag. Holds the book
+`<meta>` and preface content.
+
+<## #el:book-body | `<book-body>` ##>
+**Category** structural · **renders** `<book-body>` · **content** structured. The
+body of a book: a sequence of `<book-part>` chapters. Generated, not authored
+directly.
+
+<## #el:book-back | `<book-back>` ##>
+**Category** structural · **renders** `<book-back>` · **content** structured. A
+book's back matter — appendices and the book-wide bibliography. Generated from an
+`<appendix>` authoring tag and the bibliography.
+
+<## #el:book-part | `<book-part>` ##>
+**Category** structural · **renders** `<book-part>` · **content** structured. A
+chapter (or other top-level book division). Authored as `<chapter | Title>` (with
+`<preface>` and `<appendix>` as the front/back-matter variants); the chapter's
+title lands in a nested `<meta><book-part-title>`. A per-chapter `<author>`
+overrides the book-level author. **Attributes:** `book-part-type`,
+`numbering-style`, `note-position`.
+
+```html
+<book-part book-part-type="chapter">
+  <meta><book-part-title>Origins</book-part-title></meta>
+  <p>Content of the chapter.</p>
+</book-part>
+```
+
+*Related:* <a href="#el:section" | `<section>`>, <a href="#el:author" | `<author>`>.
+
+<## #el:section | `<section>` ##>
+**Category** structural · **renders** `<section>` (HTML-native) · **content**
+structured. A top-level division of an article body or chapter. Closes implicitly
+when a peer `<section>` opens — no `</section>` is written. **Authoring:**
+`<# Title #>` · `<section | Title>` · `# Title`. **Attributes:** `sec-type`
+(→ `data-sec-type`, JATS-aligned), `numbering-style`, `id` (`#sec:name`), `class`.
+
+```html
+<section>
+  <section-title>Introduction</section-title>
+  <p>The paper begins here.</p>
+</section>
+```
+
+*Related:* <a href="#el:sub-section" | `<sub-section>`>,
+<a href="#el:section-title" | `<section-title>`>,
+<a href="authoring-guide.html#sec:sections" | Authoring Guide ch. 2>.
+
+<## #el:sub-section | `<sub-section>` ##>
+**Category** structural · **renders** `<sub-section>` · **content** structured.
+A depth-2 division nested in a `<section>`. As `<section>` in every respect, one
+level down. **Authoring:** `<## Title ##>` · `<sub-section | Title>` · `## Title`.
+
+```html
+<sub-section>
+  <sub-section-title>Quantitative analysis</sub-section-title>
+  <p>Sub-section content.</p>
+</sub-section>
+```
+
+<## #el:sub-sub-section | `<sub-sub-section>` ##>
+**Category** structural · **renders** `<sub-sub-section>` · **content** structured.
+The depth-3 division, nested in a `<sub-section>`. The ladder stops here.
+**Authoring:** `<### Title ###>` · `<sub-sub-section | Title>` · `### Title`.
+
+```html
+<sub-sub-section>
+  <sub-sub-section-title>Regression analysis</sub-sub-section-title>
+  <p>Detailed methods.</p>
+</sub-sub-section>
+```
+
+<## #el:section-title | `<section-title>` ##>
+**Category** structural · **renders** `<section-title>` · **content** prose. The
+heading of a `<section>`. Usually generated by title extraction from the section's
+pipe content; can be written explicitly. Its siblings `<sub-section-title>` and
+`<sub-sub-section-title>` are the depth-2 and depth-3 forms. In render mode a
+section title lowers to the appropriate `<h2>`–`<h4>` for its depth.
+
+```html
+<section-title>Introduction</section-title>
+```
+
+<## #el:sub-section-title | `<sub-section-title>` ##>
+**Category** structural · **renders** `<sub-section-title>` · **content** prose. The
+heading of a `<sub-section>` — `<section-title>` one level down. Usually generated
+from the sub-section's pipe content. Lowers to `<h3>` in render mode.
+
+<## #el:sub-sub-section-title | `<sub-sub-section-title>` ##>
+**Category** structural · **renders** `<sub-sub-section-title>` · **content** prose.
+The heading of a `<sub-sub-section>`, the depth-3 title. Lowers to `<h4>`.
+
+<# #cat:meta | Metadata elements #>
+
+The document's apparatus — identity and settings. These are canonical-only (no
+sigil or markdown shorthand) and sit at the document's edges.
+
+<## #el:meta | `<meta>` ##>
+**Category** metadata · **renders** `<meta>` · **content** structured. The
+document's front-matter block, pinned to the top. `type` picks the document shape.
+Its children (`<title>`, `<author>`, `<date>`, `<subtitle>`) become the front
+matter. **Attributes:** `type` (`article` | `book`, → `data-document-type`).
+
+```html
+<meta data-document-type="article">
+  <article-title>The Effect of Elephants on Climate</article-title>
+  <author>Jane Goodall</author>
+  <date>2024-03-15</date>
+</meta>
+```
+
+*Related:* <a href="#el:title" | `<title>`>, <a href="#el:config" | `<config>`>,
+<a href="authoring-guide.html#sec:structure" | Authoring Guide ch. 1>.
+
+<## #el:title | `<title>` ##>
+**Category** metadata · **renders** `<article-title>` / `<book-title>` · **content**
+prose. The document title, written `<title | …>` inside `<meta>`. Renders as
+`<article-title>` in an article and `<book-title>` in a book.
+
+```html
+<article-front><article-title>The Effect of Elephants on Climate</article-title></article-front>
+```
+
+<## #el:subtitle | `<subtitle>` ##>
+**Category** metadata · **renders** `<article-subtitle>` / `<book-subtitle>` ·
+**content** prose. An optional secondary title, written `<subtitle | …>` inside
+`<meta>`.
+
+```html
+<article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle>
+```
+
+<## #el:author | `<author>` ##>
+**Category** metadata · **renders** `<author>` · **content** structured. A document
+or chapter author. **Attributes:** `name`, `affiliation`, `orcid`, `email`,
+`corresponding` — for a structured author record; the simple form puts the name in
+the pipe.
+
+```html
+<author>Jane Goodall</author>
+```
+
+<## #el:date | `<date>` ##>
+**Category** metadata · **renders** `<date>` · **content** prose. A document date.
+**Attributes:** `type` (→ `data-date-type`, e.g. publication), `format`.
+
+```html
+<date data-date-type="publication">2024-03-15</date>
+```
+
+<## #el:config | `<config>` ##>
+**Category** metadata · **renders** `<config>` · **content** structured. Document-
+level settings, written as keyword attributes and placed at the document's end.
+**Attributes (live):** `citation-style`, `number-equations` / `number-figures` /
+`number-tables` / `number-theorems` / `number-definitions` / `number-examples`,
+`counter-reset-scope`, `note-scope`, and any `ref-prefix-*` key. The settings are
+consumed by the pipeline; render-time options like `embedResources` belong to the
+rendering API, not here (see <a href="authoring-guide.html#sec:render" | ch. 14>).
+
+```html
+<config citation-style="apa" number-figures="false"></config>
+```
+
+<## #el:data | `<data>` ##>
+**Category** metadata · **renders** `<data>` · **content** structured. The
+apparatus container at the document's foot. Holds a `<library>` of bibliographic
+sources (and, by convention, other edge apparatus).
+
+```html
+<data>
+  <library data-format="bibtex"> @article{goodall2024, … } </library>
+</data>
+```
+
+*Related:* <a href="#el:library" | `<library>`>, <a href="#el:cite" | `<cite>`>.
+
+<# #cat:inline | Inline elements #>
+
+Formatting and inline semantics inside a paragraph. The formatting tags take a
+same-line long form (`<b>bold</b>`) and a pipe form (`<b | bold>`); several have
+markdown idioms. See <a href="authoring-guide.html#sec:inline" | Authoring Guide
+ch. 3>.
+
+<## #el:b | `<b>` ##>
+**Category** inline · **renders** `<b>` (HTML-native) · **content** prose. Bold /
+strong-visual text. **Authoring:** `**bold**` · `<b>bold</b>` · `<b | bold>`.
+**Attributes:** `type` (→ `data-bold-type`, an optional semantic tag like
+`keyword`), `id`, `class`.
+
+```html
+<p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>
+```
+
+<## #el:i | `<i>` ##>
+**Category** inline · **renders** `<i>` (HTML-native) · **content** prose. Italic
+text. **Authoring:** `*italic*` or `_italic_` · `<i>italic</i>` · `<i | italic>`.
+**Attributes:** `type` (→ `data-italic-type`, e.g. `taxonomic`).
+
+```html
+<p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>
+```
+
+<## #el:s | `<s>` ##>
+**Category** inline · **renders** `<s>` (HTML-native) · **content** prose.
+Strikethrough. **Authoring:** `~~struck~~` · `<s>struck</s>` · `<s | struck>`.
+**Attributes:** `type` (→ `data-strike-type`).
+
+```html
+<p>The price is <s>$50</s> now $40.</p>
+```
+
+<## #el:u | `<u>` ##>
+**Category** inline · **renders** `<u>` (HTML-native) · **content** prose. Underline
+(no markdown form). **Authoring:** `<u>under</u>` · `<u | under>`. **Attributes:**
+`type` (→ `data-underline-type`, e.g. `misspelling`).
+
+```html
+<p>The author wrote <u data-underline-type="misspelling">recieve</u>.</p>
+```
+
+<## #el:q | `<q>` ##>
+**Category** inline · **renders** `<q>` (HTML-native) · **content** prose. A short
+inline quotation (a browser adds quotation marks). **Authoring:** `<q>quoted</q>` ·
+`<q | quoted>`. **Attributes:** `cite` (source URL).
+
+```html
+<p>She said <q>hello</q> in passing.</p>
+```
+
+<## #el:a | `<a>` ##>
+**Category** inline · **renders** `<a>` (HTML-native) · **content** prose. A
+hyperlink or anchor. The URL is the first positional argument or the `href` kwarg;
+the text is the body. Markdown `[text](url)` is *not* supported. **Authoring:**
+`<a URL | text>` · `<a href="URL" | text>` · `<a href="URL">text</a>`.
+**Attributes:** `href`, `target`, `rel`, `title`.
+
+```html
+<p>See <a href="https://example.com/docs">the documentation</a>.</p>
+```
+
+<## #el:code | `<code>` ##>
+**Category** inline · **renders** `<code>` (HTML-native) · **content** opaque.
+Inline code; content is verbatim. **Authoring:** `` `code()` `` · `<` code() `>`.
+**Attributes:** `language`.
+
+```html
+<p>The function is <code>factorial</code>.</p>
+```
+
+<## #el:inline-math | `<inline-math>` ##>
+**Category** inline · **renders** `<inline-math>` · **content** opaque (LaTeX). Math
+set within a run of text, rendered by KaTeX. **Authoring:** `$…$` · `<$ … $>`.
+
+```html
+<inline-math> … KaTeX-rendered HTML of the LaTeX source … </inline-math>
+```
+
+<## #el:sup | `<sup>` ##>
+**Category** inline · **renders** `<sup>` (HTML-native) · **content** prose.
+Superscript. **Authoring:** `^{text}` · `<sup | text>`.
+
+```html
+<p>The 1<sup>st</sup> edition.</p>
+```
+
+<## #el:sub | `<sub>` ##>
+**Category** inline · **renders** `<sub>` (HTML-native) · **content** prose.
+Subscript. **Authoring:** `_{text}` · `<sub | text>`.
+
+```html
+<p>Water is H<sub>2</sub>O.</p>
+```
+
+<# #cat:block | Block elements #>
+
+Standalone blocks between paragraphs. See
+<a href="authoring-guide.html#sec:block" | Authoring Guide ch. 4>.
+
+<## #el:blockquote | `<blockquote>` ##>
+**Category** block · **renders** `<blockquote>` (HTML-native) · **content** prose.
+A quotation set off from the body. **Authoring:** `> quote` (markdown) ·
+`<blockquote>quote</blockquote>` · `<blockquote | quote>` (the alias `<quote | …>`
+also works). The markdown form wraps its content in a `<p>`.
+
+```html
+<blockquote>A short quotation.</blockquote>
+```
+
+<## #el:code-block | `<code-block>` ##>
+**Category** block · **renders** `<pre><code>` · **content** opaque. A fenced code
+block with optional language. The vocabulary key is `code-block`, but the rendered
+output is `<pre><code class="language-…">`. **Authoring:** a triple-backtick fence
+with a language, or the sigil `<``` lang | code ```>`. There is no `<code-block>`
+named tag to author directly.
+
+```html
+<pre><code class="language-python">def f(x):
+    return x + 1
+</code></pre>
+```
+
+<## #el:display-math | `<display-math>` ##>
+**Category** block · **renders** `<display-math>` · **content** opaque (LaTeX).
+Centered, numbered display math. **Authoring:** a `$$ … $$` fence (delimiters on
+their own lines) or the sigil `<$$ | … $$>`; a single-line `$$x$$` is inline.
+**Attributes:** `numbered` boolean, `id` (`#eqn:name`).
+
+```html
+<display-math> … KaTeX-rendered HTML … <span class="equation-number">(1)</span></display-math>
+```
+
+<# #cat:math | Math environments #>
+
+LaTeX-style multi-row math, rendered by KaTeX as display blocks. Content is verbatim
+LaTeX; use the long form. All share the equation counter.
+
+<## #el:align | `<align>` ##>
+**Category** block (math) · **renders** `<align>` · **content** opaque. An aligned
+multi-line equation (LaTeX `aligned`). **Authoring:** `<align> … </align>`.
+
+```html
+<align> … KaTeX-rendered HTML of \begin{aligned}…\end{aligned} … </align>
+```
+
+<## #el:eqnarray | `<eqnarray>` ##>
+**Category** block (math) · **renders** `<eqnarray>` · **content** opaque. As
+`<align>`, for LaTeX-source compatibility. `<eqnarray> … </eqnarray>`.
+
+<## #el:cases | `<cases>` ##>
+**Category** block (math) · **renders** `<cases>` · **content** opaque. A
+case-analysis brace (LaTeX `cases`). `<cases> x & x \ge 0 \\ -x & x < 0 </cases>`.
+
+<## #el:matrix | `<matrix>` ##>
+**Category** block (math) · **renders** `<matrix>` · **content** opaque. A matrix
+(LaTeX `matrix`). `<matrix> 1 & 2 \\ 3 & 4 </matrix>`.
+
+<# #cat:frame | Frameable elements #>
+
+Blocks that share one mechanism for captions, automatic numbering, and an optional
+border. At render time they gain a numbered label (`Figure 1.`, `Table 1.`). See
+<a href="authoring-guide.html#sec:fig" | Authoring Guide chs. 5–6>.
+
+<## #el:fig | `<fig>` ##>
+**Category** frameable · **renders** `<figure>` · **content** prose (the caption).
+A numbered, captioned figure. `<figure>` is an authoring alias for `<fig>`. The
+caption is the pipe content (also the `<img>` `alt`). **Authoring:**
+`<fig src="…" | caption>` · `<fig src="…" />` (captionless). **Attributes:** `src`,
+`alt`, `align`, `width` (→ `data-width`; no separate height), `type`, `caption`;
+booleans `numbered`, `border`. **Id:** `#fig:name`.
+
+```html
+<figure>
+  <img src="elephant.jpg" alt="An adult African elephant." />
+  <figcaption>An adult African elephant.</figcaption>
+</figure>
+```
+
+*Related:* <a href="#el:table" | `<table>`>, <a href="#el:ref" | `<ref>`>.
+
+<## #el:table | `<table>` ##>
+**Category** frameable · **renders** `<table>` (HTML-native) · **content**
+opaque-or-structured. A numbered, captioned data table. **Authoring:**
+`<table csv | …>` / `<table tsv | …>` (a `csv`/`tsv` positional qualifier names the
+data format) or a markdown pipe table. **Attributes:** `caption`, `src`, `type`;
+booleans `headers`, `numbered`. **Id:** `#tab:name`.
+
+```html
+<table>
+  <thead><tr><th>Name</th><th>Price</th></tr></thead>
+  <tbody><tr><td>foo</td><td>1</td></tr></tbody>
+</table>
+```
+
+<## #el:svg | `<svg>` ##>
+**Category** frameable · **renders** `<svg>` (HTML-native) · **content** opaque
+(raw SVG). An inline vector graphic sharing the frameable surface. **Attributes:**
+`width`, `height`, `viewBox`, `caption`; booleans `numbered`, `border`.
+
+```html
+<svg viewBox="0 0 100 100" width="200" height="200">
+  <circle cx="50" cy="50" r="40" fill="blue" />
+</svg>
+```
+
+> **Note — inline SVG source is not yet rendered.** The wrapper and its attributes
+> are emitted, but the inner SVG source is currently dropped (a tracked bug). For
+> vector graphics today, reference an external file as an image:
+> `<fig src="diagram.svg" | …>`.
+
+<## #el:frame | `<frame>` ##>
+**Category** frameable · **renders** `<frame>` · **content** prose. A generic
+frameable callout — a captioned, optionally bordered box for content that is not a
+figure, table, or diagram. **Attributes:** `title`, `caption`, `type`; booleans
+`numbered`, `border`.
+
+```html
+<frame class="frameable-border">A short callout.</frame>
+```
+
+<# #cat:thm | Theorem family #>
+
+Formal statements in numbered, styled blocks. `<theorem>`, `<lemma>`,
+`<corollary>`, and `<proposition>` share one counter; `<definition>` and
+`<example>` each have their own; `<remark>` and `<proof>` are unnumbered. All accept
+pipe, same-line long, and multi-line long forms, a `name=` kwarg, and an `#id`. See
+<a href="authoring-guide.html#sec:thm" | Authoring Guide ch. 10>.
+
+<## #el:theorem | `<theorem>` ##>
+**Category** theorem-family · **renders** `<theorem>` · **content** prose. A
+formally-stated assertion; opens the shared theorem counter. **Attributes:** `name`
+(→ `data-name`, the "(Pythagoras)" label suffix); boolean `numbered`. **Id:**
+`#thm:name`.
+
+```html
+<theorem>If $a^2 + b^2 = c^2$ then the triangle is right-angled.</theorem>
+```
+
+<## #el:lemma | `<lemma>` ##>
+**Category** theorem-family · **renders** `<lemma>` · **content** prose. A
+supporting result; shares the theorem counter. As `<theorem>` otherwise.
+`<lemma>Every continuous function on a compact set attains its maximum.</lemma>`
+
+<## #el:corollary | `<corollary>` ##>
+**Category** theorem-family · **renders** `<corollary>` · **content** prose. A
+consequence; shares the theorem counter.
+`<corollary>Every prime greater than 2 is odd.</corollary>`
+
+<## #el:proposition | `<proposition>` ##>
+**Category** theorem-family · **renders** `<proposition>` · **content** prose. A
+minor result; shares the theorem counter.
+`<proposition>The sum of two even integers is even.</proposition>`
+
+<## #el:definition | `<definition>` ##>
+**Category** theorem-family · **renders** `<definition>` · **content** prose. A
+defined term; on its own counter (Definition 1, 2, …).
+`<definition name="Group">A set with an associative operation, identity, and inverses.</definition>`
+
+<## #el:example | `<example>` ##>
+**Category** theorem-family · **renders** `<example>` · **content** prose. A worked
+instance; on its own counter.
+`<example>The integers under addition form a group.</example>`
+
+<## #el:remark | `<remark>` ##>
+**Category** theorem-family · **renders** `<remark>` · **content** prose. An aside;
+*unnumbered* (rendered "Remark.").
+`<remark>The converse does not hold in general.</remark>`
+
+<## #el:proof | `<proof>` ##>
+**Category** theorem-family · **renders** `<proof>` · **content** prose. A proof;
+*unnumbered* (rendered "Proof."), a peer of the result it follows, not a child.
+
+```html
+<theorem>The sum of two even integers is even.</theorem>
+<proof>Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m+n)$. $\square$</proof>
+```
+
+<# #cat:cite | Citation and bibliography elements #>
+
+Citations key into a `<library>` of bibliographic sources; the formatting is
+delegated to a citation engine. See
+<a href="authoring-guide.html#sec:cite" | Authoring Guide ch. 7>.
+
+<## #el:cite | `<cite>` ##>
+**Category** citation · **renders** `<cite>` (HTML-native) · **content** prose. An
+in-text citation, by key. **Authoring:** `<cite @key>` · `<cite @key1, @key2>`
+(grouped). **Attributes:** `keys`, `page`, `chapter`, `section`, `prefix`,
+`suffix`, `style`.
+
+```html
+<p>… supported by data <cite class="cite" data-keys="goodall2024">(Goodall 2024)</cite>.</p>
+```
+
+<## #el:library | `<library>` ##>
+**Category** citation · **renders** `<library>` · **content** opaque (BibTeX /
+CSL-JSON). The bibliographic source, inside `<data>`. **Authoring:**
+`<library | @article{…}>` (inline) or `<library src="refs.bib">` (external).
+**Attributes:** `format`, `src`.
+
+```html
+<library data-format="bibtex"> @article{goodall2024, author = {Goodall, Jane}, … } </library>
+```
+
+<## #el:bibliography | `<bibliography>` ##>
+**Category** citation · **renders** `<bibliography>` · **content** structured. Marks
+where the formatted reference list renders (end of an article; back matter in a
+book). Authored empty: `<bibliography></bibliography>`. **Attributes:** `source`,
+`style`, `sort`, `type`.
+
+```html
+<bibliography><h2>References</h2><div class="csl-bib-body"> … </div></bibliography>
+```
+
+<# #cat:note | Footnote elements #>
+
+<## #el:note | `<note>` ##>
+**Category** footnote · **renders** `<note>` (canonical) · **content** prose. A
+footnote, written in pipe form flush against the word it annotates. **Authoring:**
+`text<note | …>`. At render time it splits into an inline `<sup>` marker (with a
+hover preview on supporting surfaces) and a collected list at the document's foot.
+**Attributes:** `placement`, `position`, `type`.
+
+```html
+Some text<note id="note-1">A substantive note about the text.</note>.
+```
+
+<# #cat:ref | Cross-reference elements #>
+
+<## #el:ref | `<ref>` ##>
+**Category** cross-reference · **renders** `<a class="ref">` · **content** none. A
+cross-reference to a numbered target by its typed id; renders the right word and
+number ("figure 1", "theorem 2"), resolved after the whole document is parsed.
+**Authoring:** `<ref @fig:flow>` (the `@`-prefixed id; the `#` form is *not* a
+reference). Prefixes: `fig:`, `tab:`, `eqn:`, `thm:`/`lem:`/`cor:`/`prop:`, `def:`,
+`ex:`, `sec:`. **Attributes:** `target`, `type`, `format`; booleans `link`,
+`preview`. Sections are unnumbered in a flat article, so a `<ref @sec:…>` there
+renders the id tail rather than a number.
+
+```html
+See <a href="#fig:flow" class="ref">figure 1</a> for details.
+```
+
+*Related:* <a href="authoring-guide.html#sec:xref" | Authoring Guide ch. 9>.
+
+<# #cat:dsl | DSL elements #>
+
+Embedded foreign languages — diagrams and music — held verbatim and drawn by an
+external library. Content is opaque; use the long form. See
+<a href="authoring-guide.html#sec:dsl" | Authoring Guide ch. 11>.
+
+<## #el:mermaid | `<mermaid>` ##>
+**Category** DSL · **renders** `<pre class="mermaid">` · **content** opaque (Mermaid
+source). A diagram. The source renders client-side (`live-link` / `live-inline`) or
+is shown verbatim (`skip`); Mermaid has no static mode. **Attributes:** `caption`.
+A DSL block is frameable and numbers as a figure.
+
+```html
+<pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
+  A[Start] --> B{Decision}</pre>
+```
+
+<## #el:abc | `<abc>` ##>
+**Category** DSL · **renders** `<pre class="abc">` · **content** opaque (ABC source).
+Music notation. Renders client-side in the live modes, or to SVG at build time in
+`static` mode. **Attributes:** `caption`.
+
+```html
+<pre class="abc" data-enscribe-dsl="abc">X:1
+T:Twinkle, Twinkle
+K:C
+C C G G | A A G2 |</pre>
+```
+
+<# What this reference covers #>
+
+This catalog documents the user-facing Layer 1 vocabulary — the elements authors
+write and the HTML they compile to. Internal pipeline nodes, error markers, and
+purely generated list structures (the footnote list, the rendered bibliography
+entries) are omitted; they appear in the output but are never authored. For the
+shorthand that produces these elements and worked examples of each, read the
+<a href="authoring-guide.html" | Authoring Guide>; for the architecture behind the
+canonical-form model, the <a href="design.html" | Design article>; and for how
+Layer 1 exports to archival XML, the <a href="jats.html" | JATS article>.
+
+<data>
+<library |
+@misc{whatwg-html,
+  author = {{WHATWG}},
+  title  = {HTML Living Standard},
+  year   = {2024},
+  url    = {https://html.spec.whatwg.org/}
+}
+>
+</data>
+
+<bibliography>
+</bibliography>

@@ -41,7 +41,7 @@ Legend: `[x]` working and tested · `[~]` partial / in progress · `[ ]` not sta
 - [ ] Render mode — lossy lowering of custom elements to plain `<h1>`/`<h2>`
 - [x] JATS XML export (`enscribeToJats`) — the journal-submission bridge (article → JATS 1.3, book → BITS 2.0)
 - [ ] Code syntax highlighting (dependency listed, not wired in)
-- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d) and the complete 14-chapter Authoring Guide (3e-i/ii/iii) landed, and the Layer 1 Reference (3f) plus generated types are follow-up slices
+- [~] Client-side rendering — browser library + in-browser editor demo + docs-site framework shipped (`render` / `renderInto` / `executeAssets`, `enscribe.browser` bundle, `demo/`, `docs-site/`; Phase 14 Slices 1–3a); the rename and the publish prep have landed, docs-site Home + Design + Quickstart content landed (Slices 3b–3c), the JATS article (3d), the complete 14-chapter Authoring Guide (3e-i/ii/iii), and the Layer 1 Vocabulary Reference (3f) all landed — the docs-site content arc (3b–3f) is complete; generated types and fixture consolidation are the residual Phase 14 items
 
 ### Components
 
@@ -92,10 +92,13 @@ landed (`<b>bold</b>` and the same-line long form work for every vocab tag), and
 all fourteen chapters (document structure, sections, inline, block, figures,
 tables, citations, footnotes, cross-references, theorem family, external DSLs,
 book structure, arguments-and-the-pipe, rendering), authored in canonical
-enscribe with rendered demonstrations throughout. **Next:** Ariel runs
-`npm publish` per package (out of band); the remaining docs-site content is
-Slice 3f (Layer 1
-Reference).
+enscribe with rendered demonstrations throughout. **Slice 3f** then added the
+**Layer 1 Vocabulary Reference** (a sixth docs-site page) — an MDN-style
+element-by-element reference for the output vocabulary — which **completes the
+docs-site content arc (Slices 3b–3f)**. **Next:** Ariel runs `npm publish` per
+package (out of band); the remaining release-blocking work is Phase 8 (display
+features) and Phase 13 (JATS import), plus the residual Phase 14 housekeeping
+(generated types, fixture consolidation, the `design.emd` Mermaid diagram).
 
 The **render-quality spec** is written
 (`notes/specs/render-quality.md`); the slice that wrote it built
@@ -4370,3 +4373,34 @@ that). One line gets added every few months, not every slice.
   guide came in at ~5700 words — below the ~8000–12000 estimate, a consequence of
   the concise reference voice (examples over prose); the coverage is complete and
   not padded. Next: Slice 3f (Layer 1 Vocabulary Reference).
+- **2026-05-31 — Slice 3f: Layer 1 Vocabulary Reference (docs-site arc complete).**
+  New docs-site article `docs-site/sources/layer1-reference.emd` (a sixth page) —
+  an MDN-style, terse, element-by-element reference for the Layer 1 output
+  vocabulary, organized by category (~55 user-facing elements: structural,
+  metadata, inline, block, math environments, frameable, theorem family, citation,
+  footnote, cross-reference, DSL). Each card carries category / rendered-element /
+  content-model, a one-line description, authoring forms, attributes, the canonical
+  `layer1_html` example in a code fence, and related links (in-page `#el:*` anchors
+  and Authoring-Guide chapter links). Sourced from the vocabulary data
+  (`layer1-vocabulary/src/data.js` / `elements/*.md`) with authored descriptions,
+  cross-checked against runtime behavior verified across the 3e slices. `build.js`
+  PAGES gains the page (nav: Home / Design / Quickstart / Authoring Guide / Layer 1
+  Reference / JATS — six pages). Builds with no error nodes; the one citation
+  resolves; all suites pass (no code changes). This **completes the docs-site
+  content arc (Slices 3b–3f)** — the documentation plan's Documents 1–5 are all
+  delivered. Findings (documented honestly, not silently): the intro explains the
+  **canonical (Layer 1) vs render-mode** distinction once, since several vocab
+  `layer1_html` examples show the canonical structure while handlers add labels
+  (`Figure 1.`, `Theorem 1.`), split `<note>` into marker + list, and fill math —
+  so the examples are canonical, not the fully-rendered output. Editorial
+  deviations from the slice's must-include list, all justified by "this is a Layer
+  1 *output* reference": `<preface>`/`<chapter>`/`<appendix>` are authoring tags,
+  not Layer 1 elements, so they are documented under their output elements
+  (`<book-front>`/`<book-part>`/`<book-back>`); the `<svg>` card notes the
+  inner-source-drop bug honestly and points to `<fig src="…svg">`; `<config>`
+  documents its real runtime kwargs (the vocab schema's kwarg list is stale); and
+  `<ref>` documents the `@`-prefix form (the `#` form is a ref-error, contradicting
+  the vocab example). The reference came in terse (~3300 words) by design (MDN
+  voice; trivial variants cross-reference their canonical sibling). Next: the
+  release-blocking phases — Phase 8 (display features) and Phase 13 (JATS import) —
+  plus residual Phase 14 housekeeping.

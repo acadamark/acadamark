@@ -1141,12 +1141,15 @@ packages publish under `@enscribejs/*`, coordinated at 0.1.0 with `^0.1.0`
 cross-deps, an MIT license, publish-ready metadata, and a clean
 `npm pack --dry-run` each). **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
-Design articles (the `example-article` placeholder retired). Remaining slices —
-docs-site content (3f: a Layer 1 Reference) and fixture consolidation stay open;
-**Slices 3c, 3d, and 3e (i/ii/iii) have since landed** — the Quickstart guide
+Design articles (the `example-article` placeholder retired). **The docs-site
+content arc (Slices 3b–3f) is now complete** — only fixture consolidation and the
+residual `design.emd` Mermaid diagram remain as docs-site housekeeping;
+**Slices 3c, 3d, 3e (i/ii/iii), and 3f have since landed** — the Quickstart guide
 (authored in canonical enscribe, 13 features in its own content), the
 JATS-relationship article (the export mapping, a real worked example, a workflow
-comparison), and the **complete Authoring Guide** (a fifth docs-site page): 3e-i
+comparison), the **complete Authoring Guide** (a fifth docs-site page), and the
+**Layer 1 Vocabulary Reference** (a sixth page — an MDN-style element-by-element
+reference for the output vocabulary, ~55 user-facing elements by category): 3e-i
 wrote chapters 1–4 (document structure, sections, inline, block); 3e-ii added
 rendered demonstrations to chapters 1–4 and wrote chapters 5–9 (figures, tables,
 citations, footnotes, cross-references); 3e-iii wrote chapters 10–14 (theorem
