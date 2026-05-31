@@ -89,7 +89,11 @@ A flat scannable index of every open item. Detailed entries below.
   to `<sub-section>`, not `<section>`; the section markdown form is a single `#`.
   *(Found while verifying the Authoring Guide 3e-i heading mapping.)* — **CLOSED
   2026-05-31**: `## Methods` → `# Methods` in the example (carried in the 3e-ii
-  commit alongside the working-tree fix Ariel had already applied).
+  commit alongside the working-tree fix Ariel had already applied). **Follow-up
+  2026-05-31**: the 3e-ii fix corrected only the fenced example; three prose
+  references in the same section still showed `##` as the section markdown form
+  (the playground "try it" sentence, the "muscle memory" sentence, and the
+  lossy-heading note). All three corrected to `#`.
 - [ ] **`<svg>` renders empty — inner SVG source dropped**
   `[interpreter]` `[post-alpha]` — a `<svg>…</svg>` (long-form or pipe) renders
   `<svg></svg>`: the passthrough attributes (`viewBox`/`width`/`height`) survive

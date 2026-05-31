@@ -48,7 +48,7 @@ a Layer 1 `<section>` wrapping a `<section-title>`:
 ```
 
 If you are in the playground, try it: change one of this guide's `<# ... #>`
-headings to `## ...` and back. The rendered heading does not move — because all
+headings to `# ...` and back. The rendered heading does not move — because all
 three forms reduce to the same node before anything else in the pipeline sees
 them.
 
@@ -58,14 +58,14 @@ HTML — and the shorthand is just a faster way to reach it. The sigil `<#>` is 
 day-to-day default: it is the lightest to type and still carries everything a
 section needs. The named `<section>` is the explicit form, and it is exactly what
 you would read if you converted the finished HTML back to shorthand. The Markdown
-`##` is there so muscle memory works on day one. This guide writes its own
+`#` is there so muscle memory works on day one. This guide writes its own
 headings in the sigil form — the line just above this paragraph was
 `<# Sections come in three forms #>`. Give a section an id when something will
 point back to it, by adding `#name` before a pipe:
 `<# #sec:forms | Sections come in three forms #>`. The three forms are not three
 parsers racing each other.<note | The Markdown heading is a *lossy* convenience:
 it lifts into the canonical section but has nowhere to put an id, so converting
-Layer 1 back to shorthand emits the canonical form, never the `##`. The sigil and
+Layer 1 back to shorthand emits the canonical form, never the `#`. The sigil and
 canonical forms are co-equal and round-trip without loss — a distinction this
 guide's own headings rely on.> Their trade-offs are laid out in <ref @tab:layers>
 below.
