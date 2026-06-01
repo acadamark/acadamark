@@ -28,6 +28,7 @@
   },
   "exports": {
     "./cli": "./src/cli.js",
+    "./serialize-canonical": "./src/serialize-canonical.js",
     "./package.json": "./package.json"
   },
   "files": [

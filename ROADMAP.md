@@ -492,12 +492,14 @@ lossy boundary sits, how the importer handles JATS content with no
 enscribe counterpart — so it got its own **Phase 0** before the build
 began (findings at `notes/phase13-jats-import-findings.md`).
 
-**Phase 0 done; Slice 1 landed.** Slice 1 built `@enscribejs/jats-import` — the
-XML parser, the structural skeleton (article/front/body/sec/p), and inline
+**Phase 0 done; Slices 1–2 landed.** Slice 1 built `@enscribejs/jats-import` —
+the XML parser, the structural skeleton (article/front/body/sec/p), and inline
 formatting (bold/italic/code/links/sup/sub) — surfaced as `enscribe import-jats`.
-Remaining slices carry the lossy tail: Slice 2 citations & bibliography, then
-math (MathML → LaTeX), figures/tables, and the long drop-with-warning tail,
-finishing against a real CC-BY PMC article.
+Slice 2 added citations & bibliography (`<xref ref-type="bibr">` → `<cite>`,
+`<ref-list>` → a BibTeX `<library>` + `<bibliography>`). Remaining slices carry
+the lossy tail: math (MathML → LaTeX), figures/tables, non-bibliographic
+cross-references, the theorem family, DSL blocks, and the long drop-with-warning
+tail, finishing against a real CC-BY PMC article.
 
 ---
 

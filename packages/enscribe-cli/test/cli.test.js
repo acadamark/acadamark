@@ -104,12 +104,19 @@ export function run_tests() {
     assert.ok(html.out.includes('<b>bold</b>') && html.out.includes('<i>italic</i>'), 'inline imported');
     assert.ok(html.out.includes('<section-title>Introduction</section-title>'), 'section imported');
 
+    // citations resolve in the rendered output, and a bibliography is present.
+    assert.ok(html.out.includes('data-keys="ref-doe2020"') || html.out.includes('Doe'), 'cite resolved in HTML');
+    assert.ok(html.out.includes('An Earlier Study'), 'bibliography rendered in HTML');
+
     const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
     assert.equal(emd.code, 0);
     assert.ok(emd.out.includes('<meta type=article>'), '--emd → canonical meta');
     assert.ok(emd.out.includes('<section #sec:intro | Introduction>'), '--emd → canonical section with id');
     assert.ok(emd.out.includes('<section | Results>'), '--emd → canonical section (no id)');
     assert.ok(emd.out.includes('<b | bold>') || emd.out.includes('<b>bold</b>'), '--emd → canonical bold');
+    assert.ok(emd.out.includes('<cite @ref-doe2020>'), '--emd → in-text cite');
+    assert.ok(emd.out.includes('@article{ref-doe2020,'), '--emd → BibTeX entry in library');
+    assert.ok(emd.out.includes('<bibliography>'), '--emd → bibliography placement');
     console.log('PASS: import-jats → HTML and --emd');
   }
 

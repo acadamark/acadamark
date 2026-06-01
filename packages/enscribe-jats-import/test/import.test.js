@@ -113,5 +113,120 @@ More prose.`;
     console.log('PASS: round-trip export → import structural match');
   }
 
+  // ── citations + bibliography (Slice 2) ──────────────────────────────────────
+  {
+    const xml = `<article article-type="research-article">
+  <front><article-meta><title-group><article-title>Citing</article-title></title-group></article-meta></front>
+  <body><sec id="s"><title>Intro</title>
+    <p>One <xref ref-type="bibr" rid="ref-Smith2020">1</xref>; a group
+       <xref ref-type="bibr" rid="ref-Jones2018 ref-Brown2021">2,3</xref>.</p>
+  </sec></body>
+  <back><ref-list><title>References</title>
+    <ref id="ref-Smith2020"><element-citation publication-type="journal">
+      <person-group person-group-type="author">
+        <name><surname>Smith</surname><given-names>Jane</given-names></name>
+        <name><surname>Doe</surname><given-names>John</given-names></name>
+      </person-group>
+      <article-title>On Elephants</article-title><source>J. Pachyderm Studies</source>
+      <year>2020</year><volume>12</volume><issue>3</issue>
+      <fpage>45</fpage><lpage>67</lpage>
+      <pub-id pub-id-type="doi">10.1234/jps.2020.45</pub-id>
+    </element-citation></ref>
+    <ref id="ref-Jones2018"><element-citation publication-type="book">
+      <person-group person-group-type="author"><name><surname>Jones</surname><given-names>Alice</given-names></name></person-group>
+      <source>Methods in Field Research</source>
+      <publisher-name>Academic Press</publisher-name><publisher-loc>New York</publisher-loc><year>2018</year>
+    </element-citation></ref>
+    <ref id="ref-Brown2021"><mixed-citation publication-type="confproc">
+      <person-group person-group-type="author"><name><surname>Brown</surname><given-names>Bob</given-names></name></person-group>
+      <article-title>Diagram Layout</article-title><source>Proc. Symp. Layout</source><year>2021</year>
+    </mixed-citation></ref>
+    <ref id="ref-Free1999"><mixed-citation>Pure free text reference, Some Journal (1999).</mixed-citation></ref>
+  </ref-list></back>
+</article>`;
+    const tree = importJats(xml);
+
+    // in-text cites: a single and a grouped (space-separated rid → multi-key cite)
+    const cites = tagged(tree, 'cite');
+    assert.equal(cites.length, 2, 'two <cite> markers');
+    assert.deepEqual(cites[0].atRefs, ['ref-Smith2020'], 'single cite key');
+    assert.deepEqual(cites[1].atRefs, ['ref-Jones2018', 'ref-Brown2021'], 'grouped cite → two keys');
+    assert.equal(cites[0].content, null, 'cite content is null (parser shape)');
+
+    // library: one opaque <library> inside one <data>, with BibTeX entries
+    const lib = tagged(tree, 'library');
+    assert.equal(lib.length, 1, 'one <library>');
+    assert.ok(lib[0].isOpaqueContent && lib[0].contentHandler === 'library', 'library is opaque/library-handler');
+    const bib = lib[0].content;
+    assert.ok(bib.includes('@article{ref-Smith2020,'), 'journal → @article keyed by ref id');
+    assert.ok(bib.includes('author = {Smith, Jane and Doe, John}'), 'authors "Surname, Given" joined with " and "');
+    assert.ok(bib.includes('journal = {J. Pachyderm Studies}'), 'source → journal for articles');
+    assert.ok(bib.includes('pages = {45--67}'), 'fpage/lpage → pages');
+    assert.ok(bib.includes('doi = {10.1234/jps.2020.45}'), 'pub-id doi → doi');
+    assert.ok(bib.includes('@book{ref-Jones2018,'), 'book → @book');
+    assert.ok(bib.includes('publisher = {Academic Press}') && bib.includes('address = {New York}'), 'book publisher/address');
+    assert.ok(bib.includes('@inproceedings{ref-Brown2021,'), 'confproc → @inproceedings');
+    assert.ok(bib.includes('booktitle = {Proc. Symp. Layout}'), 'inproceedings source → booktitle');
+    assert.ok(/@misc\{ref-Free1999,\s*note = \{Pure free text/.test(bib), 'free-text mixed-citation → @misc note');
+
+    assert.equal(tagged(tree, 'data').length, 1, 'one <data> wrapper');
+    assert.equal(tagged(tree, 'bibliography').length, 1, 'one <bibliography> placement');
+
+    // renders: cites resolve (no ??cite errors), bibliography shows an entry
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes');
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?cite/.test(body), 'no unresolved-cite markers in rendered body');
+    assert.ok(/data-keys="ref-Smith2020"/.test(body), 'Smith cite resolved');
+    assert.ok(/data-keys="ref-Jones2018,ref-Brown2021"/.test(body), 'grouped cite resolved to both keys');
+    assert.ok(/On Elephants/.test(body), 'bibliography lists the cited entry');
+    console.log('PASS: citations + bibliography import');
+  }
+
+  // ── round-trip: .emd library + cites → export → import → cites resolve ───────
+  {
+    const emd = `<meta type=article>
+  <title | RT Cites>
+  <author | A. Author>
+</meta>
+
+<# Intro #>
+
+First <cite @Smith2020>, then <cite @Jones2018>.
+
+<data>
+<library |
+@article{Smith2020,
+  author = {Smith, Jane and Doe, John},
+  title  = {On the Behavior of Elephants},
+  journal = {J. Pachyderm Studies},
+  year   = 2020
+}
+@book{Jones2018,
+  author = {Jones, Alice},
+  title  = {Methods in Field Research},
+  publisher = {Academic Press},
+  year   = 2018
+}
+>
+</data>
+
+<bibliography>
+</bibliography>`;
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const jats = enscribeToJats(proc.runSync(proc.parse(emd)));
+    assert.ok(/<xref ref-type="bibr" rid="ref-Smith2020">/.test(jats), 'RT: export emits bibr xref');
+    assert.ok(/<ref id="ref-Smith2020">/.test(jats), 'RT: export emits matching <ref>');
+
+    const tree = importJats(jats);
+    assert.equal(tagged(tree, 'cite').length, 2, 'RT: two cites re-imported');
+    assert.equal(tagged(tree, 'library').length, 1, 'RT: library re-imported');
+    // cites resolve consistently (keys carry the export\'s ref- prefix on both sides)
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?cite/.test(body), 'RT: cites resolve (no error markers)');
+    assert.ok(/Behavior of Elephants/.test(body), 'RT: bibliography survives');
+    console.log('PASS: round-trip export → import citations resolve');
+  }
+
   console.log('All JATS import tests passed.');
 }

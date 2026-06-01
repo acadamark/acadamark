@@ -4514,3 +4514,32 @@ that). One line gets added every few months, not every slice.
   JATS instead, and logged as an open export gap (`<a>` → `<ext-link>`). All
   workspace suites pass from clean; docs build six pages. Next: **Slice 2 —
   citations and bibliography.**
+- **2026-05-31 — Phase 13 Slice 2: citations and bibliography.** The JATS
+  importer now carries the citation apparatus. In-text
+  `<xref ref-type="bibr" rid="…">` → `<cite @key>` (a space-separated `rid`
+  IDREFS list becomes one multi-key cite; the cite node carries `atRefs` with
+  `content: null`, the exact shape the parser produces — confirmed by probing
+  `liftToCanonicalMdast` so the import can't drift from it). `<back>`'s
+  `<ref-list>` `<ref>` `<element-citation>`/`<mixed-citation>` → BibTeX entries
+  gathered into one opaque `<library>` inside `<data>`, plus an empty
+  `<bibliography>` placement; both go at the document end (bibliography before
+  data), per the edge-apparatus convention the quickstart documents. The
+  field mapping inverts the export: titles (`<article-title>`→`title`,
+  `<source>`→`journal`/`booktitle`/book-title), `<year>`/`<volume>`/`<issue>`→
+  `number`, `<fpage>`/`<lpage>`→`pages`, `<pub-id pub-id-type="doi">`→`doi`,
+  publisher/loc, and `publication-type`→BibTeX entry type (`journal`→`@article`,
+  `book`→`@book`, `confproc`→`@inproceedings`, `thesis`→`@phdthesis`, else
+  `@misc`). Author `<name>` → `Surname, Given` joined with ` and `; a free-text
+  `<mixed-citation>` with no structure is kept as an `@misc` `note`. Citation
+  keys use the `<ref>` id verbatim (the locked decision — no transformation): for
+  enscribe-exported JATS that means the exporter's `ref-` prefix rides on both
+  the cite and the library entry, so cites still resolve (round-trip verified —
+  keys stay consistent and every entry renders). The BibTeX is proven valid by
+  *rendering*: citation-js parses the library and the cites resolve to a
+  formatted `(Author, Year)` with a bibliography — satisfying the slice's
+  stop-condition (BibTeX must parse downstream). Also fixed a Slice-1 doc/code
+  drift surfaced here: the jats-import README documented
+  `@enscribejs/cli/serialize-canonical`, but the CLI package didn't export that
+  subpath — added the export so the documented import resolves. All workspace
+  suites pass from clean; docs build six pages. Next: **Slice 3 — math
+  (MathML / `<tex-math>` → LaTeX).**

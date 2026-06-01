@@ -267,12 +267,15 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 - [~] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)* — **Slice 1 landed:** `@enscribejs/jats-import` with the
-  XML parser, structural mapping (article/front/body/sec/p), and inline formatting
-  (bold/italic/code/links/sup/sub), surfaced as `enscribe import-jats`
-  (HTML, or canonical `.emd` with `--emd`). Remaining slices: citations &
-  bibliography (Slice 2), math (MathML → LaTeX), figures/tables, and the long
-  tail of droppable elements.
+  *(→ roadmap: Phase 13)* — **Slices 1–2 landed.** Slice 1:
+  `@enscribejs/jats-import` with the XML parser, structural mapping
+  (article/front/body/sec/p), and inline formatting (bold/italic/code/links/sup/sub),
+  surfaced as `enscribe import-jats` (HTML, or canonical `.emd` with `--emd`).
+  Slice 2: citations & bibliography (`<xref ref-type="bibr">` → `<cite @key>`,
+  `<ref-list>`/`<element-citation>` → BibTeX `<library>` + `<bibliography>`).
+  Remaining slices: math (MathML → LaTeX), figures/tables, non-bibliographic
+  cross-references, the theorem family, DSL blocks, and the long tail of
+  droppable elements.
 - [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
   in the vocabulary), so exported JATS loses links and the import round-trip can't
@@ -1190,7 +1193,33 @@ Surfaced as `enscribe import-jats` (HTML by default, canonical `.emd` with
 *export* does not yet map `<a>` → `<ext-link>` (export predates `<a>` in the
 vocabulary), so the export→import round-trip cannot exercise the importer's
 link mapping — verified with synthetic JATS instead. Logged as an export gap for
-a future slice. Next: **Slice 2 — citations & bibliography.**
+a future slice.
+
+**Slice 2 landed (2026-05-31)** — citations & bibliography. In-text
+`<xref ref-type="bibr" rid="…">` → `<cite @key>` (a space-separated `rid` IDREFS
+list becomes one multi-key cite; the cite node carries `atRefs` with `content:
+null`, matching the parser's shape). `<back>`'s `<ref-list>` `<ref>`
+`<element-citation>` / `<mixed-citation>` → BibTeX entries gathered into one
+opaque `<library>` (inside `<data>`), with an empty `<bibliography>` placement —
+both appended at the document end (bibliography before data) per the
+edge-apparatus convention. Field mapping inverts the export:
+`<article-title>`→`title`, `<source>`→`journal` (or `booktitle` for proceedings;
+the title itself for books), `<year>`/`<volume>`/`<issue>`→`number`,
+`<fpage>`/`<lpage>`→`pages` (`a--b`), `<pub-id pub-id-type="doi">`→`doi`,
+`<publisher-name>`/`<publisher-loc>`→`publisher`/`address`. `publication-type` →
+BibTeX entry type (`journal`→`@article`, `book`→`@book`, `confproc`→
+`@inproceedings`, `thesis`→`@phdthesis`, else `@misc`). Author `<name>` →
+`Surname, Given` joined with ` and `; `<string-name>`/`<collab>` kept verbatim. A
+free-text `<mixed-citation>` with no structured fields is preserved as `@misc`
+with the text in `note`. Citation keys use the `<ref>` id verbatim (no
+transformation) — for enscribe-exported JATS that means keys carry the exporter's
+`ref-` prefix on both the cite and the library entry, so cites still resolve
+(round-trip verified: keys stay consistent, all entries render). The BibTeX is
+proven valid by rendering — citation-js parses it and the cites resolve with a
+formatted bibliography. Also: added the `@enscribejs/cli/serialize-canonical`
+subpath export (the jats-import README documented it, but the package didn't
+expose it — a Slice-1 doc/code drift, now fixed). Next: **Slice 3 — math
+(MathML / `<tex-math>` → LaTeX).**
 
 ### Build the client-side rendering library
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*

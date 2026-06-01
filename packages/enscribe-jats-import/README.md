@@ -33,8 +33,16 @@ Import is **deliberately lossy** and built incrementally. This release maps:
 - **Inline:** `<bold>`/`<italic>`/`<underline>`/`<strike>` → `<b>`/`<i>`/`<u>`/`<s>`;
   `<monospace>` → inline code; `<sup>`/`<sub>`; `<ext-link>`/`<uri>`/`<email>` →
   `<a>`.
+- **Citations & bibliography:** `<xref ref-type="bibr">` → `<cite @key>` (a
+  space-separated `rid` list becomes one multi-key cite); `<back><ref-list>`
+  `<ref><element-citation>` → BibTeX entries in a `<library>` (inside `<data>`),
+  with a `<bibliography>` placement. The `<ref>` id is the citation key, verbatim.
+  Publication types map (`journal`→`@article`, `book`→`@book`,
+  `confproc`→`@inproceedings`, `thesis`→`@phdthesis`, …; anything else →
+  `@misc`); author names become `Surname, Given` joined with ` and `. A free-text
+  `<mixed-citation>` with no structured fields is preserved as an `@misc` `note`.
 
 Not yet imported (dropped, with a one-line warning naming each kind — never
-silently): citations and bibliography, math, figures, tables, cross-references,
-the theorem family, DSL blocks, `<book>` (BITS), and the non-representable-element
-reduction policy. These arrive in later Phase 13 slices.
+silently): math, figures, tables, non-bibliographic cross-references, the theorem
+family, DSL blocks, `<book>` (BITS), and the long tail of non-representable
+elements. These arrive in later Phase 13 slices.

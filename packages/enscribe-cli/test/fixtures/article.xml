@@ -16,11 +16,27 @@
   <body>
     <sec id="sec:intro">
       <title>Introduction</title>
-      <p>A paragraph with <bold>bold</bold>, <italic>italic</italic>, and <monospace>code</monospace>.</p>
+      <p>A paragraph with <bold>bold</bold>, <italic>italic</italic>, and <monospace>code</monospace>,
+         citing earlier work <xref ref-type="bibr" rid="ref-doe2020">1</xref>.</p>
     </sec>
     <sec>
       <title>Results</title>
       <p>The result follows.</p>
     </sec>
   </body>
+  <back>
+    <ref-list>
+      <title>References</title>
+      <ref id="ref-doe2020">
+        <element-citation publication-type="journal">
+          <person-group person-group-type="author">
+            <name><surname>Doe</surname><given-names>Jane</given-names></name>
+          </person-group>
+          <article-title>An Earlier Study</article-title>
+          <source>Journal of Imports</source>
+          <year>2020</year><volume>4</volume><fpage>10</fpage><lpage>20</lpage>
+        </element-citation>
+      </ref>
+    </ref-list>
+  </back>
 </article>
