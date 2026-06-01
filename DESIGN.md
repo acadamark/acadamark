@@ -499,6 +499,8 @@ The project is organized as an npm workspace with four packages (a fifth, `enscr
 
 ## Design tensions and accepted tradeoffs
 
+**`enscribe import` via pandoc does not preserve LaTeX cross-references.** Pandoc does not carry LaTeX label/reference commands through structurally, so cross-references in LaTeX or Quarto sources imported through the pandoc bridge arrive as plain text rather than resolvable `<ref>` links. This is a pandoc limitation, not an enscribe one, and is accepted as a known limitation of the import path.
+
 **Shorthand is less readable than plain markdown.** Acknowledged. The shorthand is more readable than HTML and more readable than markdown plus the trailing-attribute extensions that academic markdown flavors require. Where plain markdown suffices, enscribe uses it. The shorthand is reached for only when needed.
 
 **Implicit closing differs from HTML.** Standard HTML linters may flag enscribe source. This is acceptable because enscribe source is not HTML — it compiles to HTML. Tooling for the shorthand is a separate concern from HTML tooling.

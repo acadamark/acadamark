@@ -155,6 +155,7 @@ Three live code comments that cite these as their rationale source were repointe
 
 ## Single archived documents (2026-05)
 
+- **`import-strategy-notes-2026-05.md`** — Import-strategy notes (the JATS-import and pandoc-bridge approach). Import shipped; retained as the rationale record. The file was duplicated byte-for-byte at the repo root and in `notes/`; the root copy was deleted and this copy archived (2026-06-01).
 - **`inline-tex-shortcuts-spec-2026-05.md`** — Spec for the `^{}`/`_{}` superscript/subscript shortcut syntax. The G1 feature is built; this is the spec it was built against.
 - **`feature-test-document-slice3.5.md`** — Slice-3.5-era markdown feature-test catalog. Originally `notes/test.amd` (wrong extension, stale name). Fully superseded by the current test suite.
 
