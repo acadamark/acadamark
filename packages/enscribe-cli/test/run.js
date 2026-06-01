@@ -1,8 +1,10 @@
 // Test runner for @enscribejs/cli.
-import { run_tests } from './cli.test.js';
+import { run_tests as runCliTests } from './cli.test.js';
+import { run_tests as runLiftTests } from './lift.test.js';
 
 try {
-  run_tests();
+  runCliTests();
+  runLiftTests();
   process.exit(0);
 } catch (err) {
   console.error('FAIL:', err?.message ?? err);

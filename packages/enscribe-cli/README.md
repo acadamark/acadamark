@@ -40,6 +40,24 @@ enscribe export-jats paper.emd                # XML to stdout
 enscribe export-jats paper.emd -o paper.xml   # XML to a file
 ```
 
+### `enscribe lift`
+
+Rewrite a document that mixes markdown idioms (`## Title`, `**bold**`), sigil
+shorthands (`<# Title #>`), and canonical tags into equivalent source in pure
+canonical named-tag form (`<section | Title>`, `<b>bold</b>`).
+
+```bash
+enscribe lift paper.emd                  # canonical source to stdout
+enscribe lift paper.emd -o canonical.emd # to a file
+```
+
+The output re-parses to the same document (round-trip fidelity) for common
+documents. A few honest caveats: opaque math and code use their canonical sigil
+forms (`<$ … $>`, `<$$ … $$>`, `` <` … `> ``, `<``` … ```>`) — the only forms
+that preserve verbatim content; lists re-emit as markdown list syntax (Enscribe
+has no list tag); markdown links become `<span>`; and rare escaping edge cases
+may need manual cleanup.
+
 ### Help and version
 
 ```bash
@@ -50,9 +68,6 @@ enscribe --version
 
 ## Not yet included
 
-- `enscribe lift` — serialize mixed markdown/sigil/canonical source to pure
-  canonical Enscribe. This is the "lowering" direction and ships in its own
-  slice.
 - `enscribe import-jats` / `enscribe import` — arrive with JATS import and the
   pandoc bridge.
 

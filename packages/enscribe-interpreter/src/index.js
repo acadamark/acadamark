@@ -721,3 +721,31 @@ export function enscribeInterpreter(options = {}) {
 export function buildEnscribePipeline(options = {}) {
   return unified().use(remarkParse).use(remarkEnscribe).use(enscribeInterpreter, options);
 }
+
+/**
+ * Lift a source document to its canonical-form mdast tree: parse + recursive
+ * content + the normalize-to-canonical gate, and nothing after. The result is a
+ * tree where markdown/sigil authored forms have been coerced to canonical
+ * Layer 1 `enscribeTag` nodes, but BEFORE the structural plugins restructure it
+ * — sections are not yet nested, and refs/cites/notes are not yet resolved (so
+ * `<ref>`/`<cite>`/`<note>` remain as authorable tags). This is the input the
+ * `enscribe lift` CLI command serializes back to canonical source.
+ *
+ * It reuses the same parse + recursive-content + normalize assembly that
+ * `enscribeInterpreter` opens with (steps 1 and 1.5), so it cannot drift from
+ * the real pipeline's lift behavior.
+ *
+ * @param {string} source - enscribe/markdown source text.
+ * @returns {import('mdast').Root} the post-normalize mdast tree.
+ */
+export function liftToCanonicalMdast(source) {
+  const inner = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+  const tree = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
+    .parse(source);
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeNormalizeToCanonical)
+    .runSync(tree);
+  return tree;
+}

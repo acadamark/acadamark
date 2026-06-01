@@ -215,17 +215,21 @@ A flat scannable index of every open item. Detailed entries below.
   written first `[parser]` `[post-alpha]` *(formerly DF-3)*
 - [ ] **Implement multi-column display rendering** `[interpreter]`
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
-- [ ] **Build the lowering pass (Layer 1 → canonical enscribe)**
-  `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)* — `enscribe lift`
-  (below) is its CLI-facing, near-term slice, pulled forward to before v0.1.0
+- [~] **Build the lowering pass (Layer 1 → canonical enscribe)**
+  `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)* — the
+  **canonical-form half is delivered** by `enscribe lift` (the serializer in
+  `@enscribejs/cli`); the remaining Phase-7 work is lowering further, canonical →
+  shorthand-sigils / markdown idioms (the friendlier authoring registers)
 - [x] **CLI: `enscribe render` + `enscribe export-jats`** `[cli]` `[release]` —
   the `@enscribejs/cli` package; a thin layer over the existing pipelines.
   **CLOSED 2026-05-31** (see detailed entry)
-- [ ] **CLI: `enscribe lift`** `[cli]` `[release]` — serialize mixed
-  markdown/sigil/canonical source to pure canonical Enscribe; the lowering
-  pass surfaced on the command line. Deferred from the CLI slice to its own
-  focused slice (the canonical serializer is real new work, not a thin CLI
-  add-on). **The immediate next CLI slice.**
+- [x] **CLI: `enscribe lift`** `[cli]` `[release]` — serialize mixed
+  markdown/sigil/canonical source to pure canonical Enscribe. **CLOSED
+  2026-05-31** — the `serialize-canonical.js` serializer + the
+  `liftToCanonicalMdast` interpreter helper; idempotent round-trip verified on
+  synthetic mixed-form docs and real fixtures (calibration, demo, tables, …);
+  documented best-effort limitations (opaque math/code use sigil forms, lists
+  re-emit as markdown, links → spans).
 - [ ] **Table-of-contents sidebar** `[interpreter]` `[release]`
   *(→ roadmap: Phase 8)*
 - [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
@@ -945,8 +949,30 @@ exit 0/1 with helpful messages; `run(argv, io)` is stream-injectable so the
 tests drive it without spawning (plus two spawn tests for the real bin).
 **CLOSED 2026-05-31.** Package home: the CLI had to be its own package — putting
 it in `@enscribejs/interpreter` would cycle (`jats-export` already depends on the
-interpreter). `enscribe lift` was deferred (see below). `import-jats` / `import`
-arrive with Phase 13 and the pandoc bridge.
+interpreter). `enscribe lift` was deferred to its own slice (now landed, below).
+`import-jats` / `import` arrive with Phase 13 and the pandoc bridge.
+
+### CLI: `enscribe lift` (canonical serializer)
+`[cli]` `[release]`
+
+**CLOSED 2026-05-31.** The third CLI command — rewrites mixed
+markdown/sigil/canonical source to pure canonical named-tag form. Two pieces:
+`liftToCanonicalMdast(source)` added to `@enscribejs/interpreter` (parse +
+recursive-content + the normalize-to-canonical gate, reusing the real pipeline's
+opening stages so it cannot drift), and `serialize-canonical.js` in
+`@enscribejs/cli` (a tree walker that emits canonical source). Round-trip
+fidelity verified by an **idempotence** test (`lift(lift(src)) === lift(src)` and
+no error nodes) across synthetic mixed-form documents and real fixtures
+(calibration with math environments, demo, linear-regression, tables). Three
+documented, round-trip-forced deviations from "pure named tags": opaque math /
+code use their canonical **sigil** forms (`<$ … $>`, `<$$ … $$>`, `` <` … `> ``,
+`<``` … ```>`) because the named forms (`inline-math`, `code-block`, …) are not
+registered opaque handlers and would re-parse as prose; lists re-emit as markdown
+list syntax (no list tag exists); markdown links de-lift to `<span>`. Escaping
+follows `notes/specs/escape-rules-spec.md` (`\<`, `\|`, `&gt;` for the
+not-backslash-escapable `>` in named-tag content); opaque DSL/math-env content
+with backslashes uses long form (pipe content is escape-processed even for opaque
+tags). Best-effort: rare escaping edge cases may need manual cleanup.
 
 ### Build the lowering pass (Layer 1 → canonical enscribe)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
@@ -956,13 +982,11 @@ plus the Layer 1 → canonical-enscribe serialization for authoring
 tooling that emits enscribe from Layer 1. The `TAGNAME_TO_SIGIL`
 lookup direction is already present in
 `packages/enscribe-core/src/tagname-sigil-map.js` (reserved for
-this work); the lowering pass itself is the missing piece. **`enscribe lift`
-is this work surfaced on the CLI** — the CLI slice (2026-05-31) confirmed no
-serializer exists today (the repo emits only HTML and JATS), so a
-round-trip-faithful canonical serializer (escaping for literal `<`/`>`/`|`,
-opaque-vs-array content, attribute reconstruction, every node type) is real new
-work. Ratified as its own focused slice before v0.1.0, the immediate next CLI
-slice.
+this work). **The canonical-form half is delivered** by `enscribe lift`
+(`serialize-canonical.js`); the remaining Phase-7 work is lowering *further* —
+canonical named tags → the shorthand sigils (`<#>`, `<$>`, …) and markdown idioms
+(the friendlier authoring registers), using the reserved `TAGNAME_TO_SIGIL`
+direction — for round-trip-critical authoring tooling.
 
 ### Table-of-contents sidebar
 `[interpreter]` `[release]` *(→ roadmap: Phase 8)*

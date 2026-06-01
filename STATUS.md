@@ -4465,3 +4465,26 @@ that). One line gets added every few months, not every slice.
   `bin`/package linked via `npm install`; all workspace suites pass (the new CLI
   suite included); docs build is six pages. Next: `enscribe lift` slice, then
   Phase 13 implementation.
+- **2026-05-31 — CLI: `enscribe lift` (canonical serializer).** The third CLI
+  command — rewrites source that mixes markdown idioms, sigil shorthands, and
+  named tags into pure canonical named-tag form. Two pieces: `liftToCanonicalMdast`
+  added to `@enscribejs/interpreter` (parse + recursive-content + the
+  normalize-to-canonical gate, reusing the real pipeline's opening stages so it
+  can't drift), and `serialize-canonical.js` in `@enscribejs/cli` (a tree walker
+  emitting canonical source). Round-trip fidelity is verified by **idempotence**
+  (`lift(lift(src)) === lift(src)` with no error nodes) across synthetic
+  mixed-form documents and real fixtures (the calibration doc with math
+  environments and `|`-bearing inline math, the demo, linear-regression, tables).
+  Investigation surfaced three round-trip-forced deviations from "pure named
+  tags", all documented in the CLI help / README: (1) opaque **math and code use
+  their canonical sigil forms** (`<$ … $>`, `<$$ … $$>`, `` <` … `> ``,
+  `<``` … ```>`) — the named forms (`inline-math`, `code-block`) are not
+  registered opaque handlers and re-parse as prose; (2) lists re-emit as markdown
+  list syntax (no list tag exists); (3) markdown links de-lift to `<span>`.
+  Escaping follows `escape-rules-spec.md` (`\<`/`\|`, and `&gt;` for the
+  not-backslash-escapable `>`); opaque DSL/math-env content with backslashes uses
+  long form, because pipe content is escape-processed even for opaque tags (the
+  bug that produced `\mathrm`→`\m` errors until fixed). All workspace suites pass;
+  docs build six pages. The BACKLOG lowering-pass entry is now half-done — the
+  remaining Phase-7 work is lowering further (canonical → sigils/markdown). Next:
+  Phase 13 implementation (JATS import).

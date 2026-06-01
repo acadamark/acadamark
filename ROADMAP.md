@@ -66,10 +66,9 @@ The release demonstrably includes five things:
    fixture. It takes over the demonstrative role the accumulated
    fixture corpus has carried.
 5. **A command-line tool.** The `@enscribejs/cli` package ships an `enscribe`
-   command — `enscribe render` (→ self-contained HTML) and `enscribe export-jats`
-   (→ JATS 1.3 XML), thin wrappers over the existing pipelines (delivered
-   2026-05-31). `enscribe lift` (mixed → canonical-Enscribe serialization, the
-   lowering pass on the CLI) follows as its own slice before release;
+   command — `enscribe render` (→ self-contained HTML), `enscribe export-jats`
+   (→ JATS 1.3 XML), and `enscribe lift` (mixed markdown/sigil/canonical source →
+   canonical named-tag form, round-trip-verified), all delivered 2026-05-31.
    `enscribe import-jats` and `enscribe import` arrive with Phase 13 (JATS import)
    and the post-v0.1.0 pandoc bridge.
 

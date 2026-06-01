@@ -5,9 +5,8 @@
 //
 //   enscribe render <input.emd>        → HTML   (buildEnscribePipeline.processSync)
 //   enscribe export-jats <input.emd>   → JATS   (runSync → enscribeToJats)
-//
-// `enscribe lift` (canonical-form serialization) is the Phase-7 "lowering"
-// direction and lands in its own focused slice; it is intentionally absent here.
+//   enscribe lift <input.emd>          → canonical Enscribe source
+//                                        (liftToCanonicalMdast → serializeCanonical)
 //
 // The CLI lives in its own package (`@enscribejs/cli`) rather than inside
 // `@enscribejs/interpreter`, because the `export-jats` command imports
@@ -17,8 +16,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline } from '@enscribejs/interpreter';
+import { buildEnscribePipeline, liftToCanonicalMdast } from '@enscribejs/interpreter';
 import { enscribeToJats } from '@enscribejs/jats-export';
+import { serializeCanonical } from './serialize-canonical.js';
 
 const require = createRequire(import.meta.url);
 const PKG = require('../package.json');
@@ -35,12 +35,36 @@ Usage:
 Commands:
   render <input.emd>       Render an Enscribe document to self-contained HTML
   export-jats <input.emd>  Export an Enscribe document to JATS 1.3 XML
+  lift <input.emd>         Rewrite mixed markdown/sigil source to canonical form
 
 Options:
   -h, --help     Show this help
   -v, --version  Show the version
 
 Run 'enscribe <command> --help' for command-specific options.
+`;
+
+const LIFT_HELP = `enscribe lift — rewrite a document to canonical Enscribe form
+
+Takes Enscribe source that mixes markdown idioms (\`## Title\`, \`**bold**\`),
+sigil shorthands (\`<# Title #>\`), and canonical named tags, and emits
+equivalent source in canonical named-tag form (\`<section | Title>\`, \`<b>bold</b>\`).
+
+Usage:
+  enscribe lift <input.emd> [options]
+
+Options:
+  -o, --output <file>  Write canonical source to <file> (default: stdout)
+  --quiet              Suppress warnings
+  -h, --help           Show this help
+
+Notes:
+  - Opaque math and code use their canonical sigil forms (<$ … $>, <\$\$ … \$\$>,
+    <\` … \`>, <\`\`\` … \`\`\`>) — the only forms that preserve verbatim content.
+  - Lists re-emit as markdown list syntax; Enscribe has no canonical list tag.
+  - Markdown links become <span> (Enscribe has no markdown-link form).
+  - Best-effort: common documents round-trip exactly; rare escaping edge cases
+    may need manual cleanup.
 `;
 
 const RENDER_HELP = `enscribe render — render an Enscribe document to HTML
@@ -135,6 +159,14 @@ function doRender(opts) {
   );
 }
 
+function doLift(opts) {
+  const src = readInput(opts.input);
+  // lift runs only parse + recursive-content + the normalize-to-canonical gate
+  // (the structural plugins are intentionally NOT run — see liftToCanonicalMdast),
+  // then serializes the canonical tree back to source.
+  return withQuiet(opts.quiet, () => serializeCanonical(liftToCanonicalMdast(src)));
+}
+
 function doExportJats(opts) {
   const src = readInput(opts.input);
   // export-jats needs the post-pipeline mdast tree (not HTML): .runSync() runs
@@ -193,6 +225,12 @@ export function run(argv, io = {}) {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(EXPORT_JATS_HELP); return 0; }
         emit(doExportJats(opts), opts, out);
+        return 0;
+      }
+      case 'lift': {
+        const opts = parseCommandArgs(rest);
+        if (opts.help) { out.write(LIFT_HELP); return 0; }
+        emit(doLift(opts), opts, out);
         return 0;
       }
       default:

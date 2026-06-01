@@ -64,6 +64,19 @@ export function run_tests() {
     console.log('PASS: export-jats → JATS 1.3 XML');
   }
 
+  // ── lift → canonical source ─────────────────────────────────────────────────
+  {
+    const { code, out } = invoke(['lift', FIXTURE]);
+    assert.equal(code, 0, 'lift exits 0');
+    assert.ok(out.includes('<meta type=article>'), 'meta block emitted');
+    assert.ok(out.includes('<section #sec:intro | Introduction>'), 'sigil heading → canonical <section> with id');
+    assert.ok(out.includes('<b | bold>') || out.includes('<b>bold</b>'), 'markdown **bold** → canonical <b>');
+    assert.ok(out.includes('<i | italic>') || out.includes('<i>italic</i>'), 'markdown *italic* → canonical <i>');
+    assert.ok(out.includes('<$E = mc^2$>') || out.includes('$E = mc^2$'), 'inline math → opaque math form');
+    assert.ok(!out.includes('**') && !/^#+ /m.test(out), 'no markdown bold/heading idioms remain');
+    console.log('PASS: lift → canonical source');
+  }
+
   // ── -o writes to a file ─────────────────────────────────────────────────────
   {
     const dir = mkdtempSync(join(tmpdir(), 'enscribe-cli-'));
