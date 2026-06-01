@@ -159,9 +159,17 @@ features are **release-blocking** for v0.1.0; the rest is post-release.
 - **Additional themes.** A wider set of display themes beyond the default.
 
 These three are net-new and UI-shaped in a way the project has not built
-before. They likely share machinery with the Phase 14 client-side library,
-so a **Phase 0** will scope where the UI code sits and how themes are
-structured before the build.
+before. **Phase 0 is done** (`notes/phase8-display-features-findings.md`):
+verdict *proceed* (neither stop-condition fires — the ToC is an opt-in layout
+that leaves non-ToC documents byte-identical, and book chapters already render
+as clean `<book-part>` siblings). The findings scope ToC generation
+(build-time, with section-id assignment for anchorless sections), chapter
+navigation (JS over `book-part-type="chapter"` siblings), and themes
+(custom-property overrides — with a small output-neutral `--enscribe-font-body`
+/ `--enscribe-font-heading` addition first, since the body font is currently
+hardcoded). Recommended slicing: **1) ToC sidebar** (the foundation) → **2)
+themes** (CSS-only) → **3) chapter navigation** (reuses the ToC as the chapter
+selector).
 
 **Post-release display work:**
 

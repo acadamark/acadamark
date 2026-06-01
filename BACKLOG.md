@@ -463,8 +463,14 @@ output: no current fixture produces a sidebar. UI-shaped — a rendered
 reading affordance, not a markup or conversion capability — and likely
 shares machinery with the Phase 14 client-side rendering library (the
 DOM the library renders is the DOM a sidebar navigates). Release-
-blocking for v0.1.0; gets a Phase 0 to site it against the render
-pipeline and the client-side library before any code.
+blocking for v0.1.0. **Phase 0 done**
+(`notes/phase8-display-features-findings.md`): generate the ToC at build time
+(it must work on the JS-free read-only pages), assigning stable ids to
+anchorless sections (only authored colon-id sections currently get an `id`);
+make the sidebar an **opt-in layout wrapper** so non-ToC documents stay
+byte-identical (this is what clears the "sidebar would restructure every
+document" stop-condition). It is the **first** Phase 8 slice — the chapter
+selector reuses it.
 
 ### Single-chapter-at-a-time book navigation
 `[interpreter]` `[release]` *(→ roadmap: Phase 8)*
@@ -474,7 +480,12 @@ a time with next/previous navigation, instead of rendering the whole
 book as one long scroll. Net-new render output and UI-shaped, like the
 table-of-contents sidebar; the two are companion navigation features
 and likely share the Phase 14 client-side-library machinery.
-Release-blocking for v0.1.0; gets a Phase 0.
+Release-blocking for v0.1.0. **Phase 0 done**
+(`notes/phase8-display-features-findings.md`): chapters already render as clean
+`<book-part book-part-type="chapter">` siblings under `<book-body>` (clearing
+the "renderer doesn't separate chapters" stop-condition), so a JS show/hide with
+prev/next + keyboard + URL-hash deep-linking is straightforward. The **third**
+Phase 8 slice — builds on the ToC (the ToC doubles as the chapter selector).
 
 ### Additional display themes
 `[interpreter]` `[release]` *(→ roadmap: Phase 8)*
@@ -482,9 +493,16 @@ Release-blocking for v0.1.0; gets a Phase 0.
 A wider set of visual themes for rendered output, beyond the current
 default — the release should ship more than one look. Lower-risk than
 the navigation features (themes are CSS, not interactive machinery) but
-still net-new; gets a Phase 0 to decide the theme mechanism: how a theme
-is selected, what a theme may vary, and how theme CSS relates to the
-structural CSS the interpreter emits. Release-blocking for v0.1.0.
+still net-new. Release-blocking for v0.1.0. **Phase 0 done**
+(`notes/phase8-display-features-findings.md`): themes are **custom-property
+overrides only** for v0.1.0 (a small CSS file re-declaring `--enscribe-*` tokens,
+cascaded after `default.css`). One output-neutral prerequisite: add a
+`--enscribe-font-body` / `--enscribe-font-heading` token, because the body font
+is currently hardcoded serif (so a sans "Modern" theme can't be a pure variable
+override yet). Open delivery decision (flagged for the slice): whether the
+interpreter injects the theme CSS or the consumer keeps supplying it — recommend
+consumer-supplied for v0.1.0, since the interpreter does not inject `default.css`
+today. The **second** Phase 8 slice (CSS-only, lowest risk).
 
 ### Build the comprehensive demonstrative fixture
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
