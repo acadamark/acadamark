@@ -535,7 +535,7 @@ article, `<book-back>` for a book. If the author placed an explicit
 `<bibliography>` tag, it is replaced in-place. Otherwise, the bibliography is
 appended (pushed) to the back-matter region. A book gets a single
 document-wide bibliography in `<book-back>`; per-chapter bibliographies are a
-deferred post-alpha option (see `BACKLOG.md`).
+deferred post-alpha option (see GitHub Issues).
 
 **Dependency:** `enscribeCiteResolution` (needs `citations.order` to be
 populated with the first-cited key list).

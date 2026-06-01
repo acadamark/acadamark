@@ -4,8 +4,8 @@ Multi-file authoring lets an enscribe document be split across several
 files — one file per chapter, separate files for appendices, shared
 bibliography files — with a project-level configuration tying them
 together. This document describes the intended mechanism. (Whether it is
-built is a STATUS question; the open work is tracked as DF-4 in
-`BACKLOG-ROADMAP.md`.)
+built is a STATUS question; the open work is tracked in
+GitHub Issues.)
 
 ## Use cases
 
@@ -95,7 +95,7 @@ files in the project at resolution time:
   on `<note>` (values `end`, `foot`, `side`, per `notes/specs/interpreter.md`
   §3.6) governs where each note appears. A chapter-end placement mode for
   multi-file documents depends on the per-section / per-chapter note
-  collection work tracked as PG-1 in `BACKLOG-ROADMAP.md` landing first;
+  collection work tracked in GitHub Issues landing first;
   it is not a currently available `placement` value.
 
 Multi-file processing is therefore not "process each file separately and
@@ -177,8 +177,8 @@ Five patterns deserve explicit framing.
 
 These are undecided design forks the rest of the spec previously presented
 as settled. They are not blocking issues — they are decisions owed
-*before* the multi-file feature is built (DF-4 in `BACKLOG-ROADMAP.md`).
-Each is filed as a discussion item in `BACKLOG-ROADMAP.md` (surfaced by
+*before* the multi-file feature is built.
+Each is filed as a discussion item in GitHub Issues (surfaced by
 the Front C extensions-cluster spec audit); the decision happens there,
 not in this spec.
 

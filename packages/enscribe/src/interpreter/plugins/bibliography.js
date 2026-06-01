@@ -50,7 +50,7 @@ function findDeep(nodes, tagname) {
  * Book case (Phase 6, 2026-05-29): a book's bibliography is a single
  * document-wide <ref-list> placed at the end of <book-back>, mirroring the
  * article path. Per-chapter bibliographies (scoped like note-scope=chapter)
- * are a deferred post-alpha option — see BACKLOG. book-structuring creates
+ * are a deferred post-alpha option — see GitHub Issues. book-structuring creates
  * <book-back> only when there is back-matter (appendix/glossary); if none
  * exists we create one and append it to the <book>.
  */

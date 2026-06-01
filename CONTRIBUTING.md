@@ -13,11 +13,11 @@ recording it in the spec.
 ## Two rules
 
 1. **One job per document.** Every document does exactly one of: describe the
-   intended design (a spec), hold open work as an unordered pool (the
-   backlog), name the build sequence (the roadmap), show where the project is
-   now (STATUS.md), or define this system (this file). A spec carries no
-   progress tracking. The backlog carries no sequencing. The roadmap carries
-   no per-item detail. A document that needs two jobs is two documents.
+   intended design (a spec), name the build sequence (the roadmap), show where
+   the project is now (STATUS.md), or define this system (this file). A spec
+   carries no progress tracking. The roadmap carries no per-item detail. A
+   document that needs two jobs is two documents. (Open work is not a document —
+   it lives in GitHub Issues.)
 
 2. **No document states a computable fact.** Test counts, vocabulary counts,
    and similar fast-changing checkable numbers appear in no document. Run
@@ -30,26 +30,13 @@ recording it in the spec.
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `multi-file-authoring.md`, `multi-column-display.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
-| `BACKLOG.md` | Backlog | ALL open work — bugs, gaps, limitations, planned features, open questions — as an unordered pool, queryable by tag, with detail. The only home for open-work detail. |
-| `ROADMAP.md` | Roadmap | The linear build narrative: phases, items in each phase in build order, dependencies, and current position. Alpha is a milestone along the roadmap. Each item is a cross-reference to its `BACKLOG.md` entry. |
-| `STATUS.md` | Status | Current-state checklist; in-flight/next; milestones. |
+| `ROADMAP.md` | Roadmap | The high-level plan: the phases the work moves through and the release each milestone aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
+| `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
+| GitHub Issues | Open work | ALL open work — bugs, enhancements, features, open questions — grouped by milestone and label. The home for open-work detail. (Not a repo file.) |
 | `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
 
-The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `BACKLOG.md`, `ROADMAP.md`) at the repository root; specs in `notes/specs/`; the historical record in `notes/archive/`. Anything outside those three is code or does not belong in the repo's documentation surface.
-
-### Why backlog and roadmap are two documents
-
-They do different jobs. The backlog is a *pool*: every open item, queryable
-by tag, with full detail (rationale, history, file paths, design tensions).
-Its readers ask "what is open in subsystem X?" or "what is the full story of
-item Y?" The roadmap is a *narrative*: a small, stable, linear path through
-phases, with each item a cross-reference to its backlog entry. Its readers
-ask "what comes next?" or "where does item Y sit in the build sequence?"
-
-The two documents agree on what is open and on alpha membership; they
-disagree on shape because they serve different questions. The coherence
-check (below) names the rule that keeps them in agreement.
+The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `ROADMAP.md`) at the repository root; specs in `notes/specs/`; the historical record in `notes/archive/`. Open work lives in GitHub Issues, not in a repo file. Anything outside those documentation locations is code or does not belong in the repo's documentation surface.
 
 ## The spec tier — DESIGN.md and notes/specs/
 
@@ -95,16 +82,16 @@ Each subsystem's blueprint:
 - **Extension blueprints (designed, not built)** —
   `notes/specs/multi-file-authoring.md` and
   `notes/specs/multi-column-display.md`. Their design is specified at the
-  rebuild standard; the unbuilt fact lives in `BACKLOG.md` and the phase
+  rebuild standard; the unbuilt fact is tracked in GitHub Issues and the phase
   sits in `ROADMAP.md`.
 
 ## Where each kind of fact lives
 
 - The intended design of any part of the system → its spec.
-- Open work of any kind, with detail → `BACKLOG.md`. Nowhere else.
+- Open work of any kind, with detail → [GitHub Issues](https://github.com/enscribejs/enscribe/issues), by milestone and label. Nowhere else.
 - The build sequence and current position → `ROADMAP.md`. Nowhere else.
 - What is true now / what is built → `STATUS.md` checklist.
-- What is being worked on now → `STATUS.md` "in flight / next".
+- What is being worked on now → the active GitHub milestone.
 - Test count, vocabulary count, etc. → no document. Run `npm run verify`.
 
 ## Reading order (for newcomers)
@@ -114,8 +101,8 @@ project, the recommended sequence:
 
 1. `README.md` — the project's purpose and high-level approach.
 2. `STATUS.md` — what is working today, what is in flight, what is pending.
-3. `ROADMAP.md` — the phases the project moves through, with alpha as a
-   milestone. Gives a one-screen view of where things are heading.
+3. `ROADMAP.md` — the phases the project moves through and the release each
+   milestone aims at. Gives a one-screen view of where things are heading.
 4. `DESIGN.md` — design rationale: the layer model, JATS relationship, DSL
    processor delegation, scope decisions, design directions.
 5. `notes/specs/idioms.md` and `notes/specs/principles.md` — the cross-cutting principles
@@ -128,8 +115,8 @@ parser specs together (`shorthand-syntax.md`, `escape-rules-spec.md`,
 (`packages/layer1-vocabulary/SPEC.md` and the per-element entries); the naming
 rules (`layer1-naming.md`); the shape-token machinery (`shape-tokens.md`).
 
-Open work in detail — `BACKLOG.md`. Working conventions for AI
-sessions — `CLAUDE.md`.
+Open work — [GitHub Issues](https://github.com/enscribejs/enscribe/issues).
+Working conventions for AI sessions — `CLAUDE.md`.
 
 ## The coherence check
 
@@ -143,56 +130,34 @@ slice is not done until code and documentation agree.
 >    Test: *with the code deleted, would the spec still describe what this slice
 >    decided?* If not, the spec has a hole — fix it in this slice.
 >
-> 2. **Backlog ⇄ code.** Every item this slice completed: the corresponding
->    `BACKLOG.md` entry is removed (checklist line and detailed entry, both
->    views in the same edit). Every item this slice discovered: a new entry
->    is added in both views. Backlog claims (file paths, sibling-items, status
->    notes) for any item this slice touched are re-verified against current
->    code; stale claims are corrected. Provisional findings reach the backlog
->    in the slice that surfaces them — not deferred to a follow-on slice.
+> 2. **Issues ⇄ code.** Every item this slice completed: close (or check off)
+>    its GitHub Issue. Every item this slice discovered: file a new GitHub Issue
+>    with the appropriate milestone and labels — a finding reaches Issues in the
+>    slice that surfaces it, not a follow-on slice. If the slice changes the
+>    phase plan or a release's scope, update `ROADMAP.md` in the same edit.
 >
-> 3. **Roadmap ⇄ backlog.** Cross-references stay live:
->    - Every `[alpha]` `BACKLOG.md` entry carries a `→ roadmap: Phase N`
->      cross-reference; every `ROADMAP.md` item names its `BACKLOG.md` entry.
->    - When a slice **closes** an `[alpha]` item: the entry is removed from
->      `BACKLOG.md` *and* the corresponding line is removed from `ROADMAP.md`.
->      If the closed item was the last in its phase, the phase exits.
->    - When a slice **adds** an `[alpha]` item: the entry is filed in
->      `BACKLOG.md` *and* listed in the appropriate `ROADMAP.md` phase with
->      its cross-reference.
->    - When a slice **rules** an item alpha vs post-alpha: the tag changes
->      in the backlog entry; if alpha, the item appears in the roadmap; if
->      post-alpha, it appears in the roadmap only if its phase already
->      includes post-alpha items (Phases 7+).
->    - When a slice **changes a phase's scope** (an alpha item moves to a
->      different phase, two phases merge, a phase splits): the roadmap edit
->      is made in the same slice; backlog cross-references update to match.
->    - The roadmap and the backlog agree on alpha membership: the set of
->      `[alpha]` entries in `BACKLOG.md` equals the set of items appearing
->      in `ROADMAP.md`'s alpha phases (Phases 1-6 currently).
+> 3. **STATUS.** Flip the relevant `STATUS.md` checkbox for any capability that
+>    shipped, and confirm the checklist still matches reality. STATUS is a
+>    capability checklist, not a changelog — the commit log is the changelog.
 >
-> 4. **STATUS.** Checklist still matches reality; a milestone line added for
->    what was completed; "in flight / next" updated.
+> 4. **Rule 2.** No computable fact was written into any document.
 >
-> 5. **Rule 2.** No computable fact was written into any document.
->
-> 6. **Report** what was reconciled. If a category needed nothing, say so
+> 5. **Report** what was reconciled. If a category needed nothing, say so
 >    explicitly — a silent skip and a deliberate "nothing needed" must not look
 >    the same.
 
 ## Maintenance
 
-- An audit is a process; its only output is backlog items. There is no
+- An audit is a process; its only output is GitHub Issues. There is no
   "audit findings" document.
-- An audit finding that is a backlog item is filed into
-  `BACKLOG.md` at the moment it is surfaced — when the Phase 0
-  report exists — not deferred to the fix slice. If the finding is alpha-
-  shaped, the roadmap is also updated in the same edit. Provisional filings
-  are allowed; the backlog, not a report or transcript, is the durable
-  holding place for a surfaced finding. A Phase 0 is not complete until
-  its backlog-worthy findings are filed. A fix slice resolves findings —
-  refines, closes, or addresses them as spec edits — but is not the first
-  place a finding reaches the backlog.
+- An audit finding that is open work is filed as a GitHub Issue at the moment
+  it is surfaced — when the Phase 0 report exists — not deferred to the fix
+  slice. If the finding changes the phase plan, the roadmap is also updated in
+  the same edit. Provisional filings are allowed; GitHub Issues, not a report
+  or transcript, is the durable holding place for a surfaced finding. A Phase 0
+  is not complete until its issue-worthy findings are filed. A fix slice
+  resolves findings — refines, closes, or addresses them as spec edits — but is
+  not the first place a finding reaches the issue tracker.
 - A prior observation is a lead, not a fact. When a documentation pass
   migrates, transcribes, or files an observation from an earlier
   investigation, an older notes file, or a past slice, it must empirically
@@ -205,18 +170,17 @@ slice is not done until code and documentation agree.
   slice, never "later."
 - A limitation is one of two things and is filed accordingly — it never gets
   its own document. A limitation that is a bug or a missing feature is open
-  work: it goes in `BACKLOG.md` (and the roadmap if alpha-shaped). A
-  limitation that is a deliberate, permanent design boundary is part of the
+  work: it goes in GitHub Issues (and the roadmap if it changes the phase
+  plan). A limitation that is a deliberate, permanent design boundary is part of the
   design: it goes in `DESIGN.md`'s "Design tensions and accepted tradeoffs"
   section, with its rationale. Every limitation must be classified as one
   or the other.
-- Discussing an idea is a type of work. It can be filed as a backlog item
+- Discussing an idea is a type of work. It can be filed as a GitHub Issue
   like any other — "discuss whether to do X" — and routed normally.
   Resolving the item produces a spec change, a work item, or a recorded
   decision not to pursue. An idea worth keeping does not become its own
-  document or a "deferred" file; it becomes a discussion item in the
-  backlog.
-- The roadmap stays small. If a phase's item list is growing past a handful
-  of items, the right move is usually to split the phase, not to lengthen
-  it. Item detail does not move into the roadmap to compensate; it stays
-  in the backlog.
+  document or a "deferred" file; it becomes a discussion issue.
+- The roadmap stays small. If a milestone's item list is growing past a
+  handful of items, the right move is usually to split the phase, not to
+  lengthen the roadmap. Item detail does not move into the roadmap to
+  compensate; it stays in GitHub Issues.

@@ -356,7 +356,7 @@ ContentChar
 // ambiguous with math braces (\mathbb{Y}); super/subscript math is a deliberate,
 // documented exclusion. NOT applied to hash sigil bodies (HashSigilBodyChar*):
 // headings share the same latent gap but need a different content class (> is
-// legal content there) — deferred, see BACKLOG.
+// legal content there) — deferred, see GitHub Issues.
 
 OpaqueSpan
   = $("$$" (!"$$" [^>])* "$$")     // display math  $$…$$

@@ -66,5 +66,5 @@ Options: `katexCss`, `hoverPreviewMode`, `assetsDir`, `embedResources`,
   injection, error handling.
 - [`notes/specs/pipeline.md`](../../notes/specs/pipeline.md) — pipeline stages,
   ordering, dependencies, data-flow examples.
-- [`BACKLOG.md`](../../BACKLOG.md) — open work; [`ROADMAP.md`](../../ROADMAP.md)
-  — the phase sequence.
+- Open work — [GitHub Issues](https://github.com/enscribejs/enscribe/issues);
+  [`ROADMAP.md`](../../ROADMAP.md) — the phase plan and release targets.

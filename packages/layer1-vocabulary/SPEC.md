@@ -248,7 +248,7 @@ For future readers and contributors, the load-bearing decisions:
 - It can be authored directly (any tool producing conformant HTML works) or through enscribe's shorthand (the primary authoring path).
 - It is the deliverable that makes enscribe's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.
 
-For current project status see `STATUS.md`; for the open backlog see
-`BACKLOG-ROADMAP.md`. The interpreter that consumes this
+For current project status see `STATUS.md`; for open work see
+[GitHub Issues](https://github.com/enscribejs/enscribe/issues). The interpreter that consumes this
 vocabulary is documented in `notes/specs/interpreter.md`; the pipeline that
 produces and operates on Layer 1 elements is in `notes/specs/pipeline.md`.

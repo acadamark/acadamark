@@ -4,8 +4,8 @@ Multi-column display is a render-mode concern: the Layer 1 structure of
 the document is column-agnostic, and a downstream render-mode lowering
 produces the CSS (or typeset directives) that implement column flow.
 This document describes the intended mechanism. (Whether it is built is
-a STATUS question; the open work is tracked as DF-5 in
-`BACKLOG-ROADMAP.md`.)
+a STATUS question; the open work is tracked in
+GitHub Issues.)
 
 ## Use cases
 
@@ -61,7 +61,7 @@ Note that this nested-element form is **not supported by `<config>` as it
 currently works** — per `notes/specs/interpreter.md` §3.2 the
 `enscribeConfigDiscovery` plugin reads `<config>` kwargs and does not
 walk nested children (the "nested `<config>` not read" gap is also
-tracked separately in `BACKLOG-ROADMAP.md`, formerly PG-9). The kwarg
+tracked separately in GitHub Issues). The kwarg
 alternative `<config columns=2>` would work with the existing mechanism
 without modification. Which form multi-column adopts (and whether
 adopting the nested form requires also extending `<config>` and/or
@@ -167,8 +167,8 @@ Four patterns deserve explicit framing.
 
 These are undecided design forks the rest of the spec previously presented
 as settled. They are not blocking issues — they are decisions owed
-*before* the multi-column feature is built (DF-5 in `BACKLOG-ROADMAP.md`).
-Each is filed as a discussion item in `BACKLOG-ROADMAP.md` (surfaced by
+*before* the multi-column feature is built.
+Each is filed as a discussion item in GitHub Issues (surfaced by
 the Front C extensions-cluster spec audit); the decision happens there,
 not in this spec.
 

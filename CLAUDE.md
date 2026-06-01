@@ -19,7 +19,7 @@ The relevant docs are:
 - `README.md` — project premise.
 - `DESIGN.md` — design rationale.
 - `STATUS.md` — current state, what's done, what's next.
-- `BACKLOG-ROADMAP.md` — open work; the single home for backlog and routing.
+- `ROADMAP.md` — the phase plan and release targets. Open work lives in GitHub Issues (by milestone and label).
 - `notes/specs/layer1-naming.md` — Layer 1 vocabulary rules.
 - `notes/specs/shorthand-syntax.md` — parser specification.
 - `notes/specs/idioms.md` — delegation principle (enscribe hands off to existing parsers wherever possible).
@@ -41,14 +41,14 @@ Read the files relevant to the current task at the start of a session.
 
 **Spec-first.** When implementation reveals a question that the existing specs don't answer, update the spec before coding. Do not paper over ambiguity by guessing what was meant.
 
-**Slice cadence.** Work is organized into vertical slices, each with a clear scope. The current slice plan and open backlog live in `BACKLOG-ROADMAP.md`. Do not start a new slice while a previous one is incomplete. Every non-trivial slice runs in two artifacts: a **Phase 0** read-only investigation (produces a findings document ending in a "recommended scope" verdict, no code changes), then an **implementation prompt** written from the findings. Phase 0 repeatedly catches things the plan could not have known — do not skip it.
+**Slice cadence.** Work is organized into vertical slices, each with a clear scope. The phase plan lives in `ROADMAP.md`; open work lives in GitHub Issues (by milestone and label). Do not start a new slice while a previous one is incomplete. Every non-trivial slice runs in two artifacts: a **Phase 0** read-only investigation (produces a findings document ending in a "recommended scope" verdict, no code changes), then an **implementation prompt** written from the findings. Phase 0 repeatedly catches things the plan could not have known — do not skip it.
 
 **Correctness models.** Know which one applies before a slice starts:
 - *Output-neutral* (most refactor work): proof is an empty fixture diff. `node test/render-fixtures.js` then `git diff test/fixtures/` must be empty. Snapshots must not change.
 - *Output-adding* (a new feature): proof is "the diff shows exactly the intended new output and nothing else." Snapshots will change for new fixtures and that is expected and reviewed.
 - *Syntax-migration* (e.g. F1): fixture source changes but rendered output does not. Proof is HTML content stable (snapshots may shift on source-position metadata; verify content, not raw bytes).
 
-**Coherence check at the end of each slice.** The check defined in `CONTRIBUTING.md` ends every implementation slice and is reported alongside the diff. It verifies spec ⇄ code, backlog ⇄ roadmap, STATUS, and Rule 2. Drift surfaced by the check is fixed in the same slice; it is not a separate "drift check report" filed for later. (The older single-direction "drift check" — re-reading specs against new code at the end of each slice — is subsumed by the coherence check.)
+**Coherence check at the end of each slice.** The check defined in `CONTRIBUTING.md` ends every implementation slice and is reported alongside the diff. It verifies spec ⇄ code, Issues ⇄ code, STATUS, and Rule 2. Drift surfaced by the check is fixed in the same slice; it is not a separate "drift check report" filed for later. (The older single-direction "drift check" — re-reading specs against new code at the end of each slice — is subsumed by the coherence check.)
 
 **Visual verification for visible-output slices.** Tests catch behavioral regressions; they do not catch visual regressions (a note in the wrong place, a code block losing newlines, math rendering as block when it should be inline). When a slice changes visible output, run `npm run verify` in `packages/enscribe` — it runs the full test suite and re-renders the fixture HTML files — then open the affected `test/fixtures/document-N-*.html` in a browser and confirm the rendered output is correct. Tests passing is necessary but not sufficient for visible-output slices. When a slice intentionally changes output, regenerate snapshots with `ENSCRIBE_UPDATE_SNAPSHOTS=1 node test/run.js` and re-run `npm run verify` to confirm the new snapshots match.
 
@@ -95,7 +95,7 @@ Always build before testing when the grammar has been modified. "48/48 pass from
 
 ## What's deferred and why
 
-Deferred features and open work live in `BACKLOG-ROADMAP.md`. Do not implement an item ahead of its placement in the roadmap unless explicitly prompted. If a current task seems to require an open item, surface this as a finding before working around it.
+Deferred features and open work live in GitHub Issues. Do not implement an item ahead of its placement in the roadmap unless explicitly prompted. If a current task seems to require an open item, surface this as a finding before working around it.
 
 ## When in doubt
 

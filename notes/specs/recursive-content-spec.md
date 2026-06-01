@@ -109,7 +109,7 @@ In both cases, blank-line termination provides localized error recovery — erro
 
 The principle: a document with errors should render the maximum possible correct output. Blank lines are the natural boundary because they already mark paragraph breaks in markdown's content model. This is the core always-renders guarantee's *visible at the location where the error occurred* half (`principles.md`); EOF-consumption violates that half by causing the error's footprint to swallow downstream content the author wrote correctly.
 
-The work to close this gap is filed in `BACKLOG-ROADMAP.md` as the blank-line-termination / EOF-consumption item (formerly DF-16, in the parser-bug cluster), paired with the parser-error-node-renderer gap; both must close for the always-renders guarantee to hold in full.
+The work to close this gap is tracked in GitHub Issues as the blank-line-termination / EOF-consumption item, paired with the parser-error-node-renderer gap; both must close for the always-renders guarantee to hold in full.
 
 ## Implementation note
 

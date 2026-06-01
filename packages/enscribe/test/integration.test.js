@@ -1952,7 +1952,7 @@ export function run() {
   // (linked + the -link unlinked variant), and inline notes. The assertions
   // below pin the markup ("M") predicates that VERIFY TRUE against rendered
   // output; the failing stylesheet ("S") predicates are filed as bugs in
-  // BACKLOG.md by predicate ID, not asserted here. The hast snapshot pins
+  // GitHub Issues by predicate ID, not asserted here. The hast snapshot pins
   // current behavior (including the filed deviations), so a later fix surfaces
   // as a reviewable snapshot diff.
   {

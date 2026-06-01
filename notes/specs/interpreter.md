@@ -855,7 +855,7 @@ article path. book-structuring creates `<book-back>` only when there is
 back-matter (appendix/glossary); if none exists, bibliography creates one and
 appends it to the `<book>`. Per-chapter (chapter-scoped) bibliographies —
 scoped the way `note-scope=chapter` scopes footnotes — are a deferred
-post-alpha option (filed in `BACKLOG.md`).
+post-alpha option (filed in GitHub Issues).
 
 **HTML generation:** citation-js `format('bibliography', ...)` with
 `template: style`, `format: 'html'`, `lang: 'en-US'`. Each `.csl-entry` div
@@ -1518,8 +1518,8 @@ markers — the same family as the §11.2 markers above
 so that an authoring mistake the parser caught is visible in the
 rendered output at its source position.
 
-The work to close this gap is filed in `BACKLOG-ROADMAP.md` as the
-parser-error-node renderer (in the parser-bug cluster, framed as
+The work to close this gap is tracked in GitHub Issues as the
+parser-error-node renderer (framed as
 core-guarantee work and noted as the sibling of the blank-line /
 EOF-consumption shortfall). It is paired in `principles.md`'s
 *Current known gaps against the guarantee* section as the more

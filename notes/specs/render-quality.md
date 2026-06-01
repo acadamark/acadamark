@@ -73,7 +73,7 @@ output is pinned by snapshot in `test/integration.test.js`.
 This document describes the **intended** rendering. The pinned snapshots
 capture the **current** rendering. Where the two disagree — a predicate this
 document states but the pipeline or the default theme does not yet satisfy —
-the gap is recorded as a render-quality bug in `BACKLOG.md`, cross-referenced
+the gap is recorded as a render-quality bug in GitHub Issues, cross-referenced
 to the predicate id below. Bug-fix slices reconcile current output to the
 intended standard; this document is the standard, not a status report, so it
 does not enumerate which predicates currently fail.
@@ -102,8 +102,8 @@ leaving a semantically-correct element rendered as undifferentiated inline text.
 Separating the predicate kinds makes that failure mode nameable.
 
 Predicate ids follow `RQ-<AREA>-<M|S><n>` (e.g. `RQ-THM-S1`). The area codes
-are the section short-names below. Ids are stable anchors: `BACKLOG.md`
-render-quality bugs reference them.
+are the section short-names below. Ids are stable anchors: render-quality
+bugs in GitHub Issues reference them.
 
 ### 1.2 Aesthetics are named by their HTML semantic
 
@@ -871,8 +871,8 @@ a regression in any `M` predicate surfaces as a snapshot diff. `S`-predicate
 conformance is checked against `default.css` directly.
 
 Gaps between this standard and current output are tracked as render-quality bugs
-in `BACKLOG.md`, each referencing the predicate id it fails. This document is
-the target; the backlog tracks the distance to it.
+in GitHub Issues, each referencing the predicate id it fails. This document is
+the target; the Issues track the distance to it.
 
 ---
 

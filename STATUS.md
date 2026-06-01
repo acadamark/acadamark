@@ -7,14 +7,14 @@ intended but not started.
 This file records **state, not history**. It is not a changelog — the
 commit log is the changelog (`git log`). It is not an explanation — for
 *why* the project exists read `README.md` and `DESIGN.md`; for the
-architecture, `notes/specs/`. Open work lives in `BACKLOG.md`; the phase
+architecture, `notes/specs/`. Open work is tracked in
+[GitHub Issues](https://github.com/enscribejs/enscribe/issues); the phase
 sequence lives in `ROADMAP.md`. No counts (test totals, fixture totals)
 appear here — a number is the fastest thing to go stale; run
 `npm run verify` in `packages/enscribe` for the live test
 status.
 
-Legend: `[x]` works and is tested · `[~]` partial / in progress ·
-`[ ]` planned, not started.
+Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 ## Authoring — what a `.emd` document can express
 
@@ -39,10 +39,10 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] Inline SVG passthrough
 - [x] Links with a positional URL (`<a url | text>`)
 - [x] Book structure — chapters, parts, front/back matter
-- [ ] Strict mode — disable markdown idioms (Phase 7)
-- [ ] `<html-passthrough>` — needs a spec first (Phase 12)
-- [ ] Multi-file source — `enscribe.yml` + `<include>` (Phase 9)
-- [ ] Executable code blocks — JS / Arquero / Vega-Lite (Phase 10)
+- [ ] Strict mode — disable markdown idioms
+- [ ] `<html-passthrough>` — needs a spec first
+- [ ] Multi-file source — `enscribe.yml` + `<include>`
+- [ ] Executable code blocks — JS / Arquero / Vega-Lite
 
 ## Rendering & output
 
@@ -53,12 +53,12 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] DSL rendering modes — `skip` default, `live-link` / `live-inline`, and `static` (build-time SVG) for ABC
 - [x] Client-side rendering — browser library (`render` / `renderInto` / `executeAssets`), `enscribe.browser` bundle
 - [ ] Code syntax highlighting (not yet wired in)
-- [ ] Render-mode lowering — lossy lowering of custom elements to plain `<h1>`/`<h2>` (Phase 8, gated on a design decision)
+- [ ] Render-mode lowering — lossy lowering of custom elements to plain `<h1>`/`<h2>` (gated on a design decision)
 - [x] Table-of-contents sidebar (opt-in, build-time, responsive)
 - [x] Single-chapter-at-a-time book navigation (JS, progressive enhancement)
 - [x] Display themes (default, modern, compact — custom-property overrides)
-- [ ] Multi-column display and margin sidenotes (Phase 8)
-- [ ] Pagination and print-targeted output (Phase 8)
+- [ ] Multi-column display and margin sidenotes
+- [ ] Pagination and print-targeted output
 
 ## CLI — the `enscribe` command (`@enscribejs/cli`)
 
@@ -102,19 +102,16 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] Test suites across the packages (parser, interpreter, core, JATS export/import, CLI, vocabulary)
 - [x] Fixture corpus of `.emd` documents exercising the system end to end
 - [x] Bundled JATS/BITS DTDs for offline `xmllint` validation
-- [ ] npm publish (Ariel runs `npm publish` per package, out of band)
-- [ ] Generated `.d.ts` types for the browser library (Phase 14)
-- [ ] Fixture-corpus consolidation + the comprehensive demonstrative fixture (Phase 14)
+- [x] Published to npm
+- [ ] Generated `.d.ts` types for the browser library
+- [ ] Fixture-corpus consolidation + the comprehensive demonstrative fixture
 
 ## Current position
 
-The **alpha milestone** is closed (the five-line acceptance definition is
-verified; see `notes/alpha-acceptance-mapping.md`). The live milestone is
-the **v0.1.0 public release**. **Phase 13 (JATS import) is complete** — the
-bidirectional JATS bridge now works end to end, demonstrated by a real
-published article imported onto the docs site. **Phase 8 (display features) is
-also complete** — the table-of-contents sidebar, themes, and single-chapter book
-navigation have all landed. Release-blocking work that remains is the residual
-Phase 14 packaging (generated types, fixture consolidation, `npm publish`).
-Phases 7, 9, 10, 11, and 12 are post-release. The phase plan and sequencing
-live in `ROADMAP.md`.
+**v0.1.0 is released** — enscribe renders rich documents, converts to and from
+JATS, ships a client-side browser library and the `enscribe` CLI, and is
+published to npm as three packages. The live milestone is **v0.2.0**: docs-site
+polish for public visitors, conda-forge packaging, and the accumulated docs and
+infrastructure fixes. Open work is tracked in
+[GitHub Issues](https://github.com/enscribejs/enscribe/issues) by milestone and
+label; the phase plan and release targets live in `ROADMAP.md`.
