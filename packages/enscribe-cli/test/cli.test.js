@@ -11,11 +11,13 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { run } from '../src/cli.js';
+import { hasPandoc } from '../src/pandoc-import.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE = join(__dirname, 'fixtures', 'sample.emd');
 const JATS_FIXTURE = join(__dirname, 'fixtures', 'article.xml');
 const BOOK_FIXTURE = join(__dirname, 'fixtures', 'book.emd');
+const TEX_FIXTURE = join(__dirname, 'fixtures', 'paper.tex');
 const BIN = join(__dirname, '..', 'bin', 'enscribe.js');
 const VERSION = createRequire(import.meta.url)('../package.json').version;
 
@@ -92,6 +94,35 @@ export function run_tests() {
     const noToc = invoke(['render', BOOK_FIXTURE]);
     assert.ok(!nav(noToc.out), 'no --toc → no chapter-nav');
     console.log('PASS: render book --toc → chapter navigation');
+  }
+
+  // ── import (pandoc bridge) ──────────────────────────────────────────────────
+  {
+    // These need no pandoc:
+    const help = invoke(['import', '--help']);
+    assert.equal(help.code, 0);
+    assert.ok(help.out.includes('import LaTeX / Quarto / DOCX') && help.out.includes('--from'), 'import --help');
+
+    const missing = invoke(['import', 'no-such-file.tex']);
+    assert.equal(missing.code, 1, 'missing input → exit 1');
+    assert.ok(missing.err.includes('input file not found'), 'helpful message for missing input');
+
+    if (hasPandoc()) {
+      const html = invoke(['import', TEX_FIXTURE]);
+      assert.equal(html.code, 0, 'import .tex exits 0 (pandoc present)');
+      assert.ok(html.out.includes('<article>'), 'import → an <article>');
+      assert.ok(html.out.includes('<b>bold</b>') && html.out.includes('<i>italic</i>'), 'LaTeX bold/italic imported');
+      assert.ok(html.out.includes('katex'), 'LaTeX math rendered via KaTeX');
+      assert.ok(html.out.includes('<section-title>Introduction</section-title>'), 'sections imported');
+      const emd = invoke(['import', TEX_FIXTURE, '--emd']);
+      assert.ok(emd.out.includes('<section #') && (emd.out.includes('<b | bold>') || emd.out.includes('<b>bold</b>')), '--emd → canonical source');
+      console.log('PASS: import .tex via pandoc (HTML + --emd)');
+    } else {
+      const noPandoc = invoke(['import', TEX_FIXTURE]);
+      assert.equal(noPandoc.code, 1, 'missing pandoc → exit 1');
+      assert.ok(noPandoc.err.includes('pandoc is required') && noPandoc.err.includes('pandoc.org/installing'), 'helpful pandoc-install message');
+      console.log('PASS: import → helpful error when pandoc is not installed (functional test skipped)');
+    }
   }
 
   // ── export-jats → JATS XML ──────────────────────────────────────────────────

@@ -802,6 +802,7 @@ command:
 enscribe render paper.emd -o paper.html      # render to self-contained HTML
 enscribe export-jats paper.emd -o paper.xml  # export to JATS 1.3 XML
 enscribe import-jats paper.xml -o paper.html # import a JATS article (--emd for source)
+enscribe import paper.tex -o paper.html      # import LaTeX/Quarto/DOCX/… via pandoc
 enscribe lift paper.emd -o canonical.emd     # rewrite mixed source to canonical form
 enscribe lower paper.emd --markdown          # rewrite to a shorter / markdown form
 ```
@@ -809,11 +810,12 @@ enscribe lower paper.emd --markdown          # rewrite to a shorter / markdown f
 With no `-o`, output goes to stdout. `enscribe lift` rewrites a document that
 mixes markdown, sigils, and named tags into pure canonical named-tag form;
 `enscribe lower` goes the other way, toward sigils (or markdown idioms with
-`--markdown`). `enscribe import-jats` brings a JATS XML article into Enscribe —
-rendered HTML by default, or canonical `.emd` source with `--emd` (import is
-incremental: structure and inline formatting today, more in later releases).
-`enscribe --help` lists the commands; `enscribe <command> --help` shows a
-command's options.
+`--markdown`). `enscribe import-jats` brings a JATS XML article into Enscribe, and
+`enscribe import` brings in LaTeX, Quarto, DOCX, and anything else
+[pandoc](https://pandoc.org) reads (shelling out to pandoc, which must be
+installed) — both produce rendered HTML by default, or canonical `.emd` source
+with `--emd`. `enscribe --help` lists the commands; `enscribe <command> --help`
+shows a command's options.
 
 **In Node.** Build a processor and run your source through it. The result is an
 HTML string:

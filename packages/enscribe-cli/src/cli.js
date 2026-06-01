@@ -13,13 +13,14 @@
 // `@enscribejs/jats-export`, which itself depends on the interpreter — putting
 // the CLI in the interpreter would create a dependency cycle.
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast } from '@enscribejs/interpreter';
 import { enscribeToJats } from '@enscribejs/jats-export';
 import { importJats } from '@enscribejs/jats-import';
 import { serializeCanonical } from './serialize-canonical.js';
+import { detectFormat, runPandoc, findBibtex, convertPandoc, PandocMissingError } from './pandoc-import.js';
 
 const require = createRequire(import.meta.url);
 const PKG = require('../package.json');
@@ -37,6 +38,7 @@ Commands:
   render <input.emd>       Render an Enscribe document to self-contained HTML
   export-jats <input.emd>  Export an Enscribe document to JATS 1.3 XML
   import-jats <input.xml>  Import a JATS XML article (→ HTML, or --emd source)
+  import <input>           Import LaTeX / Quarto / DOCX / … via pandoc
   lift <input.emd>         Rewrite mixed markdown/sigil source to canonical form
   lower <input.emd>        Rewrite to a shorter form (sigils; --markdown idioms)
 
@@ -89,6 +91,30 @@ Options:
 Import is deliberately lossy and incremental: this release maps the structural
 skeleton and inline formatting; citations, math, figures, tables, and the rest
 are dropped with a note (later Phase 13 slices add them).
+`;
+
+const IMPORT_HELP = `enscribe import — import LaTeX / Quarto / DOCX / … via pandoc
+
+Shells out to pandoc to read the input, then converts it to Enscribe: rendered
+HTML by default, or canonical .emd source with --emd. Requires pandoc on PATH
+(https://pandoc.org/installing.html).
+
+Usage:
+  enscribe import <input> [options]
+
+Options:
+  --from <format>      Override format detection (latex, markdown, docx, rst, …)
+  --emd                Output canonical .emd source instead of HTML
+  -o, --output <file>  Write to <file> (default: stdout)
+  --embed              Self-contained HTML (default; ignored with --emd)
+  --no-embed           Link assets externally
+  --quiet              Suppress warnings (unmapped pandoc nodes)
+  -h, --help           Show this help
+
+Format is detected from the extension (.tex .qmd .md .docx .rst .adoc .org …).
+Citations resolve when a .bib file is found (the document's bibliography field,
+or a single .bib beside the input). LaTeX \\label/\\ref cross-references are not
+preserved by pandoc and arrive as plain links/text.
 `;
 
 const LOWER_HELP = `enscribe lower — rewrite a document to a shorter authoring form
@@ -151,7 +177,7 @@ function parseCommandArgs(args) {
   const opts = {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
-    toc: undefined, theme: undefined, chapterNav: undefined,
+    toc: undefined, theme: undefined, chapterNav: undefined, from: undefined,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -184,7 +210,12 @@ function parseCommandArgs(args) {
       opts.theme = a.slice('--theme='.length);
     } else if (a === '--chapter-nav') opts.chapterNav = true;
     else if (a === '--no-chapter-nav') opts.chapterNav = false;
-    else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
+    else if (a === '--from' || a === '-f') {
+      opts.from = args[++i];
+      if (opts.from == null) throw new CliError('--from needs a format (e.g. latex, markdown, docx)');
+    } else if (a.startsWith('--from=')) {
+      opts.from = a.slice('--from='.length);
+    } else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
     else if (opts.input == null) opts.input = a;
     else throw new CliError(`unexpected argument: ${a}`);
   }
@@ -251,6 +282,25 @@ function doImportJats(opts) {
     if (opts.emd) return serializeCanonical(tree);
     // HTML: run the imported mdast tree through the interpreter transforms
     // (.runSync) and the HTML compiler (.stringify), self-contained by default.
+    const proc = buildEnscribePipeline({ embedResources: opts.embed ?? true });
+    return proc.stringify(proc.runSync(tree));
+  });
+}
+
+function doImport(opts) {
+  if (!opts.input) throw new CliError('no input file given (a .tex / .qmd / .docx / … to import)');
+  if (!existsSync(opts.input)) throw new CliError(`input file not found: ${opts.input}`);
+  let ast;
+  try {
+    ast = runPandoc(opts.input, detectFormat(opts.input, opts.from));
+  } catch (e) {
+    // pandoc-missing, unknown-format, or a pandoc run error → a clean CLI message.
+    throw new CliError(e instanceof PandocMissingError ? e.message : `pandoc import failed: ${e.message}`);
+  }
+  const bibtex = findBibtex(opts.input, ast.meta);
+  return withQuiet(opts.quiet, () => {
+    const tree = convertPandoc(ast, { bibtex });
+    if (opts.emd) return serializeCanonical(tree);
     const proc = buildEnscribePipeline({ embedResources: opts.embed ?? true });
     return proc.stringify(proc.runSync(tree));
   });
@@ -332,6 +382,12 @@ export function run(argv, io = {}) {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(IMPORT_JATS_HELP); return 0; }
         emit(doImportJats(opts), opts, out);
+        return 0;
+      }
+      case 'import': {
+        const opts = parseCommandArgs(rest);
+        if (opts.help) { out.write(IMPORT_HELP); return 0; }
+        emit(doImport(opts), opts, out);
         return 0;
       }
       default:

@@ -104,6 +104,30 @@ once. See
 [`@enscribejs/jats-import`](../enscribe-jats-import/README.md) for the current
 mapping.
 
+### `enscribe import`
+
+Import LaTeX, Quarto, DOCX — anything [pandoc](https://pandoc.org) reads — into
+Enscribe: rendered HTML by default, or canonical `.emd` source with `--emd`.
+
+```bash
+enscribe import paper.tex -o paper.html     # LaTeX → HTML
+enscribe import paper.tex --emd -o paper.emd
+enscribe import slides.qmd -o slides.html   # Quarto
+enscribe import report.docx -o report.html  # DOCX
+enscribe import notes.rst --from rst        # override format detection
+```
+
+Enscribe shells out to pandoc (`pandoc <in> -t json`) and converts pandoc's AST
+to Enscribe — sections, inline formatting, math, figures, tables (CSV for simple,
+raw HTML for spanning), lists, and footnotes. **Requires pandoc on `PATH`**; if
+it's missing you get a pointer to <https://pandoc.org/installing.html>. The
+format is detected from the extension (`.tex .qmd .md .docx .rst .adoc .org …`),
+overridable with `--from`. Citations resolve when a `.bib` file is found (the
+document's `bibliography` field, or a single `.bib` beside the input), included
+as a `<library>`. Honest limitation: pandoc does not preserve LaTeX
+`\label`/`\ref` cross-references structurally, so those arrive as plain
+links/text rather than Enscribe `<ref>`s.
+
 ### Help and version
 
 ```bash
@@ -111,11 +135,6 @@ enscribe --help
 enscribe render --help
 enscribe --version
 ```
-
-## Not yet included
-
-- `enscribe import` — the general document-conversion bridge (pandoc) arrives
-  post-v0.1.0.
 
 ## Exit codes
 

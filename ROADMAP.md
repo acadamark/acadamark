@@ -58,8 +58,8 @@ The release demonstrably includes five things:
    against the render-quality spec, serving as both the project's manual
    and a render-regression fixture.
 5. **A command-line tool.** The `@enscribejs/cli` package ships the
-   `enscribe` command — `render`, `export-jats`, `import-jats`, `lift`,
-   and `lower`. (`enscribe import`, the pandoc bridge, is post-release.)
+   `enscribe` command — `render`, `export-jats`, `import-jats`, `import`
+   (the pandoc bridge for LaTeX / Quarto / DOCX / …), `lift`, and `lower`.
 
 The **release-blocking phases** are Phase 8 (the display-features subset
 above), Phase 13 (JATS import — now closed), and Phase 14 (packaging). The

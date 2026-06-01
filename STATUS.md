@@ -67,7 +67,7 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] `enscribe import-jats` — JATS XML → HTML, or canonical `.emd` (`--emd`)
 - [x] `enscribe lift` — mixed markdown/sigil/canonical source → canonical named-tag form
 - [x] `enscribe lower` — canonical source → shorthand sigils, or markdown idioms (`--markdown`)
-- [ ] `enscribe import` — LaTeX / Quarto / DOCX via a pandoc bridge (post-release)
+- [x] `enscribe import` — LaTeX / Quarto / DOCX / … via a pandoc bridge
 
 ## Interoperability — JATS
 
