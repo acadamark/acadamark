@@ -27,12 +27,26 @@ const OPAQUE_NAMED = new Set(['table', 'library', 'mermaid', 'abc', 'math', 'csv
 
 // Structural section tags: title lives in `content`; body is a sibling.
 const SECTION_TAGS = new Set(['section', 'sub-section', 'sub-sub-section']);
+const SECTION_LEVEL = { section: 1, 'sub-section': 2, 'sub-sub-section': 3 };
 
 // Apparatus containers serialized as multi-line long form holding block children.
 const BLOCK_CONTAINER_TAGS = new Set(['data', 'config', 'meta', 'bibliography']);
 
-/** Serialize a whole tree (a Root) to canonical Enscribe source. */
-export function serializeCanonical(tree) {
+// Output register, set per-call (synchronous; no concurrency). Drives the
+// form-selection deviations of `enscribe lower`:
+//   'canonical' — pure named tags (the `lift` default; round-trip-faithful).
+//   'shorthand' — section sigils (`<# T #>`) where they exist; else canonical.
+//   'markdown'  — markdown heading / bold / italic / strike where they exist;
+//                 else shorthand/canonical (Enscribe-only elements stay).
+let TARGET = 'canonical';
+
+/**
+ * Serialize a tree (Root) to Enscribe source.
+ * @param {import('mdast').Root} tree
+ * @param {{ target?: 'canonical'|'shorthand'|'markdown' }} [opts]
+ */
+export function serializeCanonical(tree, { target = 'canonical' } = {}) {
+  TARGET = target;
   const body = serializeBlocks(tree.children ?? []);
   return body.replace(/\n+$/, '') + '\n';
 }
@@ -88,6 +102,16 @@ function serializeInline(nodes) {
 function serializeTag(node, block) {
   const tag = node.tagname;
 
+  // `lower --markdown`: the inline elements that have a markdown idiom. Only the
+  // plain (attribute-free) cases reduce; an id/class/kwarg has no markdown home,
+  // so those fall through to the canonical/shorthand named form.
+  if (TARGET === 'markdown' && !hasAttrs(node)) {
+    const inner = () => serializeInline(unwrapParagraph(node.content));
+    if (tag === 'b' || tag === 'strong') return `**${inner()}**`;
+    if (tag === 'i' || tag === 'em')     return `*${inner()}*`;
+    if (tag === 's' || tag === 'del')    return `~~${inner()}~~`;
+  }
+
   // Opaque math / code → canonical sigil forms (see deviation 1 above).
   if (tag === 'inline-math')  return wrapSigil('$',   node);
   if (tag === 'display-math') return wrapSigil('$$',  node);
@@ -113,9 +137,18 @@ function serializeTag(node, block) {
     return `${opener(node)} |${node.content}>`;
   }
 
-  // Section tags: the title is in `content` (a paragraph); emit it as the pipe.
+  // Section tags: the title is in `content` (a paragraph).
   if (SECTION_TAGS.has(tag)) {
-    return `${opener(node)} | ${serializeInline(unwrapParagraph(node.content))}>`;
+    const title = serializeInline(unwrapParagraph(node.content));
+    if (TARGET !== 'canonical') {
+      const h = '#'.repeat(SECTION_LEVEL[tag]);
+      const attrs = openerAttrs(node); // id/classes/kwargs, no tagname
+      // markdown heading only when there are no attributes to carry; otherwise
+      // the section sigil (which can hold an id) is the closest reduction.
+      if (TARGET === 'markdown' && !attrs) return `${h} ${title}`;
+      return attrs ? `<${h}${attrs} | ${title} ${h}>` : `<${h} ${title} ${h}>`;
+    }
+    return `${opener(node)} | ${title}>`;
   }
 
   // Self-closing / attribute-only tags (no content): cite/ref (via @refs), hr, etc.
@@ -179,6 +212,18 @@ function openerAttrs(node) {
   return s;
 }
 const openerAttrsNoPositional = openerAttrs;
+
+/** True when the node carries any attribute (id/class/atRef/positional/kwarg/bool). */
+function hasAttrs(node) {
+  return Boolean(
+    node.id ||
+    node.classes?.length ||
+    node.atRefs?.length ||
+    node.positional?.length ||
+    (node.kwargs && Object.keys(node.kwargs).length) ||
+    (node.booleans && Object.keys(node.booleans).length),
+  );
+}
 
 // ─── native mdast block helpers ──────────────────────────────────────────────
 

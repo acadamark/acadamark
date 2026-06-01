@@ -18,6 +18,7 @@ import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast } from '@enscribejs/interpreter';
 import { enscribeToJats } from '@enscribejs/jats-export';
+import { importJats } from '@enscribejs/jats-import';
 import { serializeCanonical } from './serialize-canonical.js';
 
 const require = createRequire(import.meta.url);
@@ -35,7 +36,9 @@ Usage:
 Commands:
   render <input.emd>       Render an Enscribe document to self-contained HTML
   export-jats <input.emd>  Export an Enscribe document to JATS 1.3 XML
+  import-jats <input.xml>  Import a JATS XML article (→ HTML, or --emd source)
   lift <input.emd>         Rewrite mixed markdown/sigil source to canonical form
+  lower <input.emd>        Rewrite to a shorter form (sigils; --markdown idioms)
 
 Options:
   -h, --help     Show this help
@@ -65,6 +68,46 @@ Notes:
   - Markdown links become <span> (Enscribe has no markdown-link form).
   - Best-effort: common documents round-trip exactly; rare escaping edge cases
     may need manual cleanup.
+`;
+
+const IMPORT_JATS_HELP = `enscribe import-jats — import a JATS XML article
+
+Parses a JATS 1.3 article and renders it through Enscribe. By default the output
+is self-contained HTML; with --emd it is canonical Enscribe source instead.
+
+Usage:
+  enscribe import-jats <input.xml> [options]
+
+Options:
+  --emd                Output canonical .emd source instead of HTML
+  -o, --output <file>  Write to <file> (default: stdout)
+  --embed              Self-contained HTML (default; ignored with --emd)
+  --no-embed           Link assets externally
+  --quiet              Suppress warnings (including dropped-element notes)
+  -h, --help           Show this help
+
+Import is deliberately lossy and incremental: this release maps the structural
+skeleton and inline formatting; citations, math, figures, tables, and the rest
+are dropped with a note (later Phase 13 slices add them).
+`;
+
+const LOWER_HELP = `enscribe lower — rewrite a document to a shorter authoring form
+
+Takes Enscribe source and lowers canonical named tags to their shorter forms:
+sections become sigils (\`<# Title #>\`); with --markdown, headings and bold /
+italic / strike also become markdown (\`# Title\`, \`**bold**\`, \`*italic*\`,
+\`~~struck~~\`). Elements with no shorter form (\`<u>\`, \`<q>\`, \`<a>\`,
+\`<note>\`, \`<cite>\`, \`<ref>\`, the theorem family, …) stay in Enscribe form,
+so the output is "as short as possible", not pure markdown.
+
+Usage:
+  enscribe lower <input.emd> [options]
+
+Options:
+  --markdown           Also use markdown heading/bold/italic/strike forms
+  -o, --output <file>  Write to <file> (default: stdout)
+  --quiet              Suppress warnings
+  -h, --help           Show this help
 `;
 
 const RENDER_HELP = `enscribe render — render an Enscribe document to HTML
@@ -101,7 +144,7 @@ Options:
 function parseCommandArgs(args) {
   const opts = {
     input: null, output: null, help: false,
-    embed: undefined, dslMode: undefined, quiet: false,
+    embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -109,7 +152,9 @@ function parseCommandArgs(args) {
     else if (a === '-o' || a === '--output') {
       opts.output = args[++i];
       if (opts.output == null) throw new CliError('-o/--output needs a file argument');
-    } else if (a === '--embed') opts.embed = true;
+    } else if (a === '--markdown') opts.markdown = true;
+    else if (a === '--emd') opts.emd = true;
+    else if (a === '--embed') opts.embed = true;
     else if (a === '--no-embed') opts.embed = false;
     else if (a === '--dsl-mode') {
       opts.dslMode = args[++i];
@@ -165,6 +210,26 @@ function doLift(opts) {
   // (the structural plugins are intentionally NOT run — see liftToCanonicalMdast),
   // then serializes the canonical tree back to source.
   return withQuiet(opts.quiet, () => serializeCanonical(liftToCanonicalMdast(src)));
+}
+
+function doLower(opts) {
+  const src = readInput(opts.input);
+  // Same lift tree; serialize toward a shorter register (shorthand by default,
+  // markdown with --markdown).
+  const target = opts.markdown ? 'markdown' : 'shorthand';
+  return withQuiet(opts.quiet, () => serializeCanonical(liftToCanonicalMdast(src), { target }));
+}
+
+function doImportJats(opts) {
+  const xml = readInput(opts.input);
+  return withQuiet(opts.quiet, () => {
+    const tree = importJats(xml);
+    if (opts.emd) return serializeCanonical(tree);
+    // HTML: run the imported mdast tree through the interpreter transforms
+    // (.runSync) and the HTML compiler (.stringify), self-contained by default.
+    const proc = buildEnscribePipeline({ embedResources: opts.embed ?? true });
+    return proc.stringify(proc.runSync(tree));
+  });
 }
 
 function doExportJats(opts) {
@@ -231,6 +296,18 @@ export function run(argv, io = {}) {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(LIFT_HELP); return 0; }
         emit(doLift(opts), opts, out);
+        return 0;
+      }
+      case 'lower': {
+        const opts = parseCommandArgs(rest);
+        if (opts.help) { out.write(LOWER_HELP); return 0; }
+        emit(doLower(opts), opts, out);
+        return 0;
+      }
+      case 'import-jats': {
+        const opts = parseCommandArgs(rest);
+        if (opts.help) { out.write(IMPORT_JATS_HELP); return 0; }
+        emit(doImportJats(opts), opts, out);
         return 0;
       }
       default:

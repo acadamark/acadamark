@@ -1,21 +1,21 @@
 {
-  "name": "@enscribejs/cli",
+  "name": "@enscribejs/jats-import",
   "version": "0.1.0",
-  "description": "The `enscribe` command-line tool — render Enscribe documents to HTML, exchange JATS XML, and rewrite source between authoring registers.",
+  "description": "JATS XML import for enscribe — parses a JATS article and produces an Enscribe mdast tree (the reverse of @enscribejs/jats-export).",
   "keywords": [
     "enscribe",
-    "cli",
-    "command-line",
+    "jats",
+    "xml",
+    "import",
     "academic-publishing",
-    "scholarly-publishing",
-    "jats"
+    "scholarly-publishing"
   ],
   "homepage": "https://github.com/enscribejs/enscribe",
   "bugs": "https://github.com/enscribejs/enscribe/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/enscribejs/enscribe.git",
-    "directory": "packages/enscribe-cli"
+    "directory": "packages/enscribe-jats-import"
   },
   "license": "MIT",
   "author": "Ariel Balter <ariel@arielbalter.com>",
@@ -23,15 +23,9 @@
   "engines": {
     "node": ">=18"
   },
-  "bin": {
-    "enscribe": "./bin/enscribe.js"
-  },
-  "exports": {
-    "./cli": "./src/cli.js",
-    "./package.json": "./package.json"
-  },
+  "main": "src/index.js",
+  "exports": "./src/index.js",
   "files": [
-    "bin",
     "src",
     "README.md",
     "LICENSE"
@@ -40,8 +34,7 @@
     "test": "node test/run.js"
   },
   "dependencies": {
-    "@enscribejs/interpreter": "^0.1.0",
-    "@enscribejs/jats-export": "^0.1.0",
-    "@enscribejs/jats-import": "^0.1.0"
+    "@enscribejs/core": "^0.1.0",
+    "saxes": "^6.0.0"
   }
 }

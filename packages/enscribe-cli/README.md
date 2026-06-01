@@ -1,8 +1,9 @@
 # @enscribejs/cli
 
 The `enscribe` command-line tool — a thin layer over the Enscribe pipelines for
-rendering documents to HTML and exporting them to JATS XML. It adds no capability
-the library does not already have; it is a convenient command-line front end.
+rendering documents to HTML, exchanging JATS XML, and rewriting source between
+authoring registers. It adds no capability the library does not already have; it
+is a convenient command-line front end.
 
 ## Install
 
@@ -58,6 +59,43 @@ that preserve verbatim content; lists re-emit as markdown list syntax (Enscribe
 has no list tag); markdown links become `<span>`; and rare escaping edge cases
 may need manual cleanup.
 
+### `enscribe lower`
+
+The reverse of `lift`: rewrite canonical (or mixed) source toward the shorter
+authoring registers. By default it lowers sections to sigil shorthands
+(`<section | Title>` → `<# Title #>`); with `--markdown` it additionally emits
+markdown idioms (`## Title`, `**bold**`, `*italic*`, `~~strike~~`) wherever they
+are lossless.
+
+```bash
+enscribe lower paper.emd              # toward sigil shorthands
+enscribe lower paper.emd --markdown   # toward markdown idioms where lossless
+```
+
+A construct that carries attributes a register can't express stays in the fuller
+form — e.g. an id-bearing section keeps a sigil (`<# #sec:intro | Title #>`) even
+under `--markdown`, because a markdown heading cannot carry the id.
+
+### `enscribe import-jats`
+
+Import a JATS XML article into Enscribe — rendered HTML by default, or canonical
+`.emd` source with `--emd`.
+
+```bash
+enscribe import-jats paper.xml                 # → HTML on stdout
+enscribe import-jats paper.xml -o paper.html   # → HTML to a file
+enscribe import-jats paper.xml --emd           # → canonical .emd source
+```
+
+Import is **incremental and deliberately lossy** (JATS's vocabulary is far larger
+than Layer 1's). Today it maps document structure (article/front/body/sections,
+paragraphs, lists, block quotes) and inline formatting (bold, italic, underline,
+strike, monospace, super/subscript, links). Constructs without a Layer 1
+counterpart — citations, math, figures, tables, and the rest — are dropped with a
+one-time warning per kind; later releases map more of them. See
+[`@enscribejs/jats-import`](../enscribe-jats-import/README.md) for the current
+mapping.
+
 ### Help and version
 
 ```bash
@@ -68,8 +106,8 @@ enscribe --version
 
 ## Not yet included
 
-- `enscribe import-jats` / `enscribe import` — arrive with JATS import and the
-  pandoc bridge.
+- `enscribe import` — the general document-conversion bridge (pandoc) arrives
+  post-v0.1.0.
 
 ## Exit codes
 

@@ -217,9 +217,11 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]` *(→ roadmap: Phase 8)* *(formerly DF-5)*
 - [~] **Build the lowering pass (Layer 1 → canonical enscribe)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)* — the
-  **canonical-form half is delivered** by `enscribe lift` (the serializer in
-  `@enscribejs/cli`); the remaining Phase-7 work is lowering further, canonical →
-  shorthand-sigils / markdown idioms (the friendlier authoring registers)
+  **lowering tooling is delivered** across two CLI commands: `enscribe lift`
+  (Layer 1 → canonical named tags) and `enscribe lower` (canonical → shorthand
+  sigils, or markdown idioms with `--markdown`), both in `@enscribejs/cli` via the
+  parameterized `serialize-canonical.js`. A formal Phase-7 lift/lower round-trip
+  spec can still be written, but the working tooling now exists.
 - [x] **CLI: `enscribe render` + `enscribe export-jats`** `[cli]` `[release]` —
   the `@enscribejs/cli` package; a thin layer over the existing pipelines.
   **CLOSED 2026-05-31** (see detailed entry)
@@ -264,8 +266,17 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]` *(→ roadmap: Phase 8)*
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
-- [ ] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)*
+- [~] **Build JATS import** `[interpreter]` `[release]`
+  *(→ roadmap: Phase 13)* — **Slice 1 landed:** `@enscribejs/jats-import` with the
+  XML parser, structural mapping (article/front/body/sec/p), and inline formatting
+  (bold/italic/code/links/sup/sub), surfaced as `enscribe import-jats`
+  (HTML, or canonical `.emd` with `--emd`). Remaining slices: citations &
+  bibliography (Slice 2), math (MathML → LaTeX), figures/tables, and the long
+  tail of droppable elements.
+- [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
+  *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
+  in the vocabulary), so exported JATS loses links and the import round-trip can't
+  exercise link mapping. Surfaced as a drift finding in Phase 13 Slice 1.
 - [ ] **Build the client-side rendering library** `[cross-cutting]`
   `[release]` *(→ roadmap: Phase 14)*
 
@@ -982,11 +993,17 @@ plus the Layer 1 → canonical-enscribe serialization for authoring
 tooling that emits enscribe from Layer 1. The `TAGNAME_TO_SIGIL`
 lookup direction is already present in
 `packages/enscribe-core/src/tagname-sigil-map.js` (reserved for
-this work). **The canonical-form half is delivered** by `enscribe lift`
-(`serialize-canonical.js`); the remaining Phase-7 work is lowering *further* —
-canonical named tags → the shorthand sigils (`<#>`, `<$>`, …) and markdown idioms
-(the friendlier authoring registers), using the reserved `TAGNAME_TO_SIGIL`
-direction — for round-trip-critical authoring tooling.
+this work). **Both halves now have working tooling.** The canonical-form half is
+`enscribe lift` (`serialize-canonical.js`); the further-lowering half is
+`enscribe lower` (Phase 13 Slice 1), which reuses the same serializer through a
+`target` parameter (`'canonical'` | `'shorthand'` | `'markdown'`): sections
+de-lift to `<#>`/`<##>`/`<###>` sigils (carrying ids via the sigil-with-pipe
+form when present), and `--markdown` additionally emits markdown idioms (`#`
+headings, `**bold**`, `*italic*`, `~~strike~~`) where they are lossless — an
+id-bearing section stays a sigil because a markdown heading cannot carry it. What
+remains for a formal Phase 7 is a **spec**: a written lift/lower round-trip
+contract (which deviations are sanctioned, what "lossless" means per register),
+rather than new tooling.
 
 ### Table-of-contents sidebar
 `[interpreter]` `[release]` *(→ roadmap: Phase 8)*
@@ -1155,7 +1172,25 @@ reduction policy (map / comment / drop / raw) is the center of gravity for real
 articles; math is mostly trivial (`<tex-math>`), with `mathml-to-latex` as the
 MathML-only fallback; the round-trip (`import → re-export ≈ original`) is the
 headline test; 7-step slicing (optionally 13a/b/c), built against the export
-fixtures before one CC-BY PMC article. Next: slice 13a.
+fixtures before one CC-BY PMC article.
+
+**Slice 1 landed (2026-05-31)** — `@enscribejs/jats-import` with: a saxes-based
+XML parser that handles the JATS `<!DOCTYPE>` preamble and namespaced attributes
+(`xlink:href`) without a network dependency (saxes was already in the tree);
+structural mapping (article/front/body/`<sec>`→section/sub-section/sub-sub-section
+by depth, ids preserved, `<p>`, lists, `<disp-quote>`); inline formatting
+(bold/italic/underline/strike → `b/i/u/s`, monospace → inline code, sup/sub,
+`ext-link`/`uri`/`email` → `<a>` with `mailto:` for email); and the
+`map`-category-only reduction policy — non-representable constructs are dropped
+with a one-time `console.warn` per kind. The importer emits the **post-normalize
+shape** (flat sections, title in `content`), so both consumers work: the full
+pipeline re-nests via section-nesting, and `serialize-canonical` emits `.emd`.
+Surfaced as `enscribe import-jats` (HTML by default, canonical `.emd` with
+`--emd`). Round-trip tested against the export path. **Drift finding:** the JATS
+*export* does not yet map `<a>` → `<ext-link>` (export predates `<a>` in the
+vocabulary), so the export→import round-trip cannot exercise the importer's
+link mapping — verified with synthetic JATS instead. Logged as an export gap for
+a future slice. Next: **Slice 2 — citations & bibliography.**
 
 ### Build the client-side rendering library
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*

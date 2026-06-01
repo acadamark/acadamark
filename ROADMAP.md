@@ -67,10 +67,12 @@ The release demonstrably includes five things:
    fixture corpus has carried.
 5. **A command-line tool.** The `@enscribejs/cli` package ships an `enscribe`
    command — `enscribe render` (→ self-contained HTML), `enscribe export-jats`
-   (→ JATS 1.3 XML), and `enscribe lift` (mixed markdown/sigil/canonical source →
-   canonical named-tag form, round-trip-verified), all delivered 2026-05-31.
-   `enscribe import-jats` and `enscribe import` arrive with Phase 13 (JATS import)
-   and the post-v0.1.0 pandoc bridge.
+   (→ JATS 1.3 XML), `enscribe lift` (mixed markdown/sigil/canonical source →
+   canonical named-tag form, round-trip-verified), `enscribe lower` (canonical →
+   shorthand sigils, or markdown idioms with `--markdown`), and `enscribe
+   import-jats` (a JATS article → rendered HTML, or canonical `.emd` with `--emd`;
+   structural + inline today, more in later Phase 13 slices), all delivered
+   2026-05-31. `enscribe import` (the post-v0.1.0 pandoc bridge) is still to come.
 
 The **release-blocking phases** are Phase 8 (the display-features
 subset above), Phase 13 (JATS import), and the new Phase 14
@@ -487,8 +489,15 @@ existing scholarly corpus, not a round-trip guarantee.
 First-class work now, not a someday-phase. It has substantial design
 questions to settle — which JATS features map to Layer 1, where the
 lossy boundary sits, how the importer handles JATS content with no
-enscribe counterpart — so it will get its own **Phase 0** before the
-build begins.
+enscribe counterpart — so it got its own **Phase 0** before the build
+began (findings at `notes/phase13-jats-import-findings.md`).
+
+**Phase 0 done; Slice 1 landed.** Slice 1 built `@enscribejs/jats-import` — the
+XML parser, the structural skeleton (article/front/body/sec/p), and inline
+formatting (bold/italic/code/links/sup/sub) — surfaced as `enscribe import-jats`.
+Remaining slices carry the lossy tail: Slice 2 citations & bibliography, then
+math (MathML → LaTeX), figures/tables, and the long drop-with-warning tail,
+finishing against a real CC-BY PMC article.
 
 ---
 

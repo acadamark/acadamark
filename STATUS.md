@@ -4488,3 +4488,29 @@ that). One line gets added every few months, not every slice.
   docs build six pages. The BACKLOG lowering-pass entry is now half-done — the
   remaining Phase-7 work is lowering further (canonical → sigils/markdown). Next:
   Phase 13 implementation (JATS import).
+- **2026-05-31 — Phase 13 Slice 1: core JATS import + `enscribe lower`.** Two
+  parts. **Part 1 — `enscribe lower`** (the fifth CLI command, completing the
+  lowering pass): the `serialize-canonical.js` walker gained a `target` parameter
+  (`'canonical'` | `'shorthand'` | `'markdown'`), so the same serializer now lowers
+  *past* canonical — sections de-lift to `<#>`/`<##>`/`<###>` sigils (carrying ids
+  via the sigil-with-pipe form when present), and `--markdown` additionally emits
+  markdown idioms (`#` headings, `**bold**`, `*italic*`, `~~strike~~`) where
+  lossless; an id-bearing section stays a sigil because a markdown heading can't
+  carry the id. **Part 2 — `@enscribejs/jats-import`** (new package, surfaced as
+  `enscribe import-jats`): a saxes-based XML parser that handles the JATS
+  `<!DOCTYPE>` preamble and namespaced attrs (`xlink:href`) with no network
+  dependency (saxes was already hoisted in the tree); structural mapping
+  (article/front/body, `<sec>` → section/sub-section/sub-sub-section by depth with
+  ids preserved, `<p>`, lists, `<disp-quote>`); inline formatting (bold/italic/
+  underline/strike → `b/i/u/s`, monospace → inline code, sup/sub, `ext-link`/`uri`/
+  `email` → `<a>`); and the `map`-category-only reduction policy — everything else
+  is dropped with a one-time `console.warn` per element kind. The importer emits the
+  **post-normalize shape** (flat sections, title in `content`) so both consumers
+  work unchanged: the full pipeline re-nests sections, and `serialize-canonical`
+  emits `.emd` (the `--emd` flag). Round-trip tested through the export path
+  (`.emd` → export → import → structural match). **Drift finding:** the JATS
+  *export* still drops `<a>` (it predates `<a>` in the vocabulary), so the
+  export→import round-trip can't exercise link mapping — verified with synthetic
+  JATS instead, and logged as an open export gap (`<a>` → `<ext-link>`). All
+  workspace suites pass from clean; docs build six pages. Next: **Slice 2 —
+  citations and bibliography.**

@@ -14,6 +14,7 @@ import { run } from '../src/cli.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE = join(__dirname, 'fixtures', 'sample.emd');
+const JATS_FIXTURE = join(__dirname, 'fixtures', 'article.xml');
 const BIN = join(__dirname, '..', 'bin', 'enscribe.js');
 const VERSION = createRequire(import.meta.url)('../package.json').version;
 
@@ -75,6 +76,41 @@ export function run_tests() {
     assert.ok(out.includes('<$E = mc^2$>') || out.includes('$E = mc^2$'), 'inline math → opaque math form');
     assert.ok(!out.includes('**') && !/^#+ /m.test(out), 'no markdown bold/heading idioms remain');
     console.log('PASS: lift → canonical source');
+  }
+
+  // ── lower → shorthand / markdown ────────────────────────────────────────────
+  {
+    const sh = invoke(['lower', FIXTURE]);
+    assert.equal(sh.code, 0, 'lower exits 0');
+    assert.ok(sh.out.includes('<# Results #>'), 'lower → section sigil (no-id section)');
+    assert.ok(sh.out.includes('<# #sec:intro | Introduction #>'), 'lower → section sigil carrying the id');
+    assert.ok(!sh.out.includes('<section'), 'no canonical <section> tag remains');
+
+    const md = invoke(['lower', '--markdown', FIXTURE]);
+    assert.equal(md.code, 0);
+    assert.ok(/^# Results$/m.test(md.out), 'lower --markdown → markdown heading for the no-id section');
+    assert.ok(md.out.includes('**bold**') && md.out.includes('*italic*'), 'lower --markdown → markdown bold/italic');
+    // An id-bearing section cannot be a markdown heading (lossy), so it stays a sigil.
+    assert.ok(md.out.includes('<# #sec:intro | Introduction #>'), 'lower --markdown keeps the id-bearing section as a sigil');
+    console.log('PASS: lower → shorthand / markdown');
+  }
+
+  // ── import-jats → HTML and --emd ────────────────────────────────────────────
+  {
+    const html = invoke(['import-jats', JATS_FIXTURE]);
+    assert.equal(html.code, 0, 'import-jats exits 0');
+    assert.ok(html.out.includes('<article>'), 'import-jats → an <article>');
+    assert.ok(html.out.includes('<article-title>A Small JATS Article</article-title>'), 'title imported');
+    assert.ok(html.out.includes('<b>bold</b>') && html.out.includes('<i>italic</i>'), 'inline imported');
+    assert.ok(html.out.includes('<section-title>Introduction</section-title>'), 'section imported');
+
+    const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
+    assert.equal(emd.code, 0);
+    assert.ok(emd.out.includes('<meta type=article>'), '--emd → canonical meta');
+    assert.ok(emd.out.includes('<section #sec:intro | Introduction>'), '--emd → canonical section with id');
+    assert.ok(emd.out.includes('<section | Results>'), '--emd → canonical section (no id)');
+    assert.ok(emd.out.includes('<b | bold>') || emd.out.includes('<b>bold</b>'), '--emd → canonical bold');
+    console.log('PASS: import-jats → HTML and --emd');
   }
 
   // ── -o writes to a file ─────────────────────────────────────────────────────
