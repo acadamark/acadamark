@@ -142,6 +142,7 @@ The Phase 0 read-only investigation findings for the v0.1.0-era phase sequence, 
 Three live code comments that cite these as their rationale source were repointed to this folder when the files moved: `packages/enscribe/src/interpreter/dsl/registry.js` and `node-assets.js` (→ `dsl-rendering-architecture-findings.md`), and `packages/enscribe/test/same-line-long-form.test.js` (→ `issue1-same-line-long-form-findings.md`). The intra-batch cross-references *inside* these files (each findings doc naming the one before it as precedent) were left as written — archived files are frozen records.
 
 - **`phase2-handler-findings.md`** — Phase 2 (the handler bundle) investigation.
+- **`phase3-frameable-findings.md`** — Phase 3 (frameable elements) investigation. Forward-looking design **superseded by `notes/specs/frameable.md`** (the frameable-redesign spec, 2026-06-01); the shipped-build infrastructure survey is retained here as the rationale record.
 - **`phase4-structuring-findings.md`** — Phase 4 (document structuring) investigation.
 - **`phase5-jats-export-findings.md`** — Phase 5 (JATS export) investigation.
 - **`phase6-alpha-integration-findings.md`** — Phase 6 (alpha integration) investigation; the analysis that produced the alpha acceptance mapping below.

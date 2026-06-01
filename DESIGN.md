@@ -437,11 +437,13 @@ A structured-data container is long-form-eligible (its child-tag form is `<tag>�
 
 A small group of Layer 1 elements share a common capability: they interrupt the text flow, may carry an optional outline box, an optional title (rendered at the top), and an optional caption (rendered below). Numbering — "Fig. 3", "Table 2" — is folded into the caption-and-title rendering; it is *not* a separate authored field or attribute. We call this capability **frameable**.
 
+The canonical, buildable definition of this capability — its members, the shared attribute surface, the per-member `border` / `numbered` defaults, and the JATS mapping — lives in `notes/specs/frameable.md`; that spec is the build target. This section records the *rationale*: why frameable is a shared capability rather than an umbrella element, and what it supersedes.
+
 Frameable is a **capability shared by several distinct elements**, not an umbrella element that wraps them. Every frameable element carries the *identical* attribute set and the *identical* behavior — title, caption, border, numbering — because the capability is shared. Authoring a frameable construct does not nest an inner content element inside an outer wrapper; the frameable element *is* the construct.
 
 ### Members
 
-The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; enscribe does not police it (the same posture enscribe takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`).
+The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; enscribe does not police it (the same posture enscribe takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`). The class also includes the boxed-prose member `<aside>` (tangential content; callouts and admonitions via its `type`). The authoritative membership list — and what is deliberately excluded (`<blockquote>`, math, the theorem family) — is in `notes/specs/frameable.md`.
 
 ### `<fig>` is the sole graphical element
 
@@ -453,13 +455,11 @@ The canonical name is `<fig>` (the JATS name — keeping Layer 1 JATS-shaped and
 
 This design **replaces** the prior `<figure>`-as-umbrella model, in which `<figure>` was a single element that wrapped an inner content element (an `<img>` generated from a `src` kwarg, or an author-placed `<table>` / `<code>` / `<equation>`) plus a `<figcaption>`. Under the new design there is no umbrella: `<fig>` is its own first-class element for graphical content; `<table>`/`<code>`/`<svg>`/`<mermaid>` are their own first-class elements for their own content; the frameable capability is shared across all of them at the same level. A consequence: removing the umbrella also removes the layer of tag nesting the umbrella enforced (`<figure type=table | <table>…</table>>` collapses to a frameable `<table>` directly).
 
-The implementation work — updating the `figure.md`, `img.md`, `table.md`, `code.md` vocabulary entries; refactoring the figure handler; updating the gate's bare-markdown-image lift to emit `<fig>` rather than `<img>`; auditing caption handling, cross-referencing, and numbering against the umbrella assumption — is scoped as a **Phase 0** (read-only investigation) followed by an implementation slice. Both are filed in the backlog as `[alpha]` items. The Phase 0 is a prerequisite to the implementation slice; this design section is its design baseline.
+This supersession shipped in the v0.1.0 frameable build — the `<fig>`/`<svg>`/`<frame>` vocabulary, the figure-handler refactor, the bare-markdown-image lift to `<fig>`, and caption-as-content. The later redesign — promoting `<aside>` into the class and folding callouts/admonitions into it — is defined in `notes/specs/frameable.md` and tracked in GitHub issue #31.
 
-### Open sub-questions within this design
+### Membership and remaining questions
 
-- **The exact membership list of the frameable class.** `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, `<frame>` are settled; the full enumeration of DSL-registry block elements that take the frameable capability is to be confirmed by the Phase 0 (the Phase 0 enumerates current DSL-registry members and rules each one frameable or not).
-
-The two earlier-open questions inside this design — the existence of a generic `<frame>` and the `figure`/`fig`/`img`/`picture` question — are **resolved** by this design (recorded above as decided). They are not re-filed as open.
+The membership list — and the formerly-open questions (the generic `<frame>`, the `figure`/`fig`/`img`/`picture` decision, and the later aside-vs-blockquote and callout-folding questions) — are resolved in `notes/specs/frameable.md`. Any still-undecided points are tracked there (under that spec's "Open sub-questions") and in issue #31.
 
 ## Multi-paragraph tag content; unclosed tags terminate at EOF
 
