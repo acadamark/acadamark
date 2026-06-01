@@ -83,108 +83,9 @@ A flat scannable index of every open item. Detailed entries below.
 
 - [ ] **`buildProperties` does not iterate `node.booleans`**
   `[interpreter]` `[post-alpha]` *(filed by sub-slice 2 of deferred-vocab)*
-- [x] **Quickstart shows `## Methods` as the markdown form for a section**
-  `[docs]` `[content]` — `quickstart.emd` (the "Sections come in three forms"
-  block) presented `## Methods` as equivalent to `<# Methods #>`, but `##` lifts
-  to `<sub-section>`, not `<section>`; the section markdown form is a single `#`.
-  *(Found while verifying the Authoring Guide 3e-i heading mapping.)* — **CLOSED
-  2026-05-31**: `## Methods` → `# Methods` in the example (carried in the 3e-ii
-  commit alongside the working-tree fix Ariel had already applied). **Follow-up
-  2026-05-31**: the 3e-ii fix corrected only the fenced example; three prose
-  references in the same section still showed `##` as the section markdown form
-  (the playground "try it" sentence, the "muscle memory" sentence, and the
-  lossy-heading note). All three corrected to `#`.
-- [x] **`<svg>` renders empty — inner SVG source dropped**
-  `[interpreter]` `[post-alpha]` — a `<svg>…</svg>` (long-form or pipe) rendered
-  `<svg></svg>`: the passthrough attributes (`viewBox`/`width`/`height`) survived
-  but the inner SVG source was lost. Root cause: `svg` was missing from
-  `DSL_REGISTRY` (`enscribe-core/src/dsl-registry.js`), so `getContentHandler`
-  returned `'default'` and the content was recursively re-parsed into an mdast
-  array; `handlers/svg.js` reads `node.content` only when it is a string
-  (`typeof node.content === 'string' ? … : ''`) and so dropped the array.
-  *(Found while render-verifying Authoring Guide chapter 5, 3e-ii.)* — **CLOSED
-  2026-05-31** by the housekeeping slice: registered `['svg','svg']` in
-  `DSL_REGISTRY` (opaque, like `table`/`library`), so the content stays a
-  verbatim string and the handler emits it. Long- and pipe-form `<svg>` now
-  preserve their inner source; guarded by `test/svg-content.test.js`. The
-  Authoring Guide (ch. 5) and Layer 1 Reference (`<svg>` card) limitation notes
-  were removed.
-- [x] **Same-line long-form `<tag>content</tag>` produces an empty element**
-  `[parser]` `[post-alpha]` — decided: add same-line long-form support,
-  Phase 0 first *(filed by the parser/handler-fixes slice)* — **CLOSED
-  2026-05-31** by the Issue 1 same-line-long-form implementation slice
-  (approach A; see detailed entry)
 - [ ] **doc-46 references figure images that do not exist**
   (`commit-graph.png`, `notebook-ci.png`) `[tests/build]` `[release]`
   *(→ roadmap: Phase 14; filed by Phase 14 Slice 2)*
-- [x] **Browser IIFE bundle threw `Dynamic require of "fs"` at load —
-  never ran in a browser** `[tests/build]` `[release]` *(→ roadmap: Phase 14;
-  filed and CLOSED by Phase 14 Slice 2)* — **CLOSED 2026-05-29** by the
-  in-browser editor demo slice: esbuild `alias` redirects every Node built-in to
-  a throwing stub, so the bundle resolves and loads. Phase 14 Slice 1.5 then
-  closed the underlying *class*: symmetric aliasing (both `fs` and `node:fs`
-  forms) plus a `bundle-load` smoke test that loads the IIFE in jsdom on every
-  test run.
-- [x] **Theorem-family elements render unstyled (inline, body size)**
-  `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
-  RQ-THM-S1/S2; filed by the render-quality slice)* — **CLOSED
-  2026-05-29** by the render-quality bug-fix arc, slice A (stylesheet
-  gaps): `default.css` now renders the theorem family as blocks with
-  vertical margin and the `.{kind}-label` spans at `font-weight: 700`.
-- [x] **Book structural elements render unstyled (inline, body size)**
-  `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
-  RQ-BOOK-S1; filed by the render-quality slice)* — **CLOSED
-  2026-05-29** by the render-quality bug-fix arc, slice A: `default.css`
-  now renders the book regions as blocks with a prominent `book-title`
-  and a chapter-level `book-part-title`.
-- [x] **`.frameable-border` draws no border box** `[interpreter]`
-  `[release]` *(→ roadmap: Phase 14; render-quality RQ-FRM-S4; filed by
-  the render-quality slice)* — **CLOSED 2026-05-29** by the
-  render-quality bug-fix arc, slice A: `default.css` now draws a 1px
-  solid border (with padding) on `.frameable-border`.
-- [x] **Math-environment wrappers unstyled; equation number not
-  flush-right outside `display-math`** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 14; render-quality RQ-MATH-S3; filed by the
-  render-quality slice)* — **CLOSED 2026-05-29** by the render-quality
-  bug-fix arc, slice A: the `display-math` flex layout (block + flush-right
-  `.equation-number`) now also covers `math`, `align`, `cases`,
-  `matrix`, and `eqnarray`.
-- [x] **Book caption/label numbers are bare per-chapter while
-  cross-references are chapter-prefixed (they disagree)** `[interpreter]`
-  `[release]` *(→ roadmap: Phase 14; render-quality RQ-BOOK-M4; filed by
-  the render-quality slice)* — **CLOSED 2026-05-29** by the render-quality
-  bug-fix arc, slice B: the caption / label / equation-number render path
-  now derives its display number through the shared `formatScopedNumber`
-  helper that the cross-reference resolver also uses, so a chapter-scoped
-  book's labels carry the same chapter prefix as the references resolving
-  to them (`Figure 2.1.` matches `figure 2.1`).
-- [x] **Same caption/cross-reference numbering mismatch on the JATS export
-  side — `<label>`s bare while `<xref>`s are chapter-prefixed**
-  `[interpreter]` `[release]` *(→ roadmap: Phase 14; render-quality
-  RQ-BOOK-M4; surfaced by slice B)* — **CLOSED 2026-05-29** by the
-  render-quality bug-fix arc, JATS slice (analog of slice B): the JATS
-  `<label>` emitter now derives its display number through the same
-  `formatScopedNumber` helper the `<xref>` text uses, so a chapter-scoped
-  book's `<label>`s carry the chapter prefix matching the references
-  resolving to them (`<label>3.1</label>` matches `figure 3.1`).
-- [x] **Inline math in pipe-form named-tag content is not protected from
-  escape processing** `[parser]` `[post-alpha]` *(filed by the
-  render-quality slice)* — **CLOSED 2026-05-29** by the render-quality
-  bug-fix arc, slice C: inline and display math and markdown code spans in
-  pipe-form named-tag content are now opaque to the inner parser's escape
-  processing via a shared `OpaqueSpan` grammar rule; the scope was widened
-  from math-only to math + code spans (`escape-rules-spec.md` §"Opaque
-  inline spans within prose content").
-- [x] **ABC `<div>` source is not preserved verbatim; the HTML
-  serializer adds indentation** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 14; render-quality RQ-DSL-M2; filed by the
-  render-quality bug-fix arc, DSL verification slice)* — **CLOSED
-  2026-05-29** by DSL Slice 1 (registry + live mode): the `<abc>` handler
-  now emits `<pre class="abc" data-enscribe-dsl="abc">` (matching
-  `<mermaid>`) instead of `<div>`; `<pre>` is whitespace-preserving, so the
-  HTML formatter leaves the line-oriented ABC source verbatim. The
-  canonical vocab entry (`abc.md` → generated `data.js`) was synced in the
-  same slice.
 
 ### Enhancements
 
@@ -222,16 +123,6 @@ A flat scannable index of every open item. Detailed entries below.
   sigils, or markdown idioms with `--markdown`), both in `@enscribejs/cli` via the
   parameterized `serialize-canonical.js`. A formal Phase-7 lift/lower round-trip
   spec can still be written, but the working tooling now exists.
-- [x] **CLI: `enscribe render` + `enscribe export-jats`** `[cli]` `[release]` —
-  the `@enscribejs/cli` package; a thin layer over the existing pipelines.
-  **CLOSED 2026-05-31** (see detailed entry)
-- [x] **CLI: `enscribe lift`** `[cli]` `[release]` — serialize mixed
-  markdown/sigil/canonical source to pure canonical Enscribe. **CLOSED
-  2026-05-31** — the `serialize-canonical.js` serializer + the
-  `liftToCanonicalMdast` interpreter helper; idempotent round-trip verified on
-  synthetic mixed-form docs and real fixtures (calibration, demo, tables, …);
-  documented best-effort limitations (opaque math/code use sigil forms, lists
-  re-emit as markdown, links → spans).
 - [ ] **Table-of-contents sidebar** `[interpreter]` `[release]`
   *(→ roadmap: Phase 8)*
 - [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
@@ -246,17 +137,6 @@ A flat scannable index of every open item. Detailed entries below.
 
 ### Architecture tier
 
-- [x] **Build JATS export (`rehypeEnscribeToJats`)** `[interpreter]`
-  `[alpha]` *(→ roadmap: Phase 5 — CLOSED)* *(formerly DF-18)* —
-  **Phase 5 CLOSED 2026-05-28.** Slices 5a (`98f2d7f`) package
-  + `mapAttributes` lift + minimal article export; 5b (`0ea915e`)
-  body content (frameables/lists/math/theorem family + abstract
-  fix); 5c (`2f96715`) cross-refs + footnotes + BITS book +
-  table rows; 5d structured bibliography `<element-citation>` +
-  mermaid/abc as `<fig>` with `<preformat>` source + DTD bundling
-  for offline xmllint validation (JATS 1.3 + BITS 2.0).
-  Full Layer 1 → JATS XML export across articles and books;
-  DTD-validated output when xmllint is on PATH.
 - [ ] **Build render-mode lowering** `[cross-cutting]` `[post-alpha]`
   *(→ roadmap: Phase 8)* *(formerly DF-19)*
 - [ ] **Build multi-file authoring** (`enscribe.yml` + `<include>`)
@@ -320,12 +200,6 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]`
 - [ ] **Discuss auditing documented language features against
   test-fixture coverage** `[tests/build]` `[post-alpha]`
-- [x] **Decide how live-mode assets (hover-preview / DSL scripts) execute
-  under `renderInto`** `[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-  *(filed by Phase 14 Slice 1)* — **RESOLVED 2026-05-29** by Phase 14 Slice 2:
-  an opt-in `executeAssets(target)` two-step (`render → executeAssets`); the
-  library does not auto-execute injected scripts. Recorded in
-  `notes/specs/pipeline.md` §14.
 
 ### Standing
 
@@ -349,10 +223,15 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Reconcile stale doc cross-references and claims** (`BACKLOG-ROADMAP.md`
   → `BACKLOG.md` / `ROADMAP.md`; `rehypeEnscribeToJats` →
   `enscribeToJats`; `README.md`'s License section says "TBD" though MIT now
-  ships; `README.md` links a non-existent `BUILD.md` — both surfaced while
-  translating the README for the docs-site Home page in Slice 3b, and handled
-  in the derived `.emd` but not the `README.md` source) `[specs/docs]`
-  `[post-alpha]`
+  ships; `README.md` links a non-existent `BUILD.md`; the retired
+  `[text](url)` markdown-link idiom still claimed live in `idioms.md` and
+  `elements/a.md`) `[specs/docs]` `[post-alpha]`
+- [ ] **Reconcile `CONTRIBUTING.md`'s STATUS references with the
+  capability-checklist shape** `[specs/docs]` `[post-alpha]` — the
+  tracking-docs-cleanup slice made `STATUS.md` a pure capability checklist
+  (no milestones / changelog), but `CONTRIBUTING.md` still defines STATUS as
+  holding append-only milestones + "in flight / next" (including coherence-check
+  item 4, which tells every slice to add a milestone line).
 
 ### Deferred — explicitly parked
 
@@ -362,99 +241,6 @@ A flat scannable index of every open item. Detailed entries below.
 ---
 
 ## Detailed entries — Bugs
-
-### Same-line long-form `<tag>content</tag>` produces an empty element
-`[parser]` `[post-alpha]`
-
-A long-form tag written entirely on one line — `<b>hello</b>`, `<aside>x</aside>`
-— does not capture its content. The micromark long-form opener requires a line
-ending after the opening `>` (`packages/remark-enscribe/src/syntax.js`,
-`afterOpenGt`), so a same-line opener is rejected; the text-position tokenizer
-then claims a bare empty `<b>`, and `hello</b>` falls through as text plus a raw
-`</b>` html node — the rendered result is an empty `<b></b>` followed by stray
-text. The working inline forms today are the **pipe form** `<b | hello>` and the
-**multi-line** long form (`<b>` ⏎ `hello` ⏎ `</b>`).
-
-**Decision (parser/handler-fixes slice): add same-line long-form support** — the
-slice that surfaced this chose to make `<b>hello</b>` work rather than accept the
-pipe form as the only inline form. This is a load-bearing change to the
-long-form/pipe-form disambiguation and to text-position tokenization, so it runs
-a read-only **Phase 0** first (scope: matching-close detection, nesting, the
-interaction with the existing multi-line long form and pipe form, and the fixture
-impact), then an implementation slice. Until it lands, the unknown-tag-escaping
-fix means a same-line *unknown* tag (`<glurp>hi</glurp>`) at least renders as
-clean literal text, while a same-line *known* tag still shows its empty-element
-artifact. *(Filed by the parser/handler-fixes slice.)*
-
-**Primary motivating tags.** The inline styling / semantic tags `<b>`, `<i>`,
-`<s>`, `<u>`, and `<q>` are the main beneficiaries: they carry no id or
-arguments and wrap a short run of inline text, so the same-line long form
-(`<b>hello</b>`) is their most natural authoring shape — closer to HTML and to
-how authors expect emphasis-like markup to read. The Phase 0 should weight its
-disambiguation design toward these.
-
-**Sigil proposal to evaluate in the Phase 0 — `""…""` for `<q>`.** A doubled-
-straight-quote inline sigil (`""quoted text""` → `<q>quoted text</q>`) would
-parallel `$…$` for math and the other inline sigils, giving quotation a
-lightweight form that needs no same-line long form at all. Filed here (not
-specified): if a sigil covers `<q>`, that is one fewer tag depending on
-same-line long form, so the Issue 1 Phase 0 should weigh it alongside the
-grammar work. *(Both notes added by the JATS-article + housekeeping slice.)*
-
-**Phase 0 done — findings at `notes/issue1-same-line-long-form-findings.md`.** The
-constraint is a *bounded micromark-tokenizer* change (three line-ending gates plus
-flow-only registration in `src/syntax.js`), not a Peggy-grammar or
-parser-architecture change. Recommended approach **A** (additive: a same-line
-`</tag>`-by-name close scan, the long-form tokenizer also registered in text
-position, reusing the verbatim-string → `remarkRecursiveContent` content path —
-multi-line behaviour and the empty-tag fallback untouched). Inline constructs,
-math, and **different-tag** nesting come free; **same-name** inline nesting (needs
-depth counting) and content that *starts* same-line but closes on a later line are
-deferred-and-documented edges. **One decision the implementation slice must make:**
-the priority of same-line long-form vs remark's HTML-**block** passthrough for a
-vocab tag that is also an HTML block element (`<blockquote>`, exercised by
-`document-45`). Slicing: **Slice 1 = same-line long-form** (broadly needed);
-**Slice 2 (optional) = the `""…""`-for-`<q>` sigil** — separate machinery, lower
-priority, `<q>quoted</q>` covers `<q>` without it. *(Phase 0 by the Issue 1 Phase 0
-slice.)*
-
-**CLOSED 2026-05-31 — Slice 1 (same-line long-form) implemented (approach A).**
-`makeLongFormTokenizer` is now parameterized `{ multiLine }` and registered in
-**both** flow and text position (`src/syntax.js`). When the opener's `>` is
-followed by same-line content, the tokenizer scans the **remainder of the line**
-for a matching `</tagname>` (a bounded, cheap lookahead, unlike the unbounded
-multi-line scan); found → it emits the same Open/Content/Close tokens as the
-multi-line form, so the content flows through `remarkRecursiveContent` unchanged;
-not found before the line ending/EOF → `nok`, and the named-tag tokenizer claims
-the opener as an empty short-form (`<b>` with no same-line close is a bare tag,
-not an error). Multi-line long-form is byte-identical (the line-ending branch is
-flow-only; in text position a `>`-then-line-ending opener rejects to short-form,
-which is what keeps inline `<ref @x>`-ending-a-line working). **Decision B
-(resolved): Enscribe's vocabulary wins** — a same-line `<blockquote>…</blockquote>`
-is claimed by the flow long-form tokenizer before remark's HTML-block construct,
-so its content is recursively parsed rather than passed through as raw HTML
-(the one snapshot change, `document-45`). Tests: `same-line-long-form.test.js`
-(covers `<b>/<i>/<s>/<u>/<q>`, `<a href>`, math-in-bold, different-name
-nesting, flow-trailing→one-paragraph, blockquote decision-B, multi-line guard);
-`raw-html-comments.test.js` updated (an unknown same-line tag escaped to the
-canonical pipe-form literal `<glurp | hi>` — **superseded 2026-05-31 by the
-unknown-tag-echo follow-up**, which makes unknown tags echo the author's original
-form, so `<glurp>hi</glurp>` now displays as `<glurp>hi</glurp>`). Spec:
-`shorthand-syntax.md` §"Long-form tags"
-(multi-line vs same-line, EBNF, bounded-scan rule, same-name limitation),
-`interpreter.md` §5.1, `tag-forms-reference.md` legend.
-
-**Still deferred (documented edges, not closed by Slice 1):**
-- **Same-name inline nesting** — `<b>a<b>b</b>c</b>` uses first-closer-wins: the
-  first `</b>` closes the outer tag, the captured content `a<b>b` re-parses to an
-  empty inner `<b>`, and `c</b>` trails as literal. Depth-counting is the fix;
-  not built. Different-name nesting (`<b>x<i>i</i>y</b>`) works.
-- **Content that starts same-line but closes on a later line** — `<b>bold⏎more</b>`
-  is neither same-line (no close on the opener's line) nor multi-line (opener `>`
-  not immediately followed by a line ending), so it falls back to an empty `<b>`.
-  Authors use fully-inline or fully-multi-line.
-- **Slice 2 (optional): the `""…""`-for-`<q>` sigil** — separate machinery, lower
-  priority; `<q>quoted</q>` now covers `<q>` without it.
 
 ### `buildProperties` does not iterate `node.booleans`
 `[interpreter]` `[post-alpha]`
@@ -497,326 +283,6 @@ an inline SVG `<svg>` figure). Surfaced by Phase 14 Slice 2 while
 visually verifying the editor demo; also noted as a known rough edge in
 `demo/README.md`. Filed, not fixed (out of the demo slice's scope —
 authoring fixture assets is demonstrative-fixture work).
-
-### Browser IIFE bundle threw `Dynamic require of "fs"` at load — never ran in a browser
-`[tests/build]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — Phase 14 Slice 2 (in-browser editor demo).** The
-Slice 1 tsup bundle externalized the Node built-ins (`fs` / `path` /
-`url` / `module`) that the interpreter's server-only code paths import at
-module top level. In the IIFE form that externalization became a
-top-level `__require("fs")`, which threw the instant the IIFE evaluated —
-*before* it could assign `window.enscribe`. So the committed Slice 1
-bundle, though it built and passed its byte-level safety checks, **never
-actually loaded in a browser**; the defect was invisible until a real
-page (the editor demo) tried to use the global. The earlier
-`esbuildPlugins` stub did not fire because tsup appends user plugins
-after its own node-externalizer, and a `node:`-prefixed import slips past
-esbuild's `alias` because tsup's node-protocol plugin claims it first.
-
-Slice 2's fix redirected the built-ins with esbuild `alias` (bare keys) to
-a throwing stub (`src/assets/node-builtin-stub.js`) and adopted a project
-convention that every Node-built-in import under `src/` reachable by the
-bundle is written bare (`from 'fs'`, never `from 'node:fs'`) so the alias
-could catch it; four files were converted `node:` → bare. The stub's
-members throw only when *called*, so binding them at module-init is harmless
-while a violated "never called in the browser" invariant surfaces as a loud
-error.
-
-**Phase 14 Slice 1.5 closed the underlying class.** The bare-only
-convention was a silent trap: writing the modern `from 'node:fs'` form would
-re-introduce the load-time throw, and the test suite would not catch it. The
-slice made the alias **symmetric** — both `fs` and `node:fs` (and the
-path/url/module pairs) keyed to the stub — and set `removeNodeProtocol: false`
-so the `node:` keys actually fire (tsup otherwise externalizes `node:`
-specifiers before `alias` runs). Both forms are now safe; the four files were
-restored to modern `node:` form. The standing guard is a `bundle-load` smoke
-test (`test/bundle-load.test.js`) that builds the IIFE and loads it in jsdom
-on every run, failing if it throws at evaluation — so the defect class is
-caught at test time, not at a user's browser. The previously-filed
-bare-convention drift-guard enhancement was retired as unnecessary. The
-mechanism is documented in `tsup.config.js`, `src/assets/node-builtin-stub.js`,
-and `notes/specs/pipeline.md` §14.
-
-### Theorem-family elements render unstyled (inline, body size)
-`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
-gaps).** `default.css` now renders the theorem-family elements as
-`display: block` with vertical margin (`RQ-THM-S1`) and the
-`.{kind}-label` spans at `font-weight: 700` (`RQ-THM-S2`).
-
-The interpreter emits the theorem family as custom elements —
-`<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`,
-`<example>`, `<remark>`, `<proof>` — each opening with a label span
-(`<span class="theorem-label">`, `<span class="definition-label">`,
-`<span class="proof-label">`, and so on). The markup is correct: the
-demonstrative article renders `<span class="theorem-label">Theorem 1
-(Propriety of the Brier score).</span>` and `<span
-class="proof-label">Proof.</span>` exactly as the render-quality spec's
-`RQ-THM` markup predicates require. But `default.css` has **no rule for
-any of these elements or their label spans**. A custom element with no
-CSS rule defaults to `display: inline` at body size, so a theorem reads
-as an unbroken inline run with a non-bold label — violating the
-stylesheet predicates `RQ-THM-S1` (the block sets off from body text
-with vertical margin) and `RQ-THM-S2` (label prominence,
-`font-weight: 700`).
-
-The fix is purely additive theme work: add `default.css` rules for the
-theorem-family elements (`display: block`, vertical margin) and the
-`.{kind}-label` spans (`font-weight: 700`). No interpreter change is
-needed — the markup already carries the hooks.
-
-Filed by the render-quality slice; see `notes/specs/render-quality.md`
-§11 (`RQ-THM`).
-
-### Book structural elements render unstyled (inline, body size)
-`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
-gaps).** `default.css` now renders `book` / `book-front` / `book-body` /
-`book-back` / `book-part` as block regions, `book-title` as the most
-prominent heading on the page, and `book-part-title` as a chapter-level
-heading clearly above section-title scale (`RQ-BOOK-S1`).
-
-Book structuring emits `<book>`, `<book-front>`, `<book-body>`,
-`<book-back>`, `<book-part>`, `<book-title>`, `<book-subtitle>`, and
-`<book-part-title>` — the demonstrative book renders all of them, and
-the markup satisfies the render-quality spec's `RQ-BOOK` markup
-predicates. But `default.css` has **no rule for any book element**. As
-with the theorem family, an unstyled custom element renders inline at
-body size: the book title renders as inline body text rather than the
-most prominent text on the page, and the front / body / back regions are
-not set off from one another. This violates `RQ-BOOK-S1`.
-
-The fix is additive theme work in `default.css`, parallel to the
-existing `article-title` / `article-front` rules: `book-title` block at
-the largest heading size with `font-weight: 700`, `book-part-title` as a
-chapter heading, and region-separation rules on `book-front` /
-`book-back`. No interpreter change is needed.
-
-Filed by the render-quality slice; see `notes/specs/render-quality.md`
-§15 (`RQ-BOOK`).
-
-### `.frameable-border` draws no border box
-`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
-gaps).** `default.css` now draws a 1px solid border (with a 4px radius
-and padding) on `.frameable-border` (`RQ-FRM-S4`).
-
-The `+border` flag (and `<frame>`, whose border defaults on) adds the
-`frameable-border` class to the frameable's wrapping element — the
-demonstrative article's `<frame>` renders `<figure
-class="frameable-border">`. But `default.css` has **no
-`.frameable-border` rule**, so the class is inert and no outline is
-drawn; the callout is indistinguishable from an ordinary figure. This
-violates `RQ-FRM-S4` (the class draws a visible border that sets the
-callout off from body text).
-
-The fix is a one-rule addition to `default.css`: a `border` (and likely
-padding) on `.frameable-border`. No interpreter change is needed — the
-class is already emitted.
-
-Filed by the render-quality slice; see `notes/specs/render-quality.md`
-§8 (`RQ-FRM-S4`).
-
-### Math-environment wrappers unstyled; equation number not flush-right outside `display-math`
-`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — render-quality bug-fix arc, slice A (stylesheet
-gaps).** `default.css` now applies the `display-math` flex layout —
-block display with vertical margin and a flush-right `.equation-number`
-— to `math`, `align`, `cases`, `matrix`, and `eqnarray` as well
-(`RQ-MATH-S3`).
-
-Display math written with the `<$$ … $$>` sigil renders inside
-`<display-math>`, which `default.css` styles as a flex row with the
-equation centered and the `.equation-number` flush right (the
-`display-math > .equation-number` rule). But the multi-line math
-environments — `<align>`, `<cases>`, `<matrix>`, `<eqnarray>`, and the
-generic `<math>` — render to their own custom-element wrappers, for
-which `default.css` has **no rule**. Two consequences, both observed in
-the demonstrative article's numbered `<align>`: the environment renders
-inline at body size rather than as a centered display block, and its
-`.equation-number` is not flush-right, because the only positioning rule
-is scoped to a direct child of `display-math`. This violates
-`RQ-MATH-S3`.
-
-The fix is additive theme work in `default.css`: give the
-math-environment wrappers display-block / centering treatment comparable
-to `display-math`, and broaden (or duplicate) the `.equation-number`
-flush-right rule so it applies inside the environment wrappers too. No
-interpreter change is needed.
-
-Filed by the render-quality slice; see `notes/specs/render-quality.md`
-§10 (`RQ-MATH`).
-
-### Book caption/label numbers are bare per-chapter while cross-references are chapter-prefixed
-`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — render-quality bug-fix arc, slice B.** The caption /
-label / equation-number render path now formats its display number through
-a shared helper, `formatScopedNumber` (`src/lib/scoped-number.js`), which
-the cross-reference resolver (`computeRefText`) was refactored to share.
-Because the target's label and every reference to it now derive the number
-from one definition, a chapter-scoped book renders matching pairs —
-`Figure 2.1.` / `figure 2.1`, `Definition 3.1.` / `definition 3.1`,
-`Table 3.1.` / `table 3.1`, `(2.1)` / `equation 2.1`. The fix is HTML-only:
-`node.computedNumber` stays the bare per-scope integer (the JATS exporter
-reads it for `<label>` text and is unaffected — its `.xml` output is
-byte-identical), and the chapter prefix is applied only at HTML render
-time. Articles never carry scope, so their labels are unchanged.
-
-**JATS analog CLOSED 2026-05-29 — render-quality bug-fix arc, JATS slice.**
-The JATS export carried the same mismatch on its own output: its `<label>`s
-rendered the bare per-chapter ordinal (`<label>1</label>` on a `<fig>`,
-`<label>(1)</label>` on a `<disp-formula>`, `<label>Theorem 1.</label>` on a
-`<statement>`) while its `<xref>`s were chapter-prefixed (`figure 3.1`,
-`theorem 1.1`), because the `<label>` emitters read the bare
-`node.computedNumber` directly. The JATS slice routes them through the same
-`formatScopedNumber` helper (re-exported from `enscribe-interpreter`), so a
-chapter-scoped book's `<label>` and the `<xref>` resolving to it now agree by
-construction (`<label>3.1</label>` / `<xref … >figure 3.1</xref>`). This
-intentionally changes the book JATS fixtures — slice B's "the JATS `.xml` is
-byte-identical" held only for that HTML-only slice; this slice is the
-JATS-side completion. Article fixtures carry no `_scope`, so their `<label>`s
-stay bare and held zero-diff. The `RQ-BOOK-M4` predicate is now
-output-target-agnostic (see `notes/specs/render-quality.md` §15).
-
-In a book with the default `counter-reset-scope=chapter`,
-cross-references resolve to chapter-prefixed numbers — the demonstrative
-book renders `<a … class="ref">figure 2.1</a>`, `definition 3.1`,
-`table 3.1`, `equation 2.1`. But the **caption / label on the target
-carries only the bare per-chapter ordinal**: every chapter's figure
-caption reads `<span class="figure-label">Figure 1.</span>`, the
-chapter-3 definition reads `Definition 1.`, the chapter-3 table reads
-`Table 1.`, and the chapter-2 numbered equation reads `(1)`. So a figure
-whose caption says "Figure 1." is referred to in prose as "figure 2.1" —
-the caption and every reference to it **disagree**. This violates
-`RQ-BOOK-M4`, which requires the target's label to carry the same
-chapter-prefixed number as the references resolving to it.
-
-The cross-reference resolver already computes the chapter prefix; the
-label formatter that renders the caption / equation number does not
-apply it. The fix is in the label-rendering / numbering path (not the
-resolver, and not CSS): the displayed number on a numbered target in a
-chapter-scoped book must include the chapter prefix, matching what the
-resolver emits. Unlike the four theme-gap bugs above, this is a
-markup-level (`M`) correctness bug, not a stylesheet gap.
-
-Filed by the render-quality slice; see `notes/specs/render-quality.md`
-§15 (`RQ-BOOK-M4`).
-
-### Inline math in pipe-form named-tag content is not protected from escape processing
-`[parser]` `[post-alpha]`
-
-When a named tag carries its content in pipe form — `<definition | … $p
-\in [0,1]$ …>`, `<proof | … $\mathbb{E}[…]$ …>` — the content is
-recursively parsed, and the inner parser processes backslash escape
-sequences (per `notes/specs/recursive-content-spec.md`). Inline math
-spans are **not** carved out as opaque during this pass, so a LaTeX
-backslash command inside `$…$` is read as an escape: `\in` becomes
-unknown-escape `\i`, `\mathbb` becomes `\m`, and the parser emits
-`??parse: unknown-escape-sequence`. Worse, the broken escape misaligns
-the `$…$` delimiters, so prose following the math is swallowed into a
-KaTeX span and rendered as run-together math — a cascading mis-render,
-not just a dropped command.
-
-The same math in **block form** (`<theorem>…$Y \sim
-\mathrm{Bernoulli}(q)$…</theorem>`) renders correctly, because
-block-form content flows through the markdown math extension, which
-makes `$…$` opaque before escape processing. The asymmetry is the bug:
-inline math should be opaque to escape processing in pipe-form content
-too, as it already is in block-form and top-level content.
-
-Surfaced while authoring the demonstrative article — the fixture was
-rewritten to use block form for the affected proof and backslash-free
-inline math in the pipe-form definition, so it renders cleanly. Filed,
-not fixed, per the render-quality slice's scope. Author workaround: use
-block form, or keep backslash LaTeX out of pipe-form inline math.
-
-**CLOSED 2026-05-29 — render-quality bug-fix arc, slice C.** A shared
-`OpaqueSpan` grammar rule in `packages/remark-enscribe/grammar/enscribe.peggy`
-now recognises inline math (`$…$`), display math (`$$…$$`), and markdown code
-spans (`` `…` ``, `` ``…`` ``) inside the `ContentItem` rule and returns them
-verbatim, so the inner parser's escape processing never sees the LaTeX backslash
-commands (or Windows-path backslashes) inside them; the math then flows to
-`remark-math` intact. Correctness invariant: for a backslash-free span the
-emitted string is byte-identical (zero regression) — only backslash-inside-span
-behaviour changes. Backslash escape rules stay *first* in `ContentItem`, so
-`\$` / `` \` `` still pass through as markdown literals and never open a span.
-The scope was widened from math-only to **math + code spans**, bringing the
-parser in line with `escape-rules-spec.md` §"Opaque inline spans within prose
-content." New regression fixture `document-48-pipe-form-inline-math.emd`
-exercises inline, display-fence, and single/double-backtick code-span backslash
-content in pipe form. The fix also corrected latent parse-errors an existing
-fixture — `document-35-numbering-extension.emd` (lines 21 `\sum`/`\le`, 25
-`\mathbb`) — had silently carried in its snapshot: its propositions and example
-now render their math instead of `??parse: unknown-escape-sequence` markers,
-real-world proof the bug existed in the corpus and the fix resolves it.
-**Two findings:** (i) the fixture used `<lemma>` rather than the
-prompt-suggested `<theorem>`, because `<theorem>` is `isOpaqueContent: true`
-and its body is dropped (a separate pre-existing bug; see the doc-29 note) —
-`<lemma>` is a recursively-parsed sibling that renders its body; (ii) the same
-opacity is **deferred** for hash sigil-tag headings (`<# … #>`), because `>` is
-legal content there and the heading content class needs a different rule — out
-of scope for this named-tag-content fix (noted in the grammar comment and the
-escape-rules spec).
-
-### ABC `<div>` source is not preserved verbatim — the HTML serializer adds indentation
-`[interpreter]` `[release]` *(→ roadmap: Phase 14)*
-
-**CLOSED 2026-05-29 — DSL Slice 1 (registry + live mode).** Fixed via
-candidate three below: the `<abc>` handler now emits `<pre class="abc"
-data-enscribe-dsl="abc">` instead of `<div>`. `<pre>` is one of the
-serializer's whitespace-sensitive elements (like `<mermaid>`'s wrapper), so
-the line-oriented ABC source survives verbatim — no per-line indentation,
-no inserted leading/trailing newline (`RQ-DSL-M2`). abcjs replaces the
-element's content on render regardless of tag, so the change affects source
-fidelity, not rendered output. The canonical vocab entry was synced in the
-same slice (`abc.md` now documents the `<pre>` wrapper and its rationale;
-`data.js` regenerated from it), and the abc-bearing fixtures' hast
-snapshots (doc-32, doc-44) were regenerated for the `<div>`→`<pre>`
-change (doc-36 is mermaid-only — its snapshot was unchanged, as noted
-below).
-
-`RQ-DSL-M2` requires an `<abc>` block to render `<div class="abc"
-data-enscribe-dsl="abc">` with the ABC source **preserved verbatim**, so
-a consumer-side renderer (abcjs, reading `element.textContent`) sees the
-source the author wrote. The class, the `data-enscribe-dsl` marker, and
-the `id` are all correct, but the source is **not** verbatim in the
-rendered HTML: the hast→HTML serializer pretty-prints the `<div>`'s text
-child, prefixing every line with the element's indentation — the abc block
-in doc-32 renders with ~10 leading spaces on each of `X:1`, `T:…`, `K:C`,
-and the tune body — plus a leading and trailing newline. This matters
-because ABC information fields (`X:`, `T:`, `M:`, `L:`, `K:`)
-conventionally begin at column 0; leading whitespace can cause abcjs to
-misparse them, so the fidelity break can defeat the very consumer-side
-rendering the markup contract exists to enable.
-
-The defect is **serialization-only**: the hast text node holds the source
-verbatim — the snapshot records `"X:1\nT:Twinkle…"` with no indentation —
-so nothing upstream of stringify is wrong. The asymmetry with `<mermaid>`
-is the tell: Mermaid's wrapper is `<pre>`, which the serializer treats as
-whitespace-sensitive and never reformats (so `RQ-DSL-M1` passes
-byte-for-byte), whereas `<abc>`'s `<div>` is not whitespace-sensitive and
-gets reformatted. The fix is a design call, not decided here — candidates:
-mark the abc text node so rehype-stringify preserves its whitespace; wrap
-the source in a whitespace-preserving inner element; or switch the abc
-wrapper to `<pre>` (abcjs replaces the element's content on render
-regardless of tag, so the `<div>`-vs-`<pre>` choice changes source
-fidelity, not rendered output).
-
-Surfaced by the render-quality bug-fix arc's DSL verification slice while
-verifying `RQ-DSL` against the existing corpus — `<abc>` is exercised
-in doc-32 and doc-44 (doc-36 names `<abc>` only in prose; its single DSL
-block is `<mermaid>`, confirmed when the `<div>`→`<pre>` fix left doc-36's
-snapshot unchanged); the demonstrative fixtures (doc-45,
-doc-46) exercise `<mermaid>` only. Filed, not fixed, per the
-slice's scope. See `notes/specs/render-quality.md` §9 (`RQ-DSL-M2`).
-
----
 
 ## Detailed entries — Enhancements
 
@@ -951,44 +417,6 @@ Gated by MC-Q1 through MC-Q4 (in the Discussions group).
 this work: the margin is another column, and the multi-column layout
 engine is the machinery a margin needs.
 
-### CLI: `enscribe render` + `enscribe export-jats`
-`[cli]` `[release]`
-
-The `enscribe` command-line tool, in a new `@enscribejs/cli` package — a thin
-layer over the existing pipelines (no new capability). `enscribe render`
-(`buildEnscribePipeline().processSync` → HTML, self-contained by default) and
-`enscribe export-jats` (`.runSync(parse)` → post-pipeline mdast →
-`enscribeToJats` → JATS 1.3 XML). Hand-rolled arg parsing (no dependency), `-o`
-output, `--embed`/`--no-embed`/`--dsl-mode`/`--quiet`, `--help`/`--version`,
-exit 0/1 with helpful messages; `run(argv, io)` is stream-injectable so the
-tests drive it without spawning (plus two spawn tests for the real bin).
-**CLOSED 2026-05-31.** Package home: the CLI had to be its own package — putting
-it in `@enscribejs/interpreter` would cycle (`jats-export` already depends on the
-interpreter). `enscribe lift` was deferred to its own slice (now landed, below).
-`import-jats` / `import` arrive with Phase 13 and the pandoc bridge.
-
-### CLI: `enscribe lift` (canonical serializer)
-`[cli]` `[release]`
-
-**CLOSED 2026-05-31.** The third CLI command — rewrites mixed
-markdown/sigil/canonical source to pure canonical named-tag form. Two pieces:
-`liftToCanonicalMdast(source)` added to `@enscribejs/interpreter` (parse +
-recursive-content + the normalize-to-canonical gate, reusing the real pipeline's
-opening stages so it cannot drift), and `serialize-canonical.js` in
-`@enscribejs/cli` (a tree walker that emits canonical source). Round-trip
-fidelity verified by an **idempotence** test (`lift(lift(src)) === lift(src)` and
-no error nodes) across synthetic mixed-form documents and real fixtures
-(calibration with math environments, demo, linear-regression, tables). Three
-documented, round-trip-forced deviations from "pure named tags": opaque math /
-code use their canonical **sigil** forms (`<$ … $>`, `<$$ … $$>`, `` <` … `> ``,
-`<``` … ```>`) because the named forms (`inline-math`, `code-block`, …) are not
-registered opaque handlers and would re-parse as prose; lists re-emit as markdown
-list syntax (no list tag exists); markdown links de-lift to `<span>`. Escaping
-follows `notes/specs/escape-rules-spec.md` (`\<`, `\|`, `&gt;` for the
-not-backslash-escapable `>` in named-tag content); opaque DSL/math-env content
-with backslashes uses long form (pipe content is escape-processed even for opaque
-tags). Best-effort: rare escaping edge cases may need manual cleanup.
-
 ### Build the lowering pass (Layer 1 → canonical enscribe)
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 7)*
 
@@ -1085,19 +513,6 @@ Release-blocking for v0.1.0.
 ---
 
 ## Detailed entries — Architecture tier
-
-### Build JATS export (`rehypeEnscribeToJats`)
-`[interpreter]` `[alpha]` *(→ roadmap: Phase 5)*
-
-The vocabulary is JATS-aligned by design (`jats_counterpart` on every
-entry); this is the payoff. *(formerly DF-18)*
-
-Needs a Phase 0 first to site the `enscribe-jats-export` package
-against the inward-pointing `enscribe-core`, decide the
-export-stage attribute mapper's shape (whether the iteration shape
-lifts to core's `mapAttributes(node, vocab, emit)` callback API now
-or stays local), and address the JATS section-model question
-recorded as deferred in `DESIGN.md`.
 
 ### Build render-mode lowering
 `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 8)*
@@ -1240,6 +655,18 @@ tags (matrix/cases/align/eqnarray) import as plain `<display-math>` carrying the
 named env tag is not reconstructed. Math nested inside not-yet-imported
 containers (statement / fig / table-wrap) is still dropped *with its container*
 (Slices 4–5). Next: **Slice 4 — figures, tables, cross-references.**
+
+### JATS export: map `<a>` → `<ext-link>`
+`[interpreter]` `[release]` *(→ roadmap: Phase 13)*
+
+The JATS exporter has no mapping for `<a>`, so links are dropped on export
+(`enscribeToJats`'s `INLINE_MAP` has no `a` entry). The export predates the
+`<a>` element being added to the vocabulary. Because export drops links, the
+JATS-import round-trip cannot exercise the importer's `ext-link` → `<a>` mapping
+(verified instead with synthetic JATS). A small, contained fix: emit
+`<ext-link ext-link-type="uri" xlink:href="…">…</ext-link>` for `<a>`, with
+`mailto:` URLs handled per JATS convention. *(Surfaced as a drift finding in
+Phase 13 Slice 1.)*
 
 ### Build the client-side rendering library
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*
@@ -1641,40 +1068,17 @@ audit slice; a standing rule that every spec example must come
 with a fixture; a periodic coverage-against-spec sweep. Filed under
 the discussion-is-work rule.
 
-### Decide how live-mode assets (hover-preview / DSL scripts) execute under `renderInto`
-`[interpreter]` `[release]`
-
-**RESOLVED 2026-05-29 — Phase 14 Slice 2 (in-browser editor demo).** The
-library adds an **opt-in activation helper**, `executeAssets(target)`, and
-the decided usage is the two-step `render → executeAssets`: render produces
-the markup, then `executeAssets` walks the inserted subtree and re-creates
-each injected `<script>` so the browser runs it — in document order,
-awaiting each external load (load-order dependencies: a DSL library before
-its init; Popper before Tippy before the hover init), deduplicating
-externals already in `<head>`, and finishing with a `mermaid.run()` kick.
-The library deliberately does **not** auto-execute injected scripts —
-running markup-derived JS is the consumer's explicit call. The decision is
-recorded in `notes/specs/pipeline.md` §14; the demo (`demo/`) is the worked
-example. (Resolution of the discussion below.)
-
-`renderInto(target, source)` (Phase 14 Slice 1, `src/browser.js`) assigns
-the rendered HTML via `el.innerHTML`. The HTML spec deliberately prevents
-`innerHTML`-injected `<script>` elements from executing, so the
-hover-preview init script and any live-mode DSL (mermaid / abc) activation
-scripts emitted into the fragment do **not** run when a consumer uses
-`renderInto`. (A full-page `render()` the browser parses normally is
-unaffected — only the `innerHTML` path is.) Auto-executing injected scripts
-was left out of Slice 1 on purpose: doing it would mean `eval`-ing
-markup-derived JS. This discussion: decide whether the library should offer
-an opt-in activation helper (re-inject / execute the emitted scripts after
-`renderInto`), document the limitation as the consumer's responsibility, or
-something else. Gates the in-browser editor demo slice, which needs live
-hover previews and DSL rendering inside a mounted element. *(filed by
-Phase 14 Slice 1)*
-
----
-
 ## Detailed entries — Standing
+
+### Align demonstrative fixtures' `<data>` placement to the end-convention
+`[tests]` `[post-alpha]`
+
+`document-9`, `-44`, `-45`, and `-46` place their `<data>` block at the
+*start* of the document; the convention (now followed by the docs-site
+Quickstart, and documented there) is that apparatus — `<data>`, `<config>` —
+goes at the document's **end**. Moving them is a separate chore because each
+fixture needs snapshot regeneration and a diff audit to confirm output is
+unchanged. *(Noted by the JATS-article + housekeeping slice.)*
 
 ### Run a spec-completeness audit against the rebuild-from-docs standard
 `[specs/docs]` `[post-alpha]`
@@ -1722,6 +1126,16 @@ knowable. The spec is the authoring-requirements companion to the
 pagination implementation; the implementation arc is gated on this
 spec being written.
 
+### Clarify display-math notation in `DESIGN.md`'s gate table
+`[specs/docs]` `[post-alpha]`
+
+The gate table in `DESIGN.md` writes "`$$x$$` → display-math", but a
+single-line `$$...$$` actually lifts to *inline*-math; display-math requires
+the `$$` fences on their own lines (remark-math's block rule) or the canonical
+`<$$ | ... $$>` tag. The table's shorthand is misleading on this point. A
+one-line clarification, not a behavior change. *(Surfaced while authoring the
+Quickstart in Phase 14 Slice 3c, which uses the canonical tag form.)*
+
 ### Reconcile stale doc cross-references
 `[specs/docs]` `[post-alpha]`
 
@@ -1744,11 +1158,48 @@ artifacts of a rename that did not sweep its references:
   survives in `ROADMAP.md`, this file's closed JATS-export entry, and
   `packages/layer1-vocabulary/SPEC.md`. The Phase 5 Phase 0 findings
   noted the inconsistency but did not reconcile it.
+- **The retired markdown-link idiom still in two specs.** The
+  2026-05-31 "links and images" slice retired `[text](url)` →
+  `<a>` as an active idiom (it now flows through remark's own link
+  handling), updating `shorthand-syntax.md`, `a.md`'s positional-URL
+  note, and `DESIGN.md` — but missed two live claims:
+  `notes/specs/idioms.md` (~line 51) still lists `[text](url)` →
+  `<a url | text>` as an active idiom, and
+  `packages/layer1-vocabulary/elements/a.md` (~line 93) still asserts
+  "Standard markdown link syntax produces `<a>` elements via remark."
+  *(Surfaced by the tracking-docs-cleanup STATUS-milestone audit.)*
 
 A mechanical sweep, not a design question. `notes/archive/` is frozen
 and excluded — its references correctly record what was true on their
 date. Could be folded into the spec-completeness audit Standing item
 rather than run on its own.
+
+### Reconcile `CONTRIBUTING.md`'s STATUS references with the capability-checklist shape
+`[specs/docs]` `[post-alpha]`
+
+The tracking-docs-cleanup slice redefined `STATUS.md` as a pure capability
+checklist — what enscribe can do today, with no changelog — on the principle
+that the commit log is the changelog. But `CONTRIBUTING.md`, the canonical
+definition of the documentation system, still describes STATUS as holding
+**append-only milestones** plus an **"in flight / next"** section, in four
+places:
+
+- the doc-homes table (`STATUS.md` row: "Current-state checklist; in-flight/next;
+  milestones (append-only)");
+- the "where does it go" list ("what was completed and when → `STATUS.md`
+  milestones (append-only)"; "what is being worked on now → `STATUS.md` 'in
+  flight / next'");
+- **coherence-check item 4** ("a milestone line added for what was completed;
+  'in flight / next' updated") — the most load-bearing, because it directs every
+  slice to append a milestone line, which would re-bloat STATUS back into a
+  changelog.
+
+This needs a small, surgical wording update to `CONTRIBUTING.md` so the
+documentation-system definition matches the new STATUS role (flip checkboxes for
+what shipped; update the "Current position" note; the commit log is the
+changelog). It was held out of the cleanup slice because `CONTRIBUTING.md` was
+explicitly out of that slice's scope. *(Surfaced by the tracking-docs-cleanup
+slice.)*
 
 ---
 
