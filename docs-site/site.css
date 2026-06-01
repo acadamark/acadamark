@@ -78,6 +78,14 @@ main.article {
   padding: 1.5rem 1.75rem 0;
 }
 
+/* A page whose article carries the ToC layout (the Authoring Guide) needs the
+   full width for the sidebar + body grid; default.css centers the layout within. */
+main.article:has(.enscribe-layout--toc) {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .site-footer {
   max-width: 46rem;
   margin: 2.5rem auto 0;

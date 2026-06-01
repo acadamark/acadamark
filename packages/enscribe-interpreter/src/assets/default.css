@@ -692,6 +692,95 @@ bibliography h2 {
   color: var(--enscribe-text-primary);
 }
 
+/* ─── Table of contents (Phase 8 Slice 1) ───────────────────────────────────── */
+
+/*
+ * Opt-in sidebar. Every rule here is scoped to `.enscribe-layout--toc`, which the
+ * renderer emits ONLY when the `toc` option is on — so a document without a ToC
+ * is completely unaffected by this block. The body's single-column cap is relaxed
+ * via :has() only when a ToC layout is present, letting the sidebar + body grid be
+ * wider; non-ToC bodies keep the centered --enscribe-content-width column.
+ */
+body:has(.enscribe-layout--toc) {
+  max-width: none;
+  padding: 0;
+}
+
+.enscribe-layout--toc {
+  margin: 0 auto;
+  padding: 0 var(--enscribe-content-padding);
+  max-width: var(--enscribe-content-width);
+}
+
+/* Let wide content (tables, code, math) shrink instead of blowing out the grid. */
+.enscribe-body {
+  min-width: 0;
+}
+
+.enscribe-toc {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+}
+
+.enscribe-toc-summary {
+  font-size: var(--enscribe-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  cursor: pointer;
+  margin-bottom: var(--enscribe-space-3);
+}
+
+.enscribe-toc ul {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-4);
+}
+
+.enscribe-toc-details > ul {
+  padding-left: 0;
+}
+
+.enscribe-toc li {
+  margin: 0;
+}
+
+.enscribe-toc a {
+  display: block;
+  color: var(--enscribe-text-secondary);
+  text-decoration: none;
+  padding: var(--enscribe-space-1) 0;
+}
+
+.enscribe-toc a:hover {
+  color: var(--enscribe-link);
+}
+
+/* Desktop: a two-column grid with the ToC as a sticky left sidebar; the
+ * disclosure is forced open (its <summary> toggle hidden). */
+@media (min-width: 900px) {
+  .enscribe-layout--toc {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, var(--enscribe-content-width));
+    column-gap: var(--enscribe-space-12);
+    max-width: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
+  }
+
+  .enscribe-toc {
+    position: sticky;
+    top: var(--enscribe-space-8);
+    align-self: start;
+    max-height: calc(100vh - 2 * var(--enscribe-space-8));
+    overflow-y: auto;
+  }
+
+  .enscribe-toc-summary {
+    display: none;
+  }
+}
+
 /* ─── Responsive ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {

@@ -52,6 +52,21 @@ export function run_tests() {
     console.log('PASS: render --no-embed → external assets');
   }
 
+  // ── render --toc → table-of-contents sidebar markup ─────────────────────────
+  {
+    const plain = invoke(['render', FIXTURE]);
+    const toc = invoke(['render', FIXTURE, '--toc']);
+    assert.equal(toc.code, 0, 'render --toc exits 0');
+    assert.ok(toc.out.includes('<nav class="enscribe-toc"') && toc.out.includes('enscribe-layout--toc'), '--toc adds the ToC nav + layout');
+    assert.ok(toc.out.includes('href="#sec:intro"'), '--toc links the sections');
+    assert.ok(!plain.out.includes('enscribe-toc'), 'no --toc → no ToC markup (opt-in)');
+    // bad value rejected
+    const bad = invoke(['render', FIXTURE, '--toc=sidebar']);
+    assert.equal(bad.code, 1, "--toc with a bad value exits 1");
+    assert.ok(bad.err.includes("--toc takes 'auto'"), 'helpful message for bad --toc value');
+    console.log('PASS: render --toc → ToC sidebar markup');
+  }
+
   // ── export-jats → JATS XML ──────────────────────────────────────────────────
   {
     const { code, out } = invoke(['export-jats', FIXTURE]);

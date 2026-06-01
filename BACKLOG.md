@@ -130,8 +130,6 @@ A flat scannable index of every open item. Detailed entries below.
   sigils, or markdown idioms with `--markdown`), both in `@enscribejs/cli` via the
   parameterized `serialize-canonical.js`. A formal Phase-7 lift/lower round-trip
   spec can still be written, but the working tooling now exists.
-- [ ] **Table-of-contents sidebar** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 8)*
 - [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
   `[release]` *(→ roadmap: Phase 8)*
 - [ ] **Additional display themes** `[interpreter]` `[release]`
@@ -453,24 +451,6 @@ id-bearing section stays a sigil because a markdown heading cannot carry it. Wha
 remains for a formal Phase 7 is a **spec**: a written lift/lower round-trip
 contract (which deviations are sanctioned, what "lossless" means per register),
 rather than new tooling.
-
-### Table-of-contents sidebar
-`[interpreter]` `[release]` *(→ roadmap: Phase 8)*
-
-A navigation sidebar listing the document's sections — and, for books,
-its chapters — letting a reader jump to any heading. Net-new render
-output: no current fixture produces a sidebar. UI-shaped — a rendered
-reading affordance, not a markup or conversion capability — and likely
-shares machinery with the Phase 14 client-side rendering library (the
-DOM the library renders is the DOM a sidebar navigates). Release-
-blocking for v0.1.0. **Phase 0 done**
-(`notes/phase8-display-features-findings.md`): generate the ToC at build time
-(it must work on the JS-free read-only pages), assigning stable ids to
-anchorless sections (only authored colon-id sections currently get an `id`);
-make the sidebar an **opt-in layout wrapper** so non-ToC documents stay
-byte-identical (this is what clears the "sidebar would restructure every
-document" stop-condition). It is the **first** Phase 8 slice — the chapter
-selector reuses it.
 
 ### Single-chapter-at-a-time book navigation
 `[interpreter]` `[release]` *(→ roadmap: Phase 8)*

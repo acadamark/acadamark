@@ -33,6 +33,7 @@ import { run as runSameLineLongForm } from './same-line-long-form.test.js';
 import { run as runSvgContent } from './svg-content.test.js';
 import { run as runLinksImages } from './links-images.test.js';
 import { run as runIntegration } from './integration.test.js';
+import { run as runToc } from './lib/toc.test.js';
 
 const suites = [
   ['schema/shape-tokens',          runShapeTokens],
@@ -66,6 +67,7 @@ const suites = [
   ['svg-content',                  runSvgContent],
   ['links-images',                 runLinksImages],
   ['integration',                  runIntegration],
+  ['lib/toc',                      runToc],
 ];
 
 let failed = 0;

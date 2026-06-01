@@ -13,6 +13,19 @@
         "cd ~/academark && exec python3 -m http.server 8767"
       ],
       "port": 8767
+    },
+    {
+      "name": "enscribe-docs",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": [
+        "-d",
+        "ubuntu-24.04",
+        "--",
+        "bash",
+        "-lc",
+        "cd ~/enscribe/docs-site/dist && exec python3 -m http.server 8768"
+      ],
+      "port": 8768
     }
   ]
 }

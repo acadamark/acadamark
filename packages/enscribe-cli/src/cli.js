@@ -121,6 +121,8 @@ Options:
   --no-embed           Link assets externally (fonts / KaTeX CSS from CDNs)
   --dsl-mode <mode>    DSL rendering mode: skip (default), live-link,
                        live-inline, static
+  --toc                Add a table-of-contents sidebar (--toc=auto to show it
+                       only past three sections). Needs default.css to display.
   --quiet              Suppress warnings
   -h, --help           Show this help
 `;
@@ -145,6 +147,7 @@ function parseCommandArgs(args) {
   const opts = {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
+    toc: undefined,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -163,7 +166,14 @@ function parseCommandArgs(args) {
         throw new CliError(`--dsl-mode must be one of ${allowed.join(', ')} (got ${opts.dslMode ?? '(none)'})`);
       }
     } else if (a === '--quiet') opts.quiet = true;
-    else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
+    else if (a === '--toc') opts.toc = true;
+    else if (a.startsWith('--toc=')) {
+      const v = a.slice('--toc='.length);
+      if (v !== 'auto' && v !== 'true' && v !== 'false') {
+        throw new CliError(`--toc takes 'auto' (or use a bare --toc for always-on); got ${v}`);
+      }
+      opts.toc = v === 'auto' ? 'auto' : v === 'true';
+    } else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
     else if (opts.input == null) opts.input = a;
     else throw new CliError(`unexpected argument: ${a}`);
   }
@@ -199,6 +209,7 @@ function doRender(opts) {
   // CLI default is self-contained (--embed); the library default is external.
   const pipeOpts = { embedResources: opts.embed ?? true, assetsDir: dirname(resolve(opts.input)) };
   if (opts.dslMode) pipeOpts.dslMode = opts.dslMode;
+  if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
   return withQuiet(opts.quiet, () =>
     String(buildEnscribePipeline(pipeOpts).processSync(src)),
   );

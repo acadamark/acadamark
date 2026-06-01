@@ -156,6 +156,9 @@ import { parseCsv, parseTsv } from './handlers/table.js';
 // <xref>s in agreement (RQ-BOOK-M4, JATS side). Same re-export pattern as
 // parseCsv above.
 import { formatScopedNumber } from './lib/scoped-number.js';
+// Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
+// unless the `toc` option enables it, preserving byte-identical output otherwise.
+import { applyToc } from './lib/toc.js';
 
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
@@ -488,6 +491,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.dslMode='skip'] External-DSL render mode (all DSLs).
  * @param {'skip'|'live-inline'|'live-link'} [options.mermaidMode] Override dslMode for mermaid (live-only; no 'static').
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
+ * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -501,6 +505,9 @@ export function enscribeInterpreter(options = {}) {
   const cssMode = options.katexCss ?? (embed ? 'inline' : 'link');
   const hoverMode = options.hoverPreviewMode ?? 'inline';
   const assetsDir = options.assetsDir ?? null;
+  // Phase 8 Slice 1: table-of-contents. false (default) / true / 'auto'
+  // (show only past a few top-level sections). Off → applyToc is a no-op.
+  const tocOption = options.toc ?? false;
 
   // G3: Register remarkMath on the outer processor so top-level bare $...$ is
   // tokenized. Must be registered before parse time (here, in the setup phase,
@@ -615,6 +622,12 @@ export function enscribeInterpreter(options = {}) {
       },
       allowDangerousHtml: true,
     });
+
+    // Phase 8 Slice 1: table-of-contents. Runs before asset injection so the
+    // assets land outside the layout wrapper (at the top of the body), and before
+    // rehype-format so the generated <nav> is formatted with everything else.
+    // A strict no-op when `toc` is off → byte-identical output for non-ToC docs.
+    applyToc(hast, tocOption);
 
     // Inject document fonts (Inter, Source Code Pro). fontsMode — driven by
     // embedResources unless documentFontsCss overrides — picks the form: 'inline'

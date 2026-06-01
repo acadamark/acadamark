@@ -70,16 +70,17 @@ const PAGES = [
   { slug: 'index',           source: 'index.emd',           title: 'enscribe',                       nav: 'Home',            kind: 'page' },
   { slug: 'design',          source: 'design.emd',          title: 'Design — enscribe',              nav: 'Design',          kind: 'page' },
   { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',          nav: 'Quickstart',      kind: 'playground' },
-  { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page' },
+  { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page', renderOptions: { toc: true } },
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
   { slug: 'demo-paper',      source: 'demo-paper.emd',      title: 'Demo Paper — enscribe',          nav: 'Demo Paper',      kind: 'jats-import',
     xml: DEMO_PAPER_XML, sourceUrl: `${GITHUB_REPO_BASE}/packages/enscribe-jats-import/test/fixtures/pnas_sample.xml` },
 ];
 
-/** Render an enscribe source string to an HTML fragment. */
-function renderAcm(source) {
-  return String(buildEnscribePipeline(RENDER_OPTIONS).processSync(source));
+/** Render an enscribe source string to an HTML fragment. Per-page `extra`
+ *  options (e.g. `{ toc: true }`) merge over the shared RENDER_OPTIONS. */
+function renderAcm(source, extra = {}) {
+  return String(buildEnscribePipeline({ ...RENDER_OPTIONS, ...extra }).processSync(source));
 }
 
 /**
@@ -193,7 +194,7 @@ function main() {
       // from the JATS XML fixture.
       body = buildPageBody(page, `${renderAcm(source)}\n${renderJats(page.xml)}`);
     } else {
-      body = buildPageBody(page, renderAcm(source));
+      body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}));
     }
     const html = fillTemplate(template, {
       title: page.title,

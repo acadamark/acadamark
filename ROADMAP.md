@@ -152,8 +152,11 @@ features are **release-blocking** for v0.1.0; the rest is post-release.
 
 **Release-blocking display features (v0.1.0):**
 
-- **Table-of-contents sidebar.** A navigable ToC generated from the
-  section / chapter structure.
+- **Table-of-contents sidebar** *(Slice 1 — done)*. A build-time, opt-in
+  navigable ToC generated from the section / chapter structure, with a
+  responsive layout (sticky sidebar on desktop, a no-JS `<details>` collapse on
+  narrow), shipped on the docs-site Authoring Guide. Non-ToC documents stay
+  byte-identical.
 - **Single-chapter-at-a-time book view.** A book reading mode showing one
   chapter at a time with chapter-to-chapter navigation.
 - **Additional themes.** A wider set of display themes beyond the default.
