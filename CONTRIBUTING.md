@@ -32,7 +32,7 @@ recording it in the spec.
 | `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `multi-file-authoring.md`, `multi-column-display.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `BACKLOG.md` | Backlog | ALL open work — bugs, gaps, limitations, planned features, open questions — as an unordered pool, queryable by tag, with detail. The only home for open-work detail. |
 | `ROADMAP.md` | Roadmap | The linear build narrative: phases, items in each phase in build order, dependencies, and current position. Alpha is a milestone along the roadmap. Each item is a cross-reference to its `BACKLOG.md` entry. |
-| `STATUS.md` | Status | Current-state checklist; in-flight/next; milestones (append-only). |
+| `STATUS.md` | Status | Current-state checklist; in-flight/next; milestones. |
 | `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
 
@@ -104,7 +104,6 @@ Each subsystem's blueprint:
 - Open work of any kind, with detail → `BACKLOG.md`. Nowhere else.
 - The build sequence and current position → `ROADMAP.md`. Nowhere else.
 - What is true now / what is built → `STATUS.md` checklist.
-- What was completed and when → `STATUS.md` milestones (append-only).
 - What is being worked on now → `STATUS.md` "in flight / next".
 - Test count, vocabulary count, etc. → no document. Run `npm run verify`.
 
