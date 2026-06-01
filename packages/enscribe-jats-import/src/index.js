@@ -17,10 +17,14 @@
 //             <display-math> (id preserved). The LaTeX comes from <tex-math>
 //             (preferred, verbatim) or, failing that, from presentation MathML
 //             converted via `mathml-to-latex`.
-// Figures, tables, non-bibliographic cross-references, the theorem family, DSL
-// blocks, and the non-representable-element reduction policy land in later
-// slices; elements this slice does not handle are dropped (with a one-line
-// console warning naming each kind), never silently.
+//   Slice 4 — figures (<fig> → <fig>), tables (<table-wrap> → <table>, CSV),
+//             cross-references (<xref ref-type="fig|table|disp-formula|sec"> →
+//             <ref @prefix:id>), and footnotes (<fn> inlined into <note> at its
+//             <xref ref-type="fn"> marker). Referenceable ids gain the Enscribe
+//             colon-prefix so they resolve and number.
+// The theorem family, DSL blocks, and the non-representable-element reduction
+// policy land in later slices; elements this slice does not handle are dropped
+// (with a one-line console warning naming each kind), never silently.
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
@@ -104,6 +108,8 @@ function noteDropped(name) {
  */
 export function importJats(xml) {
   _dropped.clear();
+  _footnotes.clear();
+  _fnInProgress.clear();
   const doc = parseXml(xml);
   if (!doc) throw new Error('JATS import: no <article> or <book> root element found');
   if (doc.name === 'book') {
@@ -122,13 +128,16 @@ function convertArticle(article) {
   const meta = front ? buildMeta(front) : null;
   if (meta) out.push(meta);
 
+  // Index footnote bodies before the body is converted, so an inline
+  // `<xref ref-type="fn">` can inline its `<fn>` content where it appears.
+  const back = childEl(article, 'back');
+  if (back) collectFootnotes(back);
+
   const body = childEl(article, 'body');
   if (body) out.push(...convertBlocks(body.children, 0));
 
-  // <back>: bibliography (<ref-list>) becomes a <bibliography> placement plus a
-  // <library> of BibTeX inside <data>. Footnotes / acknowledgements / appendices
-  // are later slices.
-  const back = childEl(article, 'back');
+  // <back>: <ref-list> → bibliography + <library>. The <fn-group> was inlined
+  // above (consumed here). Acknowledgements / appendices are later slices.
   if (back) out.push(...convertBack(back));
   return out;
 }
@@ -213,9 +222,10 @@ function convertBack(back) {
       out.push({ ...makeTag('data', [library]), form: 'long' });
     }
   }
-  // Footnotes, acknowledgements, glossaries, appendices, author bios → later slices.
+  // `<ref-list>` (above) and `<fn-group>` (inlined as notes) are handled;
+  // acknowledgements, glossaries, appendices, author bios → later slices.
   for (const child of back.children) {
-    if (isEl(child) && child.name !== 'ref-list') noteDropped(child.name);
+    if (isEl(child) && child.name !== 'ref-list' && child.name !== 'fn-group') noteDropped(child.name);
   }
   return out;
 }
@@ -470,13 +480,152 @@ function convertFormula(formula, display) {
   if (latex != null) {
     if (display) {
       const node = makeOpaqueTag('display-math', latex, { contentHandler: 'math-display' });
-      const id = formula.attributes.id;
+      // Prefix the id (`eqn:`) so equation cross-references resolve and the
+      // equation is numbered (only colon-ids are indexed).
+      const id = prefixId(formula.attributes.id, 'eqn');
       return id ? { ...node, id } : node;
     }
     return makeOpaqueTag('inline-math', latex, { contentHandler: 'math' });
   }
   noteDropped(display ? 'disp-formula(no-tex-math/mathml)' : 'inline-formula(no-tex-math/mathml)');
   return { type: 'inlineCode', value: textOf(formula).replace(/\s+/g, ' ').trim() || '(math)' };
+}
+
+// ─── figures, tables, cross-references, footnotes ───────────────────────────────
+
+// JATS uses bare element ids (`F1`); Enscribe's cross-reference system keys off a
+// colon-prefix (`fig:F1`) — only colon-ids are indexed/numbered, and the prefix
+// selects the rendered word ("figure" / "table" / "equation" / section). So every
+// referenceable element id is normalized to its conventional prefix, and the same
+// normalization is applied to the matching `<xref rid>` so the two agree. Already
+// -prefixed ids (Enscribe's own exported JATS) pass through unchanged.
+function prefixId(rawId, prefix) {
+  if (!rawId) return null;
+  return rawId.startsWith(`${prefix}:`) ? rawId : `${prefix}:${rawId}`;
+}
+
+// `<xref ref-type="…">` → the colon-prefix of its Enscribe target id. `bibr` and
+// `fn` are handled separately (citation / inlined note); `statement` (theorem
+// family) lands in Slice 5.
+const XREF_TYPE_TO_PREFIX = {
+  fig: 'fig',
+  table: 'tab',
+  'disp-formula': 'eqn',
+  sec: 'sec',
+};
+
+/** A `<ref @target>` node (parser shape: atRefs holds the target, content null). */
+function refNode(target) {
+  return { ...makeTag('ref'), atRefs: [target], content: null };
+}
+
+/** Inline text of a frameable's `<caption>` (`<title>` + `<p>`), as a string. */
+function captionText(el) {
+  const cap = childEl(el, 'caption');
+  if (!cap) return null;
+  const txt = textOf(cap).replace(/\s+/g, ' ').trim();
+  return txt || null;
+}
+
+/** Inline nodes of a frameable's `<caption>` (`<title>` then `<p>`), formatting kept. */
+function captionInline(el) {
+  const cap = childEl(el, 'caption');
+  if (!cap) return [];
+  const parts = [];
+  for (const child of cap.children) {
+    if (child.name === 'title' || child.name === 'p') {
+      if (parts.length) parts.push({ type: 'text', value: ' ' });
+      parts.push(...convertInline(child.children));
+    }
+  }
+  return parts;
+}
+
+/**
+ * `<fig>` → `<fig #fig:id src=… | caption>`. `src` comes from the first
+ * `<graphic xlink:href>` (descending into an `<alternatives>` wrapper); the
+ * caption is the `<caption>` inline (formatting preserved, the pipe-content
+ * convention); `<label>` is dropped (Enscribe numbers figures itself).
+ */
+function convertFigure(fig) {
+  const id = prefixId(fig.attributes.id, 'fig');
+  const graphic = collectEls(fig, 'graphic')[0];
+  const src = graphic ? (graphic.attributes['xlink:href'] || graphic.attributes.href || '') : '';
+  // A figure with no <graphic> (e.g. a DSL <fig><preformat> diagram, or a
+  // content figure) imports as a captioned figure, but its body is dropped here —
+  // DSL-source preservation is Slice 5. Warn so the loss is not silent.
+  if (!src) noteDropped('fig(no <graphic> — body content dropped)');
+  const caption = captionInline(fig);
+  return makeTag('fig', caption, { id, kwargs: src ? { src } : {} });
+}
+
+/**
+ * `<table-wrap>` → `<table csv caption=… | …>`. The inner `<table>`'s rows become
+ * CSV (header row first when a `<thead>` is present). Tables using colspan/rowspan
+ * can't be flattened to CSV — those fall back to the raw inner-`<table>` HTML
+ * (with a warning), preserving content at the cost of Enscribe styling.
+ */
+function convertTableWrap(tw) {
+  const id = prefixId(tw.attributes.id, 'tab');
+  const caption = captionText(tw);
+  const innerTable = collectEls(tw, 'table')[0];
+  if (!innerTable) { noteDropped('table-wrap(no <table>)'); return null; }
+
+  const result = tableToCsv(innerTable);
+  if (result.complex) {
+    noteDropped('table-wrap(colspan/rowspan → raw HTML)');
+    return { type: 'html', value: serializeXml(innerTable) };
+  }
+  const kwargs = caption ? { caption } : {};
+  const booleans = result.hasHeader ? {} : { headers: false };
+  return makeOpaqueTag('table', result.csv, { contentHandler: 'table', positional: ['csv'], id, kwargs, booleans });
+}
+
+/** Inner `<table>` → `{ csv, hasHeader }`, or `{ complex: true }` for colspan/rowspan. */
+function tableToCsv(table) {
+  const hasHeader = collectEls(table, 'thead').length > 0;
+  let complex = false;
+  const rows = collectEls(table, 'tr').map((tr) => {
+    const cells = tr.children.filter((c) => c.name === 'th' || c.name === 'td');
+    for (const cell of cells) {
+      if (cell.attributes.colspan || cell.attributes.rowspan) complex = true;
+    }
+    return cells.map((cell) => textOf(cell).replace(/\s+/g, ' ').trim());
+  });
+  if (complex) return { complex: true };
+  return { csv: rows.map((r) => r.map(csvCell).join(',')).join('\n'), hasHeader };
+}
+
+/** Quote a CSV cell when it contains a comma, quote, or newline (RFC-4180). */
+function csvCell(v) {
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+// Footnotes: JATS keeps the marker (`<xref ref-type="fn">`) in the body and the
+// content (`<fn>`) in `<back><fn-group>`; Enscribe's `<note>` is inline and holds
+// its content at the point of reference. So the importer pre-collects the `<fn>`
+// bodies, then inlines each into a `<note>` where its marker appears.
+const _footnotes = new Map();   // fn id → <fn> element
+const _fnInProgress = new Set(); // guards against a footnote citing itself / a cycle
+
+/** Index every `<fn id>` under `<back>` so body markers can inline them. */
+function collectFootnotes(back) {
+  for (const fn of collectEls(back, 'fn')) {
+    if (fn.attributes.id) _footnotes.set(fn.attributes.id, fn);
+  }
+}
+
+/** `<xref ref-type="fn" rid="fnID">` → an inline `<note>` carrying the `<fn>` body. */
+function inlineFootnote(xref) {
+  const rid = xref.attributes.rid || '';
+  const fn = _footnotes.get(rid);
+  if (!fn) { noteDropped('xref-fn(unresolved)'); return convertInline(xref.children); }
+  if (_fnInProgress.has(rid)) { noteDropped('xref-fn(nested/circular)'); return []; }
+  _fnInProgress.add(rid);
+  const body = convertBlocks(fn.children.filter((c) => c.name !== 'label'), 99);
+  _fnInProgress.delete(rid);
+  return [makeTag('note', body)];
 }
 
 // ─── body blocks ──────────────────────────────────────────────────────────────
@@ -506,7 +655,8 @@ function convertSec(sec, depth) {
   const tag = ['section', 'sub-section', 'sub-sub-section'][Math.min(depth, 2)];
   const titleEl = childEl(sec, 'title');
   const titleInline = titleEl ? convertInline(titleEl.children) : [{ type: 'text', value: '' }];
-  const id = sec.attributes.id || null;
+  // Prefix the id so section cross-references resolve and the section is indexed.
+  const id = prefixId(sec.attributes.id, 'sec');
   const sectionTag = makeTag(tag, [{ type: 'paragraph', children: titleInline }], { id });
 
   const bodyChildren = sec.children.filter((c) => c !== titleEl);
@@ -523,6 +673,8 @@ function convertBlock(node, depth) {
       // A LaTeX math node is a block-level sibling; a fallback code span is wrapped.
       return m.type === 'enscribeTag' ? m : { type: 'paragraph', children: [m] };
     }
+    case 'fig':         return convertFigure(node);
+    case 'table-wrap':  return convertTableWrap(node);
     case 'title':     return null; // consumed by convertSec
     default:
       noteDropped(node.name); // figures, tables, math, statements, … (later slices)
@@ -576,15 +728,23 @@ function convertInline(children) {
       continue;
     }
     if (c.name === 'xref') {
+      const refType = c.attributes['ref-type'] || '';
       // Bibliographic cross-reference → <cite @key>. `rid` is an IDREFS list (one
       // or more bibliography ids), so a grouped xref becomes one multi-key cite.
-      if ((c.attributes['ref-type'] || '') === 'bibr') {
+      if (refType === 'bibr') {
         const keys = (c.attributes.rid || '').trim().split(/\s+/).filter(Boolean);
         if (keys.length) { out.push(citeNode(keys)); continue; }
       }
-      // Non-bibliographic xrefs (fig / table / sec / fn) are cross-references —
-      // a later slice. Keep the visible link text, drop the marker.
-      noteDropped('xref');
+      // Footnote marker → an inline <note> carrying the <fn> body.
+      if (refType === 'fn') { out.push(...inlineFootnote(c)); continue; }
+      // Figure / table / equation / section cross-reference → <ref @prefix:id>.
+      const prefix = XREF_TYPE_TO_PREFIX[refType];
+      if (prefix) {
+        const target = prefixId((c.attributes.rid || '').trim(), prefix);
+        if (target) { out.push(refNode(target)); continue; }
+      }
+      // Unknown ref-type (e.g. statement — Slice 5). Keep the visible link text.
+      noteDropped(`xref(${refType || '?'})`);
       out.push(...convertInline(c.children));
       continue;
     }

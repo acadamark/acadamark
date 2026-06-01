@@ -302,5 +302,109 @@ Inline <$ E = mc^2 $> and a display:
     console.log('PASS: round-trip export → import math survives');
   }
 
+  // ── figures, tables, cross-references, footnotes (Slice 4) ──────────────────
+  {
+    const xml = `<article>
+  <front><article-meta><title-group><article-title>FTX</article-title></title-group></article-meta></front>
+  <body>
+    <sec id="s1"><title>Intro</title>
+      <p>See <xref ref-type="fig" rid="F1">Figure 1</xref>, <xref ref-type="table" rid="T1">Table 1</xref>,
+         <xref ref-type="disp-formula" rid="E1">Eq 1</xref>, <xref ref-type="sec" rid="s2">Section 2</xref>.</p>
+      <p>A claim<xref ref-type="fn" id="r1" rid="fn1">1</xref>.</p>
+      <fig id="F1"><label>Figure 1</label><caption><title>A descriptive caption</title></caption><graphic xlink:href="image.png"/></fig>
+      <table-wrap id="T1"><label>Table 1</label><caption><p>Summary data</p></caption>
+        <table><thead><tr><th>A</th><th>B, comma</th></tr></thead>
+          <tbody><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>
+      </table-wrap>
+      <disp-formula id="E1"><tex-math><![CDATA[F = ma]]></tex-math></disp-formula>
+    </sec>
+    <sec id="s2"><title>Results</title><p>Done.</p></sec>
+  </body>
+  <back><fn-group><fn id="fn1"><label>1</label><p>The footnote body.</p></fn></fn-group></back>
+</article>`;
+    const tree = importJats(xml);
+
+    // figure: id prefixed, src from <graphic>, caption is the pipe content
+    const fig = tagged(tree, 'fig')[0];
+    assert.equal(fig.id, 'fig:F1', 'figure id prefixed fig:');
+    assert.equal(fig.kwargs.src, 'image.png', 'figure src ← <graphic xlink:href>');
+    assert.equal(fig.content.map((n) => n.value).join(''), 'A descriptive caption', 'figure caption');
+
+    // table: id prefixed, CSV (header row first, comma cell quoted), caption kwarg
+    const tab = tagged(tree, 'table')[0];
+    assert.equal(tab.id, 'tab:T1', 'table id prefixed tab:');
+    assert.deepEqual(tab.positional, ['csv'], 'table positional csv');
+    assert.ok(tab.isOpaqueContent && tab.contentHandler === 'table', 'table is opaque/table-handler');
+    assert.equal(tab.content, 'A,"B, comma"\n1,2\n3,4', 'CSV: header first, comma cell quoted');
+    assert.equal(tab.kwargs.caption, 'Summary data', 'table caption kwarg');
+
+    // cross-references: prefixed targets matching the element ids
+    assert.deepEqual(tagged(tree, 'ref').map((r) => r.atRefs[0]),
+      ['fig:F1', 'tab:T1', 'eqn:E1', 'sec:s2'], 'xref → <ref @prefix:id> for fig/table/eqn/sec');
+
+    // ids on the targets are prefixed to match
+    assert.equal(tagged(tree, 'section')[0].id, 'sec:s1', 'section id prefixed');
+    assert.equal(tagged(tree, 'display-math')[0].id, 'eqn:E1', 'equation id prefixed');
+
+    // footnote inlined into a <note> at the marker
+    const note = tagged(tree, 'note');
+    assert.equal(note.length, 1, 'one inlined note');
+    assert.ok(findAll(note[0], (n) => n.type === 'text' && /footnote body/.test(n.value)).length === 1, 'note carries the <fn> body');
+
+    // renders: cross-references resolve to words, figure/table render, no errors
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes');
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?ref/.test(body), 'no unresolved cross-references');
+    assert.ok(/figure[\s&]/i.test(body) && /table[\s&]/i.test(body) && /equation[\s&]/i.test(body), 'refs resolve to figure/table/equation');
+    assert.ok(/src="image\.png"/.test(body), 'figure image rendered');
+    assert.ok(/B, comma/.test(body), 'table comma-cell round-trips through CSV');
+    console.log('PASS: figures, tables, cross-references, footnotes import');
+  }
+
+  // ── complex table (colspan) falls back to raw HTML, not CSV ──────────────────
+  {
+    const xml = `<article><front><article-meta><title-group><article-title>T</article-title></title-group></article-meta></front>
+  <body><sec><title>S</title>
+    <table-wrap id="T2"><table><tbody><tr><td colspan="2">spanning</td></tr><tr><td>1</td><td>2</td></tr></tbody></table></table-wrap>
+  </sec></body></article>`;
+    const tree = importJats(xml);
+    assert.equal(tagged(tree, 'table').length, 0, 'complex table is NOT emitted as a <table> CSV');
+    assert.equal(findAll(tree, (n) => n.type === 'html' && /<table/.test(n.value)).length, 1, 'complex table preserved as raw HTML');
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes');
+    console.log('PASS: complex table → raw HTML fallback');
+  }
+
+  // ── round-trip: .emd figure + table + ref + note → export → import survive ───
+  {
+    const emd = `<meta type=article>
+  <title | RT FTN>
+</meta>
+
+<# Intro #>
+
+A reference to <ref @fig:demo> and <ref @tab:demo>, plus a footnote<note | inlined here>.
+
+<fig #fig:demo src="pic.png" | The caption>
+
+<table #tab:demo csv caption="Data" | x,y
+1,2>
+`;
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const jats = enscribeToJats(proc.runSync(proc.parse(emd)));
+    assert.ok(/<fig id="fig:demo">/.test(jats) && /<graphic xlink:href="pic.png"/.test(jats), 'RT: export emits fig + graphic');
+    assert.ok(/<table-wrap id="tab:demo">/.test(jats), 'RT: export emits table-wrap');
+    assert.ok(/<xref ref-type="fig" rid="fig:demo">/.test(jats), 'RT: export emits fig xref');
+
+    const tree = importJats(jats);
+    assert.equal(tagged(tree, 'fig')[0].kwargs.src, 'pic.png', 'RT: figure src survives');
+    assert.equal(tagged(tree, 'table')[0].content, 'x,y\n1,2', 'RT: table CSV survives');
+    assert.deepEqual(tagged(tree, 'ref').map((r) => r.atRefs[0]).sort(), ['fig:demo', 'tab:demo'], 'RT: cross-references survive (ids consistent)');
+    assert.equal(tagged(tree, 'note').length, 1, 'RT: footnote survives as a note');
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?ref/.test(body), 'RT: cross-references resolve');
+    console.log('PASS: round-trip export → import (figures, tables, refs, notes)');
+  }
+
   console.log('All JATS import tests passed.');
 }

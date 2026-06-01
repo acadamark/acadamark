@@ -22,11 +22,19 @@
     </sec>
     <sec>
       <title>Results</title>
-      <p>The result follows.</p>
+      <p>The result follows, shown in <xref ref-type="fig" rid="fig1">Figure 1</xref> and
+         <xref ref-type="table" rid="tab1">Table 1</xref>, with a caveat<xref ref-type="fn" rid="fn1">1</xref>.</p>
       <disp-formula id="eqn:result"><tex-math><![CDATA[\sum_{i=1}^{n} x_i]]></tex-math></disp-formula>
+      <fig id="fig1"><label>Figure 1</label><caption><p>A scatter plot</p></caption><graphic xlink:href="plot.png"/></fig>
+      <table-wrap id="tab1"><label>Table 1</label><caption><p>Tabulated results</p></caption>
+        <table><thead><tr><th>x</th><th>y</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>
+      </table-wrap>
     </sec>
   </body>
   <back>
+    <fn-group>
+      <fn id="fn1"><label>1</label><p>An imported footnote.</p></fn>
+    </fn-group>
     <ref-list>
       <title>References</title>
       <ref id="ref-doe2020">

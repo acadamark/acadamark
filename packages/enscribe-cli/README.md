@@ -92,10 +92,12 @@ than Layer 1's). Today it maps document structure (article/front/body/sections,
 paragraphs, lists, block quotes), inline formatting (bold, italic, underline,
 strike, monospace, super/subscript, links), citations & bibliography
 (`<xref ref-type="bibr">` → `<cite>`, `<ref-list>` → a BibTeX `<library>` plus a
-`<bibliography>`), and math (`<inline-formula>`/`<disp-formula>` from `<tex-math>`
-or MathML). Constructs without a Layer 1 counterpart — figures, tables, and the
-rest — are dropped with a one-time warning per kind; later releases map more of
-them. See
+`<bibliography>`), math (`<inline-formula>`/`<disp-formula>` from `<tex-math>`
+or MathML), and figures, tables, cross-references, and footnotes (`<fig>`,
+`<table-wrap>` → CSV, `<xref>` → `<ref>`, inlined `<fn>` → `<note>`). Constructs
+without a Layer 1 counterpart — the theorem family, DSL blocks, and the rest —
+are dropped with a one-time warning per kind; later releases map more of them.
+See
 [`@enscribejs/jats-import`](../enscribe-jats-import/README.md) for the current
 mapping.
 

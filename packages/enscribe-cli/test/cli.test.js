@@ -109,6 +109,9 @@ export function run_tests() {
     assert.ok(html.out.includes('An Earlier Study'), 'bibliography rendered in HTML');
     // math (inline tex-math + display formula) renders via KaTeX.
     assert.ok(html.out.includes('katex'), 'imported math renders via KaTeX in HTML');
+    // figure, table, and cross-references render; footnote inlined.
+    assert.ok(html.out.includes('src="plot.png"'), 'imported figure image rendered');
+    assert.ok(!/\?\?ref/.test(html.out), 'imported cross-references resolve');
 
     const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
     assert.equal(emd.code, 0);
@@ -121,6 +124,10 @@ export function run_tests() {
     assert.ok(emd.out.includes('<bibliography>'), '--emd → bibliography placement');
     assert.ok(emd.out.includes('<$E = mc^2$>'), '--emd → inline math sigil');
     assert.ok(emd.out.includes('<$$ #eqn:result |') || emd.out.includes('\\sum_{i=1}^{n} x_i'), '--emd → display math with id');
+    assert.ok(emd.out.includes('<fig #fig:fig1 src=plot.png |'), '--emd → canonical figure');
+    assert.ok(emd.out.includes('<table #tab:tab1 csv'), '--emd → canonical table');
+    assert.ok(emd.out.includes('<ref @fig:fig1>') && emd.out.includes('<ref @tab:tab1>'), '--emd → cross-references');
+    assert.ok(emd.out.includes('<note | An imported footnote.>'), '--emd → inlined footnote');
     console.log('PASS: import-jats → HTML and --emd');
   }
 

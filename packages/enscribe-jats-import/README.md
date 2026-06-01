@@ -47,8 +47,16 @@ Import is **deliberately lossy** and built incrementally. This release maps:
   [`mathml-to-latex`](https://www.npmjs.com/package/mathml-to-latex) (handles
   namespaced `mml:` MathML). A formula carrying neither degrades to a code span
   with a warning.
+- **Figures, tables, cross-references, footnotes:** `<fig>` → `<fig src=… |
+  caption>` (src from `<graphic xlink:href>`); `<table-wrap>` → `<table>` with the
+  rows as CSV (colspan/rowspan tables fall back to raw HTML with a warning);
+  `<xref ref-type="fig|table|disp-formula|sec">` → `<ref @prefix:id>`; and
+  footnotes are inlined — each `<xref ref-type="fn">` becomes a `<note>` carrying
+  the matching `<fn>` body. Referenceable ids are normalized to the Enscribe
+  colon-prefix (`fig:`/`tab:`/`eqn:`/`sec:`) so cross-references resolve and
+  elements are numbered.
 
 Not yet imported (dropped, with a one-line warning naming each kind — never
-silently): figures, tables, non-bibliographic cross-references, the theorem
-family, DSL blocks, `<book>` (BITS), and the long tail of non-representable
-elements. These arrive in later Phase 13 slices.
+silently): the theorem family, DSL blocks (a `<fig>` with no `<graphic>` imports
+as a caption-only figure for now), `<book>` (BITS), and the long tail of
+non-representable elements. These arrive in later Phase 13 slices.

@@ -76,7 +76,7 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] JATS import — document structure and inline formatting
 - [x] JATS import — citations and bibliography
 - [x] JATS import — math (`<tex-math>` and MathML)
-- [ ] JATS import — figures, tables, and non-bibliographic cross-references
+- [x] JATS import — figures, tables, cross-references, and footnotes
 - [ ] JATS import — theorem family and DSL blocks
 - [ ] JATS import — non-representable-element reduction policy
 - [ ] JATS import — a real PubMed Central article demonstration

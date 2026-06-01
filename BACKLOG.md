@@ -147,7 +147,7 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 - [~] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)* — **Slices 1–3 landed.** Slice 1:
+  *(→ roadmap: Phase 13)* — **Slices 1–4 landed.** Slice 1:
   `@enscribejs/jats-import` with the XML parser, structural mapping
   (article/front/body/sec/p), and inline formatting (bold/italic/code/links/sup/sub),
   surfaced as `enscribe import-jats` (HTML, or canonical `.emd` with `--emd`).
@@ -155,8 +155,10 @@ A flat scannable index of every open item. Detailed entries below.
   `<ref-list>`/`<element-citation>` → BibTeX `<library>` + `<bibliography>`).
   Slice 3: math (`<inline-formula>` → `<inline-math>`, `<disp-formula>` →
   `<display-math>`, from `<tex-math>` or MathML via `mathml-to-latex`).
-  Remaining slices: figures/tables, non-bibliographic cross-references, the
-  theorem family, DSL blocks, and the long tail of droppable elements.
+  Slice 4: figures (`<fig>` → `<fig>`), tables (`<table-wrap>` → `<table>` CSV),
+  cross-references (`<xref>` → `<ref @prefix:id>`), and inlined footnotes
+  (`<fn>` → `<note>`). Remaining slices: the theorem family, DSL blocks, and the
+  long tail of droppable elements.
 - [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
   in the vocabulary), so exported JATS loses links and the import round-trip can't
@@ -654,7 +656,32 @@ tags (matrix/cases/align/eqnarray) import as plain `<display-math>` carrying the
 `\begin{env}…\end{env}` LaTeX the export wrote — identical rendering, but the
 named env tag is not reconstructed. Math nested inside not-yet-imported
 containers (statement / fig / table-wrap) is still dropped *with its container*
-(Slices 4–5). Next: **Slice 4 — figures, tables, cross-references.**
+(Slices 4–5).
+
+**Slice 4 landed (2026-05-31)** — figures, tables, cross-references, footnotes.
+`<fig>` → `<fig #fig:id src=… | caption>` (src from the first `<graphic
+xlink:href>`, descending into `<alternatives>`; caption from `<caption>`, the
+pipe-content convention; `<label>` dropped). `<table-wrap>` → `<table csv
+caption=… | …>`: the inner `<table>`'s rows become CSV (header row first when a
+`<thead>` is present, RFC-4180 cell quoting), with `caption=` from `<caption>`;
+tables using colspan/rowspan can't be flattened and fall back to the raw inner
+`<table>` HTML with a warning. Cross-references: `<xref ref-type="fig|table|
+disp-formula|sec">` → `<ref @prefix:id>`. Footnotes are **inlined** — the body
+collects `<fn>` elements from `<back><fn-group>` (before the body is converted),
+and each `<xref ref-type="fn">` is replaced by an inline `<note>` carrying that
+`<fn>`'s body (a cycle guard prevents a footnote-citing-footnote loop). The key
+design point: Enscribe's cross-reference resolver keys off the **id colon-prefix**
+(only colon-ids are indexed/numbered, and the prefix selects the rendered word),
+so every referenceable id is normalized to its conventional prefix (`fig:` /
+`tab:` / `eqn:` / `sec:`) — idempotently, so Enscribe's own already-prefixed
+exported ids pass through unchanged — and the same normalization is applied to the
+matching `<xref rid>` so the two agree. This required updating Slice 1's section
+and Slice 3's equation id handling to prefix too (necessary for section/equation
+cross-references to resolve). Round-trip verified (synthetic + the calibration
+fixture: 3 figs, 1 table, 6 cross-refs, 2 notes survive and render, 0 error
+nodes). **Known limitation:** a `<fig>` with no `<graphic>` (a DSL/`<preformat>`
+figure) imports as a captioned figure with its source dropped (warned) — DSL
+preservation is Slice 5. Next: **Slice 5 — theorem family, DSL blocks.**
 
 ### JATS export: map `<a>` → `<ext-link>`
 `[interpreter]` `[release]` *(→ roadmap: Phase 13)*
