@@ -112,6 +112,9 @@ export function run_tests() {
     // figure, table, and cross-references render; footnote inlined.
     assert.ok(html.out.includes('src="plot.png"'), 'imported figure image rendered');
     assert.ok(!/\?\?ref/.test(html.out), 'imported cross-references resolve');
+    // theorem family + DSL block render.
+    assert.ok(/Theorem/i.test(html.out) && html.out.includes('Main Result'), 'imported theorem renders');
+    assert.ok(/data-enscribe-dsl="mermaid"|class="mermaid/.test(html.out), 'imported mermaid DSL renders');
 
     const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
     assert.equal(emd.code, 0);
@@ -128,6 +131,9 @@ export function run_tests() {
     assert.ok(emd.out.includes('<table #tab:tab1 csv'), '--emd → canonical table');
     assert.ok(emd.out.includes('<ref @fig:fig1>') && emd.out.includes('<ref @tab:tab1>'), '--emd → cross-references');
     assert.ok(emd.out.includes('<note | An imported footnote.>'), '--emd → inlined footnote');
+    assert.ok(emd.out.includes('<theorem #thm:main name="Main Result"'), '--emd → canonical theorem');
+    assert.ok(emd.out.includes('<ref @thm:main>'), '--emd → theorem cross-reference');
+    assert.ok(emd.out.includes('<mermaid #fig:fig-flow'), '--emd → DSL block with preserved source');
     console.log('PASS: import-jats → HTML and --emd');
   }
 

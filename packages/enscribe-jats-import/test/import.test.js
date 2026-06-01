@@ -406,5 +406,91 @@ A reference to <ref @fig:demo> and <ref @tab:demo>, plus a footnote<note | inlin
     console.log('PASS: round-trip export → import (figures, tables, refs, notes)');
   }
 
+  // ── theorem family + DSL blocks + code (Slice 5) ────────────────────────────
+  {
+    const xml = `<article><front><article-meta><title-group><article-title>T</article-title></title-group></article-meta></front>
+  <body><sec id="s1"><title>S</title>
+    <statement content-type="theorem" id="thm:clt"><label>Theorem 1.</label><title>Central Limit Theorem</title><p>If X are i.i.d.</p></statement>
+    <statement content-type="definition" id="def:grp"><label>Definition 1.</label><p>A group is a set.</p></statement>
+    <statement content-type="proof"><label>Proof.</label><p>Trivial.</p></statement>
+    <statement content-type="conjecture" id="c1"><p>Unknown kind.</p></statement>
+    <p>By <xref ref-type="statement" rid="thm:clt">Thm 1</xref> and <xref ref-type="statement" rid="def:grp">Def 1</xref>.</p>
+    <fig id="fig-d" specific-use="enscribe-dsl-mermaid"><label>Figure 1</label><caption><p>Pipeline</p></caption>
+      <preformat content-type="mermaid-source">graph TD
+  A --> B</preformat></fig>
+    <preformat preformat-type="code" xml:lang="python">def hello():
+    print("world")</preformat>
+  </sec></body></article>`;
+    const tree = importJats(xml);
+
+    // theorem family: tagname by content-type, name from <title>, ids prefixed
+    const thm = tagged(tree, 'theorem')[0];
+    assert.equal(thm.id, 'thm:clt', 'theorem id prefixed');
+    assert.equal(thm.kwargs.name, 'Central Limit Theorem', 'theorem name ← <title>');
+    assert.equal(tagged(tree, 'definition')[0].id, 'def:grp', 'definition mapped by content-type, id prefixed');
+    assert.equal(tagged(tree, 'proof').length, 1, 'proof mapped (unnumbered, no id)');
+    assert.equal(tagged(tree, 'proof')[0].id, null, 'proof has no id');
+    // unknown content-type → <theorem> fallback
+    assert.equal(tagged(tree, 'theorem').length, 2, 'unknown content-type → theorem fallback');
+
+    // statement cross-references resolve to the prefixed ids
+    assert.deepEqual(tagged(tree, 'ref').map((r) => r.atRefs[0]), ['thm:clt', 'def:grp'], 'statement xref → <ref @prefix:id>');
+
+    // DSL figure → opaque <mermaid> with the <preformat> source + caption
+    const mer = tagged(tree, 'mermaid')[0];
+    assert.ok(mer && mer.isOpaqueContent && mer.contentHandler === 'mermaid', 'DSL fig → opaque mermaid');
+    assert.equal(mer.id, 'fig:fig-d', 'DSL fig id prefixed fig:');
+    assert.equal(mer.content, 'graph TD\n  A --> B', 'mermaid source preserved verbatim');
+    assert.equal(mer.kwargs.caption, 'Pipeline', 'DSL caption preserved');
+
+    // bare <preformat> → a code block
+    const code = findAll(tree, (n) => n.type === 'code');
+    assert.equal(code.length, 1, 'bare <preformat> → one code block');
+    assert.equal(code[0].lang, 'python', 'code language ← xml:lang');
+    assert.ok(/def hello/.test(code[0].value), 'code body preserved');
+
+    // renders cleanly: theorem labels, named theorem, mermaid, code, refs resolve
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes');
+    const proc = buildEnscribePipeline({ embedResources: false, dslMode: 'live-link' });
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?ref/.test(body), 'statement cross-references resolve');
+    assert.ok(/Theorem/i.test(body) && /Definition/i.test(body) && /Proof/i.test(body), 'theorem/definition/proof render with labels');
+    assert.ok(/Central Limit/.test(body), 'named theorem renders its name');
+    assert.ok(/data-enscribe-dsl="mermaid"|class="mermaid/.test(body), 'mermaid block renders');
+    console.log('PASS: theorem family + DSL blocks + code import');
+  }
+
+  // ── round-trip: .emd theorem + mermaid → export → import survive ─────────────
+  {
+    const emd = `<meta type=article>
+  <title | RT TD>
+</meta>
+
+<# S #>
+
+<theorem #thm:main name="Main" | The statement.>
+
+A reference to <ref @thm:main>.
+
+<mermaid #fig:flow caption="Flow">
+graph TD
+  A --> B
+</mermaid>
+`;
+    const proc = buildEnscribePipeline({ embedResources: false, dslMode: 'skip' });
+    const jats = enscribeToJats(proc.runSync(proc.parse(emd)));
+    assert.ok(/<statement content-type="theorem" id="thm:main">/.test(jats), 'RT: export emits theorem statement');
+    assert.ok(/specific-use="enscribe-dsl-mermaid"/.test(jats) && /mermaid-source/.test(jats), 'RT: export emits DSL fig');
+
+    const tree = importJats(jats);
+    assert.equal(tagged(tree, 'theorem')[0].kwargs.name, 'Main', 'RT: theorem name survives');
+    assert.deepEqual(tagged(tree, 'ref')[0].atRefs, ['thm:main'], 'RT: theorem cross-reference survives');
+    const mer = tagged(tree, 'mermaid')[0];
+    assert.ok(mer && /graph TD/.test(mer.content), 'RT: mermaid source survives');
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?ref/.test(body), 'RT: theorem cross-reference resolves');
+    console.log('PASS: round-trip export → import (theorem + DSL)');
+  }
+
   console.log('All JATS import tests passed.');
 }

@@ -22,9 +22,14 @@
 //             <ref @prefix:id>), and footnotes (<fn> inlined into <note> at its
 //             <xref ref-type="fn"> marker). Referenceable ids gain the Enscribe
 //             colon-prefix so they resolve and number.
-// The theorem family, DSL blocks, and the non-representable-element reduction
-// policy land in later slices; elements this slice does not handle are dropped
-// (with a one-line console warning naming each kind), never silently.
+//   Slice 5 — the theorem family (<statement content-type="X"> → <theorem> /
+//             <lemma> / <definition> / <proof> / …, <xref ref-type="statement"> →
+//             <ref>), DSL blocks (a DSL <fig> with a <preformat> source →
+//             <mermaid> / <abc> with the source preserved opaquely), and bare
+//             <preformat> → a code block.
+// The non-representable-element reduction policy lands in a later slice; elements
+// this slice does not handle are dropped (with a one-line console warning naming
+// each kind), never silently.
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
@@ -110,6 +115,7 @@ export function importJats(xml) {
   _dropped.clear();
   _footnotes.clear();
   _fnInProgress.clear();
+  _statements.clear();
   const doc = parseXml(xml);
   if (!doc) throw new Error('JATS import: no <article> or <book> root element found');
   if (doc.name === 'book') {
@@ -134,6 +140,8 @@ function convertArticle(article) {
   if (back) collectFootnotes(back);
 
   const body = childEl(article, 'body');
+  // Pre-index statement ids so forward `<xref ref-type="statement">` resolve.
+  if (body) collectStatements(body);
   if (body) out.push(...convertBlocks(body.children, 0));
 
   // <back>: <ref-list> → bibliography + <library>. The <fn-group> was inlined
@@ -542,19 +550,26 @@ function captionInline(el) {
 }
 
 /**
- * `<fig>` → `<fig #fig:id src=… | caption>`. `src` comes from the first
- * `<graphic xlink:href>` (descending into an `<alternatives>` wrapper); the
- * caption is the `<caption>` inline (formatting preserved, the pipe-content
- * convention); `<label>` is dropped (Enscribe numbers figures itself).
+ * `<fig>` → either a DSL frameable (`<mermaid>` / `<abc>` with the `<preformat>`
+ * source preserved opaquely) when the figure carries Enscribe's DSL markers, or an
+ * image figure `<fig #fig:id src=… | caption>` (`src` from the first
+ * `<graphic xlink:href>`, descending into an `<alternatives>` wrapper). The
+ * caption is preserved either way; `<label>` is dropped (Enscribe numbers itself).
  */
 function convertFigure(fig) {
   const id = prefixId(fig.attributes.id, 'fig');
+
+  const dsl = detectDsl(fig);
+  if (dsl) {
+    const caption = captionText(fig);
+    return makeOpaqueTag(dsl.type, dsl.source, { contentHandler: dsl.type, id, kwargs: caption ? { caption } : {} });
+  }
+
   const graphic = collectEls(fig, 'graphic')[0];
   const src = graphic ? (graphic.attributes['xlink:href'] || graphic.attributes.href || '') : '';
-  // A figure with no <graphic> (e.g. a DSL <fig><preformat> diagram, or a
-  // content figure) imports as a captioned figure, but its body is dropped here —
-  // DSL-source preservation is Slice 5. Warn so the loss is not silent.
-  if (!src) noteDropped('fig(no <graphic> — body content dropped)');
+  // A figure with neither a <graphic> nor recognized DSL source imports as a
+  // captioned figure, but any body content is dropped here — warn, never silent.
+  if (!src) noteDropped('fig(no <graphic>/DSL — body content dropped)');
   const caption = captionInline(fig);
   return makeTag('fig', caption, { id, kwargs: src ? { src } : {} });
 }
@@ -628,6 +643,81 @@ function inlineFootnote(xref) {
   return [makeTag('note', body)];
 }
 
+// ─── theorem family + DSL blocks ────────────────────────────────────────────────
+
+// JATS `<statement content-type="…">` → Enscribe theorem-family element + the
+// colon-prefix its cross-references use. The six numbered kinds have prefixes in
+// the resolver's DEFAULT_PREFIXES; remark is numbered too; proof is unnumbered
+// (no cross-reference prefix → id, if any, kept verbatim).
+const STATEMENT_TYPE = {
+  theorem:     { tag: 'theorem',     prefix: 'thm' },
+  lemma:       { tag: 'lemma',       prefix: 'lem' },
+  corollary:   { tag: 'corollary',   prefix: 'cor' },
+  proposition: { tag: 'proposition', prefix: 'prop' },
+  definition:  { tag: 'definition',  prefix: 'def' },
+  example:     { tag: 'example',     prefix: 'ex' },
+  remark:      { tag: 'remark',      prefix: 'rem' },
+  proof:       { tag: 'proof',       prefix: null },
+};
+
+// DSL frameables whose source Enscribe preserves verbatim (opaque content).
+const KNOWN_DSLS = new Set(['mermaid', 'abc']);
+
+// `<statement>` ids, pre-collected so a forward `<xref ref-type="statement">` can
+// resolve to the Enscribe-prefixed id even when the JATS rid is bare.
+const _statements = new Map(); // JATS id → Enscribe-prefixed id
+
+/** Index every `<statement id>` under `el`, mapping its JATS id to the prefixed id. */
+function collectStatements(el) {
+  for (const st of collectEls(el, 'statement')) {
+    const id = st.attributes.id;
+    if (!id) continue;
+    const info = STATEMENT_TYPE[st.attributes['content-type'] || ''] || STATEMENT_TYPE.theorem;
+    _statements.set(id, info.prefix ? prefixId(id, info.prefix) : id);
+  }
+}
+
+/** Resolve an `<xref ref-type="statement">` rid to its Enscribe-prefixed target. */
+function resolveStatementTarget(rid) {
+  if (!rid) return null;
+  return _statements.get(rid) || (rid.includes(':') ? rid : prefixId(rid, 'thm'));
+}
+
+/**
+ * `<statement content-type="X">` → the matching theorem-family element. `<label>`
+ * is dropped (Enscribe re-numbers); `<title>` → the `name=` kwarg; the body `<p>`s
+ * are the content; the id gains the type's colon-prefix so cross-references
+ * resolve. An unknown content-type falls back to `<theorem>` with a warning.
+ */
+function convertStatement(st) {
+  const ct = st.attributes['content-type'] || '';
+  let info = STATEMENT_TYPE[ct];
+  if (!info) { noteDropped(`statement(content-type=${ct || '?'} → theorem)`); info = STATEMENT_TYPE.theorem; }
+  const id = info.prefix ? prefixId(st.attributes.id, info.prefix) : (st.attributes.id || null);
+  const titleEl = childEl(st, 'title');
+  const name = titleEl ? textOf(titleEl).replace(/\s+/g, ' ').trim() : null;
+  const body = convertBlocks(st.children.filter((c) => c.name !== 'label' && c.name !== 'title'), 99);
+  return makeTag(info.tag, body, { id, kwargs: name ? { name } : {} });
+}
+
+/**
+ * Detect a DSL figure: a `<fig specific-use="enscribe-dsl-TYPE">` and/or a child
+ * `<preformat content-type="TYPE-source">`. Returns `{ type, source }` for a known
+ * DSL (mermaid / abc), or null. These markers are written by Enscribe's own JATS
+ * export — arbitrary JATS figures won't carry them and fall through to the image
+ * path.
+ */
+function detectDsl(fig) {
+  let type = (fig.attributes['specific-use'] || '').match(/^enscribe-dsl-(.+)$/)?.[1] || null;
+  const preformats = collectEls(fig, 'preformat');
+  const sourcePre = preformats.find((p) => /-source$/.test(p.attributes['content-type'] || ''));
+  if (!type && sourcePre) type = (sourcePre.attributes['content-type'] || '').replace(/-source$/, '');
+  if (!type || !KNOWN_DSLS.has(type)) return null;
+  const el = sourcePre || preformats[0];
+  if (!el) return null;
+  return { type, source: textOf(el).replace(/^\s*\n/, '').replace(/\s+$/, '') };
+}
+
 // ─── body blocks ──────────────────────────────────────────────────────────────
 
 /** Convert a sequence of block-level JATS children at the given section depth. */
@@ -675,6 +765,13 @@ function convertBlock(node, depth) {
     }
     case 'fig':         return convertFigure(node);
     case 'table-wrap':  return convertTableWrap(node);
+    case 'statement':   return convertStatement(node);
+    case 'preformat': {
+      // A bare <preformat> (DSL <preformat>s are consumed inside convertFigure) →
+      // a code block. Language from xml:lang when present.
+      const lang = node.attributes['xml:lang'] || node.attributes.language || null;
+      return { type: 'code', lang, value: textOf(node).replace(/^\s*\n/, '').replace(/\s+$/, '') };
+    }
     case 'title':     return null; // consumed by convertSec
     default:
       noteDropped(node.name); // figures, tables, math, statements, … (later slices)
@@ -737,13 +834,19 @@ function convertInline(children) {
       }
       // Footnote marker → an inline <note> carrying the <fn> body.
       if (refType === 'fn') { out.push(...inlineFootnote(c)); continue; }
+      // Theorem-family cross-reference → <ref @prefix:id> (prefix recovered from
+      // the pre-collected statement-id map, since ref-type="statement" is shared).
+      if (refType === 'statement') {
+        const target = resolveStatementTarget((c.attributes.rid || '').trim());
+        if (target) { out.push(refNode(target)); continue; }
+      }
       // Figure / table / equation / section cross-reference → <ref @prefix:id>.
       const prefix = XREF_TYPE_TO_PREFIX[refType];
       if (prefix) {
         const target = prefixId((c.attributes.rid || '').trim(), prefix);
         if (target) { out.push(refNode(target)); continue; }
       }
-      // Unknown ref-type (e.g. statement — Slice 5). Keep the visible link text.
+      // Unknown ref-type. Keep the visible link text, drop the marker.
       noteDropped(`xref(${refType || '?'})`);
       out.push(...convertInline(c.children));
       continue;

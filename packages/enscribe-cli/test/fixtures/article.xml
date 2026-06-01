@@ -24,6 +24,11 @@
       <title>Results</title>
       <p>The result follows, shown in <xref ref-type="fig" rid="fig1">Figure 1</xref> and
          <xref ref-type="table" rid="tab1">Table 1</xref>, with a caveat<xref ref-type="fn" rid="fn1">1</xref>.</p>
+      <statement content-type="theorem" id="thm:main"><label>Theorem 1.</label><title>Main Result</title>
+        <p>The estimator is consistent, by <xref ref-type="statement" rid="thm:main">Theorem 1</xref>.</p></statement>
+      <fig id="fig-flow" specific-use="enscribe-dsl-mermaid"><caption><p>The pipeline</p></caption>
+        <preformat content-type="mermaid-source">graph TD
+  A --> B</preformat></fig>
       <disp-formula id="eqn:result"><tex-math><![CDATA[\sum_{i=1}^{n} x_i]]></tex-math></disp-formula>
       <fig id="fig1"><label>Figure 1</label><caption><p>A scatter plot</p></caption><graphic xlink:href="plot.png"/></fig>
       <table-wrap id="tab1"><label>Table 1</label><caption><p>Tabulated results</p></caption>

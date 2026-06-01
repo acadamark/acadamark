@@ -55,8 +55,13 @@ Import is **deliberately lossy** and built incrementally. This release maps:
   the matching `<fn>` body. Referenceable ids are normalized to the Enscribe
   colon-prefix (`fig:`/`tab:`/`eqn:`/`sec:`) so cross-references resolve and
   elements are numbered.
+- **Theorem family, DSL blocks, code:** `<statement content-type="X">` → the
+  matching `<theorem>`/`<lemma>`/`<definition>`/`<proof>`/… (`<title>` → `name=`;
+  unknown type → `<theorem>`); `<xref ref-type="statement">` → `<ref>`. A DSL
+  figure (`<fig specific-use="enscribe-dsl-TYPE">` with a `<preformat
+  …-source>`) → `<mermaid>`/`<abc>` with the source preserved verbatim. A bare
+  `<preformat>` → a code block (`lang` from `xml:lang`).
 
 Not yet imported (dropped, with a one-line warning naming each kind — never
-silently): the theorem family, DSL blocks (a `<fig>` with no `<graphic>` imports
-as a caption-only figure for now), `<book>` (BITS), and the long tail of
-non-representable elements. These arrive in later Phase 13 slices.
+silently): `<book>` (BITS) and the long tail of non-representable elements.
+These arrive in later Phase 13 slices.

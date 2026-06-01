@@ -147,7 +147,7 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 - [~] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)* — **Slices 1–4 landed.** Slice 1:
+  *(→ roadmap: Phase 13)* — **Slices 1–5 landed.** Slice 1:
   `@enscribejs/jats-import` with the XML parser, structural mapping
   (article/front/body/sec/p), and inline formatting (bold/italic/code/links/sup/sub),
   surfaced as `enscribe import-jats` (HTML, or canonical `.emd` with `--emd`).
@@ -157,8 +157,11 @@ A flat scannable index of every open item. Detailed entries below.
   `<display-math>`, from `<tex-math>` or MathML via `mathml-to-latex`).
   Slice 4: figures (`<fig>` → `<fig>`), tables (`<table-wrap>` → `<table>` CSV),
   cross-references (`<xref>` → `<ref @prefix:id>`), and inlined footnotes
-  (`<fn>` → `<note>`). Remaining slices: the theorem family, DSL blocks, and the
-  long tail of droppable elements.
+  (`<fn>` → `<note>`). Slice 5: the theorem family (`<statement
+  content-type="X">` → `<theorem>`/`<lemma>`/`<definition>`/`<proof>`/…),
+  DSL blocks (a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`), and bare
+  `<preformat>` → code block. Remaining slices: the non-representable-element
+  reduction policy, then a real PMC article.
 - [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
   in the vocabulary), so exported JATS loses links and the import round-trip can't
@@ -679,9 +682,27 @@ matching `<xref rid>` so the two agree. This required updating Slice 1's section
 and Slice 3's equation id handling to prefix too (necessary for section/equation
 cross-references to resolve). Round-trip verified (synthetic + the calibration
 fixture: 3 figs, 1 table, 6 cross-refs, 2 notes survive and render, 0 error
-nodes). **Known limitation:** a `<fig>` with no `<graphic>` (a DSL/`<preformat>`
-figure) imports as a captioned figure with its source dropped (warned) — DSL
-preservation is Slice 5. Next: **Slice 5 — theorem family, DSL blocks.**
+nodes). The DSL-figure limitation noted here was resolved in Slice 5.
+
+**Slice 5 landed (2026-05-31)** — theorem family, DSL blocks, code listings.
+`<statement content-type="X">` → the matching theorem-family element
+(theorem/lemma/corollary/proposition/definition/example/remark/proof); `<label>`
+dropped, `<title>` → the `name=` kwarg, body `<p>`s → content, unknown
+content-type → `<theorem>` with a warning. The id gains the type's colon-prefix
+(`thm:`/`lem:`/`cor:`/`prop:`/`def:`/`ex:`/`rem:`; proof is unnumbered, id kept
+verbatim). All theorem types share one JATS `ref-type="statement"`, so the
+importer pre-collects statement ids → prefixed ids and resolves `<xref
+ref-type="statement">` through that map (handling both Enscribe's already-prefixed
+exported rids and bare real-JATS rids). DSL blocks: this slice upgraded the Slice
+4 `<fig>` handler to detect Enscribe's DSL markers
+(`specific-use="enscribe-dsl-TYPE"` and/or a `<preformat
+content-type="TYPE-source">`) and route them to `<mermaid>`/`<abc>` opaque nodes
+with the source preserved verbatim and the caption kept — so a `<fig>` with no
+`<graphic>` is now a DSL figure rather than a dropped body (the Slice 4
+limitation). A bare `<preformat>` (outside a DSL figure) → a code block (`lang`
+from `xml:lang`). Round-trip verified (synthetic + the calibration fixture: 3
+theorem-family elements, 1 DSL figure, 6 cross-references survive and render, 0
+error nodes). Next: **Slice 6 — non-representable-element reduction policy.**
 
 ### JATS export: map `<a>` → `<ext-link>`
 `[interpreter]` `[release]` *(→ roadmap: Phase 13)*
