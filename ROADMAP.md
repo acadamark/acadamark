@@ -304,6 +304,13 @@ The packaging work that turns the engine into a shippable v0.1.0.
 - **The CLI** (`@enscribejs/cli`) and the **release housekeeping**
   (the `@enscribejs/*` org-split, coordinated `0.1.0` versioning, MIT
   license, publish-ready metadata).
+- **Package consolidation (7 → 3).** The seven published packages merged into
+  three: the unscoped **`enscribe`** (Layer 1 core + shorthand parser +
+  interpreter, as `src/core` / `src/parser` / `src/interpreter`),
+  **`@enscribejs/cli`** (the `enscribe` command + JATS export/import + pandoc
+  bridge), and **`@enscribejs/layer1-vocabulary`** (unchanged). A structural
+  refactor — same behavior, same tests; subpath exports (`enscribe/parser`,
+  `enscribe/core/*`, `@enscribejs/cli/jats-import`) replace the former names.
 
 **Remaining:**
 

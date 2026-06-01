@@ -1,0 +1,53 @@
+{
+  "name": "@enscribejs/cli",
+  "version": "0.1.0",
+  "description": "The `enscribe` command-line tool — render Enscribe documents to HTML, exchange JATS XML (export and import), import other formats via a pandoc bridge, and rewrite source between authoring registers.",
+  "keywords": [
+    "enscribe",
+    "cli",
+    "command-line",
+    "academic-publishing",
+    "scholarly-publishing",
+    "jats"
+  ],
+  "homepage": "https://github.com/enscribejs/enscribe",
+  "bugs": "https://github.com/enscribejs/enscribe/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enscribejs/enscribe.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "author": "Ariel Balter <ariel@arielbalter.com>",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "enscribe": "./bin/enscribe.js"
+  },
+  "exports": {
+    ".": "./src/cli.js",
+    "./jats-import": "./src/jats-import/index.js",
+    "./jats-export": "./src/jats-export/index.js",
+    "./serialize": "./src/serialize-canonical.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/run.js && node test/jats-export.test.js"
+  },
+  "dependencies": {
+    "enscribe": "^0.1.0",
+    "@enscribejs/layer1-vocabulary": "^0.1.0",
+    "mathml-to-latex": "^1.5.0",
+    "remark-parse": "^11.0.0",
+    "saxes": "^6.0.0",
+    "unified": "^11.0.5"
+  }
+}

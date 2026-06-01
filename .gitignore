@@ -6,13 +6,13 @@
 
 # ─── Dependencies ───────────────────────────────────────────────────────────
 # npm-workspaces hoists most deps to the root `node_modules/`, but per-package
-# `node_modules/` directories also appear (e.g. enscribe-interpreter holds a
+# `node_modules/` directories also appear (e.g. the enscribe package holds a
 # per-package `.package-lock.json`). The unscoped `node_modules/` pattern (no
 # leading slash) matches at every level.
 node_modules/
 
 # ─── Build artifacts ────────────────────────────────────────────────────────
-# The tsup-built browser library (packages/enscribe-interpreter/dist/) is a
+# The tsup-built browser library (packages/enscribe/dist/) is a
 # generated, minified bundle, reproducible via `npm run build:lib`. Unlike the
 # two generated files deliberately committed (see bottom), it is NOT tracked: it
 # is large, machine-built, and rebuilt on demand. The `dist/` pattern (no
@@ -42,9 +42,9 @@ ghc-prompt-*.md
 #     the Slice 4 Phase 0's Option-A ruling (committed + pretest
 #     regenerate-and-diff staleness guard). See notes/specs/enscribe-core.md.
 #
-#   packages/remark-enscribe/src/generated/parser.js
+#   packages/enscribe/src/parser/generated/parser.js
 #     The Peggy-generated parser, produced from grammar/enscribe.peggy by
-#     packages/remark-enscribe/build/compile-grammar.js. Committed so the
+#     packages/enscribe/build/compile-grammar.js. Committed so the
 #     parser package is consumable without a build step at install time.
 #
 # The patterns above are deliberately narrow (node_modules/, ghc-prompt-*.md,
@@ -52,4 +52,4 @@ ghc-prompt-*.md
 # pattern below — anything matching `**/*.js` or `**/generated/**` or `**/src/data.*` —
 # add an explicit unignore here so the deliberate files stay tracked, e.g.:
 #   !packages/layer1-vocabulary/src/data.js
-#   !packages/remark-enscribe/src/generated/parser.js
+#   !packages/enscribe/src/parser/generated/parser.js

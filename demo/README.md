@@ -15,7 +15,7 @@ over HTTP, so it must be **served over HTTP from the repository root** (opening
 
 ```sh
 # 1. Build the browser bundle the page loads (it is gitignored, so build locally).
-cd packages/enscribe-interpreter
+cd packages/enscribe
 npm run build:lib
 
 # 2. Serve the repository root and open the demo.
@@ -33,7 +33,7 @@ bundle exists only after `npm run build:lib`.
 The page wires three things together:
 
 1. **`window.enscribe`** — the IIFE browser bundle
-   (`packages/enscribe-interpreter/dist/enscribe.browser.global.js`), loaded by
+   (`packages/enscribe/dist/enscribe.browser.global.js`), loaded by
    a classic `<script>` so the global is ready before the demo module runs.
 2. **CodeMirror 6** — imported as ES modules from a pinned CDN
    (`esm.sh/codemirror@6`). The demo is a plain-text editor; enscribe syntax
@@ -47,7 +47,7 @@ That last step is the reason `executeAssets` exists. Assigning HTML through
 running), so the interactive layer enscribe emits — Tippy/Popper hover-previews
 and the live-link DSL bundles (Mermaid/abc) — would never activate.
 `executeAssets` walks the inserted subtree and re-runs those scripts in order.
-See `packages/enscribe-interpreter/src/browser.js` for the contract.
+See `packages/enscribe/src/interpreter/browser.js` for the contract.
 
 The default document is the `document-46-reproducible-research` fixture (an
 edited volume), fetched from the interpreter's test fixtures so there is a single

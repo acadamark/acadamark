@@ -29,7 +29,7 @@ slices.
 ```sh
 # 1. Build the browser bundle the Quickstart playground loads (gitignored, so
 #    build it locally). Skip this if you only care about the read-only pages.
-cd packages/enscribe-interpreter
+cd packages/enscribe
 npm run build:lib
 
 # 2. Build the site (from the repo root).
@@ -45,7 +45,7 @@ python3 -m http.server 8000 --directory docs-site/dist
 
 If the Quickstart shows a yellow "bundle is not loaded" notice, step 1 hasn't
 been run (or wasn't re-run after a clean checkout): the bundle lives only in
-`packages/enscribe-interpreter/dist/`, which is gitignored, and `docs:build`
+`packages/enscribe/dist/`, which is gitignored, and `docs:build`
 copies it into the site's `dist/assets/` when present.
 
 ## How the build works

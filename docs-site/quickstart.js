@@ -31,7 +31,7 @@ const enscribe = window.enscribe;
 if (!enscribe || typeof enscribe.render !== "function") {
   outputEl.innerHTML =
     '<div class="pg-banner">The enscribe browser bundle is not loaded. Build ' +
-    "it, then rebuild the site:<br /><code>cd packages/enscribe-interpreter &amp;&amp; " +
+    "it, then rebuild the site:<br /><code>cd packages/enscribe &amp;&amp; " +
     "npm run build:lib</code><br /><code>npm run docs:build</code><br />then reload " +
     "this page.</div>";
   throw new Error("enscribe browser bundle not found on window.enscribe");

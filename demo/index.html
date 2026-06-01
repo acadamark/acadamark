@@ -7,22 +7,22 @@
 
     <!--
       Document theme for the Layer 1 custom elements. This is the same shell CSS
-      the rendered fixtures use (src/assets/default.css); the interpreter does NOT
-      emit it, so the demo links it explicitly to style the output pane.
+      the rendered fixtures use (src/interpreter/assets/default.css); the interpreter
+      does NOT emit it, so the demo links it explicitly to style the output pane.
     -->
     <link
       rel="stylesheet"
-      href="../packages/enscribe-interpreter/src/assets/default.css"
+      href="../packages/enscribe/src/interpreter/assets/default.css"
     />
     <link rel="stylesheet" href="demo.css" />
 
     <!--
       enscribe browser library (IIFE build → window.enscribe). Built locally by
-      `npm run build:lib` in packages/enscribe-interpreter and gitignored (dist/);
+      `npm run build:lib` in packages/enscribe and gitignored (dist/);
       see README.md. A classic <script> so the global is set during parse, before
       the deferred demo module (below) runs.
     -->
-    <script src="../packages/enscribe-interpreter/dist/enscribe.browser.global.js"></script>
+    <script src="../packages/enscribe/dist/enscribe.browser.global.js"></script>
   </head>
   <body>
     <header>

@@ -611,7 +611,14 @@ names, the CSS theme namespace, and GitHub URLs updated). The release-time
 **org-split has since landed** (the v0.1.0 prep-for-publish slice: the five
 packages publish under `@enscribejs/*`, coordinated at 0.1.0 with `^0.1.0`
 cross-deps, an MIT license, publish-ready metadata, and a clean
-`npm pack --dry-run` each). **Slice 3b has since landed** — the README and
+`npm pack --dry-run` each). **The package set has since been consolidated
+7 → 3** — the headline library is now the unscoped `enscribe` (the former
+`@enscribejs/core` + `@enscribejs/remark` + `@enscribejs/interpreter`, now its
+`src/core` / `src/parser` / `src/interpreter` subtrees), `@enscribejs/cli`
+absorbs the JATS export/import + pandoc-bridge modules, and
+`@enscribejs/layer1-vocabulary` is unchanged; subpath exports (`enscribe/parser`,
+`enscribe/core/*`, `@enscribejs/cli/jats-import`) replace the retired package
+names. Same behavior, same tests. **Slice 3b has since landed** — the README and
 DESIGN are translated to canonical enscribe and ship as the docs-site Home and
 Design articles (the `example-article` placeholder retired). **The docs-site
 content arc (Slices 3b–3f) is now complete** — only fixture consolidation remains

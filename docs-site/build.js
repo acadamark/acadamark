@@ -16,8 +16,8 @@
 // any depth); deployment copies dist/ to wherever github.io serves from. See
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
-import { buildEnscribePipeline } from '@enscribejs/interpreter';
-import { importJats } from '@enscribejs/jats-import';
+import { buildEnscribePipeline } from 'enscribe';
+import { importJats } from '@enscribejs/cli/jats-import';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,9 +32,9 @@ const TEMPLATE_PATH = join(here, 'template.html');
 const SITE_CSS = join(here, 'site.css');
 const QUICKSTART_JS = join(here, 'quickstart.js');
 
-const INTERPRETER = join(repoRoot, 'packages', 'enscribe-interpreter');
-const DEFAULT_CSS = join(INTERPRETER, 'src', 'assets', 'default.css');
-const BROWSER_BUNDLE = join(INTERPRETER, 'dist', 'enscribe.browser.global.js');
+const ENSCRIBE_PKG = join(repoRoot, 'packages', 'enscribe');
+const DEFAULT_CSS = join(ENSCRIBE_PKG, 'src', 'interpreter', 'assets', 'default.css');
+const BROWSER_BUNDLE = join(ENSCRIBE_PKG, 'dist', 'enscribe.browser.global.js');
 
 // Where the read-only pages point their "view source" link. blob view (not raw)
 // renders the file with line numbers — better for reading. Repo + branch are
@@ -47,7 +47,7 @@ const GITHUB_REPO_BASE = 'https://github.com/enscribejs/enscribe/blob/master';
 
 // The imported demo paper's JATS XML (ships as a test fixture; open sample).
 const DEMO_PAPER_XML = join(
-  repoRoot, 'packages', 'enscribe-jats-import', 'test', 'fixtures', 'pnas_sample.xml',
+  repoRoot, 'packages', 'cli', 'test', 'fixtures', 'pnas_sample.xml',
 );
 
 // Render options mirror the browser façade's defaults: lean output that links
@@ -74,7 +74,7 @@ const PAGES = [
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
   { slug: 'demo-paper',      source: 'demo-paper.emd',      title: 'Demo Paper — enscribe',          nav: 'Demo Paper',      kind: 'jats-import',
-    xml: DEMO_PAPER_XML, sourceUrl: `${GITHUB_REPO_BASE}/packages/enscribe-jats-import/test/fixtures/pnas_sample.xml` },
+    xml: DEMO_PAPER_XML, sourceUrl: `${GITHUB_REPO_BASE}/packages/cli/test/fixtures/pnas_sample.xml` },
 ];
 
 /** Render an enscribe source string to an HTML fragment. Per-page `extra`
@@ -177,7 +177,7 @@ function main() {
     console.warn(
       '[docs:build] browser bundle not found — the Quickstart playground will\n' +
         '             show a "build the bundle" notice until you run:\n' +
-        '               cd packages/enscribe-interpreter && npm run build:lib\n' +
+        '               cd packages/enscribe && npm run build:lib\n' +
         '             then rebuild the site.',
     );
   }

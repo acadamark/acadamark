@@ -1,8 +1,8 @@
 {
-  "name": "enscribe",
+  "name": "enscribe-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax.",
+  "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax. Workspace root (private); the published packages live under packages/ (enscribe, @enscribejs/cli, @enscribejs/layer1-vocabulary).",
   "type": "module",
   "license": "MIT",
   "author": "Ariel Balter <ariel@arielbalter.com>",
@@ -15,6 +15,12 @@
   "workspaces": [
     "packages/*"
   ],
+  "comments": {
+    "overrides": "katex is pinned to 0.16.45 to reproduce the pre-consolidation dependency baseline: the headline `enscribe` package and its transitive `mermaid` both depend on katex within a `^0.16` range, and a fresh lockfile floats both to 0.16.47. The interpreter's live-link CDN URL literal pins 0.16.45 (guarded by test/cdn-versions.test.js); this override keeps the rendered output byte-stable across the package consolidation. Lift this override in a dedicated katex-bump maintenance slice that also updates the CDN literal and regenerates fixture snapshots."
+  },
+  "overrides": {
+    "katex": "0.16.45"
+  },
   "scripts": {
     "test": "npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",

@@ -23,7 +23,7 @@
 import { EditorView, basicSetup } from "https://esm.sh/codemirror@6.0.1";
 
 const SAMPLE_URL =
-  "../packages/enscribe-interpreter/test/fixtures/document-46-reproducible-research.emd";
+  "../packages/enscribe/test/fixtures/document-46-reproducible-research.emd";
 const RENDER_DEBOUNCE_MS = 120;
 
 const outputEl = document.querySelector("#output");
@@ -35,7 +35,7 @@ const enscribe = window.enscribe;
 if (!enscribe || typeof enscribe.render !== "function") {
   outputEl.innerHTML =
     '<div class="demo-banner">The enscribe browser bundle is not loaded. Build ' +
-    "it first:<br /><code>cd packages/enscribe-interpreter &amp;&amp; npm run " +
+    "it first:<br /><code>cd packages/enscribe &amp;&amp; npm run " +
     "build:lib</code><br />then reload this page.</div>";
   throw new Error("enscribe browser bundle not found on window.enscribe");
 }
