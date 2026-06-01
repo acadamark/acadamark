@@ -1,0 +1,26 @@
+/* Modern theme (Phase 8 Slice 2).
+ *
+ * A clean, contemporary, web-native look — sans-serif body, lighter headings, a
+ * touch more air, a blue accent, softer rules — versus the default's academic /
+ * print feel. Overrides ONLY `--enscribe-*` custom properties (no structural
+ * rules). Cascade it AFTER default.css; the interpreter's `theme: 'modern'`
+ * option injects it for you, or include it yourself.
+ */
+:root {
+  /* Sans-serif body; headings stay on the (sans) heading face, a shade lighter. */
+  --enscribe-font-body:      var(--enscribe-font-sans);
+  --enscribe-weight-heading: 600;
+
+  /* A little more air and width for web reading. */
+  --enscribe-line-height:    1.7;
+  --enscribe-content-width:  820px;
+
+  /* A subtle blue accent; lighter text and rules. */
+  --enscribe-link:           #2563eb;
+  --enscribe-link-hover:     #1d4ed8;
+  --enscribe-link-visited:   #2563eb;
+  --enscribe-text-primary:   #18181b;
+  --enscribe-text-secondary: #52525b;
+  --enscribe-border:         #ececef;
+  --enscribe-border-strong:  #d6d6db;
+}

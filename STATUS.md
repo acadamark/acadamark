@@ -56,7 +56,7 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [ ] Render-mode lowering — lossy lowering of custom elements to plain `<h1>`/`<h2>` (Phase 8, gated on a design decision)
 - [x] Table-of-contents sidebar (opt-in, build-time, responsive)
 - [ ] Single-chapter-at-a-time book navigation (Phase 8, release-blocking)
-- [ ] Additional display themes (Phase 8, release-blocking)
+- [x] Display themes (default, modern, compact — custom-property overrides)
 - [ ] Multi-column display and margin sidenotes (Phase 8)
 - [ ] Pagination and print-targeted output (Phase 8)
 
@@ -113,8 +113,8 @@ verified; see `notes/alpha-acceptance-mapping.md`). The live milestone is
 the **v0.1.0 public release**. **Phase 13 (JATS import) is complete** — the
 bidirectional JATS bridge now works end to end, demonstrated by a real
 published article imported onto the docs site. Release-blocking work that
-remains: the rest of Phase 8 display features (single-chapter book navigation
-and more themes — the table-of-contents sidebar has landed) and the residual
+remains: one Phase 8 display feature — single-chapter book navigation (the
+table-of-contents sidebar and additional themes have landed) — and the residual
 Phase 14 packaging (generated types, fixture consolidation, `npm publish`).
 Phases 7, 9, 10, 11, and 12 are post-release. The phase plan and sequencing
 live in `ROADMAP.md`.

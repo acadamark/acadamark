@@ -1,0 +1,32 @@
+/* Compact theme (Phase 8 Slice 2).
+ *
+ * Tighter spacing and smaller type for dense reading, reviewing, and drafting —
+ * more content per screen. Overrides ONLY `--enscribe-*` custom properties (no
+ * structural rules). Cascade it AFTER default.css; the interpreter's
+ * `theme: 'compact'` option injects it for you.
+ */
+:root {
+  /* Smaller type. */
+  --enscribe-text-base:  0.875rem;
+  --enscribe-text-sm:    0.8rem;
+  --enscribe-text-code:  0.82rem;
+
+  /* Tighter leading. */
+  --enscribe-line-height:         1.45;
+  --enscribe-line-height-heading: 1.2;
+  --enscribe-line-height-tight:   1.3;
+
+  /* Smaller heading scale. */
+  --enscribe-h1-size: 1.8rem;
+  --enscribe-h2-size: 1.3rem;
+  --enscribe-h3-size: 1.1rem;
+  --enscribe-h4-size: 1rem;
+
+  /* Reduced vertical rhythm (the big structural gaps). */
+  --enscribe-space-6:  1rem;
+  --enscribe-space-8:  1.25rem;
+  --enscribe-space-12: 1.75rem;
+
+  /* Narrower measure. */
+  --enscribe-content-width: 640px;
+}

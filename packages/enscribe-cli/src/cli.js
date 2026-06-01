@@ -123,6 +123,8 @@ Options:
                        live-inline, static
   --toc                Add a table-of-contents sidebar (--toc=auto to show it
                        only past three sections). Needs default.css to display.
+  --theme <name>       Apply a theme: default, modern, or compact. Injects the
+                       theme's token overrides inline (needs default.css too).
   --quiet              Suppress warnings
   -h, --help           Show this help
 `;
@@ -147,7 +149,7 @@ function parseCommandArgs(args) {
   const opts = {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
-    toc: undefined,
+    toc: undefined, theme: undefined,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -173,6 +175,11 @@ function parseCommandArgs(args) {
         throw new CliError(`--toc takes 'auto' (or use a bare --toc for always-on); got ${v}`);
       }
       opts.toc = v === 'auto' ? 'auto' : v === 'true';
+    } else if (a === '--theme') {
+      opts.theme = args[++i];
+      if (opts.theme == null) throw new CliError('--theme needs a name (default, modern, compact)');
+    } else if (a.startsWith('--theme=')) {
+      opts.theme = a.slice('--theme='.length);
     } else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
     else if (opts.input == null) opts.input = a;
     else throw new CliError(`unexpected argument: ${a}`);
@@ -210,6 +217,7 @@ function doRender(opts) {
   const pipeOpts = { embedResources: opts.embed ?? true, assetsDir: dirname(resolve(opts.input)) };
   if (opts.dslMode) pipeOpts.dslMode = opts.dslMode;
   if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
+  if (opts.theme) pipeOpts.theme = opts.theme;
   return withQuiet(opts.quiet, () =>
     String(buildEnscribePipeline(pipeOpts).processSync(src)),
   );

@@ -81,9 +81,10 @@ The settings that are live today control citations, numbering, and scoping:
 `number-equations`, `number-figures`, `number-tables`, `number-theorems`,
 `number-definitions`, `number-examples` (set any to `false` to suppress that
 counter); `counter-reset-scope` and `note-scope` (how counters and footnotes
-reset in books); and any `ref-prefix-*` key (to customize cross-reference
-prefixes). Further keys — `theme`, `display-style`, and others — are reserved:
-accepted but not yet consumed.
+reset in books); `theme` (`modern` / `compact` — see
+<a href="#sec:render" | Chapter 14>); and any `ref-prefix-*` key (to customize
+cross-reference prefixes). A few further keys — `display-style` and others — are
+reserved: accepted but not yet consumed.
 
 > **Gotcha — `<config>` is not the rendering API.** Options like
 > `embedResources` and `dslMode` are passed to the renderer when you process a
@@ -848,6 +849,20 @@ executeAssets(document.querySelector('#out'));
   citations are delivered (`link` loads Tippy/Popper from a CDN).
 - `katexCss` / `documentFontsCss` — finer control over those specific resources,
   taking precedence over `embedResources`.
+- `toc` — `true` adds a **table-of-contents sidebar** built from the section (or,
+  for books, chapter) structure; `'auto'` adds one only past three top-level
+  sections; `false` (default) adds none. On the command line: `--toc` /
+  `--toc=auto`. (This page — the Authoring Guide — is rendered with it on.)
+- `theme` — `'modern'` (sans-serif, contemporary) or `'compact'` (denser, smaller
+  type) injects that theme's token overrides; unset, the default academic look is
+  unchanged. On the command line: `--theme modern`. A document can also choose its
+  own theme with `<config theme=modern>` (the render option wins if both are set).
+
+Both the sidebar and the themes render through `default.css` — the structural
+stylesheet a consumer includes. The ToC is a sticky two-column layout on wide
+screens that collapses to a menu on narrow ones; a theme simply re-declares the
+`--enscribe-*` custom properties that `default.css` reads, so it changes the look
+without touching any structural rule.
 
 The browser defaults (`embedResources: false`, `hoverPreviewMode: 'link'`,
 `dslMode: 'live-link'`) are tuned for a static deploy that links third-party assets

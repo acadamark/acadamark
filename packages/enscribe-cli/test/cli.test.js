@@ -67,6 +67,18 @@ export function run_tests() {
     console.log('PASS: render --toc → ToC sidebar markup');
   }
 
+  // ── render --theme → injected theme CSS ─────────────────────────────────────
+  {
+    const plain = invoke(['render', FIXTURE]);
+    const modern = invoke(['render', FIXTURE, '--theme', 'modern']);
+    assert.equal(modern.code, 0, 'render --theme modern exits 0');
+    assert.ok(modern.out.includes('Modern theme') && modern.out.includes('--enscribe-font-body'), '--theme modern injects modern.css');
+    assert.ok(!plain.out.includes('Modern theme'), 'no --theme → no theme CSS');
+    const compact = invoke(['render', FIXTURE, '--theme=compact']);
+    assert.ok(compact.out.includes('Compact theme'), '--theme=compact injects compact.css');
+    console.log('PASS: render --theme → injected theme CSS');
+  }
+
   // ── export-jats → JATS XML ──────────────────────────────────────────────────
   {
     const { code, out } = invoke(['export-jats', FIXTURE]);

@@ -92,9 +92,9 @@ Alpha is closed; the **v0.1.0 release** is the live milestone.
 works end to end, demonstrated by a real published article imported onto the
 docs site. The release-blocking work that remains is:
 
-- **Phase 8 — display features** (table-of-contents sidebar,
-  single-chapter book navigation, more themes). Not started; gets a
-  Phase 0 to scope where the UI code sits.
+- **Phase 8 — display features.** Phase 0 done; the table-of-contents
+  sidebar (Slice 1) and additional themes (Slice 2 — modern / compact) have
+  landed. Remaining: single-chapter book navigation (Slice 3).
 - **Phase 14 — packaging.** The client-side library, the in-browser
   editor demo, the docs-site content arc (now seven pages, including the
   imported-article demo), the render-quality spec, and the render-quality
@@ -159,7 +159,12 @@ features are **release-blocking** for v0.1.0; the rest is post-release.
   byte-identical.
 - **Single-chapter-at-a-time book view.** A book reading mode showing one
   chapter at a time with chapter-to-chapter navigation.
-- **Additional themes.** A wider set of display themes beyond the default.
+- **Additional themes** *(Slice 2 — done)*. Modern (sans-serif, contemporary)
+  and Compact (denser, smaller type) ship alongside the default, selected by a
+  `theme` render option, a `<config theme=…>` setting, or `--theme`. Themes are
+  `:root` custom-property overrides over `default.css` (which gained
+  `--enscribe-font-body` / `--enscribe-font-heading` / `--enscribe-weight-heading`
+  tokens, output-neutrally) — no structural CSS.
 
 These three are net-new and UI-shaped in a way the project has not built
 before. **Phase 0 is done** (`notes/phase8-display-features-findings.md`):

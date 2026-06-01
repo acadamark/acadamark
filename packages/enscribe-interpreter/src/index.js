@@ -144,6 +144,8 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 // registry imported immediately below.
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from '@enscribejs/core/registry';
+// Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
+import { ENSCRIBE_CONFIG } from '@enscribejs/core/file-data-keys';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // enscribe-jats-export can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -187,6 +189,24 @@ function getKatexCss() {
     _katexCss = patchKatexFontUrls(raw);
   }
   return _katexCss;
+}
+
+// ─── Theme CSS (Phase 8 Slice 2) ──────────────────────────────────────────────
+//
+// Themes are `:root` custom-property overrides shipped in src/assets/themes/.
+// The `theme` option (or a <config theme=…> setting) injects one inline, after
+// the document's base default.css, so its tokens win the cascade. Always inlined
+// (sub-1KB token files with no canonical CDN URL, unlike fonts / KaTeX) and read
+// lazily — only when a theme is actually requested, keeping the browser bundle's
+// fs-free default path intact.
+const KNOWN_THEMES = new Set(['modern', 'compact']);
+const _themeCss = new Map();
+function getThemeCss(name) {
+  if (!_themeCss.has(name)) {
+    const dir = dirname(fileURLToPath(import.meta.url));
+    _themeCss.set(name, readFileSync(join(dir, 'assets', 'themes', `${name}.css`), 'utf8'));
+  }
+  return _themeCss.get(name);
 }
 
 // ─── Hover-preview assets ─────────────────────────────────────────────────────
@@ -492,6 +512,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {'skip'|'live-inline'|'live-link'} [options.mermaidMode] Override dslMode for mermaid (live-only; no 'static').
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
  * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
+ * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -606,7 +627,7 @@ export function enscribeInterpreter(options = {}) {
   // `this.compiler` is the standard unified API for registering the
   // stringify step; it is called by processor.stringify() and
   // processor.process().
-  this.compiler = function compileToHtml(tree) {
+  this.compiler = function compileToHtml(tree, file) {
     const tagHandler = createEnscribeTagHandler({ assetsDir });
     const hast = toHast(tree, {
       handlers: {
@@ -640,6 +661,26 @@ export function enscribeInterpreter(options = {}) {
           ? makeLinkElement(DOCUMENT_FONTS_CDN_URL)
           : makeStyleElement(getDocumentFontsCss()),
       );
+    }
+
+    // Inject the theme CSS (Phase 8 Slice 2) after the fonts, so its `:root`
+    // overrides sit after the document's base default.css in the cascade. The
+    // `theme` render option wins over a <config theme=…> document setting.
+    const configMap = file?.data?.[ENSCRIBE_CONFIG];
+    const themeName = options.theme ?? (configMap && configMap.get('theme')) ?? 'default';
+    if (themeName && themeName !== 'default') {
+      if (KNOWN_THEMES.has(themeName)) {
+        hast.children.unshift(makeStyleElement(getThemeCss(themeName)));
+      } else {
+        // Unknown theme name (e.g. a document carrying a theme this renderer
+        // doesn't ship): warn and fall back to the default rather than failing
+        // the whole render. No silent drop.
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[enscribe-interpreter] unknown theme '${themeName}'; rendering with the default ` +
+            `(available: ${[...KNOWN_THEMES].join(', ')}).`,
+        );
+      }
     }
 
     // Inject KaTeX CSS if the document uses math and the mode is not 'skip'.

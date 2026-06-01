@@ -132,8 +132,6 @@ A flat scannable index of every open item. Detailed entries below.
   spec can still be written, but the working tooling now exists.
 - [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
   `[release]` *(→ roadmap: Phase 8)*
-- [ ] **Additional display themes** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 8)*
 - [ ] **Build the comprehensive demonstrative fixture**
   `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)* — spec written
   and demonstrative fixtures (`document-45`/`document-46`) built against
@@ -466,23 +464,6 @@ Release-blocking for v0.1.0. **Phase 0 done**
 the "renderer doesn't separate chapters" stop-condition), so a JS show/hide with
 prev/next + keyboard + URL-hash deep-linking is straightforward. The **third**
 Phase 8 slice — builds on the ToC (the ToC doubles as the chapter selector).
-
-### Additional display themes
-`[interpreter]` `[release]` *(→ roadmap: Phase 8)*
-
-A wider set of visual themes for rendered output, beyond the current
-default — the release should ship more than one look. Lower-risk than
-the navigation features (themes are CSS, not interactive machinery) but
-still net-new. Release-blocking for v0.1.0. **Phase 0 done**
-(`notes/phase8-display-features-findings.md`): themes are **custom-property
-overrides only** for v0.1.0 (a small CSS file re-declaring `--enscribe-*` tokens,
-cascaded after `default.css`). One output-neutral prerequisite: add a
-`--enscribe-font-body` / `--enscribe-font-heading` token, because the body font
-is currently hardcoded serif (so a sans "Modern" theme can't be a pure variable
-override yet). Open delivery decision (flagged for the slice): whether the
-interpreter injects the theme CSS or the consumer keeps supplying it — recommend
-consumer-supplied for v0.1.0, since the interpreter does not inject `default.css`
-today. The **second** Phase 8 slice (CSS-only, lowest risk).
 
 ### Build the comprehensive demonstrative fixture
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*

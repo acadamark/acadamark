@@ -33,6 +33,13 @@
                     "Helvetica Neue", Arial, sans-serif;
   --enscribe-font-mono:  'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco,
                     Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Theming tokens (Phase 8 Slice 2). Defaults reproduce the current look — a
+   * serif body, a sans heading/label face, and bold headings — so adding these
+   * is output-neutral. A theme overrides them (and the tokens below) to change
+   * the appearance without touching any structural rule. */
+  --enscribe-font-body:      Georgia, "Times New Roman", serif;
+  --enscribe-font-heading:   var(--enscribe-font-sans);
+  --enscribe-weight-heading: 700;
   --enscribe-text-base:  1rem;
   --enscribe-text-sm:    0.875rem;
   --enscribe-text-xs:    0.75rem;
@@ -75,7 +82,7 @@ html {
 }
 
 body {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--enscribe-font-body);
   font-size: var(--enscribe-text-base);
   line-height: var(--enscribe-line-height);
   color: var(--enscribe-text-primary);
@@ -117,9 +124,9 @@ meta[data-document-type] {
 
 article-title {
   display: block;
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: var(--enscribe-h1-size);
-  font-weight: 700;
+  font-weight: var(--enscribe-weight-heading);
   line-height: var(--enscribe-line-height-heading);
   color: var(--enscribe-text-primary);
   margin-bottom: var(--enscribe-space-2);
@@ -127,7 +134,7 @@ article-title {
 
 article-subtitle {
   display: block;
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: var(--enscribe-h2-size);
   font-weight: 400;
   line-height: var(--enscribe-line-height-heading);
@@ -191,9 +198,9 @@ book-part {
  * still scaling with the theme's heading token. */
 book-title {
   display: block;
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: calc(var(--enscribe-h1-size) * 1.25);
-  font-weight: 700;
+  font-weight: var(--enscribe-weight-heading);
   line-height: var(--enscribe-line-height-heading);
   color: var(--enscribe-text-primary);
   margin-bottom: var(--enscribe-space-2);
@@ -201,7 +208,7 @@ book-title {
 
 book-subtitle {
   display: block;
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: var(--enscribe-h2-size);
   font-weight: 400;
   line-height: var(--enscribe-line-height-heading);
@@ -214,9 +221,9 @@ book-subtitle {
  * a chapter heading sits between the book-title and section headings. */
 book-part-title {
   display: block;
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: var(--enscribe-h1-size);
-  font-weight: 700;
+  font-weight: var(--enscribe-weight-heading);
   line-height: var(--enscribe-line-height-heading);
   color: var(--enscribe-text-primary);
   margin-bottom: var(--enscribe-space-4);
@@ -224,7 +231,7 @@ book-part-title {
 
 book-part-subtitle {
   display: block;
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: var(--enscribe-h3-size);
   font-weight: 400;
   line-height: var(--enscribe-line-height-heading);
@@ -245,8 +252,8 @@ section-title,
 sub-section-title,
 sub-sub-section-title {
   display: block;
-  font-family: var(--enscribe-font-sans);
-  font-weight: 700;
+  font-family: var(--enscribe-font-heading);
+  font-weight: var(--enscribe-weight-heading);
   line-height: var(--enscribe-line-height-heading);
   color: var(--enscribe-text-primary);
   margin-bottom: var(--enscribe-space-3);
@@ -672,9 +679,9 @@ bibliography {
 }
 
 bibliography h2 {
-  font-family: var(--enscribe-font-sans);
+  font-family: var(--enscribe-font-heading);
   font-size: var(--enscribe-h3-size);
-  font-weight: 700;
+  font-weight: var(--enscribe-weight-heading);
   line-height: var(--enscribe-line-height-heading);
   color: var(--enscribe-text-primary);
   margin: 0 0 var(--enscribe-space-4);

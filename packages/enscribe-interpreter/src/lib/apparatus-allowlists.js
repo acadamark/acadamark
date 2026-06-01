@@ -71,7 +71,7 @@ export const CONFIG_KWARGS = new Map([
   // work; the allowlist accepts them so author input is not rejected
   // before the consumer lands. Unlike the live keys, no plugin reads these
   // yet; they sit in the config map awaiting implementation.
-  ['theme',                   'reserved'],
+  ['theme',                   'live'],     // index.js compiler (Phase 8 Slice 2)
   ['display-style',           'reserved'],
   ['note-position',           'reserved'],
   ['bibliography-position',   'reserved'],
