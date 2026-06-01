@@ -583,7 +583,7 @@ const escapeXmlAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&qu
 function extractMathLatex(formula) {
   const tex = collectEls(formula, 'tex-math')[0];
   if (tex) {
-    const latex = textOf(tex).trim();
+    const latex = cleanTexMath(textOf(tex));
     if (latex) return latex;
   }
   const math = collectByLocal(formula, 'math')[0];
@@ -596,6 +596,24 @@ function extractMathLatex(formula) {
     }
   }
   return null;
+}
+
+/**
+ * Clean `<tex-math>` content down to KaTeX-renderable math. Some publishers wrap
+ * the formula in a full LaTeX document (`\documentclass…\begin{document} $$ … $$
+ * \end{document}`) rather than emitting bare math; extract the document body and
+ * strip the surrounding math-mode delimiters. Bare LaTeX passes through unchanged.
+ */
+function cleanTexMath(raw) {
+  let s = String(raw).trim();
+  const doc = s.match(/\\begin\{document\}([\s\S]*?)\\end\{document\}/);
+  if (doc) s = doc[1].trim();
+  // Strip one layer of surrounding math delimiters: $$…$$, \[…\], \(…\), $…$.
+  s = s.replace(/^\$\$([\s\S]*?)\$\$$/, '$1').trim();
+  s = s.replace(/^\\\[([\s\S]*?)\\\]$/, '$1').trim();
+  s = s.replace(/^\\\(([\s\S]*?)\\\)$/, '$1').trim();
+  s = s.replace(/^\$([\s\S]*?)\$$/, '$1').trim();
+  return s;
 }
 
 /**
@@ -709,12 +727,39 @@ function convertTableWrap(tw) {
 
   const result = tableToCsv(innerTable);
   if (result.complex) {
-    noteDropped('table-wrap(colspan/rowspan → raw HTML)');
-    return { type: 'html', value: serializeXml(innerTable) };
+    // Complex table (colspan / rowspan): it can't become CSV. Emit the no-format
+    // `<table>` escape hatch — Enscribe passes the rows through as raw HTML but
+    // still wraps them in `<table id=…>`, so the table is numbered and its
+    // cross-references resolve. JATS inline tags in cells map to HTML equivalents.
+    noteDropped('table-wrap(colspan/rowspan → raw-HTML table)');
+    const capHtml = caption ? `<caption>${escapeXmlText(caption)}</caption>` : '';
+    const rows = innerTable.children.filter(isEl).map(serializeHtml).join('');
+    return makeOpaqueTag('table', capHtml + rows, { contentHandler: 'table', id, kwargs: caption ? { caption } : {} });
   }
   const kwargs = caption ? { caption } : {};
   const booleans = result.hasHeader ? {} : { headers: false };
   return makeOpaqueTag('table', result.csv, { contentHandler: 'table', positional: ['csv'], id, kwargs, booleans });
+}
+
+// JATS inline tags → their HTML equivalents (for the raw-HTML complex-table path).
+const JATS_TO_HTML_TAG = {
+  italic: 'i', bold: 'b', monospace: 'code', underline: 'u', strike: 's', sc: 'span', roman: 'span',
+};
+
+/**
+ * Serialize a parsed element to an HTML string (for the complex-table escape
+ * hatch): JATS inline tags become HTML, presentational table attributes
+ * (colspan / rowspan / align / …) are kept, namespaced attributes are dropped.
+ */
+function serializeHtml(node) {
+  if (node.name === '#text') return escapeXmlText(node.value);
+  const tag = JATS_TO_HTML_TAG[node.name] || node.name;
+  const attrs = Object.entries(node.attributes ?? {})
+    .filter(([k]) => k !== 'xmlns' && !k.includes(':'))
+    .map(([k, v]) => ` ${k}="${escapeXmlAttr(v)}"`)
+    .join('');
+  const inner = (node.children ?? []).map(serializeHtml).join('');
+  return `<${tag}${attrs}>${inner}</${tag}>`;
 }
 
 /** Inner `<table>` → `{ csv, hasHeader }`, or `{ complex: true }` for colspan/rowspan. */
@@ -888,6 +933,9 @@ function convertBlock(node, depth) {
     case 'table-wrap':  return convertTableWrap(node);
     case 'statement':   return convertStatement(node);
     case 'def-list':    return convertDefList(node);
+    // <boxed-text> (a sidebar / call-out box) → <aside> (the export's reverse),
+    // preserving its content instead of dropping the box.
+    case 'boxed-text':  return makeTag('aside', convertBlocks(node.children.filter((c) => c.name !== 'label' && c.name !== 'caption'), depth));
     // A block-position <fn> / <corresp> (e.g. inside <author-notes>) — unwrap to
     // its content. (Body footnote markers are inlined via <xref ref-type="fn">.)
     case 'fn':          return convertBlocks(node.children.filter((c) => c.name !== 'label'), depth);

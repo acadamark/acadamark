@@ -45,11 +45,15 @@ Import is **deliberately lossy** and built incrementally. This release maps:
   `<display-math>` (id preserved). The LaTeX comes from `<tex-math>` (verbatim,
   preferred) or, failing that, from presentation MathML converted with
   [`mathml-to-latex`](https://www.npmjs.com/package/mathml-to-latex) (handles
-  namespaced `mml:` MathML). A formula carrying neither degrades to a code span
-  with a warning.
+  namespaced `mml:` MathML). When a publisher wraps the formula in a full LaTeX
+  document (`\documentclass…\begin{document} $$…$$ \end{document}`), the body is
+  extracted and the math-mode delimiters stripped. A formula carrying neither
+  `<tex-math>` nor MathML degrades to a code span with a warning.
 - **Figures, tables, cross-references, footnotes:** `<fig>` → `<fig src=… |
   caption>` (src from `<graphic xlink:href>`); `<table-wrap>` → `<table>` with the
-  rows as CSV (colspan/rowspan tables fall back to raw HTML with a warning);
+  rows as CSV (colspan/rowspan tables stay an indexed no-format `<table>` whose
+  rows pass through as HTML — so they are still numbered and their
+  cross-references still resolve);
   `<xref ref-type="fig|table|disp-formula|sec">` → `<ref @prefix:id>`; and
   footnotes are inlined — each `<xref ref-type="fn">` becomes a `<note>` carrying
   the matching `<fn>` body. Referenceable ids are normalized to the Enscribe
@@ -67,8 +71,9 @@ Import is **deliberately lossy** and built incrementally. This release maps:
 Every element the importer meets is accounted for. **Reader-facing apparatus is
 preserved** as readable content: keywords → a "Keywords: …" paragraph;
 acknowledgments, funding, author notes / conflicts, appendices, and glossaries →
-sections (`<def-list>` → `<dl>`); the abstract is kept in `<meta>` (structured
-abstracts keep their internal sections). **Pure publishing metadata is dropped**
+sections (`<def-list>` → `<dl>`); `<boxed-text>` call-outs → `<aside>`; the
+abstract is kept in `<meta>` (structured abstracts keep their internal sections).
+**Pure publishing metadata is dropped**
 *silently* — journal-meta, article-ids, volume/issue/page positioning,
 permissions/license, history, counts, affiliations, self-uri,
 supplementary-material, custom-meta — because warning about an ISSN the reader

@@ -187,3 +187,27 @@ body.playground .site-header {
     border-bottom: 1px solid var(--border);
   }
 }
+
+/* Attribution / import-provenance call-out on the Demo Paper page. */
+.article aside.import-note {
+  margin: 0 0 2.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  background: var(--editor-bg);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.article aside.import-note p {
+  margin: 0.5rem 0;
+}
+
+.article aside.import-note p:first-child {
+  margin-top: 0;
+}
+
+.article aside.import-note p:last-child {
+  margin-bottom: 0;
+}

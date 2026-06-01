@@ -17,6 +17,7 @@
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
 import { buildEnscribePipeline } from '@enscribejs/interpreter';
+import { importJats } from '@enscribejs/jats-import';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,6 +41,14 @@ const BROWSER_BUNDLE = join(INTERPRETER, 'dist', 'enscribe.browser.global.js');
 // build-time constants; the rename, if it happens, updates the repo segment.
 const GITHUB_BLOB_BASE =
   'https://github.com/enscribejs/enscribe/blob/master/docs-site/sources';
+// Repo-root blob base, for pages whose source lives outside docs-site/sources
+// (the Demo Paper's "source" is a JATS XML fixture in the jats-import package).
+const GITHUB_REPO_BASE = 'https://github.com/enscribejs/enscribe/blob/master';
+
+// The imported demo paper's JATS XML (ships as a test fixture; open sample).
+const DEMO_PAPER_XML = join(
+  repoRoot, 'packages', 'enscribe-jats-import', 'test', 'fixtures', 'pnas_sample.xml',
+);
 
 // Render options mirror the browser façade's defaults: lean output that links
 // fonts / KaTeX CSS to CDNs (fine for a static deploy) and renders any live-link
@@ -64,11 +73,41 @@ const PAGES = [
   { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page' },
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
+  { slug: 'demo-paper',      source: 'demo-paper.emd',      title: 'Demo Paper — enscribe',          nav: 'Demo Paper',      kind: 'jats-import',
+    xml: DEMO_PAPER_XML, sourceUrl: `${GITHUB_REPO_BASE}/packages/enscribe-jats-import/test/fixtures/pnas_sample.xml` },
 ];
 
 /** Render an enscribe source string to an HTML fragment. */
 function renderAcm(source) {
   return String(buildEnscribePipeline(RENDER_OPTIONS).processSync(source));
+}
+
+/**
+ * Render a JATS XML file to an HTML fragment by importing it through
+ * `@enscribejs/jats-import` and running the resulting tree through the same
+ * pipeline. Rendering from the imported tree directly (not a serialized `.emd`)
+ * keeps the demo faithful — the `.emd` round-trip is lossy for a document this
+ * complex (raw-HTML tables, dense math).
+ */
+function renderJats(xmlPath) {
+  const tree = importJats(readFileSync(xmlPath, 'utf8'));
+  // The figure image files are not distributed with the XML sample, so render the
+  // figures caption-only (the page's intro note explains this) rather than as
+  // broken <img>s. Drop the `src` kwarg from every imported <fig>.
+  stripFigureSrc(tree);
+  const proc = buildEnscribePipeline(RENDER_OPTIONS);
+  return String(proc.stringify(proc.runSync(tree)));
+}
+
+function stripFigureSrc(node) {
+  if (!node || typeof node !== 'object') return;
+  if (node.type === 'enscribeTag' && node.tagname === 'fig' && node.kwargs && 'src' in node.kwargs) {
+    const { src, ...rest } = node.kwargs;
+    node.kwargs = rest;
+  }
+  for (const key of ['children', 'content']) {
+    if (Array.isArray(node[key])) node[key].forEach(stripFigureSrc);
+  }
 }
 
 /** Nav links for the header; the active page is marked aria-current. */
@@ -95,7 +134,7 @@ function fillTemplate(template, tokens) {
 }
 
 function buildPageBody(page, rendered) {
-  const githubUrl = `${GITHUB_BLOB_BASE}/${page.source}`;
+  const githubUrl = page.sourceUrl ?? `${GITHUB_BLOB_BASE}/${page.source}`;
   return (
     `<main class="article">\n${rendered}\n    </main>\n` +
     `    <footer class="site-footer">\n` +
@@ -149,6 +188,10 @@ function main() {
     if (page.kind === 'playground') {
       body = buildPlaygroundBody(source);
       headExtra = '<script src="assets/enscribe.browser.global.js"></script>';
+    } else if (page.kind === 'jats-import') {
+      // Intro/attribution (an .emd in sources/) above the article imported live
+      // from the JATS XML fixture.
+      body = buildPageBody(page, `${renderAcm(source)}\n${renderJats(page.xml)}`);
     } else {
       body = buildPageBody(page, renderAcm(source));
     }

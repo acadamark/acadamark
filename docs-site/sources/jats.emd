@@ -67,24 +67,29 @@ Same authoring surface, the correct deposit format for each shape.
 
 <# The round-trip vision #>
 
-Export is the half that exists today and the half that matters most: it is what
-lets an Enscribe document reach a journal. The longer-term goal is a round trip —
-write in Enscribe, **export** to JATS for submission, and **import** JATS from the
-published corpus back into Enscribe for re-use, correction, or re-display.
+Export is the half that lets an Enscribe document reach a journal. The other half
+is the round trip — write in Enscribe, **export** to JATS for submission, and
+**import** JATS from the published corpus back into Enscribe for re-use,
+correction, or re-display. **Both directions now exist:** the `enscribe
+import-jats` command brings a JATS article into Enscribe — rendered HTML, or
+canonical `.emd` source.
 
-That second direction is **planned, not built**. JATS import is a future phase,
-and it is deliberately the weaker direction: JATS's vocabulary is far larger than
-Layer 1's, so import is acknowledged-lossy — a one-way conversion that applies
+Import is deliberately the weaker direction: JATS's vocabulary is far larger than
+Layer 1's, so it is acknowledged-lossy — a one-way conversion that applies
 necessary simplifications, useful as an on-ramp from the existing literature, not
-a faithful reconstruction. The only lossless round trip in Enscribe is between its
-shorthand and Layer 1, which are the same document in two notations.
+a faithful reconstruction. (The only lossless round trip in Enscribe is between
+its shorthand and Layer 1, which are the same document in two notations.) The
+importer maps what maps — structure, inline formatting, math, citations, figures,
+tables, cross-references, footnotes, and the theorem family — preserves
+reader-facing apparatus such as abstracts, keywords, and acknowledgments, and
+drops pure publishing metadata, warning about anything it does not recognize.
 
-When it lands, import would let a published article — otherwise locked in JATS at
-a publisher or an archive — be pulled back into editable Enscribe source: to
-correct an erratum, to re-display it on the open web without a JATS viewer, or to
-build on it. That is the payoff that makes the lossiness worth tolerating: an
-on-ramp from the world's JATS corpus is worth more than a perfect importer that
-never ships. Today: export works; import is coming.
+Import lets a published article — otherwise locked in JATS at a publisher or an
+archive — be pulled back into editable Enscribe source: to correct an erratum, to
+re-display it on the open web without a JATS viewer, or to build on it. For a live
+demonstration, see the **<a demo-paper.html | imported PubMed Central article>** —
+a real published paper converted into Enscribe automatically by `enscribe
+import-jats`.
 
 <# A worked example #>
 
@@ -178,9 +183,11 @@ export you can reason about, instead of a conversion you submit to and hope for.
 
 Yes. If a venue accepts JATS 1.3 (or BITS 2.0 for books) — and the major archives
 and a growing list of publishers do — an Enscribe document exports to a valid,
-structure-faithful deposit, with the apparatus a real article needs intact. The
-import direction, to bring published JATS back into Enscribe, is still ahead. But
-the direction that gets your work *into* the scholarly record works today.
+structure-faithful deposit, with the apparatus a real article needs intact. And
+the reverse direction now works too: `enscribe import-jats` brings published JATS
+back into Enscribe (lossily, as an on-ramp from the literature). Both halves of
+the bridge — your work *into* the scholarly record, and the record back *into*
+Enscribe — work today.
 
 For how Layer 1 is shaped to make this possible, read the
 <a href="design.html" | Design article>; to write your first document, start with

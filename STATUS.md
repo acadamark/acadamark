@@ -79,7 +79,7 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] JATS import — figures, tables, cross-references, and footnotes
 - [x] JATS import — theorem family, DSL blocks, and code listings
 - [x] JATS import — reduction policy (reader content preserved, publishing metadata dropped)
-- [ ] JATS import — a real PubMed Central article demonstration
+- [x] JATS import — a real published article demonstration (NLM JATS sample, on the docs site)
 - [ ] JATS export — map `<a>` → `<ext-link>` (links currently dropped on export)
 
 ## Documentation — the docs site (`docs-site/`)
@@ -90,8 +90,8 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 - [x] Authoring Guide (fourteen chapters, with rendered demonstrations)
 - [x] Layer 1 Vocabulary Reference (MDN-style, element by element)
 - [x] JATS-relationship article
+- [x] Imported-article demonstration page (a real published paper, via `import-jats`)
 - [x] Static site build (`npm run docs:build`)
-- [ ] Imported PubMed Central article demonstration page
 
 ## Packaging & infrastructure
 
@@ -110,11 +110,10 @@ Legend: `[x]` works and is tested · `[~]` partial / in progress ·
 
 The **alpha milestone** is closed (the five-line acceptance definition is
 verified; see `notes/alpha-acceptance-mapping.md`). The live milestone is
-the **v0.1.0 public release**. Release-blocking work that remains: Phase 8
-display features (table-of-contents sidebar, single-chapter book
-navigation, more themes), Phase 13 JATS import (structure, inline,
-citations, math, figures/tables, cross-references, the theorem family, DSL
-blocks, and the reduction policy have landed; only the real-article
-demonstration remains), and the residual Phase 14 packaging (generated
+the **v0.1.0 public release**. **Phase 13 (JATS import) is complete** — the
+bidirectional JATS bridge now works end to end, demonstrated by a real
+published article imported onto the docs site. Release-blocking work that
+remains: Phase 8 display features (table-of-contents sidebar, single-chapter
+book navigation, more themes) and the residual Phase 14 packaging (generated
 types, fixture consolidation, `npm publish`). Phases 7, 9, 10, 11, and 12 are
 post-release. The phase plan and sequencing live in `ROADMAP.md`.

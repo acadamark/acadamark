@@ -107,6 +107,13 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Reconcile and de-duplicate the interpreter options
   documentation** `[specs/docs]` `[post-alpha]` *(filed by Phase 14
   Slice 1)*
+- [ ] **`serialize-canonical` is lossy for complex imported content**
+  `[cli]` `[post-alpha]` — the `.emd` serializer behind `enscribe lift` /
+  `lower` / `import-jats --emd` does not round-trip raw-HTML (complex) tables or
+  some dense math from real articles: re-parsing the `.emd` drops table ids,
+  emits "unknown tag" for the raw rows, and breaks math whose LaTeX trips the
+  sigil escaping. *(Surfaced by Phase 13 Slice 7 — the docs demo renders the
+  imported tree directly to stay faithful.)*
 
 ### Planned work
 
@@ -146,26 +153,6 @@ A flat scannable index of every open item. Detailed entries below.
   `[post-alpha]` *(→ roadmap: Phase 8)*
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
-- [~] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)* — **Slices 1–6 landed.** Slice 1:
-  `@enscribejs/jats-import` with the XML parser, structural mapping
-  (article/front/body/sec/p), and inline formatting (bold/italic/code/links/sup/sub),
-  surfaced as `enscribe import-jats` (HTML, or canonical `.emd` with `--emd`).
-  Slice 2: citations & bibliography (`<xref ref-type="bibr">` → `<cite @key>`,
-  `<ref-list>`/`<element-citation>` → BibTeX `<library>` + `<bibliography>`).
-  Slice 3: math (`<inline-formula>` → `<inline-math>`, `<disp-formula>` →
-  `<display-math>`, from `<tex-math>` or MathML via `mathml-to-latex`).
-  Slice 4: figures (`<fig>` → `<fig>`), tables (`<table-wrap>` → `<table>` CSV),
-  cross-references (`<xref>` → `<ref @prefix:id>`), and inlined footnotes
-  (`<fn>` → `<note>`). Slice 5: the theorem family (`<statement
-  content-type="X">` → `<theorem>`/`<lemma>`/`<definition>`/`<proof>`/…),
-  DSL blocks (a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`), and bare
-  `<preformat>` → code block. Slice 6: the reduction policy — reader-facing
-  apparatus (keywords, acknowledgments, funding, author notes, appendices,
-  glossary, def-lists) preserved as readable sections/paragraphs, publishing
-  metadata (journal-meta, article-ids, permissions, positioning, counts)
-  dropped silently, unknown elements still warned. Remaining: a real PMC
-  article (Slice 7).
 - [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
   in the vocabulary), so exported JATS loses links and the import round-trip can't
@@ -399,6 +386,27 @@ cross-file spec restructuring — the canonical-owner choice is flagged for a
 chat decision rather than resolved unilaterally. *(filed by Phase 14
 Slice 1)*
 
+### `serialize-canonical` is lossy for complex imported content
+`[cli]` `[post-alpha]`
+
+`serialize-canonical.js` (behind `enscribe lift`, `enscribe lower`, and
+`enscribe import-jats --emd`) produces `.emd` that does not faithfully
+round-trip the harder shapes a real imported article contains:
+
+- **Raw-HTML (complex) tables.** A colspan/rowspan `<table-wrap>` imports as a
+  no-format `<table>` whose content is raw HTML rows. Serialized to `.emd` and
+  re-parsed, the table loses its id and the raw `<…>` rows are read as unknown
+  Enscribe tags (`unknown tag <div>` / `<h2>` warnings).
+- **Dense / special-character math.** Some display math from real articles
+  serializes to a `<$$…$$>` sigil that does not re-parse back to math (the LaTeX
+  trips the sigil's escape handling), so the re-rendered `.emd` shows broken or
+  unrendered equations where the direct import rendered them.
+
+The Phase 13 Slice 7 docs demo works around this by rendering the imported
+**tree** directly (`importJats` → pipeline) rather than going through `.emd`, so
+the published page is faithful. The fix is in the serializer's opaque-content and
+math-sigil emission, not the importer. *(Surfaced by Phase 13 Slice 7.)*
+
 ---
 
 ## Detailed entries — Planned work
@@ -580,155 +588,6 @@ though the runtime is not Jupyter. Post-alpha extensions (other
 languages, kernel-based execution, server-side sandboxing) are not
 in scope here. Source archived at
 `notes/archive/authoring-features-survey-2026-05.md`.
-
-### Build JATS import
-`[interpreter]` `[release]` *(→ roadmap: Phase 13)*
-
-The reverse direction of the JATS bridge, and the second half of the
-bidirectional JATS conversion the v0.1.0 release demonstrably includes
-(export shipped in Phase 5). Deliberately lossy: JATS's vocabulary is
-far larger than Layer 1's; constructs with no Layer 1 equivalent are
-reduced rather than faithfully preserved. A useful on-ramp from the
-existing scholarly corpus, not a round-trip guarantee. Promoted from
-post-alpha to release-blocking — first-class now rather than deferred.
-Gets its own Phase 0 to scope the mapping and the lossy-reduction
-policy before any code. **Phase 0 done (2026-05-31)** — findings at
-`notes/phase13-jats-import-findings.md`: verdict *proceed*; new package
-`@enscribejs/jats-import` (mapping tables shared with the export so they
-cannot diverge); `importJats(xml) → canonical mdast → existing pipeline`; the
-reduction policy (map / comment / drop / raw) is the center of gravity for real
-articles; math is mostly trivial (`<tex-math>`), with `mathml-to-latex` as the
-MathML-only fallback; the round-trip (`import → re-export ≈ original`) is the
-headline test; 7-step slicing (optionally 13a/b/c), built against the export
-fixtures before one CC-BY PMC article.
-
-**Slice 1 landed (2026-05-31)** — `@enscribejs/jats-import` with: a saxes-based
-XML parser that handles the JATS `<!DOCTYPE>` preamble and namespaced attributes
-(`xlink:href`) without a network dependency (saxes was already in the tree);
-structural mapping (article/front/body/`<sec>`→section/sub-section/sub-sub-section
-by depth, ids preserved, `<p>`, lists, `<disp-quote>`); inline formatting
-(bold/italic/underline/strike → `b/i/u/s`, monospace → inline code, sup/sub,
-`ext-link`/`uri`/`email` → `<a>` with `mailto:` for email); and the
-`map`-category-only reduction policy — non-representable constructs are dropped
-with a one-time `console.warn` per kind. The importer emits the **post-normalize
-shape** (flat sections, title in `content`), so both consumers work: the full
-pipeline re-nests via section-nesting, and `serialize-canonical` emits `.emd`.
-Surfaced as `enscribe import-jats` (HTML by default, canonical `.emd` with
-`--emd`). Round-trip tested against the export path. **Drift finding:** the JATS
-*export* does not yet map `<a>` → `<ext-link>` (export predates `<a>` in the
-vocabulary), so the export→import round-trip cannot exercise the importer's
-link mapping — verified with synthetic JATS instead. Logged as an export gap for
-a future slice.
-
-**Slice 2 landed (2026-05-31)** — citations & bibliography. In-text
-`<xref ref-type="bibr" rid="…">` → `<cite @key>` (a space-separated `rid` IDREFS
-list becomes one multi-key cite; the cite node carries `atRefs` with `content:
-null`, matching the parser's shape). `<back>`'s `<ref-list>` `<ref>`
-`<element-citation>` / `<mixed-citation>` → BibTeX entries gathered into one
-opaque `<library>` (inside `<data>`), with an empty `<bibliography>` placement —
-both appended at the document end (bibliography before data) per the
-edge-apparatus convention. Field mapping inverts the export:
-`<article-title>`→`title`, `<source>`→`journal` (or `booktitle` for proceedings;
-the title itself for books), `<year>`/`<volume>`/`<issue>`→`number`,
-`<fpage>`/`<lpage>`→`pages` (`a--b`), `<pub-id pub-id-type="doi">`→`doi`,
-`<publisher-name>`/`<publisher-loc>`→`publisher`/`address`. `publication-type` →
-BibTeX entry type (`journal`→`@article`, `book`→`@book`, `confproc`→
-`@inproceedings`, `thesis`→`@phdthesis`, else `@misc`). Author `<name>` →
-`Surname, Given` joined with ` and `; `<string-name>`/`<collab>` kept verbatim. A
-free-text `<mixed-citation>` with no structured fields is preserved as `@misc`
-with the text in `note`. Citation keys use the `<ref>` id verbatim (no
-transformation) — for enscribe-exported JATS that means keys carry the exporter's
-`ref-` prefix on both the cite and the library entry, so cites still resolve
-(round-trip verified: keys stay consistent, all entries render). The BibTeX is
-proven valid by rendering — citation-js parses it and the cites resolve with a
-formatted bibliography. Also: added the `@enscribejs/cli/serialize-canonical`
-subpath export (the jats-import README documented it, but the package didn't
-expose it — a Slice-1 doc/code drift, now fixed).
-
-**Slice 3 landed (2026-05-31)** — math. `<inline-formula>` → `<inline-math>`
-and `<disp-formula>` → `<display-math>` (id preserved verbatim; the
-`<label>` equation number is dropped, since the interpreter re-numbers). The
-LaTeX comes from `<tex-math>` when present (verbatim — CDATA is folded into text
-by the parser, so no special handling; preferred even when MathML is also present
-inside `<alternatives>`), else from presentation MathML converted by
-`mathml-to-latex` (new dep, MIT, v1.5.0). Investigation confirmed the library
-handles namespaced (`mml:`) MathML natively — with or without an `xmlns`
-declaration on the re-serialized subtree — so no namespace stripping is needed;
-its output is KaTeX-renderable. A formula carrying neither `<tex-math>` nor
-convertible MathML degrades to a `<code>` span (with a warning), never an error
-node. Math nodes are `makeOpaqueTag` (`math` / `math-display` handlers), so the
-lift serializer emits them as `<$ … $>` / `<$$ … $$>` sigils. Round-trip verified
-(synthetic + the calibration fixture: 0 error nodes, KaTeX renders). Math-env
-tags (matrix/cases/align/eqnarray) import as plain `<display-math>` carrying the
-`\begin{env}…\end{env}` LaTeX the export wrote — identical rendering, but the
-named env tag is not reconstructed. Math nested inside not-yet-imported
-containers (statement / fig / table-wrap) is still dropped *with its container*
-(Slices 4–5).
-
-**Slice 4 landed (2026-05-31)** — figures, tables, cross-references, footnotes.
-`<fig>` → `<fig #fig:id src=… | caption>` (src from the first `<graphic
-xlink:href>`, descending into `<alternatives>`; caption from `<caption>`, the
-pipe-content convention; `<label>` dropped). `<table-wrap>` → `<table csv
-caption=… | …>`: the inner `<table>`'s rows become CSV (header row first when a
-`<thead>` is present, RFC-4180 cell quoting), with `caption=` from `<caption>`;
-tables using colspan/rowspan can't be flattened and fall back to the raw inner
-`<table>` HTML with a warning. Cross-references: `<xref ref-type="fig|table|
-disp-formula|sec">` → `<ref @prefix:id>`. Footnotes are **inlined** — the body
-collects `<fn>` elements from `<back><fn-group>` (before the body is converted),
-and each `<xref ref-type="fn">` is replaced by an inline `<note>` carrying that
-`<fn>`'s body (a cycle guard prevents a footnote-citing-footnote loop). The key
-design point: Enscribe's cross-reference resolver keys off the **id colon-prefix**
-(only colon-ids are indexed/numbered, and the prefix selects the rendered word),
-so every referenceable id is normalized to its conventional prefix (`fig:` /
-`tab:` / `eqn:` / `sec:`) — idempotently, so Enscribe's own already-prefixed
-exported ids pass through unchanged — and the same normalization is applied to the
-matching `<xref rid>` so the two agree. This required updating Slice 1's section
-and Slice 3's equation id handling to prefix too (necessary for section/equation
-cross-references to resolve). Round-trip verified (synthetic + the calibration
-fixture: 3 figs, 1 table, 6 cross-refs, 2 notes survive and render, 0 error
-nodes). The DSL-figure limitation noted here was resolved in Slice 5.
-
-**Slice 5 landed (2026-05-31)** — theorem family, DSL blocks, code listings.
-`<statement content-type="X">` → the matching theorem-family element
-(theorem/lemma/corollary/proposition/definition/example/remark/proof); `<label>`
-dropped, `<title>` → the `name=` kwarg, body `<p>`s → content, unknown
-content-type → `<theorem>` with a warning. The id gains the type's colon-prefix
-(`thm:`/`lem:`/`cor:`/`prop:`/`def:`/`ex:`/`rem:`; proof is unnumbered, id kept
-verbatim). All theorem types share one JATS `ref-type="statement"`, so the
-importer pre-collects statement ids → prefixed ids and resolves `<xref
-ref-type="statement">` through that map (handling both Enscribe's already-prefixed
-exported rids and bare real-JATS rids). DSL blocks: this slice upgraded the Slice
-4 `<fig>` handler to detect Enscribe's DSL markers
-(`specific-use="enscribe-dsl-TYPE"` and/or a `<preformat
-content-type="TYPE-source">`) and route them to `<mermaid>`/`<abc>` opaque nodes
-with the source preserved verbatim and the caption kept — so a `<fig>` with no
-`<graphic>` is now a DSL figure rather than a dropped body (the Slice 4
-limitation). A bare `<preformat>` (outside a DSL figure) → a code block (`lang`
-from `xml:lang`). Round-trip verified (synthetic + the calibration fixture: 3
-theorem-family elements, 1 DSL figure, 6 cross-references survive and render, 0
-error nodes). Next: **Slice 6 — non-representable-element reduction policy.**
-
-**Slice 6 landed (2026-05-31)** — the reduction policy. The principle (from the
-Phase 0 findings and chat ratification): map what maps, preserve what a reader
-would want, drop publishing metadata. **Category B (preserved as readable
-content):** `<kwd-group>` → a "Keywords: …" paragraph; `<ack>` →
-"Acknowledgments" section; `<funding-group>` → "Funding" section; `<author-notes>`
-(incl. its `<fn>`/`<corresp>`) → "Author Notes" section; `<app>`/`<app-group>` →
-"Appendix" sections (own `<title>` when present); `<glossary>`/`<def-list>` →
-sections with `<def-list>` → `<dl>`/`<dt>`/`<dd>`. (The abstract was already
-preserved in `<meta>` since Slice 1 — including structured abstracts, whose
-internal `<sec>`s render as sub-sections — so it is **not** moved to a body
-section, a deliberate divergence from the slice prompt that keeps the better
-representation.) **Category C (dropped silently** — `DROPPED_METADATA`): pure
-publishing / bibliographic / legal metadata (journal-meta, article-id, volume,
-issue, fpage/lpage, permissions/license, history, counts, self-uri, aff,
-supplementary-material, custom-meta-group, …) — warning about an ISSN or page
-count the reader can do nothing about is just noise. **Accounting:** `<front>`
-and `<back>` children are now exhaustively checked — anything neither handled nor
-expected-dropped warns once, so a real article's surprises surface. Verified: a
-synthetic PMC-shaped article imports with **zero** warnings and all reader
-content present; the export-fixture round-trips stay clean. Next: **Slice 7 — a
-real PubMed Central article demonstration.**
 
 ### JATS export: map `<a>` → `<ext-link>`
 `[interpreter]` `[release]` *(→ roadmap: Phase 13)*

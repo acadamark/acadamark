@@ -1,8 +1,13 @@
 // Tests for @enscribejs/jats-import (core structural + inline).
 import assert from 'node:assert';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { importJats } from '../src/index.js';
 import { buildEnscribePipeline } from '@enscribejs/interpreter';
 import { enscribeToJats } from '@enscribejs/jats-export';
+
+const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
 /** Collect every node (enscribeTag or mdast) matching `pred`, walking children+content. */
 function findAll(node, pred, acc = []) {
@@ -362,17 +367,61 @@ Inline <$ E = mc^2 $> and a display:
     console.log('PASS: figures, tables, cross-references, footnotes import');
   }
 
-  // ── complex table (colspan) falls back to raw HTML, not CSV ──────────────────
+  // ── complex table (colspan) → no-format <table> (raw HTML, keeps its id) ──────
   {
     const xml = `<article><front><article-meta><title-group><article-title>T</article-title></title-group></article-meta></front>
-  <body><sec><title>S</title>
-    <table-wrap id="T2"><table><tbody><tr><td colspan="2">spanning</td></tr><tr><td>1</td><td>2</td></tr></tbody></table></table-wrap>
+  <body><sec id="s"><title>S</title>
+    <p>See <xref ref-type="table" rid="T2">Table 1</xref>.</p>
+    <table-wrap id="T2"><label>Table 1</label><caption><p>Complex</p></caption>
+      <table><tbody><tr><td colspan="2">spanning</td></tr><tr><td>1</td><td>2</td></tr></tbody></table></table-wrap>
   </sec></body></article>`;
     const tree = importJats(xml);
-    assert.equal(tagged(tree, 'table').length, 0, 'complex table is NOT emitted as a <table> CSV');
-    assert.equal(findAll(tree, (n) => n.type === 'html' && /<table/.test(n.value)).length, 1, 'complex table preserved as raw HTML');
+    // Complex tables can't be CSV, but they stay an indexed <table> (id preserved,
+    // no `csv` format → raw-HTML escape hatch), so cross-references still resolve.
+    const tab = tagged(tree, 'table');
+    assert.equal(tab.length, 1, 'complex table is still a <table> node');
+    assert.equal(tab[0].id, 'tab:T2', 'complex table keeps its (prefixed) id');
+    assert.deepEqual(tab[0].positional, [], 'no csv format → raw-HTML escape hatch');
+    assert.ok(/colspan="2"/.test(tab[0].content), 'colspan preserved in the raw rows');
     assert.equal(errorNodes(tree).length, 0, 'no error nodes');
-    console.log('PASS: complex table → raw HTML fallback');
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const html = proc.stringify(proc.runSync(tree));
+    assert.ok(!/\?\?ref/.test(html.replace(/<style[\s\S]*?<\/style>/g, '')), 'cross-reference to the complex table resolves');
+    assert.ok(/<table id="tab:T2"/.test(html), 'complex table renders with its id');
+    console.log('PASS: complex table → indexed no-format <table> (refs resolve)');
+  }
+
+  // ── tex-math wrapped in a full LaTeX document → extracted body (real PMC) ─────
+  {
+    const docMath = '\\documentclass[12pt]{minimal} \\usepackage{amsmath} '
+      + '\\begin{document} $$ \\frac{dS(t)}{dt} = -\\mu S(t) $$ \\end{document}';
+    const xml = `<article><front><article-meta><title-group><article-title>M</article-title></title-group></article-meta></front>
+  <body><sec><title>S</title>
+    <disp-formula id="E1"><tex-math>${docMath}</tex-math></disp-formula>
+    <p>Inline <inline-formula><tex-math>\\documentclass{minimal}\\begin{document}$x^2$\\end{document}</tex-math></inline-formula>.</p>
+  </sec></body></article>`;
+    const tree = importJats(xml);
+    const dm = tagged(tree, 'display-math')[0];
+    assert.equal(dm.content, '\\frac{dS(t)}{dt} = -\\mu S(t)', 'document preamble + $$ delimiters stripped');
+    const im = tagged(tree, 'inline-math')[0];
+    assert.equal(im.content, 'x^2', 'inline: preamble + $ delimiters stripped');
+    // renders without a KaTeX parse error
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const html = proc.stringify(proc.runSync(tree));
+    assert.ok(/class="katex/.test(html) && !/katex-error/.test(html), 'extracted math renders via KaTeX (no error)');
+    console.log('PASS: full-document tex-math → extracted, KaTeX-renderable');
+  }
+
+  // ── <boxed-text> → <aside> (content preserved, not dropped) ──────────────────
+  {
+    const xml = `<article><front><article-meta><title-group><article-title>B</article-title></title-group></article-meta></front>
+  <body><sec><title>S</title>
+    <boxed-text><p>Boxed content.</p></boxed-text>
+  </sec></body></article>`;
+    const tree = importJats(xml);
+    assert.equal(tagged(tree, 'aside').length, 1, 'boxed-text → aside');
+    assert.ok(findAll(tree, (n) => n.type === 'text' && /Boxed content/.test(n.value)).length === 1, 'box content preserved');
+    console.log('PASS: boxed-text → aside');
   }
 
   // ── round-trip: .emd figure + table + ref + note → export → import survive ───
@@ -573,6 +622,31 @@ graph TD
     assert.ok(warnings.some((w) => /some-vendor-extension/.test(w)), 'unknown meta element warns');
     assert.ok(warnings.some((w) => /weird-back-thing/.test(w)), 'unknown back element warns');
     console.log('PASS: unknown elements still warn (no silent loss)');
+  }
+
+  // ── real published article: the PNAS PMC/JATS sample imports & renders ───────
+  {
+    const xml = readFileSync(join(FIXTURES, 'pnas_sample.xml'), 'utf8');
+    const tree = importJats(xml);
+    // structure recovered
+    assert.ok(tagged(tree, 'meta').length === 1 && tagged(tree, 'abstract').length === 1, 'meta + abstract');
+    assert.ok(tagged(tree, 'section').length >= 5, 'sections recovered');
+    assert.ok(tagged(tree, 'fig').length === 4, 'four figures');
+    assert.ok(tagged(tree, 'table').length === 4, 'four tables (complex → indexed no-format <table>)');
+    assert.ok(tagged(tree, 'display-math').length >= 5, 'display equations');
+    assert.ok(tagged(tree, 'cite').length > 50, 'many citations');
+    assert.ok(tagged(tree, 'ref').length > 10, 'many cross-references');
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes from a real article');
+
+    // renders: citations + cross-references resolve; most math renders via KaTeX
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const html = proc.stringify(proc.runSync(tree));
+    const body = html.replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?cite/.test(body), 'citations resolve');
+    assert.ok(!/\?\?ref/.test(body), 'cross-references resolve (incl. to complex tables)');
+    assert.ok((html.match(/class="katex"/g) || []).length >= 5, 'equations render via KaTeX');
+    assert.ok(/<table id="tab:/.test(html), 'tables render with their ids');
+    console.log('PASS: real PNAS article imports and renders');
   }
 
   console.log('All JATS import tests passed.');

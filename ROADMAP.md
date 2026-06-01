@@ -62,8 +62,8 @@ The release demonstrably includes five things:
    and `lower`. (`enscribe import`, the pandoc bridge, is post-release.)
 
 The **release-blocking phases** are Phase 8 (the display-features subset
-above), Phase 13 (JATS import), and Phase 14 (packaging). The other
-post-alpha phases — 7 (lift-and-lower), 9 (multi-file authoring), 10
+above), Phase 13 (JATS import — now closed), and Phase 14 (packaging). The
+other post-alpha phases — 7 (lift-and-lower), 9 (multi-file authoring), 10
 (executable code blocks), 11 (hardening), 12 (vocabulary expansion) —
 are **post-release**.
 
@@ -87,21 +87,20 @@ another; otherwise they are independently pickable.
 
 ## Current position
 
-Alpha is closed; the **v0.1.0 release** is the live milestone. The
-release-blocking work that remains is:
+Alpha is closed; the **v0.1.0 release** is the live milestone.
+**Phase 13 (JATS import) is now closed** — the bidirectional JATS bridge
+works end to end, demonstrated by a real published article imported onto the
+docs site. The release-blocking work that remains is:
 
 - **Phase 8 — display features** (table-of-contents sidebar,
   single-chapter book navigation, more themes). Not started; gets a
   Phase 0 to scope where the UI code sits.
-- **Phase 13 — JATS import.** Phase 0 and Slices 1–3 have landed
-  (structure + inline, citations + bibliography, math). Slices 4–7 remain
-  (figures/tables/cross-references, theorem family + DSL blocks, the
-  non-representable reduction policy, a real-article demo).
 - **Phase 14 — packaging.** The client-side library, the in-browser
-  editor demo, the docs-site content arc, the render-quality spec, and
-  the render-quality bug-fix arc have all landed. The CLI shipped here
-  too. Remaining: fixture-corpus consolidation + the comprehensive
-  demonstrative fixture, generated `.d.ts` types, and `npm publish`.
+  editor demo, the docs-site content arc (now seven pages, including the
+  imported-article demo), the render-quality spec, and the render-quality
+  bug-fix arc have all landed. The CLI shipped here too. Remaining:
+  fixture-corpus consolidation + the comprehensive demonstrative fixture,
+  generated `.d.ts` types, and `npm publish`.
 
 Phases 7, 9, 10, 11, and 12 are **post-release**.
 
@@ -243,37 +242,22 @@ kwarg; and `<html-passthrough>`.
 
 ---
 
-## Phase 13 — JATS import *(release-blocking · in progress)*
+## Phase 13 — JATS import *(release-blocking) · CLOSED 2026-05-31*
 
-The other direction of the JATS bridge: together with the Phase 5 export
-it makes JATS conversion bidirectional. Deliberately lossy — JATS's
-vocabulary is far larger than Layer 1's, so constructs with no Layer 1
-counterpart are reduced rather than faithfully preserved; it is a useful
-on-ramp from the existing scholarly corpus, not a round-trip guarantee. It
-got its own **Phase 0** (`notes/phase13-jats-import-findings.md`) before
-the build began.
-
-**Phase 0 done; Slices 1–6 landed.** Slice 1 built `@enscribejs/jats-import` —
-the XML parser, the structural skeleton (article/front/body/sec/p), and
-inline formatting (bold/italic/code/links/sup/sub) — surfaced as `enscribe
-import-jats`. Slice 2 added citations & bibliography (`<xref
-ref-type="bibr">` → `<cite>`, `<ref-list>` → a BibTeX `<library>` +
-`<bibliography>`). Slice 3 added math (`<inline-formula>`/`<disp-formula>`
-→ `<inline-math>`/`<display-math>`, from `<tex-math>` or MathML via
-`mathml-to-latex`). Slice 4 added figures (`<fig>`), tables (`<table-wrap>`
-→ CSV), cross-references (`<xref>` → `<ref @prefix:id>`), and inlined
-footnotes (`<fn>` → `<note>`). Slice 5 added the theorem family
-(`<statement content-type="X">` → `<theorem>`/`<definition>`/`<proof>`/…),
-DSL blocks (a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`), and bare
-`<preformat>` → code block. Slice 6 added the reduction policy: reader-facing
-apparatus (keywords, acknowledgments, funding, appendices, glossary)
-preserved as readable content, publishing metadata dropped silently, unknown
-elements warned — so every element is accounted for.
-
-**Remaining slice:** a real CC-BY PubMed Central article as the
-demonstration (Slice 7). A related open item: the JATS *export* still drops
-`<a>` (it predates `<a>` in the vocabulary) — mapping it to `<ext-link>` is
-filed in `BACKLOG.md`.
+Complete. The other direction of the JATS bridge — JATS XML → Layer 1 —
+making JATS conversion bidirectional (with the Phase 5 export). Deliberately
+lossy: JATS's vocabulary is far larger than Layer 1's, so it is a useful
+on-ramp from the scholarly corpus, not a round-trip guarantee. Built over a
+Phase 0 (`notes/phase13-jats-import-findings.md`) and seven slices as the
+`@enscribejs/jats-import` package + the `enscribe import-jats` command:
+structure and inline formatting, citations and bibliography, math
+(`<tex-math>` and MathML), figures, tables, cross-references, footnotes, the
+theorem family, DSL blocks, and a reduction policy that preserves
+reader-facing apparatus and drops publishing metadata (warning on anything
+unrecognized). Demonstrated by a real published article (an NLM JATS sample)
+imported onto the docs site (`docs-site/sources/demo-paper.emd`). One related
+item stays open in `BACKLOG.md`: the JATS *export* doesn't yet map `<a>` →
+`<ext-link>`.
 
 ---
 
