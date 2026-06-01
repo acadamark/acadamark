@@ -34,7 +34,7 @@ import { createRequire } from 'module';
 // the fixtures use), NOT the package entry `dist/mermaid.core.mjs` that
 // import.meta.resolve('mermaid') points at (an ESM code-split build that pulls
 // chunks dynamically and is not usable as a single inline <script>). See
-// notes/dsl-rendering-architecture-findings.md §Q3.
+// notes/archive/phase-findings-2026-05/dsl-rendering-architecture-findings.md §Q3.
 
 let _mermaidJs = null;
 export function getMermaidJs() {

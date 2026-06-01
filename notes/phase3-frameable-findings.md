@@ -3,7 +3,7 @@
 **Status:** read-only Phase 0 complete. No implementation; no product
 code, no spec, no vocab changes. This file is the artifact the
 implementation slice(s) will be built from — same role
-`notes/phase2-handler-findings.md` played for the Phase 2 handler
+`notes/archive/phase-findings-2026-05/phase2-handler-findings.md` played for the Phase 2 handler
 bundle.
 
 **Date:** 2026-05-27 (post-`7001aaa`, post-Phase-2-close).

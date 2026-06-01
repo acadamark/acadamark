@@ -9,7 +9,7 @@
 // multi-line and pipe spellings. The change is additive: bare openers, the
 // pipe form, the slash form, and multi-line long-form are byte-identical.
 //
-// Locked decisions (see notes/issue1-same-line-long-form-findings.md):
+// Locked decisions (see notes/archive/phase-findings-2026-05/issue1-same-line-long-form-findings.md):
 //   A — additive: same-line close scan, empty-short-form fallback when absent.
 //   B — Enscribe's vocabulary wins over remark's HTML block (`<blockquote>`).
 //   C — same-name nesting is NOT depth-counted; the first `</tag>` closes the

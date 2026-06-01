@@ -8,7 +8,7 @@
 // turns a <mermaid> tag into contract hast?". The two share the static-Map idiom
 // but are separate tables with separate consumers; conflating them would couple
 // parse-time dispatch to view-time asset policy.
-// See notes/dsl-rendering-architecture-findings.md §Q1.
+// See notes/archive/phase-findings-2026-05/dsl-rendering-architecture-findings.md §Q1.
 //
 // INTERNAL boundary (Q5). This module is deliberately NOT added to
 // enscribe-interpreter/package.json `exports` (which exposes only

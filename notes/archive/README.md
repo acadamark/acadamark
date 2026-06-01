@@ -135,6 +135,23 @@ Spent Phase-0-style investigations whose conclusions have all landed in code or 
 - **`enscribe_pipeline_runorder_vs_dependency.svg`** — Visual diagram of plugin run-order vs. dependency graph.
 - **`document_elements_sources_display_processing.csv`** — Element-to-processing-strategy mapping table.
 
+## `phase-findings-2026-05/` v0.1.0-era Phase 0 findings (archived 2026-06-01)
+
+The Phase 0 read-only investigation findings for the v0.1.0-era phase sequence, plus the alpha acceptance record. Each findings document was the design baseline its implementation slice(s) were built from; all of their conclusions have landed in shipped code (the corresponding capabilities are `[x]` in `STATUS.md`). They are retained as the design-rationale record — the durable "why the build is shaped this way" that is hard to recover from finished code, exactly as the `audit-2026-Q2/` findings are. Moved out of top-level `notes/` (which holds only live working docs) once their phases closed.
+
+Three live code comments that cite these as their rationale source were repointed to this folder when the files moved: `packages/enscribe/src/interpreter/dsl/registry.js` and `node-assets.js` (→ `dsl-rendering-architecture-findings.md`), and `packages/enscribe/test/same-line-long-form.test.js` (→ `issue1-same-line-long-form-findings.md`). The intra-batch cross-references *inside* these files (each findings doc naming the one before it as precedent) were left as written — archived files are frozen records.
+
+- **`phase2-handler-findings.md`** — Phase 2 (the handler bundle) investigation.
+- **`phase4-structuring-findings.md`** — Phase 4 (document structuring) investigation.
+- **`phase5-jats-export-findings.md`** — Phase 5 (JATS export) investigation.
+- **`phase6-alpha-integration-findings.md`** — Phase 6 (alpha integration) investigation; the analysis that produced the alpha acceptance mapping below.
+- **`phase13-jats-import-findings.md`** — Phase 13 (JATS import) investigation.
+- **`phase14-packaging-findings.md`** — Phase 14 (v0.1.0 packaging: client library, docs site, CLI) investigation.
+- **`issue1-same-line-long-form-findings.md`** — Issue 1 (same-line long form, `<b>bold</b>`) investigation.
+- **`dsl-purge-phase0-findings.md`** — DSL purge investigation.
+- **`dsl-rendering-architecture-findings.md`** — DSL rendering-architecture investigation (the `skip` / `live-link` / `live-inline` / `static` render-mode model).
+- **`alpha-acceptance-mapping.md`** — the alpha milestone acceptance record: for each of the five alpha acceptance lines, the fixture that demonstrates it and what that fixture shows. Companion to `phase6-alpha-integration-findings.md`. *Its fixture paths (`packages/enscribe-interpreter/…`, `packages/enscribe-jats-export/…`) predate the 7→3 package consolidation (`b0a9d71`) and are preserved as written.*
+
 ## Single archived documents (2026-05)
 
 - **`inline-tex-shortcuts-spec-2026-05.md`** — Spec for the `^{}`/`_{}` superscript/subscript shortcut syntax. The G1 feature is built; this is the spec it was built against.
