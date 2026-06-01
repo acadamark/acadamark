@@ -92,9 +92,9 @@ Alpha is closed; the **v0.1.0 release** is the live milestone.
 works end to end, demonstrated by a real published article imported onto the
 docs site. The release-blocking work that remains is:
 
-- **Phase 8 — display features.** Phase 0 done; the table-of-contents
-  sidebar (Slice 1) and additional themes (Slice 2 — modern / compact) have
-  landed. Remaining: single-chapter book navigation (Slice 3).
+- **Phase 8 — display features: complete.** The table-of-contents sidebar
+  (Slice 1), additional themes (Slice 2 — modern / compact), and single-chapter
+  book navigation (Slice 3) have all landed.
 - **Phase 14 — packaging.** The client-side library, the in-browser
   editor demo, the docs-site content arc (now seven pages, including the
   imported-article demo), the render-quality spec, and the render-quality
@@ -157,8 +157,12 @@ features are **release-blocking** for v0.1.0; the rest is post-release.
   responsive layout (sticky sidebar on desktop, a no-JS `<details>` collapse on
   narrow), shipped on the docs-site Authoring Guide. Non-ToC documents stay
   byte-identical.
-- **Single-chapter-at-a-time book view.** A book reading mode showing one
-  chapter at a time with chapter-to-chapter navigation.
+- **Single-chapter-at-a-time book view** *(Slice 3 — done)*. A book with a ToC
+  reads one `<book-part>` chapter at a time via an injected progressive-
+  enhancement script: the ToC is the chapter selector, with prev/next controls,
+  ←/→ keys, URL-hash deep links (cross-chapter references reveal their chapter),
+  and a "show whole book" toggle. Off → the book is one page. `chapterNav` /
+  `--chapter-nav`.
 - **Additional themes** *(Slice 2 — done)*. Modern (sans-serif, contemporary)
   and Compact (denser, smaller type) ship alongside the default, selected by a
   `theme` render option, a `<config theme=…>` setting, or `--theme`. Themes are

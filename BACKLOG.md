@@ -130,8 +130,6 @@ A flat scannable index of every open item. Detailed entries below.
   sigils, or markdown idioms with `--markdown`), both in `@enscribejs/cli` via the
   parameterized `serialize-canonical.js`. A formal Phase-7 lift/lower round-trip
   spec can still be written, but the working tooling now exists.
-- [ ] **Single-chapter-at-a-time book navigation** `[interpreter]`
-  `[release]` *(→ roadmap: Phase 8)*
 - [ ] **Build the comprehensive demonstrative fixture**
   `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)* — spec written
   and demonstrative fixtures (`document-45`/`document-46`) built against
@@ -449,21 +447,6 @@ id-bearing section stays a sigil because a markdown heading cannot carry it. Wha
 remains for a formal Phase 7 is a **spec**: a written lift/lower round-trip
 contract (which deviations are sanctioned, what "lossless" means per register),
 rather than new tooling.
-
-### Single-chapter-at-a-time book navigation
-`[interpreter]` `[release]` *(→ roadmap: Phase 8)*
-
-For book-structured documents, a reading mode that shows one chapter at
-a time with next/previous navigation, instead of rendering the whole
-book as one long scroll. Net-new render output and UI-shaped, like the
-table-of-contents sidebar; the two are companion navigation features
-and likely share the Phase 14 client-side-library machinery.
-Release-blocking for v0.1.0. **Phase 0 done**
-(`notes/phase8-display-features-findings.md`): chapters already render as clean
-`<book-part book-part-type="chapter">` siblings under `<book-body>` (clearing
-the "renderer doesn't separate chapters" stop-condition), so a JS show/hide with
-prev/next + keyboard + URL-hash deep-linking is straightforward. The **third**
-Phase 8 slice — builds on the ToC (the ToC doubles as the chapter selector).
 
 ### Build the comprehensive demonstrative fixture
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*

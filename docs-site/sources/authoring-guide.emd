@@ -857,12 +857,19 @@ executeAssets(document.querySelector('#out'));
   type) injects that theme's token overrides; unset, the default academic look is
   unchanged. On the command line: `--theme modern`. A document can also choose its
   own theme with `<config theme=modern>` (the render option wins if both are set).
+- `chapterNav` — for a **book** rendered with a ToC, reads one chapter at a time:
+  the ToC is the chapter selector, with prev/next controls, ←/→ keys, deep links,
+  and a "show whole book" toggle. On by default for books with a ToC;
+  `--no-chapter-nav` turns it off. It is a progressive enhancement — with no
+  JavaScript the book is one continuous page — and does nothing for articles.
 
 Both the sidebar and the themes render through `default.css` — the structural
 stylesheet a consumer includes. The ToC is a sticky two-column layout on wide
 screens that collapses to a menu on narrow ones; a theme simply re-declares the
 `--enscribe-*` custom properties that `default.css` reads, so it changes the look
-without touching any structural rule.
+without touching any structural rule. Chapter navigation is a small injected
+script over the book's `<book-part>` chapters — no extra markup, so it degrades
+to the full book when scripts are off.
 
 The browser defaults (`embedResources: false`, `hoverPreviewMode: 'link'`,
 `dslMode: 'live-link'`) are tuned for a static deploy that links third-party assets

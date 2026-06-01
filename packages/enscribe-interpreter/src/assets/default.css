@@ -788,6 +788,67 @@ body:has(.enscribe-layout--toc) {
   }
 }
 
+/* ─── Chapter navigation (Phase 8 Slice 3) ──────────────────────────────────── */
+
+/*
+ * The chapter-navigation script adds and removes these classes. Nothing here
+ * applies unless that script runs (book documents with a ToC) — so without it,
+ * or for any article, the book renders as one continuous page. Progressive
+ * enhancement: the classes are inert markup hooks.
+ */
+.chapter-hidden {
+  display: none;
+}
+
+/* The active chapter, highlighted in the ToC. */
+.enscribe-toc a.active {
+  color: var(--enscribe-link);
+  font-weight: 700;
+}
+
+/* Prev / next bar appended to the foot of the active chapter. */
+.enscribe-chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--enscribe-space-4);
+  margin-top: var(--enscribe-space-12);
+  padding-top: var(--enscribe-space-4);
+  border-top: 1px solid var(--enscribe-border);
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-text-sm);
+}
+
+.enscribe-chapter-prev {
+  margin-right: auto;
+}
+
+.enscribe-chapter-next {
+  margin-left: auto;
+  text-align: right;
+}
+
+/* "Show whole book" toggle, appended to the ToC. */
+.enscribe-chapter-showall {
+  display: block;
+  width: 100%;
+  margin-top: var(--enscribe-space-4);
+  padding-top: var(--enscribe-space-3);
+  border: none;
+  border-top: 1px solid var(--enscribe-border);
+  background: none;
+  text-align: left;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  cursor: pointer;
+}
+
+.enscribe-chapter-showall:hover {
+  color: var(--enscribe-link);
+}
+
 /* ─── Responsive ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {

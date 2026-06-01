@@ -123,24 +123,28 @@ function buildNav(entries) {
  * @param {import('hast').Root} hast  the compiled document hast (children hold the
  *   `<article>` / `<book>` element; assets are injected by the caller afterwards).
  * @param {boolean|'auto'} toc
+ * @returns {'article'|'book'|null} the document type when a ToC was applied (so
+ *   the caller can gate book chapter-navigation on it — the ToC assigns the
+ *   book-part ids that nav depends on), or null when nothing was done.
  */
 export function applyToc(hast, toc) {
-  if (toc !== true && toc !== 'auto') return;
+  if (toc !== true && toc !== 'auto') return null;
 
   const docIdx = (hast.children ?? []).findIndex(
     (c) => c.type === 'element' && (c.tagName === 'article' || c.tagName === 'book'),
   );
-  if (docIdx === -1) return;
+  if (docIdx === -1) return null;
   const docEl = hast.children[docIdx];
 
   const entries = collectEntries(docEl);
-  if (entries.length === 0) return;
+  if (entries.length === 0) return null;
   // 'auto': only worth a sidebar past a few top-level sections.
-  if (toc === 'auto' && entries.length <= 3) return;
+  if (toc === 'auto' && entries.length <= 3) return null;
 
   assignIds(entries, collectIds(docEl, new Set()));
 
   const nav = buildNav(entries);
   const main = el('main', { className: ['enscribe-body'] }, [docEl]);
   hast.children[docIdx] = el('div', { className: ['enscribe-layout', 'enscribe-layout--toc'] }, [nav, main]);
+  return docEl.tagName;
 }

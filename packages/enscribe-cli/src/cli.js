@@ -125,6 +125,8 @@ Options:
                        only past three sections). Needs default.css to display.
   --theme <name>       Apply a theme: default, modern, or compact. Injects the
                        theme's token overrides inline (needs default.css too).
+  --chapter-nav        For books with --toc, read one chapter at a time (default
+                       on); --no-chapter-nav renders the whole book as one page.
   --quiet              Suppress warnings
   -h, --help           Show this help
 `;
@@ -149,7 +151,7 @@ function parseCommandArgs(args) {
   const opts = {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
-    toc: undefined, theme: undefined,
+    toc: undefined, theme: undefined, chapterNav: undefined,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -180,7 +182,9 @@ function parseCommandArgs(args) {
       if (opts.theme == null) throw new CliError('--theme needs a name (default, modern, compact)');
     } else if (a.startsWith('--theme=')) {
       opts.theme = a.slice('--theme='.length);
-    } else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
+    } else if (a === '--chapter-nav') opts.chapterNav = true;
+    else if (a === '--no-chapter-nav') opts.chapterNav = false;
+    else if (a.startsWith('-')) throw new CliError(`unknown option: ${a}`);
     else if (opts.input == null) opts.input = a;
     else throw new CliError(`unexpected argument: ${a}`);
   }
@@ -218,6 +222,7 @@ function doRender(opts) {
   if (opts.dslMode) pipeOpts.dslMode = opts.dslMode;
   if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
   if (opts.theme) pipeOpts.theme = opts.theme;
+  if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
   return withQuiet(opts.quiet, () =>
     String(buildEnscribePipeline(pipeOpts).processSync(src)),
   );

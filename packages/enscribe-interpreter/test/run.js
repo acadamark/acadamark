@@ -35,6 +35,7 @@ import { run as runLinksImages } from './links-images.test.js';
 import { run as runIntegration } from './integration.test.js';
 import { run as runToc } from './lib/toc.test.js';
 import { run as runTheme } from './lib/theme.test.js';
+import { run as runChapterNav } from './lib/chapter-nav.test.js';
 
 const suites = [
   ['schema/shape-tokens',          runShapeTokens],
@@ -70,6 +71,7 @@ const suites = [
   ['integration',                  runIntegration],
   ['lib/toc',                      runToc],
   ['lib/theme',                    runTheme],
+  ['lib/chapter-nav',              runChapterNav],
 ];
 
 let failed = 0;

@@ -161,6 +161,9 @@ import { formatScopedNumber } from './lib/scoped-number.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc } from './lib/toc.js';
+// Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
+// read — so the browser bundle stays fs-free). Injected only for book + ToC.
+import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
 
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
@@ -513,6 +516,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
  * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
  * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
+ * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -529,6 +533,9 @@ export function enscribeInterpreter(options = {}) {
   // Phase 8 Slice 1: table-of-contents. false (default) / true / 'auto'
   // (show only past a few top-level sections). Off → applyToc is a no-op.
   const tocOption = options.toc ?? false;
+  // Phase 8 Slice 3: single-chapter book navigation. Defaults on for a book
+  // that has a ToC (the ToC is the chapter selector); `false` forces it off.
+  const chapterNavOption = options.chapterNav;
 
   // G3: Register remarkMath on the outer processor so top-level bare $...$ is
   // tokenized. Must be registered before parse time (here, in the setup phase,
@@ -648,7 +655,16 @@ export function enscribeInterpreter(options = {}) {
     // assets land outside the layout wrapper (at the top of the body), and before
     // rehype-format so the generated <nav> is formatted with everything else.
     // A strict no-op when `toc` is off → byte-identical output for non-ToC docs.
-    applyToc(hast, tocOption);
+    // Returns 'book' / 'article' / null so chapter-nav can gate on a book ToC.
+    const tocType = applyToc(hast, tocOption);
+
+    // Phase 8 Slice 3: inject the chapter-navigation script for a book that has a
+    // ToC (which assigns the book-part ids the script navigates by). Default on;
+    // `chapterNav: false` opts out. A pure enhancement — without it the book is
+    // one long page — so it adds no markup beyond this one <script>.
+    if (tocType === 'book' && chapterNavOption !== false) {
+      hast.children.unshift(makeScriptElement(CHAPTER_NAV_JS));
+    }
 
     // Inject document fonts (Inter, Source Code Pro). fontsMode — driven by
     // embedResources unless documentFontsCss overrides — picks the form: 'inline'

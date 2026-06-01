@@ -1,0 +1,20 @@
+<meta type=book>
+<book-title | A Tiny Test Book>
+<author | The Enscribe Project>
+</meta>
+
+<chapter | First Chapter>
+
+The first chapter's content, long enough to be a paragraph.
+
+<chapter | Second Chapter>
+
+The second chapter's content.
+
+<chapter | Third Chapter>
+
+The third chapter's content.
+
+<chapter | Fourth Chapter>
+
+The fourth chapter's content.

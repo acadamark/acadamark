@@ -15,6 +15,7 @@ import { run } from '../src/cli.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE = join(__dirname, 'fixtures', 'sample.emd');
 const JATS_FIXTURE = join(__dirname, 'fixtures', 'article.xml');
+const BOOK_FIXTURE = join(__dirname, 'fixtures', 'book.emd');
 const BIN = join(__dirname, '..', 'bin', 'enscribe.js');
 const VERSION = createRequire(import.meta.url)('../package.json').version;
 
@@ -77,6 +78,20 @@ export function run_tests() {
     const compact = invoke(['render', FIXTURE, '--theme=compact']);
     assert.ok(compact.out.includes('Compact theme'), '--theme=compact injects compact.css');
     console.log('PASS: render --theme → injected theme CSS');
+  }
+
+  // ── render --toc → book chapter navigation ──────────────────────────────────
+  {
+    const nav = (out) => out.includes("'Show whole book'");
+    const withToc = invoke(['render', BOOK_FIXTURE, '--toc']);
+    assert.equal(withToc.code, 0, 'render book --toc exits 0');
+    assert.ok(withToc.out.includes('<book-part'), 'book renders book-part chapters');
+    assert.ok(nav(withToc.out), 'book + --toc injects the chapter-nav script (default on)');
+    const noNav = invoke(['render', BOOK_FIXTURE, '--toc', '--no-chapter-nav']);
+    assert.ok(!nav(noNav.out), '--no-chapter-nav opts out');
+    const noToc = invoke(['render', BOOK_FIXTURE]);
+    assert.ok(!nav(noToc.out), 'no --toc → no chapter-nav');
+    console.log('PASS: render book --toc → chapter navigation');
   }
 
   // ── export-jats → JATS XML ──────────────────────────────────────────────────
