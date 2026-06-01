@@ -253,7 +253,7 @@ on-ramp from the existing scholarly corpus, not a round-trip guarantee. It
 got its own **Phase 0** (`notes/phase13-jats-import-findings.md`) before
 the build began.
 
-**Phase 0 done; Slices 1–5 landed.** Slice 1 built `@enscribejs/jats-import` —
+**Phase 0 done; Slices 1–6 landed.** Slice 1 built `@enscribejs/jats-import` —
 the XML parser, the structural skeleton (article/front/body/sec/p), and
 inline formatting (bold/italic/code/links/sup/sub) — surfaced as `enscribe
 import-jats`. Slice 2 added citations & bibliography (`<xref
@@ -265,13 +265,15 @@ ref-type="bibr">` → `<cite>`, `<ref-list>` → a BibTeX `<library>` +
 footnotes (`<fn>` → `<note>`). Slice 5 added the theorem family
 (`<statement content-type="X">` → `<theorem>`/`<definition>`/`<proof>`/…),
 DSL blocks (a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`), and bare
-`<preformat>` → code block.
+`<preformat>` → code block. Slice 6 added the reduction policy: reader-facing
+apparatus (keywords, acknowledgments, funding, appendices, glossary)
+preserved as readable content, publishing metadata dropped silently, unknown
+elements warned — so every element is accounted for.
 
-**Remaining slices:** the non-representable-element reduction policy
-(Slice 6); and a real CC-BY PubMed Central article as the demonstration
-(Slice 7). A related open item: the JATS *export* still drops `<a>` (it
-predates `<a>` in the vocabulary) — mapping it to `<ext-link>` is filed in
-`BACKLOG.md`.
+**Remaining slice:** a real CC-BY PubMed Central article as the
+demonstration (Slice 7). A related open item: the JATS *export* still drops
+`<a>` (it predates `<a>` in the vocabulary) — mapping it to `<ext-link>` is
+filed in `BACKLOG.md`.
 
 ---
 

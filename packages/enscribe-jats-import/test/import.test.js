@@ -492,5 +492,88 @@ graph TD
     console.log('PASS: round-trip export → import (theorem + DSL)');
   }
 
+  // ── reduction policy: preserve readers' content, drop metadata (Slice 6) ─────
+  {
+    // Capture the importer's drop warnings for this conversion.
+    const warnings = [];
+    const realWarn = console.warn;
+    console.warn = (m) => { if (/^\[jats-import\]/.test(String(m))) warnings.push(String(m)); };
+
+    let tree;
+    try {
+      const xml = `<article>
+  <front><journal-meta><issn>1234-5678</issn></journal-meta>
+    <article-meta>
+      <article-id pub-id-type="doi">10.1/x</article-id>
+      <title-group><article-title>Reduction</article-title></title-group>
+      <contrib-group><contrib contrib-type="author"><string-name>A. Author</string-name><aff>Univ</aff></contrib></contrib-group>
+      <pub-date><year>2024</year></pub-date>
+      <volume>12</volume><issue>3</issue><fpage>1</fpage><lpage>10</lpage>
+      <history><date date-type="received"><year>2023</year></date></history>
+      <permissions><license><p>CC-BY</p></license></permissions>
+      <abstract><p>The abstract.</p></abstract>
+      <kwd-group><kwd>alpha</kwd><kwd>beta</kwd></kwd-group>
+      <funding-group><funding-statement>Funded by Grant 42.</funding-statement></funding-group>
+      <author-notes><fn fn-type="conflict"><p>No conflict.</p></fn></author-notes>
+      <counts><page-count count="10"/></counts>
+    </article-meta></front>
+  <body><sec><title>Intro</title><p>Body.</p></sec></body>
+  <back>
+    <ack><title>Acknowledgments</title><p>We thank the reviewers.</p></ack>
+    <app-group><app id="app1"><title>Supplementary Methods</title><p>Extra detail.</p></app></app-group>
+    <glossary><title>Glossary</title><def-list><def-item><term>API</term><def><p>App Programming Interface.</p></def></def-item></def-list></glossary>
+  </back>
+</article>`;
+      tree = importJats(xml);
+    } finally {
+      console.warn = realWarn;
+    }
+
+    // Category B — preserved as readable content
+    assert.ok(tagged(tree, 'abstract').length === 1, 'abstract preserved (in meta)');
+    const kw = findAll(tree, (n) => n.type === 'paragraph').find((p) =>
+      findAll(p, (x) => x.type === 'text' && /alpha, beta/.test(x.value)).length);
+    assert.ok(kw, 'keywords preserved as a paragraph');
+    const titles = tagged(tree, 'section').map((s) => findAll(s, (x) => x.type === 'text').map((x) => x.value).join('')).join('|');
+    assert.ok(/Acknowledgments/.test(titles), 'acknowledgments → section');
+    assert.ok(/Funding/.test(titles), 'funding → section');
+    assert.ok(/Author Notes/.test(titles), 'author notes → section');
+    assert.ok(/Supplementary Methods/.test(titles), 'appendix → section (own title)');
+    assert.ok(/Glossary/.test(titles), 'glossary → section');
+    assert.equal(tagged(tree, 'dl').length, 1, 'def-list → <dl>');
+    assert.equal(tagged(tree, 'dt').length, 1, 'def term → <dt>');
+    assert.equal(tagged(tree, 'dd').length, 1, 'definition → <dd>');
+
+    // Category C — dropped, and SILENTLY (no warnings the reader can't act on)
+    assert.equal(warnings.length, 0, `metadata dropped silently (got: ${warnings.join('; ')})`);
+
+    // renders cleanly with the reader-facing content visible
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes');
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const body = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(/We thank the reviewers/.test(body) && /Grant 42/.test(body) && /No conflict/.test(body), 'B content rendered');
+    assert.ok(/App Programming Interface/.test(body), 'glossary definition rendered');
+    assert.ok(!/1234-5678/.test(body) && !/CC-BY/.test(body), 'metadata (ISSN, license) not rendered');
+    console.log('PASS: reduction policy (preserve reader content, drop metadata)');
+  }
+
+  // ── a genuinely unknown element still warns once (not silent) ────────────────
+  {
+    const warnings = [];
+    const realWarn = console.warn;
+    console.warn = (m) => { if (/^\[jats-import\]/.test(String(m))) warnings.push(String(m)); };
+    try {
+      importJats(`<article><front><article-meta><title-group><article-title>U</article-title></title-group>
+        <some-vendor-extension>x</some-vendor-extension></article-meta></front>
+        <body><sec><title>S</title><p>P.</p></sec></body>
+        <back><weird-back-thing>y</weird-back-thing></back></article>`);
+    } finally {
+      console.warn = realWarn;
+    }
+    assert.ok(warnings.some((w) => /some-vendor-extension/.test(w)), 'unknown meta element warns');
+    assert.ok(warnings.some((w) => /weird-back-thing/.test(w)), 'unknown back element warns');
+    console.log('PASS: unknown elements still warn (no silent loss)');
+  }
+
   console.log('All JATS import tests passed.');
 }

@@ -147,7 +147,7 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 - [~] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)* — **Slices 1–5 landed.** Slice 1:
+  *(→ roadmap: Phase 13)* — **Slices 1–6 landed.** Slice 1:
   `@enscribejs/jats-import` with the XML parser, structural mapping
   (article/front/body/sec/p), and inline formatting (bold/italic/code/links/sup/sub),
   surfaced as `enscribe import-jats` (HTML, or canonical `.emd` with `--emd`).
@@ -160,8 +160,12 @@ A flat scannable index of every open item. Detailed entries below.
   (`<fn>` → `<note>`). Slice 5: the theorem family (`<statement
   content-type="X">` → `<theorem>`/`<lemma>`/`<definition>`/`<proof>`/…),
   DSL blocks (a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`), and bare
-  `<preformat>` → code block. Remaining slices: the non-representable-element
-  reduction policy, then a real PMC article.
+  `<preformat>` → code block. Slice 6: the reduction policy — reader-facing
+  apparatus (keywords, acknowledgments, funding, author notes, appendices,
+  glossary, def-lists) preserved as readable sections/paragraphs, publishing
+  metadata (journal-meta, article-ids, permissions, positioning, counts)
+  dropped silently, unknown elements still warned. Remaining: a real PMC
+  article (Slice 7).
 - [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
   in the vocabulary), so exported JATS loses links and the import round-trip can't
@@ -703,6 +707,28 @@ limitation). A bare `<preformat>` (outside a DSL figure) → a code block (`lang
 from `xml:lang`). Round-trip verified (synthetic + the calibration fixture: 3
 theorem-family elements, 1 DSL figure, 6 cross-references survive and render, 0
 error nodes). Next: **Slice 6 — non-representable-element reduction policy.**
+
+**Slice 6 landed (2026-05-31)** — the reduction policy. The principle (from the
+Phase 0 findings and chat ratification): map what maps, preserve what a reader
+would want, drop publishing metadata. **Category B (preserved as readable
+content):** `<kwd-group>` → a "Keywords: …" paragraph; `<ack>` →
+"Acknowledgments" section; `<funding-group>` → "Funding" section; `<author-notes>`
+(incl. its `<fn>`/`<corresp>`) → "Author Notes" section; `<app>`/`<app-group>` →
+"Appendix" sections (own `<title>` when present); `<glossary>`/`<def-list>` →
+sections with `<def-list>` → `<dl>`/`<dt>`/`<dd>`. (The abstract was already
+preserved in `<meta>` since Slice 1 — including structured abstracts, whose
+internal `<sec>`s render as sub-sections — so it is **not** moved to a body
+section, a deliberate divergence from the slice prompt that keeps the better
+representation.) **Category C (dropped silently** — `DROPPED_METADATA`): pure
+publishing / bibliographic / legal metadata (journal-meta, article-id, volume,
+issue, fpage/lpage, permissions/license, history, counts, self-uri, aff,
+supplementary-material, custom-meta-group, …) — warning about an ISSN or page
+count the reader can do nothing about is just noise. **Accounting:** `<front>`
+and `<back>` children are now exhaustively checked — anything neither handled nor
+expected-dropped warns once, so a real article's surprises surface. Verified: a
+synthetic PMC-shaped article imports with **zero** warnings and all reader
+content present; the export-fixture round-trips stay clean. Next: **Slice 7 — a
+real PubMed Central article demonstration.**
 
 ### JATS export: map `<a>` → `<ext-link>`
 `[interpreter]` `[release]` *(→ roadmap: Phase 13)*

@@ -62,6 +62,18 @@ Import is **deliberately lossy** and built incrementally. This release maps:
   …-source>`) → `<mermaid>`/`<abc>` with the source preserved verbatim. A bare
   `<preformat>` → a code block (`lang` from `xml:lang`).
 
-Not yet imported (dropped, with a one-line warning naming each kind — never
-silently): `<book>` (BITS) and the long tail of non-representable elements.
-These arrive in later Phase 13 slices.
+## Reduction policy
+
+Every element the importer meets is accounted for. **Reader-facing apparatus is
+preserved** as readable content: keywords → a "Keywords: …" paragraph;
+acknowledgments, funding, author notes / conflicts, appendices, and glossaries →
+sections (`<def-list>` → `<dl>`); the abstract is kept in `<meta>` (structured
+abstracts keep their internal sections). **Pure publishing metadata is dropped**
+*silently* — journal-meta, article-ids, volume/issue/page positioning,
+permissions/license, history, counts, affiliations, self-uri,
+supplementary-material, custom-meta — because warning about an ISSN the reader
+can't act on is just noise. **Anything in neither set still warns once**, so an
+unfamiliar element surfaces rather than vanishing.
+
+Not yet imported: `<book>` (BITS), which raises a clear error rather than
+producing a mangled article.

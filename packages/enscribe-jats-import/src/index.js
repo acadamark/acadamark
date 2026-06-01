@@ -27,9 +27,12 @@
 //             <ref>), DSL blocks (a DSL <fig> with a <preformat> source →
 //             <mermaid> / <abc> with the source preserved opaquely), and bare
 //             <preformat> → a code block.
-// The non-representable-element reduction policy lands in a later slice; elements
-// this slice does not handle are dropped (with a one-line console warning naming
-// each kind), never silently.
+//   Slice 6 — the reduction policy: every element is accounted for. Reader-facing
+//             apparatus (keywords, acknowledgments, funding, author notes,
+//             appendices, glossary, def-lists) is preserved as readable sections /
+//             paragraphs; pure publishing metadata (journal-meta, article-ids,
+//             permissions, page positioning, counts, …) is an expected, silent
+//             drop; anything in neither set still warns once.
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
@@ -131,22 +134,34 @@ export function importJats(xml) {
 function convertArticle(article) {
   const out = [];
   const front = childEl(article, 'front');
+  const back = childEl(article, 'back');
+
+  // Front matter → <meta> (title / author / date / abstract).
   const meta = front ? buildMeta(front) : null;
   if (meta) out.push(meta);
 
   // Index footnote bodies before the body is converted, so an inline
   // `<xref ref-type="fn">` can inline its `<fn>` content where it appears.
-  const back = childEl(article, 'back');
   if (back) collectFootnotes(back);
+
+  // Keywords render as a paragraph right after the front matter.
+  if (front) out.push(...frontKeywords(front));
 
   const body = childEl(article, 'body');
   // Pre-index statement ids so forward `<xref ref-type="statement">` resolve.
   if (body) collectStatements(body);
   if (body) out.push(...convertBlocks(body.children, 0));
 
-  // <back>: <ref-list> → bibliography + <library>. The <fn-group> was inlined
-  // above (consumed here). Acknowledgements / appendices are later slices.
-  if (back) out.push(...convertBack(back));
+  // Reader-facing apparatus (acknowledgments, funding, author notes,
+  // appendices, glossary) preserved as sections after the body, then the
+  // bibliography. Pure publishing metadata is dropped (see DROPPED_METADATA).
+  out.push(...readableSections(front, back));
+  if (back) out.push(...bibliographyBlocks(back));
+
+  // Exhaustive accounting: warn once for any element neither handled nor an
+  // expected drop, so a real article's surprises surface instead of vanishing.
+  if (front) warnUnhandledMeta(front);
+  if (back) warnUnhandledBack(back);
   return out;
 }
 
@@ -207,35 +222,141 @@ function formatDate(date) {
   return parts.join('-');
 }
 
-// ─── back matter: citations + bibliography ──────────────────────────────────────
+// ─── reduction policy: preserve readers' content, drop publishing metadata ──────
+//
+// Every JATS element the importer meets is accounted for: mapped (Slices 1–5),
+// preserved as readable content (Category B, below), or an expected drop of
+// publishing metadata (Category C — silent, because warning about an ISSN or a
+// page count the reader can do nothing about is just noise). Anything in neither
+// set warns once, so a real article's surprises surface instead of vanishing.
+
+// `<article-meta>` children the importer consumes (in <meta>, as keywords, or as
+// a reader-facing section). Multiple pub-dates: the first is used, the rest skip.
+const HANDLED_META = new Set([
+  'title-group', 'contrib-group', 'pub-date', 'date', 'abstract',
+  'kwd-group', 'funding-group', 'author-notes',
+]);
+
+// `<back>` children the importer consumes (bibliography, inlined notes, or a
+// reader-facing section).
+const HANDLED_BACK = new Set([
+  'ref-list', 'fn-group', 'ack', 'app', 'app-group', 'funding-group',
+  'glossary', 'notes', 'sec', 'title', 'label',
+]);
+
+// Category C — pure publishing / bibliographic / legal metadata. Dropped without
+// a warning: it is not document content, and the standalone rendered document has
+// no use for it. (The DOI in <article-id> is debatable; dropped here for now.)
+const DROPPED_METADATA = new Set([
+  'journal-meta', 'article-id', 'article-categories', 'article-version',
+  'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title',
+  'issue-part', 'fpage', 'lpage', 'elocation-id', 'page-range', 'product',
+  'supplementary-material', 'history', 'pub-history', 'permissions', 'license',
+  'self-uri', 'related-article', 'related-object', 'counts', 'custom-meta-group',
+  'aff', 'aff-alternatives', 'author-comment', 'isbn', 'conference', 'bio',
+  'trans-abstract', 'trans-title-group', 'x',
+]);
 
 /**
- * Convert `<back>` to Enscribe back matter. Each `<ref>` in any `<ref-list>`
- * becomes a BibTeX entry; the entries are gathered into one `<library>` (inside
- * `<data>`), and a `<bibliography>` placement is emitted so the rendered output
- * shows the reference list. Per convention the apparatus goes at the document's
- * end: `<bibliography>` first, then `<data>`.
+ * `<ref-list>` → a `<bibliography>` placement plus a `<library>` of BibTeX inside
+ * `<data>` (apparatus at the document's end, per convention). Returns the blocks.
  */
-function convertBack(back) {
-  const out = [];
+function bibliographyBlocks(back) {
   const refs = collectEls(back, 'ref');
-  if (refs.length) {
-    const entries = refs.map((ref, i) => convertRef(ref, i)).filter(Boolean);
-    if (entries.length) {
-      // Empty `<bibliography>` placement (the interpreter fills it from the cited
-      // entries) followed by the `<library>` of BibTeX wrapped in `<data>`.
-      out.push({ ...makeTag('bibliography', []), form: 'long' });
-      const bibtex = '\n' + entries.join('\n\n') + '\n';
-      const library = makeOpaqueTag('library', bibtex, { contentHandler: 'library' });
-      out.push({ ...makeTag('data', [library]), form: 'long' });
+  if (!refs.length) return [];
+  const entries = refs.map((ref, i) => convertRef(ref, i)).filter(Boolean);
+  if (!entries.length) return [];
+  const library = makeOpaqueTag('library', '\n' + entries.join('\n\n') + '\n', { contentHandler: 'library' });
+  return [
+    { ...makeTag('bibliography', []), form: 'long' },
+    { ...makeTag('data', [library]), form: 'long' },
+  ];
+}
+
+/** `<kwd-group>` → a "Keywords: …" paragraph (or none). */
+function frontKeywords(front) {
+  const am = childEl(front, 'article-meta') ?? front;
+  const kwds = [];
+  for (const g of childrenEls(am, 'kwd-group')) {
+    for (const k of childrenEls(g, 'kwd')) {
+      const t = textOf(k).replace(/\s+/g, ' ').trim();
+      if (t) kwds.push(t);
     }
   }
-  // `<ref-list>` (above) and `<fn-group>` (inlined as notes) are handled;
-  // acknowledgements, glossaries, appendices, author bios → later slices.
-  for (const child of back.children) {
-    if (isEl(child) && child.name !== 'ref-list' && child.name !== 'fn-group') noteDropped(child.name);
+  if (!kwds.length) return [];
+  return [{ type: 'paragraph', children: [
+    makeTag('b', [{ type: 'text', value: 'Keywords: ' }]),
+    { type: 'text', value: kwds.join(', ') },
+  ] }];
+}
+
+/** A top-level section header (title in pipe content), the post-normalize shape. */
+function sectionHead(titleNodes) {
+  return makeTag('section', [{ type: 'paragraph', children: titleNodes }]);
+}
+
+/**
+ * A JATS region (`<ack>`/`<app>`/`<notes>`/`<glossary>`) → an Enscribe section:
+ * its `<title>` (or `defaultTitle`) as the heading, its body routed through the
+ * normal block converter (so nested `<sec>`, `<p>`, `<def-list>`, etc. all work).
+ */
+function regionToSection(el, defaultTitle) {
+  const titleEl = childEl(el, 'title');
+  const titleNodes = titleEl && titleEl.children.length
+    ? convertInline(titleEl.children)
+    : [{ type: 'text', value: defaultTitle }];
+  const body = el.children.filter((c) => c !== titleEl && c.name !== 'label');
+  return [sectionHead(titleNodes), ...convertBlocks(body, 1)];
+}
+
+/** `<funding-group>` → a "Funding" section carrying the funding statement text. */
+function fundingSection(fg) {
+  const stmt = collectEls(fg, 'funding-statement')[0];
+  const text = (stmt ? textOf(stmt) : textOf(fg)).replace(/\s+/g, ' ').trim();
+  if (!text) return [];
+  return [sectionHead([{ type: 'text', value: 'Funding' }]),
+    { type: 'paragraph', children: [{ type: 'text', value: text }] }];
+}
+
+/**
+ * Reader-facing apparatus from `<front>` and `<back>` → Enscribe sections, in a
+ * natural reading order: acknowledgments, funding, author notes / conflicts,
+ * appendices, glossary.
+ */
+function readableSections(front, back) {
+  const out = [];
+  const am = front ? (childEl(front, 'article-meta') ?? front) : null;
+
+  if (back) for (const ack of childrenEls(back, 'ack')) out.push(...regionToSection(ack, 'Acknowledgments'));
+  for (const src of [back, am]) {
+    if (src) for (const fg of childrenEls(src, 'funding-group')) out.push(...fundingSection(fg));
+  }
+  if (am) for (const an of childrenEls(am, 'author-notes')) out.push(...regionToSection(an, 'Author Notes'));
+  if (back) for (const nt of childrenEls(back, 'notes')) out.push(...regionToSection(nt, 'Notes'));
+  if (back) {
+    for (const app of childrenEls(back, 'app')) out.push(...regionToSection(app, 'Appendix'));
+    for (const ag of childrenEls(back, 'app-group')) {
+      for (const app of childrenEls(ag, 'app')) out.push(...regionToSection(app, 'Appendix'));
+    }
+    for (const gl of childrenEls(back, 'glossary')) out.push(...regionToSection(gl, 'Glossary'));
+    for (const sec of childrenEls(back, 'sec')) out.push(...convertSec(sec, 0));
   }
   return out;
+}
+
+/** Warn once for each `<article-meta>` child that is neither handled nor expected-dropped. */
+function warnUnhandledMeta(front) {
+  const am = childEl(front, 'article-meta') ?? front;
+  for (const child of am.children) {
+    if (isEl(child) && !HANDLED_META.has(child.name) && !DROPPED_METADATA.has(child.name)) noteDropped(child.name);
+  }
+}
+
+/** Warn once for each `<back>` child that is neither handled nor expected-dropped. */
+function warnUnhandledBack(back) {
+  for (const child of back.children) {
+    if (isEl(child) && !HANDLED_BACK.has(child.name) && !DROPPED_METADATA.has(child.name)) noteDropped(child.name);
+  }
 }
 
 // JATS <element-citation publication-type="…"> → BibTeX entry type. The inverse
@@ -766,17 +887,37 @@ function convertBlock(node, depth) {
     case 'fig':         return convertFigure(node);
     case 'table-wrap':  return convertTableWrap(node);
     case 'statement':   return convertStatement(node);
+    case 'def-list':    return convertDefList(node);
+    // A block-position <fn> / <corresp> (e.g. inside <author-notes>) — unwrap to
+    // its content. (Body footnote markers are inlined via <xref ref-type="fn">.)
+    case 'fn':          return convertBlocks(node.children.filter((c) => c.name !== 'label'), depth);
+    case 'corresp':     return { type: 'paragraph', children: convertInline(node.children.filter((c) => c.name !== 'label')) };
     case 'preformat': {
       // A bare <preformat> (DSL <preformat>s are consumed inside convertFigure) →
       // a code block. Language from xml:lang when present.
       const lang = node.attributes['xml:lang'] || node.attributes.language || null;
       return { type: 'code', lang, value: textOf(node).replace(/^\s*\n/, '').replace(/\s+$/, '') };
     }
-    case 'title':     return null; // consumed by convertSec
+    case 'title':     return null; // consumed by convertSec / regionToSection
+    case 'label':     return null; // consumed by the element that owns it
     default:
-      noteDropped(node.name); // figures, tables, math, statements, … (later slices)
+      // Expected publishing metadata drops silently; a genuinely unknown block
+      // warns once so it is not lost without notice.
+      if (!DROPPED_METADATA.has(node.name)) noteDropped(node.name);
       return null;
   }
+}
+
+/** `<def-list>` → `<dl>` with `<dt>` (term) / `<dd>` (definition) items. */
+function convertDefList(dl) {
+  const items = [];
+  for (const di of childrenEls(dl, 'def-item')) {
+    const term = childEl(di, 'term');
+    const def = childEl(di, 'def');
+    if (term) items.push(makeTag('dt', convertInline(term.children)));
+    if (def) items.push(makeTag('dd', convertBlocks(def.children, 99)));
+  }
+  return makeTag('dl', items);
 }
 
 function convertList(node, depth) {

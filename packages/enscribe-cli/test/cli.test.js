@@ -115,6 +115,10 @@ export function run_tests() {
     // theorem family + DSL block render.
     assert.ok(/Theorem/i.test(html.out) && html.out.includes('Main Result'), 'imported theorem renders');
     assert.ok(/data-enscribe-dsl="mermaid"|class="mermaid/.test(html.out), 'imported mermaid DSL renders');
+    // reduction policy: reader content preserved, publishing metadata dropped.
+    assert.ok(html.out.includes('Keywords:') && html.out.includes('importing, round-trip'), 'keywords preserved');
+    assert.ok(html.out.includes('Funded by Grant 7') && html.out.includes('We thank our collaborators'), 'funding + acknowledgments preserved');
+    assert.ok(!html.out.includes('1234-5678') && !html.out.includes('CC-BY'), 'metadata (ISSN, license) dropped, not rendered');
 
     const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
     assert.equal(emd.code, 0);

@@ -96,9 +96,11 @@ strike, monospace, super/subscript, links), citations & bibliography
 or MathML), figures, tables, cross-references, and footnotes (`<fig>`,
 `<table-wrap>` → CSV, `<xref>` → `<ref>`, inlined `<fn>` → `<note>`), and the
 theorem family, DSL blocks, and code listings (`<statement>` → theorem/lemma/…,
-a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`, `<preformat>` → code). Constructs
-without a Layer 1 counterpart are dropped with a one-time warning per kind; later
-releases map more of them. See
+a DSL `<fig><preformat>` → `<mermaid>`/`<abc>`, `<preformat>` → code). Reader-facing
+apparatus (keywords, acknowledgments, funding, appendices, glossary) is preserved
+as readable content; pure publishing metadata (journal-meta, article-ids,
+permissions, page positioning) is dropped silently; anything unfamiliar warns
+once. See
 [`@enscribejs/jats-import`](../enscribe-jats-import/README.md) for the current
 mapping.
 
