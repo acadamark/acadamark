@@ -17,11 +17,13 @@
     <sec id="sec:intro">
       <title>Introduction</title>
       <p>A paragraph with <bold>bold</bold>, <italic>italic</italic>, and <monospace>code</monospace>,
-         citing earlier work <xref ref-type="bibr" rid="ref-doe2020">1</xref>.</p>
+         citing earlier work <xref ref-type="bibr" rid="ref-doe2020">1</xref>, with inline math
+         <inline-formula><tex-math><![CDATA[E = mc^2]]></tex-math></inline-formula>.</p>
     </sec>
     <sec>
       <title>Results</title>
       <p>The result follows.</p>
+      <disp-formula id="eqn:result"><tex-math><![CDATA[\sum_{i=1}^{n} x_i]]></tex-math></disp-formula>
     </sec>
   </body>
   <back>

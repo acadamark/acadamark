@@ -13,12 +13,17 @@
 //   Slice 2 — citations and bibliography: <xref ref-type="bibr"> → <cite @key>,
 //             <back><ref-list><ref><element-citation> → BibTeX in a <library>
 //             (inside <data>), and a <bibliography> placement.
-// Math, figures, tables, non-bibliographic cross-references, the theorem family,
-// DSL blocks, and the non-representable-element reduction policy land in later
+//   Slice 3 — math: <inline-formula> → <inline-math>, <disp-formula> →
+//             <display-math> (id preserved). The LaTeX comes from <tex-math>
+//             (preferred, verbatim) or, failing that, from presentation MathML
+//             converted via `mathml-to-latex`.
+// Figures, tables, non-bibliographic cross-references, the theorem family, DSL
+// blocks, and the non-representable-element reduction policy land in later
 // slices; elements this slice does not handle are dropped (with a one-line
 // console warning naming each kind), never silently.
 
 import { SaxesParser } from 'saxes';
+import { MathMLToLaTeX } from 'mathml-to-latex';
 import { makeTag, makeOpaqueTag } from '@enscribejs/core/tag';
 
 // ─── XML → a small DOM tree (saxes) ───────────────────────────────────────────
@@ -405,6 +410,75 @@ function bibtexEscapeValue(value) {
   return depth > 0 ? out + '}'.repeat(depth) : out; // close any still-open braces
 }
 
+// ─── math ───────────────────────────────────────────────────────────────────────
+
+/** All descendant elements whose *local* name (prefix stripped) is `local`. */
+function collectByLocal(node, local, acc = []) {
+  for (const c of node.children ?? []) {
+    if (!isEl(c)) continue;
+    if (c.name.replace(/^.*:/, '') === local) acc.push(c);
+    collectByLocal(c, local, acc);
+  }
+  return acc;
+}
+
+/** Faithfully re-serialize a parsed element back to an XML string (for MathML). */
+function serializeXml(node) {
+  if (node.name === '#text') return escapeXmlText(node.value);
+  const attrs = Object.entries(node.attributes ?? {})
+    .map(([k, v]) => ` ${k}="${escapeXmlAttr(v)}"`)
+    .join('');
+  const inner = (node.children ?? []).map(serializeXml).join('');
+  return `<${node.name}${attrs}>${inner}</${node.name}>`;
+}
+const escapeXmlText = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escapeXmlAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+/**
+ * Extract LaTeX from an `<inline-formula>` / `<disp-formula>` (or an
+ * `<alternatives>` wrapper inside one). Prefers `<tex-math>` (verbatim LaTeX,
+ * CDATA-folded by the parser); falls back to presentation MathML converted via
+ * `mathml-to-latex`. Returns the LaTeX string, or null when neither is present
+ * (or MathML conversion fails) so the caller can degrade gracefully.
+ */
+function extractMathLatex(formula) {
+  const tex = collectEls(formula, 'tex-math')[0];
+  if (tex) {
+    const latex = textOf(tex).trim();
+    if (latex) return latex;
+  }
+  const math = collectByLocal(formula, 'math')[0];
+  if (math) {
+    try {
+      const latex = MathMLToLaTeX.convert(serializeXml(math)).trim();
+      if (latex) return latex;
+    } catch {
+      noteDropped('math(mathml-conversion-failed)');
+    }
+  }
+  return null;
+}
+
+/**
+ * Convert a formula element to a math node: `<inline-math>` (opaque, `math`
+ * handler) or `<display-math>` (opaque, `math-display` handler, id preserved).
+ * When no LaTeX can be recovered, degrade to a `<code>` span holding the raw
+ * text and warn — never an error node.
+ */
+function convertFormula(formula, display) {
+  const latex = extractMathLatex(formula);
+  if (latex != null) {
+    if (display) {
+      const node = makeOpaqueTag('display-math', latex, { contentHandler: 'math-display' });
+      const id = formula.attributes.id;
+      return id ? { ...node, id } : node;
+    }
+    return makeOpaqueTag('inline-math', latex, { contentHandler: 'math' });
+  }
+  noteDropped(display ? 'disp-formula(no-tex-math/mathml)' : 'inline-formula(no-tex-math/mathml)');
+  return { type: 'inlineCode', value: textOf(formula).replace(/\s+/g, ' ').trim() || '(math)' };
+}
+
 // ─── body blocks ──────────────────────────────────────────────────────────────
 
 /** Convert a sequence of block-level JATS children at the given section depth. */
@@ -444,6 +518,11 @@ function convertBlock(node, depth) {
     case 'p':         return { type: 'paragraph', children: convertInline(node.children) };
     case 'list':      return convertList(node, depth);
     case 'disp-quote':return { type: 'blockquote', children: convertBlocks(node.children, depth) };
+    case 'disp-formula': {
+      const m = convertFormula(node, /* display */ true);
+      // A LaTeX math node is a block-level sibling; a fallback code span is wrapped.
+      return m.type === 'enscribeTag' ? m : { type: 'paragraph', children: [m] };
+    }
     case 'title':     return null; // consumed by convertSec
     default:
       noteDropped(node.name); // figures, tables, math, statements, … (later slices)
@@ -466,7 +545,7 @@ function convertList(node, depth) {
 const INLINE_TAG_MAP = {
   bold: 'b', italic: 'i', underline: 'u', strike: 's', sup: 'sup', sub: 'sub',
 };
-const DROP_INLINE = new Set(['inline-formula', 'disp-formula']); // math: later slices
+const DROP_INLINE = new Set(); // (formulas handled explicitly below; populated by later slices)
 
 /** A `<cite @key…>` node (shape per the parser: atRefs hold the keys, content null). */
 function citeNode(keys) {
@@ -509,6 +588,9 @@ function convertInline(children) {
       out.push(...convertInline(c.children));
       continue;
     }
+    if (c.name === 'inline-formula') { out.push(convertFormula(c, /* display */ false)); continue; }
+    // A <disp-formula> nested in inline content (uncommon) still becomes display-math.
+    if (c.name === 'disp-formula') { out.push(convertFormula(c, /* display */ true)); continue; }
     if (DROP_INLINE.has(c.name)) { noteDropped(c.name); continue; }
     // Unknown inline wrapper: keep its text content, drop the wrapper.
     noteDropped(c.name);

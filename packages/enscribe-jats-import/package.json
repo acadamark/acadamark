@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@enscribejs/core": "^0.1.0",
+    "mathml-to-latex": "^1.5.0",
     "saxes": "^6.0.0"
   }
 }

@@ -107,6 +107,8 @@ export function run_tests() {
     // citations resolve in the rendered output, and a bibliography is present.
     assert.ok(html.out.includes('data-keys="ref-doe2020"') || html.out.includes('Doe'), 'cite resolved in HTML');
     assert.ok(html.out.includes('An Earlier Study'), 'bibliography rendered in HTML');
+    // math (inline tex-math + display formula) renders via KaTeX.
+    assert.ok(html.out.includes('katex'), 'imported math renders via KaTeX in HTML');
 
     const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
     assert.equal(emd.code, 0);
@@ -117,6 +119,8 @@ export function run_tests() {
     assert.ok(emd.out.includes('<cite @ref-doe2020>'), '--emd → in-text cite');
     assert.ok(emd.out.includes('@article{ref-doe2020,'), '--emd → BibTeX entry in library');
     assert.ok(emd.out.includes('<bibliography>'), '--emd → bibliography placement');
+    assert.ok(emd.out.includes('<$E = mc^2$>'), '--emd → inline math sigil');
+    assert.ok(emd.out.includes('<$$ #eqn:result |') || emd.out.includes('\\sum_{i=1}^{n} x_i'), '--emd → display math with id');
     console.log('PASS: import-jats → HTML and --emd');
   }
 

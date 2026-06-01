@@ -4543,3 +4543,29 @@ that). One line gets added every few months, not every slice.
   subpath — added the export so the documented import resolves. All workspace
   suites pass from clean; docs build six pages. Next: **Slice 3 — math
   (MathML / `<tex-math>` → LaTeX).**
+- **2026-05-31 — Phase 13 Slice 3: math import.** The JATS importer now carries
+  math. `<inline-formula>` → `<inline-math>` and `<disp-formula>` →
+  `<display-math>` (id preserved verbatim; the `<label>` equation number is
+  dropped because the interpreter re-numbers). The LaTeX comes from `<tex-math>`
+  when present — verbatim, with CDATA folded into text by the parser (saxes
+  handles `<![CDATA[…]]>` transparently, backslashes intact), and preferred even
+  when MathML is also offered inside `<alternatives>` — otherwise from
+  presentation MathML converted by `mathml-to-latex` (new dependency, MIT,
+  v1.5.0). The Q2 investigation confirmed the library handles namespaced (`mml:`)
+  MathML natively, with or without an `xmlns` declaration on the re-serialized
+  subtree, so the import re-serializes the MathML element faithfully and passes it
+  straight through — no namespace stripping; the output is KaTeX-renderable. A
+  formula with neither `<tex-math>` nor convertible MathML degrades to a `<code>`
+  span with a warning, never an error node (the locked graceful-fallback). Math
+  nodes are built with `makeOpaqueTag` (`math` / `math-display` handlers), so the
+  lift serializer emits them as `<$ … $>` / `<$$ … $$>` sigils in `.emd` output.
+  Round-trip verified on a synthetic document and the calibration fixture (0 error
+  nodes, KaTeX renders); the calibration's exported `<tex-math>` count exceeds the
+  re-imported math count only because math nested in `<statement>`/`<fig>`/
+  `<table-wrap>` is dropped *with its container* (those containers are Slices 4–5).
+  Math-env tags (matrix/cases/align/eqnarray) round-trip as plain `<display-math>`
+  carrying the `\begin{env}…\end{env}` LaTeX — identical rendering, but the named
+  env tag is not reconstructed. None of the slice's stop-conditions triggered:
+  saxes delivers CDATA, `mathml-to-latex` handles namespaced MathML, and its
+  output renders in KaTeX. All workspace suites pass from clean; docs build six
+  pages. Next: **Slice 4 — figures, tables, cross-references.**

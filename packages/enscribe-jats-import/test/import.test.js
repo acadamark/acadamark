@@ -228,5 +228,79 @@ First <cite @Smith2020>, then <cite @Jones2018>.
     console.log('PASS: round-trip export → import citations resolve');
   }
 
+  // ── math: tex-math + MathML (Slice 3) ───────────────────────────────────────
+  {
+    const xml = `<article>
+  <front><article-meta><title-group><article-title>Math</article-title></title-group></article-meta></front>
+  <body><sec><title>Eqs</title>
+    <p>Inline <inline-formula><tex-math><![CDATA[E = mc^2]]></tex-math></inline-formula> here.</p>
+    <disp-formula id="eqn:newton"><label>(1)</label><tex-math><![CDATA[F = ma]]></tex-math></disp-formula>
+    <p>MathML <inline-formula><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mfrac><mml:mi>a</mml:mi><mml:mi>b</mml:mi></mml:mfrac></mml:math></inline-formula>.</p>
+    <disp-formula id="eqn:mml"><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msqrt><mml:msup><mml:mi>x</mml:mi><mml:mn>2</mml:mn></mml:msup></mml:msqrt></mml:math></disp-formula>
+    <p>Both <inline-formula><alternatives><tex-math><![CDATA[\\alpha]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>WRONG</mml:mi></mml:math></alternatives></inline-formula>.</p>
+    <p>Neither <inline-formula>just words</inline-formula>.</p>
+  </sec></body>
+</article>`;
+    const tree = importJats(xml);
+
+    const im = tagged(tree, 'inline-math');
+    const dm = tagged(tree, 'display-math');
+    // 3 inline-math: tex (E=mc^2), MathML (a/b), both-present (alpha). "Neither" → code span.
+    assert.equal(im.length, 3, 'three inline-math');
+    assert.equal(dm.length, 2, 'two display-math');
+
+    // tex-math extracted verbatim; opaque with the math handler
+    assert.equal(im[0].content, 'E = mc^2', 'inline tex-math verbatim');
+    assert.ok(im[0].isOpaqueContent && im[0].contentHandler === 'math', 'inline-math opaque/math handler');
+    // MathML → LaTeX
+    assert.equal(im[1].content, '\\frac{a}{b}', 'inline MathML → \\frac{a}{b}');
+    // both present → tex-math wins (NOT the MathML "WRONG")
+    assert.equal(im[2].content, '\\alpha', 'tex-math preferred over MathML when both present');
+
+    // display: id preserved, label dropped, math-display handler
+    assert.equal(dm[0].content, 'F = ma', 'display tex-math verbatim (label dropped)');
+    assert.equal(dm[0].id, 'eqn:newton', 'display-math id preserved');
+    assert.ok(dm[0].contentHandler === 'math-display', 'display-math uses math-display handler');
+    assert.equal(dm[1].content, '\\sqrt{x^{2}}', 'display MathML → \\sqrt{x^{2}}');
+    assert.equal(dm[1].id, 'eqn:mml', 'display MathML id preserved');
+
+    // graceful fallback: "neither" → a code span, NOT an error node
+    assert.equal(errorNodes(tree).length, 0, 'no error nodes');
+    assert.ok(findAll(tree, (n) => n.type === 'inlineCode' && n.value === 'just words').length === 1,
+      'formula with no tex-math/MathML degrades to a code span');
+
+    // renders as KaTeX
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const html = proc.stringify(proc.runSync(tree));
+    assert.ok(/class="katex/.test(html), 'math renders via KaTeX');
+    console.log('PASS: math import (tex-math + MathML)');
+  }
+
+  // ── round-trip: .emd math → export → import → math survives + renders ────────
+  {
+    const emd = `<meta type=article>
+  <title | Math RT>
+</meta>
+
+<# Eqs #>
+
+Inline <$ E = mc^2 $> and a display:
+
+<$$ #eqn:newton | F = ma $$>`;
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const jats = enscribeToJats(proc.runSync(proc.parse(emd)));
+    assert.ok(/<tex-math><!\[CDATA\[E = mc\^2\]\]><\/tex-math>/.test(jats), 'RT: export emits inline tex-math');
+    assert.ok(/<disp-formula id="eqn:newton">/.test(jats), 'RT: export emits disp-formula with id');
+
+    const tree = importJats(jats);
+    assert.equal(tagged(tree, 'inline-math')[0].content, 'E = mc^2', 'RT: inline math survives');
+    const dm = tagged(tree, 'display-math')[0];
+    assert.equal(dm.content, 'F = ma', 'RT: display math survives');
+    assert.equal(dm.id, 'eqn:newton', 'RT: display math id survives');
+    assert.equal(errorNodes(tree).length, 0, 'RT: no error nodes');
+    assert.ok(/class="katex/.test(proc.stringify(proc.runSync(tree))), 'RT: re-imported math renders');
+    console.log('PASS: round-trip export → import math survives');
+  }
+
   console.log('All JATS import tests passed.');
 }

@@ -267,15 +267,16 @@ A flat scannable index of every open item. Detailed entries below.
 - [ ] **Build executable code blocks (JS / Arquero / Vega-Lite)**
   `[cross-cutting]` `[post-alpha]` *(→ roadmap: Phase 10)*
 - [~] **Build JATS import** `[interpreter]` `[release]`
-  *(→ roadmap: Phase 13)* — **Slices 1–2 landed.** Slice 1:
+  *(→ roadmap: Phase 13)* — **Slices 1–3 landed.** Slice 1:
   `@enscribejs/jats-import` with the XML parser, structural mapping
   (article/front/body/sec/p), and inline formatting (bold/italic/code/links/sup/sub),
   surfaced as `enscribe import-jats` (HTML, or canonical `.emd` with `--emd`).
   Slice 2: citations & bibliography (`<xref ref-type="bibr">` → `<cite @key>`,
   `<ref-list>`/`<element-citation>` → BibTeX `<library>` + `<bibliography>`).
-  Remaining slices: math (MathML → LaTeX), figures/tables, non-bibliographic
-  cross-references, the theorem family, DSL blocks, and the long tail of
-  droppable elements.
+  Slice 3: math (`<inline-formula>` → `<inline-math>`, `<disp-formula>` →
+  `<display-math>`, from `<tex-math>` or MathML via `mathml-to-latex`).
+  Remaining slices: figures/tables, non-bibliographic cross-references, the
+  theorem family, DSL blocks, and the long tail of droppable elements.
 - [ ] **JATS export: map `<a>` → `<ext-link>`** `[interpreter]` `[release]`
   *(→ roadmap: Phase 13)* — the exporter currently drops `<a>` (it predates `<a>`
   in the vocabulary), so exported JATS loses links and the import round-trip can't
@@ -1218,8 +1219,27 @@ transformation) — for enscribe-exported JATS that means keys carry the exporte
 proven valid by rendering — citation-js parses it and the cites resolve with a
 formatted bibliography. Also: added the `@enscribejs/cli/serialize-canonical`
 subpath export (the jats-import README documented it, but the package didn't
-expose it — a Slice-1 doc/code drift, now fixed). Next: **Slice 3 — math
-(MathML / `<tex-math>` → LaTeX).**
+expose it — a Slice-1 doc/code drift, now fixed).
+
+**Slice 3 landed (2026-05-31)** — math. `<inline-formula>` → `<inline-math>`
+and `<disp-formula>` → `<display-math>` (id preserved verbatim; the
+`<label>` equation number is dropped, since the interpreter re-numbers). The
+LaTeX comes from `<tex-math>` when present (verbatim — CDATA is folded into text
+by the parser, so no special handling; preferred even when MathML is also present
+inside `<alternatives>`), else from presentation MathML converted by
+`mathml-to-latex` (new dep, MIT, v1.5.0). Investigation confirmed the library
+handles namespaced (`mml:`) MathML natively — with or without an `xmlns`
+declaration on the re-serialized subtree — so no namespace stripping is needed;
+its output is KaTeX-renderable. A formula carrying neither `<tex-math>` nor
+convertible MathML degrades to a `<code>` span (with a warning), never an error
+node. Math nodes are `makeOpaqueTag` (`math` / `math-display` handlers), so the
+lift serializer emits them as `<$ … $>` / `<$$ … $$>` sigils. Round-trip verified
+(synthetic + the calibration fixture: 0 error nodes, KaTeX renders). Math-env
+tags (matrix/cases/align/eqnarray) import as plain `<display-math>` carrying the
+`\begin{env}…\end{env}` LaTeX the export wrote — identical rendering, but the
+named env tag is not reconstructed. Math nested inside not-yet-imported
+containers (statement / fig / table-wrap) is still dropped *with its container*
+(Slices 4–5). Next: **Slice 4 — figures, tables, cross-references.**
 
 ### Build the client-side rendering library
 `[cross-cutting]` `[release]` *(→ roadmap: Phase 14)*

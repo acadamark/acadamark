@@ -41,8 +41,14 @@ Import is **deliberately lossy** and built incrementally. This release maps:
   `confproc`→`@inproceedings`, `thesis`→`@phdthesis`, …; anything else →
   `@misc`); author names become `Surname, Given` joined with ` and `. A free-text
   `<mixed-citation>` with no structured fields is preserved as an `@misc` `note`.
+- **Math:** `<inline-formula>` → `<inline-math>` and `<disp-formula>` →
+  `<display-math>` (id preserved). The LaTeX comes from `<tex-math>` (verbatim,
+  preferred) or, failing that, from presentation MathML converted with
+  [`mathml-to-latex`](https://www.npmjs.com/package/mathml-to-latex) (handles
+  namespaced `mml:` MathML). A formula carrying neither degrades to a code span
+  with a warning.
 
 Not yet imported (dropped, with a one-line warning naming each kind — never
-silently): math, figures, tables, non-bibliographic cross-references, the theorem
+silently): figures, tables, non-bibliographic cross-references, the theorem
 family, DSL blocks, `<book>` (BITS), and the long tail of non-representable
 elements. These arrive in later Phase 13 slices.
