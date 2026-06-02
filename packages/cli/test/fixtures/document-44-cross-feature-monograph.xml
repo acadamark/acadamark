@@ -13,17 +13,17 @@
     </contrib-group>
   </book-meta>
   <front-matter>
-    <book-part book-part-type="preface">
+    <preface>
       <book-part-meta>
         <title-group>
           <title>About this Monograph</title>
         </title-group>
       </book-part-meta>
-      <body>
+      <named-book-part-body>
         <p>This monograph is a believable miniature: it exercises every alpha feature in
 one document so the alpha integration check has a single cross-feature artifact
 to point at.<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref></p>
-      </body>
+      </named-book-part-body>
       <back>
         <fn-group content-type="endnotes">
           <fn id="note-1">
@@ -32,9 +32,9 @@ to point at.<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref></p>
           </fn>
         </fn-group>
       </back>
-    </book-part>
+    </preface>
   </front-matter>
-  <body>
+  <book-body>
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
@@ -167,7 +167,7 @@ alone.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
             <p>From pitch to perceived interval.</p>
           </caption>
           <alt-text>Mermaid diagram source preserved as preformatted text.</alt-text>
-          <preformat content-type="mermaid-source">graph LR
+          <preformat preformat-type="mermaid-source">graph LR
   A[Pitch pair] --&gt; B[Frequency ratio]
   B --&gt; C[Cents]
   C --&gt; D[Perceived interval]</preformat>
@@ -179,7 +179,7 @@ alone.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
             <p>Twinkle, Twinkle, Little Star.</p>
           </caption>
           <alt-text>Abc diagram source preserved as preformatted text.</alt-text>
-          <preformat content-type="abc-source">X:1
+          <preformat preformat-type="abc-source">X:1
 T:Twinkle Twinkle
 M:4/4
 L:1/4
@@ -198,7 +198,7 @@ figures in this chapter.<xref ref-type="fn" id="noteref-4" rid="note-4">4</xref>
         </fn-group>
       </back>
     </book-part>
-  </body>
+  </book-body>
   <book-back>
     <book-part book-part-type="appendix">
       <book-part-meta>

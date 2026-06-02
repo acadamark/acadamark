@@ -13,15 +13,15 @@
     </contrib-group>
   </book-meta>
   <front-matter>
-    <book-part book-part-type="preface">
+    <preface>
       <book-part-meta>
         <title-group>
           <title>About this Book</title>
         </title-group>
       </book-part-meta>
-      <body>
+      <named-book-part-body>
         <p>This preface sits in <monospace>&lt;front-matter&gt;</monospace> per BITS convention.<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref></p>
-      </body>
+      </named-book-part-body>
       <back>
         <fn-group content-type="endnotes">
           <fn id="note-1">
@@ -30,9 +30,9 @@
           </fn>
         </fn-group>
       </back>
-    </book-part>
+    </preface>
   </front-matter>
-  <body>
+  <book-body>
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
@@ -98,7 +98,7 @@ the book-level author. The per-book-part <monospace>&lt;contrib-group&gt;</monos
         </fn-group>
       </back>
     </book-part>
-  </body>
+  </book-body>
   <book-back>
     <book-part book-part-type="appendix">
       <book-part-meta>

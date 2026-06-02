@@ -35,7 +35,7 @@ to the diagram-layout paper <xref ref-type="bibr" rid="ref-Brown2021">Brown2021<
           <p>A simple Mermaid flowchart.</p>
         </caption>
         <alt-text>Mermaid diagram source preserved as preformatted text.</alt-text>
-        <preformat content-type="mermaid-source">graph TD;
+        <preformat preformat-type="mermaid-source">graph TD;
   A[Start] --&gt; B{Decision};
   B --&gt;|yes| C[Do thing];
   B --&gt;|no|  D[Skip];</preformat>
@@ -48,7 +48,7 @@ to the diagram-layout paper <xref ref-type="bibr" rid="ref-Brown2021">Brown2021<
           <p>A short ABC tune.</p>
         </caption>
         <alt-text>Abc diagram source preserved as preformatted text.</alt-text>
-        <preformat content-type="abc-source">X:1
+        <preformat preformat-type="abc-source">X:1
 T:Twinkle Twinkle
 M:4/4
 L:1/4

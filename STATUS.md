@@ -71,8 +71,8 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 ## Interoperability — JATS
 
-- [x] JATS 1.3 Archiving export — articles (`enscribeToJats`), DTD-validated when `xmllint` is present
-- [x] BITS 2.0 export — books
+- [x] JATS 1.3 Archiving export — articles (`enscribeToJats`); the fixture corpus validates clean against the bundled DTDs under `xmllint`
+- [x] BITS 2.0 export — books; validates clean against the bundled BITS 2.0 DTD under `xmllint`
 - [x] JATS import — document structure and inline formatting
 - [x] JATS import — citations and bibliography
 - [x] JATS import — math (`<tex-math>` and MathML)

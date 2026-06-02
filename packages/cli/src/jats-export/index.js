@@ -206,9 +206,9 @@ function emitBack(backNode) {
  * BITS structural mapping (enscribe → BITS):
  *   <book>           → <book book-type="..." xml:lang="..." dtd-version="2.0">
  *   <book-front>     → <book-meta> (from <meta>) + <front-matter> (for
- *                       front-matter book-parts: preface, foreword,
- *                       dedication)
- *   <book-body>      → <body>     (chapter/part/introduction/conclusion
+ *                       front-matter parts, emitted as BITS named
+ *                       elements <preface>/<foreword>/<dedication>)
+ *   <book-body>      → <book-body> (chapter/part/introduction/conclusion
  *                       book-parts)
  *   <book-back>      → <book-back> (appendix/glossary/colophon book-parts
  *                       + bibliography + note-list)
@@ -248,7 +248,10 @@ function emitBook(bookNode, bookType, lang) {
 /**
  * Emit the BITS `<book-meta>` (from `<meta>`) and `<front-matter>`
  * (for any preface/foreword/dedication book-parts) regions from the
- * enscribe `<book-front>` content.
+ * enscribe `<book-front>` content. The front-matter parts are emitted
+ * as their BITS named elements (`<preface>` / `<foreword>` /
+ * `<dedication>`), NOT as `<book-part>`: the BITS `<front-matter>`
+ * content model does not admit `<book-part>` (#4: doc42/44).
  */
 function emitBookFrontRegion(bookFront) {
   const content = Array.isArray(bookFront.content) ? bookFront.content : [];
@@ -265,7 +268,7 @@ function emitBookFrontRegion(bookFront) {
   if (frontParts.length > 0) {
     out += `  <front-matter>\n`;
     for (const part of frontParts) {
-      out += emitBookPart(part, 4);
+      out += emitNamedFrontPart(part, 4);
     }
     out += `  </front-matter>\n`;
   }
@@ -273,13 +276,18 @@ function emitBookFrontRegion(bookFront) {
 }
 
 /**
- * Emit the BITS `<body>` from the enscribe `<book-body>` — wraps
+ * Emit the BITS `<book-body>` from the enscribe `<book-body>` — wraps
  * the body-level book-parts (chapter / part / introduction /
- * conclusion / other).
+ * conclusion / other). The element is `<book-body>`, not `<body>`: the
+ * BITS `<book>` content model is
+ * (collection-meta*, book-meta?, front-matter?, book-body?, book-back?),
+ * so the chapters region must be `<book-body>` (#4: doc42/44). The inner
+ * per-book-part content body stays `<body>` — that is the book-part
+ * model `(book-part-meta?, front-matter?, body?, back?)`.
  */
 function emitBookBodyRegion(bookBody) {
   const content = Array.isArray(bookBody.content) ? bookBody.content : [];
-  let out = `  <body>\n`;
+  let out = `  <book-body>\n`;
   for (const child of content) {
     if (isEnscribeTag(child, 'book-part')) {
       out += emitBookPart(child, 4);
@@ -289,7 +297,7 @@ function emitBookBodyRegion(bookBody) {
       out += emitBlock(child, 4);
     }
   }
-  out += `  </body>\n`;
+  out += `  </book-body>\n`;
   return out;
 }
 
@@ -371,6 +379,70 @@ function emitBookPart(bookPart, indent) {
     out += `${pad}  </back>\n`;
   }
   out += `${pad}</book-part>\n`;
+  return out;
+}
+
+// BITS named front-matter parts. <front-matter> admits these named
+// elements but NOT <book-part> (#4: doc42/44). Maps the enscribe
+// book-part-type kwarg → BITS element name.
+const BOOK_FRONT_PART_ELEMENTS = {
+  preface: 'preface',
+  foreword: 'foreword',
+  dedication: 'dedication',
+};
+
+/**
+ * Emit a BITS named front-matter part (`<preface>` / `<foreword>` /
+ * `<dedication>`) from a front-matter book-part. Unlike `<book-part>`,
+ * the named parts are non-recursive: their content model is
+ * `(book-part-meta?, named-book-part-body?, back?)` — the body is wrapped
+ * in `<named-book-part-body>`, not `<body>` (#4). The `book-part-type`
+ * kwarg selects the element; an unrecognized type falls back to
+ * `emitBookPart` defensively (emitBookFrontRegion only passes
+ * BOOK_FRONT_PART_TYPES members, so the fallback is unreachable today).
+ */
+function emitNamedFrontPart(part, indent) {
+  const elName = BOOK_FRONT_PART_ELEMENTS[part.kwargs?.['book-part-type']];
+  if (!elName) return emitBookPart(part, indent); // defensive fallback
+
+  const pad = ' '.repeat(indent);
+  const id = part.id ? ` id="${escapeXmlAttr(part.id)}"` : '';
+  const content = Array.isArray(part.content) ? part.content : [];
+
+  // Same content split as emitBookPart: <meta> → <book-part-meta>;
+  // __note-list → <back>; everything else → the body.
+  const meta = content.find(c => isEnscribeTag(c, 'meta'));
+  const bodyContent = [];
+  const backNoteLists = [];
+  for (const child of content) {
+    if (child === meta) continue;
+    if (isEnscribeTag(child, '__note-list')) backNoteLists.push(child);
+    else bodyContent.push(child);
+  }
+  const hasMetaContent = meta && Array.isArray(meta.content) && meta.content.length > 0;
+
+  let out = `${pad}<${elName}${id}>\n`;
+  if (hasMetaContent) {
+    out += `${pad}  <book-part-meta>\n`;
+    out += emitBookPartMetaChildren(meta, indent + 4);
+    out += `${pad}  </book-part-meta>\n`;
+  }
+  // <named-book-part-body> requires (para-level)+ or (sec-level)+; emit
+  // it only when there is body content (an empty named part is valid —
+  // the body is optional in the model).
+  if (bodyContent.length > 0) {
+    out += `${pad}  <named-book-part-body>\n`;
+    out += emitBodyChildren(bodyContent, indent + 4);
+    out += `${pad}  </named-book-part-body>\n`;
+  }
+  if (backNoteLists.length > 0) {
+    out += `${pad}  <back>\n`;
+    for (const nl of backNoteLists) {
+      out += emitFnGroupJats(nl, indent + 4);
+    }
+    out += `${pad}  </back>\n`;
+  }
+  out += `${pad}</${elName}>\n`;
   return out;
 }
 
@@ -779,12 +851,14 @@ function emitDslFigureJats(node, indent) {
   // JATS-conventional alt-text — short accessibility prose, not the
   // source itself. The source goes into <preformat> below.
   out += `${pad}  <alt-text>${escapeXml(`${dslType[0].toUpperCase()}${dslType.slice(1)} diagram source preserved as preformatted text.`)}</alt-text>\n`;
-  // <preformat> carries the verbatim DSL source. `content-type`
+  // <preformat> carries the verbatim DSL source. The `preformat-type`
   // attribute identifies the DSL so downstream tooling can find and
   // render these blocks (matching `data-enscribe-dsl="mermaid"`
-  // identification on the HTML side).
+  // identification on the HTML side). It is `preformat-type`, not
+  // `content-type`: the JATS/BITS <preformat> ATTLIST declares
+  // preformat-type (CDATA) but not content-type (#4: doc43/44).
   if (source) {
-    out += `${pad}  <preformat content-type="${dslType}-source">${escapeXml(source)}</preformat>\n`;
+    out += `${pad}  <preformat preformat-type="${dslType}-source">${escapeXml(source)}</preformat>\n`;
   }
   out += `${pad}</fig>\n`;
   return out;
@@ -1183,6 +1257,15 @@ function emitFnJats(node, indent) {
 
 function emitSection(secNode, indent) {
   const pad = ' '.repeat(indent);
+  // id is emitted directly from node.id, matching every other block
+  // emitter (statement, fig, fn, blockquote, aside, book-part). The
+  // section vocab declares id.maps_to only for the html target, so
+  // mapAttributes('jats') drops it — leaving <sec> with no id and
+  // breaking <xref> IDREFS validation (#4: doc41). mapAttributes still
+  // carries any non-id jats attributes the section vocab declares (none
+  // today — see the #4 drift finding on section sec-type/class lacking
+  // jats mappings).
+  const id = secNode.id ? ` id="${escapeXmlAttr(secNode.id)}"` : '';
   const attrs = aggregateJatsAttrs(mapAttributes(
     secNode, VOCABULARY[secNode.tagname], 'jats', jatsEmit
   ));
@@ -1193,7 +1276,7 @@ function emitSection(secNode, indent) {
   const titleNode = content.find(c => isEnscribeTag(c, titleTag));
   const rest = content.filter(c => !isEnscribeTag(c, titleTag));
 
-  let out = `${pad}<sec${attrs}>\n`;
+  let out = `${pad}<sec${id}${attrs}>\n`;
   if (titleNode) {
     out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
   }

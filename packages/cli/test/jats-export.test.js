@@ -13,7 +13,7 @@
 //     for slice 5a (the snapshot pins regression; DTD validation
 //     pins correctness when the toolchain has it).
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
@@ -119,6 +119,12 @@ function validateWithXmllint(fixtureName, jatsXml) {
     // are debuggable from the test output without re-running.
     const lines = stderr.split('\n').slice(0, 12).join('\n');
     console.log('  xmllint:', lines);
+  } finally {
+    // Remove the temp validation file so test runs don't litter the
+    // fixtures dir (now that xmllint is present, this path runs every
+    // time — untracked turds would otherwise pollute the output-neutral
+    // `git diff test/fixtures/` check).
+    try { unlinkSync(tmpPath); } catch { /* already gone */ }
   }
 }
 
@@ -473,10 +479,10 @@ function validateWithXmllint(fixtureName, jatsXml) {
   check('doc42: <book-subtitle subtitle> emitted',
     jats.includes('<subtitle>Demonstrating Phase 5 slice 5c book path</subtitle>'));
   check('doc42: <front-matter> region for preface', jats.includes('<front-matter>'));
-  check('doc42: <book-part book-part-type="preface">',
-    /<book-part book-part-type="preface"/.test(jats));
-  check('doc42: <body> region for chapters',
-    jats.includes('<body>'));
+  check('doc42: <preface> named front-matter element (#4)',
+    /<preface[ >]/.test(jats));
+  check('doc42: <book-body> region for chapters (#4)',
+    jats.includes('<book-body>'));
   check('doc42: <book-part book-part-type="chapter">',
     /<book-part book-part-type="chapter"/.test(jats));
   check('doc42: per-book-part <book-part-meta>',
@@ -616,8 +622,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
   // External DSL emission (mermaid).
   check('doc43: <fig specific-use="enscribe-dsl-mermaid"> for mermaid',
     /<fig[^>]*specific-use="enscribe-dsl-mermaid"/.test(jats));
-  check('doc43: mermaid <preformat content-type="mermaid-source">',
-    /<preformat content-type="mermaid-source">[\s\S]*graph TD[\s\S]*<\/preformat>/.test(jats));
+  check('doc43: mermaid <preformat preformat-type="mermaid-source"> (#4)',
+    /<preformat preformat-type="mermaid-source">[\s\S]*graph TD[\s\S]*<\/preformat>/.test(jats));
   check('doc43: mermaid <alt-text> emitted',
     /<alt-text>Mermaid diagram source/.test(jats));
   check('doc43: mermaid <caption> emitted',
@@ -626,8 +632,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
   // External DSL emission (abc).
   check('doc43: <fig specific-use="enscribe-dsl-abc"> for abc',
     /<fig[^>]*specific-use="enscribe-dsl-abc"/.test(jats));
-  check('doc43: abc <preformat content-type="abc-source">',
-    /<preformat content-type="abc-source">[\s\S]*Twinkle[\s\S]*<\/preformat>/.test(jats));
+  check('doc43: abc <preformat preformat-type="abc-source"> (#4)',
+    /<preformat preformat-type="abc-source">[\s\S]*Twinkle[\s\S]*<\/preformat>/.test(jats));
 
   // Cross-refs to DSL figures resolve through the figure counter.
   check('doc43: <xref ref-type="fig" rid="fig:flow"> resolves',
@@ -699,8 +705,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
   check('doc44: <book ... dtd-version="2.0">',
     /<book book-type="book"[^>]*dtd-version="2\.0">/.test(jats));
   check('doc44: <front-matter> region for preface', jats.includes('<front-matter>'));
-  check('doc44: <book-part book-part-type="preface">',
-    /<book-part book-part-type="preface"/.test(jats));
+  check('doc44: <preface> named front-matter element (#4)',
+    /<preface[ >]/.test(jats));
   check('doc44: <book-part book-part-type="chapter">',
     /<book-part book-part-type="chapter"/.test(jats));
   check('doc44: <book-back> region for appendix', jats.includes('<book-back>'));
@@ -742,10 +748,10 @@ function validateWithXmllint(fixtureName, jatsXml) {
     /<fig[^>]*specific-use="enscribe-dsl-mermaid"/.test(jats));
   check('doc44: <fig specific-use="enscribe-dsl-abc">',
     /<fig[^>]*specific-use="enscribe-dsl-abc"/.test(jats));
-  check('doc44: mermaid <preformat content-type="mermaid-source">',
-    /<preformat content-type="mermaid-source">/.test(jats));
-  check('doc44: abc <preformat content-type="abc-source">',
-    /<preformat content-type="abc-source">/.test(jats));
+  check('doc44: mermaid <preformat preformat-type="mermaid-source"> (#4)',
+    /<preformat preformat-type="mermaid-source">/.test(jats));
+  check('doc44: abc <preformat preformat-type="abc-source"> (#4)',
+    /<preformat preformat-type="abc-source">/.test(jats));
 
   // Chapter-prefixed cross-references (per-chapter counter resets).
   check('doc44: chapter-prefixed figure cross-ref (figure N.M)',

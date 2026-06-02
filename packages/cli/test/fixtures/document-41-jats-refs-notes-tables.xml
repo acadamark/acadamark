@@ -18,7 +18,7 @@ footnote<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref>.</p>
     </article-meta>
   </front>
   <body>
-    <sec>
+    <sec id="sec:intro">
       <title>Introduction</title>
       <p>A paragraph that references <xref ref-type="sec" rid="sec:intro">intro</xref> itself, plus
 <xref ref-type="fig" rid="fig:elephant">figure 1</xref>, <xref ref-type="disp-formula" rid="eqn:euler">equation 1</xref>, <xref ref-type="table" rid="tab:demo">table 1</xref>, and
@@ -32,7 +32,7 @@ per-section, plus an endnote<xref ref-type="fn" id="noteref-3" rid="note-3">3</x
         </fn>
       </fn-group>
     </sec>
-    <sec>
+    <sec id="sec:figs">
       <title>Figures and tables</title>
       <p>A figure with a caption:</p>
       <fig id="fig:elephant">
@@ -71,7 +71,7 @@ per-section, plus an endnote<xref ref-type="fn" id="noteref-3" rid="note-3">3</x
         </table>
       </table-wrap>
     </sec>
-    <sec>
+    <sec id="sec:math">
       <title>Math and theorems</title>
       <p>A numbered equation:</p>
       <disp-formula id="eqn:euler">
