@@ -638,7 +638,7 @@ const _article = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeArticleStructuring",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Reads <meta type=article> (or <meta> with no type, defaulting to\narticle) and generates the <article> wrapper plus\n<article-front>/<article-body>/<article-back> regions. Promotes\n<title>/<subtitle> in <meta> to <article-title>/<article-subtitle>.\nHonors explicit <article> if the author wrote it. See\nnotes/specs/pipeline.md for the full pipeline.\n",
       },
     ],
@@ -1523,7 +1523,7 @@ const _book_part = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeBookStructuring",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Generates <book-part> from <meta type=book-part> or from book-part\nshorthand expansions (<chapter>, <part>, <appendix>, etc.). Inside\neach <book-part>, <meta> and body content sit directly — no nested\nfront/body/back wrappers. Promotes <title>/<subtitle> in <meta> to\n<book-part-title>/<book-part-subtitle>. At the book level, places\nbook-parts into the appropriate region (<book-front>, <book-body>,\n<book-back>) based on book-part-type. See notes/specs/pipeline.md.\n",
       },
     ],
@@ -1682,7 +1682,7 @@ const _book = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeBookStructuring",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Reads <meta type=book> and generates the <book> wrapper plus\n<book-front>/<book-body>/<book-back> regions. Promotes\n<title>/<subtitle> in <meta> to <book-title>/<book-subtitle>.\nExpands book-part shorthands (<chapter>, <part>, <appendix>, etc.)\nto <book-part book-part-type=\"...\">. Honors explicit <book> if\nthe author wrote it. See notes/specs/pipeline.md for the full pipeline.\n",
       },
     ],
@@ -2056,7 +2056,7 @@ const _config = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeConfigDiscovery",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Phase 1 discovery — extracts <config> values into the configuration registry. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5299,7 +5299,7 @@ const _section = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeSectionNesting",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Phase 2 — implicit closing of peer sections. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5577,7 +5577,7 @@ const _sub_section = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeSectionNesting",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Phase 2 — implicit closing of peer sub-sections. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],
@@ -5746,7 +5746,7 @@ const _sub_sub_section = Object.freeze({
     "related_plugins": [
       {
         "name": "enscribeSectionNesting",
-        "runs_before": "enscribeTagInterpret",
+        "runs_before": "enscribeInterpreter",
         "purpose": "Phase 2 — implicit closing of peer sub-sub-sections. See notes/specs/pipeline.md for the full pipeline.",
       },
     ],

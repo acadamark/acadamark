@@ -131,7 +131,7 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeArticleStructuring
-    runs_before: enscribeTagInterpret
+    runs_before: enscribeInterpreter
     purpose: |
       Reads <meta type=article> (or <meta> with no type, defaulting to
       article) and generates the <article> wrapper plus

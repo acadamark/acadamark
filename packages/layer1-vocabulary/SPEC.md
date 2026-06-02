@@ -243,7 +243,7 @@ For future readers and contributors, the load-bearing decisions:
 
 ## Where this fits in the project
 
-- This vocabulary is the target for `enscribeTagInterpret` (the interpreter) and for `rehypeEnscribeToJats` (JATS export).
+- This vocabulary is the target for `enscribeInterpreter` (the interpreter) and for `enscribeToJats` (JATS export).
 - It is implementable as W3C custom elements (mostly registration-only, since the elements are semantic markers rather than interactive components).
 - It can be authored directly (any tool producing conformant HTML works) or through enscribe's shorthand (the primary authoring path).
 - It is the deliverable that makes enscribe's pitch concrete: this is what "academic markdown for the web that can submit to journals" actually outputs.

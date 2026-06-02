@@ -144,7 +144,7 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeBookStructuring
-    runs_before: enscribeTagInterpret
+    runs_before: enscribeInterpreter
     purpose: |
       Reads <meta type=book> and generates the <book> wrapper plus
       <book-front>/<book-body>/<book-back> regions. Promotes

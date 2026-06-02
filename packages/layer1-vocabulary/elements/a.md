@@ -84,13 +84,13 @@ Anchor — a hyperlink to another resource (external URL, internal fragment, fil
 
 ## Authoring
 
-**Plain markdown (most common).**
+**Positional-URL form (most common).**
 
 ```
-See [the documentation](https://example.com/docs).
+See <a https://example.com/docs | the documentation>.
 ```
 
-Standard markdown link syntax produces `<a>` elements via remark.
+The first argument is the URL; the pipe content is the link text. Bare markdown `[text](url)` is **not** an enscribe idiom — it renders as literal text. (A bare URL or email on its own still autolinks to `<a>` via remark-gfm.)
 
 **Explicit form.**
 

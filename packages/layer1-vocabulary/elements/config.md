@@ -102,7 +102,7 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeConfigDiscovery
-    runs_before: enscribeTagInterpret
+    runs_before: enscribeInterpreter
     purpose: 'Phase 1 discovery — extracts <config> values into the configuration registry. See notes/specs/pipeline.md for the full pipeline.'
 
 ---

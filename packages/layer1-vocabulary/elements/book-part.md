@@ -139,7 +139,7 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeBookStructuring
-    runs_before: enscribeTagInterpret
+    runs_before: enscribeInterpreter
     purpose: |
       Generates <book-part> from <meta type=book-part> or from book-part
       shorthand expansions (<chapter>, <part>, <appendix>, etc.). Inside

@@ -48,7 +48,6 @@ The following markdown idioms are accepted in casual mode. Each is shorthand for
 | ` ```js\ncode\n``` `  | ` <```js \| code```> `           | code-block sigil node (`` ``` ``)                    |
 | `$x$`                 | `<$ x $>`                        | inline-math sigil node (`$`)                         |
 | `$$x$$`               | `<$$ x $$>`                      | display-math sigil node (`$$`)                       |
-| `[text](url)`         | `<a url \| text>`                | `enscribeTag` tagname `a`                           |
 | `\| h \| h \|` (GFM)  | `<table md \| ...>`              | `enscribeTag` tagname `table`                       |
 | `- item` (list)       | `<list +unordered \| - item>`    | `enscribeTag` tagname `list`                        |
 

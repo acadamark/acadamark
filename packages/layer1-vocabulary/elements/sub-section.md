@@ -76,7 +76,7 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeSectionNesting
-    runs_before: enscribeTagInterpret
+    runs_before: enscribeInterpreter
     purpose: 'Phase 2 — implicit closing of peer sub-sections. See notes/specs/pipeline.md for the full pipeline.'
 
 ---
