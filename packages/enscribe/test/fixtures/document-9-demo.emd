@@ -1,10 +1,6 @@
 <config title="Participatory Methods in Autism Research" subtitle="Quantitative Approaches to Community-Centred Study Design" author="A. Balter" date="2025">
 </config>
 
-<data>
-<library src="references.bib">
-</library>
-</data>
 
 ## Introduction
 
@@ -166,3 +162,8 @@ by community preference; topics below are favoured by evidence-gap criteria.>
 <ref @fig:priority> illustrates how the framework places topics in a two-dimensional space and how the mixing parameter 
 determines which topics rise to the top of the agenda.
 
+
+<data>
+<library src="references.bib">
+</library>
+</data>

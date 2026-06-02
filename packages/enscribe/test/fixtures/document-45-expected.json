@@ -199,14 +199,14 @@
                       "value": "A classifier that assigns a probability of 0.8 to an event should be right about\n80% of the time when it says so. When that correspondence holds the classifier is\n",
                       "position": {
                         "start": {
-                          "line": 47,
+                          "line": 11,
                           "column": 1,
-                          "offset": 1791
+                          "offset": 691
                         },
                         "end": {
-                          "line": 49,
+                          "line": 13,
                           "column": 1,
-                          "offset": 1954
+                          "offset": 854
                         }
                       }
                     },
@@ -220,14 +220,14 @@
                           "value": "calibrated",
                           "position": {
                             "start": {
-                              "line": 49,
+                              "line": 13,
                               "column": 3,
-                              "offset": 1956
+                              "offset": 856
                             },
                             "end": {
-                              "line": 49,
+                              "line": 13,
                               "column": 13,
-                              "offset": 1966
+                              "offset": 866
                             }
                           }
                         }
@@ -238,14 +238,14 @@
                       "value": ", and its scores can be read as probabilities rather than as bare\nrankings. Many high-accuracy models are ",
                       "position": {
                         "start": {
-                          "line": 49,
+                          "line": 13,
                           "column": 15,
-                          "offset": 1968
+                          "offset": 868
                         },
                         "end": {
-                          "line": 50,
+                          "line": 14,
                           "column": 41,
-                          "offset": 2074
+                          "offset": 974
                         }
                       }
                     },
@@ -259,14 +259,14 @@
                           "value": "not",
                           "position": {
                             "start": {
-                              "line": 50,
+                              "line": 14,
                               "column": 42,
-                              "offset": 2075
+                              "offset": 975
                             },
                             "end": {
-                              "line": 50,
+                              "line": 14,
                               "column": 45,
-                              "offset": 2078
+                              "offset": 978
                             }
                           }
                         }
@@ -277,14 +277,14 @@
                       "value": " calibrated: ",
                       "position": {
                         "start": {
-                          "line": 50,
+                          "line": 14,
                           "column": 46,
-                          "offset": 2079
+                          "offset": 979
                         },
                         "end": {
-                          "line": 50,
+                          "line": 14,
                           "column": 59,
-                          "offset": 2092
+                          "offset": 992
                         }
                       }
                     },
@@ -309,14 +309,14 @@
                       "value": " document\nthat deep networks grow more confident than they are accurate as they are trained\nto convergence.",
                       "position": {
                         "start": {
-                          "line": 50,
+                          "line": 14,
                           "column": 74,
-                          "offset": 2107
+                          "offset": 1007
                         },
                         "end": {
-                          "line": 52,
+                          "line": 16,
                           "column": 16,
-                          "offset": 2214
+                          "offset": 1114
                         }
                       }
                     },
@@ -346,14 +346,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 47,
+                      "line": 11,
                       "column": 1,
-                      "offset": 1791
+                      "offset": 691
                     },
                     "end": {
-                      "line": 54,
+                      "line": 18,
                       "column": 49,
-                      "offset": 2405
+                      "offset": 1305
                     }
                   }
                 },
@@ -367,14 +367,14 @@
                       "value": "This note has three aims: to state precisely what calibration is, to give a small\nreproducible workflow for ",
                       "position": {
                         "start": {
-                          "line": 56,
+                          "line": 20,
                           "column": 1,
-                          "offset": 2407
+                          "offset": 1307
                         },
                         "end": {
-                          "line": 57,
+                          "line": 21,
                           "column": 27,
-                          "offset": 2515
+                          "offset": 1415
                         }
                       }
                     },
@@ -388,14 +388,14 @@
                           "value": "post-hoc",
                           "position": {
                             "start": {
-                              "line": 57,
+                              "line": 21,
                               "column": 28,
-                              "offset": 2516
+                              "offset": 1416
                             },
                             "end": {
-                              "line": 57,
+                              "line": 21,
                               "column": 36,
-                              "offset": 2524
+                              "offset": 1424
                             }
                           }
                         }
@@ -406,14 +406,14 @@
                       "value": " calibration on held-out data, and to show how\ntwo standard calibration maps behave on a benchmark task. Early work on probability\nforecasts ",
                       "position": {
                         "start": {
-                          "line": 57,
+                          "line": 21,
                           "column": 37,
-                          "offset": 2525
+                          "offset": 1425
                         },
                         "end": {
-                          "line": 59,
+                          "line": 23,
                           "column": 11,
-                          "offset": 2666
+                          "offset": 1566
                         }
                       }
                     },
@@ -438,28 +438,28 @@
                       "value": " established the scoring rules we still use.",
                       "position": {
                         "start": {
-                          "line": 59,
+                          "line": 23,
                           "column": 40,
-                          "offset": 2695
+                          "offset": 1595
                         },
                         "end": {
-                          "line": 59,
+                          "line": 23,
                           "column": 84,
-                          "offset": 2739
+                          "offset": 1639
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 56,
+                      "line": 20,
                       "column": 1,
-                      "offset": 2407
+                      "offset": 1307
                     },
                     "end": {
-                      "line": 59,
+                      "line": 23,
                       "column": 84,
-                      "offset": 2739
+                      "offset": 1639
                     }
                   }
                 }
@@ -1020,14 +1020,14 @@
                           "value": "Perfect calibration is an idealisation; in practice we measure the ",
                           "position": {
                             "start": {
-                              "line": 66,
+                              "line": 30,
                               "column": 1,
-                              "offset": 3014
+                              "offset": 1914
                             },
                             "end": {
-                              "line": 66,
+                              "line": 30,
                               "column": 68,
-                              "offset": 3081
+                              "offset": 1981
                             }
                           }
                         },
@@ -1041,14 +1041,14 @@
                               "value": "gap",
                               "position": {
                                 "start": {
-                                  "line": 66,
+                                  "line": 30,
                                   "column": 69,
-                                  "offset": 3082
+                                  "offset": 1982
                                 },
                                 "end": {
-                                  "line": 66,
+                                  "line": 30,
                                   "column": 72,
-                                  "offset": 3085
+                                  "offset": 1985
                                 }
                               }
                             }
@@ -1059,14 +1059,14 @@
                           "value": " between\npredicted confidence and observed accuracy. Binning the predictions into ",
                           "position": {
                             "start": {
-                              "line": 66,
+                              "line": 30,
                               "column": 73,
-                              "offset": 3086
+                              "offset": 1986
                             },
                             "end": {
-                              "line": 67,
+                              "line": 31,
                               "column": 74,
-                              "offset": 3168
+                              "offset": 2068
                             }
                           }
                         },
@@ -1144,14 +1144,14 @@
                           "value": " equal\nintervals ",
                           "position": {
                             "start": {
-                              "line": 67,
+                              "line": 31,
                               "column": 77,
-                              "offset": 3171
+                              "offset": 2071
                             },
                             "end": {
-                              "line": 68,
+                              "line": 32,
                               "column": 11,
-                              "offset": 3188
+                              "offset": 2088
                             }
                           }
                         },
@@ -1628,14 +1628,14 @@
                           "value": " and comparing per-bin accuracy with per-bin confidence\ngives the ",
                           "position": {
                             "start": {
-                              "line": 68,
+                              "line": 32,
                               "column": 28,
-                              "offset": 3205
+                              "offset": 2105
                             },
                             "end": {
-                              "line": 69,
+                              "line": 33,
                               "column": 11,
-                              "offset": 3271
+                              "offset": 2171
                             }
                           }
                         },
@@ -1649,14 +1649,14 @@
                               "value": "expected calibration error",
                               "position": {
                                 "start": {
-                                  "line": 69,
+                                  "line": 33,
                                   "column": 12,
-                                  "offset": 3272
+                                  "offset": 2172
                                 },
                                 "end": {
-                                  "line": 69,
+                                  "line": 33,
                                   "column": 38,
-                                  "offset": 3298
+                                  "offset": 2198
                                 }
                               }
                             }
@@ -1667,28 +1667,28 @@
                           "value": ":",
                           "position": {
                             "start": {
-                              "line": 69,
+                              "line": 33,
                               "column": 39,
-                              "offset": 3299
+                              "offset": 2199
                             },
                             "end": {
-                              "line": 69,
+                              "line": 33,
                               "column": 40,
-                              "offset": 3300
+                              "offset": 2200
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 66,
+                          "line": 30,
                           "column": 1,
-                          "offset": 3014
+                          "offset": 1914
                         },
                         "end": {
-                          "line": 69,
+                          "line": 33,
                           "column": 40,
-                          "offset": 3300
+                          "offset": 2200
                         }
                       }
                     },
@@ -3451,14 +3451,14 @@
                           "value": "where ",
                           "position": {
                             "start": {
-                              "line": 73,
+                              "line": 37,
                               "column": 1,
-                              "offset": 3430
+                              "offset": 2330
                             },
                             "end": {
-                              "line": 73,
+                              "line": 37,
                               "column": 7,
-                              "offset": 3436
+                              "offset": 2336
                             }
                           }
                         },
@@ -3535,14 +3535,14 @@
                           "value": " is the number of instances and ",
                           "position": {
                             "start": {
-                              "line": 73,
+                              "line": 37,
                               "column": 10,
-                              "offset": 3439
+                              "offset": 2339
                             },
                             "end": {
-                              "line": 73,
+                              "line": 37,
                               "column": 42,
-                              "offset": 3471
+                              "offset": 2371
                             }
                           }
                         },
@@ -3802,14 +3802,14 @@
                           "value": " the count in bin ",
                           "position": {
                             "start": {
-                              "line": 73,
+                              "line": 37,
                               "column": 49,
-                              "offset": 3478
+                              "offset": 2378
                             },
                             "end": {
-                              "line": 73,
+                              "line": 37,
                               "column": 67,
-                              "offset": 3496
+                              "offset": 2396
                             }
                           }
                         },
@@ -3886,14 +3886,14 @@
                           "value": ". Equation\n",
                           "position": {
                             "start": {
-                              "line": 73,
+                              "line": 37,
                               "column": 70,
-                              "offset": 3499
+                              "offset": 2399
                             },
                             "end": {
-                              "line": 74,
+                              "line": 38,
                               "column": 1,
-                              "offset": 3510
+                              "offset": 2410
                             }
                           }
                         },
@@ -3918,28 +3918,28 @@
                           "value": " is a weighted average of per-bin gaps; it is zero for a perfectly\ncalibrated model.",
                           "position": {
                             "start": {
-                              "line": 74,
+                              "line": 38,
                               "column": 15,
-                              "offset": 3524
+                              "offset": 2424
                             },
                             "end": {
-                              "line": 75,
+                              "line": 39,
                               "column": 18,
-                              "offset": 3608
+                              "offset": 2508
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 73,
+                          "line": 37,
                           "column": 1,
-                          "offset": 3430
+                          "offset": 2330
                         },
                         "end": {
-                          "line": 75,
+                          "line": 39,
                           "column": 18,
-                          "offset": 3608
+                          "offset": 2508
                         }
                       }
                     }
@@ -3983,14 +3983,14 @@
                           "value": "A ",
                           "position": {
                             "start": {
-                              "line": 78,
+                              "line": 42,
                               "column": 1,
-                              "offset": 3647
+                              "offset": 2547
                             },
                             "end": {
-                              "line": 78,
+                              "line": 42,
                               "column": 3,
-                              "offset": 3649
+                              "offset": 2549
                             }
                           }
                         },
@@ -4004,14 +4004,14 @@
                               "value": "scoring rule",
                               "position": {
                                 "start": {
-                                  "line": 78,
+                                  "line": 42,
                                   "column": 4,
-                                  "offset": 3650
+                                  "offset": 2550
                                 },
                                 "end": {
-                                  "line": 78,
+                                  "line": 42,
                                   "column": 16,
-                                  "offset": 3662
+                                  "offset": 2562
                                 }
                               }
                             }
@@ -4022,14 +4022,14 @@
                           "value": " assigns a penalty to a probabilistic forecast once the outcome is\nknown. It is ",
                           "position": {
                             "start": {
-                              "line": 78,
+                              "line": 42,
                               "column": 17,
-                              "offset": 3663
+                              "offset": 2563
                             },
                             "end": {
-                              "line": 79,
+                              "line": 43,
                               "column": 14,
-                              "offset": 3743
+                              "offset": 2643
                             }
                           }
                         },
@@ -4043,14 +4043,14 @@
                               "value": "proper",
                               "position": {
                                 "start": {
-                                  "line": 79,
+                                  "line": 43,
                                   "column": 16,
-                                  "offset": 3745
+                                  "offset": 2645
                                 },
                                 "end": {
-                                  "line": 79,
+                                  "line": 43,
                                   "column": 22,
-                                  "offset": 3751
+                                  "offset": 2651
                                 }
                               }
                             }
@@ -4061,28 +4061,28 @@
                           "value": " when honest reporting minimises the expected penalty. The\nBrier score — the mean squared difference between probability and outcome — is the\ncanonical example.",
                           "position": {
                             "start": {
-                              "line": 79,
+                              "line": 43,
                               "column": 24,
-                              "offset": 3753
+                              "offset": 2653
                             },
                             "end": {
-                              "line": 81,
+                              "line": 45,
                               "column": 19,
-                              "offset": 3913
+                              "offset": 2813
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 78,
+                          "line": 42,
                           "column": 1,
-                          "offset": 3647
+                          "offset": 2547
                         },
                         "end": {
-                          "line": 81,
+                          "line": 45,
                           "column": 19,
-                          "offset": 3913
+                          "offset": 2813
                         }
                       }
                     },
@@ -5627,28 +5627,28 @@
                           "value": "The Brier score decomposes into interpretable parts — a reliability term that\nmeasures miscalibration, a resolution term that rewards sharpness, and an\nirreducible uncertainty term:",
                           "position": {
                             "start": {
-                              "line": 93,
+                              "line": 57,
                               "column": 1,
-                              "offset": 4379
+                              "offset": 3279
                             },
                             "end": {
-                              "line": 95,
+                              "line": 59,
                               "column": 30,
-                              "offset": 4560
+                              "offset": 3460
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 93,
+                          "line": 57,
                           "column": 1,
-                          "offset": 4379
+                          "offset": 3279
                         },
                         "end": {
-                          "line": 95,
+                          "line": 59,
                           "column": 30,
-                          "offset": 4560
+                          "offset": 3460
                         }
                       }
                     },
@@ -7404,14 +7404,14 @@
                           "value": "Post-hoc calibration improves the reliability term in ",
                           "position": {
                             "start": {
-                              "line": 102,
+                              "line": 66,
                               "column": 1,
-                              "offset": 4720
+                              "offset": 3620
                             },
                             "end": {
-                              "line": 102,
+                              "line": 66,
                               "column": 55,
-                              "offset": 4774
+                              "offset": 3674
                             }
                           }
                         },
@@ -7436,14 +7436,14 @@
                           "value": "\nwithout touching the model's ranking, so resolution is preserved ",
                           "position": {
                             "start": {
-                              "line": 102,
+                              "line": 66,
                               "column": 78,
-                              "offset": 4797
+                              "offset": 3697
                             },
                             "end": {
-                              "line": 103,
+                              "line": 67,
                               "column": 66,
-                              "offset": 4863
+                              "offset": 3763
                             }
                           }
                         },
@@ -7468,28 +7468,28 @@
                           "value": ".",
                           "position": {
                             "start": {
-                              "line": 103,
+                              "line": 67,
                               "column": 92,
-                              "offset": 4889
+                              "offset": 3789
                             },
                             "end": {
-                              "line": 103,
+                              "line": 67,
                               "column": 93,
-                              "offset": 4890
+                              "offset": 3790
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 102,
+                          "line": 66,
                           "column": 1,
-                          "offset": 4720
+                          "offset": 3620
                         },
                         "end": {
-                          "line": 103,
+                          "line": 67,
                           "column": 93,
-                          "offset": 4890
+                          "offset": 3790
                         }
                       }
                     }
@@ -7563,28 +7563,28 @@
                           "value": "The workflow keeps three data splits strictly separate, so that the calibrator is\nnever fit on data used to evaluate it:",
                           "position": {
                             "start": {
-                              "line": 108,
+                              "line": 72,
                               "column": 1,
-                              "offset": 4942
+                              "offset": 3842
                             },
                             "end": {
-                              "line": 109,
+                              "line": 73,
                               "column": 39,
-                              "offset": 5062
+                              "offset": 3962
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 108,
+                          "line": 72,
                           "column": 1,
-                          "offset": 4942
+                          "offset": 3842
                         },
                         "end": {
-                          "line": 109,
+                          "line": 73,
                           "column": 39,
-                          "offset": 5062
+                          "offset": 3962
                         }
                       }
                     },
@@ -7607,14 +7607,14 @@
                               "value": "fit the classifier on the ",
                               "position": {
                                 "start": {
-                                  "line": 111,
+                                  "line": 75,
                                   "column": 4,
-                                  "offset": 5067
+                                  "offset": 3967
                                 },
                                 "end": {
-                                  "line": 111,
+                                  "line": 75,
                                   "column": 30,
-                                  "offset": 5093
+                                  "offset": 3993
                                 }
                               }
                             },
@@ -7628,14 +7628,14 @@
                                   "value": "training",
                                   "position": {
                                     "start": {
-                                      "line": 111,
+                                      "line": 75,
                                       "column": 31,
-                                      "offset": 5094
+                                      "offset": 3994
                                     },
                                     "end": {
-                                      "line": 111,
+                                      "line": 75,
                                       "column": 39,
-                                      "offset": 5102
+                                      "offset": 4002
                                     }
                                   }
                                 }
@@ -7646,28 +7646,28 @@
                               "value": " split;",
                               "position": {
                                 "start": {
-                                  "line": 111,
+                                  "line": 75,
                                   "column": 40,
-                                  "offset": 5103
+                                  "offset": 4003
                                 },
                                 "end": {
-                                  "line": 111,
+                                  "line": 75,
                                   "column": 47,
-                                  "offset": 5110
+                                  "offset": 4010
                                 }
                               }
                             }
                           ],
                           "position": {
                             "start": {
-                              "line": 111,
+                              "line": 75,
                               "column": 1,
-                              "offset": 5064
+                              "offset": 3964
                             },
                             "end": {
-                              "line": 111,
+                              "line": 75,
                               "column": 47,
-                              "offset": 5110
+                              "offset": 4010
                             }
                           }
                         },
@@ -7685,14 +7685,14 @@
                               "value": "fit a one-dimensional calibration map on the ",
                               "position": {
                                 "start": {
-                                  "line": 112,
+                                  "line": 76,
                                   "column": 4,
-                                  "offset": 5114
+                                  "offset": 4014
                                 },
                                 "end": {
-                                  "line": 112,
+                                  "line": 76,
                                   "column": 49,
-                                  "offset": 5159
+                                  "offset": 4059
                                 }
                               }
                             },
@@ -7706,14 +7706,14 @@
                                   "value": "validation",
                                   "position": {
                                     "start": {
-                                      "line": 112,
+                                      "line": 76,
                                       "column": 50,
-                                      "offset": 5160
+                                      "offset": 4060
                                     },
                                     "end": {
-                                      "line": 112,
+                                      "line": 76,
                                       "column": 60,
-                                      "offset": 5170
+                                      "offset": 4070
                                     }
                                   }
                                 }
@@ -7724,28 +7724,28 @@
                               "value": " split, using the classifier's scores as input;",
                               "position": {
                                 "start": {
-                                  "line": 112,
+                                  "line": 76,
                                   "column": 61,
-                                  "offset": 5171
+                                  "offset": 4071
                                 },
                                 "end": {
-                                  "line": 112,
+                                  "line": 76,
                                   "column": 108,
-                                  "offset": 5218
+                                  "offset": 4118
                                 }
                               }
                             }
                           ],
                           "position": {
                             "start": {
-                              "line": 112,
+                              "line": 76,
                               "column": 1,
-                              "offset": 5111
+                              "offset": 4011
                             },
                             "end": {
-                              "line": 112,
+                              "line": 76,
                               "column": 108,
-                              "offset": 5218
+                              "offset": 4118
                             }
                           }
                         },
@@ -7763,14 +7763,14 @@
                               "value": "report ECE and the Brier score on the untouched ",
                               "position": {
                                 "start": {
-                                  "line": 113,
+                                  "line": 77,
                                   "column": 4,
-                                  "offset": 5222
+                                  "offset": 4122
                                 },
                                 "end": {
-                                  "line": 113,
+                                  "line": 77,
                                   "column": 52,
-                                  "offset": 5270
+                                  "offset": 4170
                                 }
                               }
                             },
@@ -7784,14 +7784,14 @@
                                   "value": "test",
                                   "position": {
                                     "start": {
-                                      "line": 113,
+                                      "line": 77,
                                       "column": 53,
-                                      "offset": 5271
+                                      "offset": 4171
                                     },
                                     "end": {
-                                      "line": 113,
+                                      "line": 77,
                                       "column": 57,
-                                      "offset": 5275
+                                      "offset": 4175
                                     }
                                   }
                                 }
@@ -7802,28 +7802,28 @@
                               "value": " split.",
                               "position": {
                                 "start": {
-                                  "line": 113,
+                                  "line": 77,
                                   "column": 58,
-                                  "offset": 5276
+                                  "offset": 4176
                                 },
                                 "end": {
-                                  "line": 113,
+                                  "line": 77,
                                   "column": 65,
-                                  "offset": 5283
+                                  "offset": 4183
                                 }
                               }
                             }
                           ],
                           "position": {
                             "start": {
-                              "line": 113,
+                              "line": 77,
                               "column": 1,
-                              "offset": 5219
+                              "offset": 4119
                             },
                             "end": {
-                              "line": 113,
+                              "line": 77,
                               "column": 65,
-                              "offset": 5283
+                              "offset": 4183
                             }
                           }
                         },
@@ -7834,14 +7834,14 @@
                       ],
                       "position": {
                         "start": {
-                          "line": 111,
+                          "line": 75,
                           "column": 1,
-                          "offset": 5064
+                          "offset": 3964
                         },
                         "end": {
-                          "line": 113,
+                          "line": 77,
                           "column": 65,
-                          "offset": 5283
+                          "offset": 4183
                         }
                       }
                     },
@@ -7897,14 +7897,14 @@
                           "value": "The data flow is summarised in ",
                           "position": {
                             "start": {
-                              "line": 122,
+                              "line": 86,
                               "column": 1,
-                              "offset": 5612
+                              "offset": 4512
                             },
                             "end": {
-                              "line": 122,
+                              "line": 86,
                               "column": 32,
-                              "offset": 5643
+                              "offset": 4543
                             }
                           }
                         },
@@ -7929,28 +7929,28 @@
                           "value": ".",
                           "position": {
                             "start": {
-                              "line": 122,
+                              "line": 86,
                               "column": 51,
-                              "offset": 5662
+                              "offset": 4562
                             },
                             "end": {
-                              "line": 122,
+                              "line": 86,
                               "column": 52,
-                              "offset": 5663
+                              "offset": 4563
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 122,
+                          "line": 86,
                           "column": 1,
-                          "offset": 5612
+                          "offset": 4512
                         },
                         "end": {
-                          "line": 122,
+                          "line": 86,
                           "column": 52,
-                          "offset": 5663
+                          "offset": 4563
                         }
                       }
                     },
@@ -8046,28 +8046,28 @@
                           "value": "The expected calibration error is a short computation once the predictions are in\nhand:",
                           "position": {
                             "start": {
-                              "line": 134,
+                              "line": 98,
                               "column": 1,
-                              "offset": 6037
+                              "offset": 4937
                             },
                             "end": {
-                              "line": 135,
+                              "line": 99,
                               "column": 6,
-                              "offset": 6124
+                              "offset": 5024
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 134,
+                          "line": 98,
                           "column": 1,
-                          "offset": 6037
+                          "offset": 4937
                         },
                         "end": {
-                          "line": 135,
+                          "line": 99,
                           "column": 6,
-                          "offset": 6124
+                          "offset": 5024
                         }
                       }
                     },
@@ -8104,14 +8104,14 @@
                           "value": "The function follows ",
                           "position": {
                             "start": {
-                              "line": 154,
+                              "line": 118,
                               "column": 1,
-                              "offset": 6646
+                              "offset": 5546
                             },
                             "end": {
-                              "line": 154,
+                              "line": 118,
                               "column": 22,
-                              "offset": 6667
+                              "offset": 5567
                             }
                           }
                         },
@@ -8135,14 +8135,14 @@
                           "value": " term for term: ",
                           "position": {
                             "start": {
-                              "line": 154,
+                              "line": 118,
                               "column": 42,
-                              "offset": 6687
+                              "offset": 5587
                             },
                             "end": {
-                              "line": 154,
+                              "line": 118,
                               "column": 58,
-                              "offset": 6703
+                              "offset": 5603
                             }
                           }
                         },
@@ -8162,14 +8162,14 @@
                           "value": " is the bin\nweight ",
                           "position": {
                             "start": {
-                              "line": 154,
+                              "line": 118,
                               "column": 71,
-                              "offset": 6716
+                              "offset": 5616
                             },
                             "end": {
-                              "line": 155,
+                              "line": 119,
                               "column": 8,
-                              "offset": 6735
+                              "offset": 5635
                             }
                           }
                         },
@@ -8445,28 +8445,28 @@
                           "value": ", and the absolute difference is the per-bin gap.",
                           "position": {
                             "start": {
-                              "line": 155,
+                              "line": 119,
                               "column": 19,
-                              "offset": 6746
+                              "offset": 5646
                             },
                             "end": {
-                              "line": 155,
+                              "line": 119,
                               "column": 68,
-                              "offset": 6795
+                              "offset": 5695
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 154,
+                          "line": 118,
                           "column": 1,
-                          "offset": 6646
+                          "offset": 5546
                         },
                         "end": {
-                          "line": 155,
+                          "line": 119,
                           "column": 68,
-                          "offset": 6795
+                          "offset": 5695
                         }
                       }
                     }
@@ -8512,14 +8512,14 @@
                       "value": "On a held-out test split of a credit-default benchmark, both calibration maps\nreduce ECE substantially while leaving the Brier score and log-loss nearly\nunchanged, consistent with the decomposition above. The figures are collected in\n",
                       "position": {
                         "start": {
-                          "line": 158,
+                          "line": 122,
                           "column": 1,
-                          "offset": 6817
+                          "offset": 5717
                         },
                         "end": {
-                          "line": 161,
+                          "line": 125,
                           "column": 1,
-                          "offset": 7051
+                          "offset": 5951
                         }
                       }
                     },
@@ -8544,28 +8544,28 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 161,
+                          "line": 125,
                           "column": 19,
-                          "offset": 7069
+                          "offset": 5969
                         },
                         "end": {
-                          "line": 161,
+                          "line": 125,
                           "column": 20,
-                          "offset": 7070
+                          "offset": 5970
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 158,
+                      "line": 122,
                       "column": 1,
-                      "offset": 6817
+                      "offset": 5717
                     },
                     "end": {
-                      "line": 161,
+                      "line": 125,
                       "column": 20,
-                      "offset": 7070
+                      "offset": 5970
                     }
                   }
                 },
@@ -8836,14 +8836,14 @@
                       "value": "The reliability diagram in ",
                       "position": {
                         "start": {
-                          "line": 170,
+                          "line": 134,
                           "column": 1,
-                          "offset": 7331
+                          "offset": 6231
                         },
                         "end": {
-                          "line": 170,
+                          "line": 134,
                           "column": 28,
-                          "offset": 7358
+                          "offset": 6258
                         }
                       }
                     },
@@ -8868,28 +8868,28 @@
                       "value": " tells the same story visually:\nthe uncalibrated curve bows below the diagonal — over-confidence — and calibration\npulls it back toward it.",
                       "position": {
                         "start": {
-                          "line": 170,
+                          "line": 134,
                           "column": 50,
-                          "offset": 7380
+                          "offset": 6280
                         },
                         "end": {
-                          "line": 172,
+                          "line": 136,
                           "column": 25,
-                          "offset": 7519
+                          "offset": 6419
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 170,
+                      "line": 134,
                       "column": 1,
-                      "offset": 7331
+                      "offset": 6231
                     },
                     "end": {
-                      "line": 172,
+                      "line": 136,
                       "column": 25,
-                      "offset": 7519
+                      "offset": 6419
                     }
                   }
                 },
@@ -9016,14 +9016,14 @@
                       "value": "Post-hoc calibration is cheap, model-agnostic, and easy to get wrong in exactly one\nway: letting the calibrator see the evaluation data. The workflow above exists to\nmake that mistake hard. The whole procedure — three splits, one calibration map, two\nmetrics — is small enough to re-run end to end, which is the point: a number you\ncannot reproduce is not yet evidence.",
                       "position": {
                         "start": {
-                          "line": 179,
+                          "line": 143,
                           "column": 1,
-                          "offset": 8039
+                          "offset": 6939
                         },
                         "end": {
-                          "line": 183,
+                          "line": 147,
                           "column": 38,
-                          "offset": 8408
+                          "offset": 7308
                         }
                       }
                     },
@@ -9053,14 +9053,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 179,
+                      "line": 143,
                       "column": 1,
-                      "offset": 8039
+                      "offset": 6939
                     },
                     "end": {
-                      "line": 186,
+                      "line": 150,
                       "column": 36,
-                      "offset": 8653
+                      "offset": 7553
                     }
                   }
                 },
@@ -9074,28 +9074,28 @@
                       "value": "Whether distribution-free guarantees can be attached to the calibrated\nprobabilities — in the conformal-prediction sense — is a natural next question, and\none the present workflow is small enough to extend.",
                       "position": {
                         "start": {
-                          "line": 188,
+                          "line": 152,
                           "column": 1,
-                          "offset": 8655
+                          "offset": 7555
                         },
                         "end": {
-                          "line": 190,
+                          "line": 154,
                           "column": 52,
-                          "offset": 8861
+                          "offset": 7761
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 188,
+                      "line": 152,
                       "column": 1,
-                      "offset": 8655
+                      "offset": 7555
                     },
                     "end": {
-                      "line": 190,
+                      "line": 154,
                       "column": 52,
-                      "offset": 8861
+                      "offset": 7761
                     }
                   }
                 }
@@ -9271,9 +9271,9 @@
       "offset": 0
     },
     "end": {
-      "line": 191,
+      "line": 192,
       "column": 1,
-      "offset": 8862
+      "offset": 8863
     }
   }
 }

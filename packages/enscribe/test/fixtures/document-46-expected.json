@@ -124,14 +124,14 @@
                       "value": "Reproducibility is less a technique than a habit: a set of small, unglamorous\npractices that, taken together, let someone else — including your future self —\nrebuild a result from its inputs. This short volume collects three such habits, one\nper chapter, each written by a different contributor.",
                       "position": {
                         "start": {
-                          "line": 40,
+                          "line": 9,
                           "column": 1,
-                          "offset": 955
+                          "offset": 160
                         },
                         "end": {
-                          "line": 43,
+                          "line": 12,
                           "column": 54,
-                          "offset": 1250
+                          "offset": 455
                         }
                       }
                     },
@@ -161,14 +161,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 40,
+                      "line": 9,
                       "column": 1,
-                      "offset": 955
+                      "offset": 160
                     },
                     "end": {
-                      "line": 45,
+                      "line": 14,
                       "column": 46,
-                      "offset": 1403
+                      "offset": 608
                     }
                   }
                 },
@@ -318,14 +318,14 @@
                       "value": "A version-control system records the history of a project as a sequence of\n",
                       "position": {
                         "start": {
-                          "line": 49,
+                          "line": 18,
                           "column": 1,
-                          "offset": 1476
+                          "offset": 681
                         },
                         "end": {
-                          "line": 50,
+                          "line": 19,
                           "column": 1,
-                          "offset": 1551
+                          "offset": 756
                         }
                       }
                     },
@@ -339,14 +339,14 @@
                           "value": "commits",
                           "position": {
                             "start": {
-                              "line": 50,
+                              "line": 19,
                               "column": 2,
-                              "offset": 1552
+                              "offset": 757
                             },
                             "end": {
-                              "line": 50,
+                              "line": 19,
                               "column": 9,
-                              "offset": 1559
+                              "offset": 764
                             }
                           }
                         }
@@ -357,14 +357,14 @@
                       "value": ", each a complete snapshot tied to its parent. The result is a directed\ngraph of states that can be branched, merged, and — crucially for reproducibility —\nreferred to by an immutable identifier.",
                       "position": {
                         "start": {
-                          "line": 50,
+                          "line": 19,
                           "column": 10,
-                          "offset": 1560
+                          "offset": 765
                         },
                         "end": {
-                          "line": 52,
+                          "line": 21,
                           "column": 40,
-                          "offset": 1755
+                          "offset": 960
                         }
                       }
                     },
@@ -394,14 +394,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 49,
+                      "line": 18,
                       "column": 1,
-                      "offset": 1476
+                      "offset": 681
                     },
                     "end": {
-                      "line": 54,
+                      "line": 23,
                       "column": 16,
-                      "offset": 1895
+                      "offset": 1100
                     }
                   }
                 },
@@ -475,14 +475,14 @@
                       "value": "The discipline that matters is not the tool but the granularity: small, frequent,\nwell-described commits, as ",
                       "position": {
                         "start": {
-                          "line": 58,
+                          "line": 27,
                           "column": 1,
-                          "offset": 2125
+                          "offset": 1330
                         },
                         "end": {
-                          "line": 59,
+                          "line": 28,
                           "column": 28,
-                          "offset": 2234
+                          "offset": 1439
                         }
                       }
                     },
@@ -507,14 +507,14 @@
                       "value": " argue. ",
                       "position": {
                         "start": {
-                          "line": 59,
+                          "line": 28,
                           "column": 46,
-                          "offset": 2252
+                          "offset": 1457
                         },
                         "end": {
-                          "line": 59,
+                          "line": 28,
                           "column": 54,
-                          "offset": 2260
+                          "offset": 1465
                         }
                       }
                     },
@@ -539,28 +539,28 @@
                       "value": " shows the\nshape such a history takes.",
                       "position": {
                         "start": {
-                          "line": 59,
+                          "line": 28,
                           "column": 74,
-                          "offset": 2280
+                          "offset": 1485
                         },
                         "end": {
-                          "line": 60,
+                          "line": 29,
                           "column": 28,
-                          "offset": 2318
+                          "offset": 1523
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 58,
+                      "line": 27,
                       "column": 1,
-                      "offset": 2125
+                      "offset": 1330
                     },
                     "end": {
-                      "line": 60,
+                      "line": 29,
                       "column": 28,
-                      "offset": 2318
+                      "offset": 1523
                     }
                   }
                 },
@@ -703,14 +703,14 @@
                       "value": "Literate programming, introduced by ",
                       "position": {
                         "start": {
-                          "line": 64,
+                          "line": 33,
                           "column": 1,
-                          "offset": 2390
+                          "offset": 1595
                         },
                         "end": {
-                          "line": 64,
+                          "line": 33,
                           "column": 37,
-                          "offset": 2426
+                          "offset": 1631
                         }
                       }
                     },
@@ -735,28 +735,28 @@
                       "value": ", inverts the usual relation\nbetween code and documentation: the program is written as an essay for human\nreaders, with the machine-executable fragments extracted from it. Computational\nnotebooks are its modern, interactive descendant.",
                       "position": {
                         "start": {
-                          "line": 64,
+                          "line": 33,
                           "column": 54,
-                          "offset": 2443
+                          "offset": 1648
                         },
                         "end": {
-                          "line": 67,
+                          "line": 36,
                           "column": 50,
-                          "offset": 2678
+                          "offset": 1883
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 64,
+                      "line": 33,
                       "column": 1,
-                      "offset": 2390
+                      "offset": 1595
                     },
                     "end": {
-                      "line": 67,
+                      "line": 36,
                       "column": 50,
-                      "offset": 2678
+                      "offset": 1883
                     }
                   }
                 },
@@ -770,14 +770,14 @@
                       "value": "The reproducibility payoff is that narrative, code, and output live in one artifact.\nThe cost is ",
                       "position": {
                         "start": {
-                          "line": 69,
+                          "line": 38,
                           "column": 1,
-                          "offset": 2680
+                          "offset": 1885
                         },
                         "end": {
-                          "line": 70,
+                          "line": 39,
                           "column": 13,
-                          "offset": 2777
+                          "offset": 1982
                         }
                       }
                     },
@@ -791,14 +791,14 @@
                           "value": "execution-order fragility",
                           "position": {
                             "start": {
-                              "line": 70,
+                              "line": 39,
                               "column": 14,
-                              "offset": 2778
+                              "offset": 1983
                             },
                             "end": {
-                              "line": 70,
+                              "line": 39,
                               "column": 39,
-                              "offset": 2803
+                              "offset": 2008
                             }
                           }
                         }
@@ -809,28 +809,28 @@
                       "value": ": a notebook's stored output reflects whatever\norder its cells were last run in, which need not be top to bottom. A simple guard is\nto require that the notebook restart-and-run-all cleanly, so the stored state\nsatisfies",
                       "position": {
                         "start": {
-                          "line": 70,
+                          "line": 39,
                           "column": 40,
-                          "offset": 2804
+                          "offset": 2009
                         },
                         "end": {
-                          "line": 73,
+                          "line": 42,
                           "column": 10,
-                          "offset": 3023
+                          "offset": 2228
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 69,
+                      "line": 38,
                       "column": 1,
-                      "offset": 2680
+                      "offset": 1885
                     },
                     "end": {
-                      "line": 73,
+                      "line": 42,
                       "column": 10,
-                      "offset": 3023
+                      "offset": 2228
                     }
                   }
                 },
@@ -1137,14 +1137,14 @@
                       "value": "before it is committed.",
                       "position": {
                         "start": {
-                          "line": 77,
+                          "line": 46,
                           "column": 1,
-                          "offset": 3122
+                          "offset": 2327
                         },
                         "end": {
-                          "line": 77,
+                          "line": 46,
                           "column": 24,
-                          "offset": 3145
+                          "offset": 2350
                         }
                       }
                     },
@@ -1174,14 +1174,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 77,
+                      "line": 46,
                       "column": 1,
-                      "offset": 3122
+                      "offset": 2327
                     },
                     "end": {
-                      "line": 79,
+                      "line": 48,
                       "column": 29,
-                      "offset": 3307
+                      "offset": 2512
                     }
                   }
                 },
@@ -1255,14 +1255,14 @@
                       "value": "Cross-reference ",
                       "position": {
                         "start": {
-                          "line": 83,
+                          "line": 52,
                           "column": 1,
-                          "offset": 3484
+                          "offset": 2689
                         },
                         "end": {
-                          "line": 83,
+                          "line": 52,
                           "column": 17,
-                          "offset": 3500
+                          "offset": 2705
                         }
                       }
                     },
@@ -1287,14 +1287,14 @@
                       "value": " resolves with a chapter prefix — it is the\nfirst figure of the second chapter — while a reference back to ",
                       "position": {
                         "start": {
-                          "line": 83,
+                          "line": 52,
                           "column": 39,
-                          "offset": 3522
+                          "offset": 2727
                         },
                         "end": {
-                          "line": 84,
+                          "line": 53,
                           "column": 64,
-                          "offset": 3629
+                          "offset": 2834
                         }
                       }
                     },
@@ -1319,14 +1319,14 @@
                       "value": "\nstill resolves to the first chapter's figure: the prefix identifies the target's\nchapter, not the citing one. The invariant ",
                       "position": {
                         "start": {
-                          "line": 84,
+                          "line": 53,
                           "column": 84,
-                          "offset": 3649
+                          "offset": 2854
                         },
                         "end": {
-                          "line": 86,
+                          "line": 55,
                           "column": 44,
-                          "offset": 3774
+                          "offset": 2979
                         }
                       }
                     },
@@ -1351,28 +1351,28 @@
                       "value": " carries the same\nchapter prefix.",
                       "position": {
                         "start": {
-                          "line": 86,
+                          "line": 55,
                           "column": 67,
-                          "offset": 3797
+                          "offset": 3002
                         },
                         "end": {
-                          "line": 87,
+                          "line": 56,
                           "column": 16,
-                          "offset": 3830
+                          "offset": 3035
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 83,
+                      "line": 52,
                       "column": 1,
-                      "offset": 3484
+                      "offset": 2689
                     },
                     "end": {
-                      "line": 87,
+                      "line": 56,
                       "column": 16,
-                      "offset": 3830
+                      "offset": 3035
                     }
                   }
                 },
@@ -1598,14 +1598,14 @@
                       "value": "Provenance turns a result into a reproducible one by making its derivation explicit.\n",
                       "position": {
                         "start": {
-                          "line": 93,
+                          "line": 62,
                           "column": 1,
-                          "offset": 4097
+                          "offset": 3302
                         },
                         "end": {
-                          "line": 94,
+                          "line": 63,
                           "column": 1,
-                          "offset": 4182
+                          "offset": 3387
                         }
                       }
                     },
@@ -1630,14 +1630,14 @@
                       "value": " is deliberately strong: a partial record that omits a\ntransformation is not provenance, because the artifact cannot be rebuilt from it. The\nrecommended practice, following ",
                       "position": {
                         "start": {
-                          "line": 94,
+                          "line": 63,
                           "column": 22,
-                          "offset": 4203
+                          "offset": 3408
                         },
                         "end": {
-                          "line": 96,
+                          "line": 65,
                           "column": 33,
-                          "offset": 4376
+                          "offset": 3581
                         }
                       }
                     },
@@ -1662,28 +1662,28 @@
                       "value": ", is to capture provenance\nautomatically rather than by hand.",
                       "position": {
                         "start": {
-                          "line": 96,
+                          "line": 65,
                           "column": 51,
-                          "offset": 4394
+                          "offset": 3599
                         },
                         "end": {
-                          "line": 97,
+                          "line": 66,
                           "column": 35,
-                          "offset": 4455
+                          "offset": 3660
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 93,
+                      "line": 62,
                       "column": 1,
-                      "offset": 4097
+                      "offset": 3302
                     },
                     "end": {
-                      "line": 97,
+                      "line": 66,
                       "column": 35,
-                      "offset": 4455
+                      "offset": 3660
                     }
                   }
                 },
@@ -1749,14 +1749,14 @@
                       "value": "A minimal provenance record need capture only three fields per artifact, summarised\nin ",
                       "position": {
                         "start": {
-                          "line": 107,
+                          "line": 76,
                           "column": 1,
-                          "offset": 4716
+                          "offset": 3921
                         },
                         "end": {
-                          "line": 108,
+                          "line": 77,
                           "column": 4,
-                          "offset": 4803
+                          "offset": 4008
                         }
                       }
                     },
@@ -1781,28 +1781,28 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 108,
+                          "line": 77,
                           "column": 25,
-                          "offset": 4824
+                          "offset": 4029
                         },
                         "end": {
-                          "line": 108,
+                          "line": 77,
                           "column": 26,
-                          "offset": 4825
+                          "offset": 4030
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 107,
+                      "line": 76,
                       "column": 1,
-                      "offset": 4716
+                      "offset": 3921
                     },
                     "end": {
-                      "line": 108,
+                      "line": 77,
                       "column": 26,
-                      "offset": 4825
+                      "offset": 4030
                     }
                   }
                 },
@@ -2029,14 +2029,14 @@
                       "value": "The lineage graph in ",
                       "position": {
                         "start": {
-                          "line": 117,
+                          "line": 86,
                           "column": 1,
-                          "offset": 5120
+                          "offset": 4325
                         },
                         "end": {
-                          "line": 117,
+                          "line": 86,
                           "column": 22,
-                          "offset": 5141
+                          "offset": 4346
                         }
                       }
                     },
@@ -2061,14 +2061,14 @@
                       "value": " is the transitive closure of these\nrecords.",
                       "position": {
                         "start": {
-                          "line": 117,
+                          "line": 86,
                           "column": 40,
-                          "offset": 5159
+                          "offset": 4364
                         },
                         "end": {
-                          "line": 118,
+                          "line": 87,
                           "column": 9,
-                          "offset": 5203
+                          "offset": 4408
                         }
                       }
                     },
@@ -2098,14 +2098,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 117,
+                      "line": 86,
                       "column": 1,
-                      "offset": 5120
+                      "offset": 4325
                     },
                     "end": {
-                      "line": 119,
+                      "line": 88,
                       "column": 77,
-                      "offset": 5353
+                      "offset": 4558
                     }
                   }
                 },
@@ -2232,28 +2232,28 @@
                       "value": "The contributors agreed on a short checklist, applicable regardless of tooling:",
                       "position": {
                         "start": {
-                          "line": 122,
+                          "line": 91,
                           "column": 1,
-                          "offset": 5396
+                          "offset": 4601
                         },
                         "end": {
-                          "line": 122,
+                          "line": 91,
                           "column": 80,
-                          "offset": 5475
+                          "offset": 4680
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 122,
+                      "line": 91,
                       "column": 1,
-                      "offset": 5396
+                      "offset": 4601
                     },
                     "end": {
-                      "line": 122,
+                      "line": 91,
                       "column": 80,
-                      "offset": 5475
+                      "offset": 4680
                     }
                   }
                 },
@@ -2276,28 +2276,28 @@
                           "value": "every result traces to a version-controlled commit;",
                           "position": {
                             "start": {
-                              "line": 124,
+                              "line": 93,
                               "column": 4,
-                              "offset": 5480
+                              "offset": 4685
                             },
                             "end": {
-                              "line": 124,
+                              "line": 93,
                               "column": 55,
-                              "offset": 5531
+                              "offset": 4736
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 124,
+                          "line": 93,
                           "column": 1,
-                          "offset": 5477
+                          "offset": 4682
                         },
                         "end": {
-                          "line": 124,
+                          "line": 93,
                           "column": 55,
-                          "offset": 5531
+                          "offset": 4736
                         }
                       }
                     },
@@ -2315,28 +2315,28 @@
                           "value": "every figure regenerates from a script, not by hand;",
                           "position": {
                             "start": {
-                              "line": 125,
+                              "line": 94,
                               "column": 4,
-                              "offset": 5535
+                              "offset": 4740
                             },
                             "end": {
-                              "line": 125,
+                              "line": 94,
                               "column": 56,
-                              "offset": 5587
+                              "offset": 4792
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 125,
+                          "line": 94,
                           "column": 1,
-                          "offset": 5532
+                          "offset": 4737
                         },
                         "end": {
-                          "line": 125,
+                          "line": 94,
                           "column": 56,
-                          "offset": 5587
+                          "offset": 4792
                         }
                       }
                     },
@@ -2354,28 +2354,28 @@
                           "value": "every notebook passes restart-and-run-all in CI;",
                           "position": {
                             "start": {
-                              "line": 126,
+                              "line": 95,
                               "column": 4,
-                              "offset": 5591
+                              "offset": 4796
                             },
                             "end": {
-                              "line": 126,
+                              "line": 95,
                               "column": 52,
-                              "offset": 5639
+                              "offset": 4844
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 126,
+                          "line": 95,
                           "column": 1,
-                          "offset": 5588
+                          "offset": 4793
                         },
                         "end": {
-                          "line": 126,
+                          "line": 95,
                           "column": 52,
-                          "offset": 5639
+                          "offset": 4844
                         }
                       }
                     },
@@ -2393,28 +2393,28 @@
                           "value": "every derived artifact carries a provenance record.",
                           "position": {
                             "start": {
-                              "line": 127,
+                              "line": 96,
                               "column": 4,
-                              "offset": 5643
+                              "offset": 4848
                             },
                             "end": {
-                              "line": 127,
+                              "line": 96,
                               "column": 55,
-                              "offset": 5694
+                              "offset": 4899
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 127,
+                          "line": 96,
                           "column": 1,
-                          "offset": 5640
+                          "offset": 4845
                         },
                         "end": {
-                          "line": 127,
+                          "line": 96,
                           "column": 55,
-                          "offset": 5694
+                          "offset": 4899
                         }
                       }
                     },
@@ -2425,14 +2425,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 124,
+                      "line": 93,
                       "column": 1,
-                      "offset": 5477
+                      "offset": 4682
                     },
                     "end": {
-                      "line": 127,
+                      "line": 96,
                       "column": 55,
-                      "offset": 5694
+                      "offset": 4899
                     }
                   }
                 },
@@ -2446,14 +2446,14 @@
                       "value": "A result that satisfies all four can be rebuilt by a stranger.",
                       "position": {
                         "start": {
-                          "line": 129,
+                          "line": 98,
                           "column": 1,
-                          "offset": 5696
+                          "offset": 4901
                         },
                         "end": {
-                          "line": 129,
+                          "line": 98,
                           "column": 63,
-                          "offset": 5758
+                          "offset": 4963
                         }
                       }
                     },
@@ -2483,14 +2483,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 129,
+                      "line": 98,
                       "column": 1,
-                      "offset": 5696
+                      "offset": 4901
                     },
                     "end": {
-                      "line": 131,
+                      "line": 100,
                       "column": 32,
-                      "offset": 5894
+                      "offset": 5099
                     }
                   }
                 },
@@ -2598,9 +2598,9 @@
       "offset": 0
     },
     "end": {
-      "line": 132,
+      "line": 133,
       "column": 1,
-      "offset": 5895
+      "offset": 5896
     }
   }
 }

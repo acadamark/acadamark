@@ -26,14 +26,14 @@
                       "value": "Introduction",
                       "position": {
                         "start": {
-                          "line": 9,
+                          "line": 5,
                           "column": 4,
-                          "offset": 230
+                          "offset": 173
                         },
                         "end": {
-                          "line": 9,
+                          "line": 5,
                           "column": 16,
-                          "offset": 242
+                          "offset": 185
                         }
                       }
                     }
@@ -49,14 +49,14 @@
                       "value": "The past decade has seen a significant reorientation in autism research toward participatory methods that centre the\nexperiences and priorities of autistic people themselves. ",
                       "position": {
                         "start": {
-                          "line": 11,
+                          "line": 7,
                           "column": 1,
-                          "offset": 244
+                          "offset": 187
                         },
                         "end": {
-                          "line": 12,
+                          "line": 8,
                           "column": 59,
-                          "offset": 420
+                          "offset": 363
                         }
                       }
                     },
@@ -81,28 +81,28 @@
                       "value": " found a striking mismatch between the\nresearch agenda set by non-autistic investigators and the topics judged most pressing by autistic adults and their\nfamilies, with quality-of-life outcomes receiving far less attention than biomedical aetiology.",
                       "position": {
                         "start": {
-                          "line": 12,
+                          "line": 8,
                           "column": 80,
-                          "offset": 441
+                          "offset": 384
                         },
                         "end": {
-                          "line": 14,
+                          "line": 10,
                           "column": 96,
-                          "offset": 692
+                          "offset": 635
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 11,
+                      "line": 7,
                       "column": 1,
-                      "offset": 244
+                      "offset": 187
                     },
                     "end": {
-                      "line": 14,
+                      "line": 10,
                       "column": 96,
-                      "offset": 692
+                      "offset": 635
                     }
                   }
                 },
@@ -116,14 +116,14 @@
                       "value": "This shift toward participatory design has implications not only for research priorities but for the quantitative\ntools used to evaluate outcomes. Measures developed without autistic input may fail to capture constructs that matter\nto autistic participants.",
                       "position": {
                         "start": {
-                          "line": 16,
+                          "line": 12,
                           "column": 1,
-                          "offset": 694
+                          "offset": 637
                         },
                         "end": {
-                          "line": 18,
+                          "line": 14,
                           "column": 26,
-                          "offset": 953
+                          "offset": 896
                         }
                       }
                     },
@@ -155,28 +155,28 @@
                       "value": " Standard effect-size metrics assume outcome measures are valid, and validity depends\non face-relevance to the population studied.",
                       "position": {
                         "start": {
-                          "line": 20,
+                          "line": 16,
                           "column": 31,
-                          "offset": 1199
+                          "offset": 1142
                         },
                         "end": {
-                          "line": 21,
+                          "line": 17,
                           "column": 45,
-                          "offset": 1330
+                          "offset": 1273
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 16,
+                      "line": 12,
                       "column": 1,
-                      "offset": 694
+                      "offset": 637
                     },
                     "end": {
-                      "line": 21,
+                      "line": 17,
                       "column": 45,
-                      "offset": 1330
+                      "offset": 1273
                     }
                   }
                 },
@@ -190,28 +190,28 @@
                       "value": "The purpose of this note is to describe a simple framework for weighting research priorities, illustrate it with\ncommunity data from the literature, and show how commonly used indices behave under different weighting schemes.",
                       "position": {
                         "start": {
-                          "line": 23,
+                          "line": 19,
                           "column": 1,
-                          "offset": 1332
+                          "offset": 1275
                         },
                         "end": {
-                          "line": 24,
+                          "line": 20,
                           "column": 113,
-                          "offset": 1558
+                          "offset": 1501
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 23,
+                      "line": 19,
                       "column": 1,
-                      "offset": 1332
+                      "offset": 1275
                     },
                     "end": {
-                      "line": 24,
+                      "line": 20,
                       "column": 113,
-                      "offset": 1558
+                      "offset": 1501
                     }
                   }
                 }
@@ -232,14 +232,14 @@
                       "value": "Background",
                       "position": {
                         "start": {
-                          "line": 26,
+                          "line": 22,
                           "column": 4,
-                          "offset": 1563
+                          "offset": 1506
                         },
                         "end": {
-                          "line": 26,
+                          "line": 22,
                           "column": 14,
-                          "offset": 1573
+                          "offset": 1516
                         }
                       }
                     }
@@ -260,14 +260,14 @@
                           "value": "Prevalence and Sampling",
                           "position": {
                             "start": {
-                              "line": 28,
+                              "line": 24,
                               "column": 5,
-                              "offset": 1579
+                              "offset": 1522
                             },
                             "end": {
-                              "line": 28,
+                              "line": 24,
                               "column": 28,
-                              "offset": 1602
+                              "offset": 1545
                             }
                           }
                         }
@@ -283,14 +283,14 @@
                           "value": "Accurate prevalence estimates are a prerequisite for power calculations in community-based studies. The systematic\nreview by ",
                           "position": {
                             "start": {
-                              "line": 30,
+                              "line": 26,
                               "column": 1,
-                              "offset": 1604
+                              "offset": 1547
                             },
                             "end": {
-                              "line": 31,
+                              "line": 27,
                               "column": 11,
-                              "offset": 1730
+                              "offset": 1673
                             }
                           }
                         },
@@ -315,14 +315,14 @@
                           "value": " revised the male-to-female ratio in autism diagnoses substantially downward from the\nlong-cited 4:1 figure, with implications for studies that stratify by gender. If the true ratio is closer to 3:1 or\neven 2:1 among certain age groups, studies designed around 4:1 assumptions will be systematically underpowered for\nfemale participants.",
                           "position": {
                             "start": {
-                              "line": 31,
+                              "line": 27,
                               "column": 29,
-                              "offset": 1748
+                              "offset": 1691
                             },
                             "end": {
-                              "line": 34,
+                              "line": 30,
                               "column": 21,
-                              "offset": 2088
+                              "offset": 2031
                             }
                           }
                         },
@@ -352,14 +352,14 @@
                       ],
                       "position": {
                         "start": {
-                          "line": 30,
+                          "line": 26,
                           "column": 1,
-                          "offset": 1604
+                          "offset": 1547
                         },
                         "end": {
-                          "line": 36,
+                          "line": 32,
                           "column": 31,
-                          "offset": 2330
+                          "offset": 2273
                         }
                       }
                     },
@@ -373,14 +373,14 @@
                           "value": "Stigma and underdiagnosis interact in ways that complicate sampling. ",
                           "position": {
                             "start": {
-                              "line": 38,
+                              "line": 34,
                               "column": 1,
-                              "offset": 2332
+                              "offset": 2275
                             },
                             "end": {
-                              "line": 38,
+                              "line": 34,
                               "column": 70,
-                              "offset": 2401
+                              "offset": 2344
                             }
                           }
                         },
@@ -405,28 +405,28 @@
                           "value": " demonstrated that\nbrief educational interventions can shift attitudes among college students, suggesting that sample frames drawn from\nuniversity populations may be especially sensitive to the timing of data collection relative to awareness-raising\nactivities on campus.",
                           "position": {
                             "start": {
-                              "line": 38,
+                              "line": 34,
                               "column": 96,
-                              "offset": 2427
+                              "offset": 2370
                             },
                             "end": {
-                              "line": 41,
+                              "line": 37,
                               "column": 22,
-                              "offset": 2701
+                              "offset": 2644
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 38,
+                          "line": 34,
                           "column": 1,
-                          "offset": 2332
+                          "offset": 2275
                         },
                         "end": {
-                          "line": 41,
+                          "line": 37,
                           "column": 22,
-                          "offset": 2701
+                          "offset": 2644
                         }
                       }
                     }
@@ -447,14 +447,14 @@
                           "value": "Burnout as an Outcome Variable",
                           "position": {
                             "start": {
-                              "line": 43,
+                              "line": 39,
                               "column": 5,
-                              "offset": 2707
+                              "offset": 2650
                             },
                             "end": {
-                              "line": 43,
+                              "line": 39,
                               "column": 35,
-                              "offset": 2737
+                              "offset": 2680
                             }
                           }
                         }
@@ -470,14 +470,14 @@
                           "value": "Autistic burnout — characterised by pervasive exhaustion, cognitive difficulties, and reduced tolerance for sensory\nand social demands — has emerged as a high-priority outcome in community-identified research agendas.\n",
                           "position": {
                             "start": {
-                              "line": 45,
+                              "line": 41,
                               "column": 1,
-                              "offset": 2739
+                              "offset": 2682
                             },
                             "end": {
-                              "line": 47,
+                              "line": 43,
                               "column": 1,
-                              "offset": 2959
+                              "offset": 2902
                             }
                           }
                         },
@@ -502,14 +502,14 @@
                           "value": " proposed a conceptual model with risk and protective factors organised around three domains:\nindividual, social-environmental, and systemic. The model is summarised schematically in ",
                           "position": {
                             "start": {
-                              "line": 47,
+                              "line": 43,
                               "column": 22,
-                              "offset": 2980
+                              "offset": 2923
                             },
                             "end": {
-                              "line": 48,
+                              "line": 44,
                               "column": 90,
-                              "offset": 3164
+                              "offset": 3107
                             }
                           }
                         },
@@ -534,28 +534,28 @@
                           "value": ".",
                           "position": {
                             "start": {
-                              "line": 48,
+                              "line": 44,
                               "column": 108,
-                              "offset": 3182
+                              "offset": 3125
                             },
                             "end": {
-                              "line": 48,
+                              "line": 44,
                               "column": 109,
-                              "offset": 3183
+                              "offset": 3126
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 45,
+                          "line": 41,
                           "column": 1,
-                          "offset": 2739
+                          "offset": 2682
                         },
                         "end": {
-                          "line": 48,
+                          "line": 44,
                           "column": 109,
-                          "offset": 3183
+                          "offset": 3126
                         }
                       }
                     },
@@ -782,28 +782,28 @@
                           "value": "The three-domain structure maps naturally onto a weighted priority index, developed in the next section.",
                           "position": {
                             "start": {
-                              "line": 57,
+                              "line": 53,
                               "column": 1,
-                              "offset": 3643
+                              "offset": 3586
                             },
                             "end": {
-                              "line": 57,
+                              "line": 53,
                               "column": 105,
-                              "offset": 3747
+                              "offset": 3690
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 57,
+                          "line": 53,
                           "column": 1,
-                          "offset": 3643
+                          "offset": 3586
                         },
                         "end": {
-                          "line": 57,
+                          "line": 53,
                           "column": 105,
-                          "offset": 3747
+                          "offset": 3690
                         }
                       }
                     }
@@ -826,14 +826,14 @@
                       "value": "A Weighted Priority Index",
                       "position": {
                         "start": {
-                          "line": 59,
+                          "line": 55,
                           "column": 4,
-                          "offset": 3752
+                          "offset": 3695
                         },
                         "end": {
-                          "line": 59,
+                          "line": 55,
                           "column": 29,
-                          "offset": 3777
+                          "offset": 3720
                         }
                       }
                     }
@@ -849,14 +849,14 @@
                       "value": "Let ",
                       "position": {
                         "start": {
-                          "line": 61,
+                          "line": 57,
                           "column": 1,
-                          "offset": 3779
+                          "offset": 3722
                         },
                         "end": {
-                          "line": 61,
+                          "line": 57,
                           "column": 5,
-                          "offset": 3783
+                          "offset": 3726
                         }
                       }
                     },
@@ -934,14 +934,14 @@
                       "value": " denote a set of research topics, each evaluated on two dimensions: ",
                       "position": {
                         "start": {
-                          "line": 61,
+                          "line": 57,
                           "column": 12,
-                          "offset": 3790
+                          "offset": 3733
                         },
                         "end": {
-                          "line": 61,
+                          "line": 57,
                           "column": 80,
-                          "offset": 3858
+                          "offset": 3801
                         }
                       }
                     },
@@ -955,14 +955,14 @@
                           "value": "community importance",
                           "position": {
                             "start": {
-                              "line": 61,
+                              "line": 57,
                               "column": 81,
-                              "offset": 3859
+                              "offset": 3802
                             },
                             "end": {
-                              "line": 61,
+                              "line": 57,
                               "column": 101,
-                              "offset": 3879
+                              "offset": 3822
                             }
                           }
                         }
@@ -973,14 +973,14 @@
                       "value": " ",
                       "position": {
                         "start": {
-                          "line": 61,
+                          "line": 57,
                           "column": 102,
-                          "offset": 3880
+                          "offset": 3823
                         },
                         "end": {
-                          "line": 61,
+                          "line": 57,
                           "column": 103,
-                          "offset": 3881
+                          "offset": 3824
                         }
                       }
                     },
@@ -1209,14 +1209,14 @@
                       "value": "\n(rated by autistic participants on a 1--5 scale) and ",
                       "position": {
                         "start": {
-                          "line": 61,
+                          "line": 57,
                           "column": 113,
-                          "offset": 3891
+                          "offset": 3834
                         },
                         "end": {
-                          "line": 62,
+                          "line": 58,
                           "column": 54,
-                          "offset": 3945
+                          "offset": 3888
                         }
                       }
                     },
@@ -1230,14 +1230,14 @@
                           "value": "evidence gap",
                           "position": {
                             "start": {
-                              "line": 62,
+                              "line": 58,
                               "column": 55,
-                              "offset": 3946
+                              "offset": 3889
                             },
                             "end": {
-                              "line": 62,
+                              "line": 58,
                               "column": 67,
-                              "offset": 3958
+                              "offset": 3901
                             }
                           }
                         }
@@ -1248,14 +1248,14 @@
                       "value": " ",
                       "position": {
                         "start": {
-                          "line": 62,
+                          "line": 58,
                           "column": 68,
-                          "offset": 3959
+                          "offset": 3902
                         },
                         "end": {
-                          "line": 62,
+                          "line": 58,
                           "column": 69,
-                          "offset": 3960
+                          "offset": 3903
                         }
                       }
                     },
@@ -1485,14 +1485,14 @@
                       "value": " (the inverse of the number of recent\nhigh-quality studies, normalised to [0,1]). A combined priority score for topic ",
                       "position": {
                         "start": {
-                          "line": 62,
+                          "line": 58,
                           "column": 78,
-                          "offset": 3969
+                          "offset": 3912
                         },
                         "end": {
-                          "line": 63,
+                          "line": 59,
                           "column": 81,
-                          "offset": 4088
+                          "offset": 4031
                         }
                       }
                     },
@@ -1569,28 +1569,28 @@
                       "value": " is:",
                       "position": {
                         "start": {
-                          "line": 63,
+                          "line": 59,
                           "column": 88,
-                          "offset": 4095
+                          "offset": 4038
                         },
                         "end": {
-                          "line": 63,
+                          "line": 59,
                           "column": 92,
-                          "offset": 4099
+                          "offset": 4042
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 61,
+                      "line": 57,
                       "column": 1,
-                      "offset": 3779
+                      "offset": 3722
                     },
                     "end": {
-                      "line": 63,
+                      "line": 59,
                       "column": 92,
-                      "offset": 4099
+                      "offset": 4042
                     }
                   }
                 },
@@ -2468,14 +2468,14 @@
                       "value": "where ",
                       "position": {
                         "start": {
-                          "line": 67,
+                          "line": 63,
                           "column": 1,
-                          "offset": 4168
+                          "offset": 4111
                         },
                         "end": {
-                          "line": 67,
+                          "line": 63,
                           "column": 7,
-                          "offset": 4174
+                          "offset": 4117
                         }
                       }
                     },
@@ -2698,14 +2698,14 @@
                       "value": " controls the relative weight given to community preference versus evidence gaps.\nSetting ",
                       "position": {
                         "start": {
-                          "line": 67,
+                          "line": 63,
                           "column": 30,
-                          "offset": 4197
+                          "offset": 4140
                         },
                         "end": {
-                          "line": 68,
+                          "line": 64,
                           "column": 9,
-                          "offset": 4288
+                          "offset": 4231
                         }
                       }
                     },
@@ -2857,14 +2857,14 @@
                       "value": " recovers pure community voting; ",
                       "position": {
                         "start": {
-                          "line": 68,
+                          "line": 64,
                           "column": 25,
-                          "offset": 4304
+                          "offset": 4247
                         },
                         "end": {
-                          "line": 68,
+                          "line": 64,
                           "column": 58,
-                          "offset": 4337
+                          "offset": 4280
                         }
                       }
                     },
@@ -3016,28 +3016,28 @@
                       "value": " recovers a pure evidence-gap ranking.",
                       "position": {
                         "start": {
-                          "line": 68,
+                          "line": 64,
                           "column": 74,
-                          "offset": 4353
+                          "offset": 4296
                         },
                         "end": {
-                          "line": 68,
+                          "line": 64,
                           "column": 112,
-                          "offset": 4391
+                          "offset": 4334
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 67,
+                      "line": 63,
                       "column": 1,
-                      "offset": 4168
+                      "offset": 4111
                     },
                     "end": {
-                      "line": 68,
+                      "line": 64,
                       "column": 112,
-                      "offset": 4391
+                      "offset": 4334
                     }
                   }
                 },
@@ -3051,28 +3051,28 @@
                       "value": "The normalised priority weight across all topics is:",
                       "position": {
                         "start": {
-                          "line": 70,
+                          "line": 66,
                           "column": 1,
-                          "offset": 4393
+                          "offset": 4336
                         },
                         "end": {
-                          "line": 70,
+                          "line": 66,
                           "column": 53,
-                          "offset": 4445
+                          "offset": 4388
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 70,
+                      "line": 66,
                       "column": 1,
-                      "offset": 4393
+                      "offset": 4336
                     },
                     "end": {
-                      "line": 70,
+                      "line": 66,
                       "column": 53,
-                      "offset": 4445
+                      "offset": 4388
                     }
                   }
                 },
@@ -4129,28 +4129,28 @@
                       "value": "These weights can then be used to allocate a fixed research budget across topics, or to construct a composite\noutcome index that reflects community priorities.",
                       "position": {
                         "start": {
-                          "line": 74,
+                          "line": 70,
                           "column": 1,
-                          "offset": 4485
+                          "offset": 4428
                         },
                         "end": {
-                          "line": 75,
+                          "line": 71,
                           "column": 50,
-                          "offset": 4645
+                          "offset": 4588
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 74,
+                      "line": 70,
                       "column": 1,
-                      "offset": 4485
+                      "offset": 4428
                     },
                     "end": {
-                      "line": 75,
+                      "line": 71,
                       "column": 50,
-                      "offset": 4645
+                      "offset": 4588
                     }
                   }
                 },
@@ -4159,14 +4159,14 @@
                   "value": "<blockquote>A priority index is only as good as the community consultation that generates the importance ratings. Convenience \nsamples of autistic adults with high verbal ability and stable living situations will not reflect the priorities of \nautistic people with high support needs, those in residential care, or children and adolescents.</blockquote>",
                   "position": {
                     "start": {
-                      "line": 77,
+                      "line": 73,
                       "column": 1,
-                      "offset": 4647
+                      "offset": 4590
                     },
                     "end": {
-                      "line": 79,
+                      "line": 75,
                       "column": 110,
-                      "offset": 5000
+                      "offset": 4943
                     }
                   }
                 },
@@ -4185,14 +4185,14 @@
                           "value": "Sensitivity to the Mixing Parameter",
                           "position": {
                             "start": {
-                              "line": 81,
+                              "line": 77,
                               "column": 5,
-                              "offset": 5006
+                              "offset": 4949
                             },
                             "end": {
-                              "line": 81,
+                              "line": 77,
                               "column": 40,
-                              "offset": 5041
+                              "offset": 4984
                             }
                           }
                         }
@@ -4208,14 +4208,14 @@
                           "value": "The sensitivity of topic rankings to ",
                           "position": {
                             "start": {
-                              "line": 83,
+                              "line": 79,
                               "column": 1,
-                              "offset": 5043
+                              "offset": 4986
                             },
                             "end": {
-                              "line": 83,
+                              "line": 79,
                               "column": 38,
-                              "offset": 5080
+                              "offset": 5023
                             }
                           }
                         },
@@ -4293,14 +4293,14 @@
                           "value": " can be assessed by computing the Spearman rank correlation between\nthe ranking at ",
                           "position": {
                             "start": {
-                              "line": 83,
+                              "line": 79,
                               "column": 50,
-                              "offset": 5092
+                              "offset": 5035
                             },
                             "end": {
-                              "line": 84,
+                              "line": 80,
                               "column": 16,
-                              "offset": 5176
+                              "offset": 5119
                             }
                           }
                         },
@@ -4452,14 +4452,14 @@
                           "value": " and at ",
                           "position": {
                             "start": {
-                              "line": 84,
+                              "line": 80,
                               "column": 32,
-                              "offset": 5192
+                              "offset": 5135
                             },
                             "end": {
-                              "line": 84,
+                              "line": 80,
                               "column": 40,
-                              "offset": 5200
+                              "offset": 5143
                             }
                           }
                         },
@@ -4611,28 +4611,28 @@
                           "value": ". A high correlation indicates that community preferences and\nevidence gaps are aligned; a low correlation reveals genuine tension between the two criteria.",
                           "position": {
                             "start": {
-                              "line": 84,
+                              "line": 80,
                               "column": 56,
-                              "offset": 5216
+                              "offset": 5159
                             },
                             "end": {
-                              "line": 85,
+                              "line": 81,
                               "column": 95,
-                              "offset": 5373
+                              "offset": 5316
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 83,
+                          "line": 79,
                           "column": 1,
-                          "offset": 5043
+                          "offset": 4986
                         },
                         "end": {
-                          "line": 85,
+                          "line": 81,
                           "column": 95,
-                          "offset": 5373
+                          "offset": 5316
                         }
                       }
                     },
@@ -4646,14 +4646,14 @@
                           "value": "In practice, one can sweep ",
                           "position": {
                             "start": {
-                              "line": 87,
+                              "line": 83,
                               "column": 1,
-                              "offset": 5375
+                              "offset": 5318
                             },
                             "end": {
-                              "line": 87,
+                              "line": 83,
                               "column": 28,
-                              "offset": 5402
+                              "offset": 5345
                             }
                           }
                         },
@@ -4731,14 +4731,14 @@
                           "value": " in steps of 0.1 and report the ",
                           "position": {
                             "start": {
-                              "line": 87,
+                              "line": 83,
                               "column": 40,
-                              "offset": 5414
+                              "offset": 5357
                             },
                             "end": {
-                              "line": 87,
+                              "line": 83,
                               "column": 72,
-                              "offset": 5446
+                              "offset": 5389
                             }
                           }
                         },
@@ -4816,14 +4816,14 @@
                           "value": " value at which the top-ranked topic\nchanges. A useful summary statistic is the ",
                           "position": {
                             "start": {
-                              "line": 87,
+                              "line": 83,
                               "column": 84,
-                              "offset": 5458
+                              "offset": 5401
                             },
                             "end": {
-                              "line": 88,
+                              "line": 84,
                               "column": 44,
-                              "offset": 5539
+                              "offset": 5482
                             }
                           }
                         },
@@ -4837,14 +4837,14 @@
                               "value": "stability threshold",
                               "position": {
                                 "start": {
-                                  "line": 88,
+                                  "line": 84,
                                   "column": 45,
-                                  "offset": 5540
+                                  "offset": 5483
                                 },
                                 "end": {
-                                  "line": 88,
+                                  "line": 84,
                                   "column": 64,
-                                  "offset": 5559
+                                  "offset": 5502
                                 }
                               }
                             }
@@ -4855,14 +4855,14 @@
                           "value": " ",
                           "position": {
                             "start": {
-                              "line": 88,
+                              "line": 84,
                               "column": 65,
-                              "offset": 5560
+                              "offset": 5503
                             },
                             "end": {
-                              "line": 88,
+                              "line": 84,
                               "column": 66,
-                              "offset": 5561
+                              "offset": 5504
                             }
                           }
                         },
@@ -5046,28 +5046,28 @@
                           "value": ":",
                           "position": {
                             "start": {
-                              "line": 88,
+                              "line": 84,
                               "column": 80,
-                              "offset": 5575
+                              "offset": 5518
                             },
                             "end": {
-                              "line": 88,
+                              "line": 84,
                               "column": 81,
-                              "offset": 5576
+                              "offset": 5519
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 87,
+                          "line": 83,
                           "column": 1,
-                          "offset": 5375
+                          "offset": 5318
                         },
                         "end": {
-                          "line": 88,
+                          "line": 84,
                           "column": 81,
-                          "offset": 5576
+                          "offset": 5519
                         }
                       }
                     },
@@ -5868,14 +5868,14 @@
                           "value": "where ",
                           "position": {
                             "start": {
-                              "line": 92,
+                              "line": 88,
                               "column": 1,
-                              "offset": 5654
+                              "offset": 5597
                             },
                             "end": {
-                              "line": 92,
+                              "line": 88,
                               "column": 7,
-                              "offset": 5660
+                              "offset": 5603
                             }
                           }
                         },
@@ -6058,14 +6058,14 @@
                           "value": " is the community-preferred topic at ",
                           "position": {
                             "start": {
-                              "line": 92,
+                              "line": 88,
                               "column": 16,
-                              "offset": 5669
+                              "offset": 5612
                             },
                             "end": {
-                              "line": 92,
+                              "line": 88,
                               "column": 53,
-                              "offset": 5706
+                              "offset": 5649
                             }
                           }
                         },
@@ -6217,28 +6217,28 @@
                           "value": ".",
                           "position": {
                             "start": {
-                              "line": 92,
+                              "line": 88,
                               "column": 69,
-                              "offset": 5722
+                              "offset": 5665
                             },
                             "end": {
-                              "line": 92,
+                              "line": 88,
                               "column": 70,
-                              "offset": 5723
+                              "offset": 5666
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 92,
+                          "line": 88,
                           "column": 1,
-                          "offset": 5654
+                          "offset": 5597
                         },
                         "end": {
-                          "line": 92,
+                          "line": 88,
                           "column": 70,
-                          "offset": 5723
+                          "offset": 5666
                         }
                       }
                     }
@@ -6259,14 +6259,14 @@
                           "value": "Implementation in Python",
                           "position": {
                             "start": {
-                              "line": 94,
+                              "line": 90,
                               "column": 5,
-                              "offset": 5729
+                              "offset": 5672
                             },
                             "end": {
-                              "line": 94,
+                              "line": 90,
                               "column": 29,
-                              "offset": 5753
+                              "offset": 5696
                             }
                           }
                         }
@@ -6282,28 +6282,28 @@
                           "value": "The index can be computed straightforwardly with NumPy:",
                           "position": {
                             "start": {
-                              "line": 96,
+                              "line": 92,
                               "column": 1,
-                              "offset": 5755
+                              "offset": 5698
                             },
                             "end": {
-                              "line": 96,
+                              "line": 92,
                               "column": 56,
-                              "offset": 5810
+                              "offset": 5753
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 96,
+                          "line": 92,
                           "column": 1,
-                          "offset": 5755
+                          "offset": 5698
                         },
                         "end": {
-                          "line": 96,
+                          "line": 92,
                           "column": 56,
-                          "offset": 5810
+                          "offset": 5753
                         }
                       }
                     },
@@ -6340,14 +6340,14 @@
                           "value": "Note the normalisation of ",
                           "position": {
                             "start": {
-                              "line": 121,
+                              "line": 117,
                               "column": 1,
-                              "offset": 6412
+                              "offset": 6355
                             },
                             "end": {
-                              "line": 121,
+                              "line": 117,
                               "column": 27,
-                              "offset": 6438
+                              "offset": 6381
                             }
                           }
                         },
@@ -6424,14 +6424,14 @@
                           "value": " to [0, 1] before mixing; without this step, the two terms are on incommensurable\nscales and ",
                           "position": {
                             "start": {
-                              "line": 121,
+                              "line": 117,
                               "column": 34,
-                              "offset": 6445
+                              "offset": 6388
                             },
                             "end": {
-                              "line": 122,
+                              "line": 118,
                               "column": 12,
-                              "offset": 6539
+                              "offset": 6482
                             }
                           }
                         },
@@ -6509,28 +6509,28 @@
                           "value": " does not interpolate smoothly between the two criteria.",
                           "position": {
                             "start": {
-                              "line": 122,
+                              "line": 118,
                               "column": 24,
-                              "offset": 6551
+                              "offset": 6494
                             },
                             "end": {
-                              "line": 122,
+                              "line": 118,
                               "column": 80,
-                              "offset": 6607
+                              "offset": 6550
                             }
                           }
                         }
                       ],
                       "position": {
                         "start": {
-                          "line": 121,
+                          "line": 117,
                           "column": 1,
-                          "offset": 6412
+                          "offset": 6355
                         },
                         "end": {
-                          "line": 122,
+                          "line": 118,
                           "column": 80,
-                          "offset": 6607
+                          "offset": 6550
                         }
                       }
                     }
@@ -6553,14 +6553,14 @@
                       "value": "Illustrative Application",
                       "position": {
                         "start": {
-                          "line": 124,
+                          "line": 120,
                           "column": 4,
-                          "offset": 6612
+                          "offset": 6555
                         },
                         "end": {
-                          "line": 124,
+                          "line": 120,
                           "column": 28,
-                          "offset": 6636
+                          "offset": 6579
                         }
                       }
                     }
@@ -6592,14 +6592,14 @@
                       "value": " emphasises that insider accounts systematically reveal cognitive and social patterns that\nbehavioural observation misses. This insight suggests that for studies measuring cognitive outcomes, community importance\nratings (",
                       "position": {
                         "start": {
-                          "line": 126,
+                          "line": 122,
                           "column": 27,
-                          "offset": 6664
+                          "offset": 6607
                         },
                         "end": {
-                          "line": 128,
+                          "line": 124,
                           "column": 10,
-                          "offset": 6888
+                          "offset": 6831
                         }
                       }
                     },
@@ -6828,14 +6828,14 @@
                       "value": ") should carry more weight than evidence gaps, implying ",
                       "position": {
                         "start": {
-                          "line": 128,
+                          "line": 124,
                           "column": 19,
-                          "offset": 6897
+                          "offset": 6840
                         },
                         "end": {
-                          "line": 128,
+                          "line": 124,
                           "column": 75,
-                          "offset": 6953
+                          "offset": 6896
                         }
                       }
                     },
@@ -6987,14 +6987,14 @@
                       "value": ". For studies targeting\nunderserved populations, evidence gaps (",
                       "position": {
                         "start": {
-                          "line": 128,
+                          "line": 124,
                           "column": 93,
-                          "offset": 6971
+                          "offset": 6914
                         },
                         "end": {
-                          "line": 129,
+                          "line": 125,
                           "column": 41,
-                          "offset": 7036
+                          "offset": 6979
                         }
                       }
                     },
@@ -7224,14 +7224,14 @@
                       "value": ") may deserve more weight, implying ",
                       "position": {
                         "start": {
-                          "line": 129,
+                          "line": 125,
                           "column": 50,
-                          "offset": 7045
+                          "offset": 6988
                         },
                         "end": {
-                          "line": 129,
+                          "line": 125,
                           "column": 86,
-                          "offset": 7081
+                          "offset": 7024
                         }
                       }
                     },
@@ -7383,28 +7383,28 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 129,
+                          "line": 125,
                           "column": 104,
-                          "offset": 7099
+                          "offset": 7042
                         },
                         "end": {
-                          "line": 129,
+                          "line": 125,
                           "column": 105,
-                          "offset": 7100
+                          "offset": 7043
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 126,
+                      "line": 122,
                       "column": 1,
-                      "offset": 6638
+                      "offset": 6581
                     },
                     "end": {
-                      "line": 129,
+                      "line": 125,
                       "column": 105,
-                      "offset": 7100
+                      "offset": 7043
                     }
                   }
                 },
@@ -7418,14 +7418,14 @@
                       "value": "As an illustration, consider the five topic areas identified by ",
                       "position": {
                         "start": {
-                          "line": 131,
+                          "line": 127,
                           "column": 1,
-                          "offset": 7102
+                          "offset": 7045
                         },
                         "end": {
-                          "line": 131,
+                          "line": 127,
                           "column": 65,
-                          "offset": 7166
+                          "offset": 7109
                         }
                       }
                     },
@@ -7450,14 +7450,14 @@
                       "value": ": quality of life,\nburnout, diagnosis, education, and employment. Hypothetical importance and evidence-gap scores are given in\n",
                       "position": {
                         "start": {
-                          "line": 131,
+                          "line": 127,
                           "column": 102,
-                          "offset": 7203
+                          "offset": 7146
                         },
                         "end": {
-                          "line": 133,
+                          "line": 129,
                           "column": 1,
-                          "offset": 7332
+                          "offset": 7275
                         }
                       }
                     },
@@ -7482,28 +7482,28 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 133,
+                          "line": 129,
                           "column": 18,
-                          "offset": 7349
+                          "offset": 7292
                         },
                         "end": {
-                          "line": 133,
+                          "line": 129,
                           "column": 19,
-                          "offset": 7350
+                          "offset": 7293
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 131,
+                      "line": 127,
                       "column": 1,
-                      "offset": 7102
+                      "offset": 7045
                     },
                     "end": {
-                      "line": 133,
+                      "line": 129,
                       "column": 19,
-                      "offset": 7350
+                      "offset": 7293
                     }
                   }
                 },
@@ -7942,14 +7942,14 @@
                       "value": "At ",
                       "position": {
                         "start": {
-                          "line": 143,
+                          "line": 139,
                           "column": 1,
-                          "offset": 7668
+                          "offset": 7611
                         },
                         "end": {
-                          "line": 143,
+                          "line": 139,
                           "column": 4,
-                          "offset": 7671
+                          "offset": 7614
                         }
                       }
                     },
@@ -8101,14 +8101,14 @@
                       "value": ", quality of life ranks first and diagnosis ranks last; at ",
                       "position": {
                         "start": {
-                          "line": 143,
+                          "line": 139,
                           "column": 22,
-                          "offset": 7689
+                          "offset": 7632
                         },
                         "end": {
-                          "line": 143,
+                          "line": 139,
                           "column": 81,
-                          "offset": 7748
+                          "offset": 7691
                         }
                       }
                     },
@@ -8260,28 +8260,28 @@
                       "value": ", burnout ranks\nfirst (due to its large evidence gap) and diagnosis still ranks last. The priority ordering is thus reasonably\nstable across weighting schemes for this hypothetical dataset, consistent with the community's expressed preferences\nacross multiple surveys.",
                       "position": {
                         "start": {
-                          "line": 143,
+                          "line": 139,
                           "column": 99,
-                          "offset": 7766
+                          "offset": 7709
                         },
                         "end": {
-                          "line": 146,
+                          "line": 142,
                           "column": 25,
-                          "offset": 8037
+                          "offset": 7980
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 143,
+                      "line": 139,
                       "column": 1,
-                      "offset": 7668
+                      "offset": 7611
                     },
                     "end": {
-                      "line": 146,
+                      "line": 142,
                       "column": 25,
-                      "offset": 8037
+                      "offset": 7980
                     }
                   }
                 }
@@ -8302,14 +8302,14 @@
                       "value": "Discussion",
                       "position": {
                         "start": {
-                          "line": 148,
+                          "line": 144,
                           "column": 4,
-                          "offset": 8042
+                          "offset": 7985
                         },
                         "end": {
-                          "line": 148,
+                          "line": 144,
                           "column": 14,
-                          "offset": 8052
+                          "offset": 7995
                         }
                       }
                     }
@@ -8325,28 +8325,28 @@
                       "value": "The framework described here is intentionally minimal — two input dimensions and one mixing parameter. Real applications\nwould require multi-stakeholder consultation, reliability testing of the importance ratings, and careful\noperationalisation of the evidence-gap score. The latter in particular raises difficult methodological questions: which\ndatabases, which date windows, and how to handle grey literature and community-produced research.",
                       "position": {
                         "start": {
-                          "line": 150,
+                          "line": 146,
                           "column": 1,
-                          "offset": 8054
+                          "offset": 7997
                         },
                         "end": {
-                          "line": 153,
+                          "line": 149,
                           "column": 98,
-                          "offset": 8500
+                          "offset": 8443
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 150,
+                      "line": 146,
                       "column": 1,
-                      "offset": 8054
+                      "offset": 7997
                     },
                     "end": {
-                      "line": 153,
+                      "line": 149,
                       "column": 98,
-                      "offset": 8500
+                      "offset": 8443
                     }
                   }
                 },
@@ -8360,14 +8360,14 @@
                       "value": "The quantitative framing should not obscure the normative commitments it encodes. Choosing ",
                       "position": {
                         "start": {
-                          "line": 155,
+                          "line": 151,
                           "column": 1,
-                          "offset": 8502
+                          "offset": 8445
                         },
                         "end": {
-                          "line": 155,
+                          "line": 151,
                           "column": 92,
-                          "offset": 8593
+                          "offset": 8536
                         }
                       }
                     },
@@ -8445,28 +8445,28 @@
                       "value": " is itself a value\njudgment about how much weight to give community voice relative to investigator-defined notions of evidentiary need.\nTransparency about this choice — and community participation in making it — is as important as the arithmetic.",
                       "position": {
                         "start": {
-                          "line": 155,
+                          "line": 151,
                           "column": 104,
-                          "offset": 8605
+                          "offset": 8548
                         },
                         "end": {
-                          "line": 157,
+                          "line": 153,
                           "column": 111,
-                          "offset": 8853
+                          "offset": 8796
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 155,
+                      "line": 151,
                       "column": 1,
-                      "offset": 8502
+                      "offset": 8445
                     },
                     "end": {
-                      "line": 157,
+                      "line": 153,
                       "column": 111,
-                      "offset": 8853
+                      "offset": 8796
                     }
                   }
                 },
@@ -8480,28 +8480,28 @@
                       "value": "The code block above provides a starting point; it is deliberately simple to make the logic inspectable. Production\nimplementations would add validation, uncertainty quantification, and sensitivity reporting.",
                       "position": {
                         "start": {
-                          "line": 159,
+                          "line": 155,
                           "column": 1,
-                          "offset": 8855
+                          "offset": 8798
                         },
                         "end": {
-                          "line": 160,
+                          "line": 156,
                           "column": 93,
-                          "offset": 9064
+                          "offset": 9007
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 159,
+                      "line": 155,
                       "column": 1,
-                      "offset": 8855
+                      "offset": 8798
                     },
                     "end": {
-                      "line": 160,
+                      "line": 156,
                       "column": 93,
-                      "offset": 9064
+                      "offset": 9007
                     }
                   }
                 },
@@ -8591,28 +8591,28 @@
                       "value": " illustrates how the framework places topics in a two-dimensional space and how the mixing parameter\ndetermines which topics rise to the top of the agenda.",
                       "position": {
                         "start": {
-                          "line": 166,
+                          "line": 162,
                           "column": 20,
-                          "offset": 9403
+                          "offset": 9346
                         },
                         "end": {
-                          "line": 167,
+                          "line": 163,
                           "column": 55,
-                          "offset": 9559
+                          "offset": 9502
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 166,
+                      "line": 162,
                       "column": 1,
-                      "offset": 9384
+                      "offset": 9327
                     },
                     "end": {
-                      "line": 167,
+                      "line": 163,
                       "column": 55,
-                      "offset": 9559
+                      "offset": 9502
                     }
                   }
                 }
@@ -8794,9 +8794,9 @@
       "offset": 0
     },
     "end": {
-      "line": 169,
+      "line": 170,
       "column": 1,
-      "offset": 9561
+      "offset": 9562
     }
   }
 }

@@ -4,27 +4,6 @@
 <author | The Enscribe Team>
 </meta>
 
-<data>
-<library |
-@book{Benson2007,
-  author = {Benson, Dave},
-  title  = {Music: A Mathematical Offering},
-  publisher = {Cambridge University Press},
-  year   = 2007,
-  address = {Cambridge}
-}
-@article{Sethares1993,
-  author = {Sethares, William A.},
-  title  = {Local Consonance and the Relationship Between Timbre and Scale},
-  journal = {Journal of the Acoustical Society of America},
-  year   = 1993,
-  volume = 94,
-  number = 3,
-  pages  = {1218--1228},
-  doi    = {10.1121/1.408175}
-}
->
-</data>
 
 <preface | About this Monograph>
 This monograph is a believable miniature: it exercises every alpha feature in
@@ -103,3 +82,25 @@ figures in this chapter.<note | A structure footnote, collected at the end of ch
 <appendix | Notation and Sources>
 This appendix lives in book-back. The interval names follow the usual Western
 convention; the frequency model is the equal-tempered one of <ref @eqn:equal>.<note | An appendix footnote, collected at the end of the appendix book-part.>
+
+<data>
+<library |
+@book{Benson2007,
+  author = {Benson, Dave},
+  title  = {Music: A Mathematical Offering},
+  publisher = {Cambridge University Press},
+  year   = 2007,
+  address = {Cambridge}
+}
+@article{Sethares1993,
+  author = {Sethares, William A.},
+  title  = {Local Consonance and the Relationship Between Timbre and Scale},
+  journal = {Journal of the Acoustical Society of America},
+  year   = 1993,
+  volume = 94,
+  number = 3,
+  pages  = {1218--1228},
+  doi    = {10.1121/1.408175}
+}
+>
+</data>

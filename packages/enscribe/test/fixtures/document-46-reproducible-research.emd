@@ -4,37 +4,6 @@
 <editor | Dana Reed>
 </meta>
 
-<data>
-<library |
-@article{Knuth1984,
-  author  = {Knuth, Donald E.},
-  title   = {Literate Programming},
-  journal = {The Computer Journal},
-  year    = 1984,
-  volume  = 27,
-  number  = 2,
-  pages   = {97--111}
-}
-@article{Wilson2014,
-  author  = {Wilson, Greg and Aruliah, D. A. and Brown, C. Titus and Chue Hong, Neil P.},
-  title   = {Best Practices for Scientific Computing},
-  journal = {PLoS Biology},
-  year    = 2014,
-  volume  = 12,
-  number  = 1,
-  pages   = {e1001745}
-}
-@article{Sandve2013,
-  author  = {Sandve, Geir Kjetil and Nekrutenko, Anton and Taylor, James and Hovig, Eivind},
-  title   = {Ten Simple Rules for Reproducible Computational Research},
-  journal = {PLoS Computational Biology},
-  year    = 2013,
-  volume  = 9,
-  number  = 10,
-  pages   = {e1003285}
-}
->
-</data>
 
 <preface | About This Volume>
 Reproducibility is less a technique than a habit: a set of small, unglamorous
@@ -129,3 +98,35 @@ The contributors agreed on a short checklist, applicable regardless of tooling:
 A result that satisfies all four can be rebuilt by a stranger.<note | The checklist
 is intentionally tool-agnostic; the chapters give one concrete realisation of each
 item, but others are possible.>
+
+<data>
+<library |
+@article{Knuth1984,
+  author  = {Knuth, Donald E.},
+  title   = {Literate Programming},
+  journal = {The Computer Journal},
+  year    = 1984,
+  volume  = 27,
+  number  = 2,
+  pages   = {97--111}
+}
+@article{Wilson2014,
+  author  = {Wilson, Greg and Aruliah, D. A. and Brown, C. Titus and Chue Hong, Neil P.},
+  title   = {Best Practices for Scientific Computing},
+  journal = {PLoS Biology},
+  year    = 2014,
+  volume  = 12,
+  number  = 1,
+  pages   = {e1001745}
+}
+@article{Sandve2013,
+  author  = {Sandve, Geir Kjetil and Nekrutenko, Anton and Taylor, James and Hovig, Eivind},
+  title   = {Ten Simple Rules for Reproducible Computational Research},
+  journal = {PLoS Computational Biology},
+  year    = 2013,
+  volume  = 9,
+  number  = 10,
+  pages   = {e1003285}
+}
+>
+</data>

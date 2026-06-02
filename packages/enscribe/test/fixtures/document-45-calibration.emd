@@ -6,42 +6,6 @@
 <abstract | Modern classifiers often produce scores that rank well but do not behave as probabilities. We review what calibration means, give a small reproducible workflow for post-hoc calibration on a held-out split, and report the effect of two standard calibration maps on a benchmark task. The procedure is deliberately small enough to inspect and re-run end to end.>
 </meta>
 
-<data>
-<library |
-@article{Brier1950,
-  author  = {Brier, Glenn W.},
-  title   = {Verification of Forecasts Expressed in Terms of Probability},
-  journal = {Monthly Weather Review},
-  year    = 1950,
-  volume  = 78,
-  number  = 1,
-  pages   = {1--3}
-}
-@article{Dawid1982,
-  author  = {Dawid, A. Philip},
-  title   = {The Well-Calibrated Bayesian},
-  journal = {Journal of the American Statistical Association},
-  year    = 1982,
-  volume  = 77,
-  number  = 379,
-  pages   = {605--610}
-}
-@inproceedings{NiculescuMizil2005,
-  author    = {Niculescu-Mizil, Alexandru and Caruana, Rich},
-  title     = {Predicting Good Probabilities with Supervised Learning},
-  booktitle = {Proceedings of the 22nd International Conference on Machine Learning},
-  year      = 2005,
-  pages     = {625--632}
-}
-@inproceedings{Guo2017,
-  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q.},
-  title     = {On Calibration of Modern Neural Networks},
-  booktitle = {Proceedings of the 34th International Conference on Machine Learning},
-  year      = 2017,
-  pages     = {1321--1330}
-}
->
-</data>
 
 <section | Introduction>
 A classifier that assigns a probability of 0.8 to an event should be right about
@@ -188,3 +152,40 @@ estimates on the reported metrics.>
 Whether distribution-free guarantees can be attached to the calibrated
 probabilities — in the conformal-prediction sense — is a natural next question, and
 one the present workflow is small enough to extend.
+
+<data>
+<library |
+@article{Brier1950,
+  author  = {Brier, Glenn W.},
+  title   = {Verification of Forecasts Expressed in Terms of Probability},
+  journal = {Monthly Weather Review},
+  year    = 1950,
+  volume  = 78,
+  number  = 1,
+  pages   = {1--3}
+}
+@article{Dawid1982,
+  author  = {Dawid, A. Philip},
+  title   = {The Well-Calibrated Bayesian},
+  journal = {Journal of the American Statistical Association},
+  year    = 1982,
+  volume  = 77,
+  number  = 379,
+  pages   = {605--610}
+}
+@inproceedings{NiculescuMizil2005,
+  author    = {Niculescu-Mizil, Alexandru and Caruana, Rich},
+  title     = {Predicting Good Probabilities with Supervised Learning},
+  booktitle = {Proceedings of the 22nd International Conference on Machine Learning},
+  year      = 2005,
+  pages     = {625--632}
+}
+@inproceedings{Guo2017,
+  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q.},
+  title     = {On Calibration of Modern Neural Networks},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning},
+  year      = 2017,
+  pages     = {1321--1330}
+}
+>
+</data>
