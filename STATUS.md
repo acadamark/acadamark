@@ -80,7 +80,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] JATS import — theorem family, DSL blocks, and code listings
 - [x] JATS import — reduction policy (reader content preserved, publishing metadata dropped)
 - [x] JATS import — a real published article demonstration (NLM JATS sample, on the docs site)
-- [ ] JATS export — map `<a>` → `<ext-link>` (links currently dropped on export)
+- [x] JATS export — `<a>` → `<ext-link>` (external links) and `<xref>` (internal `#id` cross-references)
 
 ## Documentation — the docs site (`docs-site/`)
 
