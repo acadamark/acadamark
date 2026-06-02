@@ -16,7 +16,7 @@
 // any depth); deployment copies dist/ to wherever github.io serves from. See
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
-import { buildEnscribePipeline } from 'enscribe';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 import { importJats } from '@enscribejs/cli/jats-import';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';

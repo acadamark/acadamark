@@ -32,15 +32,15 @@
 // most permissive tag set).
 
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
-import { mapAttributes } from 'enscribe/core/map-attributes';
-import { parseColonId } from 'enscribe/core/colon-id';
+import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
+import { parseColonId } from '@enscribejs/enscribe/core/colon-id';
 // `formatScopedNumber` (render-quality bug-fix arc, JATS analog of slice
 // B, 2026-05-29): the shared scoped-number formatter. The `<label>`
 // emitters below derive their display number through it so JATS labels
 // carry the same chapter prefix as the `<xref>` cross-references that
 // resolve to them (RQ-BOOK-M4). It is the SAME helper computeRefText uses
 // for the xref text, so the two agree by construction.
-import { parseCsv, parseTsv, formatScopedNumber } from 'enscribe';
+import { parseCsv, parseTsv, formatScopedNumber } from '@enscribejs/enscribe';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
 const JATS_ARTICLE_DOCTYPE_DECL =

@@ -11,7 +11,7 @@ import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFileSync, existsSync } from 'node:fs';
-import { liftToCanonicalMdast } from 'enscribe';
+import { liftToCanonicalMdast } from '@enscribejs/enscribe';
 import { serializeCanonical } from '../src/serialize-canonical.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

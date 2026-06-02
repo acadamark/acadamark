@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import { convertPandoc, detectFormat } from '../src/pandoc-import.js';
 import { serializeCanonical } from '../src/serialize-canonical.js';
-import { buildEnscribePipeline } from 'enscribe';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 
 // pandoc AST builders
 const A = (id = '') => [id, [], []];

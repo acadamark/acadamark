@@ -1,0 +1,30 @@
+Scope the headline package: enscribe -> @enscribejs/enscribe
+
+The unscoped name `enscribe` could not be published: npm refused to create it
+for this account/token (a permission 403), and the name is one character from
+the existing `inscribe`, which npm's new-unscoped-name policy blocks. Scoping
+the headline package under @enscribejs -- matching @enscribejs/cli and
+@enscribejs/layer1-vocabulary -- sidesteps both: scoped names skip the
+new-unscoped-name checks and sit within the org token's reach.
+
+Changes:
+- packages/enscribe/package.json: name enscribe -> @enscribejs/enscribe.
+- packages/cli/package.json: dependency enscribe -> @enscribejs/enscribe.
+- Every `from 'enscribe...'` import in the CLI (src + tests) and
+  docs-site/build.js rewritten to '@enscribejs/enscribe...' (the deep
+  enscribe/core/* and enscribe/parser subpaths included).
+- README, authoring-guide, and STATUS entry-point references updated.
+- npm install re-linked the workspace (node_modules/@enscribejs/enscribe; the
+  old node_modules/enscribe link is gone) and regenerated package-lock.
+
+Unchanged on purpose: the CLI bin command stays `enscribe`, and the browser
+bundle globalName stays `enscribe` -- neither is the npm package name.
+
+Output-neutral: enscribe 34/34 suites, cli 133/133 checks, empty test/fixtures
+diff.
+
+Follow-up (not publish-blocking): internal design-doc prose (notes/specs/*,
+DESIGN.md, the layer1-vocabulary element docs) still refers to `enscribe/core`
+conceptually; a coherence sweep can update those references separately.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>

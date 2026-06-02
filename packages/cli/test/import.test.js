@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { importJats } from '../src/jats-import/index.js';
-import { buildEnscribePipeline } from 'enscribe';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 import { enscribeToJats } from '../src/jats-export/index.js';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');

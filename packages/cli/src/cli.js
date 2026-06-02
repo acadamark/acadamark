@@ -18,7 +18,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast } from 'enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast } from '@enscribejs/enscribe';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';

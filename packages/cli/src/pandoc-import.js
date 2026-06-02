@@ -17,7 +17,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, extname, basename, resolve, isAbsolute } from 'node:path';
-import { makeTag, makeOpaqueTag } from 'enscribe/core/tag';
+import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
 
 // ─── pandoc invocation ──────────────────────────────────────────────────────
 

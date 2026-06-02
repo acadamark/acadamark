@@ -8,17 +8,17 @@ three packages — `@enscribejs/core`, `@enscribejs/remark`, and
 
 ## Entry points
 
-- `enscribe` — the interpreter entry (`enscribeInterpreter`,
+- `@enscribejs/enscribe` — the interpreter entry (`enscribeInterpreter`,
   `buildEnscribePipeline`, the structural plugins, `liftToCanonicalMdast`, …).
   This is the main entry (`"."`).
-- `enscribe/parser` — the shorthand parser (the default-exported remark plugin);
-  `enscribe/parser/recursive-content` is the recursive-content transform.
-- `enscribe/core/*` — the inward-pointing shared foundation (tag factories,
+- `@enscribejs/enscribe/parser` — the shorthand parser (the default-exported remark plugin);
+  `@enscribejs/enscribe/parser/recursive-content` is the recursive-content transform.
+- `@enscribejs/enscribe/core/*` — the inward-pointing shared foundation (tag factories,
   registries, walkers, attribute mapping), available as per-module subpaths
-  (e.g. `enscribe/core/tag`, `enscribe/core/map-attributes`).
-- `enscribe/browser` — the browser façade bundle (`render` / `renderInto` /
+  (e.g. `@enscribejs/enscribe/core/tag`, `@enscribejs/enscribe/core/map-attributes`).
+- `@enscribejs/enscribe/browser` — the browser façade bundle (`render` / `renderInto` /
   `executeAssets`), built by `npm run build:lib`.
-- `enscribe/default.css` — the Layer 1 display stylesheet (for browser viewing;
+- `@enscribejs/enscribe/default.css` — the Layer 1 display stylesheet (for browser viewing;
   it is not emitted by the interpreter).
 
 ## Usage (Node)
@@ -26,8 +26,8 @@ three packages — `@enscribejs/core`, `@enscribejs/remark`, and
 ```js
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'enscribe/parser';
-import { enscribeInterpreter } from 'enscribe';
+import remarkEnscribe from '@enscribejs/enscribe/parser';
+import { enscribeInterpreter } from '@enscribejs/enscribe';
 
 const result = await unified()
   .use(remarkParse)
@@ -41,7 +41,7 @@ console.log(String(result)); // HTML string
 Or the one-call helper:
 
 ```js
-import { buildEnscribePipeline } from 'enscribe';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 const html = String(buildEnscribePipeline({ embedResources: true }).processSync(source));
 ```
 

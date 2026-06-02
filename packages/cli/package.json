@@ -42,7 +42,7 @@
     "test": "node test/run.js && node test/jats-export.test.js"
   },
   "dependencies": {
-    "enscribe": "^0.2.0",
+    "@enscribejs/enscribe": "^0.2.0",
     "@enscribejs/layer1-vocabulary": "^0.2.0",
     "mathml-to-latex": "^1.5.0",
     "remark-parse": "^11.0.0",

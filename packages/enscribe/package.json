@@ -1,5 +1,5 @@
 {
-  "name": "enscribe",
+  "name": "@enscribejs/enscribe",
   "version": "0.2.0",
   "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax. The headline library: the Layer 1 core foundation, the shorthand parser (remark plugin), and the interpreter that compiles enscribeTag nodes to Layer 1 HTML.",
   "keywords": [

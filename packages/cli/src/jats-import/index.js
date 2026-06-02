@@ -37,7 +37,7 @@
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
-import { makeTag, makeOpaqueTag } from 'enscribe/core/tag';
+import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
 
 // ─── XML → a small DOM tree (saxes) ───────────────────────────────────────────
 

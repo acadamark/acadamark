@@ -837,7 +837,7 @@ shows a command's options.
 HTML string:
 
 ```
-import { buildEnscribePipeline } from 'enscribe';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 
 const html = String(
   buildEnscribePipeline({ embedResources: true }).processSync(source)
@@ -848,7 +848,7 @@ const html = String(
 variant for live documents:
 
 ```
-import { render, renderInto, executeAssets } from 'enscribe/browser';
+import { render, renderInto, executeAssets } from '@enscribejs/enscribe/browser';
 
 document.querySelector('#out').innerHTML = render(source);
 // or, to also run hover-preview and DSL scripts:

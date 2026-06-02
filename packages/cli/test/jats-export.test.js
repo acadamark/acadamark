@@ -20,8 +20,8 @@ import { execSync } from 'node:child_process';
 import { strict as assert } from 'node:assert';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from 'enscribe/parser';
-import remarkRecursiveContent from 'enscribe/parser/recursive-content';
+import remarkEnscribe from '@enscribejs/enscribe/parser';
+import remarkRecursiveContent from '@enscribejs/enscribe/parser/recursive-content';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import {
@@ -38,9 +38,9 @@ import {
   enscribeCiteResolution,
   enscribeBibliography,
   buildCitationIndex,
-} from 'enscribe';
-import { ensureRegistry } from 'enscribe/core/registry';
-import { mapAttributes } from 'enscribe/core/map-attributes';
+} from '@enscribejs/enscribe';
+import { ensureRegistry } from '@enscribejs/enscribe/core/registry';
+import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
 import { jatsEmit, aggregateJatsAttrs } from '../src/jats-export/lib/jats-emit.js';
 import { enscribeToJats } from '../src/jats-export/index.js';
 
