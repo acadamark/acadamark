@@ -124,17 +124,13 @@ The micromark finder scans lines until it finds the appropriate closer:
 
 If the closer is not found before end-of-document, the parser emits an `enscribeTagError` node, following the defensive error pattern from earlier slices.
 
-## Unterminated constructs: current behavior and tracked gap
+## Unterminated constructs terminate at EOF
 
-When a multi-line construct opener is recognized but no closer is found before end-of-document, the construct **consumes everything from the opener to EOF** and produces a single `enscribeTagError` node. Content after the opener that would otherwise parse correctly is subsumed into the error node.
+When a multi-line construct opener is recognized but no closer is found, the construct **consumes everything from the opener to EOF** and produces a single `enscribeTagError` node at the opener's position. This is the settled **EOF-only termination** design (Option A, decided 2026-05-26; recorded in `DESIGN.md` §"Multi-paragraph tag content; unclosed tags terminate at EOF"): a blank line is a paragraph break, never a terminator, so multi-paragraph tag content is supported and the only terminators are the explicit closer and EOF. It is the same behavior as long-form DSL tags (`<csv>` with no `</csv>` consumes to EOF).
 
-This is the same behavior as long-form DSL tags (`<csv>` with no `</csv>` consumes to EOF).
+The EOF-consumption of an unclosed tag is an **acknowledged bounded tradeoff, not a gap** against the always-renders guarantee (`notes/specs/principles.md`): the error renders visibly at the opener, and the conspicuously missing downstream content is itself a strong author signal. **Blank-line termination** — ending an unterminated construct at the next blank line to bound the error earlier — was considered and **rejected**: it would reintroduce the blank-line-as-signal heuristic that conflicts with the multi-paragraph content model. Tighter localization remains an incremental future option, not foreclosed by EOF-only.
 
-This is a **tracked gap against the core always-renders guarantee** defined in `notes/specs/principles.md`, not an accepted limitation. The guarantee requires every error to render visibly at the location where it occurred; an EOF-consuming construct fails the "at the location where it occurred" half by causing the error's footprint to swallow downstream content the author wrote correctly. The intended end state is localized recovery — the error covers only the unterminated opener, and the rest of the document renders normally; the design for this is sketched in `notes/specs/recursive-content-spec.md` under blank-line termination, which interacts with the multi-paragraph content model and is settled together with that model.
-
-The work to close this gap is tracked in GitHub Issues as the blank-line-termination / EOF-consumption item. It is paired in `principles.md`'s *Current known gaps against the guarantee* section as the sibling of the parser-error-node-renderer gap; both must close for the always-renders guarantee to hold in full.
-
-**Practical guidance for authors:** a missing `>` or `#>` produces an error that spans to EOF until the gap is closed. If a document renders entirely as an error region, search for an unclosed tag near where the rendered content stops.
+**Practical guidance for authors:** a missing `>` or `#>` produces an error that spans to EOF. If a document renders entirely as an error region, search for an unclosed tag near where the rendered content stops.
 
 ## Whitespace inside attribute values
 
