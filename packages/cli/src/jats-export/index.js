@@ -526,6 +526,7 @@ function isInlineShaped(node) {
   // theorems) are NOT inline-shaped.
   if (INLINE_MAP[node.tagname]) return true;
   if (node.tagname === 'inline-math') return true;
+  if (node.tagname === 'a') return true;
   // Phase 5 slice 5c (2026-05-28): internal-marker nodes injected
   // by ref-resolution / cite-resolution / note-placement render
   // inline (the emitter dispatch in emitInlines produces a single
@@ -1264,6 +1265,19 @@ function emitInlines(children) {
         const refId  = child.kwargs?.refId  ?? '';
         out += `<xref ref-type="fn" id="${escapeXmlAttr(refId)}" ` +
                `rid="${escapeXmlAttr(noteId)}">${escapeXml(String(number))}</xref>`;
+        continue;
+      }
+      // <a> → JATS link. An external href maps to <ext-link>; an internal
+      // #fragment maps to <xref> (per a.md's JATS mapping). The xlink
+      // namespace is already declared on the JATS root (also used by <graphic>).
+      if (child.tagname === 'a') {
+        const href = child.kwargs?.href ?? '';
+        const text = emitInlines(child.content);
+        if (href.startsWith('#')) {
+          out += `<xref rid="${escapeXmlAttr(href.slice(1))}">${text}</xref>`;
+        } else {
+          out += `<ext-link ext-link-type="uri" xlink:href="${escapeXmlAttr(href)}">${text}</ext-link>`;
+        }
         continue;
       }
       const jatsTag = INLINE_MAP[child.tagname];

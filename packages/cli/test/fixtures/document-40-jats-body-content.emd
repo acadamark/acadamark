@@ -53,6 +53,10 @@ x + y &= z
 
 <proof | By similar triangles. ∎>
 
+<section | Links>
+
+External links export as ext-link, e.g. <a href="https://example.org/spec" | an external spec>; an internal link to a fragment id exports as a cross-reference, e.g. <a href="#thm:pyth" | the Pythagoras theorem>.
+
 <section | Frameables>
 
 <fig #fig:elephant src=elephant.jpg | An elephant.>

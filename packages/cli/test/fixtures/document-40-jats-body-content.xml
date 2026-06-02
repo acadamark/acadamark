@@ -84,6 +84,10 @@ x + y &= z
       </statement>
     </sec>
     <sec>
+      <title>Links</title>
+      <p>External links export as ext-link, e.g. <ext-link ext-link-type="uri" xlink:href="https://example.org/spec">an external spec</ext-link>; an internal link to a fragment id exports as a cross-reference, e.g. <xref rid="thm:pyth">the Pythagoras theorem</xref>.</p>
+    </sec>
+    <sec>
       <title>Frameables</title>
       <fig id="fig:elephant">
         <label>1</label>
