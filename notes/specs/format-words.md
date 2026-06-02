@@ -138,6 +138,13 @@ handler property, not a special case). The mechanics that follow from that:
   host carries the caption/number/cross-reference apparatus, the `svg` language
   supplies the inline content.
 
+> **Build note (#81).** The `<fig svg>` framed form is the design above, but it
+> is not yet built: it needs content opacity selected by the format-word
+> positional (a parser mechanism that does not exist today — `fig`'s content is
+> non-opaque for captions), and it overlaps the `<svg>`-as-frameable member
+> settled in `frameable.md` (#31). The reconciliation is tracked in #81. Bare
+> standalone `<svg>` is unaffected.
+
 ## Standalone tags are loadable shorthands
 
 `<csv>` / `<tsv>` say the same thing as `<table csv>` / `<table tsv>`, and

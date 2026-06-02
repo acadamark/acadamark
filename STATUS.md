@@ -29,10 +29,10 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Bare markdown forms normalized to canonical nodes (`$x$`, GFM tables, emphasis, lists, links, fenced code)
 - [x] Sections — three-level named ladder (`section` / `sub-section` / `sub-sub-section`)
 - [x] Figures and images, with captions
-- [x] Tables — CSV, TSV, JSON, YAML, and Markdown source formats
+- [x] Tables — the `<table>` host with CSV, TSV, JSON, YAML, and Markdown format words (`<csv>` / `<tsv>` kept as gate shorthands → `<table csv>` / `<table tsv>`)
 - [x] Inline and display math (KaTeX); numbered equations
 - [x] Notes — footnotes / endnotes / sidenotes
-- [x] Citations and bibliography — citation-js, inline BibTeX `<library>`, CSL styles
+- [x] Citations and bibliography — citation-js, the `<library>` storage host (`<library bibtex | …>` format word), inline BibTeX / CSL-JSON, CSL styles
 - [x] Cross-references to figures, equations, tables, sections, code blocks, theorems
 - [x] Theorem family — `<theorem>`, `<lemma>`, `<definition>`, `<proof>`, … (shared / own / unnumbered counters)
 - [x] External DSLs — the `<diagram>` host (Mermaid, ABC engines as format words); legacy `<mermaid>` / `<abc>` kept as gate shorthands
