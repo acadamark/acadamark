@@ -7,10 +7,7 @@
 // gating, per-DSL overrides, and the fail-explicitly static guard.
 
 import assert from 'node:assert/strict';
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkEnscribe from '../../src/parser/index.js';
-import { enscribeInterpreter } from '../../src/interpreter/index.js';
+import { buildEnscribePipeline } from '../../src/interpreter/index.js';
 import {
   getRegisteredDsls,
   getDsl,
@@ -21,13 +18,7 @@ import {
 } from '../../src/interpreter/dsl/registry.js';
 
 function processHtml(source, options = {}) {
-  return String(
-    unified()
-      .use(remarkParse)
-      .use(remarkEnscribe)
-      .use(enscribeInterpreter, options)
-      .processSync(source),
-  );
+  return String(buildEnscribePipeline(options).processSync(source));
 }
 
 const MERMAID_SRC = `<mermaid>

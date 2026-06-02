@@ -22,10 +22,7 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, resolve } from 'node:path';
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkEnscribe from '../src/parser/index.js';
-import { enscribeInterpreter } from '../src/interpreter/index.js';
+import { buildEnscribePipeline } from '../src/interpreter/index.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 
@@ -113,10 +110,7 @@ function renderFixture(emdPath) {
     interpreterOptions.abcMode = 'static';
   }
 
-  const processor = unified()
-    .use(remarkParse)
-    .use(remarkEnscribe)
-    .use(enscribeInterpreter, interpreterOptions);
+  const processor = buildEnscribePipeline(interpreterOptions);
 
   const fragment = String(processor.processSync(src));
   const html = wrapInHtmlShell(fragment, name);

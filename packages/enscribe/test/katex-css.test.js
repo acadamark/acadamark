@@ -1,17 +1,8 @@
 import assert from 'node:assert/strict';
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkEnscribe from '../src/parser/index.js';
-import { enscribeInterpreter, KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../src/interpreter/index.js';
+import { buildEnscribePipeline, KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../src/interpreter/index.js';
 
 function processHtml(source, options = {}) {
-  return String(
-    unified()
-      .use(remarkParse)
-      .use(remarkEnscribe)
-      .use(enscribeInterpreter, options)
-      .processSync(source),
-  );
+  return String(buildEnscribePipeline(options).processSync(source));
 }
 
 const MATH_SOURCE = '<$$ x^2 $$>';
