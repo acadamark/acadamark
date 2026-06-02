@@ -82,7 +82,7 @@ The plugin registration order in `enscribeInterpreter` is:
 0b. remarkGfm                   (parser extension on outer processor)
     inner processor: remarkParse + remarkEnscribe + remarkMath + remarkGfm
 1.   remarkRecursiveContent     (Phase 2 — content parsing; takes inner processor)
-1.5. enscribeNormalizeMarkdown (Phase 0 — normalize delegated-parser nodes
+1.5. enscribeNormalizeToCanonical (Phase 0 — normalize delegated-parser nodes
                                  to canonical enscribeTag nodes)
 2.  enscribeConfigDiscovery    (Phase 1 — discovery)
 3.  enscribeArticleStructuring (Phase 2 — structural)
@@ -99,7 +99,7 @@ The plugin registration order in `enscribeInterpreter` is:
 ```
 
 Note that `remarkRecursiveContent` (step 1) runs before
-`enscribeNormalizeMarkdown` (step 1.5). This is correct: normalization
+`enscribeNormalizeToCanonical` (step 1.5). This is correct: normalization
 rewrites nodes produced by the delegated parsers (`remark-math`,
 `remark-gfm`), and those nodes are produced on *both* the outer surface and
 the inner surface (via the inner processor inside `remarkRecursiveContent`).
@@ -111,7 +111,7 @@ then runs on a tree whose math and pipe-table nodes are already canonical
 `remarkMath` and `remarkGfm` (steps 0a / 0b) are parser-level extensions,
 not mdast transforms, and they affect tokenization during the parse pass;
 they're listed here so the wiring is visible in one place. The step-1.5
-numbering for `enscribeNormalizeMarkdown` matches the inline `1.5.` comment
+numbering for `enscribeNormalizeToCanonical` matches the inline `1.5.` comment
 in the source ([src/index.js](../../packages/enscribe/src/interpreter/index.js))
 and keeps the existing step-2 through step-12 references in this document
 unchanged. All other Phase 0/1/2/3 plugins retain their original step
@@ -178,7 +178,7 @@ no structural or compile steps. It is created by `enscribeInterpreter` and
 passed to this plugin via the `{ processor }` option. The inner processor
 does not include `remarkRecursiveContent` itself; recursion into nested
 tags is handled by the plugin's own tree walk. It also does not include
-`enscribeNormalizeMarkdown` — normalization runs once on the outer tree
+`enscribeNormalizeToCanonical` — normalization runs once on the outer tree
 after this plugin has revealed every pipe-content subtree, so
 delegated-parser nodes produced inside pipe content are normalized at the
 same pass as those produced at the top level.
@@ -213,17 +213,37 @@ and edge cases.
 
 ---
 
-### 3.1.5 enscribeNormalizeMarkdown
+### 3.1.5 enscribeNormalizeToCanonical
 
-**Source:** `packages/enscribe/src/interpreter/plugins/normalize-markdown.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/normalize-to-canonical.js`
+(exported as `enscribeNormalizeToCanonical`; `enscribeNormalizeMarkdown` is kept
+as a backward-compat alias of the same plugin).
 
-**Purpose:** Rewrite nodes produced by the delegated parsers (`remark-math`
-and `remark-gfm`, registered on both the outer and inner processors) into
-canonical `enscribeTag` nodes. After this pass every math construct and
-every pipe-table construct in the tree is represented as one node type,
-indistinguishable from the corresponding authored shorthand.
+**Purpose:** The single normalization gate — it coerces every *authored* form to
+its canonical Layer 1 shape, so no downstream stage ever sees a non-canonical
+node. Its work spans several rule groups (the full group structure is documented
+in `notes/specs/pipeline.md` §4.0):
 
-**Mapping:**
+- **Delegated-parser nodes → canonical tags** (the mapping table below):
+  `remark-math` / `remark-gfm` nodes become canonical `enscribeTag` math / table
+  nodes.
+- **Sigil tagnames → vocabulary names** via the tagname↔sigil cipher
+  (`#`→`section`, `$`→`inline-math`, `` ` ``→`inline-code`, …).
+- **Shorthand expansion** via the shared expansion map
+  (`lib/shorthand-expansions.js`, `createShorthandRegistry`): the book-part family
+  (`<chapter>`→`<book-part book-part-type="chapter">`, book-context-gated) and the
+  DSL shorthand family (`<mermaid>`→`<diagram mermaid>`, `<csv>`→`<table csv>`, …),
+  with later-wins+warn clobber and reserved-name rejection.
+- **Kwarg → child-tag lifts** for structured-element tags (`<meta>` / `<author>`),
+  `<config>`, and frameable tags (`caption` / `title`).
+- **Markdown inline lifts** (`emphasis`→`<i>`, `strong`→`<b>`, …; see
+  `notes/specs/idioms.md`).
+
+After this pass every math, pipe-table, sigil, shorthand, and markdown-idiom
+construct is one canonical node type, indistinguishable from the authored
+long-form.
+
+**Delegated-parser mapping:**
 
 | input node type | from | replacement |
 |----------------|------|-------------|
@@ -526,6 +546,21 @@ Each `<data>` may contain one or more `<library>` nodes.
 2. `node.content` is a non-whitespace string → use it as inline BibTeX or
    CSL-JSON.
 3. Neither → `file.message()` warning, skip.
+
+**Format selection:** The payload language is named by the leading format word —
+the positional `<library bibtex | …>` (the canonical format-word form) or the
+legacy `format=` kwarg. A named, known format is passed to citation-js as a
+`forceType`; when the format word is omitted, citation-js auto-detects (the
+default). This is the storage-host form of the format-word convention
+(`notes/specs/format-words.md`).
+
+**Storage host, not a structured element (#24 reframe):** `<library>` (and the
+`<data>` container that holds it) is a **storage host on the language axis** —
+purpose `storage`, the format word naming the payload language, the body the
+verbatim payload. It is deliberately *not* a `STRUCTURED_ELEMENTS` member (those
+are enscribe-native named-field tags like `<meta>` / `<author>`). The
+language/host model owns the payload; the container shape of `<data>` remains the
+open #24 question. See `DESIGN.md` §"The two axes: host and language".
 
 **Merging:** Multiple `<library>` nodes are parsed into separate `Cite`
 instances, then their `.data` arrays are concatenated and a new merged `Cite`
@@ -1005,9 +1040,19 @@ functions. Elements with `interpreter_strategy: handler` go through this path.
 |------------------|-----------------|---------------|
 | `./handlers/figure.js` | `figureHandler` | `figure` |
 | `./handlers/math.js` | `mathHandler` | `inline-math`, `display-math` |
+| `./handlers/code.js` | `codeHandler` | `code` |
 | `./handlers/code-block.js` | `codeBlockHandler` | `code-block` |
 | `./handlers/inline-code.js` | `inlineCodeHandler` | `inline-code` |
 | `./handlers/table.js` | `tableHandler` | `table` |
+| `./handlers/diagram.js` | `diagramHandler` | `diagram` (engine read from `positional[0]`) |
+| `./handlers/svg.js` | `svgHandler` | `svg` |
+| `./handlers/frame.js` | `frameHandler` | `frame` |
+| `./handlers/theorem.js` | `theoremFamilyHandler` | `theorem`, `lemma`, `corollary`, `proposition`, `definition`, `example`, `remark`, `proof` |
+
+The retired `<mermaid>` / `<abc>` tags have no handler entries of their own:
+the gate expands them to `<diagram mermaid>` / `<diagram abc>`, and
+`diagramHandler` dispatches on the engine positional to the per-engine render
+path. Likewise `<csv>` / `<tsv>` expand to `<table …>` and reach `tableHandler`.
 
 ### 5.4 Vocabulary loading
 
@@ -1067,18 +1112,26 @@ vocab)` builds a hast element mechanically from the vocabulary entry:
 
 ```
 tagName   = vocab.html_output?.element ?? node.tagname
-properties = buildProperties(node, vocab)
+properties = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit))
 children   = convertContent(state, node, vocab)
 ```
 
-### 6.1 Property mapping (`buildProperties`)
+### 6.1 Property mapping (`mapAttributes`)
+
+`mapAttributes(node, vocab, target, emit)`
+(`@enscribejs/enscribe/core/map-attributes.js`) is the shared attribute mapper for
+both output targets: the HTML side calls it with `target: 'html'` and the
+`htmlEmit` callback, aggregating the result via `aggregateHtmlProps`; the JATS
+exporter calls the same function with `target: 'jats'`. (The former
+`buildProperties` wrapper was removed when this shared lift landed.) For the HTML
+target it maps:
 
 1. `node.id` → `properties.id`
 2. `node.classes` → `properties.className`
 3. For each kwarg in `node.kwargs`:
    - Look up `vocab.enscribe_attributes.kwargs[key]`.
-   - If the def has `maps_to` and does NOT have `handled_by: 'handler'`,
-     set `properties[def.maps_to] = value`.
+   - If the def has a `maps_to` for the target and does NOT have
+     `handled_by: 'handler'`, emit the attribute named `def.maps_to[target]`.
    - Kwargs marked `handled_by: 'handler'` are for handler-strategy elements
      only; schema dispatch ignores them.
 4. For each boolean in `node.booleans` (the `+flag` / `-flag` surface), apply
@@ -1515,7 +1568,10 @@ constructs cannot be parsed: `enscribeTagError` (for example, an
 unterminated long-form construct, or a long-form opening whose interior
 the grammar rejects) and `enscribeParseError` (for example, an unknown
 escape sequence, an empty or unterminated `^{}`/`_{}` shortcut, or a
-named-tag content tree exceeding the recursion-depth limit).
+named-tag content tree exceeding the recursion-depth limit). Their node shapes
+are defined canonically elsewhere: `enscribeTagError` in
+`notes/specs/shorthand-syntax.md` §"Error nodes", and `enscribeParseError` in
+`notes/specs/recursive-content-spec.md` §"The `enscribeParseError` node shape".
 
 The interpreter registers compile-step handlers for both node types
 (`enscribeParseError` and `enscribeTagError` in the `toHast` handler
@@ -1604,16 +1660,17 @@ To add a new plugin-created internal node type (no vocabulary entry):
 
 ## 14. Source file map
 
-Files reachable from `enscribeInterpreter` at runtime. Test-only files
-(e.g. `schema/shape-tokens.js`, `schema/validate.js`) are omitted; they
-exist in the source tree but are not on the pipeline's call graph.
+Files reachable from `enscribeInterpreter` at runtime. (The former
+`schema/` validation subsystem — `schema/shape-tokens.js`, `schema/validate.js` —
+was removed; the gate dispatches on tagname + `interpreter_strategy`, not on a
+shape-token validator. See `notes/specs/shape-tokens.md`.)
 
 ```
 packages/enscribe/src/interpreter/
   index.js                      Main entry; enscribeInterpreter plugin
   interpret-plugin.js           enscribeTag handler; dispatch logic; registries
   plugins/
-    normalize-markdown.js       enscribeNormalizeMarkdown (step 1.5)
+    normalize-to-canonical.js   enscribeNormalizeToCanonical (step 1.5; alias enscribeNormalizeMarkdown)
     config-discovery.js         enscribeConfigDiscovery
     article-structuring.js      enscribeArticleStructuring
     section-nesting.js          enscribeSectionNesting
@@ -1628,19 +1685,25 @@ packages/enscribe/src/interpreter/
     math.js                     mathHandler (KaTeX rendering)
     figure.js                   figureHandler
     table.js                    tableHandler (CSV/TSV/JSON/YAML/MD)
+    diagram.js                  diagramHandler (delegates to the engine by positional[0])
+    svg.js                      svgHandler
+    frame.js                    frameHandler
+    code.js                     codeHandler
     code-block.js               codeBlockHandler
     inline-code.js              inlineCodeHandler
+    theorem.js                  theoremFamilyHandler (theorem/lemma/…/proof)
     notes.js                    noteMarkerHandler, noteListHandler, noteListItemHandler
     ref.js                      refMarkerHandler, refErrorHandler
     cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler
-  schema/
   lib/
     registry.js                 createRegistry(); ensureRegistry()
+    host-accept-sets.js         HOST_ACCEPT_SETS; hostAcceptsLanguage(host, lang)
+    shorthand-expansions.js     createShorthandRegistry() — the gate's shared expansion map
     ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
     bool-kwarg.js               readBoolKwarg()
     discover.js                 discover() — shared read-only pre-order DFS walker
     walk-replace.js             walkReplace() — shared in-place node replacement walker
-    walk-normalize.js           walkNormalize() — pre-order DFS used by normalize-markdown
+    walk-normalize.js           walkNormalize() — pre-order DFS used by the gate
     errors.js                   warnUnknownTag(), warnHandlerError(), ...
   assets/
     font-loader.js              patchKatexFontUrls(); getDocumentFontsCss()
@@ -1651,7 +1714,7 @@ packages/enscribe/src/parser/
   recursive-content.js          remarkRecursiveContent (used by interpreter)
 
 packages/layer1-vocabulary/
-  elements/                       ~70 .md files; one per vocabulary element
+  elements/                       one .md file per vocabulary element
   SPEC.md                         High-level vocabulary specification
 ```
 
