@@ -1173,6 +1173,9 @@ string); `positional[0]` = format word.
 2. If `kwargs.src`: read file from `join(assetsDir, src)`. Requires `assetsDir`
    option; returns `<table class="table-parse-error">` on failure.
 3. Parse the data with the format-specific parser. Returns `{ headers, rows }`.
+   `csv` and `tsv` share one RFC-4180-aware parser (quoted fields may contain
+   the delimiter and doubled `""` quotes), parameterized by delimiter (`,` for
+   csv, a tab for tsv); they do not parse differently.
 4. `hasHeaders` determined by `readBoolKwarg(node, 'headers', null, null, true)`
    (default: first row is headers).
 5. Build `<table>` with optional `<caption>` (from `kwargs.caption` and/or

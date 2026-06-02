@@ -108,6 +108,24 @@ export function run() {
     console.log('PASS: table handler: TSV with headers');
   }
 
+  // #44: TSV honors RFC-4180 quoting (shares the CSV parser, delimiter = tab).
+  // A quoted cell containing a tab stays one cell; doubled "" is an escaped quote.
+  {
+    const node = makeNode({
+      positional: ['tsv'],
+      content: 'a\tb\tc\n"x\ty"\t"she said ""hi"""\tz',
+    });
+    const hast = tableHandler(STATE, node, VOCAB);
+    const [thead, tbody] = hast.children;
+    assert.equal(thead.children[0].children.length, 3, 'TSV header has 3 columns');
+    assert.equal(tbody.children.length, 1, 'TSV: one data row (no phantom split)');
+    const cells = tbody.children[0].children;
+    assert.equal(cells.length, 3, 'TSV data row has 3 cells, not split on the embedded tab');
+    assert.equal(cells[0].children[0].value, 'x\ty', 'quoted cell keeps its embedded tab');
+    assert.equal(cells[1].children[0].value, 'she said "hi"', 'doubled quote unescapes');
+    console.log('PASS: table handler: TSV honors RFC-4180 quoting (embedded tab + escaped quote)');
+  }
+
   // ─── JSON ────────────────────────────────────────────────────────────────────
 
   // Array of objects

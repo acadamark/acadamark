@@ -52,17 +52,16 @@ export function parseCsv(text, { hasHeaders }) {
 
 /**
  * Parse TSV text into {headers, rows}.
- * Splits on tab. Strips non-tab leading/trailing whitespace from cells.
+ * RFC-4180-aware, sharing the same parser as CSV with the delimiter set to a
+ * tab: a quoted field may contain tabs and doubled-up quotes (""). Unquoted
+ * cells are trimmed (matching CSV).
  *
  * @param {string} text
  * @param {object} opts
  * @returns {{ headers: string[]|null, rows: string[][] }}
  */
 export function parseTsv(text, { hasHeaders }) {
-  const lines = text.trim().split('\n').filter(l => l.trim() !== '');
-  const allRows = lines.map(line =>
-    line.split('\t').map(cell => cell.trim()),
-  );
+  const allRows = parseDelimited(text, '\t');
   return splitHeadersRows(allRows, hasHeaders);
 }
 
@@ -202,8 +201,8 @@ function parseMd(text, { hasHeaders }) {
 
 /**
  * Parse a delimiter-separated text into rows of cells.
- * Handles RFC 4180 quoting for CSV (delimiter = ',').
- * TSV is handled separately (simpler split).
+ * Handles RFC 4180 quoting, parameterized by delimiter — `,` for CSV and a tab
+ * for TSV both route through here.
  *
  * @param {string} text
  * @param {string} delimiter
