@@ -308,7 +308,7 @@ The gate's job at a glance:
 | Bare inline code (`` `foo` ``) | the canonical `<inline-code>` |
 | Bare markdown link (`[text](url)`) | **literal text** — `[text](url)` is no longer an authoring idiom; the `<a>` tag (`<a URL \| text>`) is the only link form. An *autolinked* bare URL or email (remark-gfm) still lifts to `<a>`, since its text is its target. |
 | Bare markdown image (`![alt](url)`) | **literal text** — no longer an idiom; images are `<fig>` / `<figure>`. |
-| Bare `$x$` / `$$x$$` math | a canonical math enscribeTag (`inline-math` / `display-math`) |
+| Bare `$x$` or `$$x$$` math | `inline-math` — both inline forms (including a single-line `$$…$$`) lift to **inline** math per remark-math. **Display** math comes from a block `$$…$$` (the fences on their own lines) → `display-math`, or from the canonical `<$$ \| … $$>` tag. |
 | GFM pipe table | a canonical `<table md>` enscribeTag |
 
 **A new authored form is a new rule at the gate — never a new sniff in a downstream plugin.** This rule is the architecture's payoff: one shape downstream means one set of behaviors, no per-form forking, and a new authored convention has an obvious and structurally enforced place to live.
