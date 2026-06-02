@@ -32,8 +32,9 @@ import { codeHandler } from './handlers/code.js';
 import { codeBlockHandler } from './handlers/code-block.js';
 import { inlineCodeHandler } from './handlers/inline-code.js';
 import { tableHandler } from './handlers/table.js';
-import { csvHandler } from './handlers/csv.js';
-import { tsvHandler } from './handlers/tsv.js';
+// `<csv>` / `<tsv>` retired to gate shorthands → `<table csv>` / `<table tsv>`
+// (#22 slice 3); the table handler parses both via its format positional, so no
+// standalone csv/tsv handler is dispatched.
 // `<diagram>` host (#22 slice 3): the diagram handler delegates to the
 // per-engine mermaid/abc render handlers by the format-word positional. The
 // legacy <mermaid>/<abc> tags are now gate shorthands → <diagram mermaid|abc>,
@@ -89,8 +90,6 @@ const HANDLER_REGISTRY = new Map([
   ['./handlers/code-block.js', codeBlockHandler],
   ['./handlers/inline-code.js', inlineCodeHandler],
   ['./handlers/table.js', tableHandler],
-  ['./handlers/csv.js', csvHandler],
-  ['./handlers/tsv.js', tsvHandler],
   ['./handlers/diagram.js', diagramHandler],
   ['./handlers/svg.js', svgHandler],
   ['./handlers/frame.js', frameHandler],

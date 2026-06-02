@@ -69,10 +69,11 @@ function check(label, cond) {
 // - 2026-06-02: #22 slice 3 (member migration) — `mermaid.md` / `abc.md`
 //   removed (retired to `<diagram>` gate shorthands) and `diagram.md` added
 //   (the diagram host; the engine is the format-word positional). Net:
-//   108 → 107 primary.
+//   108 → 107 primary. Then `csv.md` / `tsv.md` removed (retired to `<table>`
+//   gate shorthands → `<table csv>` / `<table tsv>`). Net: 107 → 105 primary.
 check(
-  `VOCABULARY has 109 entries (107 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 109,
+  `VOCABULARY has 107 entries (105 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 107,
 );
 
 // Build-time loader has nothing to report in normal state.

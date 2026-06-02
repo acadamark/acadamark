@@ -16,12 +16,11 @@
 //
 // See notes/tables-investigation.md for Phase 0 findings.
 //
-// This module also exports `parseCsv`, `parseTsv`, and the shared
-// `renderParsedTable` helper for the standalone `<csv>` / `<tsv>` handlers
-// (handlers/csv.js, handlers/tsv.js). Phase 2 slice 2a (2026-05-27) added
-// those handlers; rather than duplicate the parsers and the
-// headers/rows-to-hast machinery, the standalone handlers share table.js's
-// implementation via these exports.
+// This module also exports `parseCsv`, `parseTsv`. It still exports the
+// `renderParsedTable` helper, which served the now-retired standalone `<csv>` /
+// `<tsv>` handlers — those tags became `<table>` gate shorthands in #22 slice 3
+// (`<csv>` → `<table csv>`), and their handlers were deleted, so renderParsedTable
+// is now unused and slated for removal (tracked as a cleanup issue).
 
 // Node built-ins for the server/build path. In the browser bundle these are dead
 // code (browser defaults never call them); tsup aliases both the node: and bare

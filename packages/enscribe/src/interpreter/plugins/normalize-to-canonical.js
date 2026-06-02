@@ -131,6 +131,14 @@ for (const shorthand of BOOK_PART_SHORTHANDS) {
 shorthandRegistry.register('mermaid', { tagname: 'diagram', positional: ['mermaid'] });
 shorthandRegistry.register('abc', { tagname: 'diagram', positional: ['abc'] });
 
+// DSL table family (slice 3): the retired `<csv>` / `<tsv>` tags are loadable
+// shorthands of the `<table>` host (`<csv>` → `<table csv>`). The table host
+// already accepts the csv/tsv formats (slice 2 accept-set) and both ride the one
+// RFC-4180 parse path (#44). Their vocab entries were removed, so the names are
+// no longer core-vocabulary names and the reservation policy admits them.
+shorthandRegistry.register('csv', { tagname: 'table', positional: ['csv'] });
+shorthandRegistry.register('tsv', { tagname: 'table', positional: ['tsv'] });
+
 // ─── Drift guards at module load ──────────────────────────────────────────────
 // Confirm contentHandler values. These are authoritative in dsl-registry.js;
 // if they change, these assertions catch the drift.
