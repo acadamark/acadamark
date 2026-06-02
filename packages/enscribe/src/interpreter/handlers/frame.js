@@ -24,17 +24,7 @@
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
-
-/**
- * Convert mdast children to hast children.
- */
-function convertBody(state, parent, bodyContent) {
-  return bodyContent.flatMap(child => {
-    const h = state.one(child, parent);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
-}
+import { convertChildren } from '../lib/ast-helpers.js';
 
 /**
  * Handler for the `<frame>` tag.
@@ -46,7 +36,7 @@ function convertBody(state, parent, bodyContent) {
  */
 export function frameHandler(state, node, vocab) {
   const { captionHast, titleHast, bodyContent } = extractFrameableChildren(state, node);
-  const bodyHast = convertBody(state, node, bodyContent);
+  const bodyHast = convertChildren(state, node, bodyContent);
 
   // Frame's `border` default is TRUE (per frame.md). Default-off
   // suppression uses -border / border=false.

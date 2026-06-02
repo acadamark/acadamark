@@ -46,3 +46,21 @@ export function extractPlainText(nodes) {
   }
   return text.trim();
 }
+
+/**
+ * Convert an array of mdast/enscribeTag child nodes to hast via the
+ * mdast-to-hast `state.one`, dropping nulls and flattening array results.
+ * The shared shape behind the per-handler body / caption / content conversions.
+ *
+ * @param {object} state  - mdast-util-to-hast state
+ * @param {object} parent - parent node (for state.one positioning)
+ * @param {Array}  nodes  - mdast/enscribeTag nodes to convert (nullish becomes [])
+ * @returns {Array} hast child nodes
+ */
+export function convertChildren(state, parent, nodes) {
+  return (nodes ?? []).flatMap((child) => {
+    const h = state.one(child, parent);
+    if (h == null) return [];
+    return Array.isArray(h) ? h : [h];
+  });
+}

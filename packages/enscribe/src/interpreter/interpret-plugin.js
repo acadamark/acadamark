@@ -46,6 +46,7 @@ import {
 } from './handlers/notes.js';
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler } from './handlers/cite.js';
+import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
 // gate (enscribe/interpreter/src/plugins/normalize-to-canonical.js) rewrites
 // every sigil tagname (sections AND math/code) to its canonical vocabulary
@@ -183,11 +184,7 @@ function convertContent(state, node, vocab) {
       ? unwrapSingleParagraph(content)
       : content;
 
-  return nodes.flatMap(child => {
-    const h = state.one(child, node);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
+  return convertChildren(state, node, nodes);
 }
 
 // ─── Attribute mapping ────────────────────────────────────────────────────────
@@ -242,11 +239,7 @@ function makeUnknownElement(state, node) {
   // wrapped by literal open/close strings whose `<`/`>` the serializer escapes
   // to `&#x3C;`/bare. Used by both the long and pipe forms.
   const renderArrayBetween = (openStr, closeStr) => {
-    const kids = content.flatMap(child => {
-      const h = state.one(child, node);
-      if (h == null) return [];
-      return Array.isArray(h) ? h : [h];
-    });
+    const kids = convertChildren(state, node, content);
     return [{ type: 'text', value: openStr }, ...kids, { type: 'text', value: closeStr }];
   };
 

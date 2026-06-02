@@ -39,6 +39,7 @@ import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { formatLabel } from '../lib/frameable.js';
 import { formatScopedNumber } from '../lib/scoped-number.js';
+import { convertChildren } from '../lib/ast-helpers.js';
 
 // Tagname → display-prefix mapping. Title-Cased per the amsthm
 // convention ("Theorem 1.", "Lemma 2.", etc.).
@@ -63,11 +64,7 @@ function buildBodyHast(state, node) {
   // Prose-bearing tag — single-paragraph unwrap so `<theorem | text>`
   // produces `<theorem>text</theorem>` not `<theorem><p>text</p></theorem>`.
   const nodes = unwrapSingleParagraph(content);
-  return nodes.flatMap(child => {
-    const h = state.one(child, node);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
+  return convertChildren(state, node, nodes);
 }
 
 /**

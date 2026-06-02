@@ -19,7 +19,7 @@
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
-import { extractPlainText } from '../lib/ast-helpers.js';
+import { extractPlainText, convertChildren } from '../lib/ast-helpers.js';
 import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 
@@ -33,11 +33,7 @@ import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
 function buildPipeAsCaptionHast(state, node, bodyContent) {
   if (!bodyContent || bodyContent.length === 0) return null;
   const nodes = unwrapSingleParagraph(bodyContent);
-  const children = nodes.flatMap(child => {
-    const h = state.one(child, node);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
+  const children = convertChildren(state, node, nodes);
   return children.length > 0 ? children : null;
 }
 

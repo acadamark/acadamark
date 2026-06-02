@@ -61,6 +61,7 @@
 
 import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
 import { formatScopedNumber } from './scoped-number.js';
+import { convertChildren } from './ast-helpers.js';
 
 // ─── Internal primitive: label span ────────────────────────────────────────
 
@@ -151,19 +152,11 @@ export function extractFrameableChildren(state, node) {
     if (tagname === 'caption' && captionHast == null) {
       const innerMdast = Array.isArray(child.content) ? child.content : [];
       const unwrapped = unwrapSingleParagraph(innerMdast);
-      captionHast = unwrapped.flatMap(c => {
-        const h = state.one(c, child);
-        if (h == null) return [];
-        return Array.isArray(h) ? h : [h];
-      });
+      captionHast = convertChildren(state, child, unwrapped);
     } else if (tagname === 'title' && titleHast == null) {
       const innerMdast = Array.isArray(child.content) ? child.content : [];
       const unwrapped = unwrapSingleParagraph(innerMdast);
-      titleHast = unwrapped.flatMap(c => {
-        const h = state.one(c, child);
-        if (h == null) return [];
-        return Array.isArray(h) ? h : [h];
-      });
+      titleHast = convertChildren(state, child, unwrapped);
     } else {
       bodyContent.push(child);
     }

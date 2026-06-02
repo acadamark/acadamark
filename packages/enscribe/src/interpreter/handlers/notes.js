@@ -17,22 +17,7 @@
 // dispatched 'note-list' tagname) so we can control the <ol> wrapper without
 // modifying the vocabulary entry or the schema dispatcher.
 
-/**
- * Convert an array of mdast nodes to hast children using the toHast state.
- * Same pattern as convertContent() in interpret-plugin.js.
- *
- * @param {object} state - mdast-util-to-hast state
- * @param {object} parentNode - parent node (for state.one positioning)
- * @param {Array} nodes - array of mdast/enscribeTag nodes to convert
- * @returns {Array} hast child nodes
- */
-function convertNodes(state, parentNode, nodes) {
-  return (nodes ?? []).flatMap(child => {
-    const h = state.one(child, parentNode);
-    if (h == null) return [];
-    return Array.isArray(h) ? h : [h];
-  });
-}
+import { convertChildren } from '../lib/ast-helpers.js';
 
 /**
  * Note marker handler.
@@ -74,7 +59,7 @@ export function noteMarkerHandler(_state, node) {
  * @returns {import('hast').Element}
  */
 export function noteListHandler(state, node) {
-  const liChildren = convertNodes(state, node, node.content);
+  const liChildren = convertChildren(state, node, node.content);
   return {
     type: 'element',
     tagName: 'note-list',
@@ -110,7 +95,7 @@ export function noteListHandler(state, node) {
  */
 export function noteListItemHandler(state, node) {
   const { number, refId, sidenote } = node.kwargs;
-  const contentChildren = convertNodes(state, node, node.content);
+  const contentChildren = convertChildren(state, node, node.content);
 
   const props = { id: node.id };
   if (sidenote) props.className = ['sidenote-fallback'];
