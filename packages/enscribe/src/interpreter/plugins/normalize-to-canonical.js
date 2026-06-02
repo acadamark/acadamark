@@ -64,6 +64,7 @@ import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 
 // Phase 4 slice 4a (2026-05-29): book-part shorthand tagnames that
 // expand at the gate to `<book-part book-part-type="...">`. The set
@@ -94,20 +95,25 @@ function detectBookContext(treeChildren) {
   return false;
 }
 
-// ─── Shared shorthand-expansion registry (#22 slice 2) ──────────────────────
+// ─── Shared shorthand-expansion registry (#22 slices 2–3) ───────────────────
 //
 // The gate's tagname rewrites lift into one shared map (the comment on the
-// figure→fig group foresaw this when "a second alias family lands"). Slice 2
-// registers the book-part family only — each book-part shorthand rewrites to
+// figure→fig group foresaw this when "a second alias family lands").
+//
+// Reserved names (#22 slice 3): a shorthand may not shadow a host name or a
+// core-vocabulary name — host and core-vocabulary names stay first-class. The
+// reservation is enforced only for UNCONDITIONAL shorthands; conditional ones
+// are exempt (their condition is the deliberate disambiguation — the book-part
+// `<glossary>` case). HOST_NAMES lists the two-axis hosts; the rest comes from
+// the generated vocabulary.
+const HOST_NAMES = new Set(['diagram', 'table', 'library', 'data', 'fig', 'math', 'code']);
+const RESERVED_NAMES = new Set([...Object.keys(VOCABULARY), ...HOST_NAMES]);
+const shorthandRegistry = createShorthandRegistry({ reservedNames: RESERVED_NAMES });
+
+// Book-part family (slice 2): each book-part shorthand rewrites to
 // `<book-part book-part-type="<name>">`, gated on book context so `<glossary>`
-// keeps its standalone vocab meaning in articles (the condition is the
-// deliberate disambiguation, which is also why the reservation policy exempts
-// conditional shorthands). The DSL shorthand families (`<csv>`/`<mermaid>`/…)
-// are NOT registered here this slice — that changes DSL node identity and is
-// slice-3 work, gated by the JATS guard. No unconditional shorthand is
-// registered yet, so the reserved-name set is empty for now; slice 3 supplies
-// the host + core-vocabulary names when it registers the DSL families.
-const shorthandRegistry = createShorthandRegistry();
+// keeps its standalone vocab meaning in articles (conditional → exempt from the
+// reservation policy).
 for (const shorthand of BOOK_PART_SHORTHANDS) {
   shorthandRegistry.register(shorthand, {
     tagname: 'book-part',
@@ -115,6 +121,15 @@ for (const shorthand of BOOK_PART_SHORTHANDS) {
     condition: (ctx) => ctx.isBook === true,
   });
 }
+
+// DSL diagram family (slice 3): the retired `<mermaid>` / `<abc>` tags are
+// loadable shorthands of the `<diagram>` host — positional-injecting,
+// unconditional expansions (`<mermaid>` → `<diagram mermaid>`). Their vocab
+// entries were removed, so the shorthand names are no longer core-vocabulary
+// names and the reservation policy admits them. Adding a diagram engine here is
+// a one-line shorthand, not a vocabulary entry.
+shorthandRegistry.register('mermaid', { tagname: 'diagram', positional: ['mermaid'] });
+shorthandRegistry.register('abc', { tagname: 'diagram', positional: ['abc'] });
 
 // ─── Drift guards at module load ──────────────────────────────────────────────
 // Confirm contentHandler values. These are authoritative in dsl-registry.js;

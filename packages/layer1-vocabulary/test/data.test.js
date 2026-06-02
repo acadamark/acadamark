@@ -66,9 +66,13 @@ function check(label, cond) {
 // - 2026-05-31: `<img>` removed (vocabulary-correction slice) — images are
 //   `<fig>` / `<figure>`, and the markdown image lift was removed, so `<img>`
 //   is reachable by no path. Brought count from 109 → 108 primary.
+// - 2026-06-02: #22 slice 3 (member migration) — `mermaid.md` / `abc.md`
+//   removed (retired to `<diagram>` gate shorthands) and `diagram.md` added
+//   (the diagram host; the engine is the format-word positional). Net:
+//   108 → 107 primary.
 check(
-  `VOCABULARY has 110 entries (108 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 110,
+  `VOCABULARY has 109 entries (107 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 109,
 );
 
 // Build-time loader has nothing to report in normal state.

@@ -32,6 +32,7 @@ const EXPECTED = [
   ['code',     'code'],
   ['mermaid',  'mermaid'],
   ['abc',      'abc'],
+  ['diagram',  'diagram'],
   ['matrix',   'matrix'],
   ['cases',    'cases'],
   ['align',    'align'],

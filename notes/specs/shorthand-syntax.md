@@ -292,8 +292,9 @@ Current registry contents (all are DSLs):
 | `tsv`            | `"tsv"`                | Tab-separated values (table.js)                  |
 | `math`           | `"math"`               | LaTeX math (KaTeX)                               |
 | `code`           | `"code"`               | Source code (highlighter)                        |
-| `mermaid`        | `"mermaid"`            | Mermaid diagram source                           |
-| `abc`            | `"abc"`                | ABC music notation                               |
+| `mermaid`        | `"mermaid"`            | Mermaid engine of `<diagram>` (`<mermaid>` is a gate shorthand → `<diagram mermaid>`) |
+| `abc`            | `"abc"`                | ABC engine of `<diagram>` (`<abc>` is a gate shorthand → `<diagram abc>`)             |
+| `diagram`        | `"diagram"`            | Diagram host — engine named by the format-word positional (`mermaid`, `abc`)          |
 | `matrix`         | `"matrix"`             | Math environment (LaTeX-like)                    |
 | `cases`          | `"cases"`              | Piecewise function (LaTeX-like)                  |
 | `align`          | `"align"`              | Aligned equations (LaTeX-like)                   |

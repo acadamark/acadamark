@@ -34,8 +34,11 @@ import { inlineCodeHandler } from './handlers/inline-code.js';
 import { tableHandler } from './handlers/table.js';
 import { csvHandler } from './handlers/csv.js';
 import { tsvHandler } from './handlers/tsv.js';
-import { mermaidHandler } from './handlers/mermaid.js';
-import { abcHandler } from './handlers/abc.js';
+// `<diagram>` host (#22 slice 3): the diagram handler delegates to the
+// per-engine mermaid/abc render handlers by the format-word positional. The
+// legacy <mermaid>/<abc> tags are now gate shorthands → <diagram mermaid|abc>,
+// so no mermaid/abc tagname reaches this dispatcher — only `diagram`.
+import { diagramHandler } from './handlers/diagram.js';
 import { svgHandler } from './handlers/svg.js';
 import { frameHandler } from './handlers/frame.js';
 import { theoremFamilyHandler } from './handlers/theorem.js';
@@ -88,8 +91,7 @@ const HANDLER_REGISTRY = new Map([
   ['./handlers/table.js', tableHandler],
   ['./handlers/csv.js', csvHandler],
   ['./handlers/tsv.js', tsvHandler],
-  ['./handlers/mermaid.js', mermaidHandler],
-  ['./handlers/abc.js', abcHandler],
+  ['./handlers/diagram.js', diagramHandler],
   ['./handlers/svg.js', svgHandler],
   ['./handlers/frame.js', frameHandler],
   ['./handlers/theorem.js', theoremFamilyHandler],

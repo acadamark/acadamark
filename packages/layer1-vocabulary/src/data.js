@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 108 vocabulary entries.
+// Source files: 107 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -157,59 +157,6 @@ const _abbr = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "abbr.md",
-  });
-
-const _abc = Object.freeze({
-    "semantic_role": "abc",
-    "html_output": {
-      "element": "abc",
-      "is_html_native": false,
-      "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"abc\" data-enscribe-dsl=\"abc\">…</pre>` — `<pre>`,\nmatching Mermaid, so the line-oriented ABC source survives HTML\nserialization verbatim); the schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<abc>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Enscribe preserves the source as marked\nmarkup; rendering to SVG happens external to enscribe — at view\ntime in the browser (the consumer initializes abcjs with a small\nscript calling `ABCJS.renderAbc` on each marked block) or at\nbuild time via a headless pre-render pass.\n",
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "caption": {
-          "handled_by": "handler",
-          "notes": "Optional caption text. When present, the handler emits a\n`<figcaption>` sibling after the wrapper.\n",
-        },
-      },
-    },
-    "content": {
-      "type": "opaque",
-      "notes": "Author writes ABC notation source verbatim. Enscribe preserves the\ncontent unmodified inside the wrapper element. abcjs's rendering\nlibrary (loaded from CDN at view time, or run at build time)\nparses the source.\n",
-    },
-    "content_handler": "abc",
-    "jats_counterpart": {
-      "element": "(no direct JATS counterpart; rendered as <graphic>/<inline-graphic> at export)",
-      "notes": "JATS has no ABC-notation counterpart. At JATS export the rendered\nnotation (SVG or staff image, produced by the consumer's tooling)\nis embedded as a `<graphic>` element. The enscribe source itself\nis preserved in the canonical Layer 1 form for round-trip; export\nemits the rendered notation instead of the source.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "<abc>\nX:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |\n</abc>\n",
-        "layer1_html": "<pre class=\"abc\" data-enscribe-dsl=\"abc\">X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 | F F E E | D D C2 |</pre>\n",
-        "notes": "An ABC notation excerpt. The wrapper preserves the source verbatim\nfor the consumer's abcjs initialization to find and render.\n",
-      },
-    ],
-    "interpreter_strategy": "handler",
-    "handler_module": "./handlers/abc.js",
-    "handler_responsibilities": [
-      "Read the opaque content as ABC notation source.",
-      "Emit a `<pre class=\"abc\" data-enscribe-dsl=\"abc\">…</pre>` wrapper preserving the source verbatim.",
-      "Apply id / classes from the node (the `abc` class is added by the handler alongside any author-supplied classes; the `data-enscribe-dsl` attribute is always present).",
-      "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
-    ],
-    "_sourceFile": "abc.md",
   });
 
 const _abstract = Object.freeze({
@@ -2535,6 +2482,74 @@ const _details = Object.freeze({
     "_sourceFile": "details.md",
   });
 
+const _diagram = Object.freeze({
+    "semantic_role": "diagram",
+    "html_output": {
+      "element": "diagram",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). Under `interpreter_strategy: handler` the schema field\nis not consulted — the handler emits the wrapper element shape\ndirectly (a `<pre class=\"<engine>\" data-enscribe-dsl=\"<engine>\">…</pre>`).\n",
+    },
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/diagram.js",
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+      "positional": [
+        {
+          "name": "engine",
+          "values": [
+            "mermaid",
+            "abc",
+          ],
+          "notes": "The diagram engine — the language that renders the body. The\nleading format word selects which external renderer interprets the\nsource (`<diagram mermaid | …>`, `<diagram abc | …>`). A new engine\n(D2, Graphviz, PlantUML, …) is a new format word admitted by the\ndiagram host's accept-set, not a new vocabulary element. See\n`format-words.md` and `DESIGN.md` §\"The two axes: host and language\".\n",
+        },
+      ],
+      "kwargs": {
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption text. When present the handler emits a\n`<figcaption>` sibling after the rendered diagram (the external-DSL\nsibling-caption layout). When the diagram participates in figure\nnumbering the caption carries a \"Figure N.\" label prefix.\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "notes": "Author writes the engine's diagram source verbatim. Enscribe preserves\nthe content unmodified inside the wrapper element; the engine's library\n(loaded from CDN at view time, or run at build time) parses the source.\n",
+    },
+    "content_handler": "diagram",
+    "jats_counterpart": {
+      "element": "(no direct JATS counterpart; exported as <fig specific-use=\"enscribe-dsl-<engine>\"> with the verbatim source in <preformat preformat-type=\"<engine>-source\">)",
+      "notes": "JATS has no diagram-source counterpart. The JATS exporter emits a\n`<fig>` carrying an `<alt-text>` and the verbatim source in a\n`<preformat>` element; a downstream pre-render pass may replace it with\nthe rendered `<graphic>`. The engine is read from the format-word\npositional.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<diagram mermaid>\ngraph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]\n</diagram>\n",
+        "layer1_html": "<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]</pre>\n",
+        "notes": "The `mermaid` format word selects the Mermaid engine. The handler\nemits the same `<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">`\ncontract as the legacy `<mermaid>` shorthand expands to.\n",
+      },
+      {
+        "source": "<diagram abc>\nX:1\nT:Scale\nK:C\nCDEFGABc\n</diagram>\n",
+        "layer1_html": "<pre class=\"abc\" data-enscribe-dsl=\"abc\">X:1\nT:Scale\nK:C\nCDEFGABc</pre>\n",
+        "notes": "The `abc` format word selects the abcjs engine.\n",
+      },
+    ],
+    "handler_responsibilities": [
+      "Read the format-word positional as the engine (`mermaid`, `abc`).",
+      "Read the opaque content as the engine's diagram source.",
+      "Emit a `<pre class=\"<engine>\" data-enscribe-dsl=\"<engine>\">…</pre>` wrapper preserving the source verbatim (delegating to the per-engine render path).",
+      "Apply id / classes from the node; honor the optional `caption` kwarg.",
+    ],
+    "_sourceFile": "diagram.md",
+  });
+
 const _display_math = Object.freeze({
     "semantic_role": "display-math",
     "html_output": {
@@ -4009,59 +4024,6 @@ const _matrix = Object.freeze({
       "Apply id / classes from the node.",
     ],
     "_sourceFile": "matrix.md",
-  });
-
-const _mermaid = Object.freeze({
-    "semantic_role": "mermaid",
-    "html_output": {
-      "element": "mermaid",
-      "is_html_native": false,
-      "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits the wrapper element shape directly\n(a `<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">…</pre>`) so\nthe schema field is not consulted under\n`interpreter_strategy: handler`.\n\n`<mermaid>` is an **external DSL** per `DESIGN.md` §\"DSL handlers:\nincluded vs external\". Enscribe preserves the source as marked\nmarkup; rendering to SVG happens external to enscribe — at view\ntime in the browser (Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and renders in-place) or at build time via a\nheadless pre-render pass that finds blocks by their\n`data-enscribe-dsl=\"mermaid\"` attribute.\n",
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "caption": {
-          "handled_by": "handler",
-          "notes": "Optional caption text. When present, the handler emits a\n`<figcaption>` sibling after the rendered diagram. Diagrams that\nparticipate in figure numbering use the `<figure>` wrapping\npattern; the bare `caption` kwarg here is for simple unnumbered\ncaptions.\n",
-        },
-      },
-    },
-    "content": {
-      "type": "opaque",
-      "notes": "Author writes Mermaid diagram source verbatim. Enscribe preserves\nthe content unmodified inside the wrapper element. Mermaid's\nrendering library (loaded from CDN at view time, or run at build\ntime) parses the source.\n",
-    },
-    "content_handler": "mermaid",
-    "jats_counterpart": {
-      "element": "(no direct JATS counterpart; rendered as <graphic>/<inline-graphic> at export)",
-      "notes": "JATS has no Mermaid-source counterpart. At JATS export the rendered\nSVG (produced by the consumer's view-time or build-time tooling) is\nembedded as a `<graphic>` element. The enscribe source itself\n(Mermaid notation) is preserved in the canonical Layer 1 form for\nround-trip; export emits the rendered SVG instead of the source.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "<mermaid>\ngraph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]\n</mermaid>\n",
-        "layer1_html": "<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]</pre>\n",
-        "notes": "A simple flowchart. Mermaid's CDN library scans the DOM for\n`class=\"mermaid\"` and replaces the `<pre>` content with rendered\nSVG. The `data-enscribe-dsl=\"mermaid\"` attribute lets build-time\ntooling find the same blocks unambiguously, independent of the\nCDN-specific class convention.\n",
-      },
-    ],
-    "interpreter_strategy": "handler",
-    "handler_module": "./handlers/mermaid.js",
-    "handler_responsibilities": [
-      "Read the opaque content as Mermaid source.",
-      "Emit a `<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">…</pre>` wrapper preserving the source verbatim.",
-      "Apply id / classes from the node (the `mermaid` class is added by the handler in addition to any author-supplied classes; the `data-enscribe-dsl` attribute is always present).",
-      "Honor the optional `caption` kwarg by emitting a sibling `<figcaption>`.",
-    ],
-    "_sourceFile": "mermaid.md",
   });
 
 const _meta = Object.freeze({
@@ -6610,7 +6572,6 @@ const _version = Object.freeze({
 export const VOCABULARY = Object.freeze({
   "a": _a,
   "abbr": _abbr,
-  "abc": _abc,
   "abstract": _abstract,
   "affiliation": _affiliation,
   "align": _align,
@@ -6647,6 +6608,7 @@ export const VOCABULARY = Object.freeze({
   "dd": _dd,
   "definition": _definition,
   "details": _details,
+  "diagram": _diagram,
   "display-math": _display_math,
   "dl": _dl,
   "doi": _doi,
@@ -6673,7 +6635,6 @@ export const VOCABULARY = Object.freeze({
   "license": _license,
   "math": _math,
   "matrix": _matrix,
-  "mermaid": _mermaid,
   "meta": _meta,
   "name": _name,
   "note-list": _note_list,

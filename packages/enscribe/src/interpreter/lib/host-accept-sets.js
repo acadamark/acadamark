@@ -21,6 +21,10 @@ import { TABLE_FORMATS } from '../handlers/table.js';
  */
 export const HOST_ACCEPT_SETS = new Map([
   ['table', new Set(TABLE_FORMATS)],
+  // #22 slice 3: the diagram host admits the external diagram engines. The set
+  // is open — a new engine (D2, Graphviz, …) is a new entry here + a gate
+  // shorthand, not a new vocabulary element.
+  ['diagram', new Set(['mermaid', 'abc'])],
 ]);
 
 /**

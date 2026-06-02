@@ -58,6 +58,7 @@ export const FRAMEABLE_LIFTABLE = new Map([
   ['tsv',     { liftedKwargs: new Set(['caption', 'title']) }],
   ['mermaid', { liftedKwargs: new Set(['caption', 'title']) }],
   ['abc',     { liftedKwargs: new Set(['caption', 'title']) }],
+  ['diagram', { liftedKwargs: new Set(['caption', 'title']) }],  // #22 slice 3: the diagram host
   ['svg',     { liftedKwargs: new Set(['caption', 'title']) }],
   ['frame',   { liftedKwargs: new Set(['caption', 'title']) }],
 ]);

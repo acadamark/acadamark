@@ -28,19 +28,29 @@ export function run() {
     console.log('PASS: table host rejects languages outside its accept-set');
   }
 
-  // --- unknown / not-yet-wired hosts admit nothing (slice 3 wires them) ---
+  // --- diagram host (wired in #22 slice 3) ---
   {
-    assert.equal(hostAcceptsLanguage('diagram', 'mermaid'), false,
-      'diagram host is not wired this slice → admits nothing yet');
-    assert.equal(hostAcceptsLanguage('fig', 'svg'), false);
-    assert.equal(hostAcceptsLanguage('nonexistent-host', 'csv'), false);
-    console.log('PASS: unknown/not-yet-wired hosts admit nothing');
+    assert.equal(hostAcceptsLanguage('diagram', 'mermaid'), true,
+      'diagram host accepts the mermaid engine');
+    assert.equal(hostAcceptsLanguage('diagram', 'abc'), true,
+      'diagram host accepts the abc engine');
+    assert.equal(hostAcceptsLanguage('diagram', 'csv'), false,
+      'diagram host rejects a non-engine language');
+    console.log('PASS: diagram host accepts its engines, rejects others');
   }
 
-  // --- the map wires exactly `table` this slice ---
+  // --- not-yet-wired hosts admit nothing (later slices wire them) ---
   {
-    assert.deepEqual([...HOST_ACCEPT_SETS.keys()], ['table'],
-      'slice 2 wires only the table host');
-    console.log('PASS: HOST_ACCEPT_SETS wires only `table` (slice 2 scope)');
+    assert.equal(hostAcceptsLanguage('fig', 'svg'), false,
+      'fig host is not wired yet (member 3) → admits nothing');
+    assert.equal(hostAcceptsLanguage('nonexistent-host', 'csv'), false);
+    console.log('PASS: not-yet-wired hosts admit nothing');
+  }
+
+  // --- the map wires `table` (slice 2) + `diagram` (slice 3) ---
+  {
+    assert.deepEqual([...HOST_ACCEPT_SETS.keys()], ['table', 'diagram'],
+      'table (slice 2) and diagram (slice 3) are wired');
+    console.log('PASS: HOST_ACCEPT_SETS wires table + diagram');
   }
 }

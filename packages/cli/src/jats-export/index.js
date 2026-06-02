@@ -647,9 +647,12 @@ function emitBlock(node, indent) {
     case 'csv':
     case 'tsv':
       return emitTableWrapJats(node, indent);
-    // Phase 5 slice 5d — external DSLs (mermaid, abc): <fig> with
-    // <alt-text> + <preformat> carrying the verbatim source. See
-    // emitDslFigureJats for the per-Q3 shape rationale.
+    // Phase 5 slice 5d — external DSLs: <fig> with <alt-text> + <preformat>
+    // carrying the verbatim source. See emitDslFigureJats for the per-Q3 shape
+    // rationale. #22 slice 3: the canonical node is `diagram` (engine in
+    // positional[0]); the legacy `mermaid`/`abc` cases are retained for any
+    // pre-gate caller but are dead on the post-gate tree.
+    case 'diagram':
     case 'mermaid':
     case 'abc':
       return emitDslFigureJats(node, indent);
@@ -828,7 +831,13 @@ function emitFigureJats(node, indent) {
 function emitDslFigureJats(node, indent) {
   const pad = ' '.repeat(indent);
   const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
-  const dslType = node.tagname; // 'mermaid' | 'abc'
+  // #22 slice 3: the canonical node is `<diagram>` with the engine in the
+  // format-word positional; the engine drives the specific-use / preformat-type
+  // strings, so a `<diagram mermaid>` exports byte-identically to the legacy
+  // `<mermaid>`. The legacy mermaid/abc tagname path is retained as a fallback.
+  const dslType = node.tagname === 'diagram'
+    ? (node.positional?.[0] ?? 'diagram')
+    : node.tagname; // 'mermaid' | 'abc'
   const { caption, title } = extractFrameableParts(node);
   const number = node.computedNumber ?? null;
   const source = typeof node.content === 'string' ? node.content.trim() : '';

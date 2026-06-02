@@ -102,6 +102,11 @@ export const LANGUAGES = new Map([
   ['code',     { handler: 'code',     opaque: true, bindings: [{ purpose: D, host: 'code' }] }],
   ['mermaid',  { handler: 'mermaid',  opaque: true, bindings: [{ purpose: D, host: 'diagram' }] }],
   ['abc',      { handler: 'abc',      opaque: true, bindings: [{ purpose: D, host: 'diagram' }] }],
+  // `diagram` host (#22 slice 3): a directly-authored `<diagram mermaid | …>`
+  // must keep its content opaque at parse time (getContentHandler('diagram')).
+  // The engine (mermaid/abc) is the format-word positional, resolved by the
+  // diagram handler; this entry only governs opacity + the host's own binding.
+  ['diagram',  { handler: 'diagram',  opaque: true, bindings: [{ purpose: D, host: 'diagram' }] }],
   ['matrix',   { handler: 'matrix',   opaque: true, bindings: [{ purpose: D, host: 'math' }] }],
   ['cases',    { handler: 'cases',    opaque: true, bindings: [{ purpose: D, host: 'math' }] }],
   ['align',    { handler: 'align',    opaque: true, bindings: [{ purpose: D, host: 'math' }] }],

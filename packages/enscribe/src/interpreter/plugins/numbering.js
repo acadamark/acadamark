@@ -92,6 +92,7 @@ const NUMBERED_TAGNAMES = new Map([
   ['svg',     'figure'],  // <svg> is a frameable, shares figure counter
   ['mermaid', 'figure'],  // external DSL; figure counter (Ariel's ruling)
   ['abc',     'figure'],  // external DSL; figure counter (Ariel's ruling)
+  ['diagram', 'figure'],  // #22 slice 3: the diagram host (engine = format word); figure counter
   ['csv',     'table'],   // standalone CSV → table counter (parallel to <table csv>)
   ['tsv',     'table'],   // standalone TSV → table counter (parallel to <table tsv>)
   // <frame> joins NUMBERED_TAGNAMES in slice 3c with opt-in semantics:

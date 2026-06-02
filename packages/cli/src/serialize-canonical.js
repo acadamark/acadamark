@@ -23,7 +23,11 @@
 
 // Tags whose content is opaque and round-trips via their named long form
 // (these names ARE registered opaque handlers). Emitted verbatim, no escaping.
-const OPAQUE_NAMED = new Set(['table', 'library', 'mermaid', 'abc', 'math', 'csv', 'tsv', 'matrix', 'cases', 'align', 'eqnarray']);
+// #22 slice 3: `diagram` is the canonical host for the external diagram engines
+// (the legacy `mermaid`/`abc` tags are now gate shorthands → `<diagram …>`), so
+// the serializer must treat `<diagram mermaid | …>` as opaque-named — its
+// content (Mermaid `-->`, etc.) needs the truly-opaque long form to round-trip.
+const OPAQUE_NAMED = new Set(['table', 'library', 'diagram', 'mermaid', 'abc', 'math', 'csv', 'tsv', 'matrix', 'cases', 'align', 'eqnarray']);
 
 // Structural section tags: title lives in `content`; body is a sibling.
 const SECTION_TAGS = new Set(['section', 'sub-section', 'sub-sub-section']);
