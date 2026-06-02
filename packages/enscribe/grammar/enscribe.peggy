@@ -286,6 +286,10 @@ NamedTag
       return node
     }
 
+// `:` is intentionally NOT in this char class. It is reserved for the future
+// `host:language` scoping form (`<diagram:mermaid>`) — the reserved
+// disambiguator of last resort (format-words.md §"Authored forms"). Reserving
+// it is a spec decision only; do not add `:` here until that form is built.
 TagName = $([a-zA-Z][a-zA-Z0-9_-]*)
 
 // ─── Content items: prose with escape processing ───────────────────────────
