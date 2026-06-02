@@ -70,7 +70,7 @@ A span with no backslash emits a string byte-identical to what plain prose chara
 
 ## Strict mode
 
-`\X` where `X` is not a recognized special character is an error. The parser produces an `enscribeParseError` node and continues. The error renders as visible warning text in the output document, making the mistake unmissable.
+`\X` where `X` is not a recognized special character is an error. The parser produces an `enscribeParseError` node (subtype `unknown-escape-sequence`; the node shape is defined canonically in `notes/specs/recursive-content-spec.md` §"The `enscribeParseError` node shape") and continues. The error renders as visible warning text in the output document, making the mistake unmissable.
 
 This is deliberate. Silent dropping of `\` would mask author mistakes; permissive interpretation (`\x` → `x`) would forgive errors but also confuse users who expect their escapes to mean something. Strict mode catches both intentional escapes (correct usage) and accidents (visible feedback).
 

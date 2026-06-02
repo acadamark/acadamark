@@ -112,7 +112,7 @@ Authors should use a quoted value or keep the URL on one line.
 on the next line.>
 ```
 
-`\` immediately followed by a line ending is an unknown escape sequence. The parser emits an `enscribeParseError` node at the backslash position. Line continuation via trailing backslash is **not supported**. Authors who want content that flows across lines should simply write it on multiple lines without a trailing backslash — the prose parser collapses single line breaks to spaces in flowing text.
+`\` immediately followed by a line ending is an unknown escape sequence. The parser emits an `enscribeParseError` node (shape defined in `notes/specs/recursive-content-spec.md` §"The `enscribeParseError` node shape") at the backslash position. Line continuation via trailing backslash is **not supported**. Authors who want content that flows across lines should simply write it on multiple lines without a trailing backslash — the prose parser collapses single line breaks to spaces in flowing text.
 
 ## Closer detection
 
