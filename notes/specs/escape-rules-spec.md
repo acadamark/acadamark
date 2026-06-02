@@ -56,6 +56,18 @@ Two scopes are deliberately excluded:
 - **Superscript and subscript interiors** (`^{…}`, `_{…}`): the brace closer `}` is ambiguous with math braces such as `\mathbb{Y}`, so spans inside these shortcuts are not recognised. Author math there with an explicit math sigil.
 - **Hash sigil-tag content** (`<#…#>` headings): headings share the same latent gap but need a different boundary rule (`>` is legal content inside a heading body, unlike named-tag content), so opaque-span recognition there is deferred. A math or code span containing a backslash inside a heading is still escape-processed until that work lands.
 
+### How opaque-span recognition works
+
+Recognition is a scan inside the named-tag content rule, not a separate pass. The order and the rules:
+
+- **Backslash escapes are tried first.** The escape alternatives sit ahead of opaque-span recognition in the content rule, so `\$` and `` \` `` are consumed as markdown pass-through *before* any span can open — a literal currency `$` or backtick is always authorable.
+- **Longest delimiter first:** `$$…$$` is tried before `$…$`, and `` ``…`` `` before `` `…` ``.
+- **The interior matches any character except `>`**, up to the matching closing delimiter. So `{`, `}`, and line endings are allowed inside (needed for `\mathbb{Y}` and multi-line math), but a span can never swallow the named-tag closer `>`.
+- **The matched span is emitted verbatim** — the exact source text, so escape processing never runs inside it and backslash sequences survive.
+- **An unbalanced delimiter fails the rule.** If no closing delimiter appears before the content's terminating `>`, the opening character falls through to the regular-character rule and stays literal — which is why `$5 … $10` round-trips and a lone currency `$` is fine.
+
+A span with no backslash emits a string byte-identical to what plain prose characters would produce; the only behavioral effect is that backslash-bearing spans are preserved rather than escape-processed.
+
 ## Strict mode
 
 `\X` where `X` is not a recognized special character is an error. The parser produces an `enscribeParseError` node and continues. The error renders as visible warning text in the output document, making the mistake unmissable.
@@ -70,6 +82,17 @@ The precise rule: `\X` is processed as follows, in order:
 3. Otherwise, enscribe emits an `enscribeParseError` node.
 
 "ASCII punctuation" here is the CommonMark definition: characters in the ranges `!`–`/`, `:`–`@`, `[`–`` ` ``, `{`–`~`.
+
+### Significance is region-dependent
+
+Which characters are escape-significant — and what an escape produces — is decided by the grammar rule that processes the region, not by one global table:
+
+- **Named-tag content:** the rule just above. `<`, `|`, `\`, `^`, `_`, `{`, `}` are consumed to literals; other ASCII punctuation (except `>`) passes through to remark; anything else is an `enscribeParseError`. `>` is never escapable — the finder closes the tag at it.
+- **Super/subscript interiors** (`^{…}` / `_{…}`): the same escape structure, but the interior stops at `}` (the brace closer) as well as `>`, and opaque-span recognition is **not** applied there (the `}` closer is ambiguous with math braces such as `\mathbb{Y}`).
+- **Bracketed list items:** exactly one grammar-level escape, `\,`, producing a literal comma that does not split items.
+- **Quoted attribute values** and **opaque bodies** (math / code sigils, DSL-tag content): stored verbatim — no escape processing, the escape rules do not apply.
+
+Sigil characters (`#`, `$`, `` ` ``) are significant only at sigil-*opening* positions (`<#`, `<$`, `` <` ``); in prose they are markdown pass-through, handled by remark.
 
 ## How enscribe and remark cooperate
 
@@ -226,7 +249,7 @@ The escape rules are implemented in the grammar (Peggy) by extending the relevan
 
 **Content model change.** Named-tag content and hash sigil-tag content have changed from a single opaque string to a `(string | enscribeParseError)[]` array. When there are no escape errors, `processContentItems()` collapses the array to a plain string (backward-compatible with existing code). When errors exist, the content is a mixed array with error nodes interleaved at the positions where the unknown escapes occurred.
 
-The `isOpaqueContent` field retains its meaning: "content has not been recursively re-parsed through remark." Before recursive parsing, content may be a plain string, a mixed array, or (after recursive parsing) a full structured mdast `Node[]`. The field describes the pipeline stage, not the data shape.
+The `isOpaqueContent` field describes the node's **relationship to its content**, not a pipeline stage. It is set at parse time to `contentHandler !== 'default'`: `true` for intentionally-opaque content (math / code sigils, DSL-tag bodies — content stays a verbatim string), `false` for prose-bearing content (which begins as a string or a `(string | enscribeParseError)[]` array and becomes a structured `Node[]` after the recursive-content pass). The canonical definition is in `notes/specs/recursive-content-spec.md` §"The `isOpaqueContent` flag".
 
 Escape rules apply to:
 - Named-tag content rules in `enscribe.peggy`: `ContentItem` (replaces `$ContentChar*`)
