@@ -36,6 +36,7 @@ import { run as runIntegration } from './integration.test.js';
 import { run as runToc } from './lib/toc.test.js';
 import { run as runTheme } from './lib/theme.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
+import { run as runConfigOptions } from './config-options.test.js';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -71,6 +72,7 @@ const suites = [
   ['lib/toc',                      runToc],
   ['lib/theme',                    runTheme],
   ['lib/chapter-nav',              runChapterNav],
+  ['config-options',               runConfigOptions],
 ];
 
 let failed = 0;
