@@ -195,10 +195,10 @@ are converted to `enscribeParseError` nodes with `subtype: 'max-recursion-depth'
 `enscribeParseError`; the parser also produces `enscribeParseError` for
 unknown escape sequences and for empty / unterminated `^{}` and `_{}`
 shortcuts, and produces `enscribeTagError` for unterminated long-form
-constructs and for long-form openings the grammar rejects. The fate of
-all such nodes through the interpreter compile step — currently a
-tracked gap against the always-renders guarantee — is described in
-`notes/specs/interpreter.md` §11.5.
+constructs and for long-form openings the grammar rejects. Those nodes
+are rendered as visible markers by the interpreter's compile-step
+handlers (`notes/specs/interpreter.md` §11.5), honoring the
+always-renders guarantee.
 
 **Cross-reference:** `notes/specs/recursive-content-spec.md` for the full design,
 including the mixed-content (escape-errors) path.
@@ -563,11 +563,10 @@ from `mdast-util-to-hast`.
 - Standard mdast node types (paragraph, emphasis, heading, etc.) are converted
   by built-in mdast-util-to-hast rules.
 - `enscribeTag` nodes call the custom handler registered in `handlers.enscribeTag`.
-- Parser-stage error nodes (`enscribeTagError`, `enscribeParseError`)
-  fall through to `mdast-util-to-hast`'s default unknown-node handling —
-  the interpreter has no handler for them. This is a tracked gap against
-  the always-renders guarantee, described in `notes/specs/interpreter.md`
-  §11.5.
+- Parser-stage error nodes (`enscribeTagError`, `enscribeParseError`) are
+  rendered by dedicated compile-step handlers as visible markers
+  (`<span class="parse-error">` / `<span class="tag-error">`), honoring
+  the always-renders guarantee — see `notes/specs/interpreter.md` §11.5.
 
 **The custom handler** dispatches through:
 

@@ -273,8 +273,9 @@ Milestones); `notes/specs/pipeline.md` §4.0 for the pipeline-level view.
 **Purpose:** Walk root-level `<config>` tags and extract their kwargs into a
 `Map<string, string>` stored at `file.data.enscribeConfig`.
 
-**What it does:** Iterates `tree.children` (root-level nodes only; no deep
-traversal). For each `enscribeTag` with `tagname === 'config'`, it reads all
+**What it does:** Descends the tree — both mdast `children` and
+`enscribeTag` `content` — so deeply-nested `<config>` blocks are read, not
+only root-level ones. For each `enscribeTag` with `tagname === 'config'`, it reads all
 kwargs and adds them to the config map. Later `<config>` blocks override
 earlier ones for the same key.
 
@@ -292,8 +293,10 @@ where the hast handler renders them as null/hidden).
 | `number-tables` | `enscribeNumbering` | Suppress table numbering document-wide |
 | `ref-prefix-{prefix}` | `enscribeRefResolution` | Custom display word for cross-reference labels (e.g., `ref-prefix-eqn=Eq.`) |
 
-**Limitation:** Deeply-nested `<config>` blocks (e.g., a `<config>` inside a
-`<section>`) are not read. Only top-level configs apply.
+Deeply-nested `<config>` blocks (e.g., a `<config>` inside a
+`<section>`) **are** read: `visitConfigs` recurses through both mdast
+`children` and `enscribeTag` `content` (this closed the formerly-PG-9
+"deeply-nested `<config>` not read" gap).
 
 ---
 
@@ -1437,9 +1440,9 @@ The guiding principle is the always-renders guarantee defined in
 `notes/specs/principles.md`: the document always renders to something, *and*
 every error renders visibly at the location where it occurred — both
 halves are core, not deferrable. The interpreter currently honors this
-guarantee for the error categories enumerated in §11.2 below. One
-category — parser-stage error nodes — does not yet render visibly; that
-is a tracked gap against the guarantee, described in §11.5.
+guarantee for every error category enumerated in §11.2 below, including
+the parser-stage error nodes described in §11.5 (rendered as visible
+markers).
 
 ### 11.1 Console warnings (`lib/errors.js`)
 
@@ -1491,7 +1494,7 @@ They do not appear in the HTML output.
 - All citations missing → no bibliography injected; `__cite-error` markers
   appear inline.
 
-### 11.5 Parser-stage error nodes — tracked gap against the always-renders guarantee
+### 11.5 Parser-stage error nodes — rendered as visible markers
 
 The parser (`remark-enscribe`) produces two error node types when source
 constructs cannot be parsed: `enscribeTagError` (for example, an
@@ -1500,31 +1503,23 @@ the grammar rejects) and `enscribeParseError` (for example, an unknown
 escape sequence, an empty or unterminated `^{}`/`_{}` shortcut, or a
 named-tag content tree exceeding the recursion-depth limit).
 
-The interpreter currently has **no handler** registered for either node
-type. Neither is dispatched by the `enscribeTag` handler (that handler
-is invoked only when `node.type === 'enscribeTag'`, which these error
-types are not), and `INTERNAL_REGISTRY` contains no entries for them.
-When `toHast` encounters them it falls through to
-`mdast-util-to-hast`'s default unknown-node handling, which produces an
-empty `<div>` — visually nothing in the rendered document.
+The interpreter registers compile-step handlers for both node types
+(`enscribeParseError` and `enscribeTagError` in the `toHast` handler
+table; `packages/enscribe/src/interpreter/handlers/parser-errors.js`).
+They render as house-style visible markers —
+`<span class="parse-error">??parse: …??</span>` and
+`<span class="tag-error">??tag: …??</span>` — each carrying its source
+position.
 
-This is a **tracked gap against the core always-renders guarantee** in
-`notes/specs/principles.md`, not an accepted exception. The guarantee
-requires every error to render visibly at the location where it
-occurred; parser-stage error nodes currently do not. The intended end
-state is a compile-step handler that emits these as house-style visible
-markers — the same family as the §11.2 markers above
-(`??ref: id??`, `??cite: key??`, the inline table-parse-error marker) —
-so that an authoring mistake the parser caught is visible in the
-rendered output at its source position.
+These markers are the same family as the §11.2 markers above
+(`??ref: id??`, `??cite: key??`, the inline table-parse-error marker), so
+an authoring mistake the parser caught is visible in the rendered output
+at its source position — honoring the core always-renders guarantee in
+`notes/specs/principles.md`.
 
-The work to close this gap is tracked in GitHub Issues as the
-parser-error-node renderer (framed as
-core-guarantee work and noted as the sibling of the blank-line /
-EOF-consumption shortfall). It is paired in `principles.md`'s
-*Current known gaps against the guarantee* section as the more
-impactful of the two siblings, since until it closes even bounded
-parser errors are invisible in the rendered output.
+This closed the previously-tracked gap against the guarantee (alpha
+Phase 2 slice 1, commit `e17a892`); `principles.md` records it as closed,
+and no gap remains open.
 
 ---
 
