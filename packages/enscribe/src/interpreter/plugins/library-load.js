@@ -33,6 +33,16 @@ import Cite from 'citation-js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_CITATIONS } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 
+// #22 slice 3: the `<library>` storage host's format word → the citation-js
+// input type it forces. A named format the map doesn't cover (or none) falls
+// through to citation-js auto-detect, the default-when-omitted behavior.
+// citation-js auto-detects BibTeX reliably, so forcing `@bibtex/text` yields the
+// same parse as the bare form — proven by a round-trip unit test. RIS / EndNote
+// (which do not auto-detect cleanly) get their forceType when those land.
+const FORMAT_FORCETYPE = {
+  bibtex: '@bibtex/text',
+};
+
 /**
  * Recursively collect every <data> tag node, in document order.
  *
@@ -130,8 +140,16 @@ export function buildCitationIndex(tree, file, options = {}) {
         continue;
       }
 
+      // #22 slice 3: the format word selects the parser. It is the leading
+      // positional (`<library bibtex | …>`) — the canonical format-word form —
+      // or the legacy `format=` kwarg; omitted → citation-js auto-detect
+      // (today's behavior, so existing `<library>` usage is unchanged). When a
+      // known format is named it is passed to citation-js as a forceType; an
+      // unknown/auto value falls through to auto-detect.
+      const format = libraryNode.positional?.[0] ?? libraryNode.kwargs?.format ?? null;
+      const forceType = format ? FORMAT_FORCETYPE[format] : null;
       try {
-        citeInstances.push(new Cite(content));
+        citeInstances.push(forceType ? new Cite(content, { forceType }) : new Cite(content));
       } catch (err) {
         file?.message?.(
           `library-load: failed to parse library content: ${err.message}`,

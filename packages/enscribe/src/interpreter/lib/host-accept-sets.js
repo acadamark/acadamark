@@ -25,6 +25,12 @@ export const HOST_ACCEPT_SETS = new Map([
   // is open — a new engine (D2, Graphviz, …) is a new entry here + a gate
   // shorthand, not a new vocabulary element.
   ['diagram', new Set(['mermaid', 'abc'])],
+  // #22 slice 3: the storage hosts (library, and the <data> container that holds
+  // <library> blocks) admit the bibliography payload languages. citation-js is
+  // the parser; the format word names the language. (Container shape of <data>
+  // stays the #24 question — this is only the language axis for its payloads.)
+  ['library', new Set(['bibtex', 'csl-json', 'ris', 'endnote-xml', 'other'])],
+  ['data', new Set(['bibtex', 'csl-json', 'ris', 'endnote-xml', 'other'])],
 ]);
 
 /**

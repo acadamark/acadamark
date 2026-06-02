@@ -117,6 +117,28 @@ export function run() {
     console.log('PASS: library-load: inline BibTeX');
   }
 
+  // --- #22 slice 3: format-word positional <library bibtex> ≡ bare <library> ---
+  {
+    // Bare form (citation-js auto-detect).
+    const bareFile = makeFile();
+    enscribeLibraryLoad({ assetsDir: null })(makeDataTree([makeLibraryTag({ content: INLINE_BIBTEX })]), bareFile);
+    const bareIds = bareFile.data.enscribeCitations.cite.data.map(e => e.id).sort();
+
+    // Format-word form: positional[0] = 'bibtex' forces the BibTeX parser.
+    const worded = makeLibraryTag({ content: INLINE_BIBTEX });
+    worded.positional = ['bibtex'];
+    const wordedFile = makeFile();
+    enscribeLibraryLoad({ assetsDir: null })(makeDataTree([worded]), wordedFile);
+    const wordedIds = wordedFile.data.enscribeCitations.cite.data.map(e => e.id).sort();
+
+    assert.deepEqual(wordedIds, bareIds,
+      '<library bibtex> resolves the same entries as bare <library> (forceType ≡ auto-detect for BibTeX)');
+    assert.ok(wordedIds.includes('Smith2020') && wordedIds.includes('Jones2019'),
+      'both entries present via the format word');
+    assert.equal(wordedFile._warnings.length, 0, 'no warnings for <library bibtex>');
+    console.log('PASS: library-load: <library bibtex> format word ≡ bare <library>');
+  }
+
   // --- Inline CSL-JSON content loaded correctly ---
   {
     const lib = makeLibraryTag({ content: INLINE_CSL_JSON });

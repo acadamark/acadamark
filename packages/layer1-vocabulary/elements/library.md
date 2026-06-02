@@ -13,6 +13,16 @@ enscribe_attributes:
     maps_to: id
   classes:
     maps_to: class
+  positional:
+    - name: format
+      values: [bibtex, csl-json, ris, endnote-xml, other]
+      notes: |
+        The format word — the canonical way to name the payload language
+        (`<library bibtex | …>`). `<library>` is a storage host on the
+        host/language axis (DESIGN.md §"The two axes"; format-words.md): the
+        positional names which parser reads the body. Omitted → citation-js
+        auto-detect (today's behavior). The `format=` kwarg below is the
+        equivalent attribute form.
   kwargs:
     format:
       maps_to: data-format
@@ -20,11 +30,10 @@ enscribe_attributes:
       required: false
       default: auto
       notes: |
-        The format of the library content. When omitted, the library-load plugin
+        Attribute-form equivalent of the format-word positional. When both the
+        positional and the kwarg are omitted, the library-load plugin
         auto-detects the format via citation-js (works reliably for BibTeX and
-        CSL-JSON). Authors can set this explicitly when auto-detection might be
-        ambiguous (e.g., a CSL-JSON string that also looks valid as plain text).
-        The library-load plugin passes this as a hint to citation-js if present.
+        CSL-JSON). A named format is passed to citation-js as a forceType.
 content:
   type: opaque
   becomes: 'parsed entries (registered in citation system)'

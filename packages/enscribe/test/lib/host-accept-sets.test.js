@@ -39,18 +39,29 @@ export function run() {
     console.log('PASS: diagram host accepts its engines, rejects others');
   }
 
-  // --- not-yet-wired hosts admit nothing (later slices wire them) ---
+  // --- storage hosts (library/data) accept the bibliography languages (member 4) ---
+  {
+    assert.equal(hostAcceptsLanguage('library', 'bibtex'), true,
+      'library host accepts bibtex');
+    assert.equal(hostAcceptsLanguage('data', 'bibtex'), true,
+      'data host accepts bibtex');
+    assert.equal(hostAcceptsLanguage('library', 'mermaid'), false,
+      'library host rejects a non-bibliography language');
+    console.log('PASS: storage hosts (library/data) accept the bibliography languages');
+  }
+
+  // --- not-yet-wired hosts admit nothing ---
   {
     assert.equal(hostAcceptsLanguage('fig', 'svg'), false,
-      'fig host is not wired yet (member 3) → admits nothing');
+      'fig host is not wired (member 3 deferred) → admits nothing');
     assert.equal(hostAcceptsLanguage('nonexistent-host', 'csv'), false);
     console.log('PASS: not-yet-wired hosts admit nothing');
   }
 
-  // --- the map wires `table` (slice 2) + `diagram` (slice 3) ---
+  // --- the map wires table (slice 2) + diagram/library/data (slice 3) ---
   {
-    assert.deepEqual([...HOST_ACCEPT_SETS.keys()], ['table', 'diagram'],
-      'table (slice 2) and diagram (slice 3) are wired');
-    console.log('PASS: HOST_ACCEPT_SETS wires table + diagram');
+    assert.deepEqual([...HOST_ACCEPT_SETS.keys()], ['table', 'diagram', 'library', 'data'],
+      'table + diagram + library + data are wired');
+    console.log('PASS: HOST_ACCEPT_SETS wires table + diagram + library + data');
   }
 }

@@ -415,6 +415,8 @@ The kwargs-or-child-tags interface principle described for apparatus tags above 
 
 A structured-data-container tag is one whose body is *structured enscribe data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside enscribe (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds enscribe's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different.
 
+By this distinction `<data>` / `<library>` are **not** structured-data containers: their body is a foreign-format payload (BibTeX, CSL-JSON, …) read by an external parser, so they sit on the language axis as a **storage host** — `<library bibtex>` is a `(host, language)` binding with purpose *storage* (see §"The two axes: host and language" above and `notes/specs/format-words.md`). They are registered on the DSL/language side, not in `STRUCTURED_ELEMENTS`. The container *shape* of `<data>` — whether it should additionally expose a structured-field interface — is the separate open question tracked by issue #24.
+
 The interface for every structured-data container is uniform: the tag accepts kwargs for scalar fields *and* child tags for the same fields in their structured form; the normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag spec; the canonical Layer 1 shape carries child tags (plus any boolean-marker kwargs). This is the same single-gate normalization the architecture uses for every other authored form.
 
 ### Infrastructure

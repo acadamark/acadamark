@@ -199,14 +199,22 @@ dispositions.
 ## The `<data>` connection and the #24 boundary
 
 The host/language model cleanly **subsumes the storage-purpose case**: a
-`<data bibtex>` or `<library bibtex>` block is a `(host, language)` binding like
-any other — the positional naming which storage language reads the payload. That
-binding falls out of this rule once settled.
+`<library bibtex>` (or `<data bibtex>`) block is a `(host, language)` binding like
+any other — the format-word positional names which storage language reads the
+payload, the host owns its accept-set (the bibliography parsers), and the body is
+the foreign payload. `<library bibtex | …>` is the canonical form; a bare
+`<library | …>` (or the `format=` kwarg) falls back to citation-js auto-detect.
 
-What stays the **#24** question is the *container shape* of `<data>` — how it is
-structured as a record of named fields — which is the structured-element problem,
-not the format-word one. This document settles the language axis for `<data>`'s
-payloads; #24 settles the container.
+This places `<library>` / `<data>` on the **language axis**, registered as a
+storage host — **not** as `STRUCTURED_ELEMENTS` members. `STRUCTURED_ELEMENTS` is
+for enscribe-native named-field tags (`<meta>`, `<author>`); a foreign-format
+library is a payload, which is the DSL/language axis (per `DESIGN.md`'s
+structured-data-vs-DSL distinction). The two registries stay cleanly separated.
+
+What stays the **#24** question is the *container shape* of `<data>` — whether it
+should additionally expose a structured-field interface — which is the
+structured-element problem, not the format-word one. This document settles the
+language axis for `<data>`'s payloads; #24 settles the container.
 
 ## Open sub-decision: the math environments
 

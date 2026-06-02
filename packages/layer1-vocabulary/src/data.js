@@ -3754,6 +3754,19 @@ const _library = Object.freeze({
           "html": "class",
         },
       },
+      "positional": [
+        {
+          "name": "format",
+          "values": [
+            "bibtex",
+            "csl-json",
+            "ris",
+            "endnote-xml",
+            "other",
+          ],
+          "notes": "The format word — the canonical way to name the payload language\n(`<library bibtex | …>`). `<library>` is a storage host on the\nhost/language axis (DESIGN.md §\"The two axes\"; format-words.md): the\npositional names which parser reads the body. Omitted → citation-js\nauto-detect (today's behavior). The `format=` kwarg below is the\nequivalent attribute form.\n",
+        },
+      ],
       "kwargs": {
         "format": {
           "maps_to": {
@@ -3768,7 +3781,7 @@ const _library = Object.freeze({
           ],
           "required": false,
           "default": "auto",
-          "notes": "The format of the library content. When omitted, the library-load plugin\nauto-detects the format via citation-js (works reliably for BibTeX and\nCSL-JSON). Authors can set this explicitly when auto-detection might be\nambiguous (e.g., a CSL-JSON string that also looks valid as plain text).\nThe library-load plugin passes this as a hint to citation-js if present.\n",
+          "notes": "Attribute-form equivalent of the format-word positional. When both the\npositional and the kwarg are omitted, the library-load plugin\nauto-detects the format via citation-js (works reliably for BibTeX and\nCSL-JSON). A named format is passed to citation-js as a forceType.\n",
         },
       },
     },
