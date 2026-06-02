@@ -7,8 +7,10 @@ names *how to interpret its content*. It defines when a tag should use a format
 word (rather than a dedicated tag or a sigil), which tags use the convention,
 and what becomes of tags that currently say the same thing two ways.
 
-It is deliberately **separate** from the structured-data-container work
-(issue #24). Those are two different "unifications" that are easy to confuse:
+This is the design spec for **issue #22** (generalize the qualifying-tag
+pattern beyond `<table>`). It is deliberately **separate** from the
+structured-data-container work (issue #24); those are two different
+"unifications" that are easy to confuse:
 
 - **Structured-data containers** — tags holding a record of *named fields*
   (`<meta>`, `<author>`, and the `<config>` / `<data>` question). Their
