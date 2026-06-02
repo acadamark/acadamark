@@ -376,6 +376,20 @@ function makeErrorTable(errorMsg, id) {
   };
 }
 
+// ─── Format dispatch table = the host's accept-set ─────────────────────────────
+//
+// The `table` host's accepted formats (the format words the leading positional
+// may name) are exactly the keys of this parser map. Lifted to module scope (it
+// was a per-call local) so `TABLE_FORMATS` derives from it — the table handler
+// is the single source of truth for its accept-set (DESIGN.md §"The two axes:
+// host and language"; format-words.md §"The accept-set lives in the host"). The
+// host-accept-set lookup (interpreter/lib/host-accept-sets.js) consults
+// `TABLE_FORMATS`; this slice does not change how the handler dispatches.
+const TABLE_PARSERS = { csv: parseCsv, tsv: parseTsv, json: parseJson, yaml: parseYaml, md: parseMd };
+
+/** The `table` host's accept-set: the format words its content may declare. */
+export const TABLE_FORMATS = Object.freeze(Object.keys(TABLE_PARSERS));
+
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 /**
@@ -443,9 +457,9 @@ export function tableHandler(state, node, _vocab, options) {
     rawData = typeof node.content === 'string' ? node.content : '';
   }
 
-  // Parse data according to format.
-  const parsers = { csv: parseCsv, tsv: parseTsv, json: parseJson, yaml: parseYaml, md: parseMd };
-  const parserFn = parsers[format];
+  // Parse data according to format (TABLE_PARSERS is the module-scope dispatch
+  // table; its keys are the host's accept-set, exported as TABLE_FORMATS).
+  const parserFn = TABLE_PARSERS[format];
   if (!parserFn) {
     return makeErrorTable(`unknown format "${format}"`, id);
   }
