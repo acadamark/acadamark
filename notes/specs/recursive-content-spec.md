@@ -63,7 +63,19 @@ The caller constructs `innerProcessor` with the appropriate plugins (e.g., `rema
 
 The inner processor should NOT include `remarkRecursiveContent` itself — recursion into nested content is handled by the plugin's own tree walk, not by nesting plugin instances.
 
-The inner parse produces an mdast subtree. The plugin replaces the original string content with the array of child nodes from that subtree.
+The inner parse produces an mdast subtree. The plugin replaces the original string content with the array of child nodes from that subtree, after the shaping rules below.
+
+## Content shape after parsing
+
+The replacement array is not always the inner parse's raw `root.children`. Two shaping rules apply.
+
+### Single-paragraph unwrap
+
+When the inner parse produces a root with exactly one child and that child is a `paragraph`, the plugin returns the **paragraph's inline children**, not the `paragraph` node itself. So `<aside | some text>` yields inline content (text, emphasis, nested tags) directly — matching the structured example above, which has no `paragraph` wrapper. When the root has multiple children, or a single non-paragraph child, the plugin returns the **root's children unchanged**, preserving block-level structure: `<aside | para one\n\npara two>` yields two `paragraph` nodes. (This is the same single-paragraph unwrap the frameable handlers apply when extracting caption / title text.)
+
+### Mixed string-and-error content
+
+Escape processing (`notes/specs/escape-rules-spec.md`) can leave a node's `content` as a **`(string | enscribeParseError)[]` array** rather than a single string — string segments interleaved with error nodes for escape failures. The plugin parses **each string segment independently** through the inner pipeline and **preserves the error nodes in place**. Prose between errors parses correctly and errors do not cascade: one bad escape does not corrupt the parse of the surrounding text.
 
 ## Recursion bottom-out
 
@@ -71,7 +83,7 @@ The plugin walks the tree depth-first. For each node with string content and `co
 
 Eventually, content strings contain only plain text (no nested enscribe constructs and no markdown idioms with their own substructure), and the recursion bottoms out.
 
-A maximum recursion depth of 10 is enforced as a sanity check. If a document somehow produces deeper recursion, the plugin emits an `enscribeParseError` at the deepest node and stops descending. This should never trigger in practice; it exists to prevent infinite loops from malformed input or future bugs.
+A maximum recursion depth of 10 is enforced as a sanity check. When a node would be parsed beyond that depth, the plugin **converts the node in place to an `enscribeParseError`**: it sets `subtype: "max-recursion-depth"` and `source: "<tagname>"`, drops the node's `content` / `contentHandler` / `isOpaqueContent` fields, and stops descending. This should never trigger in practice; it guards against infinite loops from malformed input or future bugs.
 
 ## The `isOpaqueContent` flag
 
