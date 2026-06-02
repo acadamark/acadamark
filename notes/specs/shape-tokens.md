@@ -1,66 +1,20 @@
 # Shape tokens
 
-Vocabulary entries use abstract tokens in their `content.shape` and `contains` fields to specify what kinds of children an element accepts. This document defines those tokens.
+Vocabulary entries classify the content an element accepts using three abstract tokens in their `content.shape` / `contains` fields. This document defines those tokens and the classification convention.
+
+> **Status.** These tokens were once expanded and enforced at runtime by a schema-validation subsystem (`interpreter/schema/validate.js` and a content-shape validator). **That subsystem was removed** — the interpreter no longer reads `content.shape`, and no code expands or checks these tokens today. They remain as the **content-model classification recorded in each vocabulary entry**: design metadata that documents the intended shape of an element's content for vocabulary authors and downstream readers, not a constraint the pipeline enforces. Dispatch keys on the tagname and the entry's `interpreter_strategy` / `enscribe_attributes`, not on `content.shape`.
 
 ## The three tokens
 
-Enscribe uses three shape tokens:
+- **`inline`** — content that appears within a flow of prose without breaking the line (semantic emphasis, inline code, links, cross-references, inline note markers, and the like).
+- **`block`** — content that produces a block-level visual unit, breaking the line and occupying its own vertical region (paragraphs, asides and blockquotes, figures, tables, lists, collected note lists and bibliographies).
+- **`section`** — content that establishes or contains structural divisions: the `<section>` / `<sub-section>` / `<sub-sub-section>` depth ladder, and `<book-part>`.
 
-- **`inline`** — content that appears within a flow of prose without breaking the line.
-- **`block`** — content that produces a block-level visual unit, breaking the line and occupying its own vertical region.
-- **`section`** — content that establishes or contains structural divisions (sections, sub-sections, book-parts).
-
-These three categories are exhaustive for the Layer 1 vocabulary. Every element belongs to one of them based on where it appears in source and how it renders.
-
-## Membership
-
-### `inline` elements
-
-Elements that appear within prose flow:
-
-- `<em>`, `<strong>` — semantic emphasis.
-- `<code>` — inline code.
-- `<i>`, `<b>`, `<u>`, `<s>` — visual styling without semantic emphasis.
-- `<a>` — hyperlinks.
-- `<img>` — embedded images.
-- `<span>` — generic inline container.
-- `<q>` — inline quotations.
-- `<sub>`, `<sup>` — subscript and superscript.
-- `<cite>` — citation references.
-- `<ref>` — cross-references.
-- `<note>` — inline note markers.
-
-When math sigils and inline-TeX shortcuts are implemented, they also belong to `inline`.
-
-### `block` elements
-
-Elements that produce block-level content:
-
-- `<p>` — paragraphs.
-- `<aside>`, `<blockquote>` — block-level supplementary content.
-- `<figure>` — captioned figures.
-- `<hr>` — thematic breaks.
-- `<ul>`, `<ol>` — lists (and their `<li>` children).
-- `<table>` — tables.
-- `<note-list>` — collected notes.
-- `<bibliography>` — rendered bibliography.
-
-DSL engine tags that produce block output (`<csv>`, `<mermaid>`, math display sigils) also belong to `block`.
-
-### `section` elements
-
-Elements that establish or contain structural divisions:
-
-- `<section>`, `<sub-section>`, `<sub-sub-section>` — the section depth ladder.
-- `<book-part>` — book-internal structural divisions (chapters, parts, appendices via shorthand expansions).
-
-These elements typically contain a mix of `block` and `section` children (sections contain paragraphs and nested sub-sections; book-parts contain sections).
+These three categories are exhaustive for the Layer 1 vocabulary: every authored element belongs to one of them, determined by where it appears in source and how it renders. **The per-element classification lives in each element's vocabulary entry (`content.shape`), which is its source of truth** — this document defines what the tokens *mean*, not which elements carry which token.
 
 ## Using the tokens in vocabulary entries
 
-Vocabulary entries reference these tokens in their `content.shape` field's `contains` arrays.
-
-### Examples
+Entries reference the tokens in their `content.shape` field's `contains` arrays. Illustrative shapes:
 
 A paragraph contains inline content only:
 
@@ -92,81 +46,25 @@ content:
     contains: [inline, block]
 ```
 
-An article body contains everything except inline (you don't put bare text directly inside `<article-body>`; it goes in paragraphs):
+Mixing categories within one content model is normal: section bodies mix `block` and `section`; list items, asides, and blockquotes mix `inline` and `block`.
 
-```yaml
-contains: [block, section]
-```
+## Classification is by source position, not content type
 
-### Container expansion
+An element's token reflects **where it appears in source and what placement constraints apply**, not the nature of its eventual content. Two consequences worth recording:
 
-The tokens are expanded by the interpreter at validation time. When an entry's `contains` field includes `inline`, the validator accepts any element from the inline list. The expansion is mechanical — no special-casing per element.
+- `<note>` is classified `inline` because its source position is inline (the marker sits in prose), even though the note's *displayed* body is block-level.
+- Asides and blockquotes are always `block`, even when their content is short.
 
-Adding a new element to the vocabulary means classifying it into one of the three categories. The element's vocabulary entry declares its category implicitly through the `html_output` and behavior; the central registration of which elements belong to which token happens here.
-
-## Edge cases and clarifications
-
-### Elements that could belong to multiple categories
-
-A few elements have arguments for both inline and block placement:
-
-**`<note>`**: Inline by default (the marker in prose is a superscript number). The note's *content* (when displayed in a footnote or endnote) is block-level, but `<note>` itself is classified as `inline` because its source position is inline.
-
-**`<img>`**: Inline by default. For block-level captioned images, wrap in `<figure>`. The bare `<img>` is `inline`.
-
-**`<aside>`, `<blockquote>`**: Always `block`. These are block-level even when their content is short.
-
-The classification is about where the element appears in source and what category constraints apply to it, not about the element's content type.
-
-### Custom Layer 1 elements (article-front, section-title, etc.)
-
-Some Layer 1 elements appear only as outputs of the structural plugin — they're not authored directly. Examples: `<article-front>`, `<section-title>`, `<book-part-title>`, `<book-part-subtitle>`. These don't need `inline`/`block`/`section` classification because they appear in fixed positions within their parent containers, not as siblings in flexible content models.
-
-If an author *does* write one of these directly (using the explicit-form escape hatch), the structural plugin treats it the same as the auto-generated version.
-
-### DSL engine tags
-
-DSL engine tags (`<csv>`, `<math>`, `<mermaid>`, `<python>`, etc.) classify based on their output, not their source form:
-
-- DSL tags producing inline output (inline math, inline code) are `inline`.
-- DSL tags producing block output (display math, code blocks, generated tables, generated figures) are `block`.
-
-The classification happens when the DSL is added to the engine registry.
-
-### Nested categories
-
-Section elements can recursively contain section elements (sub-sections inside sections; nested book-parts inside book-parts). The recursion is constrained by the depth ladder for sections and by structural conventions for book-parts.
-
-Within a single content model, mixing categories is normal:
-
-- Section bodies mix `block` and `section`.
-- List items mix `inline` and `block`.
-- Asides and blockquotes hold `inline` and `block` content.
-
-The validator allows any combination of categories the entry declares.
+Some Layer 1 elements appear only as outputs of the structural pipeline (`<article-front>`, `<section-title>`, `<book-part-title>`, …) and carry no `inline`/`block`/`section` classification: they sit in fixed positions within their parent containers rather than as siblings in a flexible content model.
 
 ## Why three tokens
 
-The three-token design was chosen because:
-
-- **Two tokens (inline/block) is too coarse.** It can't distinguish "block content within a section" from "section content within a section" — both are technically block-level in HTML, but their structural roles differ significantly.
-- **Many tokens (one per element) is too fine.** It produces unwieldy `contains` arrays and forces vocabulary entries to enumerate every allowed element. Adding a new element requires touching every container's entry.
-- **Three tokens (inline/block/section)** matches HTML's structural grammar (phrasing content, flow content, sectioning content) and enscribe's authoring concerns. It's the natural granularity.
-
-This is the same approach HTML5's content categories take, simplified to enscribe's specific needs.
-
-## Future extensions
-
-If the vocabulary grows in ways that need additional tokens, this document expands. Possibilities:
-
-- **`metadata`** — for elements that appear inside `<meta>` blocks (title, author, date, abstract). Currently treated as a fixed shape rather than a flexible content category.
-- **`bibliographic`** — for elements appearing inside `<bib-entry>` (author, year, title, journal, etc.). Currently treated as a fixed shape.
-
-Both of these are arguably already implicit categories. They're not added to the formal token system because their use cases are narrow and their shapes are mostly fixed; flexibility isn't needed.
+- **Two tokens (inline/block) is too coarse.** It cannot distinguish "block content within a section" from "section content within a section" — both are block-level in HTML, but their structural roles differ.
+- **One token per element is too fine.** It produces unwieldy `contains` arrays and forces every container entry to enumerate its allowed elements; adding an element would touch every container.
+- **Three tokens (inline / block / section)** match HTML's structural grammar (phrasing, flow, sectioning content), simplified to enscribe's authoring concerns. It is the natural granularity.
 
 ## Related references
 
-- `packages/layer1-vocabulary/SPEC.md` — high-level vocabulary specification.
-- `packages/layer1-vocabulary/elements/` — individual vocabulary entries.
-- `notes/specs/interpreter.md` — interpreter architecture; describes how these tokens are used during schema-driven dispatch and content-shape validation.
-- `notes/specs/pipeline.md` — structural plugin pipeline that produces the AST shape these tokens describe.
+- `packages/layer1-vocabulary/SPEC.md` — the vocabulary specification.
+- `packages/layer1-vocabulary/elements/` — the individual entries, each declaring its own `content.shape`.
+- `DESIGN.md` — the layer model and the vocabulary's place in it.
