@@ -1079,6 +1079,15 @@ children   = convertContent(state, node, vocab)
      set `properties[def.maps_to] = value`.
    - Kwargs marked `handled_by: 'handler'` are for handler-strategy elements
      only; schema dispatch ignores them.
+4. For each boolean in `node.booleans` (the `+flag` / `-flag` surface), apply
+   the same rule as kwargs: look up `vocab.enscribe_attributes.booleans[key]`,
+   skip those marked `handled_by: 'handler'` (handler-strategy flags such as
+   `+numbered` and `+link`), and require a `maps_to`. A true boolean emits its
+   mapped attribute; a false boolean is omitted (HTML boolean-attribute
+   semantics) unless the vocab declares a false mapping (not yet a supported
+   shape). Today every declared boolean is `handled_by: 'handler'`, so this
+   branch maps nothing yet — it completes the kwargs/booleans symmetry so a
+   future schema-element boolean with a `maps_to` renders correctly.
 
 ### 6.2 Content conversion (`convertContent`)
 

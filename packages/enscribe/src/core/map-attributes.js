@@ -90,5 +90,24 @@ export function mapAttributes(node, vocab, target, emit) {
     if (r) results.push(r);
   }
 
+  // booleans (+flag / -flag). Mirrors the kwargs loop. Handler-strategy
+  // booleans (handled_by: 'handler' — e.g. +numbered on figures/tables, +link
+  // on refs) flow through their element's handler and are skipped here so they
+  // are not double-mapped. A boolean with a target maps_to emits its attribute
+  // when true; a false boolean is omitted (HTML boolean-attribute semantics)
+  // unless a false mapping is declared (not yet a supported vocab shape).
+  const booleanDefs = vocab?.enscribe_attributes?.booleans ?? {};
+  for (const [key, value] of Object.entries(node.booleans ?? {})) {
+    const def = booleanDefs[key];
+    if (!def) continue;
+    if (def.handled_by === 'handler') continue;
+    const name = def.maps_to?.[target];
+    if (!name) continue;
+    if (value === true) {
+      const r = emit('boolean', name, true);
+      if (r) results.push(r);
+    }
+  }
+
   return results;
 }
