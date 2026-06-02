@@ -19,13 +19,13 @@ Releases are GitHub Milestones. Each draws its items from the phases below.
   book navigation, themes); a client-side rendering library with an in-browser
   editor demo; the docs site; and the `enscribe` command-line tool.
 - **v0.2.0 — current.** Docs-site polish for public visitors, the consolidated
-  three-package layout published to npm, conda-forge packaging, and the
-  accumulated docs and infrastructure fixes.
+  three-package layout published to npm, and the accumulated docs and
+  infrastructure fixes.
 - **v0.3.0.** Table features (markup inside cells, the grammar-of-tables
   model), the frameable redesign, a callout / admonition vocabulary, and parser
   improvements.
-- **v0.4.0.** Code syntax highlighting, browser-bundle size optimization, and
-  new sigil shorthands.
+- **v0.4.0.** Code syntax highlighting, browser-bundle size optimization,
+  conda-forge packaging, and new sigil shorthands.
 - **future.** The large features that need their own design arcs — multi-file
   authoring, executable code blocks, and pagination / print output.
 
