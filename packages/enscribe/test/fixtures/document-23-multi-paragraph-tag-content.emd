@@ -15,6 +15,6 @@ closing `>`. The aside must produce two paragraph children.
 Second paragraph of the aside, after a blank line.>
 
 This fixture pins Option A's allow-multi-paragraph-tag-content half
-against regression. RC-6 in `remark-enscribe/test/test-recursive.js`
+against regression. RC-6 in `packages/enscribe/test/test-recursive.js`
 covers this at the parser level; this fixture covers the full
 integration pipeline end-to-end.

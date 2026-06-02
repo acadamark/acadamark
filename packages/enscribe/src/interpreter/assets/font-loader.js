@@ -24,7 +24,7 @@
 
 // Node built-ins for the server/build path. In the browser bundle these are dead
 // code (browser defaults never call them); tsup aliases both the node: and bare
-// forms to a throwing stub. See packages/enscribe-interpreter/tsup.config.js.
+// forms to a throwing stub. See packages/enscribe/src/interpreter/tsup.config.js.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';

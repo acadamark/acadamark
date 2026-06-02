@@ -272,7 +272,7 @@ This is what allows enscribe to embed CSV, TSV, LaTeX, code, mermaid, and other 
 
 ## DSL handler-dispatch registry
 
-The DSL registry (`packages/enscribe-core/src/dsl-registry.js`) assigns a **content handler** to every DSL tag — a tag whose content is a foreign language interpreted by an external processor (LaTeX math via KaTeX, Mermaid source via Mermaid renderer, CSV via the table data parser, BibTeX via citation-js, etc.). The registry's role is **handler dispatch** for these foreign-language tags. It does not gate long-form parsing — every named tag is long-form-eligible at the parser level, regardless of registry membership (see the three-form grammar above).
+The DSL registry (`packages/enscribe/src/core/dsl-registry.js`) assigns a **content handler** to every DSL tag — a tag whose content is a foreign language interpreted by an external processor (LaTeX math via KaTeX, Mermaid source via Mermaid renderer, CSV via the table data parser, BibTeX via citation-js, etc.). The registry's role is **handler dispatch** for these foreign-language tags. It does not gate long-form parsing — every named tag is long-form-eligible at the parser level, regardless of registry membership (see the three-form grammar above).
 
 The `contentHandler` field on a node names which handler the interpreter should dispatch to. DSL-handler entries (`csv → "csv"`, `math → "math"`, `library → "library"`, etc.) name a specific embedded-language handler. The math and code sigils (`$ → "math"`, `$$ → "math-display"`, `` ` `` → `"code"`, ``` ``` ``` → `"code-block"`) are in the registry for the same content-handler lookup, even though sigils don't go through the long-form tokenizer.
 
@@ -369,7 +369,7 @@ For sigil tags, `tagname` is the literal sigil string: `<#` → `"#"`, `<##` →
 
 Defaults — when an attribute is absent from the source, the field is present on the node with its empty default:
 `positional: []`, `booleans: {}`, `kwargs: {}`, `id: null`, `classes: []`, `atRefs: []`, `isOpaqueContent: false`, `selfClosing: false`.
-`content` is `null` when there is no content (e.g. `<tag attr />`), the verbatim string for opaque-content tags, or the parsed `Node[]` after recursive-content parsing for prose tags. This matches the parser's grammar `makeNode` factory verbatim (`packages/remark-enscribe/grammar/enscribe.peggy`), which is the ground-truth origin of the shape; downstream consumers should expect every field present on every parser-produced node.
+`content` is `null` when there is no content (e.g. `<tag attr />`), the verbatim string for opaque-content tags, or the parsed `Node[]` after recursive-content parsing for prose tags. This matches the parser's grammar `makeNode` factory verbatim (`packages/enscribe/grammar/enscribe.peggy`), which is the ground-truth origin of the shape; downstream consumers should expect every field present on every parser-produced node.
 
 For tags with opaque content, `content` is the raw string. For tags with parsed content, `content` is an array of child nodes (which may themselves be `enscribeTag` nodes, or markdown nodes, or plain text).
 
@@ -869,7 +869,7 @@ These were open questions that were settled during implementation.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
 
-- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the remark-enscribe parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
+- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the enscribe/parser parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
 
 - **`|` in short-form content: subsequent `|` characters are literal.** The "exactly one `|` per construct" rule means only the first `|` separates attributes from content. Any further `|` characters in the content section are stored as literal content; no escaping is needed. Example: `<aside | first | second>` produces `content: " first | second"`.
 

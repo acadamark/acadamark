@@ -184,7 +184,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   // Run the transforms in pipeline order. remarkRecursiveContent
   // (stage 2) must run before the structural plugins (stage 3) so
   // pipe-content arrays are populated. The order matches what
-  // `enscribe-interpreter`'s `enscribeInterpreter` plugin registers.
+  // `enscribe/interpreter`'s `enscribeInterpreter` plugin registers.
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })

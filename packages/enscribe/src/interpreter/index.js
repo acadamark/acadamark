@@ -1,4 +1,4 @@
-// Main entry for enscribe-interpreter.
+// Main entry for enscribe/interpreter.
 //
 // Exports the unified plugin `enscribeInterpreter`, which wires together,
 // on the unified processor:
@@ -106,7 +106,7 @@ import remarkParse from 'remark-parse';
 import remarkEnscribe from '../parser/index.js';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
-// Relative path import: remark-enscribe does not re-export this module via
+// Relative path import: enscribe/parser does not re-export this module via
 // its package exports field; we access it directly within the workspace.
 import remarkRecursiveContent from '../parser/recursive-content.js';
 import { toHast } from 'mdast-util-to-hast';
@@ -140,19 +140,19 @@ export { DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
 // sibling files from disk. See src/assets/hover-preview-assets.js for the why.
 import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-assets.js';
 // DSL render registry (internal): drives live-mode asset emission for external
-// DSLs (mermaid, abc). Distinct concern from enscribe-core's vocabulary
+// DSLs (mermaid, abc). Distinct concern from enscribe/core's vocabulary
 // registry imported immediately below.
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
 import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
-// enscribe-jats-export can replicate the HTML pipeline's
+// @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
 // pattern as fillNumbering (slice 5b).
 import { parseCsv, parseTsv } from './handlers/table.js';
 // Render-quality bug-fix arc, JATS analog of slice B (2026-05-29):
-// re-export the scoped-number formatter so enscribe-jats-export derives
+// re-export the scoped-number formatter so @enscribejs/cli derives
 // its <label> display numbers through the same helper the HTML render
 // path and the cross-reference resolver use — keeping JATS <label>s and
 // <xref>s in agreement (RQ-BOOK-M4, JATS side). Same re-export pattern as
@@ -171,7 +171,7 @@ export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfig
 
 // Pinned KaTeX version for the CDN URL — a literal, not an fs read, so this
 // module loads in a browser bundle (the build slice's browser-safety boundary;
-// see notes/specs/enscribe-core.md). test/cdn-versions.test.js asserts it
+// see notes/specs/core.md). test/cdn-versions.test.js asserts it
 // equals the installed katex version, so a dependency bump fails loudly here.
 const _katexVersion = '0.16.45';
 
@@ -772,7 +772,7 @@ export function enscribeInterpreter(options = {}) {
 
 /**
  * Build a unified processor carrying the full enscribe pipeline:
- * remark-parse → remark-enscribe → enscribeInterpreter. This is the single
+ * remark-parse → enscribe/parser → enscribeInterpreter. This is the single
  * shared assembly; consumers and the test suite call it instead of
  * hand-assembling the chain (AUD-17 — a hand-mirror previously drifted from
  * this assembly by omitting enscribeBookStructuring).

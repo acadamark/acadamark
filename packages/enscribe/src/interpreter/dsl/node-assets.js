@@ -5,7 +5,7 @@
 // build-time abc→SVG renderer (static mode). It is split out of registry.js so
 // that registry.js itself carries NO fs/url/path/module imports and stays
 // importable in a browser bundle (the build slice's browser-safety boundary;
-// see notes/specs/enscribe-core.md — this module is one of the ✗ server-only
+// see notes/specs/core.md — this module is one of the ✗ server-only
 // paths named there).
 //
 // Browser-safety mechanics. The library build (tsup) stubs the Node built-ins

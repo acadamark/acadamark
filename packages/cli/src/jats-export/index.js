@@ -1,4 +1,4 @@
-// enscribe-jats-export — Layer 1 → JATS XML.
+// @enscribejs/cli — Layer 1 → JATS XML.
 //
 // Phase 5 slice 5a (2026-05-29): foundation slice. Implements minimal
 // article export: article scaffolding (article wrapper + title-group +
@@ -8,14 +8,14 @@
 // notes / bibliography / external DSLs are slices 5b–5d.
 //
 // CONSUMES: the post-stage-3 mdast tree produced by
-// `enscribe-interpreter`'s structural plugins (per Phase 5 Phase 0
+// `enscribe/interpreter`'s structural plugins (per Phase 5 Phase 0
 // findings Q1.5 — post-stage-3 is the right input because the tree is
 // already JATS-shaped after `enscribeArticleStructuring` /
 // `enscribeBookStructuring` + section nesting). The slice 5a entry
 // point `enscribeToJats` accepts a tree (mdast root) + options and
 // returns a JATS XML string.
 //
-// ATTRIBUTE MAPPING: delegated to `enscribe-core`'s `mapAttributes`
+// ATTRIBUTE MAPPING: delegated to `enscribe/core`'s `mapAttributes`
 // (the deferred lift from `6ae6844` that landed in this slice; JATS
 // export is the second consumer the deferral waited for). The JATS
 // side passes `target = 'jats'` + the `jatsEmit` callback; vocab
@@ -71,7 +71,7 @@ const BITS_BOOK_DOCTYPE_DECL =
  * per-element emitters (`emitBlock`, `emitInlines`, etc.) — only
  * the outer wrapping and metadata regions differ.
  *
- * @param {object} tree - mdast root, post-stage-3 (enscribe-interpreter
+ * @param {object} tree - mdast root, post-stage-3 (enscribe/interpreter
  *                         structural plugins already ran).
  * @param {object} [opts]
  * @param {string} [opts.articleType='research-article'] - JATS
@@ -641,7 +641,7 @@ function emitBlock(node, indent) {
 /**
  * Extract <caption> / <title> child tags from a frameable's content,
  * mirroring the HTML-side `extractFrameableChildren` in
- * `enscribe-interpreter/src/lib/frameable.js`. Falls back to reading
+ * `enscribe/interpreter/src/lib/frameable.js`. Falls back to reading
  * caption / title from kwargs when no child tag exists (the same
  * opaque-content fallback the HTML side uses; in JATS export the
  * fallback is uniformly applied since table/csv/tsv/svg etc. all have
@@ -837,7 +837,7 @@ function emitTableWrapJats(node, indent) {
  * shape.
  *
  * Format detection mirrors `tableHandler` in
- * `enscribe-interpreter/src/handlers/table.js`:
+ * `enscribe/interpreter/src/handlers/table.js`:
  *   - `<table csv | ...>` / `<table tsv | ...>` — positional format
  *   - `<csv | ...>` / `<tsv | ...>` — tagname is the format
  *   - `<table>` (no format) — escape-hatch raw HTML; emit as comment
@@ -1315,7 +1315,7 @@ const CSL_TYPE_TO_JATS_PUB_TYPE = {
 
 /**
  * Emit a JATS `<ref-list>` for the `__bibliography` internal node
- * built by `enscribe-interpreter`'s `bibliography.js`. Iterates the
+ * built by `enscribe/interpreter`'s `bibliography.js`. Iterates the
  * structured CSL-JSON entries (`kwargs.cslEntries`, threaded through
  * by slice 5d's bibliography.js change) in document-citation order
  * and emits one `<ref id="ref-KEY"><element-citation>...</element-
@@ -1498,7 +1498,7 @@ function emitPersonGroupJats(persons, groupType, indent) {
 /**
  * Map a colon-id prefix (the `eqn` of `eqn:newton`) to the JATS
  * `<xref>` `ref-type` attribute value. This is the JATS-side
- * counterpart of `enscribe-interpreter`'s prefix→display-word
+ * counterpart of `enscribe/interpreter`'s prefix→display-word
  * dictionary in `ref-resolution.js`.
  *
  * Per JATS Archiving 1.3 enumerated ref-type values used in this

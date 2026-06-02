@@ -1,19 +1,19 @@
 // Phase 5 slice 5a (2026-05-29): generic attribute-iteration helper.
 //
-// The lift recorded as deferred in `notes/specs/enscribe-core.md`
+// The lift recorded as deferred in `notes/specs/core.md`
 // §"Output-stage-specific code" (the only architectural item the
-// enscribe-core extraction arc left open, per commit `6ae6844`). The
+// enscribe/core extraction arc left open, per commit `6ae6844`). The
 // deferral was waiting for a second output-target consumer — JATS export
 // (Phase 5) is that second consumer.
 //
 // THE PROBLEM
 //
-// Both HTML rendering (enscribe-interpreter) and JATS export
-// (enscribe-jats-export) need to walk a node's id / classes / kwargs
+// Both HTML rendering (enscribe/interpreter) and JATS export
+// (@enscribejs/cli) need to walk a node's id / classes / kwargs
 // and produce target-specific attributes on the output element. The
 // iteration shape is identical; only the per-attribute target-naming
 // differs. Pre-lift, the HTML iteration lived in
-// `enscribe-interpreter/src/lib/build-properties.js` as `buildProperties`
+// `enscribe/interpreter/src/lib/build-properties.js` as `buildProperties`
 // — one 14-line function with two consumers inside the interpreter.
 // JATS export's parallel iteration would duplicate this shape, which is
 // the DRY problem the lift resolves.

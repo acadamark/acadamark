@@ -59,7 +59,7 @@ When the recursive-content plugin encounters a node with string content and `con
 use(remarkRecursiveContent, { processor: innerProcessor })
 ```
 
-The caller constructs `innerProcessor` with the appropriate plugins (e.g., `remarkParse`, `remark-enscribe`, `remark-math`, `remark-gfm`) and passes it in. This keeps the plugin agnostic about which plugins the outer pipeline uses, and makes the plugin independently testable.
+The caller constructs `innerProcessor` with the appropriate plugins (e.g., `remarkParse`, `enscribe/parser`, `remark-math`, `remark-gfm`) and passes it in. This keeps the plugin agnostic about which plugins the outer pipeline uses, and makes the plugin independently testable.
 
 The inner processor should NOT include `remarkRecursiveContent` itself — recursion into nested content is handled by the plugin's own tree walk, not by nesting plugin instances.
 
@@ -113,7 +113,7 @@ The work to close this gap is tracked in GitHub Issues as the blank-line-termina
 
 ## Implementation note
 
-The recursive-content plugin is a remark plugin (mdast-level transform). It runs after `remark-enscribe` produces the initial AST and before any rehype plugins.
+The recursive-content plugin is a remark plugin (mdast-level transform). It runs after `enscribe/parser` produces the initial AST and before any rehype plugins.
 
 The plugin walks the tree using `unist-util-visit`. For each `enscribeTag` node with string content and `contentHandler: "default"`:
 

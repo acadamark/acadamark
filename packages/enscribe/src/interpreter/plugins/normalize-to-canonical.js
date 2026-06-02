@@ -433,7 +433,7 @@ function liftRawHtml(node, file) {
 // ─── Group D helper: structured-element kwarg → child-tag lift ───────────────
 //
 // Per DESIGN.md §"Structured-data-container tags", a structured-element tag
-// (registered in enscribe-core/structured-elements.js — today: <meta>,
+// (registered in enscribe/core/structured-elements.js — today: <meta>,
 // <author>) accepts two authoring forms: kwargs and child tags. Both produce
 // the same Layer 1 child-tag canonical shape. The lift here converts the
 // kwarg form to the child-tag form per the per-tag spec, so downstream
@@ -579,7 +579,7 @@ function liftStructuredKwargs(node, file) {
 //
 // Phase 3 slice 3c (2026-05-28). Companion to liftStructuredKwargs — same
 // mechanism, different conceptual home (see
-// enscribe-core/frameable-elements.js for the why-a-separate-registry note).
+// enscribe/core/frameable-elements.js for the why-a-separate-registry note).
 //
 // For each frameable tag (fig / table / csv / tsv / mermaid / abc / svg /
 // frame), any kwarg in the spec's liftedKwargs (today: `caption`, `title`)
@@ -832,7 +832,7 @@ const NORMALIZATIONS = [
   // ─── Group A2: structured-element + <config> kwarg lift ───────────────
   //
   // For any structured-element tag (today: <meta>, <author>; registered in
-  // enscribe-core/structured-elements.js): allowlisted kwargs lift to
+  // enscribe/core/structured-elements.js): allowlisted kwargs lift to
   // child tags per the per-tag spec, with the lift-time misuse-feedback
   // hints. Layer 1 carries the child-tag form.
   // For <config>: allowlisted kwargs stay as kwargs (the existing

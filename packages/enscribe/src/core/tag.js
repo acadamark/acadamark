@@ -1,7 +1,7 @@
 // Canonical `enscribeTag` node-shape builders.
 //
 // The shape is defined by the parser's grammar `makeNode` factory (in
-// `packages/remark-enscribe/grammar/enscribe.peggy`) — the ground-truth
+// `packages/enscribe/grammar/enscribe.peggy`) — the ground-truth
 // origin of enscribeTag nodes — plus the spec passage in
 // `notes/specs/shorthand-syntax.md` §"What the parser produces."
 //

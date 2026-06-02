@@ -14,7 +14,7 @@ the conspicuously missing downstream content — itself a signal that
 the document has an unclosed tag.
 
 This fixture pins the EOF-terminator half of Option A against
-regression. ML-8 in `remark-enscribe/test/test.js` covers the
+regression. ML-8 in `packages/enscribe/test/test.js` covers the
 EOF-without-closer → `enscribeTagError` path at the parser level;
 this fixture covers the visible-rendering end-to-end.
 

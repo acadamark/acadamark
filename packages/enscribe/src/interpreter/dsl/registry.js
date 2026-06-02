@@ -11,14 +11,14 @@
 // See notes/archive/phase-findings-2026-05/dsl-rendering-architecture-findings.md §Q1.
 //
 // INTERNAL boundary (Q5). This module is deliberately NOT added to
-// enscribe-interpreter/package.json `exports` (which exposes only
-// ./src/index.js). `getDsl` / `getRegisteredDsls` are reachable inside the
+// the `enscribe` package's `exports` (which expose only the package's
+// public entry). `getDsl` / `getRegisteredDsls` are reachable inside the
 // workspace but not through the package's public surface — reachability, not
 // just documentation, enforces "internal."
 //
 // BROWSER-SAFETY split. This module carries NO fs/url/path/module imports, so it
 // loads cleanly in a browser bundle (the build slice's boundary; see
-// notes/specs/enscribe-core.md). Every Node-only path it drives — the
+// notes/specs/core.md). Every Node-only path it drives — the
 // readFileSync bundle loaders and the jsdom-shimmed static abc→SVG renderer —
 // lives in ./node-assets.js, imported here only as the function *references* the
 // registration records hold. Under the browser façade's `dslMode: 'live-link'`

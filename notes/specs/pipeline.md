@@ -81,14 +81,14 @@ source text
 HTML string                       JATS XML string
 ```
 
-The JATS branch (Phase 5; `enscribe-jats-export` package, landed in
+The JATS branch (Phase 5; `@enscribejs/cli` package, landed in
 slice 5a per `98f2d7f`) consumes the post-stage-3 mdast — the tree is
 already JATS-shaped at that point (the structural plugins produced
 `<article>`/`<book>` with the appropriate region wrappers; citations
 and cross-references are resolved; numbering is in). The package
-re-imports the structural plugins from `enscribe-interpreter` to
+re-imports the structural plugins from `enscribe/interpreter` to
 build the post-stage-3 tree; HTML rendering stays in
-`enscribe-interpreter`.
+`enscribe/interpreter`.
 
 The pipeline is wired by the `enscribeInterpreter` unified plugin, which
 registers all stages (2–6) on a single unified processor. The consumer provides
@@ -160,7 +160,7 @@ this stage. Stage 2 re-parses it into a structured mdast subtree.
 ## 3. Stage 2: Recursive content parsing
 
 **Plugin:** `remarkRecursiveContent`
-**Source:** `packages/remark-enscribe/src/recursive-content.js`
+**Source:** `packages/enscribe/src/parser/recursive-content.js`
 
 **Input:** mdast tree with `enscribeTag` nodes having string `content` fields.
 
@@ -250,7 +250,7 @@ have completed).
 assume one node type.
 
 **Cross-reference:** AUD-20 in `notes/archive/audit-findings-2026-05.md` for the Option-A
-decision; `packages/enscribe-interpreter/src/plugins/normalize-markdown.js`
+decision; `packages/enscribe/src/interpreter/plugins/normalize-markdown.js`
 for the implementation.
 
 ---
@@ -306,7 +306,7 @@ via its early no-op check and skips silently.
 
 #### 4.2.5 enscribeBookStructuring
 
-**Source:** `packages/enscribe-interpreter/src/plugins/book-structuring.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/book-structuring.js`
 
 **Purpose:** Wrap the root children of a book document into the Layer 1
 book structure: `<book>` containing `<book-front>`, `<book-body>`, and
@@ -959,7 +959,7 @@ individually) for self-contained HTML that needs no network to render. See
 - Source map comments (`//# sourceMappingURL=...`) are stripped to avoid
   console warnings about missing `.map` files.
 - Custom `hover-preview.css` and `hover-preview.js` in
-  `packages/enscribe-interpreter/src/assets/` handle enscribe-specific
+  `packages/enscribe/src/interpreter/assets/` handle enscribe-specific
   tooltip behavior.
 
 ### 12.3 Body fonts

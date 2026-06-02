@@ -23,7 +23,7 @@
 //
 // `node.computedNumber` is the bare per-scope integer assigned by
 // fillNumbering, and it is *also* consumed by the JATS exporter
-// (enscribe-jats-export reads it for `<label>` text). Keeping it a bare
+// (@enscribejs/cli reads it for `<label>` text). Keeping it a bare
 // integer and deriving the display string here means the HTML caption
 // fix leaves JATS output untouched by nature, not by accident.
 //

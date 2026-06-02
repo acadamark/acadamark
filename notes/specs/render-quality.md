@@ -39,7 +39,7 @@ of three targets:
 
 **This document specifies targets 1 and 2** — the current default output of the
 interpreter: custom-element-rich Layer 1 HTML, the bundled
-`packages/enscribe-interpreter/src/assets/default.css` theme, and the
+`packages/enscribe/src/interpreter/assets/default.css` theme, and the
 conditional hover-preview assets. The class vocabulary referenced throughout is
 the vocabulary that `default.css` defines.
 
@@ -49,7 +49,7 @@ the vocabulary that `default.css` defines.
   is deferred work (`ROADMAP.md`, lift-and-lower phase). When it lands it gets
   its own predicates; the lowering table is not specified here.
 - **JATS export.** JATS output correctness is enforced by DTD validation in
-  `packages/enscribe-jats-export`, not by render predicates. This document is
+  `packages/@enscribejs/cli`, not by render predicates. This document is
   about HTML rendering only.
 - **Theme variation.** Predicates here are stated against the *bundled default
   theme*. Alternate themes (a roadmap release goal) may restyle freely; they
@@ -67,7 +67,7 @@ the vocabulary that `default.css` defines.
 The demonstrative fixtures (the article-shaped and book-shaped documents added
 alongside this spec) are authored to exercise these predicates against
 believable documents. They are rendered to HTML by
-`packages/enscribe-interpreter/test/render-fixtures.js` and their structural
+`packages/enscribe/test/render-fixtures.js` and their structural
 output is pinned by snapshot in `test/integration.test.js`.
 
 This document describes the **intended** rendering. The pinned snapshots
@@ -887,5 +887,5 @@ the target; the Issues track the distance to it.
   resolution, note placement, and bibliography assembly run.
 - `packages/layer1-vocabulary/SPEC.md` and `elements/` — the vocabulary each
   predicate renders.
-- `packages/enscribe-interpreter/src/assets/default.css` — the class vocabulary
+- `packages/enscribe/src/interpreter/assets/default.css` — the class vocabulary
   the `S` predicates are checked against.

@@ -18,7 +18,7 @@ the only one.
   list by category, governing rules, design decisions).
 - [`elements/*.md`](elements/) — per-element entries with attribute lists,
   content shapes, JATS mappings, and render-mode lowering specified. The
-  interpreter (`enscribe-interpreter`) consumes these entries at load
+  interpreter (`enscribe/interpreter`) consumes these entries at load
   time.
 
 ## Governing rules

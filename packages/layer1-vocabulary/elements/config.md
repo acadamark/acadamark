@@ -19,7 +19,7 @@ enscribe_attributes:
       <config> accepts an allowlisted set of kwargs as an authoring shorthand
       for its structured-children configuration interface. The current
       allowlist (interpreter-side, see
-      packages/enscribe-interpreter/src/lib/apparatus-allowlists.js):
+      packages/enscribe/src/interpreter/lib/apparatus-allowlists.js):
         - citation-style          (live; consumed by cite-resolution)
         - number-equations        (live; consumed by numbering)
         - number-figures          (live; consumed by numbering)

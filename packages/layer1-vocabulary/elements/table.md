@@ -99,7 +99,7 @@ shorthand_examples:
       </table>
     notes: |
       **Planned — the `<csv>` standalone-handler is not yet implemented**
-      (it is registered in `enscribe-core/dsl-registry` but no handler
+      (it is registered in `enscribe/core/dsl-registry` but no handler
       exists yet; an authored `<csv | ...>` today falls through to the
       unknown-element fallback). The example is preserved here as
       documentation of the intended form. Today's working CSV authoring

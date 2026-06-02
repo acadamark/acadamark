@@ -1,10 +1,10 @@
-// JATS attribute-emit callback for `mapAttributes` (enscribe-core).
+// JATS attribute-emit callback for `mapAttributes` (enscribe/core).
 //
 // Phase 5 slice 5a (2026-05-29). The JATS-target counterpart of
-// `enscribe-interpreter/src/lib/html-emit.js`. Both callbacks share
+// `enscribe/interpreter/src/lib/html-emit.js`. Both callbacks share
 // the same `mapAttributes(node, vocab, target, emit)` iteration shape
-// from `enscribe-core/map-attributes.js` (the lift the
-// enscribe-core extraction arc deferred, landed in this slice).
+// from `enscribe/core/map-attributes.js` (the lift the
+// enscribe/core extraction arc deferred, landed in this slice).
 //
 // Per-kind dispatch:
 //   kind 'id'    → returns { targetKey: <jats-id-name>, mappedValue: <id> }

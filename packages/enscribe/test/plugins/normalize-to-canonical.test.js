@@ -125,7 +125,7 @@ export function run() {
   //
   // This is the normalization principle: a bare $x^2$ through remark-math
   // + normalization pass must produce a node indistinguishable from an
-  // authored <$ x^2 $> through remark-enscribe. The exact same fields at
+  // authored <$ x^2 $> through enscribe/parser. The exact same fields at
   // the exact same values — downstream cannot tell the difference.
 
   // --- normalized $ node matches authored <$ ... $> field-for-field ---
@@ -380,7 +380,7 @@ export function run() {
   // + normalization pass must produce a node with the same structure-level
   // fields as an authored <table md | ...> tag.
   {
-    // Authored node: parse <table md | ...> via remark-enscribe.
+    // Authored node: parse <table md | ...> via enscribe/parser.
     const authoredTree = unified().use(remarkParse).use(remarkEnscribe).parse(
       '<table md | | X | Y |\n| - | - |\n| a | b |\n>',
     );

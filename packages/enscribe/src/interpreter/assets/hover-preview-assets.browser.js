@@ -21,7 +21,7 @@
 // tsup to intercept, so it is structurally immune. Full rationale lives in
 // tsup.config.js's header.
 //
-// enscribe-core.md's "bundled-asset alternative" for a server-only path,
+// core.md's "bundled-asset alternative" for a server-only path,
 // realized for the browser side (Phase 14 Slice 1).
 
 /* global __ENSCRIBE_HOVER_PREVIEW_CSS__, __ENSCRIBE_HOVER_PREVIEW_JS__ */

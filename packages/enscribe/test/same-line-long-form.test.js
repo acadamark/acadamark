@@ -2,7 +2,7 @@
 //
 //   <tag attrs>content</tag>  on a single line, for every vocabulary tag.
 //
-// The micromark long-form tokenizer (packages/remark-enscribe/src/syntax.js)
+// The micromark long-form tokenizer (packages/enscribe/src/parser/syntax.js)
 // scans the opener's line for a matching `</tag>`. When found it emits the
 // same Open/Content/Close token structure as the multi-line form, so the
 // content is recursively re-parsed and the rendered output is identical to the

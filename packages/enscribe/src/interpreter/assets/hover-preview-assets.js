@@ -12,7 +12,7 @@
 // strings inlined at build time by the tsup text loader (see tsup.config.js).
 // Same getter API on both sides, so index.js imports one name and stays agnostic.
 //
-// This is enscribe-core.md's sanctioned "bundled-asset alternative" for a
+// This is core.md's sanctioned "bundled-asset alternative" for a
 // server-only path (Phase 14 Slice 1). The .css/.js live in this same directory
 // (src/assets/), so they are read as siblings here and imported as siblings in
 // the browser variant.

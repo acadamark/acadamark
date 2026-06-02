@@ -803,7 +803,7 @@ export function run() {
   // Pins Option A's allow-multi-paragraph-tag-content half. A blank line
   // inside <aside | ...> is a paragraph break, not a terminator — the aside
   // must produce two paragraph children in the rendered output. RC-6 in
-  // remark-enscribe/test/test-recursive.js covers this at the parser level;
+  // packages/enscribe/test/test-recursive.js covers this at the parser level;
   // this fixture covers the full integration pipeline end-to-end.
   {
     const src = readFileSync(join(FIXTURES_DIR, 'document-23-multi-paragraph-tag-content.emd'), 'utf8');

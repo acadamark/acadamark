@@ -40,7 +40,7 @@ ghc-prompt-*.md
 #     The Layer 1 vocabulary data module, generated from elements/*.md by
 #     packages/layer1-vocabulary/build/generate-data-module.js. Committed per
 #     the Slice 4 Phase 0's Option-A ruling (committed + pretest
-#     regenerate-and-diff staleness guard). See notes/specs/enscribe-core.md.
+#     regenerate-and-diff staleness guard). See notes/specs/core.md.
 #
 #   packages/enscribe/src/parser/generated/parser.js
 #     The Peggy-generated parser, produced from grammar/enscribe.peggy by

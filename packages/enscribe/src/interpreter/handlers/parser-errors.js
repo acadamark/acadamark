@@ -2,7 +2,7 @@
 //
 // The parser produces two error-node shapes when it cannot parse a construct
 // (see `notes/specs/shorthand-syntax.md` §"Error nodes" and
-// `packages/enscribe-core/src/error-nodes.js`):
+// `packages/enscribe/src/core/error-nodes.js`):
 //
 //   enscribeParseError — produced by the grammar for malformed escape
 //     sequences or empty/unterminated shortcut constructs. Shape:

@@ -1,7 +1,7 @@
 // AST helper utilities for the enscribe interpreter structural plugins.
 //
 // Query helpers for enscribeTag nodes — the construction builders live in
-// the inward-pointing `enscribe-core/tag` module (`makeTag`, `makeOpaqueTag`,
+// the inward-pointing `enscribe/core/tag` module (`makeTag`, `makeOpaqueTag`,
 // `makeInternalMarker`, `isEnscribeTag`). `isEnscribeTag` is re-exported
 // here so existing interpreter-side import sites continue to work.
 

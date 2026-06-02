@@ -6,7 +6,7 @@
  *   - <a class="ref" href="#..."> cross-reference links (showing the target element)
  *   - <cite class="cite" data-keys="..."> citation markers (showing bib entries)
  *
- * Requires: tippy.js (bundled by enscribe-interpreter or loaded from CDN).
+ * Requires: tippy.js (bundled by enscribe or loaded from CDN).
  * The tippy-bundle includes @popperjs/core so no separate Popper script needed.
  */
 (function () {

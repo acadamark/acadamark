@@ -16,13 +16,13 @@ design, see `notes/specs/recursive-content-spec.md`.
 ## 1. What the interpreter is
 
 The interpreter is the transformation layer between a parsed mdast tree and
-HTML output. The parser (`remark-enscribe`) produces an mdast tree in which
+HTML output. The parser (`enscribe/parser`) produces an mdast tree in which
 enscribe shorthand tags appear as `enscribeTag` nodes. The interpreter takes
 that tree and produces a standalone HTML document.
 
 The interpreter is implemented as a unified plugin, `enscribeInterpreter`,
-in `packages/enscribe-interpreter/`. It is used with `unified`, `remark-parse`,
-and `remark-enscribe`:
+in `packages/enscribe/src/interpreter/`. It is used with `unified`, `remark-parse`,
+and `enscribe/parser`:
 
 ```js
 import { unified } from 'unified';
@@ -112,7 +112,7 @@ then runs on a tree whose math and pipe-table nodes are already canonical
 not mdast transforms, and they affect tokenization during the parse pass;
 they're listed here so the wiring is visible in one place. The step-1.5
 numbering for `enscribeNormalizeMarkdown` matches the inline `1.5.` comment
-in the source ([src/index.js](../../packages/enscribe-interpreter/src/index.js))
+in the source ([src/index.js](../../packages/enscribe/src/interpreter/index.js))
 and keeps the existing step-2 through step-12 references in this document
 unchanged. All other Phase 0/1/2/3 plugins retain their original step
 numbers as cited throughout §3 below.
@@ -146,14 +146,14 @@ recorded so the trade is explicit and the design is not mistaken for an
 unconditional commitment to single-pass.
 
 The shared walkers themselves live in
-`packages/enscribe-core/src/walkers/` (`discover.js`,
+`packages/enscribe/src/core/walkers/` (`discover.js`,
 `walk-replace.js`, `walk-normalize.js`); their per-plugin use sites are
 called out in §3. The centralization originated as an
 interpreter-internal property and broadened to span all consumers when
-the `enscribe-core` extraction made the walkers available to other
+the `enscribe/core` extraction made the walkers available to other
 output generators (the forthcoming JATS export and any future target);
 the multithreading caveat above continues to apply. See
-`notes/specs/enscribe-core.md` for the architecture-decision record
+`notes/specs/core.md` for the architecture-decision record
 covering this broadening and the package boundaries it sits within.
 
 ---
@@ -162,8 +162,8 @@ covering this broadening and the package boundaries it sits within.
 
 ### 3.1 remarkRecursiveContent
 
-**Source:** `packages/remark-enscribe/src/recursive-content.js`
-(imported directly by the interpreter; not re-exported by remark-enscribe's
+**Source:** `packages/enscribe/src/parser/recursive-content.js`
+(imported directly by the interpreter; not re-exported by enscribe/parser's
 package exports).
 
 **Purpose:** After the parser runs, each `enscribeTag` node's `content`
@@ -215,7 +215,7 @@ and edge cases.
 
 ### 3.1.5 enscribeNormalizeMarkdown
 
-**Source:** `packages/enscribe-interpreter/src/plugins/normalize-markdown.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/normalize-markdown.js`
 
 **Purpose:** Rewrite nodes produced by the delegated parsers (`remark-math`
 and `remark-gfm`, registered on both the outer and inner processors) into
@@ -268,7 +268,7 @@ Milestones); `notes/specs/pipeline.md` §4.0 for the pipeline-level view.
 
 ### 3.2 enscribeConfigDiscovery
 
-**Source:** `packages/enscribe-interpreter/src/plugins/config-discovery.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/config-discovery.js`
 
 **Purpose:** Walk root-level `<config>` tags and extract their kwargs into a
 `Map<string, string>` stored at `file.data.enscribeConfig`.
@@ -302,7 +302,7 @@ Deeply-nested `<config>` blocks (e.g., a `<config>` inside a
 
 ### 3.3 enscribeArticleStructuring
 
-**Source:** `packages/enscribe-interpreter/src/plugins/article-structuring.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/article-structuring.js`
 
 **Purpose:** Wrap the flat list of root children into the Layer 1 article
 structure: `<article>` containing `<article-front>`, `<article-body>`, and
@@ -370,7 +370,7 @@ that disables it).
 
 ### 3.3.5 enscribeBookStructuring
 
-**Source:** `packages/enscribe-interpreter/src/plugins/book-structuring.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/book-structuring.js`
 
 **Purpose:** Parallel to `enscribeArticleStructuring` for book
 documents. Wraps the root children into the Layer 1 book structure
@@ -465,7 +465,7 @@ preserved.
 
 ### 3.4 enscribeSectionNesting
 
-**Source:** `packages/enscribe-interpreter/src/plugins/section-nesting.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/section-nesting.js`
 
 **Purpose:** Convert a flat sequence of `section` / `sub-section` /
 `sub-sub-section` nodes into a properly nested tree where each section contains
@@ -504,7 +504,7 @@ these nodes use `.content`.
 
 ### 3.5 buildCitationIndex
 
-**Source:** `packages/enscribe-interpreter/src/plugins/library-load.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/library-load.js`
 
 **Purpose:** Parse BibTeX or CSL-JSON citation data from `<data>/<library>`
 nodes, and store a citation-js `Cite` instance in `file.data.enscribeCitations`.
@@ -548,7 +548,7 @@ Downstream citation plugins check for its presence before proceeding.
 
 ### 3.6 enscribeNotes
 
-**Source:** `packages/enscribe-interpreter/src/plugins/notes.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/notes.js`
 
 **Purpose:** Register note elements (record-only). Walks the tree with `discover()`,
 calls `registry.assign('note', id, { numbered: true })` for each `<note>` node
@@ -590,7 +590,7 @@ nodes) and mdast `.children` arrays.
 
 ### 3.7 enscribeNumbering
 
-**Source:** `packages/enscribe-interpreter/src/plugins/numbering.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/numbering.js`
 
 **Purpose:** Register `$$` (display-math), `figure`, and `table` nodes with
 the registry; register `section`, `sub-section`, and `sub-sub-section` nodes
@@ -656,7 +656,7 @@ cross-reference lookup.
 
 ### 3.8 enscribeApplyNumbers
 
-**Source:** `packages/enscribe-interpreter/src/index.js` (anonymous plugin defined inline).
+**Source:** `packages/enscribe/src/interpreter/index.js` (anonymous plugin defined inline).
 
 **Purpose:** Assign display numbers to all registered numbered elements and write
 them back onto the nodes.
@@ -687,7 +687,7 @@ set before ref text is built.
 
 ### 3.9 enscribeRefResolution
 
-**Source:** `packages/enscribe-interpreter/src/plugins/ref-resolution.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/ref-resolution.js`
 
 **Purpose:** Replace each `<ref>` node with either a `__ref-marker` (resolved)
 or `__ref-error` (unresolved) internal node.
@@ -743,7 +743,7 @@ still deferred.
 
 ### 3.10 enscribeCiteResolution
 
-**Source:** `packages/enscribe-interpreter/src/plugins/cite-resolution.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/cite-resolution.js`
 
 **Purpose:** Replace each `<cite>` node with `__cite-marker` (resolved keys)
 and/or `__cite-error` (missing keys) internal nodes.
@@ -781,7 +781,7 @@ citation-js's output and is open work in the roadmap.
 
 ### 3.11 enscribeNotePlacement
 
-**Source:** `packages/enscribe-interpreter/src/plugins/note-placement.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/note-placement.js`
 
 **Purpose:** Splice `__note-marker` nodes in place of `<note>` nodes, build
 `__note-list-item` nodes from the now-resolved note content, and inject a
@@ -832,7 +832,7 @@ falls back to `notes` (neutral).
 
 ### 3.12 enscribeBibliography
 
-**Source:** `packages/enscribe-interpreter/src/plugins/bibliography.js`
+**Source:** `packages/enscribe/src/interpreter/plugins/bibliography.js`
 
 **Purpose:** Render the bibliography HTML and inject it into the back-matter
 region — `<article-back>` for an article, `<book-back>` for a book.
@@ -921,7 +921,7 @@ for KaTeX output, citation HTML, inline CSS/JS blocks).
 ## 5. Handler dispatch
 
 The custom `enscribeTag` handler is produced by `createEnscribeTagHandler(opts)`
-in `packages/enscribe-interpreter/src/interpret-plugin.js`. It is called once
+in `packages/enscribe/src/interpreter/interpret-plugin.js`. It is called once
 per `enscribeTag` node during `toHast`.
 
 ### 5.1 Dispatch order
@@ -1107,7 +1107,7 @@ the blockquote element.
 
 ### 7.1 mathHandler
 
-**Source:** `packages/enscribe-interpreter/src/handlers/math.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/math.js`
 
 **Input:** `enscribeTag` with `tagname: '$'` (inline) or `'$$'` (display);
 `content: string` (opaque LaTeX source); `isOpaqueContent: true`.
@@ -1129,7 +1129,7 @@ elements.
 
 ### 7.2 figureHandler
 
-**Source:** `packages/enscribe-interpreter/src/handlers/figure.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/figure.js`
 
 **Input:** `enscribeTag` with `tagname: 'figure'`; pipe content parsed into
 mdast; optional kwargs `src`, `alt`, `align`, `width`, `type`.
@@ -1151,7 +1151,7 @@ mdast; optional kwargs `src`, `alt`, `align`, `width`, `type`.
 
 ### 7.3 tableHandler
 
-**Source:** `packages/enscribe-interpreter/src/handlers/table.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/table.js`
 
 **Input:** `enscribeTag` with `tagname: 'table'`; opaque content (raw data
 string); `positional[0]` = format word.
@@ -1176,7 +1176,7 @@ with a visible error message in a `<td>`.
 
 ### 7.4 codeBlockHandler
 
-**Source:** `packages/enscribe-interpreter/src/handlers/code-block.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/code-block.js`
 
 **Input:** `enscribeTag` with `` tagname: '```' ``; opaque content; optional
 `positional[0]` = language.
@@ -1187,7 +1187,7 @@ any sigil-provided classes.
 
 ### 7.5 inlineCodeHandler
 
-**Source:** `packages/enscribe-interpreter/src/handlers/inline-code.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/inline-code.js`
 
 **Input:** `enscribeTag` with `` tagname: '`' ``; opaque content; optional
 `positional[0]` = language.
@@ -1196,7 +1196,7 @@ any sigil-provided classes.
 
 ### 7.6 Note handlers
 
-**Source:** `packages/enscribe-interpreter/src/handlers/notes.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/notes.js`
 
 Three handlers for the three internal note node types:
 
@@ -1230,7 +1230,7 @@ reposition these items.
 
 ### 7.7 Ref handlers
 
-**Source:** `packages/enscribe-interpreter/src/handlers/ref.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/ref.js`
 
 **`refMarkerHandler`** (`__ref-marker` → resolved cross-reference):
 ```html
@@ -1245,7 +1245,7 @@ Visible in the rendered output. Authors see unresolved refs immediately.
 
 ### 7.8 Cite handlers
 
-**Source:** `packages/enscribe-interpreter/src/handlers/cite.js`
+**Source:** `packages/enscribe/src/interpreter/handlers/cite.js`
 
 **`citeMarkerHandler`** (`__cite-marker` → resolved citation):
 ```html
@@ -1273,7 +1273,7 @@ markup citation-js produces (e.g., `<i>` for journal names).
 
 ## 8. The registry
 
-**Source:** `packages/enscribe-interpreter/src/lib/registry.js`
+**Source:** `packages/enscribe/src/interpreter/lib/registry.js`
 
 The registry is a per-document numbering and label-lookup service. It is
 created per-document by `createRegistry()` and attached to the unified `VFile`
@@ -1446,7 +1446,7 @@ markers).
 
 ### 11.1 Console warnings (`lib/errors.js`)
 
-All warnings use the prefix `[enscribe-interpreter] warning:`.
+All warnings use the prefix `[enscribe] warning:`.
 
 | function | when |
 |---------|------|
@@ -1496,7 +1496,7 @@ They do not appear in the HTML output.
 
 ### 11.5 Parser-stage error nodes — rendered as visible markers
 
-The parser (`remark-enscribe`) produces two error node types when source
+The parser (`enscribe/parser`) produces two error node types when source
 constructs cannot be parsed: `enscribeTagError` (for example, an
 unterminated long-form construct, or a long-form opening whose interior
 the grammar rejects) and `enscribeParseError` (for example, an unknown
@@ -1565,7 +1565,7 @@ To add a new vocabulary element with custom handler logic:
 
 1. Create the vocabulary entry with `interpreter_strategy: handler` and
    `handler_module: ./handlers/new-element.js`.
-2. Create `packages/enscribe-interpreter/src/handlers/new-element.js`
+2. Create `packages/enscribe/src/interpreter/handlers/new-element.js`
    exporting a handler function `(state, node, vocab, opts) => hastElement`.
 3. Add the entry to `HANDLER_REGISTRY` in `interpret-plugin.js`:
    ```js
@@ -1590,48 +1590,46 @@ Files reachable from `enscribeInterpreter` at runtime. Test-only files
 exist in the source tree but are not on the pipeline's call graph.
 
 ```
-packages/enscribe-interpreter/
-  src/
-    index.js                      Main entry; enscribeInterpreter plugin
-    interpret-plugin.js           enscribeTag handler; dispatch logic; registries
-    plugins/
-      normalize-markdown.js       enscribeNormalizeMarkdown (step 1.5)
-      config-discovery.js         enscribeConfigDiscovery
-      article-structuring.js      enscribeArticleStructuring
-      section-nesting.js          enscribeSectionNesting
-      library-load.js             buildCitationIndex; enscribeLibraryLoad (wrapper for external callers)
-      notes.js                    enscribeNotes (register-only)
-      note-placement.js           enscribeNotePlacement
-      numbering.js                enscribeNumbering
-      ref-resolution.js           enscribeRefResolution
-      cite-resolution.js          enscribeCiteResolution
-      bibliography.js             enscribeBibliography
-    handlers/
-      math.js                     mathHandler (KaTeX rendering)
-      figure.js                   figureHandler
-      table.js                    tableHandler (CSV/TSV/JSON/YAML/MD)
-      code-block.js               codeBlockHandler
-      inline-code.js              inlineCodeHandler
-      notes.js                    noteMarkerHandler, noteListHandler, noteListItemHandler
-      ref.js                      refMarkerHandler, refErrorHandler
-      cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler
-    schema/
-    lib/
-      registry.js                 createRegistry(); ensureRegistry()
-      ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
-      bool-kwarg.js               readBoolKwarg()
-      discover.js                 discover() — shared read-only pre-order DFS walker
-      walk-replace.js             walkReplace() — shared in-place node replacement walker
-      walk-normalize.js           walkNormalize() — pre-order DFS used by normalize-markdown
-      errors.js                   warnUnknownTag(), warnHandlerError(), ...
-    assets/
-      font-loader.js              patchKatexFontUrls(); getDocumentFontsCss()
-      hover-preview.css           CSS for Tippy-based hover previews
-      hover-preview.js            JS init for Tippy-based hover previews
+packages/enscribe/src/interpreter/
+  index.js                      Main entry; enscribeInterpreter plugin
+  interpret-plugin.js           enscribeTag handler; dispatch logic; registries
+  plugins/
+    normalize-markdown.js       enscribeNormalizeMarkdown (step 1.5)
+    config-discovery.js         enscribeConfigDiscovery
+    article-structuring.js      enscribeArticleStructuring
+    section-nesting.js          enscribeSectionNesting
+    library-load.js             buildCitationIndex; enscribeLibraryLoad (wrapper for external callers)
+    notes.js                    enscribeNotes (register-only)
+    note-placement.js           enscribeNotePlacement
+    numbering.js                enscribeNumbering
+    ref-resolution.js           enscribeRefResolution
+    cite-resolution.js          enscribeCiteResolution
+    bibliography.js             enscribeBibliography
+  handlers/
+    math.js                     mathHandler (KaTeX rendering)
+    figure.js                   figureHandler
+    table.js                    tableHandler (CSV/TSV/JSON/YAML/MD)
+    code-block.js               codeBlockHandler
+    inline-code.js              inlineCodeHandler
+    notes.js                    noteMarkerHandler, noteListHandler, noteListItemHandler
+    ref.js                      refMarkerHandler, refErrorHandler
+    cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler
+  schema/
+  lib/
+    registry.js                 createRegistry(); ensureRegistry()
+    ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
+    bool-kwarg.js               readBoolKwarg()
+    discover.js                 discover() — shared read-only pre-order DFS walker
+    walk-replace.js             walkReplace() — shared in-place node replacement walker
+    walk-normalize.js           walkNormalize() — pre-order DFS used by normalize-markdown
+    errors.js                   warnUnknownTag(), warnHandlerError(), ...
+  assets/
+    font-loader.js              patchKatexFontUrls(); getDocumentFontsCss()
+    hover-preview.css           CSS for Tippy-based hover previews
+    hover-preview.js            JS init for Tippy-based hover previews
 
-packages/remark-enscribe/
-  src/
-    recursive-content.js          remarkRecursiveContent (used by interpreter)
+packages/enscribe/src/parser/
+  recursive-content.js          remarkRecursiveContent (used by interpreter)
 
 packages/layer1-vocabulary/
   elements/                       ~70 .md files; one per vocabulary element
