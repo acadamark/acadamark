@@ -2,7 +2,7 @@
 // vocabulary that ships from this package.
 //
 // Relocated from `enscribe/interpreter/test/schema/load-vocabulary.test.js`
-// in Slice 4 of the enscribe/core extraction arc, where the runtime
+// in Slice 4 of the @enscribejs/enscribe/core extraction arc, where the runtime
 // `loadVocabulary` loader was replaced by a build-time generator
 // (`build/generate-data-module.js`) emitting this module. The structural
 // invariants the old test checked are reframed against `VOCABULARY` and

@@ -2,7 +2,7 @@
 //
 // The lift recorded as deferred in `notes/specs/core.md`
 // §"Output-stage-specific code" (the only architectural item the
-// enscribe/core extraction arc left open, per commit `6ae6844`). The
+// @enscribejs/enscribe/core extraction arc left open, per commit `6ae6844`). The
 // deferral was waiting for a second output-target consumer — JATS export
 // (Phase 5) is that second consumer.
 //

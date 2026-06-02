@@ -9,7 +9,7 @@
 // file (META_KWARGS, META_KWARGS_LIFTED, isMetaKwarg). The 2026-05-27
 // structured-element-infrastructure slice moved <meta>'s spec to its
 // canonical home — the structured-element registry at
-// `enscribe/core/structured-elements.js`. <meta> is now one of several
+// `@enscribejs/enscribe/core/structured-elements.js`. <meta> is now one of several
 // structured-data-container tags (alongside <author>); its kwargs / lifted
 // subset / misuse-partner pointer all live in that registry's spec entry.
 // The interpreter's lift gate consumes the spec from there.

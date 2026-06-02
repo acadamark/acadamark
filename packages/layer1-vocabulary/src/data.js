@@ -780,7 +780,7 @@ const _author = Object.freeze({
           "multiple": true,
         },
       ],
-      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\nenscribe/core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
+      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\n@enscribejs/enscribe/core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
     },
     "content_handler": "default",
     "jats_counterpart": {
@@ -6151,7 +6151,7 @@ const _table = Object.freeze({
       {
         "source": "<csv | name,price\nfoo,1\nbar,2\n>\n",
         "layer1_html": "<table>\n  <thead>\n    <tr><th>name</th><th>price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>foo</td><td>1</td></tr>\n    <tr><td>bar</td><td>2</td></tr>\n  </tbody>\n</table>\n",
-        "notes": "**Planned — the `<csv>` standalone-handler is not yet implemented**\n(it is registered in `enscribe/core/dsl-registry` but no handler\nexists yet; an authored `<csv | ...>` today falls through to the\nunknown-element fallback). The example is preserved here as\ndocumentation of the intended form. Today's working CSV authoring\npath is the qualifying form: `<table csv | ... >` — see the\ntable-with-data-format examples below and the DSL-handlers\nbacklog item.\n\nWhen implemented, the `<csv>` DSL engine will produce a table\nfrom CSV source. See the `<csv>` vocabulary entry for details on\nengine attributes (header control, alignment, etc.).\n",
+        "notes": "**Planned — the `<csv>` standalone-handler is not yet implemented**\n(it is registered in `@enscribejs/enscribe/core/dsl-registry` but no handler\nexists yet; an authored `<csv | ...>` today falls through to the\nunknown-element fallback). The example is preserved here as\ndocumentation of the intended form. Today's working CSV authoring\npath is the qualifying form: `<table csv | ... >` — see the\ntable-with-data-format examples below and the DSL-handlers\nbacklog item.\n\nWhen implemented, the `<csv>` DSL engine will produce a table\nfrom CSV source. See the `<csv>` vocabulary entry for details on\nengine attributes (header control, alignment, etc.).\n",
       },
       {
         "source": "<table #revenue type=results>\n  <caption | Quarterly revenue>\n  <tr><th>Quarter</th><th>Revenue</th></tr>\n  <tr><td>Q1</td><td>$100M</td></tr>\n  <tr><td>Q2</td><td>$120M</td></tr>\n</table>\n",

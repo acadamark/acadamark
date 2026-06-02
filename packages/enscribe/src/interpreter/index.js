@@ -35,7 +35,7 @@
 // Consumer usage:
 //   import { unified } from 'unified';
 //   import remarkParse from 'remark-parse';
-//   import remarkEnscribe from 'enscribe/parser';
+//   import remarkEnscribe from '@enscribejs/enscribe/parser';
 //   import { enscribeInterpreter } from 'enscribe';
 //
 //   const result = await unified()
@@ -112,7 +112,7 @@ import remarkParse from 'remark-parse';
 import remarkEnscribe from '../parser/index.js';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
-// Relative path import: enscribe/parser does not re-export this module via
+// Relative path import: @enscribejs/enscribe/parser does not re-export this module via
 // its package exports field; we access it directly within the workspace.
 import remarkRecursiveContent from '../parser/recursive-content.js';
 import { toHast } from 'mdast-util-to-hast';
@@ -146,7 +146,7 @@ export { DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
 // sibling files from disk. See src/assets/hover-preview-assets.js for the why.
 import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-assets.js';
 // DSL render registry (internal): drives live-mode asset emission for external
-// DSLs (mermaid, abc). Distinct concern from enscribe/core's vocabulary
+// DSLs (mermaid, abc). Distinct concern from @enscribejs/enscribe/core's vocabulary
 // registry imported immediately below.
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from '../core/registry.js';
@@ -779,7 +779,7 @@ export function enscribeInterpreter(options = {}) {
 
 /**
  * Build a unified processor carrying the full enscribe pipeline:
- * remark-parse → enscribe/parser → enscribeInterpreter. This is the single
+ * remark-parse → @enscribejs/enscribe/parser → enscribeInterpreter. This is the single
  * shared assembly; consumers and the test suite call it instead of
  * hand-assembling the chain (AUD-17 — a hand-mirror previously drifted from
  * this assembly by omitting enscribeBookStructuring).

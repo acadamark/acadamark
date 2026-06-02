@@ -15,7 +15,7 @@
 // point `enscribeToJats` accepts a tree (mdast root) + options and
 // returns a JATS XML string.
 //
-// ATTRIBUTE MAPPING: delegated to `enscribe/core`'s `mapAttributes`
+// ATTRIBUTE MAPPING: delegated to `@enscribejs/enscribe/core`'s `mapAttributes`
 // (the deferred lift from `6ae6844` that landed in this slice; JATS
 // export is the second consumer the deferral waited for). The JATS
 // side passes `target = 'jats'` + the `jatsEmit` callback; vocab

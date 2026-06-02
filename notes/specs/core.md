@@ -1,6 +1,6 @@
-# `enscribe/core`: the inward-pointing shared foundation
+# `@enscribejs/enscribe/core`: the inward-pointing shared foundation
 
-This is the architecture-decision record (ADR) for **`enscribe/core`** — the
+This is the architecture-decision record (ADR) for **`@enscribejs/enscribe/core`** — the
 inward-pointing foundation the rest of the `enscribe` package is built on.
 
 > **History.** `core` began life as a *separate package* (`enscribe-core`),
@@ -76,7 +76,7 @@ the legitimate stage edge. Every shared global-design fact lives in `core/`
 (the home for facts that belong to the package as a whole, not to a particular
 producer or consumer).
 
-## What `enscribe/core` contains (as built)
+## What `@enscribejs/enscribe/core` contains (as built)
 
 Each module covers a global-design concept identified by the DRY audit. All
 are filesystem-free, browser-safe, and depend on nothing else internal. Paths
@@ -99,7 +99,7 @@ The folder also has a small dedicated unit-test suite
 helper resolved a real inconsistency and a unit test pins the spec-correct
 semantics.
 
-## What `enscribe/core` deliberately excludes — and why
+## What `@enscribejs/enscribe/core` deliberately excludes — and why
 
 The arc was disciplined about what does **not** go into core. The exclusion
 list:

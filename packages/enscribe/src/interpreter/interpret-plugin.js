@@ -189,7 +189,7 @@ function convertContent(state, node, vocab) {
 
 // ─── Attribute mapping ────────────────────────────────────────────────────────
 // Phase 5 slice 5a (2026-05-29): the attribute mapping is now done via the
-// `mapAttributes` lift in `enscribe/core` (the deferred lift from `6ae6844`
+// `mapAttributes` lift in `@enscribejs/enscribe/core` (the deferred lift from `6ae6844`
 // landed; JATS export is the second consumer the deferral waited for). The
 // HTML side calls `mapAttributes(node, vocab, 'html', htmlEmit)` and
 // aggregates emit's results via `aggregateHtmlProps`. The pre-lift

@@ -1,8 +1,8 @@
-// HTML attribute-emit callback for `mapAttributes` (enscribe/core).
+// HTML attribute-emit callback for `mapAttributes` (@enscribejs/enscribe/core).
 //
 // Phase 5 slice 5a (2026-05-29): replaces the slice-3b-era
 // `buildProperties` wrapper (deleted in this slice; the lift to
-// `enscribe/core` made the wrapper redundant). Five interpreter sites
+// `@enscribejs/enscribe/core` made the wrapper redundant). Five interpreter sites
 // (schema dispatch in `interpret-plugin.js`; the figure / svg / frame /
 // theorem handlers) consume HTML attributes via:
 //

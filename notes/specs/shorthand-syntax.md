@@ -869,7 +869,7 @@ These were open questions that were settled during implementation.
 
 - **Tag name normalization.** The parser preserves case as written. Whether the interpreter normalizes is a downstream decision.
 
-- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the enscribe/parser parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
+- **Content shape: homogeneous `Node[]` with text as a node type.** Named-tag content is always an array of child nodes after the recursive-content pass, never a bare string. Plain text in content becomes `{ type: 'text', value: '...' }`. This matches mdast and hast conventions and means downstream consumers (interpreter, JATS exporter, any future plugin) treat content uniformly without type-checking. (At the @enscribejs/enscribe/parser parser layer, `content` is still a raw string; the homogeneous array shape is produced by the recursive-content plugin, which runs in the interpreter pipeline.)
 
 - **`|` in short-form content: subsequent `|` characters are literal.** The "exactly one `|` per construct" rule means only the first `|` separates attributes from content. Any further `|` characters in the content section are stored as literal content; no escaping is needed. Example: `<aside | first | second>` produces `content: " first | second"`.
 

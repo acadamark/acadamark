@@ -16,13 +16,13 @@ design, see `notes/specs/recursive-content-spec.md`.
 ## 1. What the interpreter is
 
 The interpreter is the transformation layer between a parsed mdast tree and
-HTML output. The parser (`enscribe/parser`) produces an mdast tree in which
+HTML output. The parser (`@enscribejs/enscribe/parser`) produces an mdast tree in which
 enscribe shorthand tags appear as `enscribeTag` nodes. The interpreter takes
 that tree and produces a standalone HTML document.
 
 The interpreter is implemented as a unified plugin, `enscribeInterpreter`,
 in `packages/enscribe/src/interpreter/`. It is used with `unified`, `remark-parse`,
-and `enscribe/parser`:
+and `@enscribejs/enscribe/parser`:
 
 ```js
 import { unified } from 'unified';
@@ -150,7 +150,7 @@ The shared walkers themselves live in
 `walk-replace.js`, `walk-normalize.js`); their per-plugin use sites are
 called out in §3. The centralization originated as an
 interpreter-internal property and broadened to span all consumers when
-the `enscribe/core` extraction made the walkers available to other
+the `@enscribejs/enscribe/core` extraction made the walkers available to other
 output generators (the forthcoming JATS export and any future target);
 the multithreading caveat above continues to apply. See
 `notes/specs/core.md` for the architecture-decision record
@@ -163,7 +163,7 @@ covering this broadening and the package boundaries it sits within.
 ### 3.1 remarkRecursiveContent
 
 **Source:** `packages/enscribe/src/parser/recursive-content.js`
-(imported directly by the interpreter; not re-exported by enscribe/parser's
+(imported directly by the interpreter; not re-exported by @enscribejs/enscribe/parser's
 package exports).
 
 **Purpose:** After the parser runs, each `enscribeTag` node's `content`
@@ -1496,7 +1496,7 @@ They do not appear in the HTML output.
 
 ### 11.5 Parser-stage error nodes — rendered as visible markers
 
-The parser (`enscribe/parser`) produces two error node types when source
+The parser (`@enscribejs/enscribe/parser`) produces two error node types when source
 constructs cannot be parsed: `enscribeTagError` (for example, an
 unterminated long-form construct, or a long-form opening whose interior
 the grammar rejects) and `enscribeParseError` (for example, an unknown
