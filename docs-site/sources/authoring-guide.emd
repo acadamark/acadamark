@@ -81,10 +81,23 @@ The settings that are live today control citations, numbering, and scoping:
 `number-equations`, `number-figures`, `number-tables`, `number-theorems`,
 `number-definitions`, `number-examples` (set any to `false` to suppress that
 counter); `counter-reset-scope` and `note-scope` (how counters and footnotes
-reset in books); `theme` (`modern` / `compact` — see
+group — detailed just below); `theme` (`modern` / `compact` — see
 <a href="#sec:render" | Chapter 14>); and any `ref-prefix-*` key (to customize
 cross-reference prefixes). A few further keys — `display-style` and others — are
 reserved: accepted but not yet consumed.
+
+**Counter and note scoping.** Two of those keys decide how counters and
+footnotes are grouped — the settings a book leans on most:
+
+- `counter-reset-scope` — `none` | `chapter` | `section`. `none` runs the
+  figure / equation / table / theorem counters continuously across the whole
+  document; `chapter` resets them at each `<book-part>` (so a figure renders as
+  "Figure 3.1"); `section` resets at each chapter *and* each top-level
+  `<section>`. Articles default to `none`, books to `chapter`.
+- `note-scope` — `document` | `chapter` | `section`. Where footnotes collect:
+  `document` is one list at the very end, `chapter` is one list per chapter,
+  `section` is one list per top-level section. Articles default to `section`,
+  books to `chapter`.
 
 > **Gotcha — `<config>` is not the rendering API.** Options like
 > `embedResources` and `dslMode` are passed to the renderer when you process a
@@ -847,8 +860,13 @@ executeAssets(document.querySelector('#out'));
 - `dslMode` — `skip` / `live-link` / `live-inline` / `static` for diagrams and
   music (see <a href="#sec:dsl" | Chapter 11>), with `mermaidMode` / `abcMode`
   per-language overrides.
-- `hoverPreviewMode` — how the hover-preview assets for footnotes, references, and
-  citations are delivered (`link` loads Tippy/Popper from a CDN).
+- `hoverPreviewMode` — one switch for the hover previews on footnotes,
+  cross-references, and citations alike (not three separate toggles):
+  `inline` (default) bundles the Tippy/Popper assets into the output for a
+  self-contained file; `link` loads them from a CDN (smaller output — the browser
+  default); `skip` omits the preview entirely, leaving the markers as ordinary
+  links with the footnote text still in the list at the foot of the
+  document/chapter.
 - `katexCss` / `documentFontsCss` — finer control over those specific resources,
   taking precedence over `embedResources`.
 - `toc` — `true` adds a **table-of-contents sidebar** built from the section (or,
