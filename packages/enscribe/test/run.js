@@ -38,6 +38,7 @@ import { run as runTheme } from './lib/theme.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
 import { run as runConfigOptions } from './config-options.test.js';
 import { run as runMapAttributes } from './map-attributes.test.js';
+import { run as runDslRegistry } from './dsl-registry.test.js';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -54,6 +55,7 @@ const suites = [
   ['katex-css',                    runKatexCss],
   ['interpret-plugin',             runInterpretPlugin],
   ['map-attributes',               runMapAttributes],
+  ['dsl-registry',                 runDslRegistry],
   ['lib/registry',                 runRegistry],
   ['lib/walk-normalize',           runWalkNormalize],
   ['plugins/notes',                runNotes],

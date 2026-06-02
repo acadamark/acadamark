@@ -86,7 +86,7 @@ are relative to the `enscribe` package root.
 |---|---|---|
 | `src/core/tag.js` | The canonical `enscribeTag` node shape; builders `makeTag`, `makeOpaqueTag`, `makeInternalMarker`; the `isEnscribeTag` predicate | G1 |
 | `src/core/error-nodes.js` | The canonical `enscribeParseError` / `enscribeTagError` shapes; builders `makeParseError`, `makeTagError` | G7 |
-| `src/core/dsl-registry.js` | The canonical `tagname → contentHandler` map and `getContentHandler` API | G3, G4 |
+| `src/core/dsl-registry.js` | The language/type axis: the `LANGUAGES` map (identifier → handler + opacity + `(purpose, host)` bindings), the derived flat `DSL_REGISTRY` (`tagname → contentHandler`), and the `getContentHandler` / `isOpaqueLanguage` / `getLanguageBindings` API | G3, G4 |
 | `src/core/tagname-sigil-map.js` | The bidirectional tagname↔sigil cipher: the single source-of-truth pair list and the two derived lookup maps (`SIGIL_TO_TAGNAME` for the lift direction, `TAGNAME_TO_SIGIL` for the future lowering pass); `isSigilTagname` predicate. Both directions are derived from one literal so they cannot drift. Renamed and broadened from the original `sigil-mapping.js` (which was one-directional) when the normalize-to-canonical gate consolidated lift work; the gate consumes the lift direction. | G14 |
 | `src/core/colon-id.js` | The cross-reference colon-id convention (`isColonId`, `parseColonId`) | G11 |
 | `src/core/registry.js` | The cross-target numbering registry (`createRegistry`, `ensureRegistry`, `findByLabel`); registry-entry shape `{ type, id, number, numbered, data }` | G10 |
