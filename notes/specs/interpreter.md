@@ -291,6 +291,7 @@ where the hast handler renders them as null/hidden).
 | `number-equations` | `enscribeNumbering` | Suppress equation numbering document-wide |
 | `number-figures` | `enscribeNumbering` | Suppress figure numbering document-wide |
 | `number-tables` | `enscribeNumbering` | Suppress table numbering document-wide |
+| `bibliography-heading` | `enscribeBibliography` | Override the bibliography heading text (default: `References`) |
 | `ref-prefix-{prefix}` | `enscribeRefResolution` | Custom display word for cross-reference labels (e.g., `ref-prefix-eqn=Eq.`) |
 
 Deeply-nested `<config>` blocks (e.g., a `<config>` inside a
@@ -866,9 +867,10 @@ gets `id="ref-{KEY}"` injected alongside its existing `data-csl-entry-id`
 attribute. This gives the hover-preview JavaScript something to look up via
 `document.getElementById('ref-KEY')`.
 
-**`__bibliography` kwargs:** `{ headingHtml: '<h2>References</h2>', bibBodyHtml }`.
-The heading defaults to `<h2>References</h2>`; the design admits a config
-kwarg (e.g. `bibliography-heading`) overriding the heading text.
+**`__bibliography` kwargs:** `{ headingHtml, bibBodyHtml }`. The heading is
+`<h2>{text}</h2>`, where `{text}` is the `bibliography-heading` config value when
+set, else `References`. The author-supplied text is HTML-escaped (the heading is
+emitted as a raw hast node).
 
 ---
 

@@ -22,8 +22,19 @@
 // getCiteContent() something to look up with document.getElementById('ref-KEY').
 
 import { makeTag, makeInternalMarker } from '../../core/tag.js';
-import { ENSCRIBE_CITATIONS } from '../../core/file-data-keys.js';
+import { ENSCRIBE_CITATIONS, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
+
+// Escape author-supplied text for embedding in the raw-HTML heading (#23). The
+// bibliography heading is emitted as a raw hast node (cite.js bibliographyHandler),
+// so the override text must be HTML-escaped to avoid injecting markup.
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 
 // ─── Deep-search helpers (same pattern as notes.js) ──────────────────────────
 
@@ -185,7 +196,13 @@ export function enscribeBibliography() {
     // `<element-citation>` with per-field structured data.
     const cslById = new Map((cite?.data ?? []).map(e => [e.id, e]));
     const cslEntries = order.map(key => cslById.get(key)).filter(Boolean);
-    const bibNode = makeBibliographyNode('<h2>References</h2>', bibBodyHtml, cslEntries);
+    // #23: the bibliography heading text is a config override (the
+    // `bibliography-heading` key); the default stays "References". headingHtml is
+    // emitted raw, so the author-supplied text is HTML-escaped before the wrapper.
+    const headingText =
+      file?.data?.[ENSCRIBE_CONFIG]?.get('bibliography-heading') ?? 'References';
+    const headingHtml = `<h2>${escapeHtml(headingText)}</h2>`;
+    const bibNode = makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries);
 
     if (authorPlaced) {
       // Replace the author-placed <bibliography> node in-place.

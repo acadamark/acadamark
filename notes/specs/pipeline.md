@@ -535,7 +535,9 @@ article, `<book-back>` for a book. If the author placed an explicit
 `<bibliography>` tag, it is replaced in-place. Otherwise, the bibliography is
 appended (pushed) to the back-matter region. A book gets a single
 document-wide bibliography in `<book-back>`; per-chapter bibliographies are a
-deferred post-alpha option (see GitHub Issues).
+deferred post-alpha option (see GitHub Issues). The heading text is `References`
+by default, overridable with the `bibliography-heading` config key (HTML-escaped,
+since the heading is emitted as a raw node).
 
 **Dependency:** `enscribeCiteResolution` (needs `citations.order` to be
 populated with the first-cited key list).
@@ -727,6 +729,7 @@ These are processed by `enscribeConfigDiscovery` and stored in
 | `number-equations` | `'false'` | `enscribeNumbering` | Suppress equation numbering |
 | `number-figures` | `'false'` | `enscribeNumbering` | Suppress figure numbering |
 | `number-tables` | `'false'` | `enscribeNumbering` | Suppress table numbering |
+| `bibliography-heading` | string | `enscribeBibliography` | Override the bibliography heading text (default: `References`) |
 | `ref-prefix-eqn` | string | `enscribeRefResolution` | Override "equation" word in ref labels |
 | `ref-prefix-fig` | string | `enscribeRefResolution` | Override "figure" word in ref labels |
 | *(other `ref-prefix-*` keys)* | string | `enscribeRefResolution` | Override any prefix word |

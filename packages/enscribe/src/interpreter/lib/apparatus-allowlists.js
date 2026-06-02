@@ -65,6 +65,7 @@ export const CONFIG_KWARGS = new Map([
   //              slice 7001aaa behavior)
   ['counter-reset-scope',     'live'],   // numbering.js + ref-resolution.js
   ['note-scope',              'live'],   // note-placement.js
+  ['bibliography-heading',    'live'],   // bibliography.js (overrides the "References" heading)
 
   // Reserved — the apparatus-tag reconciliation ruling enumerated these as
   // the intended <config> surface. The implementation per key is future

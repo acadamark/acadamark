@@ -81,6 +81,34 @@ export function run() {
     console.log('PASS: bibliography: auto-placement in article-back');
   }
 
+  // --- #23: bibliography-heading config override (default + override + escaping) ---
+  {
+    // Default (no config) → "References".
+    const file = makeFile(new Cite(TEST_BIBTEX), ['Smith2020']);
+    const tree = makeArticleTree({ backChildren: [] });
+    enscribeBibliography()(tree, file);
+    assert.equal(getArticleBack(tree).content[0].kwargs.headingHtml,
+      '<h2>References</h2>', 'default heading is References');
+
+    // <config bibliography-heading="Works Cited"> → that text.
+    const file2 = makeFile(new Cite(TEST_BIBTEX), ['Smith2020']);
+    file2.data.enscribeConfig = new Map([['bibliography-heading', 'Works Cited']]);
+    const tree2 = makeArticleTree({ backChildren: [] });
+    enscribeBibliography()(tree2, file2);
+    assert.equal(getArticleBack(tree2).content[0].kwargs.headingHtml,
+      '<h2>Works Cited</h2>', 'config overrides the heading text');
+
+    // HTML in the override is escaped (the heading is emitted raw).
+    const file3 = makeFile(new Cite(TEST_BIBTEX), ['Smith2020']);
+    file3.data.enscribeConfig = new Map([['bibliography-heading', 'Refs <b>&</b>']]);
+    const tree3 = makeArticleTree({ backChildren: [] });
+    enscribeBibliography()(tree3, file3);
+    assert.equal(getArticleBack(tree3).content[0].kwargs.headingHtml,
+      '<h2>Refs &lt;b&gt;&amp;&lt;/b&gt;</h2>', 'override text is HTML-escaped');
+
+    console.log('PASS: bibliography: bibliography-heading config override (default / override / escaped)');
+  }
+
   // --- article-back created if absent ---
   {
     const cite = new Cite(TEST_BIBTEX);
