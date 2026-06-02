@@ -30,7 +30,7 @@ recording it in the spec.
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `multi-file-authoring.md`, `multi-column-display.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
-| `ROADMAP.md` | Roadmap | The high-level plan: the phases the work moves through and the release each milestone aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
+| `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
 | GitHub Issues | Open work | ALL open work — bugs, enhancements, features, open questions — grouped by milestone and label. The home for open-work detail. (Not a repo file.) |
 | `CONTRIBUTING.md` | Governance | This system. |
@@ -82,8 +82,8 @@ Each subsystem's blueprint:
 - **Extension blueprints (designed, not built)** —
   `notes/specs/multi-file-authoring.md` and
   `notes/specs/multi-column-display.md`. Their design is specified at the
-  rebuild standard; the unbuilt fact is tracked in GitHub Issues and the phase
-  sits in `ROADMAP.md`.
+  rebuild standard; the unbuilt fact is tracked in GitHub Issues, and the
+  milestone in `ROADMAP.md`.
 
 ## Where each kind of fact lives
 
@@ -101,8 +101,8 @@ project, the recommended sequence:
 
 1. `README.md` — the project's purpose and high-level approach.
 2. `STATUS.md` — what is working today, what is in flight, what is pending.
-3. `ROADMAP.md` — the phases the project moves through and the release each
-   milestone aims at. Gives a one-screen view of where things are heading.
+3. `ROADMAP.md` — the releases the project moves through and what each aims
+   at. Gives a one-screen view of where things are heading.
 4. `DESIGN.md` — design rationale: the layer model, JATS relationship, DSL
    processor delegation, scope decisions, design directions.
 5. `notes/specs/idioms.md` and `notes/specs/principles.md` — the cross-cutting principles
@@ -133,8 +133,8 @@ slice is not done until code and documentation agree.
 > 2. **Issues ⇄ code.** Every item this slice completed: close (or check off)
 >    its GitHub Issue. Every item this slice discovered: file a new GitHub Issue
 >    with the appropriate milestone and labels — a finding reaches Issues in the
->    slice that surfaces it, not a follow-on slice. If the slice changes the
->    phase plan or a release's scope, update `ROADMAP.md` in the same edit.
+>    slice that surfaces it, not a follow-on slice. If the slice changes a
+>    release's scope, update `ROADMAP.md` in the same edit.
 >
 > 3. **STATUS.** Flip the relevant `STATUS.md` checkbox for any capability that
 >    shipped, and confirm the checklist still matches reality. STATUS is a
@@ -152,7 +152,7 @@ slice is not done until code and documentation agree.
   "audit findings" document.
 - An audit finding that is open work is filed as a GitHub Issue at the moment
   it is surfaced — when the Phase 0 report exists — not deferred to the fix
-  slice. If the finding changes the phase plan, the roadmap is also updated in
+  slice. If the finding changes a release's scope, the roadmap is also updated in
   the same edit. Provisional filings are allowed; GitHub Issues, not a report
   or transcript, is the durable holding place for a surfaced finding. A Phase 0
   is not complete until its issue-worthy findings are filed. A fix slice
@@ -170,8 +170,8 @@ slice is not done until code and documentation agree.
   slice, never "later."
 - A limitation is one of two things and is filed accordingly — it never gets
   its own document. A limitation that is a bug or a missing feature is open
-  work: it goes in GitHub Issues (and the roadmap if it changes the phase
-  plan). A limitation that is a deliberate, permanent design boundary is part of the
+  work: it goes in GitHub Issues (and the roadmap if it changes a release's
+  scope). A limitation that is a deliberate, permanent design boundary is part of the
   design: it goes in `DESIGN.md`'s "Design tensions and accepted tradeoffs"
   section, with its rationale. Every limitation must be classified as one
   or the other.
@@ -181,6 +181,12 @@ slice is not done until code and documentation agree.
   decision not to pursue. An idea worth keeping does not become its own
   document or a "deferred" file; it becomes a discussion issue.
 - The roadmap stays small. If a milestone's item list is growing past a
-  handful of items, the right move is usually to split the phase, not to
+  handful of items, the right move is usually to split the milestone, not to
   lengthen the roadmap. Item detail does not move into the roadmap to
   compensate; it stays in GitHub Issues.
+- Provenance for a shipped change is the commit log, not a phase number or
+  slice label. A document records *what* the system does and *why*; *when* and
+  *in which slice* live in git. Documents do not cite phase numbers as identity
+  anchors — where a historical reference is genuinely useful, cite the commit
+  SHA (or say "an earlier change"), never a phase definition that no longer
+  exists.

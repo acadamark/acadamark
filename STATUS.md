@@ -8,7 +8,7 @@ This file records **state, not history**. It is not a changelog — the
 commit log is the changelog (`git log`). It is not an explanation — for
 *why* the project exists read `README.md` and `DESIGN.md`; for the
 architecture, `notes/specs/`. Open work is tracked in
-[GitHub Issues](https://github.com/enscribejs/enscribe/issues); the phase
+[GitHub Issues](https://github.com/enscribejs/enscribe/issues); the release
 sequence lives in `ROADMAP.md`. No counts (test totals, fixture totals)
 appear here — a number is the fastest thing to go stale; run
 `npm run verify` in `packages/enscribe` for the live test
@@ -108,10 +108,10 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 ## Current position
 
-**v0.1.0 is released** — enscribe renders rich documents, converts to and from
+**v0.2.0 is released** — enscribe renders rich documents, converts to and from
 JATS, ships a client-side browser library and the `enscribe` CLI, and is
-published to npm as three packages. The live milestone is **v0.2.0**: docs-site
-polish for public visitors, conda-forge packaging, and the accumulated docs and
-infrastructure fixes. Open work is tracked in
+published to npm as three scoped packages. The live milestone is **v0.2.5**: the
+spec-completeness re-sync plus accumulated parser, interop, and tables fixes.
+Open work is tracked in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues) by milestone and
-label; the phase plan and release targets live in `ROADMAP.md`.
+label; the release plan and targets live in `ROADMAP.md`.

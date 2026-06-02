@@ -5,7 +5,7 @@ The enscribe documentation + articles website. Each canonical `.emd` source in
 producing a multi-page static site in `dist/` — ready to serve locally or deploy
 to GitHub Pages.
 
-This is the **Phase 14 Slice 3a framework**: the build machinery plus three
+This is the docs-site **build framework**: the build machinery plus three
 placeholder pages that exercise it. Real content (the homepage, a written
 Quickstart, and articles translated from the README and DESIGN) lands in later
 slices.

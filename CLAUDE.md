@@ -19,7 +19,7 @@ The relevant docs are:
 - `README.md` — project premise.
 - `DESIGN.md` — design rationale.
 - `STATUS.md` — current state, what's done, what's next.
-- `ROADMAP.md` — the phase plan and release targets. Open work lives in GitHub Issues (by milestone and label).
+- `ROADMAP.md` — the release plan and targets. Open work lives in GitHub Issues (by milestone and label).
 - `notes/specs/layer1-naming.md` — Layer 1 vocabulary rules.
 - `notes/specs/shorthand-syntax.md` — parser specification.
 - `notes/specs/idioms.md` — delegation principle (enscribe hands off to existing parsers wherever possible).
@@ -41,7 +41,7 @@ Read the files relevant to the current task at the start of a session.
 
 **Spec-first.** When implementation reveals a question that the existing specs don't answer, update the spec before coding. Do not paper over ambiguity by guessing what was meant.
 
-**Slice cadence.** Work is organized into vertical slices, each with a clear scope. The phase plan lives in `ROADMAP.md`; open work lives in GitHub Issues (by milestone and label). Do not start a new slice while a previous one is incomplete. Every non-trivial slice runs in two artifacts: a **Phase 0** read-only investigation (produces a findings document ending in a "recommended scope" verdict, no code changes), then an **implementation prompt** written from the findings. Phase 0 repeatedly catches things the plan could not have known — do not skip it.
+**Slice cadence.** Work is organized into vertical slices, each with a clear scope. The release plan lives in `ROADMAP.md`; open work lives in GitHub Issues (by milestone and label). Do not start a new slice while a previous one is incomplete. Every non-trivial slice runs in two artifacts: a **Phase 0** read-only investigation (produces a findings document ending in a "recommended scope" verdict, no code changes), then an **implementation prompt** written from the findings. Phase 0 repeatedly catches things the plan could not have known — do not skip it.
 
 **Correctness models.** Know which one applies before a slice starts:
 - *Output-neutral* (most refactor work): proof is an empty fixture diff. `node test/render-fixtures.js` then `git diff test/fixtures/` must be empty. Snapshots must not change.
