@@ -1,21 +1,15 @@
-// CSV handler — renders `<csv>` standalone tags.
+// CSV handler — renders standalone `<csv>` tags.
 //
-// Reads opaque CSV content from node.content (string), parses with the
-// shared `parseCsv` from table.js, and renders the headers/rows + an
-// optional caption/title through the unified `renderFrameable` helper.
+// Thin caller of the shared `renderDelimitedTable` (table.js): `<csv>` and
+// `<tsv>` differ only in the parser used, the frameable `kind`, and the
+// parse-error label, so the body lives in table.js (which also owns the
+// parsers and the table-body machinery).
 //
-// Phase 3 slice 3c (2026-05-28): refactored from the slice-3b
-// `renderParsedTable` call (which built the table + caption inline) to
-// a `buildTableBodyHast` + `renderFrameable` pair, matching the
-// uniform frameable-handler shape. Caption / title arrive as <caption>
-// / <title> child tags (lifted from `caption=` / `title=` kwargs at the
-// normalize-to-canonical gate; or author-written directly).
-//
-// Phase 2 slice 2a (2026-05-27) initial implementation.
+// Phase 2 slice 2a (2026-05-27) initial; Phase 3 slice 3c unified to the
+// renderFrameable shape; #46 collapsed the csv/tsv duplication into
+// renderDelimitedTable.
 
-import { readBoolKwarg } from '../lib/bool-kwarg.js';
-import { parseCsv, buildTableBodyHast } from './table.js';
-import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { parseCsv, renderDelimitedTable } from './table.js';
 
 /**
  * Handler for the `<csv>` standalone tag.
@@ -25,48 +19,5 @@ import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
  * @returns {import('hast').Element}
  */
 export function csvHandler(state, node) {
-  const rawData = typeof node.content === 'string' ? node.content : '';
-  const hasHeaders = readBoolKwarg(node, 'headers', null, null, true);
-  const id = node.id ?? null;
-
-  const tableProps = {};
-  if (id) tableProps.id = id;
-  if (node.classes?.length) tableProps.className = node.classes;
-
-  // Extract <caption> / <title> children. For <csv> the content is
-  // typically the opaque CSV string, but the gate lifts caption= / title=
-  // kwargs to child tags first, so the lifted children sit in
-  // node.content alongside the data. extractFrameableChildren handles
-  // both the child-tag and lifted-from-kwarg paths uniformly.
-  const { captionHast, titleHast } = extractFrameableChildren(state, node);
-
-  let parsed;
-  try {
-    parsed = parseCsv(rawData, { hasHeaders });
-  } catch (err) {
-    return {
-      type: 'element',
-      tagName: 'table',
-      properties: tableProps,
-      children: [
-        {
-          type: 'element',
-          tagName: 'caption',
-          properties: { className: ['table-parse-error'] },
-          children: [{ type: 'text', value: `??csv: ${err.message}??` }],
-        },
-      ],
-    };
-  }
-
-  return renderFrameable({
-    kind: 'csv',
-    bodyHast: buildTableBodyHast(parsed),
-    wrapperEl: 'table',
-    wrapperProps: tableProps,
-    captionHast,
-    titleHast,
-    computedNumber: node.computedNumber ?? null,
-    scope: node._scope ?? null,
-  });
+  return renderDelimitedTable(state, node, { kind: 'csv', parse: parseCsv, label: 'csv' });
 }

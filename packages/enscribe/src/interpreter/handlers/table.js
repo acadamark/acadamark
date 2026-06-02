@@ -527,3 +527,70 @@ export function renderParsedTable({ parsed, tableProps, captionText = null, comp
     scope,
   });
 }
+
+/**
+ * Shared renderer for the standalone `<csv>` / `<tsv>` handlers. The two
+ * differ only in the parser used, the frameable `kind`, and the parse-error
+ * label, so the whole body lives here; handlers/csv.js and handlers/tsv.js
+ * are thin callers. (This module already owns the parsers and the
+ * table-body machinery, so it is the natural home.)
+ *
+ * The parse-error placeholder is the caption-based form `<table><caption
+ * class="table-parse-error">??label: msg??</caption></table>` — distinct
+ * from the tbody-based `makeErrorTable` used by the multi-format `<table>`
+ * handler, so it is built inline here rather than shared with that.
+ *
+ * @param {object} state - mdast-util-to-hast state
+ * @param {object} node  - enscribeTag with tagname "csv" or "tsv"
+ * @param {object} opts
+ * @param {string} opts.kind  - frameable kind ('csv' | 'tsv')
+ * @param {(text: string, o: {hasHeaders: boolean|null}) => {headers: string[]|null, rows: any[][]}} opts.parse
+ * @param {string} opts.label - prefix shown in the parse-error placeholder ('csv' | 'tsv')
+ * @returns {import('hast').Element}
+ */
+export function renderDelimitedTable(state, node, { kind, parse, label }) {
+  const rawData = typeof node.content === 'string' ? node.content : '';
+  const hasHeaders = readBoolKwarg(node, 'headers', null, null, true);
+  const id = node.id ?? null;
+
+  const tableProps = {};
+  if (id) tableProps.id = id;
+  if (node.classes?.length) tableProps.className = node.classes;
+
+  // Extract <caption> / <title> children. For <csv>/<tsv> the content is
+  // typically the opaque delimited string, but the gate lifts caption= /
+  // title= kwargs to child tags first, so the lifted children sit in
+  // node.content alongside the data; extractFrameableChildren handles both
+  // the child-tag and lifted-from-kwarg paths uniformly.
+  const { captionHast, titleHast } = extractFrameableChildren(state, node);
+
+  let parsed;
+  try {
+    parsed = parse(rawData, { hasHeaders });
+  } catch (err) {
+    return {
+      type: 'element',
+      tagName: 'table',
+      properties: tableProps,
+      children: [
+        {
+          type: 'element',
+          tagName: 'caption',
+          properties: { className: ['table-parse-error'] },
+          children: [{ type: 'text', value: `??${label}: ${err.message}??` }],
+        },
+      ],
+    };
+  }
+
+  return renderFrameable({
+    kind,
+    bodyHast: buildTableBodyHast(parsed),
+    wrapperEl: 'table',
+    wrapperProps: tableProps,
+    captionHast,
+    titleHast,
+    computedNumber: node.computedNumber ?? null,
+    scope: node._scope ?? null,
+  });
+}
