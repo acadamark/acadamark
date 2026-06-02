@@ -16,11 +16,11 @@
 //
 // See notes/tables-investigation.md for Phase 0 findings.
 //
-// This module also exports `parseCsv`, `parseTsv`. It still exports the
-// `renderParsedTable` helper, which served the now-retired standalone `<csv>` /
-// `<tsv>` handlers — those tags became `<table>` gate shorthands in #22 slice 3
-// (`<csv>` → `<table csv>`), and their handlers were deleted, so renderParsedTable
-// is now unused and slated for removal (tracked as a cleanup issue).
+// This module also exports `parseCsv` / `parseTsv` (the format parsers) and
+// `buildTableBodyHast`. The standalone `<csv>` / `<tsv>` handlers were retired in
+// #22 slice 3 (`<csv>` → `<table csv>` gate shorthands), and the dead helpers
+// they left behind (`renderParsedTable` / `renderDelimitedTable`) were removed in
+// the #82 dead-code sweep.
 
 // Node built-ins for the server/build path. In the browser bundle these are dead
 // code (browser defaults never call them); tsup aliases both the node: and bare
@@ -330,11 +330,9 @@ function makeTbody(rows) {
 }
 
 // Phase 3 slice 3c: caption construction moved into renderFrameable
-// (lib/frameable.js). The handlers below build the table BODY (thead +
-// tbody) via renderParsedTable and let renderFrameable produce the
-// wrapped <table> with title/caption placement. The slice-3b
-// makeCaption helper is gone — its job is renderFrameable's
-// `buildCaptionEl`, called per kind.
+// (lib/frameable.js). tableHandler builds the table BODY (thead + tbody)
+// via buildTableBodyHast and lets renderFrameable produce the wrapped
+// <table> with title/caption placement.
 
 /**
  * Build an error placeholder table when parsing fails.
@@ -489,9 +487,7 @@ export function tableHandler(state, node, _vocab, options) {
  * data — the [thead?, tbody?] sequence that goes inside <table>
  * alongside <caption>.
  *
- * Shared helper used by `tableHandler` and by the standalone `<csv>` /
- * `<tsv>` handlers (via the `renderParsedTable` wrapper below for
- * source-compat with slice 3b's signature).
+ * Used by `tableHandler` to build the table body inside the `<table>` wrapper.
  *
  * @param {{ headers: string[]|null, rows: any[][] }} parsed
  * @returns {import('hast').Element[]}
@@ -501,108 +497,4 @@ export function buildTableBodyHast(parsed) {
   if (parsed.headers) children.push(makeThead(parsed.headers));
   if (parsed.rows.length > 0) children.push(makeTbody(parsed.rows));
   return children;
-}
-
-/**
- * Backward-compat wrapper for the slice-3b `renderParsedTable` signature.
- *
- * Phase 3 slice 3c: csv.js and tsv.js no longer call this — they call
- * `buildTableBodyHast` + `renderFrameable` directly to get caption-as-
- * content support. This wrapper remains for any out-of-tree consumer
- * still on the slice-3b API; it constructs the table by delegating to
- * `renderFrameable` with a synthetic kwarg-derived caption (the old
- * captionText input becomes a single-text-node hast).
- *
- * @param {object} args
- * @param {{ headers: string[]|null, rows: any[][] }} args.parsed
- * @param {object} args.tableProps
- * @param {string|null} [args.captionText]
- * @param {number|null} [args.computedNumber]
- * @param {{chapter:number, section:number}|null} [args.scope] - node._scope
- *        for chapter-prefixed labels in books (slice B / RQ-BOOK-M4);
- *        defaults to null → bare number (article behavior).
- * @returns {import('hast').Element}
- */
-export function renderParsedTable({ parsed, tableProps, captionText = null, computedNumber = null, scope = null }) {
-  const bodyHast = buildTableBodyHast(parsed);
-  const captionHast = captionText
-    ? [{ type: 'text', value: String(captionText) }]
-    : null;
-  return renderFrameable({
-    kind: 'table',
-    bodyHast,
-    wrapperEl: 'table',
-    wrapperProps: tableProps,
-    captionHast,
-    titleHast: null,
-    computedNumber,
-    scope,
-  });
-}
-
-/**
- * Shared renderer for the standalone `<csv>` / `<tsv>` handlers. The two
- * differ only in the parser used, the frameable `kind`, and the parse-error
- * label, so the whole body lives here; handlers/csv.js and handlers/tsv.js
- * are thin callers. (This module already owns the parsers and the
- * table-body machinery, so it is the natural home.)
- *
- * The parse-error placeholder is the caption-based form `<table><caption
- * class="table-parse-error">??label: msg??</caption></table>` — distinct
- * from the tbody-based `makeErrorTable` used by the multi-format `<table>`
- * handler, so it is built inline here rather than shared with that.
- *
- * @param {object} state - mdast-util-to-hast state
- * @param {object} node  - enscribeTag with tagname "csv" or "tsv"
- * @param {object} opts
- * @param {string} opts.kind  - frameable kind ('csv' | 'tsv')
- * @param {(text: string, o: {hasHeaders: boolean|null}) => {headers: string[]|null, rows: any[][]}} opts.parse
- * @param {string} opts.label - prefix shown in the parse-error placeholder ('csv' | 'tsv')
- * @returns {import('hast').Element}
- */
-export function renderDelimitedTable(state, node, { kind, parse, label }) {
-  const rawData = typeof node.content === 'string' ? node.content : '';
-  const hasHeaders = readBoolKwarg(node, 'headers', null, null, true);
-  const id = node.id ?? null;
-
-  const tableProps = {};
-  if (id) tableProps.id = id;
-  if (node.classes?.length) tableProps.className = node.classes;
-
-  // Extract <caption> / <title> children. For <csv>/<tsv> the content is
-  // typically the opaque delimited string, but the gate lifts caption= /
-  // title= kwargs to child tags first, so the lifted children sit in
-  // node.content alongside the data; extractFrameableChildren handles both
-  // the child-tag and lifted-from-kwarg paths uniformly.
-  const { captionHast, titleHast } = extractFrameableChildren(state, node);
-
-  let parsed;
-  try {
-    parsed = parse(rawData, { hasHeaders });
-  } catch (err) {
-    return {
-      type: 'element',
-      tagName: 'table',
-      properties: tableProps,
-      children: [
-        {
-          type: 'element',
-          tagName: 'caption',
-          properties: { className: ['table-parse-error'] },
-          children: [{ type: 'text', value: `??${label}: ${err.message}??` }],
-        },
-      ],
-    };
-  }
-
-  return renderFrameable({
-    kind,
-    bodyHast: buildTableBodyHast(parsed),
-    wrapperEl: 'table',
-    wrapperProps: tableProps,
-    captionHast,
-    titleHast,
-    computedNumber: node.computedNumber ?? null,
-    scope: node._scope ?? null,
-  });
 }

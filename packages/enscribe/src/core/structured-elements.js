@@ -31,8 +31,6 @@
 //
 // See DESIGN.md §"Structured-data-container tags" for the design.
 
-import { DSL_REGISTRY } from './dsl-registry.js';
-
 /**
  * Per-tag spec for a structured-element tag.
  *
