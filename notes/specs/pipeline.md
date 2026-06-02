@@ -58,7 +58,7 @@ source text
     │  remarkRecursiveContent
     │
     ▼  Stage 3: mdast transforms
-    │  normalize markdown → config discovery →
+    │  normalize to canonical → config discovery →
     │  book structure → article structure →
     │  section nesting → citation index → notes → numbering →
     │  apply numbers → ref resolution → cite resolution →
@@ -109,7 +109,7 @@ processor passed to `remarkRecursiveContent`). This lets the parser tokenize
 bare `$x$` / `$$x$$` math and bare GFM pipe tables anywhere in the source —
 both at the top level and inside named-tag content. The resulting
 `inlineMath` / `math` / `table` nodes are then rewritten to canonical
-`enscribeTag` nodes by `enscribeNormalizeMarkdown` (Stage 3's first
+`enscribeTag` nodes by `enscribeNormalizeToCanonical` (Stage 3's first
 plugin), so the rest of the pipeline only sees one node type. See AUD-20 in
 `notes/archive/audit-findings-2026-05.md` for the Option-A normalization decision.
 
@@ -217,18 +217,43 @@ detail follows in §4.0–§4.10.
 
 ### Phase 0 — Normalization
 
-#### 4.0 enscribeNormalizeMarkdown
+#### 4.0 enscribeNormalizeToCanonical
 
-**When:** First in Stage 3, immediately after `remarkRecursiveContent`. By
-this point both the outer `remarkParse` run and the inner `remarkParse` run
-(inside `remarkRecursiveContent`) have completed, so all delegated-parser
-nodes (`inlineMath`, `math`, `table`) are present in the tree on both
-surfaces.
+(Exported as `enscribeNormalizeToCanonical`; `enscribeNormalizeMarkdown` is a
+backward-compat alias of the same plugin.)
 
-**What it does:** Walks the tree and rewrites delegated-parser nodes to
-canonical `enscribeTag` nodes so that downstream structural and semantic
-plugins see exactly one node type. Settled principle: *delegate the lexer,
+**When:** First in Stage 3, immediately after `remarkRecursiveContent`. By this
+point both the outer `remarkParse` run and the inner one (inside
+`remarkRecursiveContent`) have completed, so every delegated-parser node and
+every pipe-content subtree is present on both surfaces.
+
+**What it does:** The single normalization gate. It coerces *every* authored form
+to its canonical Layer 1 shape, so downstream structural and semantic plugins see
+exactly one representation per construct. Settled principle: *delegate the lexer,
 own the node identity*.
+
+It is **not** a fixed-size pass: it is an **ordered array of
+`{ predicate, normalize }` rule groups**, walked per node with **first-match**
+semantics (`.find()` — at most one group fires per node, so group order is
+load-bearing). The groups — not a number to memorize — fall into these families:
+
+- **Delegated-parser nodes → canonical tags** (the mapping table below):
+  `remark-math` / `remark-gfm` nodes become canonical math / table `enscribeTag`
+  nodes.
+- **Sigil tagnames → vocabulary names** via the tagname↔sigil cipher
+  (`#`→`section`, `$`→`inline-math`, `` ` ``→`inline-code`, …).
+- **Shorthand expansion** via the shared expansion map
+  (`lib/shorthand-expansions.js`, `createShorthandRegistry`): the book-part family
+  (`<chapter>`→`<book-part book-part-type="chapter">`, gated on book context) and
+  the DSL shorthand family (`<mermaid>`→`<diagram mermaid>`, `<csv>`→`<table csv>`),
+  with later-wins+warn clobber and reserved-name rejection (conditional shorthands
+  — the book-context `<glossary>` — exempt).
+- **Kwarg → child-tag lifts** for structured-element tags (`<meta>` / `<author>`),
+  `<config>`, and frameable tags (the shared `caption` / `title` lift).
+- **Markdown inline lifts** (`emphasis`→`<i>`, `strong`→`<b>`, …; see
+  `notes/specs/idioms.md`).
+
+The delegated-parser group's mapping:
 
 | input node type | from | replacement |
 |----------------|------|-------------|
@@ -249,9 +274,10 @@ have completed).
 **Must precede:** every structural plugin (Phase 1 onwards) — they all
 assume one node type.
 
-**Cross-reference:** AUD-20 in `notes/archive/audit-findings-2026-05.md` for the Option-A
-decision; `packages/enscribe/src/interpreter/plugins/normalize-markdown.js`
-for the implementation.
+**Cross-reference:** AUD-20 in `notes/archive/audit-findings-2026-05.md` for the
+Option-A decision; `packages/enscribe/src/interpreter/plugins/normalize-to-canonical.js`
+for the implementation; `notes/specs/interpreter.md` §3.1.5 for the
+interpreter-level view.
 
 ---
 
@@ -385,6 +411,18 @@ in `file.data.enscribeCitations`. Called as an explicit index-build step in
 `index.js` via an anonymous plugin wrapper (`enscribeCitationIndex`), not as
 `this.use(enscribeLibraryLoad)`. The exported `enscribeLibraryLoad` plugin
 wrapper is kept for external callers.
+
+**Format word.** A `<library>`'s payload language is named by the leading format
+word — the positional (`<library bibtex | …>`) or the legacy `format=` kwarg. A
+named, known format becomes a citation-js `forceType`; omitted → citation-js
+auto-detects (the default). This is the storage-host form of the format-word
+convention (`notes/specs/format-words.md`).
+
+**Storage host (#24 reframe).** `<library>` (and its `<data>` container) is a
+**storage host on the language axis** — purpose `storage`, the format word naming
+the payload language, the body the verbatim payload — *not* a `STRUCTURED_ELEMENTS`
+member. The language/host model owns the payload; the container shape of `<data>`
+stays the open #24 question. See `DESIGN.md` §"The two axes: host and language".
 
 **Output:**
 ```js
@@ -652,8 +690,8 @@ to have run before it.
 | Plugin | Must run after | Produces |
 |--------|---------------|---------|
 | `remarkRecursiveContent` | `remarkEnscribe` (string content set) | `node.content` as `Node[]` |
-| `enscribeNormalizeMarkdown` | `remarkRecursiveContent` (both outer and inner parses complete) | delegated-parser nodes (`inlineMath`, `math`, `table`) rewritten to canonical `enscribeTag` nodes |
-| `enscribeConfigDiscovery` | `enscribeNormalizeMarkdown` | `file.data.enscribeConfig` |
+| `enscribeNormalizeToCanonical` | `remarkRecursiveContent` (both outer and inner parses complete) | every authored form coerced to canonical Layer 1 nodes — delegated-parser nodes, sigils, shorthands (book-part + DSL), and kwarg lifts |
+| `enscribeConfigDiscovery` | `enscribeNormalizeToCanonical` | `file.data.enscribeConfig` |
 | `enscribeArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `enscribeSectionNesting` | `enscribeArticleStructuring` | nested section tree |
 | `buildCitationIndex` | `enscribeConfigDiscovery` | `file.data.enscribeCitations` |
@@ -673,7 +711,7 @@ to have run before it.
 - `remarkRecursiveContent` must precede all structural plugins. Structural
   plugins read node content (e.g., `<meta>` internals, note content) as parsed
   mdast arrays; they cannot work with raw strings.
-- `enscribeNormalizeMarkdown` must precede every Phase 1+ plugin. After
+- `enscribeNormalizeToCanonical` must precede every Phase 1+ plugin. After
   normalization, the structural and semantic plugins only ever see
   `enscribeTag` nodes — never raw `inlineMath`, `math`, or GFM `table` nodes.
   Running any structural plugin first would mean some code paths see two node
