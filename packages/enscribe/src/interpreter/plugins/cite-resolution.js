@@ -24,26 +24,9 @@
 import { makeInternalMarker } from '../../core/tag.js';
 import { walkReplace } from '../../core/walkers/walk-replace.js';
 import { ENSCRIBE_CITATIONS } from '../../core/file-data-keys.js';
+import { extractPlainText } from '../lib/ast-helpers.js';
 
 // ─── Key extraction ───────────────────────────────────────────────────────────
-
-/**
- * Collect plain text from an mdast node array.
- * Used when <cite> content has been recursively parsed.
- */
-function extractTextFromContent(nodes) {
-  let text = '';
-  for (const n of (nodes ?? [])) {
-    if (n.type === 'text') {
-      text += n.value ?? '';
-    } else if (n.children) {
-      text += extractTextFromContent(n.children);
-    } else if (n.content && Array.isArray(n.content)) {
-      text += extractTextFromContent(n.content);
-    }
-  }
-  return text;
-}
 
 /**
  * Extract citation keys from a <cite> node.
@@ -82,7 +65,7 @@ function extractCiteKeys(node) {
   }
   // Path 4: recursively-parsed content array (defensive; cite not in DSL_REGISTRY).
   if (Array.isArray(node.content) && node.content.length > 0) {
-    const text = extractTextFromContent(node.content);
+    const text = extractPlainText(node.content, { trim: false });
     return text.split(',').map(k => k.trim()).filter(Boolean);
   }
   return [];

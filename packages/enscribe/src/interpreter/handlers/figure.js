@@ -77,7 +77,7 @@ export function figureHandler(state, node, vocab) {
       // Prefer child <caption>'s plain text if available; else legacy
       // pipe content's plain text.
       if (childCaptionHast) {
-        altText = extractHastPlainText(childCaptionHast);
+        altText = extractPlainText(childCaptionHast, { trim: false });
       } else {
         altText = extractPlainText(bodyContent ?? []);
       }
@@ -108,20 +108,4 @@ export function figureHandler(state, node, vocab) {
     scope: node._scope ?? null,
     border,
   });
-}
-
-/**
- * Extract plain text from a hast children list (for image alt fallback
- * when the caption came from a child <caption> tag, post-hast-conversion).
- */
-function extractHastPlainText(children) {
-  let text = '';
-  for (const node of children ?? []) {
-    if (node.type === 'text') {
-      text += node.value ?? '';
-    } else if (node.children) {
-      text += extractHastPlainText(node.children);
-    }
-  }
-  return text;
 }

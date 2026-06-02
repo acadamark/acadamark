@@ -28,10 +28,20 @@ export function findTag(nodes, name) {
 }
 
 /**
- * Recursively collect all plain-text values in a node tree (traverses both
- * .content and .children). Used to compute alt-text fallbacks.
+ * Recursively collect all plain-text values in a node tree. Traverses mdast
+ * `.children` and enscribeTag `.content`; also works on hast (which only has
+ * `.children`). The shared plain-text collector — used for image alt-text
+ * fallbacks and citation-key text extraction.
+ *
+ * @param {Array} nodes
+ * @param {object} [opts]
+ * @param {boolean} [opts.trim=true] - trim the result (and each recursive
+ *        sub-result). Pass false for callers that need the raw concatenation
+ *        (hast alt-text, cite-key text), preserving their pre-unification
+ *        no-trim behavior.
+ * @returns {string}
  */
-export function extractPlainText(nodes) {
+export function extractPlainText(nodes, { trim = true } = {}) {
   if (!nodes || !Array.isArray(nodes)) return '';
   let text = '';
   for (const node of nodes) {
@@ -39,12 +49,12 @@ export function extractPlainText(nodes) {
     if (node.type === 'text') {
       text += node.value ?? '';
     } else if (node.children && Array.isArray(node.children)) {
-      text += extractPlainText(node.children);
+      text += extractPlainText(node.children, { trim });
     } else if (node.content && Array.isArray(node.content)) {
-      text += extractPlainText(node.content);
+      text += extractPlainText(node.content, { trim });
     }
   }
-  return text.trim();
+  return trim ? text.trim() : text;
 }
 
 /**
