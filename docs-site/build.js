@@ -40,10 +40,10 @@ const BROWSER_BUNDLE = join(ENSCRIBE_PKG, 'dist', 'enscribe.browser.global.js');
 // renders the file with line numbers — better for reading. Repo + branch are
 // build-time constants; the rename, if it happens, updates the repo segment.
 const GITHUB_BLOB_BASE =
-  'https://github.com/enscribejs/enscribe/blob/master/docs-site/sources';
+  'https://github.com/enscribejs/enscribe/blob/main/docs-site/sources';
 // Repo-root blob base, for pages whose source lives outside docs-site/sources
 // (the Demo Paper's "source" is a JATS XML fixture in the jats-import package).
-const GITHUB_REPO_BASE = 'https://github.com/enscribejs/enscribe/blob/master';
+const GITHUB_REPO_BASE = 'https://github.com/enscribejs/enscribe/blob/main';
 
 // The imported demo paper's JATS XML (ships as a test fixture; open sample).
 const DEMO_PAPER_XML = join(
