@@ -40,6 +40,7 @@ import { run as runConfigOptions } from './config-options.test.js';
 import { run as runMapAttributes } from './map-attributes.test.js';
 import { run as runDslRegistry } from './dsl-registry.test.js';
 import { run as runHostAcceptSets } from './lib/host-accept-sets.test.js';
+import { run as runShorthandExpansions } from './lib/shorthand-expansions.test.js';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -58,6 +59,7 @@ const suites = [
   ['map-attributes',               runMapAttributes],
   ['dsl-registry',                 runDslRegistry],
   ['lib/host-accept-sets',         runHostAcceptSets],
+  ['lib/shorthand-expansions',     runShorthandExpansions],
   ['lib/registry',                 runRegistry],
   ['lib/walk-normalize',           runWalkNormalize],
   ['plugins/notes',                runNotes],

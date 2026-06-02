@@ -63,6 +63,7 @@ import {
 import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
+import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
 
 // Phase 4 slice 4a (2026-05-29): book-part shorthand tagnames that
 // expand at the gate to `<book-part book-part-type="...">`. The set
@@ -91,6 +92,28 @@ function detectBookContext(treeChildren) {
     }
   }
   return false;
+}
+
+// ─── Shared shorthand-expansion registry (#22 slice 2) ──────────────────────
+//
+// The gate's tagname rewrites lift into one shared map (the comment on the
+// figure→fig group foresaw this when "a second alias family lands"). Slice 2
+// registers the book-part family only — each book-part shorthand rewrites to
+// `<book-part book-part-type="<name>">`, gated on book context so `<glossary>`
+// keeps its standalone vocab meaning in articles (the condition is the
+// deliberate disambiguation, which is also why the reservation policy exempts
+// conditional shorthands). The DSL shorthand families (`<csv>`/`<mermaid>`/…)
+// are NOT registered here this slice — that changes DSL node identity and is
+// slice-3 work, gated by the JATS guard. No unconditional shorthand is
+// registered yet, so the reserved-name set is empty for now; slice 3 supplies
+// the host + core-vocabulary names when it registers the DSL families.
+const shorthandRegistry = createShorthandRegistry();
+for (const shorthand of BOOK_PART_SHORTHANDS) {
+  shorthandRegistry.register(shorthand, {
+    tagname: 'book-part',
+    kwargs: { 'book-part-type': shorthand },
+    condition: (ctx) => ctx.isBook === true,
+  });
 }
 
 // ─── Drift guards at module load ──────────────────────────────────────────────
@@ -793,40 +816,25 @@ const NORMALIZATIONS = [
     },
   },
 
-  // ─── Group A1.7: book-part shorthand expansion ────────────────────────
+  // ─── Group A1.7: shorthand expansion (shared map) ─────────────────────
   //
-  // Phase 4 slice 4a (2026-05-29): `<chapter>`, `<part>`, `<appendix>`,
-  // `<preface>`, `<foreword>`, `<introduction>`, `<conclusion>`,
-  // `<glossary>`, `<dedication>` are authoring shorthands for
-  // `<book-part book-part-type="...">`. The build-time vocab generator
-  // skips these because their `shorthand_expansions.expands_to` value
-  // contains a space (`'book-part book-part-type="chapter"'`) — it only
-  // creates aliases for bare-key expansions. So the expansion has to
-  // happen at the gate.
+  // Tag shorthands rewrite to their canonical (host) form through the shared
+  // `shorthandRegistry` (interpreter/lib/shorthand-expansions.js). Slice 2
+  // lifts the book-part family into that map (output-neutral); the DSL
+  // families join in slice 3.
   //
-  // CONFLICT DISAMBIGUATION: `<glossary>` has two semantic meanings —
-  // a standalone vocab-glossary container (glossary.md, contains
-  // <glossary-entry> children) AND a book-part shorthand (book-part.md
-  // L68, an appendix-shaped book division). To resolve, only expand
-  // book-part shorthands when the document is a book context (signaled
-  // by `<meta type=book>` at root level). Article documents keep their
-  // standalone `<glossary>` and any other shorthand-named tag with its
-  // non-book-part meaning.
-  //
-  // The closure over `_isBookContext` is computed once per document at
-  // the normalize-to-canonical entry point — see enscribeNormalizeToCanonical
-  // below where the predicate consults it.
+  // First-match dispatch is preserved by keeping the condition IN the
+  // predicate via `matches()`: a book-part shorthand matches only in book
+  // context, exactly as the former inline predicate did. This is what keeps
+  // `<glossary>` resolving to its standalone vocab meaning in articles — the
+  // predicate does not match there, so `.find()` moves on to glossary's other
+  // normalizations (book-part.md L68 vs glossary.md). `_bookContextFlag` is
+  // set per-document at the entry point below.
   {
     predicate: (node) =>
       isEnscribeTag(node) &&
-      BOOK_PART_SHORTHANDS.has(node.tagname) &&
-      _bookContextFlag.isBook === true,
-    normalize: (node) => {
-      const shorthand = node.tagname;
-      node.tagname = 'book-part';
-      node.kwargs = { ...node.kwargs, 'book-part-type': shorthand };
-      return node;
-    },
+      shorthandRegistry.matches(node, { isBook: _bookContextFlag.isBook }),
+    normalize: (node) => shorthandRegistry.expand(node),
   },
 
   // ─── Group A2: structured-element + <config> kwarg lift ───────────────
