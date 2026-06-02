@@ -28,13 +28,6 @@ export function findTag(nodes, name) {
 }
 
 /**
- * Return all nodes in an array that match the given tagname.
- */
-export function findAllTags(nodes, name) {
-  return nodes.filter(n => isEnscribeTag(n, name));
-}
-
-/**
  * Recursively collect all plain-text values in a node tree (traverses both
  * .content and .children). Used to compute alt-text fallbacks.
  */

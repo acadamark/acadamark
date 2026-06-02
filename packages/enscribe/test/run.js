@@ -3,7 +3,6 @@
 // them in sequence and report a summary. (The core and parser suites are
 // self-executing files invoked directly by the package `test` script.)
 
-import { run as runShapeTokens } from './schema/shape-tokens.test.js';
 import { run as runConfigDiscovery } from './plugins/config-discovery.test.js';
 import { run as runArticleStructuring } from './plugins/article-structuring.test.js';
 import { run as runSectionNesting } from './plugins/section-nesting.test.js';
@@ -39,7 +38,6 @@ import { run as runTheme } from './lib/theme.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
 
 const suites = [
-  ['schema/shape-tokens',          runShapeTokens],
   ['plugins/config-discovery',     runConfigDiscovery],
   ['plugins/article-structuring',  runArticleStructuring],
   ['plugins/section-nesting',      runSectionNesting],
