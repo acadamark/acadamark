@@ -30,7 +30,6 @@
     ".": "./src/cli.js",
     "./jats-import": "./src/jats-import/index.js",
     "./jats-export": "./src/jats-export/index.js",
-    "./serialize": "./src/serialize-canonical.js",
     "./package.json": "./package.json"
   },
   "files": [

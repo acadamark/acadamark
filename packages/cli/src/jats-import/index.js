@@ -5,7 +5,7 @@
 // `enscribeTag` + native mdast nodes — the same shape the parser produces
 // post-normalize — ready for:
 //   - buildEnscribePipeline().runSync(tree) + .stringify(tree) → HTML
-//   - serializeCanonical(tree) (from `@enscribejs/cli/serialize`) → .emd source
+//   - serializeCanonical(tree) (from `../serialize-canonical.js`) → .emd source
 //
 // Deliberately lossy and incremental.
 //   Slice 1 — structural skeleton (article / front / body / sec / p) and inline

@@ -27,17 +27,14 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "src/interpreter/index.js",
   "browser": {
     "./src/interpreter/assets/hover-preview-assets.js": "./src/interpreter/assets/hover-preview-assets.browser.js"
   },
   "exports": {
     ".": "./src/interpreter/index.js",
-    "./core": "./src/core/index.js",
     "./core/*": "./src/core/*.js",
     "./parser": "./src/parser/index.js",
     "./parser/*": "./src/parser/*.js",
-    "./vocabulary": "./src/core/registry.js",
     "./browser": "./dist/enscribe.browser.js",
     "./default.css": "./src/interpreter/assets/default.css",
     "./package.json": "./package.json"

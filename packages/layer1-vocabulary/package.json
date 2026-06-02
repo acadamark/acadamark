@@ -24,7 +24,6 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "src/index.js",
   "exports": "./src/index.js",
   "files": [
     "src",

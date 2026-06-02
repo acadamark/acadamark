@@ -13,9 +13,9 @@ three packages — `@enscribejs/core`, `@enscribejs/remark`, and
   This is the main entry (`"."`).
 - `enscribe/parser` — the shorthand parser (the default-exported remark plugin);
   `enscribe/parser/recursive-content` is the recursive-content transform.
-- `enscribe/core` — the inward-pointing shared foundation (tag factories,
-  registries, walkers, attribute mapping). Per-module subpaths are available
-  under `enscribe/core/*` (e.g. `enscribe/core/tag`, `enscribe/core/map-attributes`).
+- `enscribe/core/*` — the inward-pointing shared foundation (tag factories,
+  registries, walkers, attribute mapping), available as per-module subpaths
+  (e.g. `enscribe/core/tag`, `enscribe/core/map-attributes`).
 - `enscribe/browser` — the browser façade bundle (`render` / `renderInto` /
   `executeAssets`), built by `npm run build:lib`.
 - `enscribe/default.css` — the Layer 1 display stylesheet (for browser viewing;

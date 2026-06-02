@@ -16,8 +16,6 @@
 import { enscribeSyntax } from './syntax.js'
 import { enscribeFromMarkdown } from './from-markdown.js'
 
-export { enscribeSyntax, enscribeFromMarkdown }
-
 /**
  * @this {import('unified').Processor}
  * @returns {undefined}
