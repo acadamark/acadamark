@@ -53,7 +53,7 @@ export async function run() {
   {
     const warnings = [];
     const realWarn = console.warn;
-    console.warn = (m) => { if (/enscribe-interpreter/.test(String(m))) warnings.push(String(m)); };
+    console.warn = (m) => { if (/\[enscribe\]/.test(String(m))) warnings.push(String(m)); };
     let out;
     try { out = render(DOC, { theme: 'neon' }); } finally { console.warn = realWarn; }
     assert.ok(!/Modern theme|Compact theme/.test(out), 'unknown theme injects no theme CSS');

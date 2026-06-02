@@ -693,7 +693,7 @@ export function enscribeInterpreter(options = {}) {
         // the whole render. No silent drop.
         // eslint-disable-next-line no-console
         console.warn(
-          `[enscribe-interpreter] unknown theme '${themeName}'; rendering with the default ` +
+          `[enscribe] unknown theme '${themeName}'; rendering with the default ` +
             `(available: ${[...KNOWN_THEMES].join(', ')}).`,
         );
       }

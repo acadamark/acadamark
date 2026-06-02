@@ -4,7 +4,7 @@
 // prefix. Errors are always visible in the rendered document via marker
 // elements; warnings tell the author where to look.
 
-const PREFIX = '[enscribe-interpreter] warning:';
+const PREFIX = '[enscribe] warning:';
 
 export function warnUnknownTag(tagname) {
   // eslint-disable-next-line no-console
