@@ -547,7 +547,10 @@ text also collects in the list at the foot of the page.> you can try right now.
 
 On surfaces that support it the marker shows a **hover preview**; in print, or
 where hover is unavailable, the note falls back to the numbered list at the foot of
-the document. Same source, different surfaces.
+the document. Same source, different surfaces. Either way the marker is always a
+clickable link — clicking it jumps down to the note, and a small ↩ in the note
+jumps back — so footnotes work with no hover and no JavaScript. (Cross-references
+are likewise always clickable links; see Chapter 9.)
 
 > **Gotcha — attach the note with no space.** Write the `<note | …>` flush against
 > the word it annotates (`standard.<note | …>`, not `standard. <note | …>`); a
