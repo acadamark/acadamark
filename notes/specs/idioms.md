@@ -38,20 +38,23 @@ These are different rules at different stages and must not be conflated. The par
 
 The following markdown idioms are accepted in casual mode. Each is shorthand for the corresponding tagged form: remark's tokenizer finds it, and the normalization pass rewrites it to the canonical enscribe node, so the two columns below converge on *one* node, not two equivalent ones. The list is representative, not exhaustive.
 
-| Bare idiom            | Canonical tagged form            | Canonical enscribe node                             |
-|-----------------------|----------------------------------|------------------------------------------------------|
-| `# Heading`           | `<# Heading #>`                  | `$`-family section sigil node (`#`)                  |
-| `## Heading`          | `<## Heading ##>`                | sub-section sigil node (`##`)                        |
-| `*emphasis*`          | `<em \| emphasis>`               | `enscribeTag` tagname `em`                          |
-| `**strong**`          | `<strong \| strong>`             | `enscribeTag` tagname `strong`                      |
-| `` `code` ``          | `` <`code`> ``                   | inline-code sigil node (`` ` ``)                     |
-| ` ```js\ncode\n``` `  | ` <```js \| code```> `           | code-block sigil node (`` ``` ``)                    |
-| `$x$`                 | `<$ x $>`                        | inline-math sigil node (`$`)                         |
-| `$$x$$`               | `<$$ x $$>`                      | display-math sigil node (`$$`)                       |
-| `\| h \| h \|` (GFM)  | `<table md \| ...>`              | `enscribeTag` tagname `table`                       |
-| `- item` (list)       | `<list +unordered \| - item>`    | `enscribeTag` tagname `list`                        |
+| Bare idiom            | Canonical tagged form    | Canonical enscribe node (after normalization)        |
+|-----------------------|--------------------------|------------------------------------------------------|
+| `# Heading`           | `<# Heading #>`          | `enscribeTag` tagname `section`                      |
+| `## Heading`          | `<## Heading ##>`        | `enscribeTag` tagname `sub-section`                  |
+| `### Heading`         | `<### Heading ###>`      | `enscribeTag` tagname `sub-sub-section`              |
+| `*emphasis*`          | `<i \| emphasis>`        | `enscribeTag` tagname `i`                            |
+| `**strong**`          | `<b \| strong>`          | `enscribeTag` tagname `b`                            |
+| `~~struck~~`          | `<s \| struck>`          | `enscribeTag` tagname `s`                            |
+| `` `code` ``          | `` <`code`> ``           | `enscribeTag` tagname `inline-code` (opaque content) |
+| `$x$`                 | `<$ x $>`                | `enscribeTag` tagname `inline-math` (opaque content) |
+| `$$x$$`               | `<$$ x $$>`              | `enscribeTag` tagname `display-math` (opaque content)|
+| `\| h \| h \|` (GFM)  | `<table md \| ...>`      | `enscribeTag` tagname `table`, positional `md` (opaque)|
 
-The third column is what the document contains after normalization. There is no separate "markdown node" path that happens to render the same — the markdown spelling has been desugared into the canonical node before any structural plugin runs.
+The third column is what the document contains after normalization: a real `enscribeTag`, not a markdown node that happens to render the same. Two points the code makes precise:
+
+- **Markdown emphasis maps to the *visual* tags.** `*x*` normalizes to `<i>` and `**x**` to `<b>` — not the semantic `<em>` / `<strong>`. The semantic tags are reached only by writing them explicitly. Headings of depth 1–3 lift to the section ladder; depths 4–6 pass through as literal `<h4>`–`<h6>` (the named exception). Explicit markdown links `[text](url)` are **not** an idiom — they render as their literal source (a bare URL / email autolink still lifts to `<a>`).
+- **Not every markdown construct is normalized.** Fenced code blocks (` ``` `) and bulleted / ordered lists currently render through the native remark→hast path; they are candidate idioms not yet on the normalization registry, so they have no canonical-node row above. Per the registry framing below, whether a construct is normalized *today* is a `STATUS.md` / backlog question, not this document's.
 
 A few points worth noting:
 
