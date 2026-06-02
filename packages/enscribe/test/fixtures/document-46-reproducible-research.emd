@@ -53,7 +53,7 @@ referred to by an immutable identifier.<note | Distributed systems such as Git g
 every clone the full history, so the record does not depend on a central server
 staying alive.>
 
-<fig #fig:vcs-graph src=commit-graph.png | A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.>
+<fig #fig:vcs-graph src="https://picsum.photos/seed/commit-graph/800/400" | A commit graph with two branches merging. Each node is an immutable snapshot; the labels are human-readable names for otherwise opaque commit hashes.>
 
 The discipline that matters is not the tool but the granularity: small, frequent,
 well-described commits, as <cite @Wilson2014> argue. <ref @fig:vcs-graph> shows the
@@ -78,7 +78,7 @@ before it is committed.<note | Many notebook platforms can enforce this in
 continuous integration: a notebook that fails restart-and-run-all is rejected the
 same way a failing test is.>
 
-<fig #fig:nb-pipeline src=notebook-ci.png | A notebook passing a restart-and-run-all check in continuous integration before being archived.>
+<fig #fig:nb-pipeline src="https://picsum.photos/seed/notebook-ci/800/400" | A notebook passing a restart-and-run-all check in continuous integration before being archived.>
 
 Cross-reference <ref @fig:nb-pipeline> resolves with a chapter prefix — it is the
 first figure of the second chapter — while a reference back to <ref @fig:vcs-graph>
