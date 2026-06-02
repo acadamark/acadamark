@@ -47,6 +47,12 @@
 //   console.log(String(result)); // HTML string
 //
 // OPTIONS
+//   The full option set, with type / default / effect, is documented on the
+//   enscribeInterpreter @param JSDoc below and in notes/specs/interpreter.md
+//   §12; the authoring-facing version is the Authoring Guide's "Rendering and
+//   output" chapter. The notes below detail the asset/DSL options; toc, theme,
+//   chapterNav, and assetsDir are documented on the @param.
+//
 //   embedResources: boolean (default false)
 //     The global embed-vs-external switch for the two resources enscribe would
 //     otherwise inline: document fonts and KaTeX CSS. false (the default) links
@@ -517,6 +523,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
  * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
  * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
+ * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources

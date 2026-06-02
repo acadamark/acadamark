@@ -1534,6 +1534,11 @@ and no gap remains open.
 | `katexCss` | `'inline' \| 'link' \| 'skip'` | `embedResources ? 'inline' : 'link'` | How KaTeX CSS is delivered |
 | `hoverPreviewMode` | `'inline' \| 'link' \| 'skip'` | `'inline'` | How hover preview JS/CSS is delivered |
 | `assetsDir` | `string \| null` | `null` | Base directory for resolving `src=` paths in `<library src=...>` and `<table src=...>` |
+| `dslMode` | `'skip' \| 'live-inline' \| 'live-link' \| 'static'` | `'skip'` | External-DSL (mermaid/abc) render mode for all DSLs (see `render-quality.md` §9) |
+| `mermaidMode` / `abcMode` | same value space (`mermaidMode` excludes `'static'`) | falls back to `dslMode` | Per-DSL override of `dslMode` |
+| `toc` | `boolean \| 'auto'` | `false` | Table-of-contents sidebar: `true` always, `'auto'` past three top-level sections, `false` none. Layout CSS in `default.css` (`.enscribe-layout--toc`) |
+| `theme` | `'default' \| 'modern' \| 'compact'` | `'default'` | Inject a theme's `:root` token overrides inline; also settable via `<config theme=…>` (the option wins) |
+| `chapterNav` | `boolean` | on for a book with a ToC | Single-chapter book navigation (progressive-enhancement script); ignored for articles and books without a ToC |
 
 `'inline'` modes produce self-contained HTML; `'link'` modes are leaner but
 require network access to the relevant CDN; `'skip'` modes expect the consumer
