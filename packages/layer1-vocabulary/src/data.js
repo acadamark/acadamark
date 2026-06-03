@@ -5972,7 +5972,7 @@ const _svg = Object.freeze({
     "jats_counterpart": {
       "element": "graphic",
       "attributes": {},
-      "notes": "JATS uses <graphic> for embedded images (raster or vector). Inline\nSVG in enscribe exports as <graphic xlink:href=\"#svg-N\"> with the\nSVG content placed in the article's resource bundle, or — when the\nexport target supports it — as <graphic> with the SVG inline.\nWrapping in <fig>...</fig> is the captioned form for JATS.\n",
+      "notes": "JATS uses <graphic> for embedded images (raster or vector). Inline\nSVG has no external resource path, so enscribe embeds it as a base64\ndata URI on the graphic's xlink:href —\n<graphic xlink:href=\"data:image/svg+xml;base64,…\"/> — carrying the\nfull SVG losslessly in a single self-contained XML file (consistent\nwith the HTML path's embedResources). This is DTD-valid (xlink:href\nis CDATA) and needs no resource-packaging mechanism. A captioned or\nnumbered <svg> wraps in <fig>…</fig>, with the number as <label> and\nthe caption as <caption>. (#86.)\n",
     },
     "shorthand_examples": [
       {

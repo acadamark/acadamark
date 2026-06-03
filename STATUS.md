@@ -82,6 +82,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] JATS import — reduction policy (reader content preserved, publishing metadata dropped)
 - [x] JATS import — a real published article demonstration (NLM JATS sample, on the docs site)
 - [x] JATS export — `<a>` → `<ext-link>` (external links) and `<xref>` (internal `#id` cross-references)
+- [x] JATS export — inline `<svg>` → a self-contained `<graphic>` (the SVG embedded losslessly as a base64 data URI; DTD-valid)
 
 ## Documentation — the docs site (`docs-site/`)
 

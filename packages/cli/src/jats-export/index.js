@@ -753,6 +753,22 @@ function extractFrameableParts(node) {
 }
 
 /**
+ * Reconstruct a complete standalone SVG document string from an `<svg>`
+ * node for embedding as a data URI. The node carries the inner SVG source
+ * (`node.content`) and the passthrough attributes (`viewBox` / `width` /
+ * `height`) as kwargs; this wraps them in an `<svg>` element with the SVG
+ * namespace so the decoded data URI is a renderable document.
+ */
+function reconstructInlineSvg(node) {
+  const attrs = ['xmlns="http://www.w3.org/2000/svg"'];
+  for (const key of ['viewBox', 'width', 'height']) {
+    const value = node.kwargs?.[key];
+    if (value != null) attrs.push(`${key}="${escapeXmlAttr(String(value))}"`);
+  }
+  return `<svg ${attrs.join(' ')}>${node.content}</svg>`;
+}
+
+/**
  * Emit a JATS `<fig>` for figure-family frameables (fig / svg / frame).
  * Per JATS Archiving 1.3: `<fig>` contains optional `<label>` (for
  * numbering), optional `<caption>` (with `<title>` and `<p>`s),
@@ -799,10 +815,17 @@ function emitFigureJats(node, indent) {
   if (src) {
     out += `${pad}  <graphic xlink:href="${escapeXmlAttr(src)}"/>\n`;
   } else if (node.tagname === 'svg' && typeof node.content === 'string') {
-    // SVG source — JATS allows inline graphics via <graphic> with
-    // alternative content; for slice 5b we emit a placeholder
-    // <graphic> with the source preserved as an attribute comment.
-    out += `${pad}  <graphic specific-use="inline-svg"/>\n`;
+    // Inline SVG has no external resource path. Consistent with enscribe's
+    // self-contained-output philosophy (the HTML path's embedResources, and the
+    // external-DSL emitter's lossless single-file source preservation via
+    // <preformat>), the SVG is embedded as a base64 data URI on the <graphic>'s
+    // xlink:href. This is DTD-valid (xlink:href is CDATA) and lossless — the
+    // full SVG survives the round trip — without any resource-packaging
+    // mechanism. See svg.md jats_counterpart and #86.
+    const dataUri =
+      'data:image/svg+xml;base64,' +
+      Buffer.from(reconstructInlineSvg(node), 'utf8').toString('base64');
+    out += `${pad}  <graphic xlink:href="${escapeXmlAttr(dataUri)}"/>\n`;
   } else if (body.length > 0) {
     out += emitBodyChildren(body, indent + 2);
   }

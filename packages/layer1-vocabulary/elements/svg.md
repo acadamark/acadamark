@@ -60,10 +60,14 @@ jats_counterpart:
   attributes: {}
   notes: |
     JATS uses <graphic> for embedded images (raster or vector). Inline
-    SVG in enscribe exports as <graphic xlink:href="#svg-N"> with the
-    SVG content placed in the article's resource bundle, or — when the
-    export target supports it — as <graphic> with the SVG inline.
-    Wrapping in <fig>...</fig> is the captioned form for JATS.
+    SVG has no external resource path, so enscribe embeds it as a base64
+    data URI on the graphic's xlink:href —
+    <graphic xlink:href="data:image/svg+xml;base64,…"/> — carrying the
+    full SVG losslessly in a single self-contained XML file (consistent
+    with the HTML path's embedResources). This is DTD-valid (xlink:href
+    is CDATA) and needs no resource-packaging mechanism. A captioned or
+    numbered <svg> wraps in <fig>…</fig>, with the number as <label> and
+    the caption as <caption>. (#86.)
 shorthand_examples:
   - source: |
       <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
@@ -161,8 +165,8 @@ The id enables `<ref @fig:phase-diagram>` cross-references resolving to "Figure 
 
 | enscribe | JATS |
 |-----------|------|
-| `<svg>` | `<graphic>` (typically via `<fig>` wrapper) |
-| Captioned `<svg>` | `<fig><graphic.../><caption>...</caption></fig>` |
+| `<svg>` | `<graphic xlink:href="data:image/svg+xml;base64,…"/>` (the SVG embedded losslessly as a data URI) |
+| Captioned / numbered `<svg>` | `<fig><label>N</label><caption>…</caption><graphic xlink:href="data:…"/></fig>` |
 
 ## See also
 

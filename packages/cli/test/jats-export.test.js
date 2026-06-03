@@ -785,6 +785,65 @@ function validateWithXmllint(fixtureName, jatsXml) {
   validateWithXmllint('doc44', jats);
 }
 
+// ─── Integration: doc-45 inline SVG figure → JATS <graphic> data URI (#86) ──
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-45-jats-svg-figure.emd'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  // Full pipeline incl. numbering so the numbered <svg> gets its <label>.
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeNormalizeToCanonical)
+    .use(enscribeConfigDiscovery)
+    .use(enscribeBookStructuring)
+    .use(enscribeArticleStructuring)
+    .use(enscribeSectionNesting)
+    .use(enscribeNumbering)
+    .use(function applyNumbers() {
+      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+    })
+    .use(enscribeRefResolution)
+    .runSync(tree, file);
+
+  const jats = enscribeToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-45-jats-svg-figure.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-45-jats-svg-figure.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc45: JATS snapshot matches', jats === expected);
+  }
+
+  // #86: a captioned/numbered inline <svg> exports as <fig> with a <label>, a
+  // <caption>, and a self-contained <graphic> whose xlink:href is a base64 SVG
+  // data URI — valid (was a DTD-invalid placeholder) and lossless (was dropped).
+  check('doc45: <fig id="fig:circle">', jats.includes('<fig id="fig:circle">'));
+  check('doc45: numbered <label>', jats.includes('<label>1</label>'));
+  check('doc45: <caption> carries the caption text', jats.includes('<p>A blue circle.</p>'));
+  check('doc45: no DTD-invalid placeholder <graphic specific-use="inline-svg">',
+    !jats.includes('specific-use="inline-svg"'));
+  const gm = jats.match(/<graphic xlink:href="data:image\/svg\+xml;base64,([^"]+)"\/>/);
+  check('doc45: <graphic> carries an SVG base64 data-URI xlink:href', !!gm);
+  if (gm) {
+    const decoded = Buffer.from(gm[1], 'base64').toString('utf8');
+    check('doc45: data URI is lossless (full <svg> + the <circle> survive)',
+      decoded.includes('<svg ') && decoded.includes('<circle') && decoded.includes('fill="blue"'));
+  }
+
+  // DTD validation — the gate this whole fix exists to clear (#86 / #31).
+  validateWithXmllint('doc45', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

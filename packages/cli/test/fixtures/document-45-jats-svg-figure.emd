@@ -1,0 +1,11 @@
+<meta type=article title="Inline SVG figure">
+</meta>
+
+<section | A figure>
+
+A captioned, numbered inline `<svg>` exports as a self-contained JATS
+`<graphic>` whose `xlink:href` is a base64 data URI carrying the full SVG.
+
+<svg #fig:circle viewBox="0 0 100 100" caption="A blue circle." |
+  <circle cx="50" cy="50" r="40" fill="blue" />
+>
