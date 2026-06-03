@@ -161,6 +161,17 @@ gives these callouts an optional title and border; the admonition
 "vocabulary" is therefore styling and the `type` enumeration, not a new
 element. (This subsumes [issue #30](https://github.com/enscribejs/enscribe/issues/30).)
 
+The styling carries one accessibility contract that is *what*, not *how*:
+a callout type is signalled by **three independent cues — an accent
+color, a type icon, and the title text — so color is never the only
+distinguisher** (the variants stay legible for color-blind readers and
+in monochrome print). The type icon is delivered through CSS
+(`::before`), not markup, so the rendered HTML stays a clean semantic
+tree and the icon does not enter the accessibility tree or the JATS
+export. *Which* colors and glyphs a theme uses is the theme's business;
+the default theme defines them as `--enscribe-callout-*` custom
+properties an alternate theme can override.
+
 `<frame type=…>` exists alongside as the *non-semantic* box — same
 visual outcome, but making no claim that the content is tangential.
 

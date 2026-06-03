@@ -26,6 +26,23 @@
   --enscribe-accent:         #444;
   --enscribe-error:          #c0392b;
 
+  /* Callout / admonition accents (#31 Phase B). Per-type accent + light
+   * background tint for <aside type=…> callouts; themes may override these.
+   * Each tint is light enough that the body text (--enscribe-text-primary on
+   * the tint) keeps WCAG AA contrast, and the accent is one of THREE cues
+   * (accent / icon / title) so a variant is never distinguished by color
+   * alone — it stays legible for color-blind readers and in monochrome print. */
+  --enscribe-callout-note-accent:    #0052cc;
+  --enscribe-callout-note-bg:        #eef4ff;
+  --enscribe-callout-info-accent:    #0b7285;
+  --enscribe-callout-info-bg:        #e7f6f8;
+  --enscribe-callout-tip-accent:     #1f7a4d;
+  --enscribe-callout-tip-bg:         #eafaf1;
+  --enscribe-callout-warning-accent: #8a6d1f;
+  --enscribe-callout-warning-bg:     #fff8e1;
+  --enscribe-callout-caution-accent: #c0392b;
+  --enscribe-callout-caution-bg:     #fdecea;
+
   /* Typography — Inter (sans) and Source Code Pro (mono) are bundled as base64
    * @font-face rules and injected before this CSS. System stacks serve as
    * fallback for any consumer that includes default.css without the font loader. */
@@ -565,6 +582,64 @@ figcaption {
   border-radius: 4px;
   padding: var(--enscribe-space-4);
 }
+
+/* Callouts / admonitions (#31 Phase B). An <aside type=…> is a frameable
+ * boxed-prose element — it already carries .frameable-border (the box) and an
+ * optional <p class="title"> / <p class="caption">. These rules add the
+ * per-type treatment for the admonition types the vocabulary defines
+ * (note / info / tip / warning / caution); the plain `sidebar` / `callout`
+ * types keep the unadorned box. The icon comes through ::before (CSS only — no
+ * markup injected, so the HTML stays a clean semantic tree and the fixtures are
+ * unchanged; the pseudo-element is decorative, outside the accessibility tree).
+ * Each variant is signalled by THREE cues — accent, icon, and the title text —
+ * so color is never the only distinguisher (legible color-blind / in mono). */
+aside[data-aside-type="note"],
+aside[data-aside-type="info"],
+aside[data-aside-type="tip"],
+aside[data-aside-type="warning"],
+aside[data-aside-type="caution"] {
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+
+aside[data-aside-type="note"]::before,
+aside[data-aside-type="info"]::before,
+aside[data-aside-type="tip"]::before,
+aside[data-aside-type="warning"]::before,
+aside[data-aside-type="caution"]::before {
+  margin-right: var(--enscribe-space-2);
+  font-weight: 700;
+}
+
+aside[data-aside-type="note"] {
+  border-left-color: var(--enscribe-callout-note-accent);
+  background: var(--enscribe-callout-note-bg);
+}
+aside[data-aside-type="note"]::before { content: "\270E"; color: var(--enscribe-callout-note-accent); }
+
+aside[data-aside-type="info"] {
+  border-left-color: var(--enscribe-callout-info-accent);
+  background: var(--enscribe-callout-info-bg);
+}
+aside[data-aside-type="info"]::before { content: "\2139\FE0E"; color: var(--enscribe-callout-info-accent); }
+
+aside[data-aside-type="tip"] {
+  border-left-color: var(--enscribe-callout-tip-accent);
+  background: var(--enscribe-callout-tip-bg);
+}
+aside[data-aside-type="tip"]::before { content: "\1F4A1"; color: var(--enscribe-callout-tip-accent); }
+
+aside[data-aside-type="warning"] {
+  border-left-color: var(--enscribe-callout-warning-accent);
+  background: var(--enscribe-callout-warning-bg);
+}
+aside[data-aside-type="warning"]::before { content: "\26A0\FE0E"; color: var(--enscribe-callout-warning-accent); }
+
+aside[data-aside-type="caution"] {
+  border-left-color: var(--enscribe-callout-caution-accent);
+  background: var(--enscribe-callout-caution-bg);
+}
+aside[data-aside-type="caution"]::before { content: "\26D4"; color: var(--enscribe-callout-caution-accent); }
 
 /* Tables */
 table {
