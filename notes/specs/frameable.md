@@ -274,6 +274,15 @@ These were the genuinely-undecided points; the #31 build resolved them:
   as `<p class="title">` (top) and `<p class="caption">` (bottom) — the same
   `.title` / `.caption` styling hooks the figure family uses, since
   `<figcaption>` is invalid outside `<figure>`.
+- **`<svg>`-as-frameable owns framed inline SVG; `<fig svg>` is retired.**
+  `<svg>` is a figure-wrapped content-float member (above): a captioned or
+  numbered `<svg>` wraps in `<figure>` with its `<figcaption>`; a bare
+  `<svg -numbered>` with no caption is a lone inline `<svg>` (`<svg>` is numbered
+  by default). The earlier `<fig svg | …>` sketch — inline SVG as a format word
+  on the `fig` host — was a redundant *second* route to the same framed inline
+  SVG, so it was retired (#81): no `<svg>` gate shorthand exists, and svg's
+  registry binding names svg as its own host, not `fig`. See `format-words.md`
+  §"svg: a passthrough display language".
 
 ## Related references
 

@@ -26,10 +26,13 @@
  * opacity field are net-new *data*; the only behavioral consumer is still
  * `getContentHandler()` (used by the parser to set `node.contentHandler` and
  * derive `isOpaqueContent = contentHandler !== 'default'`). The bindings are
- * not yet read by dispatch — member migration (the `<diagram>` host, the
- * csv/tsv/mermaid/abc shorthands) is slice 3, which turns them on. Hosts named
- * in a binding that do not yet exist as tags (e.g. `diagram`, `fig` for `svg`)
- * are forward-looking declarations, harmless until slice 3 reads them.
+ * not read by dispatch. Member migration (slice 3) shipped the `<diagram>`
+ * host and the csv/tsv/mermaid/abc gate shorthands as *explicit* registrations
+ * (`interpreter/plugins/normalize-to-canonical.js`), not by reading these
+ * bindings; the `(purpose, host)` bindings and the host accept-sets
+ * (`host-accept-sets.js`) remain a declarative substrate — `getLanguageBindings`
+ * and `hostAcceptsLanguage` have no dispatch consumer yet. They record the legal
+ * host/language pairs; opacity itself is tagname-keyed via `getContentHandler`.
  *
  * `getContentHandler(tagName)` is consumed by the parser (`from-markdown.js`),
  * which sets `node.contentHandler` and the
@@ -85,8 +88,12 @@ const S = PURPOSE.STORAGE;
  *     `math` host as display languages because they render math — this names
  *     the render target, not a commitment on whether the standalone tags retire
  *     into `<math …>` (the open #79 question).
- *   - `svg` binds to the `fig` host (the inline-SVG frameable case); its handler
- *     is a passthrough (the browser renders SVG natively).
+ *   - `svg` is its own host (a first-class frameable element, not a format word
+ *     on another host); its handler is a passthrough — the browser renders SVG
+ *     natively. The `<fig svg>` framed-via-figure-host form was considered and
+ *     RETIRED (#81): `<svg>`-as-frameable (frameable.md) already owns framed
+ *     inline SVG, so a second `(svg, fig)` path would be a redundant second
+ *     route and would need positional-conditional opacity that was never built.
  */
 export const LANGUAGES = new Map([
   // ── Math and code sigils (opaque, embedded language) ─────────────────────
@@ -113,7 +120,7 @@ export const LANGUAGES = new Map([
   ['eqnarray', { handler: 'eqnarray', opaque: true, bindings: [{ purpose: D, host: 'math' }] }],
   ['table',    { handler: 'table',    opaque: true, bindings: [{ purpose: D, host: 'table' }] }],
   ['library',  { handler: 'library',  opaque: true, bindings: [{ purpose: S, host: 'library' }] }],
-  ['svg',      { handler: 'svg',      opaque: true, bindings: [{ purpose: D, host: 'fig' }] }],
+  ['svg',      { handler: 'svg',      opaque: true, bindings: [{ purpose: D, host: 'svg' }] }],
 ]);
 
 /**

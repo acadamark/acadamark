@@ -128,22 +128,28 @@ SVG is a **display language** whose display handler is *passthrough* — the sou
 bytes are already the rendered form and the browser draws SVG natively, where
 Mermaid's display handler invokes a JavaScript library (the architectural point
 is in `DESIGN.md`: "render natively" vs "invoke a library" is a per-language
-handler property, not a special case). The mechanics that follow from that:
+handler property, not a special case). Two facts follow:
 
-- **Bare `<svg>` is the loadable shorthand** for the svg display language (a gate
-  expansion, like the other standalone tags below).
-- **SVG is framed only when captioned or numbered**, by the ordinary frameable
-  rule — there is no defer-to-HTML carve-out and no second inline-SVG path.
-- The qualified form on the figure host is `<fig svg | <svg>…</svg> >`: the `fig`
-  host carries the caption/number/cross-reference apparatus, the `svg` language
-  supplies the inline content.
+- **`<svg>` is a first-class frameable element, not a host format word.** Unlike
+  `<csv>` / `<mermaid>` (whose tags retired into the `<table>` / `<diagram>`
+  hosts as loadable shorthands), the `<svg>` tag stays first-class: it has its own
+  vocabulary entry and handler and *is* a member of the frameable class
+  (`frameable.md`). The svg language sits in the registry only so the tag's
+  content is opaque (the SVG XML passes through verbatim); there is **no `<svg>`
+  gate shorthand**, and svg's `(purpose, host)` binding names svg as its own host.
+- **`<svg>` framing is the ordinary frameable rule.** A captioned or numbered
+  `<svg>` is wrapped in a `<figure>` with its `<figcaption>` inside; a bare
+  `<svg -numbered>` with no caption is a lone inline `<svg>`. (`<svg>` is numbered
+  by default, sharing the figure counter — `-numbered` is the opt-out.)
 
-> **Build note (#81).** The `<fig svg>` framed form is the design above, but it
-> is not yet built: it needs content opacity selected by the format-word
-> positional (a parser mechanism that does not exist today — `fig`'s content is
-> non-opaque for captions), and it overlaps the `<svg>`-as-frameable member
-> settled in `frameable.md` (#31). The reconciliation is tracked in #81. Bare
-> standalone `<svg>` is unaffected.
+> **`<fig svg>` is retired (#81).** An earlier design sketched a qualified
+> `<fig svg | …>` form — the `fig` host carrying the apparatus, the `svg`
+> language supplying the inline content. It is **not built and will not be**: it
+> would be a redundant *second* route to framed inline SVG, which
+> `<svg>`-as-frameable already owns, and it would require content opacity selected
+> by the format-word positional (positional-conditional opacity) — a parser
+> mechanism that was never built and, with this disposition, is not needed.
+> `<svg>`-as-frameable is the sole home for framed inline SVG.
 
 ## Standalone tags are loadable shorthands
 
@@ -198,7 +204,9 @@ slice:
 1. `<diagram>` — clearest payoff; folds in `<mermaid>` / `<abc>` as shorthands.
 2. `<library bibtex>` (then RIS, …).
 3. Retire `<csv>` / `<tsv>` into `<table …>` (as shorthands).
-4. `<fig svg>` for inline content (smallest).
+4. `<svg>` — dispositioned as a first-class frameable member, **not** a
+   `<fig svg>` format word; the `<fig svg>` route was retired (#81). No migration
+   slice; the disposition is the "svg: a passthrough display language" section above.
 
 `<code>` and `<list>` are explicitly out of scope, for the reasons in the member
 dispositions.

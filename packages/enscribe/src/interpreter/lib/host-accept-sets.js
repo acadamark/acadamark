@@ -7,11 +7,15 @@
 // format dispatch table (`TABLE_FORMATS`), which is its source of truth — and
 // this map just points at it.
 //
-// Slice 2 (output-neutral) wires the ONE existing host, `table`, and provides
-// the lookup; nothing in production dispatch consults it yet (the table handler
-// still dispatches through its own parser table). Slice 3 declares the
-// remaining hosts' accept-sets here (`diagram` → {mermaid, abc, …}, `fig` →
-// {svg, …}) and turns the lookup on as it migrates the members.
+// Slice 2 (output-neutral) wired the first host, `table`, and provided the
+// lookup. Slice 3 declared the `diagram` and storage-host (`library`, `data`)
+// accept-sets below. The lookup is still a declarative substrate: nothing in
+// production dispatch consults `hostAcceptsLanguage` yet — the members migrated
+// via explicit gate shorthands (`normalize-to-canonical.js`) and each host
+// handler still dispatches through its own format table. There is deliberately
+// NO `fig` accept-set: framed inline SVG is the first-class `<svg>` frameable
+// element, not a `<fig svg>` format word. The `<fig svg>` second path was
+// retired (#81) — see `format-words.md` and the svg note in `dsl-registry.js`.
 
 import { TABLE_FORMATS } from '../handlers/table.js';
 

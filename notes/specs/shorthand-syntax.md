@@ -245,6 +245,8 @@ The finder decides locally — no registry consultation, no vocabulary lookup. A
 
 - **Same-line** (opener `>` followed by non-line-ending content). The finder scans the **remainder of the current line** for a matching `</tagname>`. This lookahead is bounded — it never crosses a line ending — so it is cheap, unlike the unbounded multi-line scan. If a matching closer is found on the line, the construct is same-line long-form. If the line ends (or EOF is reached) first, the finder rejects (`nok`) and the named-tag tokenizer claims `<tag attrs>` as an **empty short-form** tag — `<b>` with no same-line `</b>` is a bare empty tag, not an error. Same-line long-form is recognized in both flow and text (inline) position; in flow position a same-line tag followed by non-whitespace trailing content on the line is rejected so the paragraph forms and the inline (text-position) tokenizer claims it, keeping `<b>bold</b> and more` a single paragraph.
 
+**Flow-position rejection applies to sigils too, and tolerates trailing whitespace.** The same flow-vs-text rule governs the sigil tokenizers: in flow (block) position a same-line sigil (`<# Heading #>`, `<$ … $>`) followed by **non-whitespace** trailing content on the line is rejected (`nok`), so the paragraph forms and the text-position tokenizer claims the sigil inline. Trailing *whitespace* before the line ending is tolerated and does **not** disqualify flow recognition (PG-11) — without that tolerance, `<# Heading #> ` with a trailing space would be silently reclaimed as inline, which is rarely the author's intent. The named-tag and sigil tokenizers share this shape (`packages/enscribe/src/parser/syntax.js`).
+
 Authors who want a short-form empty tag (the slash form) write `<tag />` — covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`, `<config attrs />`).
 
 **Nested same-name tags (known limitation).** The finder uses first-closer-wins: the first `</tagname>` encountered closes the outer `<tagname>`. Depth is not tracked inside long-form content — same-line or multi-line. For example, `<b>a<b>b</b>c</b>` produces one `<b>` with content `a<b>b`; the trailing `c</b>` is not consumed and falls through as literal text. Re-parsing the captured content does **not** recover the nesting: `a<b>b` re-parses to `a` plus an empty `<b>` (the inner opener has no same-line closer of its own), so the inner tag is lost rather than nested. Different-name nesting is unaffected — `<b>x<i>i</i>y</b>` captures `x<i>i</i>y` verbatim and re-parses the inner `<i>` correctly, because the scan only matches the outer tag's own name. Same-name nesting via depth-counting is deferred; authors who need a same-name tag inside another should use the multi-line form for the outer tag or rename one level.
@@ -269,6 +271,20 @@ Inside opaque content:
 This is what allows enscribe to embed CSV, TSV, LaTeX, code, mermaid, and other DSLs without any escaping mechanism.
 
 **Hash sigils are not opaque.** The `<#`, `<##`, `<###` heading sigils carry prose-bearing content (`contentHandler: "default"`, `isOpaqueContent: false`). Their content is recursively parsed via the same path as named-tag default content, so markdown idioms and nested enscribe constructs inside a heading body are processed normally. `<# *bold* heading #>` has its emphasis parsed; the result is the same as if the body appeared in any other prose-bearing context. The mirrored closer (`#>` / `##>` / `###>`) ends the sigil at the source level; opacity is a separate property and hash sigils do not have it.
+
+### Opaque inline spans inside prose content
+
+Opacity above is a *tag-level* property — a whole sigil or DSL tag is opaque or not. There is also a finer-grained, *span-level* opacity inside prose-bearing (`contentHandler: "default"`) content. When the recursive content of a named tag is re-parsed, bare inline **math and code spans** are matched as opaque runs by the grammar's `OpaqueSpan` rule (`packages/enscribe/grammar/enscribe.peggy`):
+
+- `$$ … $$` (display math), `$ … $` (inline math), `` `` … `` `` and `` ` … ` `` (code spans).
+
+Their interior is returned **verbatim** (via Peggy's `text()`), so the grammar's escape processing is skipped and backslash sequences survive intact — `<b>$\mathbb{R}$</b>` and a code span containing `C:\new\folder` are preserved, then handed to remark-math / CommonMark to render downstream. This mirrors the always-opaque sigil forms (`<$ … $>`, `` <` … `> ``) for the bare-markdown spelling. Three mechanics matter:
+
+- **Longest delimiter first** (`$$` before `$`, `` `` `` before `` ` ``).
+- **A span stops at `>`** so it can never swallow the named-tag closer; a delimiter with no matching closer before `>` is not a span — the opening character falls through to a literal (a lone currency `$` stays literal).
+- **An escaped delimiter opens nothing.** The backslash pass-through (`\$`, `` \` ``) sits ahead of `OpaqueSpan` in the grammar, so an escaped delimiter is consumed as literal markdown before a span can begin.
+
+This span-level opacity does **not** apply to the super/subscript brace shortcuts (`^{…}` / `_{…}` — their `}` closer is ambiguous with math braces like `\mathbb{Y}`) nor to hash-sigil heading bodies (which need a content class where `>` is legal); both are deliberate, documented exclusions tracked in GitHub Issues.
 
 ## DSL handler-dispatch registry
 
@@ -301,6 +317,7 @@ Current registry contents (all are DSLs):
 | `eqnarray`       | `"eqnarray"`           | Equation array (LaTeX-like)                      |
 | `table`          | `"table"`              | Table (data string in CSV/TSV/JSON/YAML/MD)      |
 | `library`        | `"library"`            | BibTeX/CSL-JSON source (citation-js)             |
+| `svg`            | `"svg"`                | Inline SVG — first-class frameable element; opaque XML source (passthrough) |
 
 Regular Layer 1 vocabulary tags (`<section>`, `<aside>`, `<note>`, `<blockquote>`, `<ul>`/`<ol>`/`<li>`, `<dl>`/`<dt>`/`<dd>`, `<glossary>`, `<details>`, the theorem family, `<meta>`, `<author>`, `<data>`, every other tag) are **not** in this registry — they don't need handler dispatch, their content is regular enscribe (recursively parsed via the default handler), and they reach the parser through the language's regular three-form grammar.
 
@@ -308,7 +325,7 @@ The map currently uses identity keys (tag name = handler name) for the DSL entri
 
 **Historical note.** The registry previously also held regular-vocabulary tags (sections, `<aside>`, `<note>`, lists, definition lists, theorem family, `<meta>`, `<data>`) as a workaround for the parser's pre-2026-05-27 long-form gate, which required registry membership for `<tag>…</tag>` parsing. That conflation forced regular vocabulary into the DSL registry to be authorable in their natural long-form. The DSL/long-form parser bug fix (2026-05-27) removed the gate; the registry shrank to genuine DSLs only.
 
-The qualifying-tag pattern (`<category language | content>`) means a generic category tag can declare its content's language as the first positional. `<table csv | ...>` and `<table tsv | ...>` are valid, even though `table` itself is not necessarily a DSL tag.
+The qualifying-tag pattern (`<category language | content>`) means a generic host tag declares its content's language as the first positional. `<table csv | ...>` and `<table tsv | ...>` are valid because the **host tagname** `table` is itself a registered opaque language (the table above); the positional `csv` / `tsv` only names which engine the host's handler dispatches to — it does not decide opacity.
 
 ## Qualifying-tag pattern
 
@@ -325,7 +342,9 @@ The general form `<category language | content>` lets a structural tag declare i
 <diagram mermaid | graph TD; A-->B >
 ```
 
-Whether the tag is a DSL tag is determined by the registry consulting either the tag name (`code`, `math`) or — for category tags like `table` and `diagram` — the first positional argument. Implementation detail: when entering a category tag's content, the parser checks if the first positional matches a registered DSL identifier. If so, content is opaque.
+**Content opacity is tagname-keyed, not positional-conditional.** The parser sets `node.contentHandler = getContentHandler(node.tagname)` and derives `isOpaqueContent = (contentHandler !== "default")` — it consults only the **opener's tag name**, never a positional (`packages/enscribe/src/parser/from-markdown.js`). The host tags `table` and `diagram` are themselves registered opaque languages (entries in the table above), so `<table csv | …>` and `<diagram mermaid | …>` keep their content opaque by virtue of the host tagname; the format-word positional (`csv`, `mermaid`) names the engine the host's handler dispatches to *after* parsing and plays no part in the opacity decision.
+
+There is **no** "check whether the first positional matches a registered DSL identifier" mechanism. It was specified once but never built, and nothing needs it: every host that carries opaque content is itself a registered opaque language, and `<svg>` — the one tag that might have wanted a `<fig svg>` positional form — is instead a first-class frameable element (the `<fig svg>` route was retired, #81; see `format-words.md`).
 
 ## Nested tags inside content
 

@@ -94,11 +94,14 @@ export function run() {
     assert.deepEqual(getLanguageBindings('library'), [{ purpose: 'storage', host: 'library' }],
       'library is a storage language hosted by library');
     assert.deepEqual(getLanguageBindings('mermaid'), [{ purpose: 'display', host: 'diagram' }],
-      'mermaid is a display language whose host is diagram (forward-looking; slice 3 turns it on)');
+      'mermaid is a display language whose host is diagram (the binding is declarative; ' +
+      'the <mermaid> → <diagram mermaid> gate shorthand is registered explicitly)');
     assert.deepEqual(getLanguageBindings('csv'), [{ purpose: 'display', host: 'table' }],
       'csv is a display language hosted by table');
-    assert.deepEqual(getLanguageBindings('svg'), [{ purpose: 'display', host: 'fig' }],
-      'svg is a passthrough display language framed via the fig host');
+    assert.deepEqual(getLanguageBindings('svg'), [{ purpose: 'display', host: 'svg' }],
+      'svg is a passthrough display language and its own host — a first-class ' +
+      'frameable element, not a <fig svg> format word (the <fig svg> second ' +
+      'path was retired, #81/#22; framed inline SVG is <svg>-as-frameable)');
     // Unregistered → no bindings.
     assert.deepEqual(getLanguageBindings('unknown'), []);
     console.log('PASS: every language declares well-formed (purpose, host) bindings');

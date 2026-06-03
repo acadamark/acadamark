@@ -66,7 +66,7 @@ jats_counterpart:
     Wrapping in <fig>...</fig> is the captioned form for JATS.
 shorthand_examples:
   - source: |
-      <svg viewBox="0 0 100 100" width=200 height=200 |
+      <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
         <circle cx="50" cy="50" r="40" fill="blue" />
       >
     layer1_html: |
@@ -74,28 +74,34 @@ shorthand_examples:
         <circle cx="50" cy="50" r="40" fill="blue" />
       </svg>
     notes: |
-      Inline SVG with the source as opaque pipe content. The
+      A lone inline SVG. `<svg>` is numbered by default (it shares the
+      figure counter), so `-numbered` is what opts out of framing for a
+      purely inline graphic. The source is opaque pipe content; the
       attributes pass through to the rendered <svg> element.
   - source: |
       <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
         <circle cx="50" cy="50" r="40" />
       >
     layer1_html: |
-      <svg id="fig:diagram" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="40" />
-      </svg>
-      <figcaption>Figure 1. A simple circle</figcaption>
+      <figure>
+        <svg id="fig:diagram" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" />
+        </svg>
+        <figcaption>Figure 1. A simple circle</figcaption>
+      </figure>
     notes: |
-      Captioned and numbered. Shares the figure counter with <fig>;
-      cross-references via the colon-prefix `fig:` resolve to
-      "Figure N".
+      Captioned and numbered → framed by the ordinary frameable rule: the
+      handler wraps the <svg> in a <figure> with the <figcaption> as a
+      sibling inside the wrapper (figcaption is not a valid child of <svg>).
+      Shares the figure counter with <fig>; `<ref @fig:diagram>` resolves
+      to "Figure N".
 interpreter_strategy: handler
 handler_module: ./handlers/svg.js
 handler_responsibilities:
   - Emit the <svg> element with the standard SVG attributes (width, height, viewBox).
   - Preserve the pipe-content SVG source verbatim as the rendered <svg>'s inner content.
   - When +border is set, add `frameable-border` to the class list.
-  - When numbered, emit a sibling <figcaption> with the "Figure N." label prefix and any caption text.
+  - When captioned or numbered, frame the <svg> by wrapping it in a <figure> with the <figcaption> as a sibling inside the wrapper (figcaption is not a valid child of <svg>); the figcaption carries the "Figure N." label prefix and any caption text. A bare <svg -numbered> with no caption renders as a lone <svg>.
 ---
 
 # `<svg>`
@@ -112,7 +118,9 @@ The rendered output is HTML-native `<svg>` (which browsers handle natively). For
 
 ## Frameable membership
 
-`<svg>` is a member of the Phase 3 frameable class. Shares the figure counter with `<fig>`, `<mermaid>`, `<abc>`. The shared frameable surface attributes apply: `id`, `caption`, `border`, `numbered`. The captioning rendering matches `<fig>` (sibling `<figcaption>` with "Figure N." label prefix).
+`<svg>` is a member of the Phase 3 frameable class — and it is the **canonical home for framed inline SVG**. It shares the figure counter with `<fig>`, `<mermaid>`, `<abc>`. The shared frameable surface attributes apply: `id`, `caption`, `border`, `numbered`. A captioned or numbered `<svg>` is framed by the ordinary frameable rule — wrapped in a `<figure>` with the `<figcaption>` inside, matching `<fig>`. A bare `<svg -numbered>` with no caption stays a lone `<svg>`.
+
+There is **no `<fig svg>` form**: a `(svg, fig)` format-word path would be a redundant second route to the same framed inline SVG that `<svg>`-as-frameable already provides, so it was retired (#81). Inline SVG goes through `<svg>`.
 
 ## Why a handler
 
@@ -145,7 +153,7 @@ The id enables `<ref @fig:phase-diagram>` cross-references resolving to "Figure 
 ## Attributes
 
 - `width`, `height`, `viewBox` — standard SVG attributes; pass through to the rendered element.
-- `caption` — optional caption text. Renders as a sibling `<figcaption>` after the SVG element.
+- `caption` — optional caption text. Frames the SVG: the `<svg>` is wrapped in a `<figure>` with the caption in a `<figcaption>` inside.
 - `+border` — Phase 3 frameable surface; adds `frameable-border` class.
 - `+numbered` / `-numbered` — participates in the figure counter by default.
 

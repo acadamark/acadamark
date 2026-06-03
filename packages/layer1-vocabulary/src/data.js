@@ -5976,14 +5976,14 @@ const _svg = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "<svg viewBox=\"0 0 100 100\" width=200 height=200 |\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"blue\" />\n>\n",
+        "source": "<svg -numbered viewBox=\"0 0 100 100\" width=200 height=200 |\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"blue\" />\n>\n",
         "layer1_html": "<svg viewBox=\"0 0 100 100\" width=\"200\" height=\"200\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"blue\" />\n</svg>\n",
-        "notes": "Inline SVG with the source as opaque pipe content. The\nattributes pass through to the rendered <svg> element.\n",
+        "notes": "A lone inline SVG. `<svg>` is numbered by default (it shares the\nfigure counter), so `-numbered` is what opts out of framing for a\npurely inline graphic. The source is opaque pipe content; the\nattributes pass through to the rendered <svg> element.\n",
       },
       {
         "source": "<svg #fig:diagram viewBox=\"0 0 100 100\" caption=\"A simple circle\" |\n  <circle cx=\"50\" cy=\"50\" r=\"40\" />\n>\n",
-        "layer1_html": "<svg id=\"fig:diagram\" viewBox=\"0 0 100 100\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" />\n</svg>\n<figcaption>Figure 1. A simple circle</figcaption>\n",
-        "notes": "Captioned and numbered. Shares the figure counter with <fig>;\ncross-references via the colon-prefix `fig:` resolve to\n\"Figure N\".\n",
+        "layer1_html": "<figure>\n  <svg id=\"fig:diagram\" viewBox=\"0 0 100 100\">\n    <circle cx=\"50\" cy=\"50\" r=\"40\" />\n  </svg>\n  <figcaption>Figure 1. A simple circle</figcaption>\n</figure>\n",
+        "notes": "Captioned and numbered → framed by the ordinary frameable rule: the\nhandler wraps the <svg> in a <figure> with the <figcaption> as a\nsibling inside the wrapper (figcaption is not a valid child of <svg>).\nShares the figure counter with <fig>; `<ref @fig:diagram>` resolves\nto \"Figure N\".\n",
       },
     ],
     "interpreter_strategy": "handler",
@@ -5992,7 +5992,7 @@ const _svg = Object.freeze({
       "Emit the <svg> element with the standard SVG attributes (width, height, viewBox).",
       "Preserve the pipe-content SVG source verbatim as the rendered <svg>'s inner content.",
       "When +border is set, add `frameable-border` to the class list.",
-      "When numbered, emit a sibling <figcaption> with the \"Figure N.\" label prefix and any caption text.",
+      "When captioned or numbered, frame the <svg> by wrapping it in a <figure> with the <figcaption> as a sibling inside the wrapper (figcaption is not a valid child of <svg>); the figcaption carries the \"Figure N.\" label prefix and any caption text. A bare <svg -numbered> with no caption renders as a lone <svg>.",
     ],
     "_sourceFile": "svg.md",
   });
