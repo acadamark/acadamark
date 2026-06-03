@@ -18,7 +18,7 @@ with prose to verify the slice 5b paragraph-grouping fix.</p>
     </article-meta>
   </front>
   <body>
-    <sec>
+    <sec sec-type="lists">
       <title>Lists</title>
       <p>An unordered list:</p>
       <list list-type="bullet">

@@ -285,6 +285,11 @@ function validateWithXmllint(fixtureName, jatsXml) {
 
   // Spot-checks per slice 5b's added surface.
 
+  // #78: section sec-type emitted directly at the emit site (verbatim raw value,
+  // not the html data-sec-type form; custom values like "lists" pass through).
+  check('doc40: <sec sec-type="lists"> from <section sec-type=lists>',
+    jats.includes('<sec sec-type="lists">'));
+
   // Lists.
   check('doc40: <list list-type="bullet">', jats.includes('<list list-type="bullet">'));
   check('doc40: <list list-type="order">', jats.includes('<list list-type="order">'));

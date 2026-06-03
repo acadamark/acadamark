@@ -7,7 +7,7 @@ with prose to verify the slice 5b paragraph-grouping fix.
 >
 </meta>
 
-<section | Lists>
+<section sec-type=lists | Lists>
 
 An unordered list:
 

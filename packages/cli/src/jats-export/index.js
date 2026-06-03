@@ -1266,15 +1266,22 @@ function emitFnJats(node, indent) {
 
 function emitSection(secNode, indent) {
   const pad = ' '.repeat(indent);
-  // id is emitted directly from node.id, matching every other block
-  // emitter (statement, fig, fn, blockquote, aside, book-part). The
-  // section vocab declares id.maps_to only for the html target, so
-  // mapAttributes('jats') drops it — leaving <sec> with no id and
-  // breaking <xref> IDREFS validation (#4: doc41). mapAttributes still
-  // carries any non-id jats attributes the section vocab declares (none
-  // today — see the #4 drift finding on section sec-type/class lacking
-  // jats mappings).
+  // id and sec-type are emitted directly from the node, matching every other
+  // block emitter (statement, fig, fn, blockquote, aside, book-part). The
+  // section vocab declares both only for the html target, so mapAttributes('jats')
+  // drops them; they are sourced here at the emit site. They are deliberately
+  // NOT given a `jats` maps_to in the vocab: emitSection also calls
+  // mapAttributes('jats'), so a vocab jats mapping plus this direct emit would
+  // write the attribute twice — the double-emit landmine #77 is about.
+  //   - id: #4 (doc41 IDREFS).
+  //   - sec-type: #78 — the raw kwarg value passes through verbatim (JATS permits
+  //     custom sec-type values, so it is not validated against the suggested list,
+  //     and it is not the html `data-sec-type` form). Applies to all three section
+  //     levels, which all flow through emitSection.
   const id = secNode.id ? ` id="${escapeXmlAttr(secNode.id)}"` : '';
+  const secType = secNode.kwargs?.['sec-type']
+    ? ` sec-type="${escapeXmlAttr(secNode.kwargs['sec-type'])}"`
+    : '';
   const attrs = aggregateJatsAttrs(mapAttributes(
     secNode, VOCABULARY[secNode.tagname], 'jats', jatsEmit
   ));
@@ -1285,7 +1292,7 @@ function emitSection(secNode, indent) {
   const titleNode = content.find(c => isEnscribeTag(c, titleTag));
   const rest = content.filter(c => !isEnscribeTag(c, titleTag));
 
-  let out = `${pad}<sec${id}${attrs}>\n`;
+  let out = `${pad}<sec${id}${secType}${attrs}>\n`;
   if (titleNode) {
     out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
   }
