@@ -173,6 +173,8 @@ Every DSL tag resolves on two independent axes, and the **format word** — the 
 
 **Standalone tags are shorthands; languages are permanent.** A fused standalone tag (`<mermaid>`, `<csv>`) is a shorthand that expands to its bound `(host, language)` form, kept permanently the way the markdown idioms are kept. Retiring such a tag retires only *the tag* — the language stays first-class in the registry, free to be hosted elsewhere. The language axis and the tag namespace are independent.
 
+**The documented exception — the math environments.** Not every standalone tag is a fused shorthand. The LaTeX-math environment tags (`<matrix>`, `<cases>`, `<align>`, `<eqnarray>`) stay standalone rather than collapsing into `<math …>` languages: each is single-engine and source-compatible with `\begin{…}`, so it reads best as a dedicated tag, and the familiarity is worth more than the symmetry. They are the deliberate exception to the format-word collapse (`notes/specs/format-words.md`).
+
 The per-host mechanics — how a language registers its `(purpose, host)` bindings, how a host consults its accept-set, the shorthand-expansion and clobber rules, and the reserved scoping syntax — are specified in `notes/specs/format-words.md`. This section owns the architecture; that document owns the subsystem.
 
 ### DSL handlers: included vs external

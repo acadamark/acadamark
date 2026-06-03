@@ -223,12 +223,13 @@ should additionally expose a structured-field interface — which is the
 structured-element problem, not the format-word one. This document settles the
 language axis for `<data>`'s payloads; #24 settles the container.
 
-## Open sub-decision: the math environments
+## The math environments stay standalone
 
-`<matrix>` / `<cases>` / `<align>` / `<eqnarray>` are standalone tags today, each
-a LaTeX-math environment. The symmetric move would collapse them into the `<math>`
-host as languages (`<matrix>` → `<math matrix>`), exactly as `<mermaid>` folds
-into `<diagram>`. The competing reading keeps them as standalone sugar because
-their names are LaTeX-source-compatible and authors type them directly. This is an
-**open sub-decision**, tracked as a discussion issue (#79); it is recorded here,
-not resolved.
+`<matrix>` / `<cases>` / `<align>` / `<eqnarray>` are standalone LaTeX-math
+environment tags, and they **stay standalone** — they are deliberately *not*
+collapsed into `<math>` as languages the way `<mermaid>` folds into `<diagram>` or
+`<csv>` into `<table>`. Their names are LaTeX-source-compatible (`\begin{matrix}`
+and the rest), so authoring them directly is a familiarity win, not vocabulary
+bloat. They are the documented exception to the format-word collapse: a
+single-engine, source-compatible family that reads best as dedicated tags. (This
+resolves the former open sub-decision in favor of keeping the tags — issue #79.)
