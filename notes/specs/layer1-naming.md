@@ -49,7 +49,9 @@ The ladder:
 | `<sub-section>`     | 2     | `\subsection`          |
 | `<sub-sub-section>` | 3     | `\subsubsection`       |
 
-If depth 4+ is ever needed, extend the ladder with `<sub-sub-sub-section>` rather than introducing a different mechanism.
+If depth 4+ is ever needed *as a named section level*, the ladder extends with `<sub-sub-sub-section>` rather than introducing a different mechanism — future work, not built.
+
+**The `<h4>`–`<h6>` exception (built behavior).** Markdown heading *input* deeper than the three named levels does not silently map to a named section. A markdown heading of depth 4–6 (`#### …` through `###### …`) passes through as a **literal HTML `<h4>`–`<h6>` element**, with an informative diagnostic (`heading depth N exceeds Layer 1's three section levels; passed through as <hN>`, source `normalize-to-canonical:heading-depth-out-of-range`). The heading's inline children are preserved (emphasis / code inside an `<h4>` still render). This is a named, narrow exception to Layer 1's otherwise-closed vocabulary — see DESIGN.md §"The `<h4>`–`<h6>` exception". It concerns only markdown `#`-heading input; authored `<section>` / `<sub-section>` / `<sub-sub-section>` long-form tags are unaffected.
 
 The corresponding title elements follow the container-role rule:
 
@@ -119,7 +121,7 @@ The mapping is straightforward:
 | `<sub-section-title>`       | `<h2>`               |
 | `<sub-sub-section-title>`   | `<h3>`               |
 
-(The exact mapping for `<article-title>` vs `<section-title>` when both are present needs more thought — possibly `<article-title>` becomes `<h1>` and `<section-title>` becomes `<h2>`, shifting everything down by one. Defer to render-mode plugin design.)
+(The exact mapping for `<article-title>` vs `<section-title>` when both are present — and the `<article-subtitle>` lowering choice in the table above — are render-mode decisions tracked under [#40](https://github.com/enscribejs/enscribe/issues/40); see "Open decisions" below. This table sketches the intent; #40 settles the collision deterministically when the render-mode machinery is built.)
 
 ## Coexistence with raw HTML
 
@@ -133,9 +135,13 @@ This keeps the rules simple. Enscribe plugins have one job each, with predictabl
 
 These are flagged here so they don't get re-litigated implicitly later:
 
-- **Render-mode mapping for `<article-title>` + `<section-title>`.** When both are present, do section titles become `<h2>` (because article title takes `<h1>`)? Or do they stay `<h1>` and rely on document structure? Decide when building the render-mode plugin.
+- **Render-mode mapping for `<article-title>` + `<section-title>` (the title/section collision), and the `<article-subtitle>` lowering alternatives** — **re-homed to [#40](https://github.com/enscribejs/enscribe/issues/40) (render-mode lowering).** Whether `<section-title>` becomes `<h2>` when `<article-title>` takes `<h1>` (or stays `<h1>` and relies on structure), and whether `<article-subtitle>` lowers to `<p class="subtitle">` or `<h2 class="subtitle">`, are render-mode decisions that can't be made deterministically until the render-mode machinery exists. They are specified under #40, not here — this spec acknowledges the deferral rather than dropping it.
 
-- **`<header>` block usage.** When `<article-title>` and `<article-subtitle>` are both present, are they wrapped in `<header>`? Probably yes (matches HTML5 convention), but the shorthand layer needs to either generate the wrapper automatically or expose a `<header | ...>` form.
+- **`<header>` block usage — resolved (#74): wrap implicitly, no author syntax.** The leading title block is wrapped in a semantic HTML5 `<header>` automatically; there is no `<header | …>` authoring form and no change to how authors write the title. The system wraps the **leading contiguous front-matter run** — the content of `<article-front>` (the `<meta>` carrying `<article-title>`, `<article-subtitle>`, the byline, and any future front-matter elements) — in a single `<header>`, closing the wrapper at the first non-front-matter block (the `<article-body>`). The result is `<article-front><header>…title block…</header></article-front>`.
+
+  The wrapper is **HTML-canonical only**: it is added in the HTML compiler (on the hast, after the mdast→hast step), so it never enters the shared Layer 1 mdast tree. The **JATS export is unaffected** — it reads the mdast (no `<header>`) and groups the front matter independently via `<front>` / `<article-meta>` / `<title-group>`. JATS has no `<header>`, and none is invented; the HTML `<header>` and the JATS `<front>` are parallel front-matter groupings on their respective output targets.
+
+  Scope: **articles only.** Book front matter (`<book-front>`: `<book-title>` plus `<book-part>`s, a different structure) is deliberately out of scope. A document with no title block (no `<article-front>`) gains no wrapper.
 
 - **Markdown-input section wrapping.** Plain markdown input (`# Heading`) produces a flat sequence of `<h1>`, `<p>`, `<h2>` etc. with no `<section>` wrappers. If markdown documents should participate in enscribe's section-nesting, a separate plugin (or borrowing `rehype-section`) needs to wrap heading-delimited regions into `<section>` elements first. Or declare that markdown-only input doesn't get section treatment. Decide when building the full pipeline.
 
