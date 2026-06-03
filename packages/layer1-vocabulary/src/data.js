@@ -3154,7 +3154,7 @@ const _frame = Object.freeze({
         "border": {
           "handled_by": "handler",
           "default": true,
-          "notes": "The frameable surface. **On by default for frame** (unlike\n<fig>/<svg>/etc.) because the whole point of the generic\n<frame> element is the visual frame. Use -border to suppress\nthe outline and just use the frame as a semantic grouping\nwrapper.\n",
+          "notes": "The frameable surface. **On by default for frame** (unlike\n<fig>/<svg>/etc.) because the whole point of the generic\n<frame> element is the visual frame. Use -border to suppress\nthe outline and just use the frame as a semantic grouping\nwrapper. border=<name> selects a named look (accent / thick /\ndashed / subtle) and implies the border on; the look renders as a\nframeable-border-<name> modifier class (document names it, theme\ndefines it — #58; see frameable.md).\n",
         },
       },
     },

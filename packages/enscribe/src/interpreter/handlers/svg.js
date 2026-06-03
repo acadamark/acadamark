@@ -21,7 +21,7 @@
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
-import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
 
 /**
  * Handler for the `<svg>` tag.
@@ -59,6 +59,9 @@ export function svgHandler(state, node, vocab) {
   // Phase 3 frameable surface: +border opts in to the frameable-border
   // class on the wrapping <figure>.
   const border = node.booleans?.border === true;
+  // #58: border=<name> selects a named look. Like +border on <svg>, it applies
+  // to the framed form (captioned/numbered); a bare <svg> stays the lone element.
+  const borderLook = frameableBorderLook(node);
 
   // The SVG element itself carries id (per schema-mapped properties);
   // the wrapping <figure> doesn't need its own id. The frameable
@@ -75,5 +78,6 @@ export function svgHandler(state, node, vocab) {
     computedNumber: node.computedNumber ?? null,
     scope: node._scope ?? null,
     border,
+    borderLook,
   });
 }

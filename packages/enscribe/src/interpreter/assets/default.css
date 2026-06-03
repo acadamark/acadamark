@@ -24,6 +24,12 @@
   --enscribe-border:         #e1e1e1;
   --enscribe-border-strong:  #ccc;
   --enscribe-accent:         #444;
+
+  /* Frameable border "looks" (#58, `border=<name>`) — the document names the
+   * look; these properties define how it renders. Themes may override them. */
+  --enscribe-border-accent:  var(--enscribe-accent);   /* accent look: border color */
+  --enscribe-border-thick:   3px;                       /* thick look: border width */
+  --enscribe-border-subtle:  #e6e6e6;                   /* subtle look: thin light-gray color */
   --enscribe-error:          #c0392b;
 
   /* Callout / admonition accents (#31 Phase B). Per-type accent + light
@@ -610,6 +616,17 @@ figcaption {
   border-radius: 4px;
   padding: var(--enscribe-space-4);
 }
+
+/* Frameable border looks (#58). `border=<name>` adds a `frameable-border-<name>`
+ * modifier class alongside the base `.frameable-border`; each look overrides one
+ * facet of the base rule. The default theme ships this starter menu (accent /
+ * thick / dashed / subtle); the mechanism is open — a theme can override the
+ * `--enscribe-border-*` properties above, or add its own `.frameable-border-<name>`
+ * rules (the document just names the look). */
+.frameable-border-accent { border-color: var(--enscribe-border-accent); }
+.frameable-border-thick  { border-width: var(--enscribe-border-thick); }
+.frameable-border-dashed { border-style: dashed; }
+.frameable-border-subtle { border-color: var(--enscribe-border-subtle); }
 
 /* Callouts / admonitions (#31 Phase B). An <aside type=…> is a frameable
  * boxed-prose element — it already carries .frameable-border (the box) and an

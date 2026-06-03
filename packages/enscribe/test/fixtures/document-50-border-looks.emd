@@ -1,0 +1,20 @@
+<meta type=article title="Frame border looks">
+</meta>
+
+<section | Border looks>
+
+A frameable's border look is selected with `border=<name>`: the document names
+the look, and the theme defines how it renders. The starter menu is `accent`,
+`thick`, `dashed`, and `subtle`; a named look implies the border is on.
+
+<frame border=accent | An accent-bordered callout.>
+
+<frame border=thick | A thick-bordered callout.>
+
+<frame border=dashed | A dashed-bordered callout.>
+
+<frame border=subtle | A subtle-bordered callout.>
+
+<frame | A plain frame — default border, no named look.>
+
+<aside border=accent | A named look works on any frameable border surface, not just on a frame.>

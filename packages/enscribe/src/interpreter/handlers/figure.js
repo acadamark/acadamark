@@ -21,7 +21,7 @@ import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractPlainText, convertChildren } from '../lib/ast-helpers.js';
 import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
-import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
 
 /**
  * Legacy pipe-content-as-caption fallback. When the author writes
@@ -92,6 +92,8 @@ export function figureHandler(state, node, vocab) {
 
   // Phase 3 frameable surface: +border opts in to the frameable-border class.
   const border = node.booleans?.border === true;
+  // #58: border=<name> selects a named look (and implies border-on).
+  const borderLook = frameableBorderLook(node);
 
   // Properties for the wrapper (id, classes, schema-mapped attributes).
   const wrapperProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
@@ -107,5 +109,6 @@ export function figureHandler(state, node, vocab) {
     computedNumber: node.computedNumber ?? null,
     scope: node._scope ?? null,
     border,
+    borderLook,
   });
 }

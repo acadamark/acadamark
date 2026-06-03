@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>document-17-parser-edge-cases</title>
+<title>document-50-border-looks</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1009,36 +1009,23 @@ body:has(.enscribe-layout--toc) {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Parser edge-case fixture</article-title>
-      <author>Test Author</author>
+      <article-title>Frame border looks</article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Self-closing DSL-registry tag</section-title>
+      <section-title>Border looks</section-title>
       <p>
-        A self-closing <code>&#x3C;table /></code> should parse as a self-closing tag, not as a
-        long-form opener missing its closer. Before the alpha Phase 2 fix the DSL-
-        registry's long-form finder would greedily claim <code>&#x3C;table /></code> and treat the
-        missing <code>&#x3C;/table></code> as a tag error.
-      </p><table>
-
-</table>
-      <p>Surrounding prose continues to render normally after the self-closing tag.</p>
-    </section>
-    <section>
-      <section-title>Visible parse-error rendering</section-title>
-      <p>
-        A deliberate parse error: an unknown escape sequence in named-tag content
-        produces an <code>enscribeParseError</code> node. The always-renders guarantee
-        requires it to render visibly at its source location, not fall through
-        silently.
+        A frameable's border look is selected with <code>border=&#x3C;name></code>: the document names
+        the look, and the theme defines how it renders. The starter menu is <code>accent</code>,
+        <code>thick</code>, <code>dashed</code>, and <code>subtle</code>; a named look implies the border is on.
       </p>
-      <aside class="frameable-border">This aside has an unknown escape:<span class="parse-error">??parse: unknown-escape-sequence "\\z"??</span>and then more prose.</aside>
-      <p>
-        Surrounding content continues to render normally — the error is bounded to
-        its construct.
-      </p>
+      <figure class="frameable-border frameable-border-accent">An accent-bordered callout.</figure>
+      <figure class="frameable-border frameable-border-thick">A thick-bordered callout.</figure>
+      <figure class="frameable-border frameable-border-dashed">A dashed-bordered callout.</figure>
+      <figure class="frameable-border frameable-border-subtle">A subtle-bordered callout.</figure>
+      <figure class="frameable-border">A plain frame — default border, no named look.</figure>
+      <aside class="frameable-border frameable-border-accent">A named look works on any frameable border surface, not just on a frame.</aside>
     </section>
   </article-body>
 </article>

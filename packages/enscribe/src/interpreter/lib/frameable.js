@@ -238,6 +238,24 @@ function buildTitleEl(captionEl, titleHast) {
   };
 }
 
+// Frameable border "look" (#58). `border=<name>` selects a named look — the
+// document names it; the theme/stylesheet defines what it renders as. Returns a
+// safe CSS class-token look name, or null. A look implies border-on (handled in
+// renderFrameable). The default theme ships a starter menu (accent / thick /
+// dashed / subtle); the mechanism is open — any token name passes through as a
+// `frameable-border-<name>` class a theme can target (matching how `type` values
+// pass through to `data-*`). A non-token value (e.g. an attempted raw-CSS escape
+// hatch, `border="2px dashed red"` — out of scope, #58) is ignored, not emitted
+// as a class. `border=true` / `border=false` are the boolean form, not a look.
+const BORDER_LOOK_TOKEN = /^[a-z][a-z0-9-]*$/;
+export function frameableBorderLook(node) {
+  const raw = node?.kwargs?.border;
+  if (typeof raw !== 'string') return null;
+  const name = raw.toLowerCase();
+  if (name === 'true' || name === 'false') return null;
+  return BORDER_LOOK_TOKEN.test(name) ? name : null;
+}
+
 /**
  * The unified frameable rendering helper.
  *
@@ -286,6 +304,7 @@ export function renderFrameable(opts) {
     computedNumber = null,
     scope = null,
     border = false,
+    borderLook = null,
   } = opts;
 
   const meta = KIND_META.get(kind);
@@ -299,11 +318,15 @@ export function renderFrameable(opts) {
     };
   }
 
-  // Apply border class to wrapper props.
+  // Apply border class(es) to wrapper props. A named look (border=<name>, #58)
+  // implies border-on and adds a `frameable-border-<name>` modifier alongside the
+  // base class — the document names the look; the theme defines how it renders.
   const finalWrapperProps = { ...wrapperProps };
-  if (border) {
+  if (border || borderLook) {
     const existing = Array.isArray(finalWrapperProps.className) ? finalWrapperProps.className : [];
-    finalWrapperProps.className = [...existing, 'frameable-border'];
+    const classes = [...existing, 'frameable-border'];
+    if (borderLook) classes.push(`frameable-border-${borderLook}`);
+    finalWrapperProps.className = classes;
   }
 
   // Slice B (RQ-BOOK-M4): derive the chapter-prefixed display number via

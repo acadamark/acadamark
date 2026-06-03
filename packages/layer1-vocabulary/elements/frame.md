@@ -47,7 +47,10 @@ enscribe_attributes:
         <fig>/<svg>/etc.) because the whole point of the generic
         <frame> element is the visual frame. Use -border to suppress
         the outline and just use the frame as a semantic grouping
-        wrapper.
+        wrapper. border=<name> selects a named look (accent / thick /
+        dashed / subtle) and implies the border on; the look renders as a
+        frameable-border-<name> modifier class (document names it, theme
+        defines it — #58; see frameable.md).
 content:
   type: prose
   becomes: children
@@ -161,6 +164,7 @@ Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure
 - `caption` — optional caption at the bottom (with "Figure N." prefix when numbered).
 - `type` — classification (note / warning / tip / methodology / etc.). Renders as `data-frame-type` for CSS targeting.
 - `+border` / `-border` — the frameable surface. **Default: on.**
+- `border=<name>` — select a named border look — `accent`, `thick`, `dashed`, or `subtle` (the default theme's starter menu); implies the border on. The document names the look; the theme defines how it renders (#58). Emitted as a `frameable-border-<name>` modifier class. See `frameable.md`.
 - `+numbered` / `-numbered` — the frameable surface. **Default: off.**
 
 ## JATS mapping

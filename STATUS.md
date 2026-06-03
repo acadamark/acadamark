@@ -36,6 +36,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Cross-references to figures, equations, tables, sections, code blocks, theorems
 - [x] Theorem family — `<theorem>`, `<lemma>`, `<definition>`, `<proof>`, … (shared / own / unnumbered counters)
 - [x] Frameable boxed prose — `<aside>` joins `<frame>` with an optional title, caption, and border (on by default); a numbered `<aside>` gets its own "Box" counter, and `<aside type=…>` carries the callout taxonomy (the admonition types — note / info / tip / warning / caution — are styled per-type by the default theme) + `<boxed-text>` export
+- [x] Frameable border looks — `border=<name>` selects a named look (`accent` / `thick` / `dashed` / `subtle` in the default theme) on the frameable border surface; the document names the look, the theme defines it (`frameable-border-<name>` modifier class)
 - [x] External DSLs — the `<diagram>` host (Mermaid, ABC engines as format words); legacy `<mermaid>` / `<abc>` kept as gate shorthands
 - [x] Inline SVG — the `<svg>` frameable element (bare inline, or captioned / numbered → wrapped in `<figure>`); the canonical home for framed inline SVG (no `<fig svg>`)
 - [x] Links with a positional URL (`<a url | text>`)

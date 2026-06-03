@@ -23,7 +23,7 @@
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
-import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
 import { convertChildren } from '../lib/ast-helpers.js';
 
 /**
@@ -47,6 +47,8 @@ export function frameHandler(state, node, vocab) {
     node.booleans?.border ??
     (typeof node.kwargs?.border === 'boolean' ? node.kwargs.border : null);
   const border = borderRaw === false ? false : true;
+  // #58: border=<name> selects a named look (and implies border-on).
+  const borderLook = frameableBorderLook(node);
 
   const wrapperProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   // Add data-frame-type if the type kwarg passed through (schema mapping
@@ -63,5 +65,6 @@ export function frameHandler(state, node, vocab) {
     computedNumber: node.computedNumber ?? null,
     scope: node._scope ?? null,
     border,
+    borderLook,
   });
 }

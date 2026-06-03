@@ -2367,4 +2367,34 @@ export function run() {
     snapshotHast('document-49', hast);
     console.log('PASS: integration doc49 (callout types — typed asides + box counter)');
   }
+
+  // ── Document 50: Frame border looks (#58 — border=<name> named looks) ───────
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-50-border-looks.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // border=<name> adds a `frameable-border-<name>` modifier alongside the base
+    // `frameable-border` class (the existing border mechanism, extended — not a
+    // parallel path), and implies border-on.
+    for (const look of ['accent', 'thick', 'dashed', 'subtle']) {
+      assert.ok(
+        html.includes(`class="frameable-border frameable-border-${look}"`),
+        `doc50: <frame border=${look}> emits frameable-border + frameable-border-${look}`,
+      );
+    }
+    // A named look works on the aside border surface too (not just <frame>).
+    assert.ok(
+      html.includes('<aside class="frameable-border frameable-border-accent">'),
+      'doc50: <aside border=accent> gets the look on its frameable border surface',
+    );
+    // A plain frame keeps exactly the base class — no modifier (byte-identical
+    // to pre-#58 output for frames without a named look).
+    assert.ok(
+      html.includes('<figure class="frameable-border">A plain frame'),
+      'doc50: plain <frame> is unchanged (frameable-border only, no modifier)',
+    );
+
+    snapshotHast('document-50', hast);
+    console.log('PASS: integration doc50 (frame border looks — border=<name>)');
+  }
 }
