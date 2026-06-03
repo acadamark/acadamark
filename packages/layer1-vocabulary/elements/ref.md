@@ -47,6 +47,7 @@ enscribe_attributes:
         attribute to vary the rendered text.
   booleans:
     link:
+      handled_by: handler
       default: true
       notes: |
         Controls whether the rendered ref is a navigable hyperlink. Default
@@ -56,6 +57,7 @@ enscribe_attributes:
         navigable anchor (e.g. inside a passage that itself describes the
         cross-reference rather than invoking it).
     preview:
+      handled_by: handler
       default: true
       notes: |
         Controls the hover preview that attaches to the rendered ref by
@@ -64,6 +66,7 @@ enscribe_attributes:
         to the rendered anchor; the hover-preview script's attacher
         skips elements with that attribute.
     title:
+      handled_by: handler
       default: true
       notes: |
         Reserved / unimplemented. The original intent has not been

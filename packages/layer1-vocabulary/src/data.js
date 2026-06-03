@@ -4821,14 +4821,17 @@ const _ref = Object.freeze({
       },
       "booleans": {
         "link": {
+          "handled_by": "handler",
           "default": true,
           "notes": "Controls whether the rendered ref is a navigable hyperlink. Default\nis +link, producing <a href=\"#targetId\" class=\"ref\">...</a>. The\n-link form produces <span class=\"ref\">...</span> instead — useful\nwhen the author wants the ref's display text without making it a\nnavigable anchor (e.g. inside a passage that itself describes the\ncross-reference rather than invoking it).\n",
         },
         "preview": {
+          "handled_by": "handler",
           "default": true,
           "notes": "Controls the hover preview that attaches to the rendered ref by\ndefault. Default +preview attaches a tippy tooltip showing the\ntarget element's content. -preview adds data-no-preview=\"true\"\nto the rendered anchor; the hover-preview script's attacher\nskips elements with that attribute.\n",
         },
         "title": {
+          "handled_by": "handler",
           "default": true,
           "notes": "Reserved / unimplemented. The original intent has not been\nrecovered; deliberately set aside until that intent is\narticulated. Future work, not a current feature.\n",
         },
@@ -6008,10 +6011,12 @@ const _table = Object.freeze({
       ],
       "booleans": {
         "headers": {
+          "handled_by": "handler",
           "default": true,
           "notes": "Whether the first row of the data is a header row. Default true.\nUse -headers to suppress thead generation; rows render as tbody only.\n",
         },
         "numbered": {
+          "handled_by": "handler",
           "default": true,
           "notes": "Whether this table is counted in the numbered table sequence and\nreceives a \"Table N.\" label prefix in its caption.\n",
         },

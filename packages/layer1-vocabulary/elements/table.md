@@ -20,11 +20,13 @@ enscribe_attributes:
         data-driven forms.
   booleans:
     headers:
+      handled_by: handler
       default: true
       notes: |
         Whether the first row of the data is a header row. Default true.
         Use -headers to suppress thead generation; rows render as tbody only.
     numbered:
+      handled_by: handler
       default: true
       notes: |
         Whether this table is counted in the numbered table sequence and
