@@ -120,25 +120,6 @@ export function run() {
     assert.ok(html.includes('The Effect of Elephants on Climate'), 'doc2: title');
     assert.ok(html.includes('<article-subtitle>'), 'doc2: subtitle promoted');
     assert.ok(html.includes('Evidence from Sub-Saharan Africa'), 'doc2: subtitle');
-    // #74: the title block is wrapped in a semantic <header> that opens inside
-    // <article-front> (before the title) and closes before the body. Order-based
-    // (whitespace-agnostic). The header is added in the HTML compiler, so it
-    // shows in `html` but not in the hast snapshot (HTML-only; JATS unaffected).
-    {
-      const frontIdx = html.indexOf('<article-front>');
-      const headerOpenIdx = html.indexOf('<header>', frontIdx);
-      const titleIdx = html.indexOf('<article-title>');
-      const headerCloseIdx = html.indexOf('</header>');
-      const bodyIdx = html.indexOf('<article-body>');
-      assert.ok(
-        frontIdx >= 0 && headerOpenIdx > frontIdx && headerOpenIdx < titleIdx,
-        'doc2: <header> opens inside <article-front>, wrapping the title block',
-      );
-      assert.ok(
-        headerCloseIdx > titleIdx && headerCloseIdx < bodyIdx,
-        'doc2: <header> closes before <article-body> (first non-front-matter block)',
-      );
-    }
     assert.ok(html.includes('<sub-section>'), 'doc2: sub-sections present');
     assert.ok(html.includes('<sub-section-title>'), 'doc2: sub-section titles');
     assert.ok(html.includes('Data sources'), 'doc2: sub-section title text');

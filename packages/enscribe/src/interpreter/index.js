@@ -167,9 +167,6 @@ import { formatScopedNumber } from './lib/scoped-number.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc } from './lib/toc.js';
-// #74: HTML-canonical <header> wrapping of the article title block. Runs on the
-// hast (HTML-only), so the JATS export — which reads the mdast — is unaffected.
-import { wrapArticleFrontHeader } from './lib/front-header.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
@@ -660,11 +657,6 @@ export function enscribeInterpreter(options = {}) {
       },
       allowDangerousHtml: true,
     });
-
-    // #74: wrap the article title block (<article-front> content) in a semantic
-    // <header>. HTML-only (operates on hast), so JATS is unaffected. No-op for
-    // documents without an <article-front> (no title block → byte-identical).
-    wrapArticleFrontHeader(hast);
 
     // Phase 8 Slice 1: table-of-contents. Runs before asset injection so the
     // assets land outside the layout wrapper (at the top of the body), and before
