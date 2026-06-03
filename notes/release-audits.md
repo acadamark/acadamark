@@ -13,14 +13,24 @@ fact." An earlier note establishes only that something was once true.
 Run the four in this order. Code is ground truth, so the code-facing audits come first and
 the doc audits then reconcile against already-accurate specs.
 
-## 1 · Code review + DRY
+## 1 · Code review — fit, dead code, duplication
 
-Surface, as findings: dead code (unreferenced exports, functions, or branches; stale
-comments), duplicated logic that wants one home, and obvious consistency wins.
+Three lenses; each finding is the observation, the fix lands in a `.x.5` slice.
 
-This audit is **light by boundary**: a finding here is the *observation*, not the fix. The
-fix lands in a later `.x.5` slice. A behavior-changing change, or a project-sized
-restructure, is itself a finding with its own Issue — never folded into the audit pass.
+- **Architectural fit (primary).** Does each addition sit on the system's grain, or beside
+  it? Smells to hunt: a one-off helper or module that does almost what an existing mechanism
+  does (a parallel path for one concept); a special-case branch for an input the general
+  mechanism could handle if adjusted; logic placed at a stage chosen for convenience — e.g.
+  to keep tests quiet — rather than where the concept belongs; a suite that passes without
+  covering the shipped behavior. The question is not "does it work" but "should the big
+  picture have been adjusted to absorb this case natively?" A working one-off that signals a
+  missed generalization is a finding — file the refactor toward the general mechanism, not a
+  note that the one-off is fine.
+- **Dead code.** Unreferenced exports, functions, branches; stale comments.
+- **Duplication.** Copy-paste logic that wants one home.
+
+A behavior-changing fix or a project-sized restructure is itself a finding (its own Issue),
+never folded into the audit.
 
 ## 2 · Specs ⇄ code
 
