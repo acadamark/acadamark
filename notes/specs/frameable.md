@@ -220,38 +220,49 @@ figure counter):
 … see <ref @fig:setup> …
 ```
 
-## Relationship to the current build
+## Rendering and the build
 
-The content-float members and the generic `<frame>` ship today with the
-shared surface, caption-as-content, and the per-member defaults above.
-The redesign this spec defines changes two things:
+All frameable members render through the shared `renderFrameable` helper with the
+surface, caption-and-title-as-content, and per-member defaults above. `<aside>` is
+a built frameable member: it carries `title` / `caption` / `border` (default on) /
+`numbered` (default off, the `box` series) alongside its `type` taxonomy and
+`<boxed-text>` export. Callouts/admonitions are `<aside type=…>` (no separate
+element), per "Callouts and admonitions" above.
 
-1. **Promote `<aside>` into the frameable class.** Today `<aside>` is
-   plain prose with only the `type` kwarg (and the `<boxed-text>` export
-   already exists). The redesign gives it the frameable surface — `title`,
-   `caption`, `border` (default on), `numbered` (default off) — alongside
-   its existing `type` taxonomy.
-2. **Fold callouts/admonitions into `<aside type=…>`** rather than a
-   separate element (closes the conceptual scope of #30).
+The helper emits each member through **its own wrapper element** — the wrapper is
+the construct, never an inner element nested in an outer one:
 
-Both are tracked under issue #31; this spec is the build target.
+- **Figure-wrapped members** (`<fig>`, `<svg>`, and `<frame>`) use `<figure>`,
+  with the title as `<figcaption class="title">` (top) and the caption as
+  `<figcaption>` (bottom, with the number-label folded in). Table-family members
+  (`<table>` / `<csv>` / `<tsv>`) use `<table>` with `<caption>`; external DSLs
+  (`<diagram>`) place a sibling `<figcaption>`.
+- **`<aside>`** keeps the semantic `<aside>` element. Its title and caption are
+  `<p class="title">` (top) and `<p class="caption">` (bottom) — the same
+  `.title` / `.caption` styling hooks the figure family uses, because
+  `<figcaption>` is invalid outside `<figure>`. The `frameable-border` class
+  (default on for boxed prose) draws the box.
 
-## Open sub-questions
+## Resolved sub-questions
 
-Genuinely undecided points, owed before or during the build:
+These were the genuinely-undecided points; the #31 build resolved them:
 
-- **Numbered `<aside>` counter.** A numbered float shares the `figure`
-  counter; if a numbered `<aside>` is ever wanted, does it share `figure`,
-  or get its own counter / ref-prefix? (Likely rare — asides default
-  unnumbered — but the counter choice is unrecorded.)
-- **`<title>` as a child tag.** `title` is a kwarg today; the
-  caption-as-content lift pattern extends naturally to a `<title>` child,
-  but whether titles need rich content (and thus the child form) is
-  unconfirmed.
-- **`<aside>` implementation strategy.** `<aside>` is `schema`-strategy
-  today; gaining the frameable surface may move it to the shared
-  frameable helper (`handler`-strategy) or extend the schema path — an
-  implementation call for the #31 build, not a design fork.
+- **Title is content**, not a plain attribute. Like the caption, the title is
+  rich, two-form content: a `<title>` child tag, or a `title=` kwarg lifted to
+  that child at the normalize-to-canonical gate. Same treatment the caption gets.
+- **A numbered `<aside>` gets its OWN counter** — the **`box`** series
+  ("Box N"), with config key `number-boxes` and ref-prefix `box`. It does *not*
+  share the `figure` counter. `<aside>` is **unnumbered by default**;
+  `+numbered` opts it into the box series. (Per-type callout numbering —
+  "Note 1" / "Tip 1" — is deferred; a numbered aside counts in the single `box`
+  series regardless of `type`.)
+- **`<aside>` is handler-strategy.** Gaining the frameable surface moved
+  `<aside>` from `schema` to `handler`: `asideHandler` (mirroring
+  `frameHandler`) calls the shared `renderFrameable` helper. The wrapper stays
+  the semantic `<aside>` element (not `<figure>`); its title and caption render
+  as `<p class="title">` (top) and `<p class="caption">` (bottom) — the same
+  `.title` / `.caption` styling hooks the figure family uses, since
+  `<figcaption>` is invalid outside `<figure>`.
 
 ## Related references
 

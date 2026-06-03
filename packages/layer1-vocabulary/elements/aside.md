@@ -17,6 +17,34 @@ enscribe_attributes:
         Optional classification of the aside's role. Affects rendering
         (callouts get visual emphasis; sidebars get layout treatment).
         Maps to JATS via boxed-text content-type at export.
+    title:
+      handled_by: handler
+      notes: |
+        Optional title rendered at the top of the aside (the frameable
+        title-top convention, #31). Lifts to a <title> child tag at the
+        normalize-to-canonical gate; the child form is equivalent.
+    caption:
+      handled_by: handler
+      notes: |
+        Optional caption rendered at the foot of the aside (frameable
+        caption-bottom convention, #31), with the "Box N." label folded in
+        when numbered. Lifts to a <caption> child tag at the gate.
+  booleans:
+    numbered:
+      handled_by: handler
+      default: false
+      notes: |
+        Whether this aside is numbered. **Off by default** (boxed prose is
+        usually a one-off callout). When +numbered, the aside counts in its
+        OWN "Box N" series (the `box` counter / ref-prefix `box`), not the
+        figure counter.
+    border:
+      handled_by: handler
+      default: true
+      notes: |
+        Frameable surface (#31). **On by default for boxed prose** — the
+        visual box is the point of a callout / sidebar. Use -border to
+        suppress the outline.
 content:
   type: prose
   becomes: children
@@ -46,7 +74,8 @@ shorthand_examples:
         <p>This is a multi-line callout.</p>
         <p>It can contain multiple paragraphs and other content like <strong>emphasis</strong> and inline references.</p>
       </aside>
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/aside.js
 ---
 
 # `<aside>`

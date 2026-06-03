@@ -103,6 +103,11 @@ const NUMBERED_TAGNAMES = new Map([
   // the default. Frame stays unregistered when no +numbered marker
   // is present.
   ['frame',   'figure'],
+  // #31: <aside> joins the frameable class with its OWN 'box' counter
+  // ("Box N", config key number-boxes, ref-prefix box) — not the figure
+  // counter. Unnumbered by default (NUMBERED_DEFAULT_FALSE below); +numbered
+  // opts in. Per-type callout numbering ("Note 1"/"Tip 1") is deferred.
+  ['aside',   'box'],
 ]);
 
 // Phase 3 slice 3c (2026-05-28): tagnames whose `numbered` kwarg
@@ -117,7 +122,7 @@ const NUMBERED_TAGNAMES = new Map([
 // without any colon-id-derived label have no reason to be in the
 // registry. The visitor short-circuits and skips registration entirely
 // when the resolved numbered is false and the node has no id.
-const NUMBERED_DEFAULT_FALSE = new Set(['frame']);
+const NUMBERED_DEFAULT_FALSE = new Set(['frame', 'aside']);
 
 // Maps registry type to the document-level config key that can suppress numbering.
 const CONFIG_KEY = {
@@ -127,6 +132,7 @@ const CONFIG_KEY = {
   theorem: 'number-theorems',
   definition: 'number-definitions',
   example: 'number-examples',
+  box: 'number-boxes',
 };
 
 // Section tagnames registered for cross-reference lookup (AUD-09).

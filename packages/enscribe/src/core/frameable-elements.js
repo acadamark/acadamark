@@ -61,6 +61,7 @@ export const FRAMEABLE_LIFTABLE = new Map([
   ['diagram', { liftedKwargs: new Set(['caption', 'title']) }],  // #22 slice 3: the diagram host
   ['svg',     { liftedKwargs: new Set(['caption', 'title']) }],
   ['frame',   { liftedKwargs: new Set(['caption', 'title']) }],
+  ['aside',   { liftedKwargs: new Set(['caption', 'title']) }],  // #31: aside joins the frameable class
 ]);
 
 /**

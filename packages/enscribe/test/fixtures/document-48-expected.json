@@ -1729,7 +1729,11 @@
                 {
                   "type": "element",
                   "tagName": "aside",
-                  "properties": {},
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
                   "children": [
                     {
                       "type": "element",
@@ -2168,7 +2172,11 @@
                 {
                   "type": "element",
                   "tagName": "aside",
-                  "properties": {},
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
                   "children": [
                     {
                       "type": "text",
@@ -2218,7 +2226,11 @@
                 {
                   "type": "element",
                   "tagName": "aside",
-                  "properties": {},
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
                   "children": [
                     {
                       "type": "text",

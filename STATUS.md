@@ -35,6 +35,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Citations and bibliography — citation-js, the `<library>` storage host (`<library bibtex | …>` format word), inline BibTeX / CSL-JSON, CSL styles
 - [x] Cross-references to figures, equations, tables, sections, code blocks, theorems
 - [x] Theorem family — `<theorem>`, `<lemma>`, `<definition>`, `<proof>`, … (shared / own / unnumbered counters)
+- [x] Frameable boxed prose — `<aside>` joins `<frame>` with an optional title, caption, and border (on by default); a numbered `<aside>` gets its own "Box" counter, and `<aside type=…>` carries the callout taxonomy + `<boxed-text>` export
 - [x] External DSLs — the `<diagram>` host (Mermaid, ABC engines as format words); legacy `<mermaid>` / `<abc>` kept as gate shorthands
 - [x] Inline SVG passthrough
 - [x] Links with a positional URL (`<a url | text>`)

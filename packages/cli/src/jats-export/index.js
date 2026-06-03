@@ -1187,8 +1187,30 @@ function emitBlockquoteJats(node, indent) {
 function emitAsideJats(node, indent) {
   const pad = ' '.repeat(indent);
   const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
-  let out = `${pad}<boxed-text content-type="aside"${id}>\n`;
-  out += emitBodyChildren(node.content, indent + 2);
+  // content-type comes from the `type` kwarg (round-trip with <aside type=X>);
+  // default "aside". This is the <boxed-text content-type="…"> ↔ <aside type="…">
+  // mapping (#31).
+  const type = node.kwargs?.type ?? 'aside';
+  // #31: <aside> is frameable — pull the lifted <title>/<caption> children.
+  const { caption, title, body } = extractFrameableParts(node);
+  const number = node.computedNumber ?? null;
+
+  let out = `${pad}<boxed-text content-type="${escapeXmlAttr(type)}"${id}>\n`;
+  // A numbered aside carries its "Box N" label (the box series); boxed-text
+  // permits <label> before <caption>. Unnumbered asides omit it.
+  if (number != null) {
+    out += `${pad}  <label>${escapeXml(`Box ${formatScopedNumber(number, node._scope)}.`)}</label>\n`;
+  }
+  // Title → the boxed-text <caption><title>…</title></caption> slot.
+  if (title) {
+    out += `${pad}  <caption><title>${emitInlines(title)}</title></caption>\n`;
+  }
+  out += emitBodyChildren(body, indent + 2);
+  // A bottom caption has no dedicated slot on <boxed-text>; per the #31
+  // decision it defaults to a trailing <p> inside the box.
+  if (caption) {
+    out += `${pad}  <p>${emitInlines(caption)}</p>\n`;
+  }
   out += `${pad}</boxed-text>\n`;
   return out;
 }

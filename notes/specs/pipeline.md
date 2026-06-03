@@ -767,6 +767,7 @@ These are processed by `enscribeConfigDiscovery` and stored in
 | `number-equations` | `'false'` | `enscribeNumbering` | Suppress equation numbering |
 | `number-figures` | `'false'` | `enscribeNumbering` | Suppress figure numbering |
 | `number-tables` | `'false'` | `enscribeNumbering` | Suppress table numbering |
+| `number-boxes` | `'false'` | `enscribeNumbering` | Suppress numbered-`<aside>` ("Box N") numbering |
 | `bibliography-heading` | string | `enscribeBibliography` | Override the bibliography heading text (default: `References`) |
 | `ref-prefix-eqn` | string | `enscribeRefResolution` | Override "equation" word in ref labels |
 | `ref-prefix-fig` | string | `enscribeRefResolution` | Override "figure" word in ref labels |

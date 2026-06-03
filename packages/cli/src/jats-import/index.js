@@ -935,8 +935,15 @@ function convertBlock(node, depth) {
     case 'statement':   return convertStatement(node);
     case 'def-list':    return convertDefList(node);
     // <boxed-text> (a sidebar / call-out box) → <aside> (the export's reverse),
-    // preserving its content instead of dropping the box.
-    case 'boxed-text':  return makeTag('aside', convertBlocks(node.children.filter((c) => c.name !== 'label' && c.name !== 'caption'), depth));
+    // preserving its content instead of dropping the box. The content-type
+    // round-trips onto the `type` kwarg (#31), except the default "aside" which
+    // re-imports as a bare <aside>. (Title/caption import is not yet round-tripped
+    // — frameable.md scopes the import to content-type ↔ type.)
+    case 'boxed-text': {
+      const contentType = node.attributes['content-type'];
+      const kwargs = (contentType && contentType !== 'aside') ? { type: contentType } : {};
+      return makeTag('aside', convertBlocks(node.children.filter((c) => c.name !== 'label' && c.name !== 'caption'), depth), { kwargs });
+    }
     // A block-position <fn> / <corresp> (e.g. inside <author-notes>) — unwrap to
     // its content. (Body footnote markers are inlined via <xref ref-type="fn">.)
     case 'fn':          return convertBlocks(node.children.filter((c) => c.name !== 'label'), depth);

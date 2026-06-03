@@ -50,6 +50,7 @@ export const CONFIG_KWARGS = new Map([
   ['number-theorems',         'live'],   // numbering.js (theorem/lemma/corollary/proposition)
   ['number-definitions',      'live'],   // numbering.js (<definition>)
   ['number-examples',         'live'],   // numbering.js (<example>)
+  ['number-boxes',            'live'],   // numbering.js (numbered <aside> — the 'box' counter, #31)
 
   // Phase 4 slice 4a (2026-05-29): two scope knobs for book documents.
   // Articles default to none/section; books default to chapter/chapter.

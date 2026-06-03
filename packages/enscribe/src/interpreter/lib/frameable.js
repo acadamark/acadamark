@@ -114,6 +114,12 @@ const KIND_META = new Map([
   // external DSL — <figcaption> sibling of the content wrapper
   ['mermaid', { prefix: 'Figure', captionEl: 'figcaption', layout: 'sibling' }],
   ['abc',     { prefix: 'Figure', captionEl: 'figcaption', layout: 'sibling' }],
+  // boxed prose (#31) — <p class="title"> / <p class="caption"> inside the
+  // element's own wrapper (<aside>). NOT <figcaption> (invalid outside <figure>);
+  // the .title / .caption classes are the same styling hooks the figure family
+  // uses. `prefix: 'Box'` is the own "Box N" counter label (config key
+  // number-boxes, ref-prefix box); <aside> is unnumbered by default.
+  ['aside',   { prefix: 'Box',    captionEl: 'p',          layout: 'boxed-prose' }],
 ]);
 
 // ─── Caption / title extraction ────────────────────────────────────────────
@@ -187,7 +193,7 @@ export function extractFrameableChildren(state, node) {
  * by the caption content (when present). Returns null when no caption
  * needs to render (no label AND no content).
  */
-function buildCaptionEl(captionEl, labelSpan, captionHast) {
+function buildCaptionEl(captionEl, labelSpan, captionHast, captionClass = null) {
   if (labelSpan == null && (captionHast == null || captionHast.length === 0)) {
     return null;
   }
@@ -204,10 +210,13 @@ function buildCaptionEl(captionEl, labelSpan, captionHast) {
   if (captionHast && captionHast.length > 0) {
     children.push(...captionHast);
   }
+  // `captionClass` is null for the figure/table families (a class-less
+  // <figcaption>/<caption> — byte-identical to before); the boxed-prose layout
+  // passes 'caption' so the <p> gets the .caption styling hook (#31).
   return {
     type: 'element',
     tagName: captionEl,
-    properties: {},
+    properties: captionClass ? { className: [captionClass] } : {},
     children,
   };
 }
@@ -302,7 +311,8 @@ export function renderFrameable(opts) {
   // text. formatScopedNumber returns the bare number when scope is absent
   // (articles), so this is zero-diff for unscoped documents.
   const labelSpan = formatLabel(meta.prefix, formatScopedNumber(computedNumber, scope));
-  const captionEl = buildCaptionEl(meta.captionEl, labelSpan, captionHast);
+  const captionClass = meta.layout === 'boxed-prose' ? 'caption' : null;
+  const captionEl = buildCaptionEl(meta.captionEl, labelSpan, captionHast, captionClass);
   const titleEl = buildTitleEl(meta.captionEl, titleHast);
 
   if (meta.layout === 'inside-table') {
@@ -328,6 +338,23 @@ export function renderFrameable(opts) {
     return {
       type: 'element',
       tagName: wrapperEl ?? 'figure',
+      properties: finalWrapperProps,
+      children,
+    };
+  }
+
+  if (meta.layout === 'boxed-prose') {
+    // <aside> [<p class="title">title</p>] body [<p class="caption">label + caption</p>]
+    // Keeps the element's own semantic wrapper (e.g. <aside>); title/caption are
+    // <p> with the .title / .caption classes — NOT <figcaption> (invalid outside
+    // <figure>), so the figure family's CSS hooks apply uniformly (#31).
+    const children = [];
+    if (titleEl) children.push(titleEl);
+    children.push(...bodyHast);
+    if (captionEl) children.push(captionEl);
+    return {
+      type: 'element',
+      tagName: wrapperEl ?? 'aside',
       properties: finalWrapperProps,
       children,
     };

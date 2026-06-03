@@ -626,6 +626,26 @@ const _aside = Object.freeze({
           ],
           "notes": "Optional classification of the aside's role. Affects rendering\n(callouts get visual emphasis; sidebars get layout treatment).\nMaps to JATS via boxed-text content-type at export.\n",
         },
+        "title": {
+          "handled_by": "handler",
+          "notes": "Optional title rendered at the top of the aside (the frameable\ntitle-top convention, #31). Lifts to a <title> child tag at the\nnormalize-to-canonical gate; the child form is equivalent.\n",
+        },
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption rendered at the foot of the aside (frameable\ncaption-bottom convention, #31), with the \"Box N.\" label folded in\nwhen numbered. Lifts to a <caption> child tag at the gate.\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Whether this aside is numbered. **Off by default** (boxed prose is\nusually a one-off callout). When +numbered, the aside counts in its\nOWN \"Box N\" series (the `box` counter / ref-prefix `box`), not the\nfigure counter.\n",
+        },
+        "border": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "Frameable surface (#31). **On by default for boxed prose** — the\nvisual box is the point of a callout / sidebar. Use -border to\nsuppress the outline.\n",
+        },
       },
     },
     "content": {
@@ -651,7 +671,8 @@ const _aside = Object.freeze({
         "layer1_html": "<aside data-aside-type=\"callout\">\n  <p>This is a multi-line callout.</p>\n  <p>It can contain multiple paragraphs and other content like <strong>emphasis</strong> and inline references.</p>\n</aside>\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/aside.js",
     "_sourceFile": "aside.md",
   });
 
@@ -3151,17 +3172,17 @@ const _frame = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<frame | A short callout.>",
-        "layer1_html": "<frame class=\"frameable-border\">A short callout.</frame>\n",
-        "notes": "The simplest case. +border is default on for <frame>, so the\nclass appears automatically.\n",
+        "layer1_html": "<figure class=\"frameable-border\">A short callout.</figure>\n",
+        "notes": "The simplest case. The handler emits a <figure> wrapper (the vocab\nhtml_output.element `frame` is only the lookup key for handler-strategy\nentries — the handler controls the actual element). +border is default on\nfor <frame>, so the class appears automatically.\n",
       },
       {
         "source": "<frame type=note title=\"Important\" |\nMake sure to read this carefully.\n>\n",
-        "layer1_html": "<frame class=\"frameable-border\" data-frame-type=\"note\">\n  <div class=\"frame-title\">Important</div>\n  Make sure to read this carefully.\n</frame>\n",
+        "layer1_html": "<figure class=\"frameable-border\" data-frame-type=\"note\">\n  <figcaption class=\"title\">Important</figcaption>\n  Make sure to read this carefully.\n</figure>\n",
         "notes": "With a title rendered at the top.\n",
       },
       {
         "source": "<frame #fig:method-box +numbered caption=\"Workflow steps\" |\n1. Collect data.\n2. Clean.\n3. Model.\n>\n",
-        "layer1_html": "<frame class=\"frameable-border\" id=\"fig:method-box\">\n  1. Collect data.\n  2. Clean.\n  3. Model.\n  <figcaption>Figure 1. Workflow steps</figcaption>\n</frame>\n",
+        "layer1_html": "<figure class=\"frameable-border\" id=\"fig:method-box\">\n  1. Collect data.\n  2. Clean.\n  3. Model.\n  <figcaption>Figure 1. Workflow steps</figcaption>\n</figure>\n",
         "notes": "Numbered frame, opted in via +numbered. Shares the figure\ncounter with <fig>/<svg>/<mermaid>/<abc>.\n",
       },
     ],

@@ -311,6 +311,7 @@ where the hast handler renders them as null/hidden).
 | `number-equations` | `enscribeNumbering` | Suppress equation numbering document-wide |
 | `number-figures` | `enscribeNumbering` | Suppress figure numbering document-wide |
 | `number-tables` | `enscribeNumbering` | Suppress table numbering document-wide |
+| `number-boxes` | `enscribeNumbering` | Suppress numbered-`<aside>` ("Box N") numbering document-wide |
 | `bibliography-heading` | `enscribeBibliography` | Override the bibliography heading text (default: `References`) |
 | `ref-prefix-{prefix}` | `enscribeRefResolution` | Custom display word for cross-reference labels (e.g., `ref-prefix-eqn=Eq.`) |
 

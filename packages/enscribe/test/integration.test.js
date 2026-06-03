@@ -127,7 +127,7 @@ export function run() {
     assert.ok(html.includes('<img'), 'doc2: figure img generated');
     assert.ok(html.includes('elephant.jpg'), 'doc2: figure src');
     assert.ok(html.includes('<figcaption>'), 'doc2: figcaption present');
-    assert.ok(html.includes('<aside>'), 'doc2: aside present');
+    assert.ok(html.includes('<aside'), 'doc2: aside present');  // #31: aside now frameable (carries class)
     assert.ok(html.includes('<blockquote>'), 'doc2: blockquote present');
     // Document fonts linked (external-by-default); no KaTeX CSS when there's no math.
     assert.ok(html.includes(FONTS_LINK_PREFIX), 'doc2: document fonts linked (external-by-default)');
@@ -438,7 +438,7 @@ export function run() {
     assert.ok(html.includes(KATEX_CDN_URL), 'doc11: KaTeX CSS linked (external-by-default, bare math triggers hasMathElements)');
 
     // The aside content contains inline math (two-surface normalization check).
-    assert.ok(html.includes('<aside>'), 'doc11: <aside> rendered');
+    assert.ok(html.includes('<aside'), 'doc11: <aside> rendered');  // #31: aside now frameable (carries class)
 
     // Inline-math count: top-level section has 2 (bare + authored same expression),
     // aside section has 2 (bare + authored). Total at least 4.
@@ -792,7 +792,7 @@ export function run() {
       'doc22: pre-violation content renders');
     assert.ok(html.includes('Surrounding content continues'),
       'doc22: post-violation content renders');
-    assert.ok(html.includes('<aside>'),
+    assert.ok(html.includes('<aside'),
       'doc22: the aside containing the misplaced apparatus still renders');
 
     snapshotHast('document-22', hast);
@@ -810,12 +810,12 @@ export function run() {
     const { html, hast } = runPipeline(src);
 
     assert.ok(html.includes('<article>'), 'doc23: article structure present');
-    assert.ok(html.includes('<aside>'), 'doc23: aside renders (not consumed as error)');
+    assert.ok(html.includes('<aside'), 'doc23: aside renders (not consumed as error)');
     assert.ok(!html.includes('class="tag-error"'),
       'doc23: no tag-error marker — blank line did not terminate the aside');
 
     // The aside content must contain two paragraphs.
-    const asideSlice = html.substring(html.indexOf('<aside>'), html.indexOf('</aside>'));
+    const asideSlice = html.substring(html.indexOf('<aside'), html.indexOf('</aside>'));
     const paragraphCount = (asideSlice.match(/<p>/g) ?? []).length;
     assert.ok(paragraphCount >= 2,
       `doc23: aside contains at least two <p> elements; got ${paragraphCount}`);

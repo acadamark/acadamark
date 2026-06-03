@@ -50,6 +50,7 @@ const DEFAULT_PREFIXES = {
   prop: 'proposition',   // Phase 3 slice 3a (2026-05-28)
   def:  'definition',
   ex:   'example',
+  box:  'box',           // #31: numbered <aside> own counter (in-text "box 1"; caption label "Box 1.")
 };
 
 /**

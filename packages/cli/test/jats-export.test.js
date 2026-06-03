@@ -294,6 +294,15 @@ function validateWithXmllint(fixtureName, jatsXml) {
   check('doc40: <strike> from ~~…~~ (#55 strikethrough idiom)',
     jats.includes('<strike>a struck-out aside</strike>'));
 
+  // #31: <aside> is frameable — type → content-type, title → <caption><title>,
+  // bottom caption → trailing <p> inside the box.
+  check('doc40: <boxed-text content-type="warning"> from <aside type=warning>',
+    jats.includes('<boxed-text content-type="warning"'));
+  check('doc40: aside title → <caption><title>Heads up</title></caption>',
+    jats.includes('<caption><title>Heads up</title></caption>'));
+  check('doc40: aside bottom caption → trailing <p>',
+    jats.includes('<p>See the calibration log.</p>'));
+
   // Lists.
   check('doc40: <list list-type="bullet">', jats.includes('<list list-type="bullet">'));
   check('doc40: <list list-type="order">', jats.includes('<list list-type="order">'));

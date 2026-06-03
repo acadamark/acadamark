@@ -65,3 +65,5 @@ External links export as ext-link, e.g. <a href="https://example.org/spec" | an 
 a,b,c
 1,2,3
 </table>
+
+<aside type=warning title="Heads up" caption="See the calibration log." | Always calibrate the instrument first.>

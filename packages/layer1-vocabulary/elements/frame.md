@@ -65,19 +65,21 @@ jats_counterpart:
 shorthand_examples:
   - source: '<frame | A short callout.>'
     layer1_html: |
-      <frame class="frameable-border">A short callout.</frame>
+      <figure class="frameable-border">A short callout.</figure>
     notes: |
-      The simplest case. +border is default on for <frame>, so the
-      class appears automatically.
+      The simplest case. The handler emits a <figure> wrapper (the vocab
+      html_output.element `frame` is only the lookup key for handler-strategy
+      entries — the handler controls the actual element). +border is default on
+      for <frame>, so the class appears automatically.
   - source: |
       <frame type=note title="Important" |
       Make sure to read this carefully.
       >
     layer1_html: |
-      <frame class="frameable-border" data-frame-type="note">
-        <div class="frame-title">Important</div>
+      <figure class="frameable-border" data-frame-type="note">
+        <figcaption class="title">Important</figcaption>
         Make sure to read this carefully.
-      </frame>
+      </figure>
     notes: |
       With a title rendered at the top.
   - source: |
@@ -87,12 +89,12 @@ shorthand_examples:
       3. Model.
       >
     layer1_html: |
-      <frame class="frameable-border" id="fig:method-box">
+      <figure class="frameable-border" id="fig:method-box">
         1. Collect data.
         2. Clean.
         3. Model.
         <figcaption>Figure 1. Workflow steps</figcaption>
-      </frame>
+      </figure>
     notes: |
       Numbered frame, opted in via +numbered. Shares the figure
       counter with <fig>/<svg>/<mermaid>/<abc>.
