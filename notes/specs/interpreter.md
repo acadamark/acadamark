@@ -1003,7 +1003,13 @@ For each node, the handler performs this sequence:
      recognized authoring spelling — see `shorthand-syntax.md` §"Long-form
      tags"; only the *tagname* is unknown here, not the syntax.)
 
-4. If `vocab.interpreter_strategy === 'handler'`:
+4. **SUPPRESSED_APPARATUS check.** If the (now-confirmed) vocabulary tag is in
+   `SUPPRESSED_APPARATUS` (`<data>` / `<library>`), return `null` — these are real
+   vocabulary tags whose body renders to nothing (their content is consumed at
+   build time by `library-load.js`). They are kept distinct from INTERNAL_REGISTRY,
+   which holds only plugin-created nodes that have no vocabulary entry.
+
+5. If `vocab.interpreter_strategy === 'handler'`:
    - Look up `vocab.handler_module` in HANDLER_REGISTRY.
    - If found, call `handlerFn(state, node, vocab, opts)`.
    - If the handler throws, emit `warnHandlerError()` and fall through to
@@ -1011,7 +1017,7 @@ For each node, the handler performs this sequence:
    - If the module is not in HANDLER_REGISTRY, emit a warning and fall
      through to schema dispatch.
 
-5. **Schema dispatch** (fallback and default for `interpreter_strategy: schema`).
+6. **Schema dispatch** (fallback and default for `interpreter_strategy: schema`).
 
 ### 5.2 INTERNAL_REGISTRY
 
@@ -1021,8 +1027,6 @@ before the vocabulary lookup.
 
 | tagname | handler | rendered output |
 |---------|---------|----------------|
-| `data` | `() => null` | (suppressed) |
-| `library` | `() => null` | (suppressed) |
 | `__note-marker` | `noteMarkerHandler` | `<sup id="noteref-N" data-note-id="ID"><a href="#ID">N</a></sup>` |
 | `__note-list` | `noteListHandler` | `<note-list class="..."><ol>...</ol></note-list>` |
 | `__note-list-item` | `noteListItemHandler` | `<li id="ID">...</li>` |
@@ -1031,6 +1035,15 @@ before the vocabulary lookup.
 | `__cite-marker` | `citeMarkerHandler` | `<cite class="cite" data-keys="...">FORMATTED HTML</cite>` |
 | `__cite-error` | `citeErrorHandler` | `<cite class="cite-error" data-keys="...">??cite: KEY??</cite>` |
 | `__bibliography` | `bibliographyHandler` | `<bibliography>HEADING + BIB HTML</bibliography>` |
+
+**SUPPRESSED_APPARATUS.** Separately, `<data>` and `<library>` are **real
+vocabulary tags** (they have `data.md` / `library.md` entries) whose rendered body
+output is suppressed — their content is consumed at build time by
+`library-load.js`, so they emit nothing. They are listed in a small
+`SUPPRESSED_APPARATUS` set and suppressed in dispatch step 4 (after the vocabulary
+lookup confirms them), **not** in INTERNAL_REGISTRY — which is reserved for
+plugin-created nodes that have no vocabulary entry, so each registry's name matches
+its contract.
 
 ### 5.3 HANDLER_REGISTRY
 

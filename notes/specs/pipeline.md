@@ -1046,9 +1046,11 @@ and cannot be authored directly.
 | `enscribeCiteResolution` | `__cite-error` | `<cite class="cite-error">` |
 | `enscribeBibliography` | `__bibliography` | `<bibliography>` |
 
-The `data` and `library` tagnames (author-written) are also in INTERNAL_REGISTRY
-and render as `null` (suppressed): their content has been consumed by
-`buildCitationIndex`.
+The `data` and `library` tagnames (author-written) render as `null` (suppressed):
+their content has been consumed by `buildCitationIndex`. As real vocabulary tags
+(unlike the `__`-prefixed plugin nodes above), they are suppressed via the
+`SUPPRESSED_APPARATUS` set in `interpret-plugin.js` — after the vocabulary lookup
+confirms them — not via INTERNAL_REGISTRY (see `interpreter.md` §5.1–5.2).
 
 ---
 

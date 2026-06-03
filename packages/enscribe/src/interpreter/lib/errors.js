@@ -11,11 +11,6 @@ export function warnUnknownTag(tagname) {
   console.warn(`${PREFIX} unknown tag <${tagname}>`);
 }
 
-export function warnValidation(tagname, message) {
-  // eslint-disable-next-line no-console
-  console.warn(`${PREFIX} validation [<${tagname}>]: ${message}`);
-}
-
 export function warnHandlerError(tagname, err) {
   const msg = err?.message ?? String(err);
   // eslint-disable-next-line no-console

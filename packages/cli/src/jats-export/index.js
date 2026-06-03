@@ -41,6 +41,7 @@ import { parseColonId } from '@enscribejs/enscribe/core/colon-id';
 // resolve to them (RQ-BOOK-M4). It is the SAME helper computeRefText uses
 // for the xref text, so the two agree by construction.
 import { parseCsv, parseTsv, formatScopedNumber } from '@enscribejs/enscribe';
+import { escapeXmlAttr } from '../lib/xml-escape.js';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
 const JATS_ARTICLE_DOCTYPE_DECL =
@@ -1775,15 +1776,4 @@ function escapeXml(s) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-}
-
-/**
- * Escape XML attribute values (used in raw id="..." strings emitted
- * outside the mapAttributes/jatsEmit pathway).
- */
-function escapeXmlAttr(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/"/g, '&quot;');
 }

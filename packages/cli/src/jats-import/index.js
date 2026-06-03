@@ -38,6 +38,7 @@
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
 import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
+import { escapeXmlAttr } from '../lib/xml-escape.js';
 
 // ─── XML → a small DOM tree (saxes) ───────────────────────────────────────────
 
@@ -572,7 +573,6 @@ function serializeXml(node) {
   return `<${node.name}${attrs}>${inner}</${node.name}>`;
 }
 const escapeXmlText = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const escapeXmlAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 /**
  * Extract LaTeX from an `<inline-formula>` / `<disp-formula>` (or an

@@ -25,6 +25,8 @@
 //                  scope is the foundation; per-element JATS attribute
 //                  completion is slices 5b–5d work.
 
+import { escapeXmlAttr } from '../../lib/xml-escape.js';
+
 /**
  * The JATS emit callback. Returns the target-key + mapped-value pair
  * the export-side aggregator consumes (analogous to the HTML side's
@@ -66,17 +68,4 @@ export function aggregateJatsAttrs(results) {
     parts.push(`${k}="${escapeXmlAttr(String(v))}"`);
   }
   return ' ' + parts.join(' ');
-}
-
-/**
- * Escape characters that are illegal in an XML double-quoted attribute
- * value: `&`, `<`, `"`. (Apostrophes are legal inside double-quoted
- * values; tabs / newlines are typically normalized by the XML parser
- * but escaped here for safety in tooling.)
- */
-function escapeXmlAttr(s) {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/"/g, '&quot;');
 }

@@ -58,13 +58,19 @@ import { convertChildren } from './lib/ast-helpers.js';
 // name early in the pipeline. By the time a node reaches this handler, its
 // tagname is already the canonical key — see DESIGN.md §"The single gate".
 
-// Internal node types created by the notes plugin — they have no vocabulary
-// entries, so they are dispatched here before the vocabulary lookup.
+// Suppressed apparatus (#89): REAL vocabulary tags (`<data>`, `<library>` — see
+// data.md / library.md) whose rendered body output is suppressed. Their content
+// is consumed at build time (library-load.js parses them into the citation
+// registry) and contributes nothing to the rendered body. Kept separate from
+// INTERNAL_REGISTRY below — which is only for plugin-created nodes that have no
+// vocabulary entry — so each registry's name matches its contract. Behaviour is
+// unchanged: these tags still render to null; only the home is now correct.
+const SUPPRESSED_APPARATUS = new Set(['data', 'library']);
+
+// Internal node types created by the structural plugins (notes / refs / cites) —
+// they have NO vocabulary entry, so they are dispatched here before the
+// vocabulary lookup.
 const INTERNAL_REGISTRY = new Map([
-  // Data-layer nodes: render no visible output in HTML.
-  // <data> and <library> are processed by library-load.js at build time.
-  ['data',             () => null],
-  ['library',          () => null],
   ['__note-marker',    noteMarkerHandler],
   ['__note-list',      noteListHandler],
   ['__note-list-item', noteListItemHandler],
@@ -120,6 +126,12 @@ export function createEnscribeTagHandler(opts = {}) {
       warnUnknownTag(node.tagname);
       return makeUnknownElement(state, node);
     }
+
+    // Suppressed apparatus (#89): a real vocabulary tag whose body renders to
+    // nothing (<data> / <library>, consumed at build time). Confirmed a known
+    // vocab tag above, so this is deliberate suppression, not an unknown-tag
+    // fallthrough.
+    if (SUPPRESSED_APPARATUS.has(node.tagname)) return null;
 
     if (vocab.interpreter_strategy === 'handler') {
       const handlerFn = HANDLER_REGISTRY.get(vocab.handler_module);
