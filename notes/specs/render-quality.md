@@ -140,7 +140,7 @@ accounted for as one of three dispositions.
 | Specified — author & meta | `author`, `name` | §4 |
 | Specified — block prose | `blockquote`, `hr`, `ul`/`ol`/`li` | §6 |
 | Specified — inline prose | `em`, `strong` | §7 |
-| Specified — frameables | `fig`(`figure`), `img`, `table`, `csv`, `tsv`, `svg`, `frame` | §8 |
+| Specified — frameables | `fig`(`figure`), `img`, `table`, `csv`, `tsv`, `svg`, `frame`, `aside` (boxed prose) | §8 |
 | Specified — external DSLs | `mermaid`, `abc` | §9 |
 | Specified — math | `inline-math`, `display-math`, `math`, `align`, `cases`, `matrix`, `eqnarray` | §10 |
 | Specified — theorem family | `theorem`, `lemma`, `corollary`, `proposition`, `definition`, `example`, `remark`, `proof` | §11 |
@@ -148,7 +148,7 @@ accounted for as one of three dispositions.
 | Specified — footnotes | `note`, `note-list` | §13 |
 | Specified — bibliography | `bibliography`, `bib-entry` | §14 |
 | Specified — book | `book`, `book-front/body/back`, `book-part`, `book-title`, `book-subtitle`, `book-part-title`, `book-part-subtitle` | §15 |
-| Generic-implicit (block) | `p`, `aside`, `details`, `summary`, `dl`, `dt`, `dd` | §6.2 |
+| Generic-implicit (block) | `p`, `details`, `summary`, `dl`, `dt`, `dd` | §6.2 |
 | Generic-implicit (inline) | `b`, `i`, `u`, `s`, `sub`, `sup`, `span`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, `code` | §7.2 |
 | No-output | `meta`, `config`, `data`, `library`, `bib-entry` | §4.3, §14 |
 | Specified with deferred presentation | `affiliation`, `orcid`, `email`, `date`, `publication-date`, `doi`, `license`, `lang`, `keywords`, `subject`, `version`, `editor`, `abstract`, `term`, `glossary`, `glossary-entry`, `code-block`, `inline-code` | §4.4, §6.3, §7.3 |
@@ -318,17 +318,20 @@ thematic breaks.
 
 ### 6.2 Generic-implicit block elements
 
-**`RQ-BLK-M2`** — `aside`, `details`, `summary`, `dl`, `dt`, `dd` pass through
+**`RQ-BLK-M2`** — `details`, `summary`, `dl`, `dt`, `dd` pass through
 as the same HTML-native tags, with `data-*` attributes preserved. They render
-via browser defaults; the spec verifies pass-through, not appearance.
+via browser defaults; the spec verifies pass-through, not appearance. (`aside`
+is **no longer** generic-implicit: it gained the frameable surface in #31 and is
+a specified boxed-prose frameable — see §8.)
 
 ### 6.3 Out of spec — deferred presentation
 
-Callout styling keyed on `aside[data-aside-type]` (note/warning/tip/…),
-list-marker variants keyed on `ol[data-list-type]`, and dedicated styling for
+List-marker variants keyed on `ol[data-list-type]` and dedicated styling for
 `glossary`/`glossary-entry`/`abstract` sectioning are theme territory: the
 markup carries the attributes/classes for a theme to target, and the default
-theme does not target them.
+theme does not target them. (Callout styling keyed on `aside[data-aside-type]`
+is **no longer** deferred — the default theme now ships per-type callout styling
+for the admonition types; see §8, `RQ-FRM-S7`.)
 
 ---
 
@@ -367,8 +370,9 @@ unstyled. Dedicated `term` styling is a candidate theme rule.
 optional title (rendered above), an optional caption (rendered below), an
 optional outline box, and a number folded into the caption (`Figure N.`,
 `Table N.`). Members: `fig` (→ `<figure>`), `table`/`csv`/`tsv` (→ `<table>`),
-`svg` (→ `<svg>`), `frame` (→ `<figure>`, the shared frameable wrapper), and the
-external DSLs (§9, which share the figure counter).
+`svg` (→ `<svg>`), `frame` (→ `<figure>`, the shared frameable wrapper), `aside`
+(→ `<aside>`, the boxed-prose member with its own `Box` counter and callout
+styling), and the external DSLs (§9, which share the figure counter).
 
 **Expected markup (figure):**
 
@@ -412,6 +416,42 @@ external DSLs (§9, which share the figure counter).
 - **`RQ-FRM-M5`** — the `+border` flag adds the `frameable-border` class to the
   frameable's wrapper element; figures and tables share one figure/table counter
   respectively with the DSLs and `svg`.
+- **`RQ-FRM-M6`** (title/caption ordering) — when present, the **title** is the
+  **first child** of the wrapper (rendered above the body) and carries the class
+  `title`: `<figcaption class="title">` (figure family), `<caption class="title">`
+  (table family), or `<p class="title">` (boxed prose / `aside`). The **caption**
+  is the **last child** (after the body) for the figure and boxed-prose families;
+  for `<table>` the `<caption>` is emitted as the table's first child (HTML
+  requires `<caption>` to precede the rows) and `caption-side: top` keeps it
+  visually at the top. The bottom caption is a bare `<figcaption>` / `<caption>`
+  for the figure/table families, and a `<p class="caption">` for boxed prose.
+- **`RQ-FRM-M7`** (label-only caption) — when a frameable is numbered but has no
+  caption text, the caption element renders the label span **alone** —
+  `<figcaption><span class="figure-label">Figure N.</span></figcaption>` — never
+  an empty or absent caption. When the frameable is neither numbered nor
+  captioned, no caption element is emitted at all.
+- **`RQ-FRM-M8`** (alt-text fallback) — for a figure with `src`, the `<img>`'s
+  `alt` is filled from a fallback chain: the explicit `alt=` kwarg if given, else
+  the caption's plain text, else the pipe/body content's plain text. (The
+  `<img>` always carries an `alt` attribute.)
+- **`RQ-FRM-M9`** (bare-vs-wrapped, generalized) — a frameable adds its wrapper
+  only when it carries something to frame. **`fig` and `frame` always wrap** in
+  `<figure>` (the figure / bordered box is the construct itself). **`table` /
+  `csv` / `tsv` always render** as `<table>`. **`svg`, `mermaid`, `abc` wrap only
+  when captioned, titled, or numbered** — bare, they emit the lone `<svg>` /
+  pass-through contract. Because `svg` / `mermaid` / `abc` are **numbered by
+  default** (they share the figure counter), a bare `<svg>` / `<mermaid>` /
+  `<abc>` *is* numbered and therefore frames; `-numbered` (with no caption or
+  title) is what yields the truly lone form. (`frame` is unnumbered by default
+  but always wraps, because its border/box — not a number — is the point.)
+- **`RQ-FRM-M10`** (aside / boxed prose) — an `<aside>` keeps the semantic
+  `<aside>` element (it is **not** wrapped in `<figure>`, since `<figcaption>` is
+  invalid outside `<figure>`); its title renders `<p class="title">` (first
+  child) and its caption `<p class="caption">` (last child), using the same
+  `.title`/`.caption` hooks (`RQ-FRM-S5`/`S6`). `+border` (default **on** for
+  `<aside>`) adds `frameable-border`. A numbered `<aside>` joins its **own** `Box`
+  counter (`<span class="box-label">Box N.</span>`), not the figure counter, and
+  is unnumbered by default. The `type` kwarg is preserved as `data-aside-type`.
 
 **Stylesheet predicates:**
 
@@ -426,6 +466,24 @@ external DSLs (§9, which share the figure counter).
 - **`RQ-FRM-S4`** — the `frameable-border` class renders a visible outline box
   around the frameable (a `border` on `.frameable-border`), setting the bordered
   callout off from the body text around it.
+- **`RQ-FRM-S5`** — `.title` (the shared title hook for `<figcaption class="title">`
+  / `<caption class="title">` / `<p class="title">`) renders **visually distinct
+  from the bottom caption**: `font-weight: 700`, body-size (`--enscribe-text-base`),
+  primary text colour, with bottom margin separating it from the body. Without
+  this the title would inherit the small/secondary caption look (`RQ-FRM-S2`) and
+  be indistinguishable from the caption — so the spec's "title top, caption
+  bottom, visually distinct" promise depends on this `S` predicate.
+- **`RQ-FRM-S6`** — `.caption` (the boxed-prose bottom caption, `<p class="caption">`)
+  renders at the same small size and secondary colour as `figcaption`/`caption`,
+  so the `aside`-family caption reads as a caption rather than as body prose.
+- **`RQ-FRM-S7`** (callouts) — the default theme styles the admonition `aside`
+  types: `aside[data-aside-type="note"|"info"|"tip"|"warning"|"caution"]` each
+  render a per-type accent (a `border-left-color` from an `--enscribe-callout-*`
+  custom property), a light background tint, and a type icon via `::before`
+  (CSS-only — no markup is injected). The generic `sidebar` / `callout` types
+  receive no admonition styling (the plain box only). Each variant is signalled
+  by three cues — accent, icon, and the title — so colour is never the sole
+  distinguisher.
 
 **Out of spec.** Visual application of `figure[data-align]` (left/right float)
 and `figure[data-width]` is theme territory — the markup carries the attributes;

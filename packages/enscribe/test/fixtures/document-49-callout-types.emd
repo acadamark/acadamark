@@ -1,0 +1,29 @@
+<meta type=article title="Callout types">
+</meta>
+
+<section | Admonitions>
+
+The five admonition types render with distinct per-type callout styling
+(accent border, background tint, and a CSS icon); the generic `sidebar`
+type keeps the plain boxed look.
+
+<aside type=note title="A note" | Plain informational note.>
+
+<aside type=warning | Do not run this on production data.>
+
+<aside type=tip title="Reproducibility" | Use a fixed random seed for every run.>
+
+<aside type=info | Background context the reader may want.>
+
+<aside type=caution | This step is destructive and cannot be undone.>
+
+<aside type=sidebar | A plain sidebar — no admonition styling, just the box.>
+
+<section | Numbered box>
+
+A numbered aside joins the "Box" series and carries a title above and a
+caption below.
+
+<aside #box:setup +numbered type=note title="Experimental setup" caption="The full calibration rig." |
+The apparatus is calibrated before each run.
+>

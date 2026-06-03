@@ -3142,7 +3142,7 @@ const _frame = Object.freeze({
           "maps_to": {
             "html": "data-frame-type",
           },
-          "notes": "Optional classification of what the frame contains (note,\nwarning, tip, theorem-block, etc.). Authors can use this for\nCSS styling (.frame[data-frame-type=\"note\"] { … }).\n",
+          "notes": "Optional classification of what the frame contains (note,\nwarning, tip, theorem-block, etc.), preserved as the\ndata-frame-type attribute. Since <frame> renders as\n<figure class=\"frameable-border\"> (not a custom <frame> element),\nauthors target it with the rendered figure —\nfigure[data-frame-type=\"note\"] { … } — not a \".frame\" selector.\n",
         },
       },
       "booleans": {

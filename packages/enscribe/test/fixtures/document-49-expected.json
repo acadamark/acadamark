@@ -1,0 +1,491 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Callout types"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Admonitions",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 13,
+                          "offset": 12
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The five admonition types render with distinct per-type callout styling\n(accent border, background tint, and a CSS icon); the generic ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 76
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 63,
+                          "offset": 210
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "sidebar"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "\ntype keeps the plain boxed look.",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 72,
+                          "offset": 219
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 33,
+                          "offset": 252
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 76
+                    },
+                    "end": {
+                      "line": 8,
+                      "column": 33,
+                      "offset": 252
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "data-aside-type": "note",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {
+                        "className": [
+                          "title"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A note"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "Plain informational note.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 27,
+                          "offset": 26
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "data-aside-type": "warning",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Do not run this on production data.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 37,
+                          "offset": 36
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "data-aside-type": "tip",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {
+                        "className": [
+                          "title"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Reproducibility"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "Use a fixed random seed for every run.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 40,
+                          "offset": 39
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "data-aside-type": "info",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Background context the reader may want.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 41,
+                          "offset": 40
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "data-aside-type": "caution",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This step is destructive and cannot be undone.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 48,
+                          "offset": 47
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "data-aside-type": "sidebar",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A plain sidebar — no admonition styling, just the box.",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 56,
+                          "offset": 55
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Numbered box",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 14,
+                          "offset": 13
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A numbered aside joins the \"Box\" series and carries a title above and a\ncaption below.",
+                      "position": {
+                        "start": {
+                          "line": 24,
+                          "column": 1,
+                          "offset": 696
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 15,
+                          "offset": 782
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 24,
+                      "column": 1,
+                      "offset": 696
+                    },
+                    "end": {
+                      "line": 25,
+                      "column": 15,
+                      "offset": 782
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "id": "box:setup",
+                    "data-aside-type": "note",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {
+                        "className": [
+                          "title"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Experimental setup"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "The apparatus is calibrated before each run.",
+                      "position": {
+                        "start": {
+                          "line": 2,
+                          "column": 1,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 2,
+                          "column": 45,
+                          "offset": 45
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {
+                        "className": [
+                          "caption"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "box-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Box 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "The full calibration rig."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 30,
+      "column": 1,
+      "offset": 934
+    }
+  }
+}

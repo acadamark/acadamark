@@ -2337,4 +2337,34 @@ export function run() {
     snapshotHast('document-48', hast);
     console.log('PASS: integration doc48 (pipe-form inline/display math + code-span escapes — bug-fix arc Slice C)');
   }
+
+  // ── Document 49: Callout types (#31 — rendered regression guard) ────────────
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-49-callout-types.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Each admonition type renders a typed <aside> carrying its data-aside-type
+    // (the per-type callout CSS in default.css keys off exactly this attribute)
+    // and the frameable-border box class.
+    for (const t of ['note', 'warning', 'tip', 'info', 'caution', 'sidebar']) {
+      assert.ok(
+        html.includes(`data-aside-type="${t}"`),
+        `doc49: <aside type=${t}> carries data-aside-type="${t}"`,
+      );
+    }
+    assert.ok(html.includes('<aside'), 'doc49: asides rendered');
+    assert.ok(html.includes('class="frameable-border"'), 'doc49: asides carry the border box');
+
+    // The boxed-prose title/caption hooks: a titled/captioned aside renders
+    // <p class="title"> (top) and <p class="caption"> (bottom) — the shared
+    // .title / .caption styling hooks (RQ-FRM-S5 / S6).
+    assert.ok(html.includes('<p class="title">'), 'doc49: aside title is <p class="title">');
+    assert.ok(html.includes('<p class="caption">'), 'doc49: aside caption is <p class="caption">');
+
+    // The numbered aside joins the "Box" series.
+    assert.ok(html.includes('Box 1'), 'doc49: numbered aside is "Box 1"');
+
+    snapshotHast('document-49', hast);
+    console.log('PASS: integration doc49 (callout types — typed asides + box counter)');
+  }
 }

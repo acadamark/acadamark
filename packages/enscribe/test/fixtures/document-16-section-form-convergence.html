@@ -579,6 +579,34 @@ figcaption {
   margin-right: var(--enscribe-space-1);
 }
 
+/* RQ-FRM-S5 (#70): the frameable TITLE — <figcaption class="title"> (figure
+ * family), <caption class="title"> (table family), or <p class="title"> (boxed
+ * prose / aside) — is rendered ABOVE the body and must read as a prominent
+ * title, visually distinct from the bottom caption (which is small + secondary).
+ * Without this rule a title <figcaption class="title"> would inherit the plain
+ * figcaption look and be indistinguishable from the caption. This shared `.title`
+ * hook styles all three element forms uniformly across the frameable families. */
+.title {
+  font-size: var(--enscribe-text-base);
+  font-weight: 700;
+  color: var(--enscribe-text-primary);
+  text-align: left;
+  line-height: var(--enscribe-line-height-tight);
+  margin: 0 0 var(--enscribe-space-2) 0;
+}
+
+/* RQ-FRM-S6 (#70): the boxed-prose bottom CAPTION is a <p class="caption">. The
+ * figure/table families style their bare <figcaption>/<caption> by element
+ * selector; a <p> would otherwise read as body text, so `.caption` gives it the
+ * same small/secondary caption look (the counterpart hook to `.title`). */
+.caption {
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  text-align: left;
+  line-height: var(--enscribe-line-height-tight);
+  margin: var(--enscribe-space-2) 0 0 0;
+}
+
 /* RQ-FRM-S4: a frame renders <figure class="frameable-border">. The border
  * class draws a visible outline box around the frameable, setting the bordered
  * callout off from the body text. Reasonable baseline: a 1px solid rule in the

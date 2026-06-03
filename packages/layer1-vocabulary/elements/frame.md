@@ -26,8 +26,11 @@ enscribe_attributes:
       maps_to: data-frame-type
       notes: |
         Optional classification of what the frame contains (note,
-        warning, tip, theorem-block, etc.). Authors can use this for
-        CSS styling (.frame[data-frame-type="note"] { … }).
+        warning, tip, theorem-block, etc.), preserved as the
+        data-frame-type attribute. Since <frame> renders as
+        <figure class="frameable-border"> (not a custom <frame> element),
+        authors target it with the rendered figure —
+        figure[data-frame-type="note"] { … } — not a ".frame" selector.
   booleans:
     numbered:
       handled_by: handler

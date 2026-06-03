@@ -93,6 +93,8 @@ are relative to the `enscribe` package root.
 | `src/core/file-data-keys.js` | String constants for `file.data.*` plugin-bus keys (`ENSCRIBE_CONFIG`, `ENSCRIBE_REGISTRY`, `ENSCRIBE_CITATIONS`, `ENSCRIBE_NOTES_PENDING`, `ENSCRIBE_NUMBERING_PENDING`) | G12 |
 | `src/core/paragraph-unwrap.js` | The single-paragraph unwrap convention helper (the *mechanic*; per-call gates stay with callers) | G13 |
 | `src/core/walkers/discover.js`, `walk-replace.js`, `walk-normalize.js` | The shared single-pass tree walkers (per T2-2 — centralization spans the whole package) | G6 |
+| `src/core/structured-elements.js` | The structured-data-container registry: `STRUCTURED_ELEMENTS` (tag → kwarg/child-tag lift spec + per-tag allowlists, e.g. `<meta>` / `<author>`), with `isStructuredElement` / `getStructuredSpec`. The kwarg form (`<meta title="X">`) lifts to the canonical child-tag form (`<meta><title>X</title>`) at the normalize-to-canonical gate. | — |
+| `src/core/frameable-elements.js` | The frameable kwarg-to-child-tag lift registry: `FRAMEABLE_LIFTABLE` (frameable tag → liftable `caption` / `title` kwargs), with `isFrameableLiftable` / `getFrameableLiftSpec`. Same lift *mechanism* as `structured-elements.js`, different conceptual home — body-content frameables where the lift is a caption/title convenience, not the element's primary interface. | — |
 
 The folder also has a small dedicated unit-test suite
 (`test/colon-id.test.js`) — added during the extraction because the colon-id

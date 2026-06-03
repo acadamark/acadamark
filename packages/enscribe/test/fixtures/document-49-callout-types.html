@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>document-28-deferred-vocab-sub2</title>
+<title>document-49-callout-types</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -992,73 +992,38 @@ body:has(.enscribe-layout--toc) {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Deferred-vocab sub-slice 2 fixture</article-title>
+      <article-title>Callout types</article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Definition list</section-title>
-      <p>A <code>&#x3C;dl></code> pairs terms with their descriptions:</p>
-      <dl>
-        <dt>enscribe</dt>
-        <dd>An academic publishing system built on HTML+CSS+JS.</dd>
-        <dt>Layer 1</dt>
-        <dd>The canonical semantic HTML vocabulary.</dd>
-        <dt>Layer 2</dt>
-        <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>
-      </dl>
+      <section-title>Admonitions</section-title>
+      <p>
+        The five admonition types render with distinct per-type callout styling
+        (accent border, background tint, and a CSS icon); the generic <code>sidebar</code>
+        type keeps the plain boxed look.
+      </p>
+      <aside data-aside-type="note" class="frameable-border">
+        <p class="title">A note</p>Plain informational note.
+      </aside>
+      <aside data-aside-type="warning" class="frameable-border">Do not run this on production data.</aside>
+      <aside data-aside-type="tip" class="frameable-border">
+        <p class="title">Reproducibility</p>Use a fixed random seed for every run.
+      </aside>
+      <aside data-aside-type="info" class="frameable-border">Background context the reader may want.</aside>
+      <aside data-aside-type="caution" class="frameable-border">This step is destructive and cannot be undone.</aside>
+      <aside data-aside-type="sidebar" class="frameable-border">A plain sidebar — no admonition styling, just the box.</aside>
     </section>
     <section>
-      <section-title>Glossary</section-title>
+      <section-title>Numbered box</section-title>
       <p>
-        A <code>&#x3C;glossary></code> is a curated collection of <code>&#x3C;glossary-entry></code> items,
-        each carrying a <code>&#x3C;dt></code>/<code>&#x3C;dd></code> pair:
+        A numbered aside joins the "Box" series and carries a title above and a
+        caption below.
       </p>
-      <glossary id="project-terms">
-        <glossary-entry id="term:enscribe">
-          <dt>enscribe</dt>
-          <dd>The publishing system.</dd>
-        </glossary-entry>
-        <glossary-entry id="term:layer1">
-          <dt>Layer 1</dt>
-          <dd>The canonical vocabulary.</dd>
-        </glossary-entry>
-      </glossary>
-    </section>
-    <section>
-      <section-title>Collapsible disclosure</section-title>
-      <p>
-        A <code>&#x3C;details></code> block carries a <code>&#x3C;summary></code> heading; the body shows
-        when the disclosure is opened:
-      </p>
-      <details>
-        <summary>Background reading</summary>
-        <p>
-          Additional context for the curious reader. The summary above is the
-          visible heading; this paragraph is the disclosure body.
-        </p>
-      </details>
-      <p>A second <code>&#x3C;details></code> with an <code>open</code> kwarg expands by default:</p>
-      <details open="true">
-        <summary>Always-expanded note</summary>
-        <p>This disclosure is expanded by default.</p>
-      </details>
-      <p>
-        This fixture exercises all seven sub-slice-2 elements end-to-end. The
-        test asserts each renders as a real custom (or HTML-native) element
-        with its content — no <code>data-enscribe-unknown</code> spans remain. Closed-
-        child-set / parent-child structural validation is a spec concern only;
-        the parser does not enforce it (always-renders posture).
-      </p>
-      <p>
-        (Note on the <code>open</code> form: the kwarg form <code>open=true</code> is used here
-        rather than the <code>+open</code> boolean form because of a pre-existing
-        limitation in <code>buildProperties</code> — it does not iterate <code>node.booleans</code>,
-        so <code>+flag</code> markers silently drop through the schema dispatch. The
-        limitation is filed as a <code>[post-alpha]</code> backlog item for a future
-        fix; this slice does not address it. Once fixed, <code>+open</code> will render
-        identically to <code>open=true</code>.)
-      </p>
+      <aside id="box:setup" data-aside-type="note" class="frameable-border">
+        <p class="title">Experimental setup</p>The apparatus is calibrated before each run.
+        <p class="caption"><span class="box-label">Box 1.</span> The full calibration rig.</p>
+      </aside>
     </section>
   </article-body>
 </article>
