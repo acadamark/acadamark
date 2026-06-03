@@ -17,6 +17,11 @@ layout published to npm.
 Releases are GitHub Milestones. Each draws its items from GitHub Issues,
 grouped by milestone and label.
 
+The numbering alternates by design: a `.x.0` ships features; the `.x.5` that
+follows is a consolidation pass that resolves the findings of the `.x.0`-close
+release audit (see `CONTRIBUTING.md`, "The release audit") and ships no new
+features.
+
 - **v0.1.0 — shipped.** Bidirectional JATS conversion (export *and* import);
   display features for end-readers (table-of-contents sidebar, single-chapter
   book navigation, themes); a client-side rendering library with an in-browser

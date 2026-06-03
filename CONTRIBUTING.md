@@ -30,13 +30,14 @@ recording it in the spec.
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `multi-file-authoring.md`, `multi-column-display.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/release-audits.md` | Spec | The release-audit procedure — the four reconciliations and how each is run. A process spec; see "The release audit." |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
 | GitHub Issues | Open work | ALL open work — bugs, enhancements, features, open questions — grouped by milestone and label. The home for open-work detail. (Not a repo file.) |
 | `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
 
-The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `ROADMAP.md`) at the repository root; specs in `notes/specs/`; the historical record in `notes/archive/`. Open work lives in GitHub Issues, not in a repo file. Anything outside those documentation locations is code or does not belong in the repo's documentation surface.
+The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `ROADMAP.md`) at the repository root; specs in `notes/specs/` (with the release-audit process spec alongside them at `notes/release-audits.md`); the historical record in `notes/archive/`. Open work lives in GitHub Issues, not in a repo file. Anything outside those documentation locations is code or does not belong in the repo's documentation surface.
 
 ## The spec tier — DESIGN.md and notes/specs/
 
@@ -146,18 +147,20 @@ slice is not done until code and documentation agree.
 >    explicitly — a silent skip and a deliberate "nothing needed" must not look
 >    the same.
 
+## The release audit
+
+The coherence check gates a slice; the release audit gates a `.x.0` milestone — the milestone-level analogue, and the last step before a `.x.0` is tagged.
+
+**When.** A `.x.0` is not complete until, with all its issues closed, the release audit has run. Running it is the final act of the `.x.0`.
+
+**What it produces.** Like any audit, its only output is GitHub Issues — there is no findings document. Findings are filed as they surface and routed by the Maintenance rules below (open work → an Issue; a deliberate, permanent boundary → `DESIGN.md`'s "Design tensions and accepted tradeoffs"; an idea → a discussion Issue), grouped under the next `.x.5` milestone. A finding that blocks the `.x.0` release is assigned to the `.x.0`, not deferred to `.x.5`.
+
+**The cadence.** A `.x.0` ships features; the following `.x.5` is a consolidation pass that resolves the audit's findings and ships no new features. `.x.5` is therefore finite by construction — its scope is exactly what the `.x.0`-close audit surfaced.
+
+**The audit itself** — the four reconciliations and how to run each — is specified in `notes/release-audits.md`.
+
 ## Maintenance
 
-- An audit is a process; its only output is GitHub Issues. There is no
-  "audit findings" document.
-- An audit finding that is open work is filed as a GitHub Issue at the moment
-  it is surfaced — when the Phase 0 report exists — not deferred to the fix
-  slice. If the finding changes a release's scope, the roadmap is also updated in
-  the same edit. Provisional filings are allowed; GitHub Issues, not a report
-  or transcript, is the durable holding place for a surfaced finding. A Phase 0
-  is not complete until its issue-worthy findings are filed. A fix slice
-  resolves findings — refines, closes, or addresses them as spec edits — but is
-  not the first place a finding reaches the issue tracker.
 - A prior observation is a lead, not a fact. When a documentation pass
   migrates, transcribes, or files an observation from an earlier
   investigation, an older notes file, or a past slice, it must empirically
