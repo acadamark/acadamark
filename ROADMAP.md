@@ -29,7 +29,7 @@ features.
 - **v0.2.0 — shipped.** Docs-site polish for public visitors, the consolidated
   three-package layout published to npm, and the accumulated docs and
   infrastructure fixes.
-- **v0.2.5 — current.** The spec-completeness re-sync (acting on the
+- **v0.2.5 — shipped.** The spec-completeness re-sync (acting on the
   rebuild-from-docs audit), accumulated parser / interop / tables fixes, and
   refinements to the apparatus and qualifying-tag surface (the `<data>`
   container migration, generalizing the qualifying-tag pattern, the frameable
@@ -48,12 +48,13 @@ features.
 
 ## Current position
 
-**v0.2.0 is released**: enscribe renders rich documents, converts to and from
-JATS, ships a browser library and the `enscribe` CLI, and is published to npm as
-three packages (`@enscribejs/enscribe`, `@enscribejs/cli`,
-`@enscribejs/layer1-vocabulary`). The live milestone is now **v0.2.5** — the
-spec-completeness re-sync plus accumulated parser, interop, and tables fixes.
-v0.3.0 and v0.4.0 follow with new authoring and display features; the
-longest-horizon work sits under `future`. Every release's items live in
+**v0.2.5 is released** — the spec-completeness re-sync, shipped on top of the
+v0.2.0 base (rich-document rendering, bidirectional JATS, the browser library and
+`enscribe` CLI, three packages on npm: `@enscribejs/enscribe`, `@enscribejs/cli`,
+`@enscribejs/layer1-vocabulary`). v0.2.5 brought the keystone frameable
+close-out, the docs/specs/code reconciliation from the first release audit, and
+accumulated parser, interop, and tables fixes. **v0.3.0 is next** with new
+authoring and display features; v0.4.0 follows, and the longest-horizon work sits
+under `future`. Every release's items live in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues), grouped by
 milestone and label.

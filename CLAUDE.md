@@ -76,6 +76,8 @@ Read the files relevant to the current task at the start of a session.
 
 **No scope creep through "while I'm here."** A prompt that asks for X should produce X. If Y becomes apparent during the work, Y is a finding for a future prompt, not an addition to the current one. The exception is when Y is strictly necessary for X to land cleanly — in which case, surface it and confirm before proceeding.
 
+**Commit and tag messages go via a file, never a heredoc.** Use `git commit -F <file>` / `git tag -a <name> -F <file>` (write the message with the editor first). Do **not** pipe a multi-line message through a heredoc or `-m` in the WSL shell: an apostrophe or backtick in the body breaks the bridge's quoting and silently truncates the message (it mangled several commit messages during v0.2.5). The file route is immune.
+
 **Tests must pass before declaring done.** Run the test suite from a clean state at the end of any work that touches code. "Tests passed in the last incremental run" is not the same as "tests pass from scratch." For Peggy-based grammar work, this means rebuilding the generated parser before running tests.
 
 **Comments on speculative or short-lived code.** When writing code that has a known finite lifespan (e.g., a defensive measure that will be replaced when a deferred feature is implemented), comment it explicitly with that lifespan noted. This makes it findable when the deferred feature lands.
