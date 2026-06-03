@@ -3051,7 +3051,7 @@ const _fig = Object.freeze({
         "border": {
           "handled_by": "handler",
           "default": false,
-          "notes": "Phase 3 frameable surface. When +border is set, the rendered\n<figure> gains the `frameable-border` class so theme stylesheets\ncan draw the outline box per the frameable convention. Off by\ndefault.\n",
+          "notes": "The frameable surface. When +border is set, the rendered\n<figure> gains the `frameable-border` class so theme stylesheets\ncan draw the outline box per the frameable convention. Off by\ndefault.\n",
         },
       },
     },
@@ -3072,7 +3072,7 @@ const _fig = Object.freeze({
       {
         "shorthand": "figure",
         "expands_to": "fig",
-        "notes": "`<figure>` is an accepted authoring alias for the canonical\n`<fig>`, recorded in `DESIGN.md` §\"Frameable elements: a shared\ncapability\". The Phase 3 normalize-to-canonical gate rewrites\n`<figure>`-authored node tagnames to `fig` before downstream\nplugins run, so the entire pipeline below the gate sees the\ncanonical name. Both shorthand_expansions (this vocab-level\nalias) and the gate rewrite exist together because they serve\ndifferent needs: the vocab alias makes `<figure>` survive a\nbypass of the gate (defensive), and the gate rewrite ensures\ntagname-keyed downstream lookups (NUMBERED_TAGNAMES, handler\nrouting) see the single canonical name.\n",
+        "notes": "`<figure>` is an accepted authoring alias for the canonical\n`<fig>`, recorded in `DESIGN.md` §\"Frameable elements: a shared\ncapability\". The normalize-to-canonical gate rewrites\n`<figure>`-authored node tagnames to `fig` before downstream\nplugins run, so the entire pipeline below the gate sees the\ncanonical name. Both shorthand_expansions (this vocab-level\nalias) and the gate rewrite exist together because they serve\ndifferent needs: the vocab alias makes `<figure>` survive a\nbypass of the gate (defensive), and the gate rewrite ensures\ntagname-keyed downstream lookups (NUMBERED_TAGNAMES, handler\nrouting) see the single canonical name.\n",
       },
     ],
     "shorthand_examples": [
@@ -3084,7 +3084,7 @@ const _fig = Object.freeze({
       {
         "source": "<figure src=elephant.jpg | An adult African elephant.>",
         "layer1_html": "<figure>\n  <img src=\"elephant.jpg\" alt=\"An adult African elephant.\" />\n  <figcaption>An adult African elephant.</figcaption>\n</figure>\n",
-        "notes": "`<figure>` is the authoring alias. The Phase 3 gate rewrites the\ntagname to `fig` early; the rendered output is the same.\n",
+        "notes": "`<figure>` is the authoring alias. The normalize-to-canonical gate rewrites the\ntagname to `fig` early; the rendered output is the same.\n",
       },
       {
         "source": "<fig #elephant src=elephant.jpg align=right alt=\"A photograph of an elephant\" | An adult African elephant photographed in Tanzania.>",
@@ -3105,7 +3105,7 @@ const _fig = Object.freeze({
       "Wrap pipe content (or the trailing line of multi-content figures) as <figcaption>.",
       "Preserve any non-caption content (tables, code blocks, equations) as direct children before the figcaption.",
       "Handle the type kwarg by setting data-figure-type and potentially adjusting the wrapping.",
-      "When +border is set, add `frameable-border` to the rendered class list (Phase 3 frameable surface).",
+      "When +border is set, add `frameable-border` to the rendered class list (the frameable surface).",
       "Prepend \"Figure N.\" label span to the figcaption when computedNumber is set (uses formatLabel helper).",
     ],
     "_sourceFile": "fig.md",
@@ -3132,11 +3132,11 @@ const _frame = Object.freeze({
       "kwargs": {
         "title": {
           "handled_by": "handler",
-          "notes": "Optional title rendered at the top of the frame (Phase 3 frameable\ntitle-top convention). Plain text for now; slice 3c will allow\na <title> child tag.\n",
+          "notes": "Optional title rendered at the top of the frame (the frameable\ntitle-top convention), as a title= kwarg or a <title> child tag.\n",
         },
         "caption": {
           "handled_by": "handler",
-          "notes": "Optional caption text rendered at the bottom of the frame\n(Phase 3 frameable caption-bottom convention). Phase 3 slice 3c\nwill lift this kwarg to a <caption> child tag at the gate.\n",
+          "notes": "Optional caption text rendered at the bottom of the frame\n(the frameable caption-bottom convention). The caption= kwarg\nlifts to a <caption> child tag at the gate.\n",
         },
         "type": {
           "maps_to": {
@@ -3154,7 +3154,7 @@ const _frame = Object.freeze({
         "border": {
           "handled_by": "handler",
           "default": true,
-          "notes": "Phase 3 frameable surface. **On by default for frame** (unlike\n<fig>/<svg>/etc.) because the whole point of the generic\n<frame> element is the visual frame. Use -border to suppress\nthe outline and just use the frame as a semantic grouping\nwrapper.\n",
+          "notes": "The frameable surface. **On by default for frame** (unlike\n<fig>/<svg>/etc.) because the whole point of the generic\n<frame> element is the visual frame. Use -border to suppress\nthe outline and just use the frame as a semantic grouping\nwrapper.\n",
         },
       },
     },
@@ -3833,7 +3833,7 @@ const _library = Object.freeze({
         "name": "enscribeLibraryLoad",
         "location": "packages/enscribe/src/interpreter/plugins/library-load.js",
         "runs_before": "enscribeCiteResolution",
-        "purpose": "The actual library processing happens at PLUGIN time, not at handler\ntime. `enscribeLibraryLoad` walks `<data>` root siblings, reads each\ncontained `<library>` node's opaque content, dispatches to the\nformat-specific parser (BibTeX via citation-js, etc.), and registers\nevery entry in the citation registry. By the time interpreter\nrendering runs, the library entries are already in the registry; the\n`<library>` element itself produces no inline output (the structural\npipeline routes `<data>` into `<article-back>` where the empty\n`<library>` element is filtered from the rendered HTML).\n\nThe interpreter_strategy is `schema` (not `handler`) because no\nhandler-time work is needed — the upstream plugin has already done\neverything. A handler module entry was previously declared\n(`handler_module: ./handlers/library.js`) but pointed at a file\nthat does not exist; the declaration was stale aspirational text\nand was removed by Phase 2 slice 2a (2026-05-27). If `<library>`\never needs handler-time work in the future (e.g. a render-mode\nthat shows library content inline), the entry can be re-elevated\nto handler strategy at that time.\n",
+        "purpose": "The actual library processing happens at PLUGIN time, not at handler\ntime. `enscribeLibraryLoad` walks `<data>` root siblings, reads each\ncontained `<library>` node's opaque content, dispatches to the\nformat-specific parser (BibTeX via citation-js, etc.), and registers\nevery entry in the citation registry. By the time interpreter\nrendering runs, the library entries are already in the registry; the\n`<library>` element itself produces no inline output (the structural\npipeline routes `<data>` into `<article-back>` where the empty\n`<library>` element is filtered from the rendered HTML).\n\nThe interpreter_strategy is `schema` (not `handler`) because no\nhandler-time work is needed — the upstream plugin has already done\neverything. A handler module entry was previously declared\n(`handler_module: ./handlers/library.js`) but pointed at a file\nthat does not exist; the declaration was stale aspirational text\nand was removed by an earlier change. If `<library>`\never needs handler-time work in the future (e.g. a render-mode\nthat shows library content inline), the entry can be re-elevated\nto handler strategy at that time.\n",
       },
     ],
     "_sourceFile": "library.md",
@@ -3901,7 +3901,7 @@ const _math = Object.freeze({
       "element": "math",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits a `<math>` wrapper element directly;\nthe schema field is not consulted under\n`interpreter_strategy: handler`. (Same pattern slice 2a's csv/tsv\nentries follow.)\n",
+      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits a `<math>` wrapper element directly;\nthe schema field is not consulted under\n`interpreter_strategy: handler`. (Same pattern the csv/tsv\nentries follow.)\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -3966,7 +3966,7 @@ const _matrix = Object.freeze({
     },
     "content": {
       "type": "opaque",
-      "notes": "Author writes pure environment body (rows separated by `\\\\`, cells\nseparated by `&`). The handler wraps in `\\begin{matrix}...\\end{matrix}`\nbefore passing to KaTeX (wrap-inside convention; see DESIGN.md and\nthe slice 2b STATUS milestone).\n",
+      "notes": "Author writes pure environment body (rows separated by `\\\\`, cells\nseparated by `&`). The handler wraps in `\\begin{matrix}...\\end{matrix}`\nbefore passing to KaTeX (wrap-inside convention; see DESIGN.md and\nan earlier STATUS milestone).\n",
     },
     "content_handler": "matrix",
     "jats_counterpart": {
@@ -5947,7 +5947,7 @@ const _svg = Object.freeze({
         },
         "caption": {
           "handled_by": "handler",
-          "notes": "Optional caption text rendered in a sibling <figcaption>.\nPhase 3 slice 3c will lift this kwarg to a <caption> child tag\nat the normalize-to-canonical gate, matching the frameable\nconvention.\n",
+          "notes": "Optional caption text rendered in a sibling <figcaption>.\nThe caption= kwarg lifts to a <caption> child tag at the\nnormalize-to-canonical gate, matching the frameable convention.\n",
         },
       },
       "booleans": {
@@ -5959,7 +5959,7 @@ const _svg = Object.freeze({
         "border": {
           "handled_by": "handler",
           "default": false,
-          "notes": "Phase 3 frameable surface. When +border is set, the rendered\n<svg> wrapper gains the `frameable-border` class.\n",
+          "notes": "The frameable surface. When +border is set, the rendered\n<svg> wrapper gains the `frameable-border` class.\n",
         },
       },
     },

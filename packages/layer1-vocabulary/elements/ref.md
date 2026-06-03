@@ -240,7 +240,7 @@ Future element types are supported by using a recognized id prefix or registerin
 
 ## JATS mapping
 
-JATS export is deferred to Phase 3. The expected mapping is:
+JATS export maps `<ref>` to `<xref>` as follows:
 
 | enscribe | JATS |
 |-----------|------|

@@ -283,9 +283,8 @@ directions (§"Design directions (discovered through implementation)"):
   such.
 - **"Caption-bearing elements support two equivalent forms"** — both
   the compact form (`caption="..."` kwarg) and the explicit form
-  (`<caption>...</caption>` child) produce identical output. Phase
-  3 slice 3c implemented the kwarg-form lift to child-tag at the
-  normalize-to-canonical gate (`a90a0d2`). For `<table>` (opaque-
+  (`<caption>...</caption>` child) produce identical output. An earlier change (`a90a0d2`) implemented the kwarg-form lift to child-tag at the
+  normalize-to-canonical gate. For `<table>` (opaque-
   content frameable), the lift is skipped to preserve the body
   data string; the handler reads the caption kwarg directly via
   `extractFrameableChildren`'s opaque-content fallback.

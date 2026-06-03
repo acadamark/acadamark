@@ -133,7 +133,7 @@ related_plugins:
       everything. A handler module entry was previously declared
       (`handler_module: ./handlers/library.js`) but pointed at a file
       that does not exist; the declaration was stale aspirational text
-      and was removed by Phase 2 slice 2a (2026-05-27). If `<library>`
+      and was removed by an earlier change. If `<library>`
       ever needs handler-time work in the future (e.g. a render-mode
       that shows library content inline), the entry can be re-elevated
       to handler strategy at that time.

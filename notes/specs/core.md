@@ -119,10 +119,10 @@ vocabulary `data.js` — ship.
 The HTML attribute mapper emits HTML attributes specifically; the JATS export
 has its own attribute mapper emitting JATS attributes. They are stage-specific.
 
-**The deferred open question — RESOLVED 2026-05-29 in Phase 5 slice 5a.** The
+**The deferred open question — RESOLVED 2026-05-29.** The
 iteration shape lifted to `core` as `mapAttributes(node, vocab, target, emit)`
 (`src/core/map-attributes.js`). The lift waited for a second output-target
-consumer; JATS export (Phase 5) is that consumer. The HTML side
+consumer; JATS export is that consumer. The HTML side
 (`src/interpreter/lib/html-emit.js`) and the JATS side
 (`@enscribejs/cli`'s `src/jats-export/lib/jats-emit.js`) each pass
 `target = 'html'` or `target = 'jats'` plus their target-specific emit
@@ -148,7 +148,7 @@ plugin-specific helpers in `src/interpreter/lib/ast-helpers.js`,
 
 ## The build-time vs run-time seam (= the browser-safety boundary)
 
-The boundary the architecture Phase 0 drew is now real (paths relative to the
+The boundary the architecture drew is now real (paths relative to the
 `enscribe` package root unless noted):
 
 ```
@@ -174,7 +174,7 @@ RUN TIME, BROWSER-SAFE (ships in the client-side bundle)
   ✓ src/interpreter/schema/{shape-tokens,validate}.js
   ✓ src/interpreter/interpret-plugin.js
   ✓ src/interpreter/dsl/registry.js                     (DSL asset-emit registry; no Node built-ins after the node-assets split)
-  ✓ src/interpreter/browser.js                          (the render/renderInto browser façade; Phase 14 Slice 1)
+  ✓ src/interpreter/browser.js                          (the render/renderInto browser façade)
   ✓ @enscribejs/layer1-vocabulary src/data.js           (the generated data module)
   ✓ @enscribejs/layer1-vocabulary src/index.js          (re-exports)
 
@@ -249,7 +249,7 @@ The known server-only paths are the five `✗` items above (asset-injection's
 `fs` reads, `font-loader.js`, `table.js`'s `<table src=…>` branch,
 `library-load.js`, and `dsl/node-assets.js`'s DSL bundle loaders + jsdom static
 renderer) — recorded so the client-side-build arc has a visible target list.
-**Phase 14 Slice 1 began that arc.** The tsup browser bundle (entry
+**An earlier change began that arc.** The tsup browser bundle (entry
 `src/interpreter/browser.js`) ships these modules but neutralizes their Node
 calls two ways: (1) the build stubs `fs`/`path`/`url`/`module` so the imports
 resolve, while the browser façade's external-by-default options
@@ -263,7 +263,7 @@ client-side. The standing rule still holds: *no new runtime code should add to
 this list* without the same stub-and-dead-code-or-bundle treatment.
 
 The full client-side build — loading an `.emd` file in-browser with no build
-step — remains a future Architecture-tier arc; Phase 14 Slice 1 delivered the
+step — remains a future Architecture-tier arc; an earlier change delivered the
 library-packaging layer beneath it (a `render`/`renderInto` façade bundled by
 tsup, exposed as the package's `./browser` export). This note exists so backlog
 work doesn't smuggle `fs` into a runtime path.
@@ -277,7 +277,7 @@ The five-slice extraction arc, in order (when `core` was its own package):
 | `0a4523a` | 1 | Created the `enscribe-core` package; moved `dsl-registry` and `sigil-mapping` (pure data, zero logic). |
 | `2fabdf5` | 2 | Added the `enscribeTag` builder family in `tag.js`; migrated 12 hand-construction sites + the partial `lib/ast-helpers.js#makeTag` (DRY audit Bin A.1). |
 | `7cc6002` | 3 | Moved walkers, registry, error-node builders; added `colon-id.js` (with a flagged spec-conformance fix), `file-data-keys.js`, `paragraph-unwrap.js`. |
-| `442202c` | 4 | Vocabulary build-time/run-time split — the arc's highest-risk slice, executed against its own Phase 0 with a gating equivalence check. |
+| `442202c` | 4 | Vocabulary build-time/run-time split — the arc's highest-risk slice, executed against its own read-only investigation with a gating equivalence check. |
 | (arc close) | 5 | Consolidated `buildProperties` (DRY audit Bin A.2); `peggy` → devDep; cross-package imports standardized to bare names; this ADR; client-side constraints. |
 
 Later, the **7→3 package consolidation** (`b0a9d71`) merged the `enscribe-core`,

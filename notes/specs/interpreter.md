@@ -379,7 +379,7 @@ root
   data (root sibling, not inside article)
 ```
 
-**Document type detection update (Phase 4 slice 4a):** the warn-and-
+**Document type detection update:** the warn-and-
 skip for `book`/`book-part` types is now a defensive backstop. The
 `enscribeBookStructuring` plugin (§3.3.5 below) runs before this one
 and wraps book documents into a `<book>` root; article-structuring's
@@ -1444,7 +1444,7 @@ the `documentFontsCss` mode (default `embedResources ? 'inline' : 'link'`):
 
 The `'inline'` path is the AUD-16 fix; before it, fixture rendering had the
 fonts wired in via the render-fixtures shell but external consumers of the
-package silently fell back to the system font stack. Phase 14 Slice 1 made the
+package silently fell back to the system font stack. An earlier change made the
 mode selectable and flipped the default to `'link'`; see
 `notes/specs/pipeline.md` §9.1 for the option and migration note, and §12.3 for
 the same description from the pipeline-stage perspective.
@@ -1466,8 +1466,7 @@ Detection: `hasMathElements` walks the hast tree looking for elements with
 | `'link'` | `<link rel="stylesheet" href="CDN_URL">` |
 | `'skip'` | nothing |
 
-The default is `embedResources ? 'inline' : 'link'` (external-by-default since
-Phase 14 Slice 1).
+The default is `embedResources ? 'inline' : 'link'` (external-by-default since an earlier change).
 
 "Patched" means the font-relative URLs in the raw KaTeX CSS (e.g.,
 `url(fonts/KaTeX_Main-Regular.woff2)`) are replaced with base64 data URIs
@@ -1601,8 +1600,7 @@ an authoring mistake the parser caught is visible in the rendered output
 at its source position — honoring the core always-renders guarantee in
 `notes/specs/principles.md`.
 
-This closed the previously-tracked gap against the guarantee (alpha
-Phase 2 slice 1, commit `e17a892`); `principles.md` records it as closed,
+This closed the previously-tracked gap against the guarantee (alpha; commit `e17a892`); `principles.md` records it as closed,
 and no gap remains open.
 
 ---
@@ -1626,7 +1624,7 @@ and no gap remains open.
 
 `'inline'` modes produce self-contained HTML; `'link'` modes are leaner but
 require network access to the relevant CDN; `'skip'` modes expect the consumer
-to provide the assets. Since Phase 14 Slice 1 the document-fonts and KaTeX
+to provide the assets. Since an earlier change the document-fonts and KaTeX
 defaults are external (`'link'`) — set `embedResources: true` to restore
 self-contained output (`pipeline.md` §9.1 carries the migration note). The
 browser entry (`src/browser.js`) ships these tuned for the client:

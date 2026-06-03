@@ -16,7 +16,7 @@ Enscribe allows line endings inside many construct regions, so authors can struc
 | Sigil-tag content (`<#...#>`, `<##...##>`, etc.) | Yes | Preserved verbatim. Prose parser interprets later. |
 | Math sigil content (`<$...$>`, `<$$...$$>`) | Yes | Preserved verbatim. Embedded language interprets. |
 | Code sigil content (`` <`...`> ``, ` <```...```> `) | Yes | Preserved verbatim. Embedded language interprets. |
-| DSL-tag content (`<csv>...</csv>`, etc.) | Yes | Preserved verbatim. Already multi-line from Slice 4. |
+| DSL-tag content (`<csv>...</csv>`, etc.) | Yes | Preserved verbatim. Already multi-line. |
 
 The principle: quoted attribute values are for short, structured strings (captions, IDs, paths). Long prose belongs in content, where line endings are natural and preserved. Tag names and identifiers are tokens with no internal whitespace.
 

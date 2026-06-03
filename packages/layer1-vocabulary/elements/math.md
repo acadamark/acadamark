@@ -8,7 +8,7 @@ html_output:
     `html_output.element` here is the vocabulary lookup key (must match
     the tagname). The handler emits a `<math>` wrapper element directly;
     the schema field is not consulted under
-    `interpreter_strategy: handler`. (Same pattern slice 2a's csv/tsv
+    `interpreter_strategy: handler`. (Same pattern the csv/tsv
     entries follow.)
 enscribe_attributes:
   id:

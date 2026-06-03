@@ -20,7 +20,7 @@ Where localized recovery is genuinely hard to implement, the resulting shortfall
 
 **No gaps remain open against the guarantee at the time of this writing.** The previously-tracked gaps are closed:
 
-- **The parser-error-node renderer** — closed as of the alpha Phase 2 slice 1 (commit `e17a892`). `enscribeParseError` and `enscribeTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/enscribe/src/interpreter/handlers/parser-errors.js`.
+- **The parser-error-node renderer** — closed as of `e17a892`. `enscribeParseError` and `enscribeTagError` nodes now render as visible `<span class="parse-error">??parse: …??</span>` and `<span class="tag-error">??tag: …??</span>` markers via the compile-step handlers in `packages/enscribe/src/interpreter/handlers/parser-errors.js`.
 
 - **Blank-line / EOF consumption** — resolved per the Option A design (decided 2026-05-26). A blank line inside an open tag is a paragraph break, not a terminator; multi-paragraph tag content is allowed; a tag terminates only on its explicit closing `>` or at EOF; an unclosed tag is detected at EOF and produces a visible `enscribeTagError` at its opening position. The previous "the tag consumes across the blank line" framing was based on the opposite design (blank-line-terminates) being assumed correct — the Option A ruling resolved the open question and confirmed the existing tokenizer behavior is the right behavior. Integration fixtures `document-23-multi-paragraph-tag-content.emd` and `document-24-unclosed-tag-at-eof.emd` pin both halves against regression. The design itself is recorded in `DESIGN.md`.
 

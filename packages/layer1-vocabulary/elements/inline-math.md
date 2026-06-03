@@ -63,5 +63,5 @@ the KaTeX error span appears inside it. Documents always render to something.
 - Inline math renders with `displayMode: false` (KaTeX default).
 - Display-mode math (centered, on its own line) uses `<display-math>`.
 - The `$` sigil may not carry attributes. Id and classes are not supported
-  for inline math in slice 2; add them via a future `<inline-math>` named tag
+  for inline math currently; add them via a future `<inline-math>` named tag
   if needed.

@@ -19,7 +19,7 @@ content:
     Author writes pure environment body (rows separated by `\\`, cells
     separated by `&`). The handler wraps in `\begin{matrix}...\end{matrix}`
     before passing to KaTeX (wrap-inside convention; see DESIGN.md and
-    the slice 2b STATUS milestone).
+    an earlier STATUS milestone).
 content_handler: matrix
 jats_counterpart:
   element: disp-formula
@@ -62,7 +62,7 @@ A LaTeX `matrix` math environment. Authors write rows-and-cells; the handler wra
 </matrix>
 ```
 
-Cells are separated by `&`; rows are terminated by `\\`. The body is pure environment content — the handler adds the `\begin{matrix}` / `\end{matrix}` wrapper (the "wrap-inside" convention from Phase 2 slice 2b).
+Cells are separated by `&`; rows are terminated by `\\`. The body is pure environment content — the handler adds the `\begin{matrix}` / `\end{matrix}` wrapper (the "wrap-inside" convention).
 
 ## See also
 

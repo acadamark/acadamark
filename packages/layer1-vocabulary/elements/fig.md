@@ -74,7 +74,7 @@ enscribe_attributes:
       handled_by: handler
       default: false
       notes: |
-        Phase 3 frameable surface. When +border is set, the rendered
+        The frameable surface. When +border is set, the rendered
         <figure> gains the `frameable-border` class so theme stylesheets
         can draw the outline box per the frameable convention. Off by
         default.
@@ -103,7 +103,7 @@ shorthand_expansions:
     notes: |
       `<figure>` is an accepted authoring alias for the canonical
       `<fig>`, recorded in `DESIGN.md` §"Frameable elements: a shared
-      capability". The Phase 3 normalize-to-canonical gate rewrites
+      capability". The normalize-to-canonical gate rewrites
       `<figure>`-authored node tagnames to `fig` before downstream
       plugins run, so the entire pipeline below the gate sees the
       canonical name. Both shorthand_expansions (this vocab-level
@@ -133,7 +133,7 @@ shorthand_examples:
         <figcaption>An adult African elephant.</figcaption>
       </figure>
     notes: |
-      `<figure>` is the authoring alias. The Phase 3 gate rewrites the
+      `<figure>` is the authoring alias. The normalize-to-canonical gate rewrites the
       tagname to `fig` early; the rendered output is the same.
   - source: '<fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.>'
     layer1_html: |
@@ -175,7 +175,7 @@ handler_responsibilities:
   - Wrap pipe content (or the trailing line of multi-content figures) as <figcaption>.
   - Preserve any non-caption content (tables, code blocks, equations) as direct children before the figcaption.
   - Handle the type kwarg by setting data-figure-type and potentially adjusting the wrapping.
-  - When +border is set, add `frameable-border` to the rendered class list (Phase 3 frameable surface).
+  - When +border is set, add `frameable-border` to the rendered class list (the frameable surface).
   - Prepend "Figure N." label span to the figcaption when computedNumber is set (uses formatLabel helper).
 ---
 
@@ -198,7 +198,7 @@ Both cases produce semantically rich HTML that browsers and screen readers handl
 
 ## The `<figure>` alias
 
-`<figure>` is an authoring alias for `<fig>`. The Phase 3 frameable build (slice 3b, 2026-05-28) added this alias because:
+`<figure>` is an authoring alias for `<fig>`. An earlier change added this alias because:
 
 - HTML5 uses `<figure>` natively, so authors coming from HTML are likely to type `<figure>`.
 - JATS uses `<fig>` for the same element, so the Layer 1 canonical name matches JATS for export simplicity.
@@ -208,7 +208,7 @@ The normalize-to-canonical gate rewrites authored `<figure>` to `<fig>` before a
 
 ## Frameable membership
 
-`<fig>` is a member of the Phase 3 frameable class. The shared frameable surface attributes are `id`, `title`, `caption`, `border`, `numbered`. For `<fig>` specifically, the body content is the captioned material (image, table, code, etc.), the caption appears in the `<figcaption>`, and the number is folded into the figcaption as a "Figure N." prefix.
+`<fig>` is a member of the frameable class. The shared frameable surface attributes are `id`, `title`, `caption`, `border`, `numbered`. For `<fig>` specifically, the body content is the captioned material (image, table, code, etc.), the caption appears in the `<figcaption>`, and the number is folded into the figcaption as a "Figure N." prefix.
 
 ## Why a handler strategy
 
@@ -280,7 +280,7 @@ A figure without `src`. The content includes whatever is being captioned followe
 
 `type` — classifies the figure's content for rendering and JATS export. Common values: `image` (default), `table`, `code`, `equation`, `diagram`, `multi-part`.
 
-`+border` — opt-in frame outline box (Phase 3 frameable surface). Off by default. When set, the rendered `<figure>` gains a `frameable-border` class.
+`+border` — opt-in frame outline box (the frameable surface). Off by default. When set, the rendered `<figure>` gains a `frameable-border` class.
 
 `+numbered` / `-numbered` — controls participation in the document-wide figure sequence. On by default.
 
@@ -329,15 +329,14 @@ directions (§"Design directions (discovered through implementation)"):
   argument's clothing and must be parsed as such.
 - **"Caption-bearing elements support two equivalent forms"** — both
   the compact form (`caption="..."` kwarg) and the explicit form
-  (`<caption>...</caption>` child) produce identical output. Phase
-  3 slice 3c implemented the kwarg-form lift to child-tag at the
+  (`<caption>...</caption>` child) produce identical output. An earlier change implemented the kwarg-form lift to child-tag at the
   normalize-to-canonical gate via `liftFrameableKwargs` backed by
   the `FRAMEABLE_LIFTABLE` registry. For `<fig>` (non-opaque-content
   frameable), the lift fires fully; the handler reads the lifted
   `<caption>` child via `extractFrameableChildren`.
 
 The frameable shared surface itself (id, title, caption, border,
-numbered) is the Phase 3 design recorded in `DESIGN.md`
+numbered) is the design recorded in `DESIGN.md`
 §"Frameable elements: a shared capability".
 
 ## See also

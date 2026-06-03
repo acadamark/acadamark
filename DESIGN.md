@@ -404,7 +404,7 @@ article-vs-book defaults that diverge:
 - **`<config note-scope>`** — `document` (single back-matter list)
   / `chapter` (book default; per-`<book-part>` collection at
   chapter end) / `section` (article default; outermost-section
-  collection, per the slice 7001aaa PG-1 behavior).
+  collection, per the `7001aaa` PG-1 behavior).
 
 The two shapes share everything below the structural wrapper. The
 frameable handlers, the theorem family, math, citations, and notes

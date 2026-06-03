@@ -81,8 +81,7 @@ source text
 HTML string                       JATS XML string
 ```
 
-The JATS branch (Phase 5; `@enscribejs/cli` package, landed in
-slice 5a per `98f2d7f`) consumes the post-stage-3 mdast — the tree is
+The JATS branch (`@enscribejs/cli` package, landed in `98f2d7f`) consumes the post-stage-3 mdast — the tree is
 already JATS-shaped at that point (the structural plugins produced
 `<article>`/`<book>` with the appropriate region wrappers; citations
 and cross-references are resolved; numbering is in). The package
@@ -324,7 +323,7 @@ root
 between them — ordering is arbitrary).
 
 **Book and book-part documents:** handled by `enscribeBookStructuring`
-(Phase 4 slice 4a, `c7b2b75`), which runs immediately before this
+(`c7b2b75`), which runs immediately before this
 plugin in the pipeline. When `<meta type=book>` or `<meta type=book-part>`
 is at root, the book-structuring plugin wraps the tree first; this
 article-structuring plugin then detects the already-book-wrapped tree
@@ -746,7 +745,7 @@ to have run before it.
 `assetsDir` is required when using `<library src="...">` or `<table src="...">`.
 Without it, those elements produce warnings and skip the external file.
 
-**Migration (Phase 14 Slice 1).** The defaults for document fonts and KaTeX CSS
+**Migration (an earlier change).** The defaults for document fonts and KaTeX CSS
 flipped from inline (self-contained) to external `'link'` — output is leaner but
 now references the font and KaTeX CDNs. Set `embedResources: true` to restore the
 prior self-contained output, or set `documentFontsCss`/`katexCss` individually
@@ -984,7 +983,7 @@ By default (`embedResources: false`) the interpreter links document fonts and
 KaTeX CSS externally — leaner output that references the font and KaTeX CDNs.
 Set `embedResources: true` (or `documentFontsCss`/`katexCss` to `'inline'`
 individually) for self-contained HTML that needs no network to render. See
-§9.1 for the full precedence and the Phase 14 Slice 1 migration note.
+§9.1 for the full precedence and the browser-bundle migration note.
 
 ### 12.1 KaTeX
 
@@ -1057,7 +1056,7 @@ confirms them — not via INTERNAL_REGISTRY (see `interpreter.md` §5.1–5.2).
 ## 14. Client-side rendering (browser library)
 
 Layer 1 documents render in the browser with no build step, via the browser
-entry `src/browser.js` (Phase 14 Slice 1). It exports `render(source, options)`
+entry `src/browser.js`. It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
 which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
 browser-safe defaults (external fonts / KaTeX CSS, linked third-party
@@ -1076,15 +1075,15 @@ etc. — so `src/` may import a built-in either way (modern `node:` is preferred
 this also catches bundled dependencies that import built-ins in bare form. Making
 the `node:` form reach the alias requires `removeNodeProtocol: false` in the tsup
 config, because tsup otherwise externalizes `node:`-prefixed specifiers before
-esbuild consults `alias` (Phase 14 Slice 1.5 made the aliasing symmetric and
+esbuild consults `alias` (an earlier change made the aliasing symmetric and
 retired the earlier bare-only convention; the mechanism is documented in
 `tsup.config.js` and `src/assets/node-builtin-stub.js`). The
 `test/bundle-load.test.js` smoke test is the runtime backstop: it builds the IIFE
 bundle and loads it in a browser-like context (jsdom), failing if the bundle
 throws at evaluation — the exact class of defect (a top-level `__require("fs")`)
-that left the Slice 1 bundle unable to load in a browser.
+that left the bundle unable to load in a browser.
 
-**Live-mode assets under `renderInto` (Phase 14 Slice 2).** `renderInto` sets
+**Live-mode assets under `renderInto`.** `renderInto` sets
 the HTML via `el.innerHTML`, and the HTML spec deliberately leaves
 `innerHTML`-injected `<script>` elements inert. The interactive layer enscribe
 emits — Tippy/Popper hover-previews and live-link DSL bundles (mermaid / abc) —

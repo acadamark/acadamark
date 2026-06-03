@@ -28,9 +28,8 @@ enscribe_attributes:
       handled_by: handler
       notes: |
         Optional caption text rendered in a sibling <figcaption>.
-        Phase 3 slice 3c will lift this kwarg to a <caption> child tag
-        at the normalize-to-canonical gate, matching the frameable
-        convention.
+        The caption= kwarg lifts to a <caption> child tag at the
+        normalize-to-canonical gate, matching the frameable convention.
   booleans:
     numbered:
       handled_by: handler
@@ -44,7 +43,7 @@ enscribe_attributes:
       handled_by: handler
       default: false
       notes: |
-        Phase 3 frameable surface. When +border is set, the rendered
+        The frameable surface. When +border is set, the rendered
         <svg> wrapper gains the `frameable-border` class.
 content:
   type: opaque
@@ -110,7 +109,7 @@ handler_responsibilities:
 
 # `<svg>`
 
-Inline SVG embedded in the document. A member of the Phase 3 frameable class — captionable, numberable, optionally bordered.
+Inline SVG embedded in the document. A member of the frameable class — captionable, numberable, optionally bordered.
 
 `<svg>` lets an author embed vector graphics directly without going through `<fig>`'s image-via-src path. The pipe content is the SVG XML source, treated as opaque (the parser does not interpret it).
 
@@ -122,7 +121,7 @@ The rendered output is HTML-native `<svg>` (which browsers handle natively). For
 
 ## Frameable membership
 
-`<svg>` is a member of the Phase 3 frameable class — and it is the **canonical home for framed inline SVG**. It shares the figure counter with `<fig>`, `<mermaid>`, `<abc>`. The shared frameable surface attributes apply: `id`, `caption`, `border`, `numbered`. A captioned or numbered `<svg>` is framed by the ordinary frameable rule — wrapped in a `<figure>` with the `<figcaption>` inside, matching `<fig>`. A bare `<svg -numbered>` with no caption stays a lone `<svg>`.
+`<svg>` is a member of the frameable class — and it is the **canonical home for framed inline SVG**. It shares the figure counter with `<fig>`, `<mermaid>`, `<abc>`. The shared frameable surface attributes apply: `id`, `caption`, `border`, `numbered`. A captioned or numbered `<svg>` is framed by the ordinary frameable rule — wrapped in a `<figure>` with the `<figcaption>` inside, matching `<fig>`. A bare `<svg -numbered>` with no caption stays a lone `<svg>`.
 
 There is **no `<fig svg>` form**: a `(svg, fig)` format-word path would be a redundant second route to the same framed inline SVG that `<svg>`-as-frameable already provides, so it was retired (#81). Inline SVG goes through `<svg>`.
 
@@ -158,7 +157,7 @@ The id enables `<ref @fig:phase-diagram>` cross-references resolving to "Figure 
 
 - `width`, `height`, `viewBox` — standard SVG attributes; pass through to the rendered element.
 - `caption` — optional caption text. Frames the SVG: the `<svg>` is wrapped in a `<figure>` with the caption in a `<figcaption>` inside.
-- `+border` — Phase 3 frameable surface; adds `frameable-border` class.
+- `+border` — the frameable surface; adds `frameable-border` class.
 - `+numbered` / `-numbered` — participates in the figure counter by default.
 
 ## JATS mapping

@@ -13,15 +13,14 @@ enscribe_attributes:
     title:
       handled_by: handler
       notes: |
-        Optional title rendered at the top of the frame (Phase 3 frameable
-        title-top convention). Plain text for now; slice 3c will allow
-        a <title> child tag.
+        Optional title rendered at the top of the frame (the frameable
+        title-top convention), as a title= kwarg or a <title> child tag.
     caption:
       handled_by: handler
       notes: |
         Optional caption text rendered at the bottom of the frame
-        (Phase 3 frameable caption-bottom convention). Phase 3 slice 3c
-        will lift this kwarg to a <caption> child tag at the gate.
+        (the frameable caption-bottom convention). The caption= kwarg
+        lifts to a <caption> child tag at the gate.
     type:
       maps_to: data-frame-type
       notes: |
@@ -44,7 +43,7 @@ enscribe_attributes:
       handled_by: handler
       default: true
       notes: |
-        Phase 3 frameable surface. **On by default for frame** (unlike
+        The frameable surface. **On by default for frame** (unlike
         <fig>/<svg>/etc.) because the whole point of the generic
         <frame> element is the visual frame. Use -border to suppress
         the outline and just use the frame as a semantic grouping
@@ -113,7 +112,7 @@ handler_responsibilities:
 
 # `<frame>`
 
-A generic frameable container — an outline-box wrapper around arbitrary content with optional title and caption. The catch-all member of the Phase 3 frameable class.
+A generic frameable container — an outline-box wrapper around arbitrary content with optional title and caption. The catch-all member of the frameable class.
 
 ## Semantic intent
 
@@ -121,7 +120,7 @@ A generic frameable container — an outline-box wrapper around arbitrary conten
 
 ## Frameable membership
 
-`<frame>` is the generic member of the Phase 3 frameable class. Unlike `<fig>`/`<svg>` (which default to numbered+borderless), `<frame>` defaults the opposite way: **borderless by default → no, +border is default-true; numbered by default → no, default-false**. The reasoning:
+`<frame>` is the generic member of the frameable class. Unlike `<fig>`/`<svg>` (which default to numbered+borderless), `<frame>` defaults the opposite way: **borderless by default → no, +border is default-true; numbered by default → no, default-false**. The reasoning:
 
 - A generic `<frame>` is most often used as a visual callout where the frame IS the point — so border defaults on.
 - A generic `<frame>` is not always a numbered float — it's often a one-off annotation that doesn't need cross-referencing. So numbering defaults off; authors opt in via `+numbered` when they want it.
@@ -161,8 +160,8 @@ Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure
 - `title` — optional title at the top of the frame.
 - `caption` — optional caption at the bottom (with "Figure N." prefix when numbered).
 - `type` — classification (note / warning / tip / methodology / etc.). Renders as `data-frame-type` for CSS targeting.
-- `+border` / `-border` — Phase 3 frameable surface. **Default: on.**
-- `+numbered` / `-numbered` — Phase 3 frameable surface. **Default: off.**
+- `+border` / `-border` — the frameable surface. **Default: on.**
+- `+numbered` / `-numbered` — the frameable surface. **Default: off.**
 
 ## JATS mapping
 
