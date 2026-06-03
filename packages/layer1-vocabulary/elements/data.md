@@ -106,6 +106,8 @@ A container for document resources — content that the document references but 
 
 `<data>` holds **referenced resources, not displayed content**. The element is processed at build time; its contents are made available to the citation system, figure system, and other parts of the pipeline that look up resources by id or key. The `<data>` element itself produces no rendered output.
 
+Architecturally, `<data>` (with `<library>`) is a **storage host on the language axis**, not a structured-data container: its body is a foreign-format payload (BibTeX, CSL-JSON, …) read by an external parser, not a record of enscribe-native fields. It therefore does **not** expose the kwarg↔child-tag structured-field interface that `<meta>` / `<author>` have, and is **not** registered in `STRUCTURED_ELEMENTS`. Issue #24 asked whether `<data>` should gain such an interface; resolved **no** — a foreign payload has no enscribe fields to lift, and mirroring external schemas would reimplement the parsers `<data>` delegates to. See `DESIGN.md` §"Structured-data-container tags".
+
 This is parallel to how `<note>` produces an inline marker (a number) and the note content gets collected by the placement plugin. With `<data>`, there's no inline marker either — the element is purely a backing store for resources that other elements reference.
 
 The placement convention is back-of-document, because reading shouldn't be interrupted by configuration-style content. But the structural plugin places `<data>` correctly regardless of source position. Authors who put `<data>` at the front are not penalized; the convention is for reading ergonomics, not requirement.
