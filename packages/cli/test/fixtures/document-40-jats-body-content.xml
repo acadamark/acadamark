@@ -56,7 +56,7 @@ with prose to verify the slice 5b paragraph-grouping fix.</p>
     </sec>
     <sec>
       <title>Math</title>
-      <p>Inline math <inline-formula><tex-math><![CDATA[E = mc^2]]></tex-math></inline-formula> in a paragraph.</p>
+      <p>Inline math <inline-formula><tex-math><![CDATA[E = mc^2]]></tex-math></inline-formula> in a paragraph, with <strike>a struck-out aside</strike>.</p>
       <p>A numbered display equation:</p>
       <disp-formula id="eqn:euler">
         <label>(1)</label>

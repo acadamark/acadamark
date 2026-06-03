@@ -55,6 +55,7 @@ The third column is what the document contains after normalization: a real `ensc
 
 - **Markdown emphasis maps to the *visual* tags.** `*x*` normalizes to `<i>` and `**x**` to `<b>` — not the semantic `<em>` / `<strong>`. The semantic tags are reached only by writing them explicitly. Headings of depth 1–3 lift to the section ladder; depths 4–6 pass through as literal `<h4>`–`<h6>` (the named exception). Explicit markdown links `[text](url)` are **not** an idiom — they render as their literal source (a bare URL / email autolink still lifts to `<a>`).
 - **Not every markdown construct is normalized.** Fenced code blocks (` ``` `) and bulleted / ordered lists currently render through the native remark→hast path; they are candidate idioms not yet on the normalization registry, so they have no canonical-node row above. Per the registry framing below, whether a construct is normalized *today* is a `STATUS.md` / backlog question, not this document's.
+- **Strikethrough is semantic; there is no underline idiom.** `~~x~~` lifts to `<s>` — HTML5's "no longer relevant or accurate" — **not** `<del>` (remark-gfm names the node `delete`, but a bare strikethrough is not an edit-tracked deletion, so it must not claim one; the same semantic call as `*`→`<em>`-family and headings). **Underline has no idiom:** markdown has no conventional underline shorthand and enscribe does not invent one, so `<u>` is authored only as the direct canonical tag — its absence here is a decision, not an oversight.
 
 A few points worth noting:
 

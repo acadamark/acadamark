@@ -26,7 +26,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Implicit section closing (a peer-level tag ends the previous)
 - [x] Multi-line tag content; escape rules (`\<`, `\|`, `\\`, `&gt;`)
 - [x] Nested tags inside named-tag content (recursive content parsing)
-- [x] Bare markdown forms normalized to canonical nodes (`$x$`, GFM tables, emphasis, lists, links, fenced code)
+- [x] Bare markdown forms normalized to canonical nodes (`$x$`, GFM tables, emphasis/strong, strikethrough, inline code, links, headings)
 - [x] Sections — three-level named ladder (`section` / `sub-section` / `sub-sub-section`)
 - [x] Figures and images, with captions
 - [x] Tables — the `<table>` host with CSV, TSV, JSON, YAML, and Markdown format words (`<csv>` / `<tsv>` kept as gate shorthands → `<table csv>` / `<table tsv>`)

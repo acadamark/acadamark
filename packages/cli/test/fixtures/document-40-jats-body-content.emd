@@ -34,7 +34,7 @@ A definition list:
 
 <section | Math>
 
-Inline math <$ E = mc^2 $> in a paragraph.
+Inline math <$ E = mc^2 $> in a paragraph, with ~~a struck-out aside~~.
 
 A numbered display equation:
 

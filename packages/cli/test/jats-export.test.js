@@ -290,6 +290,10 @@ function validateWithXmllint(fixtureName, jatsXml) {
   check('doc40: <sec sec-type="lists"> from <section sec-type=lists>',
     jats.includes('<sec sec-type="lists">'));
 
+  // #55: the ~~…~~ strikethrough idiom lifts to <s> → JATS <strike>.
+  check('doc40: <strike> from ~~…~~ (#55 strikethrough idiom)',
+    jats.includes('<strike>a struck-out aside</strike>'));
+
   // Lists.
   check('doc40: <list list-type="bullet">', jats.includes('<list list-type="bullet">'));
   check('doc40: <list list-type="order">', jats.includes('<list list-type="order">'));
