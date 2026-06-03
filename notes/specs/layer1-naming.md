@@ -81,47 +81,9 @@ JATS also includes elements enscribe may not need (`<related-article>`, `<fundin
 
 ## Two compilation targets
 
-Enscribe Layer 1 is the canonical, archival representation: custom-element-rich, semantically explicit, lossless. But Layer 1 is not the only useful output — for browser display without custom CSS, a *render-mode* lowering is also useful.
+Enscribe Layer 1 is the canonical, archival representation: custom-element-rich, semantically explicit, lossless. It is not the only useful output — a downstream **render-mode** lowering produces plain HTML (`<section-title>` → `<h1>`, and so on) for browser display without enscribe's CSS. Render mode is lossy and for display only; semantic mode is for everything else (archival, conversion, downstream tooling). This canonical-vs-render distinction is what lets the Layer 1 names stay semantically explicit instead of collapsing to presentational HTML.
 
-**Semantic mode** (the default) preserves Layer 1 elements:
-
-```html
-<section>
-  <section-title>Introduction</section-title>
-  <p>...</p>
-  <sub-section>
-    <sub-section-title>Background</sub-section-title>
-    <p>...</p>
-  </sub-section>
-</section>
-```
-
-**Render mode** is an optional downstream plugin that lowers title elements to standard heading tags so browsers display them with default styling:
-
-```html
-<section>
-  <h1>Introduction</h1>
-  <p>...</p>
-  <sub-section>
-    <h2>Background</h2>
-    <p>...</p>
-  </sub-section>
-</section>
-```
-
-Render mode is lossy — once `<section-title>` becomes `<h1>`, the semantic role is no longer recoverable from the output alone. Render mode is for display, semantic mode is for everything else (archival, conversion, downstream tooling).
-
-The mapping is straightforward:
-
-| Layer 1 element             | Render mode lowering |
-|-----------------------------|----------------------|
-| `<article-title>`           | `<h1>` (top-level)   |
-| `<article-subtitle>`        | `<p class="subtitle">` or `<h2 class="subtitle">` |
-| `<section-title>`           | `<h1>` if article-title is also present, else `<h1>` |
-| `<sub-section-title>`       | `<h2>`               |
-| `<sub-sub-section-title>`   | `<h3>`               |
-
-(The exact mapping for `<article-title>` vs `<section-title>` when both are present — and the `<article-subtitle>` lowering choice in the table above — are render-mode decisions tracked under [#40](https://github.com/enscribejs/enscribe/issues/40); see "Open decisions" below. This table sketches the intent; #40 settles the collision deterministically when the render-mode machinery is built.)
+The render-mode lowering design — the mapping tables and the open title/heading decisions — is a future, unbuilt feature ([#40](https://github.com/enscribejs/enscribe/issues/40)) specified in [`render-mode.md`](render-mode.md).
 
 ## Coexistence with raw HTML
 
@@ -135,7 +97,7 @@ This keeps the rules simple. Enscribe plugins have one job each, with predictabl
 
 These are flagged here so they don't get re-litigated implicitly later:
 
-- **Render-mode mapping for `<article-title>` + `<section-title>` (the title/section collision), and the `<article-subtitle>` lowering alternatives** — **re-homed to [#40](https://github.com/enscribejs/enscribe/issues/40) (render-mode lowering).** Whether `<section-title>` becomes `<h2>` when `<article-title>` takes `<h1>` (or stays `<h1>` and relies on structure), and whether `<article-subtitle>` lowers to `<p class="subtitle">` or `<h2 class="subtitle">`, are render-mode decisions that can't be made deterministically until the render-mode machinery exists. They are specified under #40, not here — this spec acknowledges the deferral rather than dropping it.
+- **Render-mode mapping for `<article-title>` + `<section-title>` (the title/section collision), and the `<article-subtitle>` lowering alternatives** — **re-homed to [#40](https://github.com/enscribejs/enscribe/issues/40) (render-mode lowering).** Whether `<section-title>` becomes `<h2>` when `<article-title>` takes `<h1>` (or stays `<h1>` and relies on structure), and whether `<article-subtitle>` lowers to `<p class="subtitle">` or `<h2 class="subtitle">`, are render-mode decisions that can't be made deterministically until the render-mode machinery exists. Their design now lives in [`render-mode.md`](render-mode.md) (the build is tracked by #40), not here — this spec acknowledges the deferral rather than dropping it.
 
 - **`<header>` block usage — resolved (#74): no separate `<header>` wrapper.** The title-block grouping already exists canonically as the `<article-front>` element — rendered as `<article-front>` in HTML and mapped to JATS `<front>`. A separate `<header>` would be *less* semantically specific than `<article-front>`, and, nested inside `<article>`, would not even carry the `banner` landmark role (which applies only to a top-level `<header>`). So `<article-front>` **is** the title-block grouping; enscribe adds no `<header>` wrapper. This keeps the front-matter grouping a single semantically-explicit custom element, per DESIGN.md §534's intentional model (Layer 1 elements are emitted as raw custom elements). The earlier "wrap the title block in `<header>`?" question is therefore answered **no**.
 

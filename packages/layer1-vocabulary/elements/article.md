@@ -295,20 +295,7 @@ Use the fully explicit form when you need precise control over what goes in fron
 
 ## Render-mode lowering
 
-In semantic mode (the default), `<article>` and its children remain as Layer 1 elements with explicit semantics.
-
-In render mode (a separate downstream plugin), the article structure can be lowered for browser display:
-
-| Layer 1 element | Render-mode lowering |
-|----------------|----------------------|
-| `<article>` | `<article>` (unchanged) |
-| `<article-front>` | `<header>` |
-| `<article-body>` | (transparent — children rendered directly) |
-| `<article-back>` | `<footer>` |
-| `<article-title>` | `<h1>` |
-| `<article-subtitle>` | `<p class="subtitle">` |
-
-The lowering preserves semantic structure where HTML supports it and removes wrappers where they don't add value at the rendering layer.
+In semantic mode (the default), `<article>` and its children remain as Layer 1 elements with explicit semantics. Render-mode lowering of the article structure to plain HTML (`<article-front>` → `<header>`, `<article-title>` → `<h1>`, etc.) is a future, unbuilt feature ([#40](https://github.com/enscribejs/enscribe/issues/40)) specified in [`notes/specs/render-mode.md`](../../../../notes/specs/render-mode.md).
 
 ## See also
 

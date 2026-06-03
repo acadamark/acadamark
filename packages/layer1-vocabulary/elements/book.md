@@ -340,15 +340,7 @@ The build system would inline the referenced content before rendering.
 
 ## Render-mode lowering
 
-| Layer 1 element | Render-mode lowering |
-|----------------|----------------------|
-| `<book>` | `<article>` |
-| `<book-front>` | `<header>` |
-| `<book-body>` | (transparent) |
-| `<book-back>` | `<footer>` |
-| `<book-part>` | `<section class="<type>">` |
-| `<book-title>` | `<h1>` |
-| `<book-part-title>` | heading element appropriate to depth |
+Render-mode lowering of the book structure to plain HTML (`<book>` → `<article>`, `<book-front>` → `<header>`, `<book-part>` → `<section>`, etc.) is a future, unbuilt feature ([#40](https://github.com/enscribejs/enscribe/issues/40)) specified in [`notes/specs/render-mode.md`](../../../../notes/specs/render-mode.md).
 
 ## See also
 
