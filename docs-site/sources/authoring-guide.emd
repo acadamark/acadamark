@@ -301,6 +301,21 @@ Rendered, the markdown form produces:
 The markdown form wraps its content in a paragraph (`<blockquote><p>…</p>`); the
 tag forms with inline content do not.
 
+**Callouts.** An `<aside>` with a `type` is a callout (admonition). Five types are
+styled by the default theme — `note`, `info`, `tip`, `warning`, `caution` — each with
+its own accent, background tint, and icon; the plain `sidebar` / `callout` types are
+just boxes. An aside takes an optional `title` (rendered on top) and `caption` (bottom),
+and is bordered by default:
+
+```
+<aside type=warning | Don't run this on production data.>
+<aside type=tip title="Reproducibility" | Use a fixed random seed.>
+```
+
+Rendered, a tip callout looks like this:
+
+<aside type=tip title="Reproducibility" | Use a fixed random seed for every run.>
+
 **Code blocks.** A fenced block is the standard form; add a language name after
 the opening fence for syntax highlighting. The triple-backtick *sigil* is the
 canonical equivalent. Both appear below — the outer fence here is four backticks
@@ -656,8 +671,11 @@ and equations — see <a href="#sec:book" | Chapter 12>.
 
 Some content is a small language of its own — a diagram description, a snippet of
 music. Enscribe embeds these as *DSL* blocks: `<mermaid>` for diagrams and `<abc>`
-for music notation. Enscribe holds the source verbatim and delegates the drawing to
-the established library for that language.
+for music notation. Both are shorthands for the `<diagram>` host — `<diagram mermaid>`
+and `<diagram abc>` — which is where a new engine plugs in (a one-line registry entry,
+not a new element); the bare `<mermaid>` / `<abc>` forms stay as the convenient spelling.
+Enscribe holds the source verbatim and delegates the drawing to the established library
+for that language.
 
 **Forms.** DSL tags are canonical-only, and you almost always want the **long
 form** — DSL source is full of characters that would end a pipe early (Mermaid's

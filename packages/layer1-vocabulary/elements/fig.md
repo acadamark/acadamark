@@ -53,13 +53,13 @@ enscribe_attributes:
     caption:
       handled_by: handler
       notes: |
-        Optional caption text. Phase 3 slice 3b accepts this as a kwarg
-        only as a sibling-shape convention; the figure handler today
-        still derives the caption from the pipe content (the legacy
-        figure-as-pipe-caption model). Slice 3c (caption-as-content,
-        DD-1 / DD-2) will lift this kwarg to a `<caption>` child tag at
-        the normalize-to-canonical gate, the same way `<meta>` and
-        `<author>` kwargs lift to their child tags.
+        Optional caption text. The `caption=` kwarg lifts to a `<caption>`
+        child tag at the normalize-to-canonical gate (caption-as-content) —
+        the same way `<meta>` / `<author>` kwargs lift to their child tags —
+        so a `<caption>` child can equivalently be authored directly. The
+        figure handler also still accepts the legacy figure-as-pipe-caption
+        form: when no `<caption>` child is present, the pipe content becomes
+        the caption. (`title=` lifts to a `<title>` child the same way.)
   booleans:
     numbered:
       handled_by: handler

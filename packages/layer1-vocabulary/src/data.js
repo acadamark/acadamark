@@ -3039,7 +3039,7 @@ const _fig = Object.freeze({
         },
         "caption": {
           "handled_by": "handler",
-          "notes": "Optional caption text. Phase 3 slice 3b accepts this as a kwarg\nonly as a sibling-shape convention; the figure handler today\nstill derives the caption from the pipe content (the legacy\nfigure-as-pipe-caption model). Slice 3c (caption-as-content,\nDD-1 / DD-2) will lift this kwarg to a `<caption>` child tag at\nthe normalize-to-canonical gate, the same way `<meta>` and\n`<author>` kwargs lift to their child tags.\n",
+          "notes": "Optional caption text. The `caption=` kwarg lifts to a `<caption>`\nchild tag at the normalize-to-canonical gate (caption-as-content) —\nthe same way `<meta>` / `<author>` kwargs lift to their child tags —\nso a `<caption>` child can equivalently be authored directly. The\nfigure handler also still accepts the legacy figure-as-pipe-caption\nform: when no `<caption>` child is present, the pipe content becomes\nthe caption. (`title=` lifts to a `<title>` child the same way.)\n",
         },
       },
       "booleans": {

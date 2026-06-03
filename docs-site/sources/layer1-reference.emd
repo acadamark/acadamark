@@ -437,8 +437,9 @@ booleans `numbered`, `border`. **Id:** `#fig:name`.
 **Category** frameable · **renders** `<table>` (HTML-native) · **content**
 opaque-or-structured. A numbered, captioned data table. **Authoring:**
 `<table csv | …>` / `<table tsv | …>` (a `csv`/`tsv` positional qualifier names the
-data format) or a markdown pipe table. **Attributes:** `caption`, `src`, `type`;
-booleans `headers`, `numbered`. **Id:** `#tab:name`.
+data format), the standalone shorthands `<csv | …>` / `<tsv | …>` (gate-expanded to
+`<table csv>` / `<table tsv>`), or a markdown pipe table. **Attributes:** `caption`,
+`src`, `type`; booleans `headers`, `numbered`. **Id:** `#tab:name`.
 
 ```html
 <table>
@@ -462,13 +463,31 @@ the `width`/`height`/`viewBox` kwargs land on the rendered `<svg>`.
 ```
 
 <## #el:frame | `<frame>` ##>
-**Category** frameable · **renders** `<frame>` · **content** prose. A generic
+**Category** frameable · **renders** `<figure class="frameable-border">` · **content** prose. A generic
 frameable callout — a captioned, optionally bordered box for content that is not a
-figure, table, or diagram. **Attributes:** `title`, `caption`, `type`; booleans
-`numbered`, `border`.
+figure, table, or diagram. The custom name `<frame>` is the authoring key; the
+handler emits a `<figure>` (border on by default). **Attributes:** `title`,
+`caption`, `type`; booleans `numbered`, `border` (default on).
 
 ```html
-<frame class="frameable-border">A short callout.</frame>
+<figure class="frameable-border">A short callout.</figure>
+```
+
+<## #el:aside | `<aside>` ##>
+**Category** frameable · **renders** `<aside data-aside-type="…">` · **content** prose.
+Tangential content, and the home for **callouts / admonitions**: a `type` of `note`,
+`info`, `tip`, `warning`, or `caution` is styled per-type by the default theme (accent
+stripe, background tint, and a CSS icon — color is never the only cue); the plain `sidebar`
+/ `callout` types get the box with no admonition styling. `<aside>` shares the frameable
+surface — `title` (rendered on top), `caption` (bottom), `border` (**on** by default) —
+and a numbered `<aside>` joins its own "Box N" counter (not the figure counter).
+**Attributes:** `type`, `title`, `caption`; booleans `numbered`, `border`.
+
+```html
+<aside data-aside-type="warning" class="frameable-border">
+  <p class="title">Heads up</p>
+  Do not run this on production data.
+</aside>
 ```
 
 <# #cat:thm | Theorem family #>
@@ -601,11 +620,24 @@ Embedded foreign languages — diagrams and music — held verbatim and drawn by
 external library. Content is opaque; use the long form. See
 <a href="authoring-guide.html#sec:dsl" | Authoring Guide ch. 11>.
 
+<## #el:diagram | `<diagram>` ##>
+**Category** DSL host · **renders** `<pre class="ENGINE" data-enscribe-dsl="ENGINE">` ·
+**content** opaque (engine source). The host for embedded diagram engines: a `mermaid` or
+`abc` positional names the engine — `<diagram mermaid | …>`, `<diagram abc | …>`. Adding an
+engine is a one-line registry entry, not a new element. **Attributes:** `caption`. Frameable;
+numbers as a figure.
+
+```html
+<pre class="mermaid" data-enscribe-dsl="mermaid">graph TD
+  A --> B</pre>
+```
+
 <## #el:mermaid | `<mermaid>` ##>
 **Category** DSL · **renders** `<pre class="mermaid">` · **content** opaque (Mermaid
-source). A diagram. The source renders client-side (`live-link` / `live-inline`) or
-is shown verbatim (`skip`); Mermaid has no static mode. **Attributes:** `caption`.
-A DSL block is frameable and numbers as a figure.
+source). A diagram; `<mermaid>` is the standalone shorthand for `<diagram mermaid>`. The
+source renders client-side (`live-link` / `live-inline`) or is shown verbatim (`skip`);
+Mermaid has no static mode. **Attributes:** `caption`. A DSL block is frameable and numbers
+as a figure.
 
 ```html
 <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
@@ -614,8 +646,9 @@ A DSL block is frameable and numbers as a figure.
 
 <## #el:abc | `<abc>` ##>
 **Category** DSL · **renders** `<pre class="abc">` · **content** opaque (ABC source).
-Music notation. Renders client-side in the live modes, or to SVG at build time in
-`static` mode. **Attributes:** `caption`.
+Music notation; `<abc>` is the standalone shorthand for `<diagram abc>`. Renders
+client-side in the live modes, or to SVG at build time in `static` mode. **Attributes:**
+`caption`.
 
 ```html
 <pre class="abc" data-enscribe-dsl="abc">X:1
