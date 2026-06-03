@@ -93,6 +93,8 @@ npm test
 
 Always build before testing when the grammar has been modified. "48/48 pass from a clean rebuild" is the claim that matters; "48/48 pass in the latest run" can be stale.
 
+**`xmllint` is provided by micromamba, not the system.** The JATS DTD-validation checks (in `packages/cli/test/jats-export.test.js`) shell out to `xmllint`, which lives at `~/micromamba/bin/xmllint` — it is *not* a system binary and the ambient PATH may not include it. The harness resolves that path itself (then falls back to a PATH `xmllint`), so `npm test` runs the DTD checks without any manual activation. If neither is found the harness **fails loudly** (it never skips-and-stays-green) — a DTD check that cannot run is a failure. For any ad-hoc XML validation outside the suite, invoke `~/micromamba/bin/xmllint` directly (or activate micromamba); do not assume a bare `xmllint` is on PATH.
+
 ## What's deferred and why
 
 Deferred features and open work live in GitHub Issues. Do not implement an item ahead of its placement in the roadmap unless explicitly prompted. If a current task seems to require an open item, surface this as a finding before working around it.

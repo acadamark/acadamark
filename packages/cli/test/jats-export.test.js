@@ -79,36 +79,46 @@ function check(name, condition) {
 //             dtd/ root and dtd/iso9573-13/ so MathML's bare-name ISO
 //             entity references resolve.
 //
-// When xmllint is NOT on PATH, validation is skipped with a log message
-// (matches slice 5a behavior — snapshot pinning is the binding
-// regression check; validation is the extra-strict check available when
-// xmllint is installed).
-let _xmllintAvailable = null;
-function isXmllintAvailable() {
-  if (_xmllintAvailable !== null) return _xmllintAvailable;
-  try {
-    execSync('xmllint --version', { stdio: 'pipe' });
-    _xmllintAvailable = true;
-  } catch {
-    _xmllintAvailable = false;
+// xmllint is provided by micromamba (`~/micromamba/bin/xmllint`) — it is NOT a
+// system binary, and the ambient PATH is not guaranteed in every environment (a
+// Claude Code session may not have micromamba active, and that is not the user's
+// to control). So resolve the binary DETERMINISTICALLY — the micromamba path
+// first, then a PATH fallback for environments that ship a system xmllint —
+// rather than depending on prior activation.
+//
+// A DTD check that cannot run is a FAILURE, never a silent pass: if no xmllint
+// can be found, fail loudly (exit non-zero) so a green run always means these
+// checks actually executed. There is deliberately no skip-and-still-green path.
+let _xmllintBin = null;
+function resolveXmllint() {
+  if (_xmllintBin !== null) return _xmllintBin;
+  const home = process.env.HOME || process.env.USERPROFILE || '';
+  const candidates = [];
+  if (home) candidates.push(join(home, 'micromamba', 'bin', 'xmllint'));
+  candidates.push('xmllint'); // PATH fallback (e.g. a system-installed xmllint)
+  for (const bin of candidates) {
+    try {
+      execSync(`"${bin}" --version`, { stdio: 'pipe' });
+      _xmllintBin = bin;
+      return bin;
+    } catch { /* try the next candidate */ }
   }
-  return _xmllintAvailable;
+  console.error(
+    '\nFATAL: xmllint not found — JATS DTD validation cannot run.\n' +
+    '  xmllint is provided by micromamba at ~/micromamba/bin/xmllint (it is NOT a\n' +
+    '  system binary). Ensure that path exists, or provide xmllint on PATH.\n' +
+    '  A DTD check that cannot run is a failure, not a skip — refusing to report green.\n',
+  );
+  process.exit(1);
 }
 
-let _xmllintNotedAbsence = false;
 function validateWithXmllint(fixtureName, jatsXml) {
-  if (!isXmllintAvailable()) {
-    if (!_xmllintNotedAbsence) {
-      console.log('  (xmllint not on PATH — DTD validation skipped for all fixtures)');
-      _xmllintNotedAbsence = true;
-    }
-    return;
-  }
+  const bin = resolveXmllint();
   const tmpPath = join(FIXTURES_DIR, `.tmp-validate-${fixtureName}.xml`);
   writeFileSync(tmpPath, jatsXml, 'utf8');
   try {
     execSync(
-      `xmllint --noout --valid --nonet --path "${DTD_DIR}:${DTD_DIR}/iso9573-13" "${tmpPath}"`,
+      `"${bin}" --noout --valid --nonet --path "${DTD_DIR}:${DTD_DIR}/iso9573-13" "${tmpPath}"`,
       { stdio: 'pipe' },
     );
     check(`${fixtureName}: DTD-valid (xmllint --valid against bundled DTDs)`, true);
