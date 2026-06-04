@@ -956,6 +956,8 @@ in one page, see the <a href="quickstart.html" | Quickstart>; and for the output
 vocabulary element by element, the Layer 1 Reference is the next document to land
 on this site.
 
+<config show-source=true />
+
 <data>
 <library |
 @misc{katex,

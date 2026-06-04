@@ -219,3 +219,33 @@ body.playground .site-header {
 .article aside.import-note p:last-child {
   margin-bottom: 0;
 }
+
+/* "See source" disclosure (#8 / #19) — reveals the authored DSL source behind a
+   rendered Mermaid/ABC block. enscribe leaves `.enscribe-source` as a styling
+   hook (the default theme renders the native control); these rules give it an
+   intentional, button-like look on the docs site. */
+.article details.enscribe-source {
+  margin: 0.5rem 0 2rem;
+}
+
+.article details.enscribe-source > summary {
+  display: inline-block;
+  cursor: pointer;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--editor-bg);
+  color: var(--muted);
+  font-family: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+  font-size: 0.8rem;
+  user-select: none;
+}
+
+.article details.enscribe-source[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+.article details.enscribe-source > pre {
+  margin: 0;
+}
