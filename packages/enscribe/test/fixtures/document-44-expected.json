@@ -269,6 +269,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "1"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -277,6 +292,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Foundations"
@@ -2066,6 +2096,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "2"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -2074,6 +2119,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Consonance and Ratios"
@@ -3724,6 +3784,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "3"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -3732,6 +3807,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "3"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Visual and Aural Structure"
@@ -4133,6 +4223,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -4141,6 +4246,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Notation and Sources"

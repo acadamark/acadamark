@@ -28,6 +28,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Nested tags inside named-tag content (recursive content parsing)
 - [x] Bare markdown forms normalized to canonical nodes (`$x$`, GFM tables, emphasis/strong, strikethrough, inline code, links, headings)
 - [x] Sections — three-level named ladder (`section` / `sub-section` / `sub-sub-section`)
+- [x] Section numbering — opt-in via `<config number-sections=true />` (default off for articles, on for books); build-time hierarchical numbers (`3.1.2`) as real content, chapter-prefixed in books, with chapter (arabic) and appendix (alpha) book-part headings numbered; cross-refs render the number ("section 3.1.2", "chapter 1", "appendix A") and JATS carries `<sec><label>` / `<book-part-meta>…<label>`
 - [x] Figures and images, with captions
 - [x] Tables — the `<table>` host with CSV, TSV, JSON, YAML, and Markdown format words (`<csv>` / `<tsv>` kept as gate shorthands → `<table csv>` / `<table tsv>`)
 - [x] Inline and display math (KaTeX); numbered equations

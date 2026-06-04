@@ -462,3 +462,152 @@ export function fillNumbering(file) {
     node.computedNumber = entry.number;
   }
 }
+
+// ─── Section numbering (#57) ─────────────────────────────────────────────────
+//
+// Optional hierarchical section numbering, computed at build time so the number
+// is REAL content (cross-refs render it, JATS carries it, no-JS/archival readers
+// see it) — not a CSS counter. Gated by the `number-sections` config key:
+// default OFF for articles (preserves byte-identical unnumbered output) and ON
+// for books ("2.1 Methods" is standard). When off, numberSections is a no-op, so
+// nothing is stamped and emission is unchanged.
+//
+// The number is a dotted hierarchical string ("3.1.2") — the CANONICAL number.
+// Body sections: top component is the section index (articles) or the chapter
+// index (books, so "3.1" = chapter 3 §1). It is stamped on the section node (for
+// the JATS <sec><label>) AND its title child (for the HTML span via schemaDispatch),
+// and written onto the section's registry entry (so cross-refs render it via the
+// existing computeRefText — one registry, one source of truth). Presentation
+// (separators, "Chapter N" framing) is the theme's job.
+
+const SECTION_TAG_SET = new Set(SECTION_TAGNAMES);
+
+/** Structural children of a node (enscribeTag content, or mdast children). */
+function structuralChildren(node) {
+  if (Array.isArray(node?.content)) return node.content;
+  if (Array.isArray(node?.children)) return node.children;
+  return [];
+}
+
+function findRegionChild(node, tagname) {
+  return structuralChildren(node).find((c) => isEnscribeTag(c, tagname)) ?? null;
+}
+
+/**
+ * Resolve whether section numbering is on. Config `number-sections` (true/false)
+ * wins; otherwise the default is ON for books, OFF for articles.
+ */
+function resolveNumberSections(treeChildren, config) {
+  const cv = config?.get?.('number-sections');
+  if (cv === true || cv === 'true') return true;
+  if (cv === false || cv === 'false') return false;
+  for (const child of treeChildren ?? []) {
+    if (isEnscribeTag(child) && child.tagname === 'book') return true;
+  }
+  return false;
+}
+
+/**
+ * Stamp a section's computed number on the node (for JATS), on its title child
+ * (for HTML schemaDispatch), and on its registry entry (for cross-refs).
+ */
+function stampSection(node, num, registry) {
+  node.computedSectionNumber = num;
+  // The heading element is `${tagname}-title` — section-title / sub-section-title
+  // / sub-sub-section-title (a direct child of the section), and (Layer 2)
+  // book-part-title for a numbered chapter or appendix (which lives inside the
+  // book-part's synthesized <meta>, not as a direct child). The guarded
+  // schemaDispatch span renders the number there.
+  const titleTag = `${node.tagname}-title`;
+  const kids = structuralChildren(node);
+  let title = kids.find((c) => isEnscribeTag(c, titleTag));
+  if (!title) {
+    const meta = kids.find((c) => isEnscribeTag(c, 'meta'));
+    if (meta) title = structuralChildren(meta).find((c) => isEnscribeTag(c, titleTag));
+  }
+  if (title) title.computedSectionNumber = num;
+  if (node.id) {
+    let entry = registry.findByLabel(node.id);
+    // Sections already have a (numbered:false) registry entry from the numbering
+    // visitor; book-parts do NOT (#57 Layer 2 registers them here so cross-refs
+    // resolve). Create the entry on demand for book-parts.
+    if (!entry && node.tagname === 'book-part') {
+      entry = registry.assign('book-part', node.id, { numbered: false, data: {} });
+    }
+    if (entry) entry.number = num; // a string ("1" / "A" / "3.1.2"); computeRefText renders it
+  }
+}
+
+/**
+ * Number a level of the section tree. `prefix` is the parent's number ('' at the
+ * article top level, the chapter index for a book chapter, a letter for an
+ * appendix — Layer 2). Recurses into each section's nested sub-sections.
+ */
+function numberSectionLevel(nodes, prefix, registry) {
+  let i = 0;
+  for (const n of nodes) {
+    if (isEnscribeTag(n) && SECTION_TAG_SET.has(n.tagname)) {
+      i += 1;
+      const num = prefix ? `${prefix}.${i}` : String(i);
+      stampSection(n, num, registry);
+      numberSectionLevel(structuralChildren(n), num, registry);
+    }
+  }
+}
+
+/**
+ * Section-numbering pass. Runs after numberRegistry()/fillNumbering() (so the
+ * section registry entries exist) and before ref-resolution (so cross-refs see
+ * the numbers). No-op when numbering is off.
+ *
+ * @param {import('mdast').Root} tree
+ * @param {import('vfile').VFile} file
+ */
+export function numberSections(tree, file) {
+  const config = file?.data?.[ENSCRIBE_CONFIG] ?? null;
+  if (!resolveNumberSections(tree.children, config)) return;
+  const registry = ensureRegistry(file);
+
+  const docRoot = (tree.children ?? []).find(
+    (c) => isEnscribeTag(c, 'article') || isEnscribeTag(c, 'book'),
+  );
+  if (!docRoot) return;
+
+  if (isEnscribeTag(docRoot, 'article')) {
+    const body = findRegionChild(docRoot, 'article-body');
+    if (body) numberSectionLevel(structuralChildren(body), '', registry);
+    return;
+  }
+
+  // Book: number every book-part heading (#57 Layer 2). Body book-parts
+  // (chapters) get an arabic number; the same index prefixes their sections
+  // ("3.1"). Book-back appendices get an alphabetic letter; the letter prefixes
+  // their sections ("A.1"). Front-matter and non-appendix back-matter
+  // (preface / glossary / colophon / …) are conventionally unnumbered, so they
+  // are left alone.
+  const body = findRegionChild(docRoot, 'book-body');
+  if (body) {
+    let chapterIdx = 0;
+    for (const part of structuralChildren(body)) {
+      if (!isEnscribeTag(part, 'book-part')) continue;
+      const partType = part.kwargs?.['book-part-type'] ?? 'other';
+      if (!BODY_BOOK_PART_TYPES.has(partType)) continue;
+      chapterIdx += 1;
+      stampSection(part, String(chapterIdx), registry);            // chapter heading number
+      numberSectionLevel(structuralChildren(part), String(chapterIdx), registry); // its sections → "N.1"
+    }
+  }
+
+  const back = findRegionChild(docRoot, 'book-back');
+  if (back) {
+    let appendixIdx = 0;
+    for (const part of structuralChildren(back)) {
+      if (!isEnscribeTag(part, 'book-part')) continue;
+      if ((part.kwargs?.['book-part-type'] ?? 'other') !== 'appendix') continue;
+      const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
+      appendixIdx += 1;
+      stampSection(part, letter, registry);                        // appendix heading letter
+      numberSectionLevel(structuralChildren(part), letter, registry); // its sections → "A.1"
+    }
+  }
+}

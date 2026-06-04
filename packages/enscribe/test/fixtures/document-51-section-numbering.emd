@@ -1,0 +1,15 @@
+<meta type=article title="Section numbering">
+</meta>
+<config number-sections=true />
+
+<section #sec:intro | Introduction>
+
+The methods are described in <ref @sec:methods>.
+
+<sub-section | Background>
+
+Some background.
+
+<section #sec:methods | Methods>
+
+The method, building on the introduction.

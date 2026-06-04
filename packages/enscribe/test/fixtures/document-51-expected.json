@@ -1,0 +1,392 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Section numbering"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:intro"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "1"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "section-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "Introduction",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 14,
+                          "offset": 13
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The methods are described in ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 1,
+                          "offset": 124
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 30,
+                          "offset": 153
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#sec:methods",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "section 2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 48,
+                          "offset": 171
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 49,
+                          "offset": 172
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 7,
+                      "column": 1,
+                      "offset": 124
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 49,
+                      "offset": 172
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "section-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1.1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "Background",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 12,
+                              "offset": 11
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Some background.",
+                          "position": {
+                            "start": {
+                              "line": 11,
+                              "column": 1,
+                              "offset": 202
+                            },
+                            "end": {
+                              "line": 11,
+                              "column": 17,
+                              "offset": 218
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 1,
+                          "offset": 202
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 17,
+                          "offset": 218
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:methods"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "2"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "section-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "Methods",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 9,
+                          "offset": 8
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The method, building on the introduction.",
+                      "position": {
+                        "start": {
+                          "line": 15,
+                          "column": 1,
+                          "offset": 254
+                        },
+                        "end": {
+                          "line": 15,
+                          "column": 42,
+                          "offset": 295
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 15,
+                      "column": 1,
+                      "offset": 254
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 42,
+                      "offset": 295
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 16,
+      "column": 1,
+      "offset": 296
+    }
+  }
+}

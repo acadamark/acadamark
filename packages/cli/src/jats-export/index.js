@@ -523,6 +523,13 @@ function emitBookPartMetaChildren(metaNode, indent) {
   let out = '';
   if (titleNode || subtitleNode) {
     out += `${pad}<title-group>\n`;
+    // #57 Layer 2: a numbered book-part (chapter / appendix) carries its
+    // enumerator on the book-part-title node; emit it as <label> before <title>
+    // (BITS title-group content model: label?, title?, ...). Guarded → byte-
+    // identical for unnumbered book-parts.
+    if (titleNode && titleNode.computedSectionNumber != null) {
+      out += `${pad}  <label>${escapeXml(String(titleNode.computedSectionNumber))}</label>\n`;
+    }
     if (titleNode) {
       out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
     }
@@ -1339,6 +1346,12 @@ function emitSection(secNode, indent) {
   const rest = content.filter(c => !isEnscribeTag(c, titleTag));
 
   let out = `${pad}<sec${id}${secType}${attrs}>\n`;
+  // #57: a numbered section carries a build-time dotted number on the node; emit
+  // it as <label> before <title> (JATS <sec> content model: sec-meta?, label?,
+  // title?, ...). Guarded by the stamp → unnumbered sections are byte-identical.
+  if (secNode.computedSectionNumber != null) {
+    out += `${pad}  <label>${escapeXml(String(secNode.computedSectionNumber))}</label>\n`;
+  }
   if (titleNode) {
     out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
   }

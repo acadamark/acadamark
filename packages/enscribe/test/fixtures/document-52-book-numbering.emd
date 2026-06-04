@@ -1,0 +1,22 @@
+<meta type=book title="Numbered book">
+</meta>
+
+<chapter #chapter:one | First Chapter>
+
+Body text. The notation is in <ref @app:notation>.
+
+<section #sec:approach | Approach>
+
+The approach. See the detail in <ref @sec:detail>.
+
+<sub-section #sec:detail | Detail>
+
+Deeper detail.
+
+<appendix #app:notation | Notation>
+
+This appendix is referenced from <ref @chapter:one>.
+
+<section #sec:symbols | Symbols>
+
+The symbol table.

@@ -24,6 +24,7 @@ enscribe_attributes:
         - number-equations        (live; consumed by numbering)
         - number-figures          (live; consumed by numbering)
         - number-tables           (live; consumed by numbering)
+        - number-sections         (live; consumed by numbering; default off for articles, on for books)
         - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)
         - theme                   (reserved; future)
         - display-style           (reserved; future)

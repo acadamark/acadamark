@@ -34,6 +34,7 @@ import {
   enscribeNotePlacement,
   enscribeNumbering,
   fillNumbering,
+  numberSections,
   enscribeRefResolution,
   enscribeCiteResolution,
   enscribeBibliography,
@@ -277,7 +278,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeSectionNesting)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
-      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
     })
     .use(enscribeRefResolution)
     .runSync(tree, file);
@@ -393,7 +394,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeNotes)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
-      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
     })
     .use(enscribeRefResolution)
     .use(enscribeCiteResolution)
@@ -475,7 +476,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeNotes)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
-      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
     })
     .use(enscribeRefResolution)
     .use(enscribeCiteResolution)
@@ -579,7 +580,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeNotes)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
-      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
     })
     .use(enscribeRefResolution)
     .use(enscribeCiteResolution)
@@ -709,7 +710,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeNotes)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
-      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
     })
     .use(enscribeRefResolution)
     .use(enscribeCiteResolution)
@@ -818,7 +819,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeSectionNesting)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
-      return (_t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); };
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
     })
     .use(enscribeRefResolution)
     .runSync(tree, file);
@@ -852,6 +853,57 @@ function validateWithXmllint(fixtureName, jatsXml) {
 
   // DTD validation — the gate this whole fix exists to clear (#86 / #31).
   validateWithXmllint('doc45', jats);
+}
+
+// ─── Integration: doc-46 book section/appendix numbering → JATS labels (#57) ─
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-46-jats-section-numbering.emd'), 'utf8');
+
+  const inner = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+
+  const tree = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
+    .parse(src);
+
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeNormalizeToCanonical)
+    .use(enscribeConfigDiscovery)
+    .use(enscribeBookStructuring)
+    .use(enscribeArticleStructuring)
+    .use(enscribeSectionNesting)
+    .use(enscribeNumbering)
+    .use(function applyNumbers() {
+      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
+    })
+    .use(enscribeRefResolution)
+    .runSync(tree, file);
+
+  const jats = enscribeToJats(tree);
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-46-jats-section-numbering.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-46-jats-section-numbering.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration doc46: JATS snapshot matches', jats === expected);
+  }
+
+  // #57: book defaults on. Chapter/appendix headings get a <label> in their
+  // <book-part-meta><title-group> (before <title>); sections get a <sec><label>.
+  check('doc46: chapter book-part numbered (<label>1</label>)', jats.includes('<label>1</label>'));
+  check('doc46: appendix book-part lettered (<label>A</label>)', jats.includes('<label>A</label>'));
+  check('doc46: chapter section <sec> label 1.1', jats.includes('<label>1.1</label>'));
+  check('doc46: appendix section <sec> label A.1', jats.includes('<label>A.1</label>'));
+  // The <label> lives inside <title-group> before <title> (BITS-valid placement).
+  check('doc46: <title-group> carries label before title',
+    /<title-group>\s*<label>[^<]+<\/label>\s*<title>/.test(jats));
+
+  validateWithXmllint('doc46', jats);
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────

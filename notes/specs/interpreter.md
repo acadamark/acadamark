@@ -312,6 +312,7 @@ where the hast handler renders them as null/hidden).
 | `number-figures` | `enscribeNumbering` | Suppress figure numbering document-wide |
 | `number-tables` | `enscribeNumbering` | Suppress table numbering document-wide |
 | `number-boxes` | `enscribeNumbering` | Suppress numbered-`<aside>` ("Box N") numbering document-wide |
+| `number-sections` | `numberSections` | Turn section numbering on/off (#57; default off for articles, on for books) |
 | `bibliography-heading` | `enscribeBibliography` | Override the bibliography heading text (default: `References`) |
 | `ref-prefix-{prefix}` | `enscribeRefResolution` | Custom display word for cross-reference labels (e.g., `ref-prefix-eqn=Eq.`) |
 
@@ -482,6 +483,27 @@ field stamped by the scope-tracking visitor. `ref-resolution.js`'s
 prefix) or "Figure 1.2.3" (chapter.section.figure) per the resolved
 scope. Articles render "Figure 3" (no prefix) — current behavior
 preserved.
+
+**Section numbering (`numberSections`, #57).** Optional, gated by
+`<config number-sections>` (default off for articles, on for books). It
+runs in `enscribeApplyNumbers` after `fillNumbering` (so section registry
+entries exist) and before ref-resolution. A hierarchical counter-stack
+walk over the **body** section tree computes each section's **canonical
+dotted number** — `1` / `1.1` / `2` for articles, chapter-prefixed
+(`3.1` / `3.1.2`) for books. **All book-part headings are numbered**:
+body chapters get an arabic number, book-back appendices an alphabetic
+letter (`A`, `B`), each prefixing the sections within it (`A.1`). The
+number is stamped on the section / book-part node and its title element
+(`section-title` / `book-part-title`), and written onto the element's
+registry `entry.number` — book-parts are **registered here** (they have
+no numbering-visitor entry) so cross-refs resolve. Emission is one
+mechanism: the number is real DOM content, a
+`<span class="section-number">` prepended in `schemaDispatch` (HTML), and
+a `<label>` before `<title>` in JATS — `<sec><label>` for sections and
+`<book-part-meta><title-group><label>` for book-parts. Presentation (the
+words "Chapter"/"Appendix", separators) is the theme's / the cross-ref
+prefix-word's job; the document carries the bare enumerator. When off,
+`numberSections` is a no-op — unnumbered output is byte-identical.
 
 ---
 

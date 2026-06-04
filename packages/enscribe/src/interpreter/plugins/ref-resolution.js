@@ -51,6 +51,12 @@ const DEFAULT_PREFIXES = {
   def:  'definition',
   ex:   'example',
   box:  'box',           // #31: numbered <aside> own counter (in-text "box 1"; caption label "Box 1.")
+  // #57 Layer 2: book-part headings (registered + numbered when section
+  // numbering is on). chapter → arabic, appendix → alphabetic ("A"); a ref to
+  // either renders the word + enumerator ("chapter 1", "appendix A").
+  chapter: 'chapter',
+  app:     'appendix',
+  part:    'part',
 };
 
 /**

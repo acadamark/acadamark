@@ -269,6 +269,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "1"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -277,6 +292,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Version Control for Scientific Work"
@@ -654,6 +684,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "2"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -662,6 +707,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Literate Programming and Notebooks"
@@ -1466,6 +1526,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "3"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -1474,6 +1549,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "3"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Data Provenance and Lineage"
@@ -2206,6 +2296,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -2214,6 +2319,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "A Reproducibility Checklist"

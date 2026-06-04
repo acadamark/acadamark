@@ -302,6 +302,16 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Section numbering (#57). The build-time number is emitted as a
+ * <span class="section-number"> at the start of the section title (and the
+ * book-part title of a numbered appendix) — real, copy/paste-able content. It
+ * inherits the heading's weight/size; the theme controls only the spacing /
+ * separator before the title text. The document carries the canonical dotted
+ * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
+.section-number {
+  margin-right: var(--enscribe-space-2);
+}
+
 /* Suppress top margin on section directly following article-body open. */
 article-body > section:first-child {
   margin-top: 0;

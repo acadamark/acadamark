@@ -36,6 +36,7 @@
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>1</label>
           <title>Introduction</title>
         </title-group>
       </book-part-meta>
@@ -69,6 +70,7 @@ chapter 1 in current behavior).<xref ref-type="fn" id="noteref-2" rid="note-2">2
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>2</label>
           <title>Methods</title>
         </title-group>
         <contrib-group>
@@ -103,6 +105,7 @@ the book-level author. The per-book-part <monospace>&lt;contrib-group&gt;</monos
     <book-part book-part-type="appendix">
       <book-part-meta>
         <title-group>
+          <label>A</label>
           <title>Notation</title>
         </title-group>
       </book-part-meta>

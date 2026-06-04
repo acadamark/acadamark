@@ -43,6 +43,7 @@ export const CONFIG_KWARGS = new Map([
   ['number-equations',        'live'],   // numbering.js
   ['number-figures',          'live'],   // numbering.js
   ['number-tables',           'live'],   // numbering.js
+  ['number-sections',         'live'],   // numbering.js (#57; default off articles / on books)
   // Phase 3 slice 3a (2026-05-28): the three new theorem-family counter
   // suppressions. Same pattern as number-equations/figures/tables —
   // setting any of these to false in a <config> block suppresses the

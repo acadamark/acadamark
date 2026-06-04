@@ -2103,9 +2103,12 @@ export function run() {
       'doc46: <book-title>',
     );
     assert.ok(html.includes('<book-subtitle>A Short Edited Volume'), 'doc46: <book-subtitle>');
-    assert.ok(html.includes('<book-part-title>Version Control for Scientific Work'), 'doc46: chapter 1 title');
-    assert.ok(html.includes('<book-part-title>Data Provenance and Lineage'), 'doc46: chapter 3 title');
-    assert.ok(html.includes('<book-part-title>A Reproducibility Checklist'), 'doc46: appendix title');
+    // #57: book chapter/appendix headings now carry a number span (a numbered
+    // book defaults on), so assert the title text is present rather than that it
+    // directly follows the <book-part-title> open tag.
+    assert.ok(html.includes('Version Control for Scientific Work'), 'doc46: chapter title present');
+    assert.ok(html.includes('Data Provenance and Lineage'), 'doc46: later chapter title present');
+    assert.ok(html.includes('A Reproducibility Checklist'), 'doc46: appendix title present');
 
     // RQ-BOOK-M3 (edited-volume authorship): a book-level <editor> and NO
     // book-level <author> -- the only authors are the three per-chapter guests.
@@ -2396,5 +2399,51 @@ export function run() {
 
     snapshotHast('document-50', hast);
     console.log('PASS: integration doc50 (frame border looks — border=<name>)');
+  }
+
+  // ── Document 51: article section numbering (#57; number-sections on) ────────
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-51-section-numbering.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Build-time hierarchical numbers, emitted as <span class="section-number">.
+    assert.ok(html.includes('<section-title><span class="section-number">1</span>'),
+      'doc51: first section numbered 1');
+    assert.ok(html.includes('<sub-section-title><span class="section-number">1.1</span>'),
+      'doc51: nested sub-section numbered 1.1');
+    assert.ok(html.includes('<section-title><span class="section-number">2</span>'),
+      'doc51: second section numbered 2');
+    // Cross-ref to a numbered section renders the number (one registry).
+    assert.ok(html.includes('class="ref">section 2</a>'),
+      'doc51: <ref @sec:methods> renders "section 2"');
+
+    snapshotHast('document-51', hast);
+    console.log('PASS: integration doc51 (article section numbering)');
+  }
+
+  // ── Document 52: book numbering — chapter/appendix headings + sections (#57) ─
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-52-book-numbering.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Book defaults on: chapter heading arabic, appendix heading alphabetic;
+    // sections chapter-/appendix-prefixed.
+    assert.ok(html.includes('<book-part-title><span class="section-number">1</span>'),
+      'doc52: chapter heading numbered 1');
+    assert.ok(html.includes('<section-title><span class="section-number">1.1</span>'),
+      'doc52: chapter section numbered 1.1');
+    assert.ok(html.includes('<sub-section-title><span class="section-number">1.1.1</span>'),
+      'doc52: nested sub-section numbered 1.1.1');
+    assert.ok(html.includes('<book-part-title><span class="section-number">A</span>'),
+      'doc52: appendix heading lettered A');
+    assert.ok(html.includes('<section-title><span class="section-number">A.1</span>'),
+      'doc52: appendix section numbered A.1');
+    // Cross-refs to book-parts (registered) and a chapter-prefixed section.
+    assert.ok(html.includes('class="ref">appendix A</a>'), 'doc52: ref → "appendix A"');
+    assert.ok(html.includes('class="ref">chapter 1</a>'), 'doc52: ref → "chapter 1"');
+    assert.ok(html.includes('class="ref">section 1.1.1</a>'), 'doc52: ref → "section 1.1.1"');
+
+    snapshotHast('document-52', hast);
+    console.log('PASS: integration doc52 (book numbering — chapters, appendix, sections)');
   }
 }

@@ -1,0 +1,638 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "book",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "book-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "book"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "book-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Numbered book"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "book-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "id": "chapter:one",
+                "book-part-type": "chapter"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "1"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "First Chapter"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Body text. The notation is in ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 88
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 31,
+                          "offset": 118
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#app:notation",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "appendix A"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 50,
+                          "offset": 137
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 51,
+                          "offset": 138
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 88
+                    },
+                    "end": {
+                      "line": 6,
+                      "column": 51,
+                      "offset": 138
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "section",
+                  "properties": {
+                    "id": "sec:approach"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "section-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "1.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1.1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "Approach",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 10,
+                              "offset": 9
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The approach. See the detail in ",
+                          "position": {
+                            "start": {
+                              "line": 10,
+                              "column": 1,
+                              "offset": 176
+                            },
+                            "end": {
+                              "line": 10,
+                              "column": 33,
+                              "offset": 208
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#sec:detail",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "section 1.1.1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ".",
+                          "position": {
+                            "start": {
+                              "line": 10,
+                              "column": 50,
+                              "offset": 225
+                            },
+                            "end": {
+                              "line": 10,
+                              "column": 51,
+                              "offset": 226
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 1,
+                          "offset": 176
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 51,
+                          "offset": 226
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "sub-section",
+                      "properties": {
+                        "id": "sec:detail"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1.1.1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "sub-section-title",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "section-number"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1.1.1"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": "Detail",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 8,
+                                  "offset": 7
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Deeper detail.",
+                              "position": {
+                                "start": {
+                                  "line": 14,
+                                  "column": 1,
+                                  "offset": 264
+                                },
+                                "end": {
+                                  "line": 14,
+                                  "column": 15,
+                                  "offset": 278
+                                }
+                              }
+                            }
+                          ],
+                          "position": {
+                            "start": {
+                              "line": 14,
+                              "column": 1,
+                              "offset": 264
+                            },
+                            "end": {
+                              "line": 14,
+                              "column": 15,
+                              "offset": 278
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "book-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "book-part",
+              "properties": {
+                "id": "app:notation",
+                "book-part-type": "appendix"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "meta",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "book-part-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "Notation"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "This appendix is referenced from ",
+                      "position": {
+                        "start": {
+                          "line": 18,
+                          "column": 1,
+                          "offset": 317
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 34,
+                          "offset": 350
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#chapter:one",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "chapter 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 18,
+                          "column": 52,
+                          "offset": 368
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 53,
+                          "offset": 369
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 18,
+                      "column": 1,
+                      "offset": 317
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 53,
+                      "offset": 369
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "section",
+                  "properties": {
+                    "id": "sec:symbols"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "span",
+                      "properties": {
+                        "className": [
+                          "section-number"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A.1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A.1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "Symbols",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 9,
+                              "offset": 8
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The symbol table.",
+                          "position": {
+                            "start": {
+                              "line": 22,
+                              "column": 1,
+                              "offset": 405
+                            },
+                            "end": {
+                              "line": 22,
+                              "column": 18,
+                              "offset": 422
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 1,
+                          "offset": 405
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 18,
+                          "offset": 422
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 23,
+      "column": 1,
+      "offset": 423
+    }
+  }
+}

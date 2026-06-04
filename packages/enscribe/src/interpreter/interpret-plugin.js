@@ -165,6 +165,21 @@ function schemaDispatch(state, node, vocab) {
   const properties = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   const children = convertContent(state, node, vocab);
 
+  // #57: section numbering. When the section-numbering pass stamped a computed
+  // number on this node (a section/sub-section/...-title, or a numbered
+  // book-part-title for an appendix), prepend it as real DOM content — a
+  // <span class="section-number"> — so the number is copy/paste-able, archival,
+  // and visible with no JS; the theme styles the spacing/separator. Guarded by
+  // the stamp, so titles in unnumbered documents are byte-identical.
+  if (node.computedSectionNumber != null) {
+    children.unshift({
+      type: 'element',
+      tagName: 'span',
+      properties: { className: ['section-number'] },
+      children: [{ type: 'text', value: String(node.computedSectionNumber) }],
+    });
+  }
+
   return {
     type: 'element',
     tagName,

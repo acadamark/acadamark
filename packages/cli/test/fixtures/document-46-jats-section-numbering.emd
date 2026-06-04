@@ -1,0 +1,18 @@
+<meta type=book title="Numbered book">
+</meta>
+
+<chapter #chapter:one | First Chapter>
+
+Body text.
+
+<section #sec:approach | Approach>
+
+The approach.
+
+<appendix #app:notation | Notation>
+
+Appendix body.
+
+<section #sec:symbols | Symbols>
+
+The symbol table.

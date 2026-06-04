@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>document-34-mixed-footnote-placement</title>
+<title>document-51-section-numbering</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1293,38 +1293,25 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Mixed footnote placement — article-back fallback for residual notes</article-title>
+      <article-title>Section numbering</article-title>
     </meta>
   </article-front>
   <article-body>
-    <p>Some prose before the first section. This carries a footnote.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> The pre-section footnote falls into the residual set and appears in the article-back list.</p>
-    <section>
-      <section-title>Body section</section-title>
-      <p>Inside the section, a regular footnote.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> This one collects per-section.</p>
-      <p>An endnote too.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup> Endnotes go to article-back.</p>
-      <note-list class="footnotes">
-        <ol>
-          <li id="note-2"><sup>2</sup> In-section footnote — collects into the section's per-section list. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a></li>
-        </ol>
-      </note-list>
+    <section id="sec:intro"><span class="section-number">1</span>
+      <section-title><span class="section-number">1</span>Introduction</section-title>
+      <p>The methods are described in <a href="#sec:methods" class="ref">section 2</a>.</p>
+      <sub-section><span class="section-number">1.1</span>
+        <sub-section-title><span class="section-number">1.1</span>Background</sub-section-title>
+        <p>Some background.</p>
+      </sub-section>
     </section>
-    <section>
-      <section-title>A second body section</section-title>
-      <p>Another in-section footnote.<sup id="noteref-4" data-note-id="note-4"><a href="#note-4">4</a></sup></p>
-      <note-list class="footnotes">
-        <ol>
-          <li id="note-4"><sup>4</sup> Second in-section footnote. Per-section. <a href="#noteref-4" class="note-backref" aria-label="back to text">↩</a></li>
-        </ol>
-      </note-list>
+    <section id="sec:methods"><span class="section-number">2</span>
+      <section-title><span class="section-number">2</span>Methods</section-title>
+      <p>The method, building on the introduction.</p>
     </section>
   </article-body>
   <article-back>
-    <note-list class="notes">
-      <ol>
-        <li id="note-1"><sup>1</sup> Pre-section footnote — authored before any section starts. The outermost-section collection rule doesn't apply (no containing top-level section), so this collects into the article-back residual list. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
-        <li id="note-3"><sup>3</sup> An endnote. Goes to article-back. <a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a></li>
-      </ol>
-    </note-list>
+    <config></config>
   </article-back>
 </article>
 

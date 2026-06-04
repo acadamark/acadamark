@@ -130,7 +130,7 @@ import { enscribeNotes } from './plugins/notes.js';
 // __note-list-item / __note-marker nodes the JATS emitter consumes).
 import { enscribeNotePlacement } from './plugins/note-placement.js';
 import { buildCitationIndex, enscribeLibraryLoad } from './plugins/library-load.js';
-import { enscribeNumbering, fillNumbering } from './plugins/numbering.js';
+import { enscribeNumbering, fillNumbering, numberSections } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
 import { enscribeCiteResolution } from './plugins/cite-resolution.js';
 import { enscribeBibliography } from './plugins/bibliography.js';
@@ -171,7 +171,7 @@ import { applyToc } from './lib/toc.js';
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
 
-export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
+export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 
@@ -616,6 +616,11 @@ export function enscribeInterpreter(options = {}) {
       const registry = ensureRegistry(file);
       registry.numberRegistry();
       fillNumbering(file);
+      // #57: hierarchical section numbering (no-op unless number-sections is on;
+      // default on for books, off for articles). Runs here so section registry
+      // entries exist (registration ran in step 7) and cross-refs (step 9) see
+      // the numbers.
+      numberSections(tree, file);
     };
   });
 
