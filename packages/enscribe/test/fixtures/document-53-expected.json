@@ -1,0 +1,669 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "See source: revealing the authored DSL behind a rendered block (#19)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Mermaid with its source disclosed",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 35,
+                          "offset": 34
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "With ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 1,
+                          "offset": 182
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 6,
+                          "offset": 187
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<config show-source=true />"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " on, a rendered-from-DSL block emits the\nauthored source alongside the rendered output, inside a native\n",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 35,
+                          "offset": 216
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 1,
+                          "offset": 320
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<details><summary>See source</summary><pre>…</pre></details>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " control. No\nJavaScript: ",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 63,
+                          "offset": 382
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 13,
+                          "offset": 407
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<details>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is a native HTML toggle. The disclosure's ",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 24,
+                          "offset": 418
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 67,
+                          "offset": 461
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<pre>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is\nplain (no ",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 74,
+                          "offset": 468
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 11,
+                          "offset": 482
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "mermaid"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " class, no ",
+                      "position": {
+                        "start": {
+                          "line": 12,
+                          "column": 20,
+                          "offset": 491
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 31,
+                          "offset": 502
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "data-enscribe-dsl"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "), so a live in-browser scan or\na build-time static render never touches it — the source survives verbatim.",
+                      "position": {
+                        "start": {
+                          "line": 12,
+                          "column": 50,
+                          "offset": 521
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 76,
+                          "offset": 628
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 8,
+                      "column": 1,
+                      "offset": 182
+                    },
+                    "end": {
+                      "line": 13,
+                      "column": 76,
+                      "offset": 628
+                    }
+                  }
+                },
+                {
+                  "type": "root",
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "pre",
+                      "properties": {
+                        "className": [
+                          "mermaid"
+                        ],
+                        "dataEnscribeDsl": "mermaid",
+                        "id": "diagram:flow"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "details",
+                      "properties": {
+                        "className": [
+                          "enscribe-source"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "summary",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "See source"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "pre",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "graph LR\n  A[Start] --> B{Decision}\n  B -->|yes| C[OK]\n  B -->|no| D[Stop]"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "ABC with its source disclosed",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 31,
+                          "offset": 30
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The same switch covers the other diagram engine. The disclosure rides the\nexisting frameable emission — it is the last sibling of the figure block, after\nthe rendered output and its caption.",
+                      "position": {
+                        "start": {
+                          "line": 24,
+                          "column": 1,
+                          "offset": 784
+                        },
+                        "end": {
+                          "line": 26,
+                          "column": 37,
+                          "offset": 974
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 24,
+                      "column": 1,
+                      "offset": 784
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 37,
+                      "offset": 974
+                    }
+                  }
+                },
+                {
+                  "type": "root",
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "pre",
+                      "properties": {
+                        "className": [
+                          "abc"
+                        ],
+                        "dataEnscribeDsl": "abc",
+                        "id": "music:twinkle"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 |"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 2."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A familiar tune."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "details",
+                      "properties": {
+                        "className": [
+                          "enscribe-source"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "summary",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "See source"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "pre",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "X:1\nT:Twinkle, Twinkle, Little Star\nM:4/4\nL:1/4\nK:C\nC C G G | A A G2 |"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The control's look is a theme concern: the document says ",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 1,
+                          "offset": 1103
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 58,
+                          "offset": 1160
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "what",
+                          "position": {
+                            "start": {
+                              "line": 37,
+                              "column": 59,
+                              "offset": 1161
+                            },
+                            "end": {
+                              "line": 37,
+                              "column": 63,
+                              "offset": 1165
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " (source is\navailable, via the ",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 64,
+                          "offset": 1166
+                        },
+                        "end": {
+                          "line": 38,
+                          "column": 20,
+                          "offset": 1197
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "enscribe-source"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " class hook); the theme says ",
+                      "position": {
+                        "start": {
+                          "line": 38,
+                          "column": 37,
+                          "offset": 1214
+                        },
+                        "end": {
+                          "line": 38,
+                          "column": 66,
+                          "offset": 1243
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "how",
+                          "position": {
+                            "start": {
+                              "line": 38,
+                              "column": 67,
+                              "offset": 1244
+                            },
+                            "end": {
+                              "line": 38,
+                              "column": 70,
+                              "offset": 1247
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " (it can\nbe styled to look like a button). The baseline here is the unstyled native\ncontrol.",
+                      "position": {
+                        "start": {
+                          "line": 38,
+                          "column": 71,
+                          "offset": 1248
+                        },
+                        "end": {
+                          "line": 40,
+                          "column": 9,
+                          "offset": 1340
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 37,
+                      "column": 1,
+                      "offset": 1103
+                    },
+                    "end": {
+                      "line": 40,
+                      "column": 9,
+                      "offset": 1340
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 41,
+      "column": 1,
+      "offset": 1341
+    }
+  }
+}

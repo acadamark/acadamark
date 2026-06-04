@@ -35,16 +35,19 @@
 // DSL Slice 1 (2026-05-29) — RQ-DSL-M2 fix: wrapperEl <div> → <pre> so the
 // source survives serialization verbatim.
 
-import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, buildSourceDisclosure } from '../lib/frameable.js';
 
 /**
  * Handler for the `<abc>` external DSL tag.
  *
  * @param {object} state - mdast-util-to-hast state
  * @param {object} node  - enscribeTag with tagname "abc"
+ * @param {object} [opts] - interpreter options; `opts.showSource` (#19) appends a
+ *                          "See source" <details> disclosure of the authored
+ *                          source. Threaded from compileToHtml via diagram.js.
  * @returns {import('hast').Element|{type:'root',children:Array}}
  */
-export function abcHandler(state, node) {
+export function abcHandler(state, node, opts) {
   const source = typeof node.content === 'string' ? node.content.trim() : '';
   const id = node.id ?? null;
 
@@ -68,5 +71,6 @@ export function abcHandler(state, node) {
     titleHast,
     computedNumber: node.computedNumber ?? null,
     scope: node._scope ?? null,
+    sourceDisclosureHast: opts?.showSource ? buildSourceDisclosure(source) : null,
   });
 }

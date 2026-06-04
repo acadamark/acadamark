@@ -1,0 +1,40 @@
+<meta type=article title="See source: revealing the authored DSL behind a rendered block (#19)">
+</meta>
+
+<config show-source=true />
+
+<section | Mermaid with its source disclosed>
+
+With `<config show-source=true />` on, a rendered-from-DSL block emits the
+authored source alongside the rendered output, inside a native
+`<details><summary>See source</summary><pre>…</pre></details>` control. No
+JavaScript: `<details>` is a native HTML toggle. The disclosure's `<pre>` is
+plain (no `mermaid` class, no `data-enscribe-dsl`), so a live in-browser scan or
+a build-time static render never touches it — the source survives verbatim.
+
+<mermaid #diagram:flow>
+graph LR
+  A[Start] --> B{Decision}
+  B -->|yes| C[OK]
+  B -->|no| D[Stop]
+</mermaid>
+
+<section | ABC with its source disclosed>
+
+The same switch covers the other diagram engine. The disclosure rides the
+existing frameable emission — it is the last sibling of the figure block, after
+the rendered output and its caption.
+
+<abc #music:twinkle caption="A familiar tune.">
+X:1
+T:Twinkle, Twinkle, Little Star
+M:4/4
+L:1/4
+K:C
+C C G G | A A G2 |
+</abc>
+
+The control's look is a theme concern: the document says *what* (source is
+available, via the `enscribe-source` class hook); the theme says *how* (it can
+be styled to look like a button). The baseline here is the unstyled native
+control.

@@ -647,7 +647,16 @@ export function enscribeInterpreter(options = {}) {
   // stringify step; it is called by processor.stringify() and
   // processor.process().
   this.compiler = function compileToHtml(tree, file) {
-    const tagHandler = createEnscribeTagHandler({ assetsDir });
+    // Document <config> values, resolved once for this compile. #19: `show-source`
+    // (default off) reveals the authored DSL source behind a rendered diagram in a
+    // native <details> disclosure; threaded into the diagram engine handlers via
+    // the tag-handler opts. Read here — never stamped on the tree — so the mdast
+    // tree (and therefore the JATS export, which consumes the same tree) is
+    // identical whether the switch is on or off.
+    const configMap = file?.data?.[ENSCRIBE_CONFIG];
+    const showSource =
+      configMap?.get('show-source') === true || configMap?.get('show-source') === 'true';
+    const tagHandler = createEnscribeTagHandler({ assetsDir, showSource });
     const hast = toHast(tree, {
       handlers: {
         enscribeTag: tagHandler,
@@ -694,7 +703,6 @@ export function enscribeInterpreter(options = {}) {
     // Inject the theme CSS (Phase 8 Slice 2) after the fonts, so its `:root`
     // overrides sit after the document's base default.css in the cascade. The
     // `theme` render option wins over a <config theme=…> document setting.
-    const configMap = file?.data?.[ENSCRIBE_CONFIG];
     const themeName = options.theme ?? (configMap && configMap.get('theme')) ?? 'default';
     if (themeName && themeName !== 'default') {
       if (KNOWN_THEMES.has(themeName)) {

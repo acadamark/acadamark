@@ -69,6 +69,11 @@ export const CONFIG_KWARGS = new Map([
   ['note-scope',              'live'],   // note-placement.js
   ['bibliography-heading',    'live'],   // bibliography.js (overrides the "References" heading)
 
+  // #19: reveal the authored DSL source behind a rendered DSL block in a native
+  // <details> disclosure. Document-level, default off. Read in index.js's
+  // compileToHtml and threaded to the diagram engine handlers (mermaid / abc).
+  ['show-source',             'live'],   // index.js compileToHtml → handlers/{mermaid,abc}.js
+
   // Reserved — the apparatus-tag reconciliation ruling enumerated these as
   // the intended <config> surface. The implementation per key is future
   // work; the allowlist accepts them so author input is not rejected

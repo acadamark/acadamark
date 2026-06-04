@@ -590,6 +590,31 @@ requesting `static` for mermaid raises the fail-explicitly build error below.
   runs. No dedicated rule for `.abc`/`.mermaid` *rendered* output is required of
   the default theme.
 
+**Source disclosure (`show-source`, #19) — opt-in, off by default:**
+
+Orthogonal to the render mode. The document-level `<config show-source=true>`
+switch reveals the authored source behind a rendered DSL block in a native
+`<details>` disclosure, so a reader can see the Mermaid / ABC the author wrote.
+No JavaScript — `<details>` is a native HTML control. The switch is read in
+`compileToHtml` from the document config and threaded to the diagram engine
+handlers via the tag-handler opts; the **mdast tree is never stamped**, so the
+JATS export (a separate tree consumer) is byte-identical whether the switch is
+on or off — the disclosure is a presentational HTML affordance only.
+
+- **`RQ-DSL-SOURCE-M1`** — with `show-source` on, each rendered-from-DSL block
+  (`mermaid`, `abc`) emits, as the **final sibling** of its figure block (after
+  the contract markup and any caption), a `<details class="enscribe-source">`
+  whose `<summary>` reads "See source" and whose `<pre>` holds the verbatim
+  authored source. That disclosure `<pre>` is **plain** — no `mermaid` / `abc`
+  class, no `data-enscribe-dsl` — so the live scanner and the static renderer
+  never touch it; it preserves the source in every render mode. Default off →
+  byte-identical contract markup (no `<details>`).
+- The control's *look* is a theme concern — the `enscribe-source` class is the
+  styling hook. Document says *what* (source is available); theme says *how* (it
+  can be styled to look like a button), the same split as the border looks (#58)
+  and section numbers (#57). The baseline is the unstyled native control; no
+  default-theme rule is required, and none is shipped this slice.
+
 **Out of spec.** Rendered diagram/notation fidelity — that is the external
 library's job, not enscribe's. Skip (the default) emits only the contract; live
 and static are opt-in and emit assets / inline SVG per the `RQ-DSL-LIVE-*` /

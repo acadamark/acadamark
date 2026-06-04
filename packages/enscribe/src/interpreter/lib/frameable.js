@@ -256,6 +256,40 @@ export function frameableBorderLook(node) {
   return BORDER_LOOK_TOKEN.test(name) ? name : null;
 }
 
+// "See source" disclosure (#19). When a document turns on the `show-source`
+// <config> switch, a rendered-from-DSL block (mermaid / abc) emits the authored
+// source alongside its rendered output, inside a native <details> control — no
+// JavaScript: <details> is a native HTML toggle. The disclosure's <pre> is
+// deliberately PLAIN (no `mermaid` / `abc` class, no data-enscribe-dsl), so the
+// live in-browser scanner and the build-time static renderer never touch it —
+// it keeps the verbatim source regardless of the block's render mode. The
+// `enscribe-source` class is the theme's styling hook (document says *what* —
+// source is available; theme says *how* — it can be made to look like a button).
+//
+// @param {string} source - the authored DSL source (already trimmed by the handler)
+// @returns {import('hast').Element}
+export function buildSourceDisclosure(source) {
+  return {
+    type: 'element',
+    tagName: 'details',
+    properties: { className: ['enscribe-source'] },
+    children: [
+      {
+        type: 'element',
+        tagName: 'summary',
+        properties: {},
+        children: [{ type: 'text', value: 'See source' }],
+      },
+      {
+        type: 'element',
+        tagName: 'pre',
+        properties: {},
+        children: [{ type: 'text', value: source }],
+      },
+    ],
+  };
+}
+
 /**
  * The unified frameable rendering helper.
  *
@@ -291,6 +325,10 @@ export function frameableBorderLook(node) {
  *                                     number, current behavior.
  * @param {boolean} [opts.border]    - whether to add the frameable-border
  *                                     class to the wrapper.
+ * @param {object|null} [opts.sourceDisclosureHast] - #19 "See source" <details>
+ *                                     hast (from buildSourceDisclosure), or null.
+ *                                     Placed as the final sibling in the sibling
+ *                                     (DSL) layout; ignored by the other layouts.
  * @returns {import('hast').Element|{type:'root', children:object[]}}
  */
 export function renderFrameable(opts) {
@@ -305,6 +343,7 @@ export function renderFrameable(opts) {
     scope = null,
     border = false,
     borderLook = null,
+    sourceDisclosureHast = null,
   } = opts;
 
   const meta = KIND_META.get(kind);
@@ -395,6 +434,9 @@ export function renderFrameable(opts) {
   if (titleEl) siblings.push(titleEl);
   siblings.push(wrapper);
   if (captionEl) siblings.push(captionEl);
-  if (siblings.length === 1) return wrapper; // no title or caption; bare wrapper
+  // #19: the "See source" disclosure sits at the bottom of the block, after the
+  // rendered output and its caption. Only the DSL (sibling-layout) kinds pass it.
+  if (sourceDisclosureHast) siblings.push(sourceDisclosureHast);
+  if (siblings.length === 1) return wrapper; // no title, caption, or disclosure; bare wrapper
   return { type: 'root', children: siblings };
 }

@@ -23,7 +23,7 @@
 // Mermaid joins the figure counter (slice 3b NUMBERED_TAGNAMES wiring)
 // and now gets a "Figure N." prefix in its caption when numbered.
 
-import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, buildSourceDisclosure } from '../lib/frameable.js';
 
 /**
  * Handler for the `<mermaid>` external DSL tag. Emits pass-through
@@ -31,9 +31,12 @@ import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
  *
  * @param {object} state - mdast-util-to-hast state
  * @param {object} node  - enscribeTag with tagname "mermaid"
+ * @param {object} [opts] - interpreter options; `opts.showSource` (#19) appends a
+ *                          "See source" <details> disclosure of the authored
+ *                          source. Threaded from compileToHtml via diagram.js.
  * @returns {import('hast').Element|{type:'root',children:Array}}
  */
-export function mermaidHandler(state, node) {
+export function mermaidHandler(state, node, opts) {
   const source = typeof node.content === 'string' ? node.content.trim() : '';
   const id = node.id ?? null;
 
@@ -59,5 +62,6 @@ export function mermaidHandler(state, node) {
     titleHast,
     computedNumber: node.computedNumber ?? null,
     scope: node._scope ?? null,
+    sourceDisclosureHast: opts?.showSource ? buildSourceDisclosure(source) : null,
   });
 }

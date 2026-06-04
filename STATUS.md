@@ -55,6 +55,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Bundled subsetted fonts (Inter, Source Code Pro) and patched KaTeX fonts
 - [x] Default stylesheet with theme variables (`default.css`)
 - [x] DSL rendering modes — `skip` default, `live-link` / `live-inline`, and `static` (build-time SVG) for ABC
+- [x] DSL "See source" disclosure — opt-in `<config show-source=true />` reveals the authored Mermaid/ABC source behind a rendered block in a native `<details>` control (no JavaScript); off by default, theme styles the control
 - [x] Client-side rendering — browser library (`render` / `renderInto` / `executeAssets`), `enscribe.browser` bundle
 - [ ] Code syntax highlighting (not yet wired in)
 - [ ] Render-mode lowering — lossy lowering of custom elements to plain `<h1>`/`<h2>` (gated on a design decision)

@@ -2446,4 +2446,41 @@ export function run() {
     snapshotHast('document-52', hast);
     console.log('PASS: integration doc52 (book numbering — chapters, appendix, sections)');
   }
+
+  // --- doc53: show-source disclosure (#19) ---
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-53-show-source.emd'), 'utf8');
+
+    // The `html` here goes through the real compiler, which reads `show-source`
+    // from the document <config> (NOT from render opts) — so this `html` is
+    // config-driven. The render option of the same name is passed only so the
+    // harness's *separate* snapshot-hast toHast (which reads handler opts, not
+    // the document config) reflects the same disclosure the compile emits.
+    const { html, hast } = runPipeline(src, { showSource: true });
+
+    // One native <details> "See source" disclosure per DSL block (mermaid + abc).
+    assert.equal((html.match(/<details class="enscribe-source">/g) || []).length, 2,
+      'doc53: one source disclosure per DSL block (mermaid + abc)');
+    assert.ok(html.includes('<summary>See source</summary>'),
+      'doc53: the disclosure control is a <summary>See source</summary>');
+    // It holds the VERBATIM authored source in a PLAIN <pre> (no mermaid/abc
+    // class, no data-enscribe-dsl) — so the live scanner / static renderer never
+    // overwrite it.
+    assert.ok(/<details class="enscribe-source">\s*<summary>See source<\/summary>\s*<pre>graph LR/.test(html),
+      'doc53: the mermaid disclosure holds the verbatim source in a plain <pre>');
+    // The rendered diagram blocks themselves are still emitted unchanged.
+    assert.ok(html.includes('class="mermaid" data-enscribe-dsl="mermaid"'),
+      'doc53: the rendered mermaid block is still emitted');
+    assert.ok(html.includes('class="abc" data-enscribe-dsl="abc"'),
+      'doc53: the rendered abc block is still emitted');
+
+    // The documented surface is the <config> switch: config alone (no render
+    // opt — compileToHtml never consults an opts.showSource) drives the disclosure.
+    const { html: htmlConfigOnly } = runPipeline(src);
+    assert.ok(htmlConfigOnly.includes('<details class="enscribe-source">'),
+      'doc53: <config show-source=true> alone turns the disclosure on');
+
+    snapshotHast('document-53', hast);
+    console.log('PASS: integration doc53 (show-source disclosure — mermaid + abc)');
+  }
 }

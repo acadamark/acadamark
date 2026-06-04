@@ -27,9 +27,13 @@ const ENGINE_HANDLERS = {
  *
  * @param {object} state - mdast-util-to-hast state
  * @param {object} node  - enscribeTag with tagname "diagram"; positional[0] is the engine
+ * @param {object} [_vocab] - the vocabulary entry (unused; the host dispatches by engine)
+ * @param {object} [opts]   - interpreter options; forwarded verbatim to the engine
+ *                            handler so document-level switches like `showSource`
+ *                            (#19) reach mermaid / abc.
  * @returns {import('hast').Element|{type:'root',children:Array}}
  */
-export function diagramHandler(state, node) {
+export function diagramHandler(state, node, _vocab, opts) {
   const engine = node.positional?.[0] ?? null;
   const handler = engine ? ENGINE_HANDLERS[engine] : null;
   if (!handler) {
@@ -44,5 +48,5 @@ export function diagramHandler(state, node) {
       children: [{ type: 'text', value: source }],
     };
   }
-  return handler(state, node);
+  return handler(state, node, opts);
 }
