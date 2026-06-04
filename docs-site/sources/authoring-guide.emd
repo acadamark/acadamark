@@ -99,12 +99,14 @@ footnotes are grouped — the settings a book leans on most:
   `section` is one list per top-level section. Articles default to `section`,
   books to `chapter`.
 
-> **Gotcha — `<config>` is not the rendering API.** Options like
-> `embedResources` and `dslMode` are passed to the renderer when you process a
-> document (covered in the Rendering chapter, forthcoming); they are *not*
-> `<config>` keys. A kwarg `<config>` does not recognize is dropped with a console
-> warning rather than rendered, so a misplaced `embedResources=false` inside
-> `<config>` silently does nothing.
+<aside type=caution>
+**Gotcha — `<config>` is not the rendering API.** Options like
+`embedResources` and `dslMode` are passed to the renderer when you process a
+document (covered in the Rendering chapter, forthcoming); they are *not*
+`<config>` keys. A kwarg `<config>` does not recognize is dropped with a console
+warning rather than rendered, so a misplaced `embedResources=false` inside
+`<config>` silently does nothing.
+</aside>
 
 *Related:* <a href="#sec:sections" | Sections and headings> (Chapter 2);
 book structure and the `<data>`/`<library>` block are covered in later chapters.
@@ -178,11 +180,13 @@ usually wants to be a *book* — chapters and parts, a different top-level shape
 rather than a fourth heading level. In books, sections number automatically within
 each chapter; the details are in the cross-references and book-structure chapters.
 
-> **Gotcha — hash count is the level, not the importance.** In ordinary Markdown
-> `#` is the document's top title. In Enscribe the title comes from `<meta>`, so
-> `#` is the first *body* section, `##` a sub-section, `###` a sub-sub-section.
-> Match the sigil hash count to the markdown hash count: `<# … #>` and `# …` are
-> both level 1.
+<aside type=caution>
+**Gotcha — hash count is the level, not the importance.** In ordinary Markdown
+`#` is the document's top title. In Enscribe the title comes from `<meta>`, so
+`#` is the first *body* section, `##` a sub-section, `###` a sub-sub-section.
+Match the sigil hash count to the markdown hash count: `<# … #>` and `# …` are
+both level 1.
+</aside>
 
 *Related:* <a href="#sec:structure" | Document structure> (Chapter 1);
 <a href="#sec:xref" | Cross-references> (Chapter 9) and book numbering.
@@ -264,11 +268,13 @@ Enscribe does not support). The URL is the first positional argument, or the
 
 Rendered, that is a link to <a href="https://example.com" | example.com>.
 
-> **Gotcha — when to use `href=`.** The bare positional URL is fine for ordinary
-> URLs, but a URL that is *just* a fragment (`#sec:methods`) collides with the
-> `#id` syntax, and a URL containing spaces or a `>` will end the tag early. In
-> those cases use the quoted `href` keyword form:
-> `<a href="#sec:methods" | jump to Methods>`.
+<aside type=caution>
+**Gotcha — when to use `href=`.** The bare positional URL is fine for ordinary
+URLs, but a URL that is *just* a fragment (`#sec:methods`) collides with the
+`#id` syntax, and a URL containing spaces or a `>` will end the tag early. In
+those cases use the quoted `href` keyword form:
+`<a href="#sec:methods" | jump to Methods>`.
+</aside>
 
 *Related:* <a href="#sec:block" | Block elements> (Chapter 4) for display math and
 code blocks; <a href="#sec:xref" | Cross-references> (Chapter 9) link by name
@@ -356,11 +362,13 @@ Gaussian integral sets on its own numbered line:
 Display math is numbered automatically; give it an id (`#eqn:name`) when prose
 will refer back to it.
 
-> **Gotcha — `$$x$$` on one line is *inline*, not display.** The `$$` fence only
-> produces display math when the delimiters are on their own lines. A single-line
-> `$$x = y$$` renders as inline math. If you want display math without a multi-line
-> fence, use the sigil `<$$ | x = y $$>`, which is always display regardless of
-> line placement.
+<aside type=caution>
+**Gotcha — `$$x$$` on one line is *inline*, not display.** The `$$` fence only
+produces display math when the delimiters are on their own lines. A single-line
+`$$x = y$$` renders as inline math. If you want display math without a multi-line
+fence, use the sigil `<$$ | x = y $$>`, which is always display regardless of
+line placement.
+</aside>
 
 **Math environments.** LaTeX-style multi-line math environments are available as
 tags: `<align>`, `<eqnarray>`, `<cases>`, and `<matrix>`. They carry verbatim
@@ -416,11 +424,13 @@ Here is a rendered figure, with an id Chapter 9 refers to:
 The label ("Figure 1.") and the number are added for you; move the figure and the
 number follows.
 
-> **Gotcha — captionless figures still number.** A self-closing
-> `<fig src="…" />` with no caption is still a numbered figure and still
-> participates in the figure sequence. If you want an image that is *not* a
-> numbered figure, that is a plain inline image — a different need Enscribe does
-> not fold into `<fig>`.
+<aside type=caution>
+**Gotcha — captionless figures still number.** A self-closing
+`<fig src="…" />` with no caption is still a numbered figure and still
+participates in the figure sequence. If you want an image that is *not* a
+numbered figure, that is a plain inline image — a different need Enscribe does
+not fold into `<fig>`.
+</aside>
 
 For vector graphics, Enscribe has a dedicated `<svg>` element that embeds inline
 SVG source directly and shares this same frameable surface (caption, number,
@@ -480,11 +490,13 @@ Markdown,few,no
 
 The "Table 1." label and number are supplied for you, exactly as with figures.
 
-> **Gotcha — commas and tabs are the delimiters.** In a `csv` table a literal
-> comma in a cell needs quoting (standard CSV rules); if your data is full of
-> commas, `tsv` (tab-separated) is often cleaner. The markdown pipe form is handy
-> for a small hand-written table but has no place to put an id or a caption kwarg,
-> so reach for `csv`/`tsv` when the table needs to be referenced or captioned.
+<aside type=caution>
+**Gotcha — commas and tabs are the delimiters.** In a `csv` table a literal
+comma in a cell needs quoting (standard CSV rules); if your data is full of
+commas, `tsv` (tab-separated) is often cleaner. The markdown pipe form is handy
+for a small hand-written table but has no place to put an id or a caption kwarg,
+so reach for `csv`/`tsv` when the table needs to be referenced or captioned.
+</aside>
 
 *Related:* <a href="#sec:fig" | Figures> (Chapter 5) — the sibling frameable;
 <a href="#sec:xref" | Cross-references> (Chapter 9).
@@ -532,10 +544,12 @@ both resolving against the `<library>` in the `<data>` block at the foot of this
 page. Grouped, those two are <cite @katex, @commonmark>, and the formatted list of
 everything cited appears under "References" at the very bottom.
 
-> **Gotcha — a `<cite>` needs its key in the library.** A `<cite @missing>` whose
-> key is not in any `<library>` renders a visible "missing citation" marker rather
-> than silently vanishing, so unresolved keys are easy to catch. Keep the `<data>`
-> block's BibTeX keys and your `<cite>` keys in sync.
+<aside type=caution>
+**Gotcha — a `<cite>` needs its key in the library.** A `<cite @missing>` whose
+key is not in any `<library>` renders a visible "missing citation" marker rather
+than silently vanishing, so unresolved keys are easy to catch. Keep the `<data>`
+block's BibTeX keys and your `<cite>` keys in sync.
+</aside>
 
 *Related:* <a href="#sec:foot" | Footnotes> (Chapter 8) — the other apparatus that
 collects at the document's foot; <a href="#sec:xref" | Cross-references>
@@ -567,10 +581,12 @@ clickable link — clicking it jumps down to the note, and a small ↩ in the no
 jumps back — so footnotes work with no hover and no JavaScript. (Cross-references
 are likewise always clickable links; see Chapter 9.)
 
-> **Gotcha — attach the note with no space.** Write the `<note | …>` flush against
-> the word it annotates (`standard.<note | …>`, not `standard. <note | …>`); a
-> space before the marker reads as a space between the word and its footnote
-> number.
+<aside type=caution>
+**Gotcha — attach the note with no space.** Write the `<note | …>` flush against
+the word it annotates (`standard.<note | …>`, not `standard. <note | …>`); a
+space before the marker reads as a space between the word and its footnote
+number.
+</aside>
 
 *Related:* <a href="#sec:cite" | Citations> (Chapter 7);
 <a href="#sec:xref" | Cross-references> (Chapter 9).
@@ -602,14 +618,16 @@ Here it is at work. This guide gave its figure the id `#fig:example`, its table
 <ref @fig:example>, <ref @tab:comparison>, and <ref @eqn:gauss> — resolves to the
 numbers they received above, each a link you can follow.
 
-> **Gotcha — sections are unnumbered in a flat article.** Figures, tables,
-> equations, and theorems carry numbers, so a `<ref>` to them reads "figure 1",
-> "table 1". Sections in an article are *not* numbered, so `<ref @sec:methods>`
-> falls back to the id's tail ("methods") rather than "section 1". Numbered section
-> references are a book feature: with chapter/section counter scoping a book
-> numbers its sections and the references follow. To link to a section by custom
-> text in any document, use a plain anchor — `<a href="#sec:methods" | the Methods
-> section>`.
+<aside type=caution>
+**Gotcha — sections are unnumbered in a flat article.** Figures, tables,
+equations, and theorems carry numbers, so a `<ref>` to them reads "figure 1",
+"table 1". Sections in an article are *not* numbered, so `<ref @sec:methods>`
+falls back to the id's tail ("methods") rather than "section 1". Numbered section
+references are a book feature: with chapter/section counter scoping a book
+numbers its sections and the references follow. To link to a section by custom
+text in any document, use a plain anchor — `<a href="#sec:methods" | the Methods
+section>`.
+</aside>
 
 In a **book**, numbering is *scoped*: a figure in Chapter 3 numbers as "Figure 3.1"
 and a cross-reference to it renders the chapter-prefixed number. Scoped numbering
@@ -658,11 +676,13 @@ the proof is unnumbered:
 In a **book**, theorem numbers are chapter-scoped (Theorem 2.1) just like figures
 and equations — see <a href="#sec:book" | Chapter 12>.
 
-> **Gotcha — a bare `>` ends pipe content.** A statement that contains a literal
-> greater-than sign (`n > 1`) will end the `<theorem | …>` early at that `>`. Write
-> such statements in long form (`<theorem>n > 1 implies …</theorem>`), where the
-> content is read verbatim, or phrase the comparison in words. This is the general
-> pipe rule covered in <a href="#sec:args" | Chapter 13>.
+<aside type=caution>
+**Gotcha — a bare `>` ends pipe content.** A statement that contains a literal
+greater-than sign (`n > 1`) will end the `<theorem | …>` early at that `>`. Write
+such statements in long form (`<theorem>n > 1 implies …</theorem>`), where the
+content is read verbatim, or phrase the comparison in words. This is the general
+pipe rule covered in <a href="#sec:args" | Chapter 13>.
+</aside>
 
 *Related:* <a href="#sec:xref" | Cross-references> (Chapter 9);
 <a href="#sec:args" | Arguments and the pipe> (Chapter 13).
@@ -815,11 +835,13 @@ Reach for the **pipe form** for short inline or single-paragraph content, the
 confuse the pipe, and the **self-closing form** for empty elements like `<hr />`
 or an attribute-only `<cite @key />`.
 
-> **Gotcha — the pipe ends at the first bare `>`.** Pipe content is read up to the
-> first unescaped `>` (with a matching-`<…>` exception for nested tags). So content
-> with a literal `>` — a math comparison, a Mermaid arrow, a chunk of code — must
-> use the long form, where the body is verbatim. You have met this rule in the
-> theorem and DSL chapters; it is the one thing to remember about the pipe.
+<aside type=caution>
+**Gotcha — the pipe ends at the first bare `>`.** Pipe content is read up to the
+first unescaped `>` (with a matching-`<…>` exception for nested tags). So content
+with a literal `>` — a math comparison, a Mermaid arrow, a chunk of code — must
+use the long form, where the body is verbatim. You have met this rule in the
+theorem and DSL chapters; it is the one thing to remember about the pipe.
+</aside>
 
 *Related:* every preceding chapter — this is the syntax they all use;
 <a href="#sec:render" | Rendering and output> (Chapter 14).
