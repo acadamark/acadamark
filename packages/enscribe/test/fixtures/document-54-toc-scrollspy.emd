@@ -1,0 +1,46 @@
+<meta type=article title="Scroll-spy in the ToC sidebar (#20)">
+</meta>
+
+This article renders with the table-of-contents sidebar on (`toc: true`), so the
+build injects the scroll-spy script and the ToC entries gain the active-state
+hook as the reader scrolls. The nested sections below exercise the ancestor-trail
+highlight (an active `3.1.2`-style entry lights up along with its parents).
+
+<section | Introduction>
+
+Opening prose. The ToC lists this as a top-level entry linking to the section id.
+
+<section | Methods>
+
+The Methods section has sub-sections, which have sub-sub-sections — a three-level
+nest so the "you are here" trail has something to walk.
+
+<sub-section | Data>
+
+A sub-section under Methods.
+
+<sub-section | Analysis>
+
+Another sub-section, this one with its own sub-sub-sections.
+
+<sub-sub-section | Regression>
+
+A sub-sub-section — the deepest level. When this is the current section, its ToC
+entry is active and both Analysis and Methods carry the trail hook.
+
+<sub-sub-section | Validation>
+
+A second sub-sub-section under Analysis.
+
+<section | Results>
+
+A top-level section with one sub-section.
+
+<sub-section | Findings>
+
+A sub-section under Results.
+
+<section | Conclusion>
+
+The final top-level section. When the reader scrolls to the bottom, this entry
+stays active (the graceful end-of-document case).

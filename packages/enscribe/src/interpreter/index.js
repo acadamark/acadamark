@@ -170,6 +170,10 @@ import { applyToc } from './lib/toc.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
+// #20: scroll-spy client script — the first first-party hand-authored render JS
+// (distinct from the bundled DSL-rendering libraries). Injected whenever a ToC
+// sidebar is rendered; a pure progressive enhancement over the existing ToC.
+import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
@@ -685,6 +689,16 @@ export function enscribeInterpreter(options = {}) {
     // one long page — so it adds no markup beyond this one <script>.
     if (tocType === 'book' && chapterNavOption !== false) {
       hast.children.unshift(makeScriptElement(CHAPTER_NAV_JS));
+    }
+
+    // #20: scroll-spy — highlight the current section in the ToC sidebar as the
+    // reader scrolls. Ships wherever a ToC sidebar is rendered (article or book);
+    // no separate switch. A pure progressive enhancement: JS off → the ToC still
+    // navigates, just no live highlight. Joins the existing render-JS injection
+    // story (chapter-nav above, DSL libraries below) via the same
+    // makeScriptElement path.
+    if (tocType) {
+      hast.children.unshift(makeScriptElement(SCROLL_SPY_JS));
     }
 
     // Inject document fonts (Inter, Source Code Pro). fontsMode — driven by

@@ -2483,4 +2483,38 @@ export function run() {
     snapshotHast('document-53', hast);
     console.log('PASS: integration doc53 (show-source disclosure — mermaid + abc)');
   }
+
+  // --- doc54: ToC sidebar + scroll-spy (#20) ---
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-54-toc-scrollspy.emd'), 'utf8');
+    // Rendered WITH the ToC sidebar on (the documented trigger for scroll-spy).
+    const { html, hast } = runPipeline(src, { toc: true });
+
+    // The ToC sidebar is emitted, with nested entries linking to section ids.
+    assert.ok(html.includes('class="enscribe-toc"'), 'doc54: the ToC sidebar is rendered');
+    assert.ok(html.includes('href="#sec:methods"') && html.includes('href="#sec:regression"'),
+      'doc54: nested ToC entries link to the section ids (incl. the deepest level)');
+
+    // No-JS baseline: the link targets already exist in the markup, so scroll-spy
+    // is pure JS-over-existing-markup. The ToC navigates without any script.
+    assert.ok(html.includes('id="sec:methods"') && html.includes('id="sec:regression"'),
+      'doc54: section ids (the ToC link targets) are present in the markup');
+
+    // Scroll-spy is injected as an inline <script> alongside the ToC, via the same
+    // makeScriptElement path as chapter-nav. It is IntersectionObserver-based and
+    // sets the active hook.
+    assert.ok(html.includes('<script>'), 'doc54: an inline <script> is injected');
+    assert.ok(html.includes('IntersectionObserver') && html.includes('enscribe-toc-active'),
+      'doc54: the injected script is the IntersectionObserver-based scroll-spy that sets the active hook');
+
+    // The active hook is RUNTIME only — no aria-current / active class enters the
+    // static markup (scroll-spy adds no new content or meaning; it only sets the
+    // hook at runtime). The script string mentions them, the rendered ToC must not.
+    const tocFragment = html.slice(html.indexOf('class="enscribe-toc"'), html.indexOf('</nav>'));
+    assert.ok(!/aria-current|enscribe-toc-active/.test(tocFragment),
+      'doc54: no active hook in the static ToC markup — it is set at runtime');
+
+    snapshotHast('document-54', hast);
+    console.log('PASS: integration doc54 (ToC sidebar + scroll-spy injection)');
+  }
 }

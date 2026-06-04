@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>document-32-external-dsls</title>
+<title>document-54-toc-scrollspy</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1075,72 +1075,191 @@ body:has(.enscribe-layout--toc) {
 </head>
 <body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
-<article>
-  <article-front>
-    <meta data-document-type="article">
-      <article-title>External DSL handlers: &#x3C;mermaid> and &#x3C;abc> (Phase 2 slice 2c)</article-title>
-    </meta>
-  </article-front>
-  <article-body>
-    <section>
-      <section-title>Mermaid flowchart</section-title>
-      <p>
-        A simple flowchart authored with <code>&#x3C;mermaid></code>. The handler emits a
-        <code>&#x3C;pre class="mermaid" data-enscribe-dsl="mermaid"></code> wrapper preserving
-        the source. Mermaid's CDN library (if loaded by the consumer) scans for
-        <code>class="mermaid"</code> and replaces the content with rendered SVG at view
-        time; a build-time pre-render pass finds the same blocks via
-        <code>data-enscribe-dsl="mermaid"</code>.
-      </p>
-      
-        <pre class="mermaid" data-enscribe-dsl="mermaid" id="diagram:simple-flow">graph LR
-  A[Start] --> B{Decision}
-  B -->|yes| C[OK]
-  B -->|no| D[Stop]</pre>
-        <figcaption><span class="figure-label">Figure 1.</span></figcaption>
-      
-    </section>
-    <section>
-      <section-title>Mermaid sequence diagram</section-title>
-      <p>
-        A different diagram type confirms the handler doesn't assume any
-        specific Mermaid grammar — it preserves whatever source the author
-        writes.
-      </p>
-      
-        <pre class="mermaid" data-enscribe-dsl="mermaid">sequenceDiagram
-  Alice->>Bob: Hello Bob
-  Bob-->>Alice: Hello Alice</pre>
-        <figcaption><span class="figure-label">Figure 2.</span></figcaption>
-      
-    </section>
-    <section>
-      <section-title>ABC music notation</section-title>
-      <p>
-        A short ABC notation excerpt. The handler emits a
-        <code>&#x3C;pre class="abc" data-enscribe-dsl="abc"></code> wrapper preserving the
-        source verbatim. abcjs has no DOM auto-scan; the consumer's page needs
-        a small init script (sample in the vocab entry) that finds each marked
-        element and calls <code>ABCJS.renderAbc</code>.
-      </p>
-      
-        <pre class="abc" data-enscribe-dsl="abc" id="music:twinkle">X:1
-T:Twinkle, Twinkle, Little Star
-M:4/4
-L:1/4
-K:C
-C C G G | A A G2 | F F E E | D D C2 |</pre>
-        <figcaption><span class="figure-label">Figure 3.</span></figcaption>
-      
-      <p>
-        This fixture exercises both external DSLs end-to-end. The handlers
-        preserve source verbatim and add the CDN-compatible class plus the
-        enscribe-specific <code>data-enscribe-dsl</code> marker. No rendering happens
-        at enscribe time — that's the whole point of "external."
-      </p>
-    </section>
-  </article-body>
-</article>
+<script>(function () {
+  function init() {
+    var nav = document.querySelector('nav.enscribe-toc');
+    if (!nav) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+
+    // Map each ToC link to its target section, in document order.
+    var linkById = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') return;
+      var id = decodeURIComponent(href.slice(1));
+      var el = document.getElementById(id);
+      if (el) { linkById[id] = a; targets.push(el); }
+    });
+    if (!targets.length) return;
+
+    function visible(el) { return el.offsetParent !== null; } // false for display:none (e.g. a chapter-nav-hidden chapter)
+
+    function directLink(li) {
+      for (var i = 0; i < li.children.length; i++) {
+        var c = li.children[i];
+        if (c.tagName && c.tagName.toLowerCase() === 'a') return c;
+      }
+      return null;
+    }
+
+    var currentId = null;
+    function setActive(id) {
+      if (id === currentId) return;
+      currentId = id;
+      links.forEach(function (a) {
+        a.removeAttribute('aria-current');
+        a.classList.remove('enscribe-toc-active', 'enscribe-toc-active-trail');
+      });
+      var a = linkById[id];
+      if (!a) return;
+      a.classList.add('enscribe-toc-active');
+      a.setAttribute('aria-current', 'location');
+      // Ancestor trail: walk up the nested <li>/<ul> structure, marking each
+      // ancestor entry's own <a> (the "you are here" path).
+      var li = a.parentNode;
+      while (li && li.tagName && li.tagName.toLowerCase() === 'li') {
+        var ul = li.parentNode;                     // enclosing <ul>
+        var parentLi = ul ? ul.parentNode : null;   // ancestor <li>, or the <details>
+        if (parentLi && parentLi.tagName && parentLi.tagName.toLowerCase() === 'li') {
+          var pa = directLink(parentLi);
+          if (pa) pa.classList.add('enscribe-toc-active-trail');
+          li = parentLi;
+        } else {
+          break;
+        }
+      }
+    }
+
+    function firstVisibleId() {
+      for (var i = 0; i < targets.length; i++) { if (visible(targets[i])) return targets[i].id; }
+      return targets[0].id;
+    }
+    function lastVisibleId() {
+      for (var i = targets.length - 1; i >= 0; i--) { if (visible(targets[i])) return targets[i].id; }
+      return null;
+    }
+
+    function update() {
+      var marker = window.innerHeight * 0.2; // the "top threshold" line
+      var activeId = null;
+      for (var i = 0; i < targets.length; i++) {
+        var el = targets[i];
+        if (!visible(el)) continue;
+        if (el.getBoundingClientRect().top <= marker) activeId = el.id; // last to cross the top wins
+      }
+      // Ends. Before the first heading crosses the line, the first section is
+      // current; at the very bottom of the page, keep the last section active
+      // even though its top sits below the line.
+      if (activeId === null) activeId = firstVisibleId();
+      var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+      if (atBottom) { var lastId = lastVisibleId(); if (lastId) activeId = lastId; }
+      if (activeId) setActive(activeId);
+    }
+
+    if ('IntersectionObserver' in window) {
+      // The observer is the efficient TRIGGER (no scroll-handler thrash); the
+      // top band it watches brackets the threshold line, and update() does the
+      // authoritative "last above the line" computation on each crossing.
+      var io = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+      targets.forEach(function (t) { io.observe(t); });
+    }
+    window.addEventListener('resize', update);
+    update();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();</script>
+<div class="enscribe-layout enscribe-layout--toc">
+  <nav class="enscribe-toc" aria-label="Table of contents">
+    <details class="enscribe-toc-details" open>
+      <summary class="enscribe-toc-summary">Contents</summary>
+      <ul>
+        <li><a href="#sec:introduction">Introduction</a></li>
+        <li><a href="#sec:methods">Methods</a>
+          <ul>
+            <li><a href="#sec:data">Data</a></li>
+            <li><a href="#sec:analysis">Analysis</a>
+              <ul>
+                <li><a href="#sec:regression">Regression</a></li>
+                <li><a href="#sec:validation">Validation</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#sec:results">Results</a>
+          <ul>
+            <li><a href="#sec:findings">Findings</a></li>
+          </ul>
+        </li>
+        <li><a href="#sec:conclusion">Conclusion</a></li>
+      </ul>
+    </details>
+  </nav>
+  <main class="enscribe-body">
+    <article>
+      <article-front>
+        <meta data-document-type="article">
+          <article-title>Scroll-spy in the ToC sidebar (#20)</article-title>
+        </meta>
+      </article-front>
+      <article-body>
+        <p>
+          This article renders with the table-of-contents sidebar on (<code>toc: true</code>), so the
+          build injects the scroll-spy script and the ToC entries gain the active-state
+          hook as the reader scrolls. The nested sections below exercise the ancestor-trail
+          highlight (an active <code>3.1.2</code>-style entry lights up along with its parents).
+        </p>
+        <section id="sec:introduction">
+          <section-title>Introduction</section-title>
+          <p>Opening prose. The ToC lists this as a top-level entry linking to the section id.</p>
+        </section>
+        <section id="sec:methods">
+          <section-title>Methods</section-title>
+          <p>
+            The Methods section has sub-sections, which have sub-sub-sections — a three-level
+            nest so the "you are here" trail has something to walk.
+          </p>
+          <sub-section id="sec:data">
+            <sub-section-title>Data</sub-section-title>
+            <p>A sub-section under Methods.</p>
+          </sub-section>
+          <sub-section id="sec:analysis">
+            <sub-section-title>Analysis</sub-section-title>
+            <p>Another sub-section, this one with its own sub-sub-sections.</p>
+            <sub-sub-section id="sec:regression">
+              <sub-sub-section-title>Regression</sub-sub-section-title>
+              <p>
+                A sub-sub-section — the deepest level. When this is the current section, its ToC
+                entry is active and both Analysis and Methods carry the trail hook.
+              </p>
+            </sub-sub-section>
+            <sub-sub-section id="sec:validation">
+              <sub-sub-section-title>Validation</sub-sub-section-title>
+              <p>A second sub-sub-section under Analysis.</p>
+            </sub-sub-section>
+          </sub-section>
+        </section>
+        <section id="sec:results">
+          <section-title>Results</section-title>
+          <p>A top-level section with one sub-section.</p>
+          <sub-section id="sec:findings">
+            <sub-section-title>Findings</sub-section-title>
+            <p>A sub-section under Results.</p>
+          </sub-section>
+        </section>
+        <section id="sec:conclusion">
+          <section-title>Conclusion</section-title>
+          <p>
+            The final top-level section. When the reader scrolls to the bottom, this entry
+            stays active (the graceful end-of-document case).
+          </p>
+        </section>
+      </article-body>
+    </article>
+  </main>
+</div>
 
 </body>
 </html>

@@ -60,6 +60,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [ ] Code syntax highlighting (not yet wired in)
 - [ ] Render-mode lowering — lossy lowering of custom elements to plain `<h1>`/`<h2>` (gated on a design decision)
 - [x] Table-of-contents sidebar (opt-in, build-time, responsive)
+- [x] ToC scroll-spy — highlights the current section (and its ancestor trail) in the sidebar as the reader scrolls, via an injected inline `IntersectionObserver` script with `aria-current`; ships with the ToC sidebar, a pure progressive enhancement (the first first-party hand-authored render JS)
 - [x] Single-chapter-at-a-time book navigation (JS, progressive enhancement)
 - [x] Display themes (default, modern, compact — custom-property overrides)
 - [ ] Multi-column display and margin sidenotes

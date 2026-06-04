@@ -949,6 +949,58 @@ and other print-book apparatus (no print stylesheet); the navigation UI itself.
 
 ---
 
+## 15.5 Table-of-contents sidebar and scroll-spy — `RQ-TOC`
+
+**What it is.** With the `toc` render option on (`true`, or `auto` past a few
+top-level sections) the renderer wraps the document in a two-column layout with a
+`<nav class="enscribe-toc">` sidebar of links to the section ids. The links work
+with no JavaScript — the ToC navigates by plain in-page anchors.
+
+**Scroll-spy (#20).** When the ToC sidebar is rendered, the renderer injects an
+inline scroll-spy `<script>` that highlights the current section in the sidebar
+as the reader scrolls. "Current" is the last section heading to cross a threshold
+line near the top of the viewport (an `IntersectionObserver` on the section
+elements triggers the recompute, not a max-viewport-area heuristic); the active
+entry **and its ancestor trail** are marked, and the ends are handled (first
+section active at the top, last stays active at the bottom).
+
+- **`RQ-TOC-M1`** — a ToC document carries the `<nav class="enscribe-toc">`
+  sidebar with nested entries linking to the section ids, and every listed
+  section carries the matching `id`. (Pre-existing; scroll-spy relies on it.)
+- **`RQ-TOC-M2`** (#20) — a ToC document also carries the inline scroll-spy
+  `<script>`. It is a PURE progressive enhancement: it adds no content or meaning
+  to the markup — the active hook (`aria-current="location"` plus the
+  `enscribe-toc-active` / `enscribe-toc-active-trail` classes) is set at runtime,
+  not present statically — and the ToC navigates without it. A non-ToC document
+  carries no sidebar and no script.
+
+**Stylesheet predicate:**
+
+- **`RQ-TOC-S1`** (#20) — the default theme styles the scroll-spy active state
+  from the existing palette: the active entry (`a[aria-current]` /
+  `.enscribe-toc-active`) is emphasised (link colour + bold) and its ancestor
+  trail (`.enscribe-toc-active-trail`) given a subtler emphasis, so the hook is
+  not shipped bare (the #103 lesson). JS off → the hook is never set and the ToC
+  renders exactly as before.
+
+**The hand-authored-render-JS convention (#20 sets it).** Scroll-spy is enscribe's
+first *first-party, hand-authored* render script — distinct from the bundled
+third-party DSL-rendering libraries (mermaid / abc) the live modes already ship,
+and a reading-time enhancement rather than the book-only chapter-nav script. The
+convention it sets, which the next such feature (#52, hover previews) should
+follow: inline, self-contained, dependency-free vanilla JS, injected as an inline
+`<script>` (via the same `makeScriptElement` path) so the document stays
+self-contained, and a PURE progressive enhancement — the page is fully functional
+without it. JATS is unaffected: no ToC sidebar and no script enter the archival
+channel.
+
+**Out of spec.** URL-hash sync while scrolling and smooth-scroll on ToC click
+(deferred, #20). The scroll behaviour itself is runtime and is not exercised by
+the static snapshot — the snapshot proves the script is injected and the
+active-state styling exists, the same boundary as #19's disclosure.
+
+---
+
 ## 16. Conformance
 
 A rendered document is conformant when every applicable `M` predicate holds

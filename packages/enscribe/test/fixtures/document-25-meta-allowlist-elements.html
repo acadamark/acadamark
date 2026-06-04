@@ -944,6 +944,23 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link);
 }
 
+/* Scroll-spy active state (#20). The scroll-spy script (injected with the ToC
+ * sidebar) sets aria-current + .enscribe-toc-active on the entry for the section
+ * at the top of the viewport, and .enscribe-toc-active-trail on its ancestor
+ * entries (the "you are here" path). Styled from the existing palette; document
+ * says *what* (which entry is current), theme says *how* it's shown. JS off →
+ * none of these are set, so the ToC renders exactly as before (the script is a
+ * pure progressive enhancement). */
+.enscribe-toc a.enscribe-toc-active,
+.enscribe-toc a[aria-current] {
+  color: var(--enscribe-link);
+  font-weight: 700;
+}
+
+.enscribe-toc a.enscribe-toc-active-trail {
+  color: var(--enscribe-text-primary);
+}
+
 /* Desktop: a two-column grid with the ToC as a sticky left sidebar; the
  * disclosure is forced open (its <summary> toggle hidden). */
 @media (min-width: 900px) {

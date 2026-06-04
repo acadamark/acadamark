@@ -69,6 +69,16 @@ const ABC_STATIC_FIXTURES = new Set([
 ]);
 
 /**
+ * ToC-sidebar fixtures (#20). Rendered with `toc: true` so the table-of-contents
+ * sidebar is emitted and the scroll-spy script is injected alongside it. Set per
+ * fixture here rather than changing the interpreter default (`toc: false`), which
+ * keeps every other fixture byte-identical.
+ */
+const TOC_FIXTURES = new Set([
+  'document-54-toc-scrollspy',
+]);
+
+/**
  * Wrap an interpreter fragment in a full HTML document shell.
  *
  * @param {string} fragment - Raw HTML fragment from the interpreter.
@@ -108,6 +118,9 @@ function renderFixture(emdPath) {
   }
   if (ABC_STATIC_FIXTURES.has(name)) {
     interpreterOptions.abcMode = 'static';
+  }
+  if (TOC_FIXTURES.has(name)) {
+    interpreterOptions.toc = true;
   }
 
   const processor = buildEnscribePipeline(interpreterOptions);
