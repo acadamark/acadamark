@@ -39,6 +39,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Frameable boxed prose — `<aside>` joins `<frame>` with an optional title, caption, and border (on by default); a numbered `<aside>` gets its own "Box" counter, and `<aside type=…>` carries the callout taxonomy (the admonition types — note / info / tip / warning / caution — are styled per-type by the default theme) + `<boxed-text>` export
 - [x] Frameable border looks — `border=<name>` selects a named look (`accent` / `thick` / `dashed` / `subtle` in the default theme) on the frameable border surface; the document names the look, the theme defines it (`frameable-border-<name>` modifier class)
 - [x] External DSLs — the `<diagram>` host (Mermaid, ABC engines as format words); legacy `<mermaid>` / `<abc>` kept as gate shorthands
+- [x] Host format-word validation — a format-word host (`<table>` / `<diagram>` / `<library>`) carrying a format outside its accept-set (e.g. `<table xml>`, `<diagram mermaidx>`) gets a located, non-fatal diagnostic at the gate and still renders
 - [x] Inline SVG — the `<svg>` frameable element (bare inline, or captioned / numbered → wrapped in `<figure>`); the canonical home for framed inline SVG (no `<fig svg>`)
 - [x] Links with a positional URL (`<a url | text>`)
 - [x] Book structure — chapters, parts, front/back matter

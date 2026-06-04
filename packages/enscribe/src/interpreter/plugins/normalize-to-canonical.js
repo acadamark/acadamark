@@ -50,6 +50,7 @@
 import { getContentHandler } from '../../core/dsl-registry.js';
 import { makeTag, makeOpaqueTag, isEnscribeTag } from '../../core/tag.js';
 import { walkNormalize } from '../../core/walkers/walk-normalize.js';
+import { discover } from '../../core/walkers/discover.js';
 import { SIGIL_TO_TAGNAME, isSigilTagname } from '../../core/tagname-sigil-map.js';
 import {
   STRUCTURED_ELEMENTS,
@@ -64,6 +65,7 @@ import {
   CONFIG_KWARGS, isConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
+import { hostAcceptsLanguage, HOST_ACCEPT_SETS } from '../lib/host-accept-sets.js';
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 
 // Phase 4 slice 4a (2026-05-29): book-part shorthand tagnames that
@@ -944,6 +946,62 @@ function normalizeNode(node, file) {
   return entry.normalize(node, file);
 }
 
+// ─── Host accept-set validation (issue #85) ─────────────────────────────────
+//
+// After canonicalization, every host element carries its format word as the
+// leading positional (`<table csv>`, `<diagram mermaid>`, `<library bibtex>`).
+// `HOST_ACCEPT_SETS` (interpreter/lib/host-accept-sets.js) is the authority for
+// which format words each host admits. This pass promotes that map from inert
+// data to a validation gate: a host carrying a format word outside its
+// accept-set gets a located, non-fatal diagnostic (via `file.message`, which
+// carries the node's source position) — and the document STILL RENDERS. The
+// host handler's own fallback produces visible output (e.g. `<diagram bogus>`
+// renders an `enscribe-error` span). Validation never aborts and never mutates
+// the tree; it is purely observational.
+//
+// `data` is deliberately NOT validated here. It carries no format word of its
+// own — it is a storage container for `<library>` blocks. Its accept-set (still
+// declared in `host-accept-sets.js`, mirroring `library`) governs the payload
+// languages of the libraries it holds, and those are validated when each inner
+// `<library>` node is visited. The hosts checked here are exactly the ones
+// whose leading positional IS a format word.
+const FORMAT_WORD_HOSTS = ['table', 'diagram', 'library'];
+
+// Read a host's format word the SAME way its handler reads it, so validation
+// can never disagree with dispatch:
+//   - table   (handlers/table.js):   node.positional[0]
+//   - diagram (handlers/diagram.js): node.positional[0]
+//   - library (plugins/library-load.js): node.positional[0] ?? node.kwargs.format
+// Returns null when no format word is present (the host uses its default —
+// e.g. a bare `<table | … >` markdown pipe table). If a handler's format
+// accessor ever changes, update this in lockstep.
+function hostFormatWord(node) {
+  const positional = node.positional?.[0];
+  if (positional != null && positional !== '') return positional;
+  if (node.tagname === 'library') {
+    const kw = node.kwargs?.format;
+    if (kw != null && kw !== '') return kw;
+  }
+  return null;
+}
+
+// Validate one host node's format word against its accept-set. Emits a located,
+// non-fatal diagnostic on a miss; renders regardless. No-op without a `file`
+// (the gate is sometimes run file-less in unit tests).
+function validateHostAcceptSet(node, file) {
+  const format = hostFormatWord(node);
+  if (format == null) return;                            // no format word → nothing to check
+  if (hostAcceptsLanguage(node.tagname, format)) return; // in the accept-set → valid
+  if (file && typeof file.message === 'function') {
+    const accepted = [...(HOST_ACCEPT_SETS.get(node.tagname) ?? [])].join(', ');
+    file.message(
+      `<${node.tagname}>: "${format}" is not an accepted ${node.tagname} format ` +
+      `(accepted: ${accepted}). Rendering anyway.`,
+      node,
+    );
+  }
+}
+
 /**
  * Unified mdast-transform plugin — the normalize-to-canonical gate.
  *
@@ -966,6 +1024,15 @@ export function enscribeNormalizeToCanonical() {
     _bookContextFlag.isBook = detectBookContext(tree.children);
     try {
       walkNormalize(tree.children ?? [], isNormalizable, (node) => normalizeNode(node, file));
+      // #85: validate host format words against their accept-sets. Runs AFTER
+      // canonicalization so gate shorthands (e.g. `<csv>` → `<table csv>`) have
+      // already injected their format positional. Observe-only — `discover`
+      // never mutates the tree, and host content is opaque so the walk does not
+      // descend into payloads.
+      const hostValidators = new Map(
+        FORMAT_WORD_HOSTS.map((host) => [host, (node) => validateHostAcceptSet(node, file)]),
+      );
+      discover(tree, hostValidators);
     } finally {
       _bookContextFlag.isBook = false;
     }

@@ -243,6 +243,15 @@ After this pass every math, pipe-table, sigil, shorthand, and markdown-idiom
 construct is one canonical node type, indistinguishable from the authored
 long-form.
 
+**Host format-word validation (#85):** as a final, observe-only step (after
+canonicalization, so gate shorthands have already injected their format
+positional), the gate validates each format-word host (`table`, `diagram`,
+`library`) against `HOST_ACCEPT_SETS` (`lib/host-accept-sets.js`). A host whose
+leading format word is outside its accept-set gets a located `file.message`
+diagnostic and **still renders** — validation never mutates the tree or aborts.
+See `notes/specs/format-words.md` §"The accept-set lives in the host" for the
+mechanism and why `<data>` is excluded.
+
 **Delegated-parser mapping:**
 
 | input node type | from | replacement |
@@ -1583,6 +1592,9 @@ Some plugins use `file.message()` to attach diagnostics to the unified VFile:
 - `buildCitationIndex` (step 5): file read failures, empty library, parse errors.
 - `enscribeRefResolution`: missing id, target not found.
 - `enscribeCiteResolution`: empty `<cite>`, missing keys.
+- `enscribeNormalizeToCanonical` (the gate): a host's leading format word is
+  outside its accept-set (`HOST_ACCEPT_SETS`) — e.g. `<table xml>`, `<diagram
+  mermaidx>`. Located on the offending node; the document still renders (#85).
 
 These messages appear in the `file.messages` array after `process()` resolves.
 They do not appear in the HTML output.
@@ -1731,7 +1743,7 @@ packages/enscribe/src/interpreter/
     cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler
   lib/
     registry.js                 createRegistry(); ensureRegistry()
-    host-accept-sets.js         HOST_ACCEPT_SETS; hostAcceptsLanguage(host, lang)
+    host-accept-sets.js         HOST_ACCEPT_SETS; hostAcceptsLanguage(host, lang) — consulted by the gate as format-word validation (#85)
     shorthand-expansions.js     createShorthandRegistry() — the gate's shared expansion map
     ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
     bool-kwarg.js               readBoolKwarg()

@@ -575,4 +575,89 @@ export function run() {
     assert.ok(/<config>/.test(String(messages[0])), 'warning suggests <config>');
     console.log('PASS: normalize-to-canonical: <meta> with config-shaped kwarg hints <config>');
   }
+
+  // ── Host accept-set validation (#85) ───────────────────────────────────────
+  //
+  // The gate validates each format-word host's leading format against
+  // HOST_ACCEPT_SETS, emitting a located, non-fatal diagnostic on a miss while
+  // still rendering (the node is never removed). Helper: parse authored source,
+  // run the gate with a fake file, and return just the accept-set diagnostics.
+  function gateAcceptSet(source) {
+    const tree = unified().use(remarkParse).use(remarkEnscribe).parse(source);
+    const messages = [];
+    const file = { data: {}, message(msg, node) { messages.push({ reason: String(msg), node }); } };
+    enscribeNormalizeToCanonical()(tree, file);
+    const acceptSetMsgs = messages.filter((m) => /is not an accepted .* format/.test(m.reason));
+    return { tree, acceptSetMsgs };
+  }
+  function findHostTag(nodes, tagname) {
+    for (const n of nodes ?? []) {
+      if (n.type === 'enscribeTag' && n.tagname === tagname) return n;
+      const kids = Array.isArray(n.children) ? n.children
+        : (Array.isArray(n.content) ? n.content : null);
+      if (kids) { const r = findHostTag(kids, tagname); if (r) return r; }
+    }
+    return null;
+  }
+
+  // --- valid format words emit no accept-set diagnostic ---
+  {
+    for (const src of ['<table csv | a,b>', '<diagram mermaid | graph>', '<library bibtex | @article{k,}>']) {
+      const { acceptSetMsgs } = gateAcceptSet(src);
+      assert.equal(acceptSetMsgs.length, 0, `valid host format must not warn: ${src}`);
+    }
+    console.log('PASS: normalize-to-canonical: valid host format words pass accept-set validation');
+  }
+
+  // --- out-of-set table format warns, located, and STILL RENDERS (node kept) ---
+  {
+    const { tree, acceptSetMsgs } = gateAcceptSet('<table xml | a,b>');
+    assert.equal(acceptSetMsgs.length, 1, '<table xml> warns exactly once');
+    assert.ok(/<table>: "xml" is not an accepted table format/.test(acceptSetMsgs[0].reason),
+      'diagnostic names the host and the bad format word');
+    assert.ok(/accepted: csv, tsv, json, yaml, md/.test(acceptSetMsgs[0].reason),
+      'diagnostic lists the table accept-set');
+    assert.ok(acceptSetMsgs[0].node && acceptSetMsgs[0].node.tagname === 'table',
+      'diagnostic carries the offending node (so file.message attaches a source location)');
+    assert.ok(findHostTag(tree.children, 'table'),
+      '<table xml> is NOT removed from the tree — it still renders');
+    console.log('PASS: normalize-to-canonical: out-of-set table format warns + still renders');
+  }
+
+  // --- diagram + library out-of-set words warn ---
+  {
+    const d = gateAcceptSet('<diagram mermaidx | graph>');
+    assert.equal(d.acceptSetMsgs.length, 1, '<diagram mermaidx> warns');
+    assert.ok(/<diagram>: "mermaidx" is not an accepted diagram format/.test(d.acceptSetMsgs[0].reason));
+    const l = gateAcceptSet('<library bogus | @article{k,}>');
+    assert.equal(l.acceptSetMsgs.length, 1, '<library bogus> warns');
+    assert.ok(/<library>: "bogus" is not an accepted library format/.test(l.acceptSetMsgs[0].reason));
+    console.log('PASS: normalize-to-canonical: out-of-set diagram + library formats warn');
+  }
+
+  // --- library validates the legacy format= kwarg the same way its handler reads it ---
+  {
+    const ok = gateAcceptSet('<library format=bibtex | @article{k,}>');
+    assert.equal(ok.acceptSetMsgs.length, 0, 'library format=bibtex is valid (kwarg form)');
+    const bad = gateAcceptSet('<library format=bogus | @article{k,}>');
+    assert.equal(bad.acceptSetMsgs.length, 1, 'library format=bogus warns (kwarg form)');
+    console.log('PASS: normalize-to-canonical: library validates the legacy format= kwarg too');
+  }
+
+  // --- a host with no format word is not flagged (it uses its default) ---
+  {
+    const bare = gateAcceptSet('<table | x>');
+    assert.equal(bare.acceptSetMsgs.length, 0, 'bare <table> (no format word) does not warn');
+    console.log('PASS: normalize-to-canonical: a host with no format word is not flagged');
+  }
+
+  // --- <data> is deliberately excluded from format-word validation ---
+  {
+    // <data> carries no format word of its own; its accept-set governs the
+    // payload languages of the <library> blocks it contains (validated when each
+    // inner <library> is visited), so a bare token on <data> itself never warns.
+    const { acceptSetMsgs } = gateAcceptSet('<data bogus | x>');
+    assert.equal(acceptSetMsgs.length, 0, '<data> is excluded from format-word validation');
+    console.log('PASS: normalize-to-canonical: <data> is excluded from format-word validation');
+  }
 }

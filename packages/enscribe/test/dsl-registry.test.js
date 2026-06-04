@@ -1,21 +1,20 @@
 // Unit tests for the reshaped DSL registry — the language/type axis
 // (core/dsl-registry.js), issue #22 slice 2.
 //
-// The reshape adds (purpose, host) bindings + an opacity field to each
-// language record, behind a STABLE lookup: getContentHandler() must resolve
-// byte-identically to the pre-reshape flat map, and the derived DSL_REGISTRY
-// must equal the old map entry-for-entry, in order. These tests pin that
-// output-neutrality (no render fixture can — the reshape is pure data model)
-// and exercise the new accessors.
+// The reshape added an opacity field to each language record behind a STABLE
+// lookup: getContentHandler() must resolve byte-identically to the pre-reshape
+// flat map, and the derived DSL_REGISTRY must equal the old map entry-for-entry,
+// in order. These tests pin that output-neutrality (no render fixture can — the
+// reshape is pure data model) and exercise the live accessors (getContentHandler,
+// isOpaqueLanguage). The `(purpose, host)` bindings the reshape once carried were
+// removed in #85 as confirmed-inert data (see the note in the bindings section).
 
 import assert from 'node:assert/strict';
 import {
   LANGUAGES,
   DSL_REGISTRY,
-  PURPOSE,
   getContentHandler,
   isOpaqueLanguage,
-  getLanguageBindings,
 } from '../src/core/dsl-registry.js';
 
 // The pre-reshape flat map, frozen here as the byte-identity oracle: identifier
@@ -78,34 +77,13 @@ export function run() {
     console.log('PASS: opacity is stored true for all languages and matches the parser derivation');
   }
 
-  // --- (purpose, host) bindings: present, well-formed, valid purpose ---
-  {
-    const validPurposes = new Set(Object.values(PURPOSE));
-    for (const [id] of EXPECTED) {
-      const bindings = getLanguageBindings(id);
-      assert.ok(Array.isArray(bindings) && bindings.length >= 1,
-        `${id} must declare at least one (purpose, host) binding`);
-      for (const b of bindings) {
-        assert.ok(validPurposes.has(b.purpose), `${id}: purpose ${b.purpose} must be one of PURPOSE`);
-        assert.ok(typeof b.host === 'string' && b.host.length > 0, `${id}: host must be a non-empty string`);
-      }
-    }
-    // Spot-check the dispositions the spec names.
-    assert.deepEqual(getLanguageBindings('library'), [{ purpose: 'storage', host: 'library' }],
-      'library is a storage language hosted by library');
-    assert.deepEqual(getLanguageBindings('mermaid'), [{ purpose: 'display', host: 'diagram' }],
-      'mermaid is a display language whose host is diagram (the binding is declarative; ' +
-      'the <mermaid> → <diagram mermaid> gate shorthand is registered explicitly)');
-    assert.deepEqual(getLanguageBindings('csv'), [{ purpose: 'display', host: 'table' }],
-      'csv is a display language hosted by table');
-    assert.deepEqual(getLanguageBindings('svg'), [{ purpose: 'display', host: 'svg' }],
-      'svg is a passthrough display language and its own host — a first-class ' +
-      'frameable element, not a <fig svg> format word (the <fig svg> second ' +
-      'path was retired, #81/#22; framed inline SVG is <svg>-as-frameable)');
-    // Unregistered → no bindings.
-    assert.deepEqual(getLanguageBindings('unknown'), []);
-    console.log('PASS: every language declares well-formed (purpose, host) bindings');
-  }
+  // NOTE (#85): the per-language `(purpose, host)` bindings and the
+  // `getLanguageBindings` accessor were removed as confirmed-inert data — no
+  // dispatch consumer ever materialized (the planned slice-3 migration shipped
+  // via explicit gate registrations instead). The host/language relationship
+  // that DOES have a consumer (host → accepted format words, for validation)
+  // lives in `host-accept-sets.js` and is covered by `lib/host-accept-sets.test.js`
+  // plus the gate validation tests in `plugins/normalize-to-canonical.test.js`.
 
   // --- LANGUAGES and DSL_REGISTRY stay in sync (same keys, same order) ---
   {

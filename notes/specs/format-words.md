@@ -8,9 +8,9 @@ inside — the two axes (a **host** element and a **language**), the DSL registr
 understood as a type system, the format word as the binding between the axes, and
 the **display / storage / evaluation** purpose trichotomy — lives in `DESIGN.md`
 §"The two axes: host and language" and is not restated here. This document owns
-the per-host mechanics: how a language's `(purpose, host)` bindings are declared,
-how a host consults its accept-set, the member dispositions, the shorthand and
-clobber rules, the reserved scoping syntax, and the implementation order.
+the per-host mechanics: how a host owns and is validated against its accept-set,
+the member dispositions, the shorthand and clobber rules, the reserved scoping
+syntax, and the implementation order.
 
 This is the design spec for **issue #22** (generalize the qualifying-tag pattern
 beyond `<table>`). It is deliberately **separate** from the structured-data-
@@ -65,24 +65,24 @@ Why:
 - **Sigils keep their niche.** Inline/display math and code are single-language
   and read best as terse sigils; the rule leaves them be.
 
-## Registration: a language declares its `(purpose, host)` bindings
+## Admission: a host owns the set of languages it admits
 
-A language is legal in a host only if it has **registered a binding** for that
-host. A binding pairs the language with a host and a purpose, and the purpose is
+A language is legal in a host only if it is in that **host's accept-set**. The
+purpose (`display` / `storage` / `evaluation`, the trichotomy in `DESIGN.md`) is
 **derived from the host**, never authored — the table host's languages are
-display, the `data`/`library` host's are storage, a code-output host's are
-evaluation (the trichotomy is defined in `DESIGN.md`). The author writes only the
-host and the language word; the purpose comes along through the registration.
+display, the `data` / `library` host's are storage, a code-output host's would be
+evaluation. The author writes only the host and the language word; the purpose
+comes along with the host.
 
-Two consequences of "purpose is derived from the host":
-
-- A language can register against **more than one** `(purpose, host)` binding —
-  the same source format can be a storage language under `<data>` and a display
-  language under a rendering host — without the author ever disambiguating
-  purpose by hand.
-- A host's accept-set (next section) is exactly "the languages that registered a
-  binding naming this host." Admission is a registry lookup, not a special case
-  in the host's handler.
+The accept-set is keyed by host (host → the languages it admits) because that is
+the direction admission actually needs. An early design (#22) additionally
+recorded the inverse — a per-language `(purpose, host)` *binding* list on the DSL
+registry, read by a `getLanguageBindings` accessor — as a declarative substrate a
+later member migration was expected to consume. That migration shipped via
+explicit gate registrations instead, so the bindings were never consulted;
+**#85 removed them** as inert data. The host accept-set is the single authority
+for admission, and the inverse projection is reconstructible from it if ever
+needed.
 
 ## The accept-set lives in the host
 
@@ -93,6 +93,18 @@ the leading positional, looks the format up in its own parser table, and renders
 the no-format case as a raw-HTML escape hatch. Every other host follows the same
 shape: the host's handler is where its accept-set is defined and consulted, and
 this document does not enumerate any host's languages.
+
+These per-host accept-sets are mirrored in one lookup (`HOST_ACCEPT_SETS` in
+`interpreter/lib/host-accept-sets.js`) so the system can ask "does host H admit
+language L?" without reaching into each handler — the table host's entry is
+literally the handler's format table, so the two cannot drift. **#85 wired this
+as validation** at the normalize-to-canonical gate: after canonicalization, a
+host carrying a format word outside its accept-set gets a located, non-fatal
+diagnostic (a `file.message` on the offending node) and **still renders** — the
+handler's own fallback produces visible output. Validation observes; it never
+aborts and never mutates the tree. `<data>` is not validated this way: it carries
+no format word of its own, and the payload languages of the `<library>` blocks it
+holds are validated when each inner `<library>` is visited.
 
 ## Members and dispositions
 
@@ -210,6 +222,10 @@ slice:
 
 `<code>` and `<list>` are explicitly out of scope, for the reasons in the member
 dispositions.
+
+Admission **validation** — the `HOST_ACCEPT_SETS` lookup wired as a gate
+diagnostic (see "The accept-set lives in the host") — landed separately in **#85**,
+after the members, once there were several hosts to validate.
 
 ## The `<data>` connection and the #24 boundary
 
