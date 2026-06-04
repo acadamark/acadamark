@@ -53,7 +53,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] HTML output — external CSS/fonts by default, self-contained on request (`embedResources`)
 - [x] Rendered citations inlined; conditionally-injected hover previews (notes / refs / citations)
 - [x] Bundled subsetted fonts (Inter, Source Code Pro) and patched KaTeX fonts
-- [x] Default stylesheet with theme variables (`default.css`)
+- [x] Default stylesheet with theme variables (`default.css`) — styles every shipped feature hook from one custom-property palette (border looks, section numbers, callout types, captions/labels, the show-source disclosure, cross-refs, errors)
 - [x] DSL rendering modes — `skip` default, `live-link` / `live-inline`, and `static` (build-time SVG) for ABC
 - [x] DSL "See source" disclosure — opt-in `<config show-source=true />` reveals the authored Mermaid/ABC source behind a rendered block in a native `<details>` control (no JavaScript); off by default, theme styles the control
 - [x] Client-side rendering — browser library (`render` / `renderInto` / `executeAssets`), `enscribe.browser` bundle

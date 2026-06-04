@@ -696,6 +696,48 @@ aside[data-aside-type="caution"] {
 }
 aside[data-aside-type="caution"]::before { content: "\26D4"; color: var(--enscribe-callout-caution-accent); }
 
+/* "See source" disclosure (#19). A rendered-from-DSL block (mermaid / abc) with
+ * the `show-source` <config> switch on emits the authored source in a native
+ * <details class="enscribe-source"><summary>See source</summary><pre>…</pre>.
+ * The default theme gives the <summary> an intentional, button-like control
+ * look — drawn from the EXISTING palette (the same label idiom as the ToC
+ * summary, the same border / radius as the frameable box and <pre>; no new
+ * tokens). Document says *what* (source is available); theme says *how*. The
+ * inner <pre> inherits the base code-block styling above; only its margin is
+ * reset so it sits flush under the control. */
+.enscribe-source {
+  margin: var(--enscribe-space-4) 0 var(--enscribe-space-6);
+}
+
+.enscribe-source > summary {
+  display: inline-block;
+  cursor: pointer;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  background: var(--enscribe-bg-subtle);
+  border: 1px solid var(--enscribe-border);
+  border-radius: 4px;
+  padding: var(--enscribe-space-1) var(--enscribe-space-3);
+  user-select: none;
+}
+
+.enscribe-source > summary:hover {
+  color: var(--enscribe-text-secondary);
+  border-color: var(--enscribe-border-strong);
+}
+
+.enscribe-source[open] > summary {
+  margin-bottom: var(--enscribe-space-2);
+}
+
+.enscribe-source > pre {
+  margin: 0;
+}
+
 /* Tables */
 table {
   border-collapse: collapse;

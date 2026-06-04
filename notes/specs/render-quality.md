@@ -612,8 +612,13 @@ on or off — the disclosure is a presentational HTML affordance only.
 - The control's *look* is a theme concern — the `enscribe-source` class is the
   styling hook. Document says *what* (source is available); theme says *how* (it
   can be styled to look like a button), the same split as the border looks (#58)
-  and section numbers (#57). The baseline is the unstyled native control; no
-  default-theme rule is required, and none is shipped this slice.
+  and section numbers (#57).
+- **`RQ-DSL-SOURCE-S1`** (#103) — the default theme styles the disclosure so it
+  reads as an intentional control: the `<summary>` is a small, button-like label
+  (uppercase, muted, bordered, rounded — the same palette as the ToC summary and
+  the frameable box / `<pre>`, no new tokens), and the inner `<pre>` keeps the
+  base code-block look. Styling only; the markup is unchanged, so this is a pure
+  embedded-`<style>` diff in the HTML fixtures (markup + JATS byte-identical).
 
 **Out of spec.** Rendered diagram/notation fidelity — that is the external
 library's job, not enscribe's. Skip (the default) emits only the contract; live
