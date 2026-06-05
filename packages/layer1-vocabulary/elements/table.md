@@ -31,7 +31,25 @@ enscribe_attributes:
       notes: |
         Whether this table is counted in the numbered table sequence and
         receives a "Table N." label prefix in its caption.
+    parse-text:
+      handled_by: plugin
+      default: false
+      notes: |
+        #21: whether ALL cells of a DATA-format table parse as Enscribe inline
+        markup. Default false (data-format cells are literal — the safe baseline).
+        +parse-text parses every cell; -parse-text forces literal, overriding a
+        document-wide <config parse-data-tables=true> default. Markdown/pipe
+        tables always parse and ignore this. Resolved by the table-cell-parse
+        plugin (precedence: this attribute > config default > literal baseline).
   kwargs:
+    parse-columns:
+      notes: |
+        #21: comma-separated list of column names (by header) whose cells parse
+        as Enscribe inline markup, leaving the other columns literal — the common
+        mixed case (a prose column among data columns). Adds the named columns on
+        top of the parse-text / config decision. Headerless tables can't match by
+        name, so use +parse-text there. A parsed column parses in HTML AND JATS;
+        the stored data payload is never mutated (a display directive on the table).
     caption:
       notes: |
         Short-form caption as a kwarg string. Renders as <caption> inside
@@ -253,6 +271,41 @@ The choice depends on the author's intent:
 - `other` — anything not covered above.
 
 The classification mostly affects styling and JATS export.
+
+## Cell content: literal data, opt-in markup (#21)
+
+Whether a cell parses as Enscribe inline markup is keyed to the table's **kind**,
+with explicit opt-in to override:
+
+- **Markdown / pipe tables** (`| a | b |`) — cells **always parse** as inline
+  markup (standard remark behavior). Unchanged.
+- **Data-format tables** (`<table csv>`, `<table json>`, …) — cells are
+  **literal by default**, because data-format tables usually hold data that
+  markup interpretation would mangle. Parsing is opt-in:
+  - `+parse-text` — parse every cell.
+  - `parse-columns="notes, summary"` — parse only the named columns (by header),
+    leaving the data columns literal. The common mixed case.
+  - `-parse-text` — force all cells literal (overrides a document-wide default).
+- **Document-wide default** — `<config parse-data-tables=true>` makes data-format
+  tables parse by default for a document with many similar tables. Baseline
+  **off**, so literal data is the safe default; data parses only when the author
+  opted in somewhere deliberate. Per-table attributes override it.
+
+**Precedence:** per-table attribute (`+`/`-parse-text`, `parse-columns`) > the
+global `<config>` default > the kind baseline (markdown = parse, data = literal).
+
+**What "parse" means.** A cell is **phrasing content** — emphasis, strong,
+`<a URL | text>` links, cross-references, citations, inline code, inline math —
+not a block container (no headings, lists, or nested tables, the same as GFM).
+Opted-in cells route through the *same* inline pipeline the rest of the document
+uses; a cross-reference or citation in a cell resolves like any other.
+
+**Both channels; payload stays literal.** A parsed column parses in **HTML and
+JATS both** (a link is an `<a>` / `<ext-link>`, a cross-ref an `<xref>`), and a
+literal column stays literal in both. The opt-in is a display/semantic directive
+on the *table* — the stored data payload (the inline content, or the `src=` file)
+is never rewritten. The asset three-layer model holds: format/identity untouched,
+display interpreted.
 
 ## JATS mapping
 

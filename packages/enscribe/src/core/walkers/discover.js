@@ -43,6 +43,18 @@ function walkDiscover(nodes, visitors) {
     if (node.children && Array.isArray(node.children)) {
       walkDiscover(node.children, visitors);
     }
+    // #21: recurse into parsed data-table cells. A data-format table's content is
+    // an opaque string (skipped above), but when its cells opted into Enscribe
+    // markup the table-cell-parse plugin stamps `_parsedCells` with per-cell inline
+    // node arrays. Descending them lets discover-based passes (numbering) see cell
+    // content. No-op for every node without the stamp → byte-identical.
+    if (node._parsedCells && Array.isArray(node._parsedCells.rows)) {
+      for (const row of node._parsedCells.rows) {
+        for (const cell of row) {
+          if (cell && Array.isArray(cell.inline)) walkDiscover(cell.inline, visitors);
+        }
+      }
+    }
   }
 }
 

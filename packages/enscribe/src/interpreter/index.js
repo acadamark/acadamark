@@ -124,6 +124,9 @@ import { enscribeConfigDiscovery } from './plugins/config-discovery.js';
 import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
+// #21: opt-in Enscribe inline markup in data-format table cells. Runs in the
+// mdast phase so cell <ref>/<cite> become tree-resident before resolution.
+import { enscribeTableCellParse } from './plugins/table-cell-parse.js';
 import { enscribeNotes } from './plugins/notes.js';
 // Phase 5 slice 5c (2026-05-28): re-export enscribeNotePlacement so the
 // JATS test pipeline can include it (it produces __note-list /
@@ -607,6 +610,13 @@ export function enscribeInterpreter(options = {}) {
   // 6. Notes: register note elements (record-only); splice __note-marker nodes
   //    into the tree; store pending data for the apply-numbers stage.
   this.use(enscribeNotes);
+
+  // 6.5 (#21): parse opted-in data-table cells into canonical inline mdast. Runs
+  //     after notes and BEFORE numbering / ref / cite resolution, so a <ref> /
+  //     <cite> authored inside an opted-in cell becomes tree-resident (the shared
+  //     walkers descend the stamped cells) and resolves like any other. A no-op
+  //     for tables without an opt-in → every existing document byte-identical.
+  this.use(enscribeTableCellParse, { assetsDir });
 
   // 7. Numbering: register equation, figure, and table elements (record-only);
   //    store pending { node, entry } pairs for the apply-numbers stage.

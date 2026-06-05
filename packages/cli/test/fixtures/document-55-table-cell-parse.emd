@@ -1,0 +1,48 @@
+<meta type=article title="Opt-in Enscribe markup in data-table cells (#21)">
+</meta>
+
+<section | A parsed prose column>
+
+Data-format tables hold data, so cells are literal by default. A `parse-columns`
+attribute opts a single prose column into Enscribe inline markup while the data
+columns stay literal. Long form is used (the cell content carries `>`, which
+would end pipe content early). The notes column links, emphasises, cross-refs the
+figure below, and cites — all parsed; `sample` and `value` stay literal.
+
+<fig #fig:plot src="plot.png" caption="A reference plot, cross-referenced from a table cell." />
+
+<table #tab:results csv parse-columns="notes" caption="Results — only the notes column parses.">
+sample,value,notes
+A,3.14,see *the docs* at <a https://example.org | the site>
+B,2.72,compare with <ref @fig:plot> and <cite @smith2020>
+C,1.41,uses `inline code` and inline math $x^2$
+</table>
+
+<section | Parsing every cell>
+
+With `+parse-text`, every cell parses — the all-cells opt-in.
+
+<table csv +parse-text caption="Every cell parsed.">
+label,detail
+*emphasised label*,a link to <a https://example.org | the site>
+</table>
+
+<section | Explicit opt-out>
+
+`-parse-text` keeps a table literal even if a document-wide default turned
+parsing on. Here it is literal (no global default set), demonstrating the
+attribute is accepted and leaves cells untouched.
+
+<table csv -parse-text caption="Explicitly literal.">
+token,note
+x,this *stays* literal and <a https://example.org | this> is not a link
+</table>
+
+<data>
+<library |
+@article{smith2020, author = {Smith, Ada}, title = {On Cells}, journal = {J. Tables}, year = {2020}}
+>
+</data>
+
+<bibliography>
+</bibliography>

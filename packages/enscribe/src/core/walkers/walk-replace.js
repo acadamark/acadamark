@@ -52,6 +52,18 @@ export function walkReplace(nodes, tagname, process) {
       if (node.children && Array.isArray(node.children)) {
         walkReplace(node.children, tagname, process);
       }
+      // #21: recurse into parsed data-table cells (see discover.js for the
+      // rationale). This is what lets ref-resolution / cite-resolution resolve a
+      // <ref> / <cite> authored inside an opted-in table cell — the cell's inline
+      // array is mutated in place, and the renderer reads the same array. No-op
+      // for every node without the `_parsedCells` stamp → byte-identical.
+      if (node._parsedCells && Array.isArray(node._parsedCells.rows)) {
+        for (const row of node._parsedCells.rows) {
+          for (const cell of row) {
+            if (cell && Array.isArray(cell.inline)) walkReplace(cell.inline, tagname, process);
+          }
+        }
+      }
       i++;
     }
   }

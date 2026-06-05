@@ -74,6 +74,13 @@ export const CONFIG_KWARGS = new Map([
   // compileToHtml and threaded to the diagram engine handlers (mermaid / abc).
   ['show-source',             'live'],   // index.js compileToHtml → handlers/{mermaid,abc}.js
 
+  // #21: doc-wide default for whether DATA-format table cells (<table csv|json|…>)
+  // parse their cells as Enscribe inline markup. Baseline OFF — data stays literal
+  // unless the author opts in (per-table +parse-text / parse-columns, or this set
+  // on purpose). Per-table attributes override it. Consumed by the table-cell-parse
+  // plugin, which reads it through readBoolKwarg's config layer.
+  ['parse-data-tables',       'live'],   // plugins/table-cell-parse.js
+
   // Reserved — the apparatus-tag reconciliation ruling enumerated these as
   // the intended <config> surface. The implementation per key is future
   // work; the allowlist accepts them so author input is not rejected

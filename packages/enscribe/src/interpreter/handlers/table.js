@@ -30,6 +30,7 @@ import { join } from 'node:path';
 import yaml from 'js-yaml';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { extractFrameableChildren, renderFrameable } from '../lib/frameable.js';
+import { convertChildren } from '../lib/ast-helpers.js';
 
 // ─── Format parsers ───────────────────────────────────────────────────────────
 
@@ -387,6 +388,58 @@ const TABLE_PARSERS = { csv: parseCsv, tsv: parseTsv, json: parseJson, yaml: par
 /** The `table` host's accept-set: the format words its content may declare. */
 export const TABLE_FORMATS = Object.freeze(Object.keys(TABLE_PARSERS));
 
+/**
+ * Parse data-table text in a given format into {headers, rows} of string cells.
+ * The single dispatch over the format → parser map, shared so the table-cell-parse
+ * plugin (#21) parses identically to this handler. Throws on an unknown format.
+ *
+ * @param {string} format - a TABLE_FORMATS member
+ * @param {string} rawData
+ * @param {{hasHeaders: boolean}} opts
+ * @returns {{ headers: string[]|null, rows: any[][] }}
+ */
+export function parseTableData(format, rawData, { hasHeaders }) {
+  const parserFn = TABLE_PARSERS[format];
+  if (!parserFn) throw new Error(`unknown format "${format}"`);
+  return parserFn(rawData, { hasHeaders });
+}
+
+// ─── #21: parsed-cell rendering ────────────────────────────────────────────
+//
+// When the table-cell-parse plugin has opted cells into Enscribe inline markup,
+// it stamps `node._parsedCells = { headers, rows }`, where each body cell is
+// either a literal `{ text }` or a parsed `{ inline: <canonical inline mdast> }`
+// (already resolved — refs/cites resolved by the resolution plugins, which the
+// shared walkers route through the stamped cell arrays). The header row stays
+// literal (column names). This builder renders that structure; the literal path
+// (buildTableBodyHast) is untouched, so non-opted tables are byte-identical.
+
+function makeParsedCell(state, node, cell) {
+  const children = Array.isArray(cell?.inline)
+    ? convertChildren(state, node, cell.inline)
+    : [makeTextNode(cell?.text ?? '')];
+  return { type: 'element', tagName: 'td', properties: {}, children };
+}
+
+function buildTableBodyFromParsedCells(state, node, parsedCells) {
+  const children = [];
+  if (parsedCells.headers) children.push(makeThead(parsedCells.headers));
+  if (parsedCells.rows.length > 0) {
+    children.push({
+      type: 'element',
+      tagName: 'tbody',
+      properties: {},
+      children: parsedCells.rows.map((row) => ({
+        type: 'element',
+        tagName: 'tr',
+        properties: {},
+        children: row.map((cell) => makeParsedCell(state, node, cell)),
+      })),
+    });
+  }
+  return children;
+}
+
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 /**
@@ -432,6 +485,23 @@ export function tableHandler(state, node, _vocab, options) {
       type: 'raw',
       value: `<table${id ? ` id="${id}"` : ''}>\n${rawContent}\n</table>`,
     };
+  }
+
+  // #21: opted-in cells. The table-cell-parse plugin parsed the data and the
+  // opted-in cells already (so refs/cites in cells could resolve in the mdast
+  // phase); render straight from the stamped structure. Literal-cell tables are
+  // never stamped, so they fall through to the parse path below unchanged.
+  if (node._parsedCells) {
+    return renderFrameable({
+      kind: 'table',
+      bodyHast: buildTableBodyFromParsedCells(state, node, node._parsedCells),
+      wrapperEl: 'table',
+      wrapperProps: tableProps,
+      captionHast,
+      titleHast,
+      computedNumber: node.computedNumber ?? null,
+      scope: node._scope ?? null,
+    });
   }
 
   // Load content: src= takes precedence over inline pipe content.

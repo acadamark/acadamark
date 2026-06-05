@@ -39,6 +39,7 @@ import {
   enscribeCiteResolution,
   enscribeBibliography,
   buildCitationIndex,
+  buildEnscribePipeline,
 } from '@enscribejs/enscribe';
 import { ensureRegistry } from '@enscribejs/enscribe/core/registry';
 import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
@@ -904,6 +905,44 @@ function validateWithXmllint(fixtureName, jatsXml) {
     /<title-group>\s*<label>[^<]+<\/label>\s*<title>/.test(jats));
 
   validateWithXmllint('doc46', jats);
+}
+
+// ─── Integration: doc-55 data-table cell parsing → JATS (#21) ───────────────
+
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-55-table-cell-parse.emd'), 'utf8');
+
+  // Use the real pipeline assembly so the table-cell-parse plugin + cite/ref
+  // resolution all run in their proper order (this test can't drift from the
+  // shipped pipeline the way a hand-mirrored stack can).
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-55-table-cell-parse.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-55-table-cell-parse.xml)');
+  } else {
+    check('integration doc55: JATS snapshot matches', jats === readFileSync(snapshotPath, 'utf8'));
+  }
+
+  // #21: a parsed column parses in JATS as well as HTML — the archival channel
+  // carries the semantics (a link is an <ext-link>, a cross-ref an <xref>, a cite
+  // an <xref ref-type="bibr">, inline code <monospace>, inline math <inline-formula>).
+  check('doc55: parsed cell link → <ext-link>', /<ext-link[^>]*>the site<\/ext-link>/.test(jats));
+  check('doc55: cross-ref in cell → <xref ref-type="fig">',
+    jats.includes('<xref ref-type="fig" rid="fig:plot">figure 1</xref>'));
+  check('doc55: cite in cell → <xref ref-type="bibr">',
+    /<xref ref-type="bibr"[^>]*>smith2020<\/xref>/.test(jats));
+  check('doc55: inline code in cell → <monospace>', jats.includes('<monospace>inline code</monospace>'));
+  check('doc55: inline math in cell → <inline-formula>',
+    jats.includes('<inline-formula><tex-math><![CDATA[x^2]]></tex-math></inline-formula>'));
+  // Literal columns stay literal (escaped) in JATS — data payload untouched.
+  check('doc55: literal value cell unchanged', jats.includes('<td>3.14</td>'));
+  check('doc55: -parse-text cell stays literal in JATS',
+    jats.includes('&lt;a https://example.org | this&gt; is not a link'));
+
+  validateWithXmllint('doc55', jats);
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────

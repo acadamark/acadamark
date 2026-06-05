@@ -2517,4 +2517,31 @@ export function run() {
     snapshotHast('document-54', hast);
     console.log('PASS: integration doc54 (ToC sidebar + scroll-spy injection)');
   }
+
+  // --- doc55: data-table cell parsing (#21) ---
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-55-table-cell-parse.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // parse-columns: only the named (notes) column parses; data columns literal.
+    assert.ok(html.includes('<td>see <i>the docs</i> at <a href="https://example.org">the site</a></td>'),
+      'doc55: parse-columns parses the notes cell (emphasis + link)');
+    assert.ok(html.includes('<a href="#fig:plot" class="ref">figure 1</a>'),
+      'doc55: a cross-ref authored in a cell resolves to "figure 1"');
+    assert.ok(/<cite class="cite"[^>]*>\(Smith, 2020\)<\/cite>/.test(html),
+      'doc55: a cite authored in a cell resolves to a formatted citation');
+    assert.ok(html.includes('<td>uses <code>inline code</code> and inline math'),
+      'doc55: inline code + inline math parse in a cell');
+    assert.ok(html.includes('<td>3.14</td>') && html.includes('<td>2.72</td>'),
+      'doc55: the value column stays literal');
+    // +parse-text: every cell parses.
+    assert.ok(html.includes('<td><i>emphasised label</i></td>'),
+      'doc55: +parse-text parses every cell');
+    // -parse-text: literal — the <a> is escaped text, not a link.
+    assert.ok(html.includes('&#x3C;a https://example.org | this> is not a link'),
+      'doc55: -parse-text keeps cells literal');
+
+    snapshotHast('document-55', hast);
+    console.log('PASS: integration doc55 (data-table cell parsing — parse-columns / +parse-text / -parse-text)');
+  }
 }

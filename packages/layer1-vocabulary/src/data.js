@@ -1959,7 +1959,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
       },
     },
     "content": {
@@ -6041,8 +6041,16 @@ const _table = Object.freeze({
           "default": true,
           "notes": "Whether this table is counted in the numbered table sequence and\nreceives a \"Table N.\" label prefix in its caption.\n",
         },
+        "parse-text": {
+          "handled_by": "plugin",
+          "default": false,
+          "notes": "#21: whether ALL cells of a DATA-format table parse as Enscribe inline\nmarkup. Default false (data-format cells are literal — the safe baseline).\n+parse-text parses every cell; -parse-text forces literal, overriding a\ndocument-wide <config parse-data-tables=true> default. Markdown/pipe\ntables always parse and ignore this. Resolved by the table-cell-parse\nplugin (precedence: this attribute > config default > literal baseline).\n",
+        },
       },
       "kwargs": {
+        "parse-columns": {
+          "notes": "#21: comma-separated list of column names (by header) whose cells parse\nas Enscribe inline markup, leaving the other columns literal — the common\nmixed case (a prose column among data columns). Adds the named columns on\ntop of the parse-text / config decision. Headerless tables can't match by\nname, so use +parse-text there. A parsed column parses in HTML AND JATS;\nthe stored data payload is never mutated (a display directive on the table).\n",
+        },
         "caption": {
           "notes": "Short-form caption as a kwarg string. Renders as <caption> inside\nthe table element. When numbered, a \"Table N.\" label span is\nprepended. Long-form caption (<caption | ...> nested tag) is deferred.\n",
         },

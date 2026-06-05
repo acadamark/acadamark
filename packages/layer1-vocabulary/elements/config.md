@@ -26,6 +26,7 @@ enscribe_attributes:
         - number-tables           (live; consumed by numbering)
         - number-sections         (live; consumed by numbering; default off for articles, on for books)
         - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)
+        - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)
         - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)
         - theme                   (reserved; future)
         - display-style           (reserved; future)

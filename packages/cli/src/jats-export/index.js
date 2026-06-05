@@ -964,6 +964,18 @@ function emitTableWrapJats(node, indent) {
  */
 function emitTableInner(node, indent) {
   const pad = ' '.repeat(indent);
+
+  // #21: opted-in cells. The table-cell-parse plugin (shared pipeline, so the
+  // export path's runSync ran it too) parsed the data and the opted-in cells,
+  // and the resolution plugins resolved any <ref>/<cite> in them. Emit straight
+  // from the stamped structure so a parsed column parses in JATS as well as HTML:
+  // literal cells stay escaped text, parsed cells emit inline JATS (<xref>,
+  // <ext-link>, <inline-formula>, …) via the shared emitInlines. Works for every
+  // format the plugin parsed (incl. json/yaml), not just csv/tsv.
+  if (node._parsedCells) {
+    return emitParsedCellsTable(node._parsedCells, indent);
+  }
+
   const format = node.tagname === 'table' ? (node.positional?.[0] ?? null)
                : node.tagname;
   const rawData = typeof node.content === 'string' ? node.content : '';
@@ -1003,6 +1015,42 @@ function emitTableInner(node, indent) {
       out += `${pad}    <tr>\n`;
       for (const cell of row) {
         out += `${pad}      <td>${escapeXml(String(cell))}</td>\n`;
+      }
+      out += `${pad}    </tr>\n`;
+    }
+    out += `${pad}  </tbody>\n`;
+  }
+  out += `${pad}</table>\n`;
+  return out;
+}
+
+/**
+ * #21: emit the inner `<table>` from the table-cell-parse plugin's
+ * `_parsedCells` stamp. Header cells and literal body cells are escaped text
+ * (byte-identical to the literal path's `<td>${escapeXml(cell)}</td>`); parsed
+ * body cells (`{ inline }`) emit inline JATS via the shared `emitInlines`, so a
+ * link is an `<ext-link>`, a resolved cross-ref an `<xref>`, inline math an
+ * `<inline-formula>`, etc. — the same semantic content the HTML channel renders.
+ */
+function emitParsedCellsTable(parsedCells, indent) {
+  const pad = ' '.repeat(indent);
+  let out = `${pad}<table>\n`;
+  if (parsedCells.headers) {
+    out += `${pad}  <thead>\n${pad}    <tr>\n`;
+    for (const cell of parsedCells.headers) {
+      out += `${pad}      <th>${escapeXml(String(cell))}</th>\n`;
+    }
+    out += `${pad}    </tr>\n${pad}  </thead>\n`;
+  }
+  if (parsedCells.rows.length > 0) {
+    out += `${pad}  <tbody>\n`;
+    for (const row of parsedCells.rows) {
+      out += `${pad}    <tr>\n`;
+      for (const cell of row) {
+        const content = Array.isArray(cell?.inline)
+          ? emitInlines(cell.inline)
+          : escapeXml(String(cell?.text ?? ''));
+        out += `${pad}      <td>${content}</td>\n`;
       }
       out += `${pad}    </tr>\n`;
     }
