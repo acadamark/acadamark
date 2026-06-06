@@ -607,16 +607,19 @@ export function enscribeInterpreter(options = {}) {
     return (tree, file) => buildCitationIndex(tree, file, { assetsDir });
   });
 
+  // 5.5 (#21 / #105): parse opted-in data-table cells into canonical inline mdast.
+  //     Runs BEFORE notes, numbering, and ref/cite resolution, so any <note> /
+  //     <ref> / <cite> authored inside an opted-in cell is tree-resident when
+  //     those passes run — the shared walkers (discover / walkReplace) descend the
+  //     stamped cells, so cell footnotes register/number/hoist and cell refs/cites
+  //     resolve exactly like body ones. (#21 originally placed this AFTER notes,
+  //     leaving footnotes-in-cells out of scope; #105 moves it earlier to bring
+  //     them in. A no-op for tables without an opt-in → byte-identical.)
+  this.use(enscribeTableCellParse, { assetsDir });
+
   // 6. Notes: register note elements (record-only); splice __note-marker nodes
   //    into the tree; store pending data for the apply-numbers stage.
   this.use(enscribeNotes);
-
-  // 6.5 (#21): parse opted-in data-table cells into canonical inline mdast. Runs
-  //     after notes and BEFORE numbering / ref / cite resolution, so a <ref> /
-  //     <cite> authored inside an opted-in cell becomes tree-resident (the shared
-  //     walkers descend the stamped cells) and resolves like any other. A no-op
-  //     for tables without an opt-in → every existing document byte-identical.
-  this.use(enscribeTableCellParse, { assetsDir });
 
   // 7. Numbering: register equation, figure, and table elements (record-only);
   //    store pending { node, entry } pairs for the apply-numbers stage.

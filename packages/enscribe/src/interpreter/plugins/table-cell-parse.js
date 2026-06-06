@@ -15,14 +15,17 @@
 // readBoolKwarg's priority (booleans > kwargs > config > default) for the
 // all-cells flag, with parse-columns adding named columns on top.
 //
-// WHY a plugin (not the render handlers): an opted-in cell may contain a <ref>
-// or <cite>, which only resolve if they are tree-resident when the resolution
-// plugins (numbering / ref-resolution / cite-resolution) run. So this plugin
-// runs in the mdast phase, BEFORE those, and parses opted-in cells into canonical
-// inline mdast stamped on `node._parsedCells`. The shared walkers (discover /
-// walkReplace) descend that stamp, so the resolution plugins reach the cell
-// content for free. Both render channels (HTML table handler, JATS table emitter)
-// then read `_parsedCells` — a parsed column parses in BOTH.
+// WHY a plugin (not the render handlers): an opted-in cell may contain a <note>,
+// <ref>, or <cite>, which only resolve if they are tree-resident when the
+// resolution passes (notes / numbering / ref-resolution / cite-resolution) run.
+// So this plugin runs in the mdast phase, BEFORE all of those, and parses
+// opted-in cells into canonical inline mdast stamped on `node._parsedCells`. The
+// shared walkers (discover / walkReplace) descend that stamp, so those passes
+// reach the cell content for free — a cell footnote registers/numbers/hoists, and
+// a cell ref/cite resolves, exactly like a body one. (#21 originally placed this
+// AFTER the notes pass, leaving footnotes-in-cells out of scope; #105 moved it
+// before notes to bring them in.) Both render channels (HTML table handler, JATS
+// table emitter) then read `_parsedCells` — a parsed column parses in BOTH.
 //
 // Data payload stays literal: parsing happens on a READ of node.content / the
 // src= file; nothing is written back. parse-columns is a display/semantic

@@ -797,7 +797,12 @@ variation of the resolved text.
 
 **What it is.** `<note>` produces an in-text marker and a collected entry in a
 note list. Notes are collected per *note-scope* — by section in an article, by
-chapter in a book (configurable).
+chapter in a book (configurable). A `<note>` authored inside an opted-in
+data-table cell collects, numbers, and hoists identically to a body note: #105
+moved the cell-parse pass *before* the notes pass (it ran after at #21, which left
+footnotes-in-cells out of scope), and the notes pass descends the parsed-cell
+arrays via the shared walkers — so the cell footnote's marker stays in the cell
+and its definition hoists to the note list, like any other.
 
 **Expected markup:**
 

@@ -81,6 +81,26 @@ function serializeBlock(node) {
   }
 }
 
+/**
+ * Serialize an inline node sequence to canonical Enscribe source, independent of
+ * any in-flight `serializeCanonical` target. Used by the JATS importer (#105) to
+ * turn converted table-cell content (math / cite / note / formatting nodes) into
+ * the inline source it embeds in a `<table csv parse-columns=…>` cell, which #21's
+ * cell-parse plugin then re-parses to the same nodes on both render channels.
+ *
+ * @param {Array} nodes - inline mdast / enscribeTag nodes
+ * @returns {string} canonical Enscribe inline source
+ */
+export function inlineToCanonicalSource(nodes) {
+  const prev = TARGET;
+  TARGET = 'canonical';
+  try {
+    return serializeInline(nodes);
+  } finally {
+    TARGET = prev;
+  }
+}
+
 /** Serialize an inline node sequence (paragraph children, pipe content). */
 function serializeInline(nodes) {
   let out = '';

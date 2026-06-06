@@ -295,10 +295,14 @@ with explicit opt-in to override:
 global `<config>` default > the kind baseline (markdown = parse, data = literal).
 
 **What "parse" means.** A cell is **phrasing content** — emphasis, strong,
-`<a URL | text>` links, cross-references, citations, inline code, inline math —
-not a block container (no headings, lists, or nested tables, the same as GFM).
-Opted-in cells route through the *same* inline pipeline the rest of the document
-uses; a cross-reference or citation in a cell resolves like any other.
+`<a URL | text>` links, cross-references, citations, footnotes (`<note>`), inline
+code, inline math — not a block container (no headings, lists, or nested tables,
+the same as GFM). Opted-in cells route through the *same* inline pipeline the rest
+of the document uses; a cross-reference, citation, or footnote in a cell resolves
+exactly like one in body prose. (Footnotes-in-cells were out of scope at #21,
+because the cell-parse pass then ran *after* the notes pass; #105 moved it
+*before* the notes pass — the shared walkers already descend the parsed cells — so
+a `<note>` in a cell now collects, numbers, and hoists like any body footnote.)
 
 **Both channels; payload stays literal.** A parsed column parses in **HTML and
 JATS both** (a link is an `<a>` / `<ext-link>`, a cross-ref an `<xref>`), and a

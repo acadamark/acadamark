@@ -84,6 +84,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] JATS import — citations and bibliography
 - [x] JATS import — math (`<tex-math>` and MathML)
 - [x] JATS import — figures, tables, cross-references, and footnotes
+- [x] JATS import — formulas, footnotes, and citations inside `<table-wrap>` cells (converted to the opt-in parsed-cell form so they render and resolve in HTML and JATS both, not flattened to text)
 - [x] JATS import — theorem family, DSL blocks, and code listings
 - [x] JATS import — reduction policy (reader content preserved, publishing metadata dropped)
 - [x] JATS import — a real published article demonstration (NLM JATS sample, on the docs site)

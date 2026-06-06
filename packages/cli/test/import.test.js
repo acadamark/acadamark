@@ -649,5 +649,40 @@ graph TD
     console.log('PASS: real PNAS article imports and renders');
   }
 
+  // ── #105: formulas / footnotes / citations in the body AND in table cells ────
+  {
+    const xml = readFileSync(join(FIXTURES, 'document-56-jats-cell-content.xml'), 'utf8');
+    const tree = importJats(xml);
+    assert.equal(errorNodes(tree).length, 0, 'doc56: no error nodes');
+
+    // The imported table opts only its markup-bearing column into cell parsing,
+    // and the cell content is converted to Enscribe inline source ($…$ / <cite> /
+    // <note>) carried in the opaque CSV (the #21 representation).
+    const table = tagged(tree, 'table')[0];
+    assert.ok(table && table.kwargs['parse-columns'] === 'notes', 'doc56: parse-columns names only the notes column');
+    assert.ok(/<\$E=mc\^2\$>/.test(table.content), 'doc56: cell formula → inline-math source');
+    assert.ok(/<cite @bib-smith2020>/.test(table.content), 'doc56: cell citation → <cite @key> source');
+    assert.ok(/<note \| A footnote authored inside a table cell\.>/.test(table.content), 'doc56: cell footnote → <note> source');
+    assert.ok(/^A,3\.14,/m.test(table.content), 'doc56: the value column stays literal data');
+
+    // Rendered: all three resolve in the cell, the cell footnote hoists to a
+    // marker (the notes-in-cells extension), and the body carries them too.
+    // (Re-uses the single imported `tree` — importJats holds per-run footnote
+    // state, so the one-shot CLI calls it once; runSync mutates the tree in place,
+    // after the pre-pipeline assertions above.)
+    const proc = buildEnscribePipeline({ embedResources: true });
+    const html = proc.stringify(proc.runSync(tree));
+    // (whitespace-tolerant: rehype-format indents the custom <inline-math> element.)
+    assert.ok(/<td>energy[\s\S]*?<inline-math>/.test(html) && html.includes('class="katex"'),
+      'doc56: cell formula renders (KaTeX)');
+    assert.ok(html.includes('<cite class="cite" data-keys="bib-smith2020">(Smith, 2020)</cite>'),
+      'doc56: cell citation resolves');
+    assert.ok(/data-note-id="note-2"|href="#note-2"/.test(html),
+      'doc56: cell footnote hoists to a numbered marker');
+    assert.ok(html.includes('class="katex"') && html.includes('class="cite"'),
+      'doc56: body math + cite render too');
+    console.log('PASS: import #105 — formulas / footnotes / citations in body + table cells');
+  }
+
   console.log('All JATS import tests passed.');
 }

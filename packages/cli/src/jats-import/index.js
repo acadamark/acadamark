@@ -34,11 +34,25 @@
 //             paragraphs; pure publishing metadata (journal-meta, article-ids,
 //             permissions, page positioning, counts, …) is an expected, silent
 //             drop; anything in neither set still warns once.
+//   Slice 7 (#105) — special content INSIDE <table-wrap> cells. Slices 2-4 brought
+//             formulas, footnotes, and citations through in body prose, but a cell
+//             was flattened to plain text (CSV), dropping them. Now a cell with
+//             non-text content is converted to Enscribe inline source via the same
+//             convertInline the body uses (formula → $…$, <xref bibr> → <cite @k>,
+//             <xref fn> → <note | …>, formatting), embedded in the opaque CSV with
+//             the markup-bearing columns named in `parse-columns` — the #21
+//             parsed-cell representation. So an imported table's cells carry
+//             rendering, resolving math / cites / notes in HTML and JATS both,
+//             and round-trip through canonical `.emd`.
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
 import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
 import { escapeXmlAttr } from '../lib/xml-escape.js';
+// #105: serialize converted table-cell content (math / cite / note / formatting)
+// to Enscribe inline source, which the cell goes on to carry so #21's cell-parse
+// plugin re-parses it on render and round-trip.
+import { inlineToCanonicalSource } from '../serialize-canonical.js';
 
 // ─── XML → a small DOM tree (saxes) ───────────────────────────────────────────
 
@@ -738,7 +752,11 @@ function convertTableWrap(tw) {
     return makeOpaqueTag('table', capHtml + rows, { contentHandler: 'table', id, kwargs: caption ? { caption } : {} });
   }
   const kwargs = caption ? { caption } : {};
-  const booleans = result.hasHeader ? {} : { headers: false };
+  // #105: opt the markup-bearing columns into Enscribe inline parsing (#21).
+  if (result.parseColumns?.length) kwargs['parse-columns'] = result.parseColumns.join(', ');
+  const booleans = {};
+  if (!result.hasHeader) booleans.headers = false;
+  if (result.parseAll) booleans['parse-text'] = true; // headerless-with-markup fallback
   return makeOpaqueTag('table', result.csv, { contentHandler: 'table', positional: ['csv'], id, kwargs, booleans });
 }
 
@@ -763,7 +781,18 @@ function serializeHtml(node) {
   return `<${tag}${attrs}>${inner}</${tag}>`;
 }
 
-/** Inner `<table>` → `{ csv, hasHeader }`, or `{ complex: true }` for colspan/rowspan. */
+/**
+ * Inner `<table>` → `{ csv, hasHeader, parseColumns, parseAll }`, or
+ * `{ complex: true }` for colspan/rowspan.
+ *
+ * #105: a cell whose JATS content is more than plain text (a formula, a
+ * `<xref bibr|fn>`, formatting) is converted to Enscribe **inline source**
+ * (`$…$`, `<cite @k>`, `<note | …>`, `<i>…`) via the same `convertInline` the
+ * body uses, then serialized; plain cells stay text (current behavior). The
+ * columns that carry markup are named in `parse-columns` so #21's cell-parse
+ * plugin parses exactly those — pure-data columns stay literal (and can't be
+ * mis-parsed as markdown).
+ */
 function tableToCsv(table) {
   const hasHeader = collectEls(table, 'thead').length > 0;
   let complex = false;
@@ -772,10 +801,33 @@ function tableToCsv(table) {
     for (const cell of cells) {
       if (cell.attributes.colspan || cell.attributes.rowspan) complex = true;
     }
-    return cells.map((cell) => textOf(cell).replace(/\s+/g, ' ').trim());
+    return cells.map((cell) => {
+      const markup = (cell.children ?? []).some((c) => c.name !== '#text');
+      const src = markup
+        ? inlineToCanonicalSource(convertInline(cell.children)).replace(/\s+/g, ' ').trim()
+        : textOf(cell).replace(/\s+/g, ' ').trim();
+      return { src, markup };
+    });
   });
   if (complex) return { complex: true };
-  return { csv: rows.map((r) => r.map(csvCell).join(',')).join('\n'), hasHeader };
+
+  // Which BODY columns carry markup? The header row holds the column names.
+  const bodyRows = hasHeader ? rows.slice(1) : rows;
+  const headerRow = hasHeader ? rows[0] : null;
+  const ncols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+  const markupColIdx = [];
+  for (let c = 0; c < ncols; c++) {
+    if (bodyRows.some((r) => r[c]?.markup)) markupColIdx.push(c);
+  }
+  let parseColumns = null;
+  let parseAll = false;
+  if (markupColIdx.length) {
+    if (headerRow) parseColumns = markupColIdx.map((c) => headerRow[c]?.src ?? '').filter(Boolean);
+    else parseAll = true; // headerless table can't name columns → opt the whole table in
+  }
+
+  const csv = rows.map((r) => r.map((cell) => csvCell(cell.src)).join(',')).join('\n');
+  return { csv, hasHeader, parseColumns, parseAll };
 }
 
 /** Quote a CSV cell when it contains a comma, quote, or newline (RFC-4180). */

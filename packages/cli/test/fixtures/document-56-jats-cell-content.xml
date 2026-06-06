@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.3 20210610//EN" "https://jats.nlm.nih.gov/archiving/1.3/JATS-archivearticle1-3.dtd">
+<article article-type="research-article" xml:lang="en" dtd-version="1.3">
+  <front>
+    <article-meta>
+      <title-group>
+        <article-title>Formulas, footnotes, and citations in the body and in table cells</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author"><string-name>Test Author</string-name></contrib>
+      </contrib-group>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="sec:body">
+      <title>In the body</title>
+      <p>Inline math <inline-formula><tex-math><![CDATA[x^2]]></tex-math></inline-formula>, a
+        citation <xref ref-type="bibr" rid="bib-smith2020">Smith 2020</xref>, and a
+        footnote<xref ref-type="fn" rid="fn-1">1</xref> all come through in body prose.</p>
+    </sec>
+    <sec id="sec:table">
+      <title>In a table cell</title>
+      <table-wrap id="tab:cell-content">
+        <label>1</label>
+        <caption><p>The notes column carries a formula, a citation, and a footnote.</p></caption>
+        <table>
+          <thead>
+            <tr><th>sample</th><th>value</th><th>notes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A</td>
+              <td>3.14</td>
+              <td>energy <inline-formula><tex-math><![CDATA[E=mc^2]]></tex-math></inline-formula></td>
+            </tr>
+            <tr>
+              <td>B</td>
+              <td>2.72</td>
+              <td>see <xref ref-type="bibr" rid="bib-smith2020">Smith</xref> with a note<xref ref-type="fn" rid="fn-2">2</xref></td>
+            </tr>
+          </tbody>
+        </table>
+      </table-wrap>
+    </sec>
+  </body>
+  <back>
+    <fn-group>
+      <fn id="fn-1"><label>1</label><p>A footnote in body prose.</p></fn>
+      <fn id="fn-2"><label>2</label><p>A footnote authored inside a table cell.</p></fn>
+    </fn-group>
+    <ref-list>
+      <ref id="bib-smith2020">
+        <element-citation publication-type="journal">
+          <person-group person-group-type="author"><string-name>Ada Smith</string-name></person-group>
+          <article-title>On Cells</article-title>
+          <source>Journal of Tables</source>
+          <year>2020</year>
+        </element-citation>
+      </ref>
+    </ref-list>
+  </back>
+</article>

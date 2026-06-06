@@ -45,6 +45,7 @@ import { ensureRegistry } from '@enscribejs/enscribe/core/registry';
 import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
 import { jatsEmit, aggregateJatsAttrs } from '../src/jats-export/lib/jats-emit.js';
 import { enscribeToJats } from '../src/jats-export/index.js';
+import { importJats } from '../src/jats-import/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -943,6 +944,22 @@ function validateWithXmllint(fixtureName, jatsXml) {
     jats.includes('&lt;a https://example.org | this&gt; is not a link'));
 
   validateWithXmllint('doc55', jats);
+}
+
+// ─── Integration: doc-56 import → re-export, cell content survives + DTD-valid (#105) ─
+
+{
+  const xml = readFileSync(join(FIXTURES_DIR, 'document-56-jats-cell-content.xml'), 'utf8');
+  // Import JATS → run the real pipeline (cell-parse + resolution) → re-export.
+  const tree = buildEnscribePipeline({ assetsDir: FIXTURES_DIR }).runSync(importJats(xml));
+  const jats = enscribeToJats(tree);
+
+  // A formula / citation / footnote authored inside a <table-wrap> cell survives
+  // the import → re-export round-trip into the archival channel.
+  check('doc56: cell formula → <inline-formula> in re-export', jats.includes('<inline-formula>'));
+  check('doc56: cell citation → <xref ref-type="bibr"> in re-export', /<xref ref-type="bibr"/.test(jats));
+  check('doc56: cell footnote → <xref ref-type="fn"> in re-export', /<xref ref-type="fn"/.test(jats));
+  validateWithXmllint('doc56', jats);
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────
