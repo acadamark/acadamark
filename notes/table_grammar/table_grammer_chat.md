@@ -346,3 +346,183 @@ T1 and T3 fall in the same two buckets — T1 a genotype crosstab like T2, T3 a 
 So v1 + two metadata fields (dimension label; typed values including `inline`) covers all four of the tables that started this. That's the model surviving the hardest input you have — and pointing straight at the real fix.
 
 The fork from here: do you want to turn this into the actual design-pass document (the model, now battle-tested on your four tables, plus the authoring-syntax layer), or first re-run the importer mentally against T2/T4 to spec exactly how dimension-recovery from JATS spans should work?
+
+>This is really great! The primary data is facts. The dimensions say how to understand the data. The measures give metadata. The display gives......display.
+>
+>I'm honestly not quite fully grokking how this works, which is a little shameful since we're pretending I'm in charge of this development. But I'm going to have to postpone going over this in detail to when I'm rested and have some open thinking time.
+>
+>For now, here is what makes sense to me:
+>
+>* Please write a short white-paper style overview of the table grammar we are developing.
+>Please draft a design-pass document for CC so we can keep making progress on enscribe.
+>
+>I started a folder notes/table_grammar:
+>
+>```
+>(base) balter@expiyes:~/enscribe$ tree notes/table_grammar/
+>
+>notes/table_grammar/
+>
+>├── table_grammar_survey.md
+>
+>└── table_grammer_chat.md
+>```
+>
+>That's where I'll store the whitepaper.
+
+
+
+This is a strong, clearly-reasoned design — the tidy-data/OLAP framing is the right lens, and the "recover dimensions from a grid serves both import and authoring" insight is genuinely elegant. I've just shipped Design A (#106), so I'm reviewing this from inside the code it supersedes. I'll push on five things, in priority order, then give positions on §8. I'm not cutting slices — this is review.
+
+## 1. The motivating bug is already fixed — so re-justify the milestone honestly
+
+§1 motivates the whole milestone with: raw-HTML fallback freezes cell contents, cross-refs don't resolve, the import note lies. **All three are fixed as of #106.** Cell contents already flow through the #21/#105 inline conversion; the grep gate (§9) is **already green**; the note is corrected.
+
+So the dimensional model's real value is **not** the leaked-content fix — it's authoring ergonomics, pivoting, derived/aggregate facts, and clean data-entry (Stage 2/3). That's a legitimate feature, but it's a *different, more speculative* value proposition than "fix the bug," and the doc leans on the (solved) bug to carry a (large, open-ended) model.
+
+The honest question this forces: **do enscribe's authors actually want OLAP-style tables?** A physicist building a parameter crosstab — yes, plausibly. But that's a feature bet, and right now there's *no time pressure* (the paper renders). I'd want that bet made consciously, on its own merits, not as the tail of a bug fix. If the answer is "the dimensional model is worth it for authoring," great — proceed. If it's "we mostly need tables to render faithfully," Design A may already be enough and this becomes a much smaller, optional effort.
+
+## 2. Not all academic tables are dimensional — and the doc underweights this
+
+The model assumes every table is facts-over-dimensions. The paper's tables happen to be regular parameter crosstabs, so the escape hatch was "needed by none" (§7) — but that's **survivorship from one mathematical-modeling paper**. Real academic tables include:
+
+- **Mid-table subheadings** (a row spanning all columns as a divider) — sometimes a row-dimension outline level, sometimes pure layout. Ambiguous.
+- **Totals/summary rows** — these are *derived facts* (§2), whose rendering is explicitly deferred. So how does Stage-1 *import* handle a "Total" row? Treat it as a regular fact (wrong — pollutes the fact set, violates §10) or escape-hatch it? This is common and unaddressed.
+- **Spanning for emphasis**, not for a spanner-dimension.
+- **Heterogeneous/ragged tables** (e.g. "Method | Description | Reference") — degenerate to relational, fine, *if* there's a clean key column; not all have one.
+
+This isn't fatal, but it means **dimension-recovery is the hard, ambiguous core of the whole design, and §7 buries it inside a Stage-1 bullet list** next to easy things like "XHTML export."
+
+## 3. The single most useful reframing: the escape hatch should *be* Design A, not raw HTML
+
+§7 and §10 define the escape hatch as a "raw-cell / raw-table mechanism" and say "retire the raw-HTML path." But **Design A is already a strictly better fallback than raw HTML**: it preserves the grid layout *and* converts cell content (zero raw JATS, resolving cells), it just doesn't impose a dimensional model.
+
+So the recovery story should be a two-tier floor, not a model-or-raw-HTML cliff:
+
+- **Confident dimensional recovery → native dimensional table** (the new model).
+- **Ambiguous / non-dimensional → Design A** (grid preserved, cells converted). *Not* raw HTML, *not* a wrong guess.
+
+This buys three things at once: the grep gate stays green for *every* table (not just dimensional ones); import never has to guess wrong (when unsure, it falls back faithfully); and you **don't throw away shipped, tested, DTD-valid code** — you demote it from "the complex-table path" to "the non-dimensional fallback." §10's "retire Design A" becomes "Design A stops being the *default* for dimensional tables" — a much smaller, safer move. I'd rewrite §7/§10 around this.
+
+## 4. "Grid is a projection, not source of truth" trades archival fidelity for a clean model
+
+This is the load-bearing decision (§2) and it's in real tension with enscribe's own premise that **Layer 1 is the canonical, archival representation**. If import *normalizes* a publisher's table into facts+projection and the round-trip grid differs (member reordering, span-vs-repeat, dropped presentational quirks), then enscribe is no longer a faithful archive of the *original* — it's a faithful archive of enscribe's *re-interpretation*.
+
+That may be an acceptable, even desirable, stance (a cleaner canonical model). But it's a philosophical shift that deserves an explicit, signed-off sentence in the design, because it contradicts the archival framing used elsewhere in the project. "Structurally faithful, not byte-identical" (§5/§8.3) understates it: you're choosing *interpretation over preservation* for tables. Say so out loud.
+
+## 5. §9's gates can't tell whether Stage 1 succeeded
+
+Because Design A already passes the grep gate and imports the paper, "the paper's complex tables import as native tables with zero raw JATS" is **already true without any of this work**. The gate can't discriminate the new model from what's shipped. Stage 1 needs a **model-level** acceptance, e.g.: "Table 2 imports with dimensions = {infected-partner, susceptible-partner}, members = [...], one implicit measure; render reproduces the spanner header; round-trip reproduces that structure." Otherwise "done" is unfalsifiable.
+
+---
+
+## Positions on §8 (you decide; here's my reasoning)
+
+1. **Front-end B first** — agree, the import-serves-authoring symmetry is the best idea here. **Surface syntax: don't pin it.** Prototype recovery on the paper's 4 tables as a read-only spike *first* (see below); let the real ambiguities shape the annotation syntax.
+2. **Export target: XHTML.** #106 already emits an XHTML grid that DTD-validates. CALS is a rabbit hole with no consumer asking for it — defer indefinitely, don't scope it.
+3. **Fidelity bar:** same facts, same dimension membership, same measures, **member order preserved**; span-vs-repeat and cosmetic projection *may* differ. But resolve §4 first — fidelity is meaningless until you've decided normalize-vs-preserve.
+4. **Detection: pure heuristic, because JATS gives no hint channel.** This is why a confident-or-fall-back policy (concern #3) is essential — import has no author to disambiguate, so on ambiguity it must fall back to Design A, never guess.
+5. **Measure metadata (units):** here's the sharp interaction — **a second header row is ambiguous between "nested column dimension" and "units" (`Mass` / `(kg)`).** Recommend: Stage-1 import does **not** infer units; authored-only in Stage 2. Until then a units row is either a dimension level or an escape-hatch, never a silent guess.
+6. **Derived facts:** keep the reserved model slot, defer syntax — but **import needs a totals-row policy now** (recommend: detect-and-escape, or tag-as-derived-but-render-inline), or Stage 1 will mis-model common tables.
+7. **Escape hatch = Design A** (concern #3), not raw cells. Its boundary: any table where dimension recovery isn't confident.
+8. **Compound members label-only:** fine for *rendering*; insufficient for *pivot/filter* (a "W/W or Δ32/Δ32" member is a set, not an atom). Defer the structure, but note it as a known limit the moment derived facts/pivoting arrive.
+
+## Recommended path
+
+Because there's no time pressure, do the slow thing: **a read-only Phase-0 spike that runs dimension-recovery over the paper's four tables and reports what it recovers and where it's ambiguous — before any code is retired.** That spike answers §8.4/§8.5/§8.6 with evidence instead of guesses, validates the model against real input, and de-risks the big bet in §1. Only after it proves out do you cut Stage 1 slices — and even then, demote Design A to the fallback rather than retiring it.
+
+One factual correction for the doc: §1's present-tense problem statement ("its current fallback freezes... the note's claim is false") describes the pre-#106 state. It's worth a line noting #106 shipped, the grep gate is already green, and this milestone's payoff is the *model*, not the bug — so nobody cuts Stage 1 expecting the grep gate to be the proof.
+
+Want me to turn the Phase-0 recovery spike into a concrete read-only investigation prompt? That's the next artifact, and it's the cheapest way to pressure-test §2's model against the real tables before any decision in §8 is locked.
+
+This review earns its keep — and the sharpest thing in it is the one reframing I wish I'd written myself: **the escape hatch should *be* Design A, not raw HTML.** That's strictly better than what's in my doc, and I'll come back to it. Let me own the weak spots first, then push back where I think it under- or over-reaches, then answer the offer.
+
+**Concern 1 (the bug is already fixed) — fully conceded, and it's the most important point.** My §1 is written in present tense about a pre-#106 world; with Design A shipped and the grep gate green, the milestone is a *feature bet*, not a bug fix, and the doc leaned on the solved bug to carry a large open-ended model. That's a real honesty failure in the framing and it has to change.
+
+The one thing I'd add — not to rescue the bet, but because it's a second axis to weigh it on: the value isn't only "do authors want OLAP tables." Design A preserves the *grid* (presentation); dimensional recovery produces *semantically structured* tables — real header/scope association, machine-traversable structure. For accessibility that's a concrete win (a screen reader can follow recovered header relationships that a preserved grid only implies), and for downstream reflow/re-projection it's a latent one. But I'll flag honestly: a11y is the only *concrete* leg; the rest is speculative; and it only pays out for confidently-recoverable tables. So it widens the bet, it doesn't settle it. The thing that actually de-risks the bet is the symmetry the review already praised — building recovery is justified by *import* quality even if few authors hand-author dimensional tables.
+
+**Concerns 3 and 4 interlock — and together they resolve the archival tension.** Adopting the two-tier floor (confident → native; ambiguous → Design A, grid preserved + cells converted) isn't just kinder to shipped code; it's *exactly what makes concern 4's tradeoff acceptable.* The review is right that "structurally faithful, not byte-identical" understates the choice, and that it deserves a signed-off sentence. Here's the one I'd put in the doc:
+
+> For tables recovered into the dimensional model, enscribe's canonical form is a *semantic interpretation* of the table's structure, not a byte-faithful preservation of the source's presentation — a deliberate choice of meaning over pixels. It is scoped to tables where recovery is confident; every other table is preserved as-is through the Design A fallback.
+
+So preservation is the default and reinterpretation is opt-in-by-confidence. That also sharpens *where* the fidelity concern actually bites: not on import-then-render (the source JATS is untouched as the archive), but on the import-edit-**re-export** path, where a normalized table round-trips differently. Worth saying that explicitly too.
+
+**Concern 2 + 5 + §8.6 — agreed: recovery is the hard core and my §7 buried it.** The totals-row import gap is the cleanest example — a "Total" row reads as a fact but is derived, and naive recovery would pollute the fact set in violation of my own §10. And concern 5 is right that the grep gate can't discriminate the model from Design A; the gate has to be *model-level* ("T2 recovers dimensions {infected, susceptible}, members […], one implicit measure"). Those two points converge on the recommended path.
+
+**On §8:** I agree with every position. XHTML, and I'd go further than "defer CALS" — drop it from scope entirely, no consumer is asking. Units not inferred at import (§8.5 is the sharpest catch — a second header row is genuinely ambiguous between a column-dimension level and a units row, and silent inference is how you get a wrong archive). And §8.8 — compound members as label-only atoms — connects straight to the stress-test: the model deliberately calls "W/W or Δ32/Δ32" a *combined member* rather than a *set*, which is fine for render and breaks the moment you want to filter "rows where genotype includes W/W." Real deferred limit; note it when pivoting arrives.
+
+So: yes to the slow path, and yes to the offer. Here's the spike.`cc-spike_jats-table-dimension-recovery.md` is the read-only investigation, scoped exactly as the review's recommended path: it runs recovery over T1–T4, reports the recovered model per table plus a confidence verdict, and answers §8.4/8.5/8.6 with evidence — touching nothing shipped. Its per-table recovered models are written to *become* the model-level Stage-1 gates (concern 5), and its confidence verdicts populate the two-tier floor (concern 3). No code merges; the human decides §8 after seeing it.
+
+On the design pass itself — there are two classes of edit, and I'd treat them differently:
+
+Spike-independent, should change now: §1 reframed from bug-fix to feature bet (with the factual line that #106 shipped and the gate is already green); §7/§10 rebuilt around "escape hatch = Design A, demote not retire"; the signed-off archival sentence added to §4/§5; §9 gates made model-level. None of these depend on what the spike finds.
+
+Spike-dependent, should *wait*: everything in §8 with surface-syntax or detection-policy specifics (the annotation syntax, the units/totals import rules), because the whole point of the spike is to let the real tables shape those rather than locking them now.
+
+I held off regenerating the design pass this turn rather than half-revise it ahead of evidence — but the four spike-independent edits are clear wins regardless of outcome. Want me to apply just those now so the doc stops leaning on a solved bug, and leave §8 to settle after the spike reports back? Or would you rather make the §1 feature-bet call in your own words first, since that's the one judgment the doc shouldn't make for you?
+
+This is a read-only investigation. Let me read the four source tables (T1–T4) carefully — the actual JATS is the input I need to recover dimensions from. Let me read them in sections.
+
+T1 is already revealing — a Father×Mother genotype crosstab, but the column-member labels (W/W, W/Δ32…) are in `<td>` not `<th>`, there's an `<hr/>` divider row, and the "Father" stub label is offset from its members. Let me read T2–T4.
+
+T2 and T3 are highly informative. T2 has **disease-stage subheading rows** (`<td>Acute/primary</td>` alone) — a hidden third row dimension invisible to colspan/th heuristics — plus a compound member "W/W or Δ32/Δ32" and inconsistent header colspans. T3 uses **blank-cell forward-fill** for the genotype column. Let me read T4 (the formula-heavy one).
+
+T4 is the clean relational case (Parameter key + Definition/Value measures, with in-cell formulas and an xref). I've now read all four tables in full. Let me write a throwaway scratch script to dump the normalized grid structure programmatically — to ground my analysis and confirm cell counts/spans before I interpret.
+
+The script confirms my reading exactly. The findings are striking. Let me write the report.
+
+Let me confirm the spike was truly read-only — no production changes, nothing committed (only the untracked findings report):
+
+Read-only confirmed: zero tracked files modified, no commits, only the untracked findings report at `notes/spikes/jats-table-dimension-recovery.md`. (The throwaway probe is at `/tmp/table_spike.py` and never touches the importer.)
+
+## Spike findings — the headline
+
+I ran dimension-recovery against all four source tables (T1–T4). The result is an **inversion** that bears directly on the design's open questions:
+
+| Table | Shape | Confident? | Why |
+|---|---|---|---|
+| **T1** genotype crosstab | 3×3 | **No → Design A** | column members in `<td>` not `<th>`; corner layout; set-valued cells |
+| **T2** transmission probs | 3 row-dims × 1 col-dim | **No (worst) → Design A** | a whole dimension (disease stage) exists only as single-cell subheading rows; header cols ≠ body cols |
+| **T3** progression rates | relational, 2 dims | **Yes** | clean `<th>` header + blank forward-fill |
+| **T4** parameter values | relational, key + 2 measures | **Yes** | clean header, no spans, unique key |
+
+**The two tables that most need the dimensional model (the real crosstabs T1, T2) are exactly the two where recovery is ambiguous; the two that recover confidently (T3, T4) are near-flat relational tables that barely need it.** On this paper, native recovery would confidently fire only where it adds least, while the showcase crosstabs fall back to Design A regardless.
+
+## Evidence for the §8 decisions
+
+- **§8.4 (detection):** markup is not trustable. The *same publisher* encodes equivalent column-members as `<td>` in T1 and `<th>` in T2. Every table has `<hr/>` divider-rows (noise) that masquerade as colspan cells. **2 of 4 real tables hit the "never guess → fall back" policy** — it fires exactly where it should.
+- **§8.5 (units):** *not exercised* — no units rows anywhere; units are prose inside value cells ("per year", "%"). The feared dimension-vs-units ambiguity doesn't arise here.
+- **§8.6 (totals/derived):** *not exercised* — no totals/summary rows in any of T1–T4. Stage 1 needs no totals policy to import *this* paper; the general risk stands but is unproven on the acceptance set.
+- **§8.8 (compound members):** confirmed — T2's "W/W or Δ32/Δ32" (set member) and T1's set-valued cells. Label-only is fine for render, insufficient for later pivot.
+- **Non-dimensional shapes (concern #2):** the killer is T2's **disease-stage dimension encoded as subheading rows** — a genuine categorical axis indistinguishable by markup from a divider.
+
+## What it means for the design
+
+1. **Model-level acceptance** (replacing the already-green grep gate): T3/T4 must recover the exact models in the report; **T1/T2 are negative assertions** — they must take the Design-A fall-back, not be force-fit.
+2. **The two-tier floor is right, and sized:** 2/4 native, 2/4 fall-back, both pass the grep gate. **Design A is load-bearing — don't retire it.**
+3. **It sharpens design-review concern #1:** the model's payoff on real *import* is smaller than §1 implies; its true value is **authoring** (Front-end B, where the author resolves the ambiguities the importer can't) and data-tables — which argues for leading with authoring rather than import-driven recovery.
+
+The full per-table recovered models (YAML-ish), fact samples, projections, and complete ambiguity logs are in the report. Nothing is committed — it's yours to review and place (or I can fold the recovered models into the eventual Stage-1 acceptance set when you cut slices).
+
+This is the spike paying for itself — and the inversion is the result that should drive the decision, so let me make sure we read it right rather than just nodding at it.
+
+**The inversion is semi-general, not just this paper.** The spike frames it cautiously as survivorship from one article, which is the right caution, but there's a structural reason it'll recur: *value and recoverability are anti-correlated.* The features that make a table worth modeling — nested dimensions, spanners, a categorical axis like disease-stage — are exactly the features publishers express through fragile visual convention (subheading rows, `<hr/>` dividers, forward-fill, and the `<td>`-here-`<th>`-there inconsistency the spike caught *from the same publisher*). The richer the structure, the more ways the markup hides it. It's not an iron law — a cleanly tagged born-digital crosstab would recover fine — but for the messy legacy PMC JATS you'll actually meet, the high-value tables are disproportionately the low-markup-quality tables. So import yield skews toward the cases that need the model least, and that's a property of real corpora, not of this one paper.
+
+**The reframe that follows: importer and author are the same engine, but only one of them can disambiguate.** The design's elegant symmetry holds — grid→facts recovery serves both. But the spike shows the decisive asymmetry: the importer has no hint channel (§8.4) and *must* fall back; the author *is* the hint channel. T2's disease-stage-as-subheading-rows is the clean proof — that row is markup-identical to a decorative divider, so the only thing that can tell "this is a dimension" from "this is a rule" is understanding the content. A human author knows it instantly. A deterministic parser fundamentally cannot. (If you ever wanted import to recover T2-class tables, the tool isn't better heuristics — it's a semantic/LLM pass, a heavier and non-deterministic thing. Worth knowing that ceiling exists.)
+
+Put together: **the model is validated; only the delivery vector is wrong.** T2 really is a clean 4-D cube once recovered — the white-paper model isn't what the spike challenged. What it challenged is the design pass's *import-first staging*. The value is realized through authoring, with import demoted to confident-only reuse on top of the Design-A floor — which the spike confirms is load-bearing (2/4 fall back, both stay green). The good model work isn't wasted; the build order is.
+
+Two places the evidence actually *simplifies* the design: §8.5 (units) and §8.6 (totals) were **not exercised** — no units rows, no summary rows anywhere in T1–T4. So don't pre-build a units-inference policy or a totals policy; units here are just prose inside value cells, which the inline pipeline already handles. Note both as known-unhandled, not Stage-1 work. The fall-back keystone (§8.4) and compound-members-as-atoms (§8.8) are confirmed.
+
+So the bet from concern #1 is now ripe, and it's yours to make — the spike did its job by sharpening it to this:
+
+- **Shelve.** Design A handles import; the model's only reliable value is a speculative authoring feature with no current demand; no time pressure. Revisit when an author asks for it or a cleaner corpus makes import high-yield. (The spike was cheap insurance that bought this option honestly.)
+- **Build, authoring-first.** Invert the staging: build the recovery engine + Front-end B annotation syntax where the human resolves the ambiguity, prove the model there, let import reuse it confident-only later. Justified only if you — physicist writing parameter crosstabs — actually want to author tables this way.
+
+The one option the evidence rejects is import-first in any form, including a relational-only slice (T3/T4 recover cleanly but, per the spike, "barely need it").
+
+My recommendation: don't let me revise the design pass until you make this call, because the staging revision *is* the call — baking in "authoring-first" would pre-decide the bet for you. Which way are you leaning — and is this a decide-now or a sit-with-it-rested decision? Once you say, I'll fold it in (inverted staging + concrete T3/T4-positive / T1/T2-negative gates if building; an archived findings note if shelving).
+
+>I'm trying to understand the call, but the language is thick. 
+>
+>Please go back over designs A and B for me.

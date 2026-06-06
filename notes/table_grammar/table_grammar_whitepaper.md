@@ -14,7 +14,8 @@ facts** (values computed from facts), and **display choices** (how all of that
 is projected onto a rectangle). The first three are what a table *is*; the
 fourth is how it *looks*. The practical payoff for enscribe: tables that look
 "complex" turn out to be simple data under elaborate display, which makes them
-tractable to author, import from JATS, render, and round-trip.
+tractable to write and render going one way — and, going the other way, to read
+back from a displayed table well enough to reproduce it faithfully.
 
 ## 1. The problem with grids
 
@@ -25,13 +26,14 @@ bold "Total" line, a blank cell that means "same as above" — these are all the
 author teaching the reader how to decode the grid, in a language the grid
 itself does not speak.
 
-This causes concrete trouble. When enscribe's importer met the paper's
+This causes concrete trouble. When enscribe's importer first met the paper's
 multi-header tables, it had no way to express the spans in its plain-grid
 source, so it fell back to copying the raw HTML verbatim. That froze the cell
 contents: formulas, cross-references, and notes that should have been converted
-were carried through as literal markup. The "complex table" problem and the
-"cell content" problem looked like two bugs. They are one, and the model below
-shows why.
+were carried through as literal markup. (The importer no longer does this; the
+point here is what grids *invite*, not a current bug.) The "complex table"
+problem and the "cell content" problem looked like two bugs. They are one, and
+the model below shows why.
 
 ## 2. The core move: dimensions were hiding inside the facts
 
@@ -103,7 +105,7 @@ Second, a value need not be a scalar. It has a **type** — number, text, or
 *inline content* — and may carry metadata such as a **unit** (kg, %, per year)
 or a number **format**. These annotations attach to the measure (or, for a
 single-measure table, to the value directly). The `inline` type is the one that
-matters most for enscribe: it is the bridge to cell content, treated in §7.
+matters most for enscribe: it is the bridge to cell content, treated in §8.
 
 The upshot: "a value at a set of labels" still holds. We have only admitted
 that one of the labels can be *which quantity*, and that the value can be typed
@@ -249,26 +251,84 @@ untangled.
 are keyed by a single dimension, the parameter; its columns are *measures* — a
 definition and a value — not a dimension. And the value cells are not numbers:
 they hold formulas, cross-references, and notes. That is a measure of type
-`inline`, which is exactly the hook the next section turns on.
+`inline`, which is exactly the hook §8 turns on.
 
-## 7. Why this matters for enscribe
+## 7. The two directions: writing forward, reading back
 
-- **"Complex" is a display word, not a data word.** Recover the dimensions from
-  a table's spanning headers and the table becomes native; nothing is left that
-  needs a raw-HTML fallback.
+A grammar like this describes a one-way street that runs perfectly in one
+direction and imperfectly in the other, and it is worth being precise about
+both.
+
+**Forward — from description to display — is total and deterministic.** Given
+the data, the labels, and the display choices, there is exactly one table. No
+ambiguity, no guessing. This is the direction *authoring* uses: state what the
+data is and how to lay it out, and the rendered table is fully determined.
+Everything above describes this direction.
+
+**Backward — from a displayed table to a description — is a different kind of
+problem.** Reading an existing grid and recovering a description cannot, in
+general, recover the author's *intention*. A row that spans the full width
+might be a real category that groups the rows beneath it, or it might be a
+decorative divider; the two look identical, so the markup alone cannot say
+which. Reading-back is therefore lossy, and its answer is not unique.
+
+But it does not need to recover intention. It only needs to recover *enough to
+reproduce the display*. That is a far weaker and entirely reachable goal: find
+some description that, run forward, reproduces the original table. Whether that
+description names a "real" category or merely a layout grouping does not matter,
+because both render the same.
+
+And here the forward direction's determinism pays an unexpected dividend:
+**reading-back can check its own work.** Produce a candidate description, run it
+forward, and compare the result to the original table. If they match, the
+description is correct *for display*, whatever its relationship to the author's
+intent. If they do not, fall back to a more literal description and try again.
+Reading-back stops being a guess one hopes is right and becomes a search with an
+answer key — and the original table is the key.
+
+This gives the grammar a single expressive **range** rather than two competing
+systems. At one end sits the most literal description — "draw exactly these
+cells in exactly this grid" — which always reproduces the original and is always
+safe. At the other sits a more structured description that recovers grouping and
+so earns the model's benefits: pivoting, accessibility, restyling. Reading-back
+slides along this range, recovering as much structure as the draw-and-check will
+bear and no more.
+
+Two kinds of completeness are worth separating. *Display* completeness asks
+whether the grammar can reproduce any look; *semantic* completeness asks whether
+it can capture any meaning. Reading-back needs only the first, and the literal
+end of the range guarantees it. The grammar can be a faithful re-encoder of
+appearance without ever claiming to understand what a table means.
+
+One caveat follows. Because reading-back may assert grouping that was only
+layout, an imported description can carry structure the original author did not
+intend. This never affects faithful redisplay. It bites only if someone imports
+a table, then *edits* it, and begins treating a recovered layout-grouping as
+though it were real data — a limitation of editing imports, worth documenting,
+not a flaw in reproducing them.
+
+## 8. Why this matters for enscribe
+
+- **"Complex" is a display word, not a data word.** A table that looks
+  complicated is simple data under elaborate display; the spanning and nesting
+  live in the display choices, not the content.
 - **The complex-table problem and the cell-content problem are one problem.** A
-  fact's value can be inline content, resolved by the same conversion the
-  document body already uses. The leaked formulas and cross-references were a
-  symptom of freezing cells inside raw HTML; once cells are facts with inline
-  values, they flow through the pipeline and resolve.
-- **JATS spans map to dimensions.** Import reads spanning headers back into
-  dimension outlines; export projects dimensions back out to a grid. The
-  archival channel holds the projected grid; the canonical source holds the
-  dimensional form.
-- **The escape hatch stays empty** except for residue that is genuinely
-  presentation-only — which, across the paper's tables, was none of them.
+  fact's value can be inline content — a formula, a cross-reference, a note —
+  resolved by the same conversion the document body already uses. Once cells are
+  facts with inline values, nothing about a table needs to be held as opaque
+  markup.
+- **Reading back a published table is redisplay, not interpretation.** The
+  importer's job is to find a description that reproduces the table, verified by
+  drawing it — not to divine the author's data model. It recovers as much
+  structure as the draw-and-check allows, for the accessibility and restyling
+  that buys, and falls to a literal description when it cannot be sure.
+- **The literal floor is already built.** enscribe's current importer preserves
+  a complex table's grid and converts its cell contents — exactly the most
+  literal point on the grammar's range. The dimensional model does not replace
+  it; it extends the range upward, toward descriptions that recover real
+  structure where that is safe.
 
-## 8. Relationship to prior work
+## 9. Relationship to prior work
 
 The conceptual core is a synthesis, not a discovery. Facts-at-coordinates is
 tidy data (Wickham) and the OLAP cube. Display-as-projection is the spirit of
@@ -278,18 +338,20 @@ messy grid back into regular data is the goal of recent work such as
 TableCanoniser.
 
 What may be original is narrower and more useful: a concise, human-writable
-**authoring language** that compiles one source into tidy data, a presentation
-grid, and archival JATS/CALS at once — treating the grid as a projection rather
-than the source of truth. That is a design-and-tooling contribution, and its
-evidence is the working round-trip in enscribe, not the model on its own.
+**authoring language** with a deterministic forward render and a *verifiable*
+read-back — one source that compiles to tidy data, a presentation grid, and
+archival JATS at once, treating the grid as a projection rather than the source
+of truth. That is a design-and-tooling contribution, and its evidence is the
+working round-trip in enscribe, not the model on its own.
 
-## 9. Scope
+## 10. Scope
 
 The first version covers dimensions (flat and outline), facts, measures with
 metadata including inline values, and a display projection with span/repeat
-control — plus the importer's recovery of dimensions from JATS spanning
-headers. Deferred for later: rendering of derived/aggregate facts, arbitrary
-in-body rowspan, a concise tidy-form authoring front-end, and any pivot
-convenience layer. A raw-cell escape hatch remains available for genuinely
-irregular, presentation-only residue, as the rare exception rather than the
-default.
+control — the forward direction in full. Reading back a displayed table is a
+verifiable redisplay that recovers structure as far as the draw-and-check
+permits and otherwise rests on the literal floor. Deferred for later: rendering
+of derived/aggregate facts, arbitrary in-body rowspan, a concise tidy-form
+authoring front-end, and any pivot convenience layer. The literal floor —
+preserve the grid, convert the cells — is the safe fallback for any layout the
+structured end cannot yet express.
