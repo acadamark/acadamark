@@ -112,7 +112,13 @@ function renderFixture(emdPath) {
   const src = readFileSync(emdPath, 'utf8');
   const name = basename(emdPath, '.emd');
 
-  const interpreterOptions = { assetsDir: join(FIXTURES_DIR, 'assets') };
+  // DSL runtime: render fixtures in a live mode so the generated .html matches
+  // what users get (a diagram that renders), not the library's bare 'skip'
+  // default. live-link is the representative, lean choice — a <script src> to the
+  // pinned CDN (small, deterministic), mirroring the CDN-default posture; the
+  // demonstrative LIVE_INLINE_FIXTURES below override to the self-contained
+  // bundle. Non-DSL fixtures are unaffected (assets are gated on DSL presence).
+  const interpreterOptions = { assetsDir: join(FIXTURES_DIR, 'assets'), dslMode: 'live-link' };
   if (LIVE_INLINE_FIXTURES.has(name)) {
     interpreterOptions.dslMode = 'live-inline';
   }

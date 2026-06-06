@@ -252,7 +252,14 @@ function doRender(opts) {
   const src = readInput(opts.input);
   // CLI default is self-contained (--embed); the library default is external.
   const pipeOpts = { embedResources: opts.embed ?? true, assetsDir: dirname(resolve(opts.input)) };
-  if (opts.dslMode) pipeOpts.dslMode = opts.dslMode;
+  // DSL runtime (mermaid / abc): the CLI produces standalone documents, so it must
+  // render by default — otherwise a diagram block ships as un-rendered <pre> source
+  // (the library default 'skip' is for embedding into a host that wires its own
+  // runtime). Mirror the KaTeX-CSS / fonts posture (embed → self-contained inline;
+  // external → CDN link). An explicit --dsl-mode overrides. Math needs no wiring:
+  // it is pre-rendered to KaTeX HTML at build time and the CSS rides the same
+  // embed/CDN switch (cssMode), so formulas already render.
+  pipeOpts.dslMode = opts.dslMode ?? (pipeOpts.embedResources ? 'live-inline' : 'live-link');
   if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
   if (opts.theme) pipeOpts.theme = opts.theme;
   if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;

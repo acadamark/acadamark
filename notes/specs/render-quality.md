@@ -510,6 +510,23 @@ external-DSL modes); the default is **skip**:
 - **static** (abc only) — invoke the external library at build time and inline
   the resulting SVG; no client library is shipped.
 
+**Runtime-injection posture (who picks which mode).** The `skip` *library* default
+is for embedding — a host page that wires its own runtime. But a **standalone,
+user-facing** document must render on its own, so the user-facing paths opt into a
+live mode, matching the CDN-default / embed posture the math CSS already uses
+(`cssMode = embedResources ? 'inline' : 'link'`): **`embedResources` → the bundle
+is inlined (`live-inline`, self-contained); external → a `<script src>` to the
+pinned CDN (`live-link`, lean).** Concretely: the `enscribe render` CLI defaults
+`dslMode` to `embed ? 'live-inline' : 'live-link'` (the CLI is self-contained by
+default, so a diagram ships rendered); the docs-site builds `live-link`; and the
+fixture generator renders DSL fixtures `live-link` so the committed `.html` matches
+what users get. This is the same render-JS injection story as scroll-spy (#20) —
+the difference is only first-party-inline (scroll-spy) vs the third-party DSL
+*runtime* shipped here, CDN-linked by default. **Math needs no runtime**: formulas
+are pre-rendered to KaTeX HTML at build time; only the KaTeX CSS is injected (same
+embed/CDN switch), so math renders wherever the CSS is present. JATS is unaffected
+— no runtime or CDN enters the archival channel.
+
 Predicate IDs are **mode-aware**: `RQ-DSL-<MODE>-<KIND><N>`, MODE ∈ {`SKIP`,
 `LIVE`, `STATIC`}, KIND ∈ {`M` markup, `S` stylesheet, `O` observable}. The
 mode-independent contract predicates keep the bare `RQ-DSL-M<N>` form. The
