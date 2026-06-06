@@ -869,18 +869,30 @@ function htmlGridToSource(grid) {
  * plugin parses exactly those — pure-data columns stay literal (and can't be
  * mis-parsed as markdown).
  */
+/**
+ * True only for a *real* span (parsed integer > 1). Missing, empty, `"1"`, and
+ * non-numeric all coerce to "no span". Publishers routinely emit explicit
+ * `colspan="1" rowspan="1"` on every cell; the presence of the attribute is NOT
+ * a span, so the complexity gate must test the value, not the attribute.
+ */
+function isRealSpan(v) {
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) && n > 1;
+}
+
 function tableToCsv(table) {
   const theadEl = collectEls(table, 'thead')[0] ?? null;
   const hasHeader = theadEl != null;
   const trs = collectEls(table, 'tr');
 
   // Detect complexity BEFORE converting any cell. A flat CSV can't express a
-  // colspan/rowspan or a multi-row header, so such a table is handled by the
-  // #106 grid path in convertTableWrap — converting its cells here would be
-  // wasted work and would look up footnotes before the table's <table-wrap-foot>
-  // is collected (a spurious "xref-fn unresolved" warning).
+  // real (>1) colspan/rowspan or a multi-row header, so such a table is handled
+  // by the #106 grid path in convertTableWrap — converting its cells here would
+  // be wasted work and would look up footnotes before the table's
+  // <table-wrap-foot> is collected (a spurious "xref-fn unresolved" warning).
   const spanned = trs.some((tr) =>
-    tr.children.some((c) => (c.name === 'th' || c.name === 'td') && (c.attributes.colspan || c.attributes.rowspan)));
+    tr.children.some((c) => (c.name === 'th' || c.name === 'td')
+      && (isRealSpan(c.attributes.colspan) || isRealSpan(c.attributes.rowspan))));
   const multiRowHeader = theadEl ? childrenEls(theadEl, 'tr').length > 1 : false;
   if (spanned || multiRowHeader) return { complex: true };
 
