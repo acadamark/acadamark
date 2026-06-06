@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { tableHandler } from '../../src/interpreter/handlers/table.js';
+import { tableHandler, parseCsv } from '../../src/interpreter/handlers/table.js';
 
 // State mock is not used by tableHandler (it builds hast directly from data),
 // but we pass a minimal object in case future code checks for properties.
@@ -352,5 +352,33 @@ export function run() {
       hast.children[0].children[0].children[0].children[0].value.includes('assetsDir'),
     );
     console.log('PASS: table handler: src= without assetsDir → error table');
+  }
+
+  // ─── parseCsv: no phantom trailing cell after a quoted final field ───────────
+  // A row ending in a quoted (e.g. comma-bearing) field must NOT gain a spurious
+  // trailing empty cell. A genuine trailing delimiter still yields the empty.
+  {
+    const row = (text) => parseCsv(text, { hasHeaders: false }).rows[0];
+    assert.deepEqual(row('a,"b,c"'), ['a', 'b,c'], 'quoted final field → no phantom');
+    assert.deepEqual(row('a,b,'), ['a', 'b', ''], 'trailing delimiter → keeps the empty field');
+    assert.deepEqual(row('a,b'), ['a', 'b'], 'plain row → exact cells');
+    assert.deepEqual(row('"a,b",c'), ['a,b', 'c'], 'quoted non-final field unaffected');
+    assert.deepEqual(row('"only"'), ['only'], 'single quoted field → no phantom');
+    assert.deepEqual(row('a,"b""q"'), ['a', 'b"q'], 'escaped quote in final field → no phantom');
+    console.log('PASS: table handler: parseCsv no phantom trailing cell (quoted final field)');
+  }
+
+  // ─── render: a quoted comma-bearing last column → header width == body width ──
+  {
+    const node = makeNode({ positional: ['csv'], content: 'name,tags\nA,"x, y, z"\nB,"p, q"' });
+    const hast = tableHandler(STATE, node, VOCAB);
+    const [thead, tbody] = hast.children;
+    const headerW = thead.children[0].children.length;
+    assert.equal(headerW, 2, 'two header columns');
+    for (const tr of tbody.children) {
+      assert.equal(tr.children.length, headerW, 'body row width matches header (no phantom column)');
+    }
+    assert.equal(tbody.children[0].children[1].children[0].value, 'x, y, z', 'quoted comma value intact');
+    console.log('PASS: table handler: quoted comma-bearing last column keeps header==body width');
   }
 }

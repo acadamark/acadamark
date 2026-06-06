@@ -224,6 +224,13 @@ function parseDelimited(text, delimiter) {
  * Handles double-quote escaping (RFC 4180): quoted fields may contain
  * the delimiter, newlines, and doubled-up quotes ("").
  *
+ * One field is read per iteration. A trailing empty field is produced ONLY when
+ * the line ends on an unconsumed delimiter (`a,b,` → `['a','b','']`); a line that
+ * ends on a closed quoted field gets NO trailing empty (`a,"b,c"` → `['a','b,c']`,
+ * not `['a','b,c','']`). The earlier loop emitted a phantom trailing empty after
+ * any field that reached end-of-line, which mis-split rows whose last column was a
+ * quoted (e.g. comma-bearing) value into one extra empty column.
+ *
  * @param {string} line
  * @param {string} delimiter
  * @returns {string[]}
@@ -231,23 +238,18 @@ function parseDelimited(text, delimiter) {
 function parseCsvLine(line, delimiter) {
   const cells = [];
   let pos = 0;
-  while (pos <= line.length) {
-    if (pos === line.length) {
-      cells.push('');
-      break;
-    }
+  for (;;) {
     if (line[pos] === '"') {
-      // Quoted field
+      // Quoted field: may contain the delimiter, newlines, and doubled quotes.
       pos++; // skip opening quote
       let cell = '';
       while (pos < line.length) {
         if (line[pos] === '"') {
           if (line[pos + 1] === '"') {
-            // Escaped quote
-            cell += '"';
+            cell += '"'; // escaped quote
             pos += 2;
           } else {
-            pos++; // skip closing quote
+            pos++; // closing quote
             break;
           }
         } else {
@@ -255,19 +257,21 @@ function parseCsvLine(line, delimiter) {
         }
       }
       cells.push(cell);
-      // Skip delimiter if present
-      if (line[pos] === delimiter) pos++;
-    } else {
-      // Unquoted field: read until delimiter
-      const end = line.indexOf(delimiter, pos);
-      if (end === -1) {
-        cells.push(line.slice(pos).trim());
-        break;
-      } else {
-        cells.push(line.slice(pos, end).trim());
-        pos = end + 1;
-      }
+      // A delimiter continues to the next field; end-of-line ends the row here —
+      // no phantom trailing empty.
+      if (line[pos] === delimiter) { pos++; continue; }
+      break;
     }
+    // Unquoted field: read until the next delimiter. A trailing delimiter leaves
+    // pos at end-of-line, so this branch reads an empty final field (the real
+    // trailing empty); end-of-input with no delimiter ends the row.
+    const end = line.indexOf(delimiter, pos);
+    if (end === -1) {
+      cells.push(line.slice(pos).trim());
+      break;
+    }
+    cells.push(line.slice(pos, end).trim());
+    pos = end + 1;
   }
   return cells;
 }

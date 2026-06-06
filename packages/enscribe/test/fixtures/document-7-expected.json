@@ -342,17 +342,6 @@
                                   "value": "Quoted, third"
                                 }
                               ]
-                            },
-                            {
-                              "type": "element",
-                              "tagName": "td",
-                              "properties": {},
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "value": ""
-                                }
-                              ]
                             }
                           ]
                         }
@@ -1626,17 +1615,6 @@
                                 {
                                   "type": "text",
                                   "value": "Quoted, third"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "element",
-                              "tagName": "td",
-                              "properties": {},
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "value": ""
                                 }
                               ]
                             }
