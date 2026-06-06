@@ -74,6 +74,11 @@ content:
     The long-form structural path (<table>...<tr>...</table>) is handled by
     the same handler with recursive cell content; this path is partially
     implemented and may produce basic results.
+    The JATS importer reuses this no-format path for complex (colspan / rowspan /
+    multi-row-header) tables it can't express as a flat enscribe table (#106): it
+    keeps the grid as an HTML layout but stamps `_htmlTable` with each cell's
+    converted, resolvable inline (formula → math, xref → ref/cite, fn → note), so
+    the handler renders the grid with resolved cells rather than the raw passthrough.
 content_handler: table
 jats_counterpart:
   element: table-wrap

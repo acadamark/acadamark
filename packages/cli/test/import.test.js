@@ -646,6 +646,13 @@ graph TD
     assert.ok(!/\?\?ref/.test(body), 'cross-references resolve (incl. to complex tables)');
     assert.ok((html.match(/class="katex"/g) || []).length >= 5, 'equations render via KaTeX');
     assert.ok(/<table id="tab:/.test(html), 'tables render with their ids');
+    // #106: the four complex tables convert their cells like body content — no raw
+    // JATS leaks into any cell, and an in-cell cross-reference actually resolves.
+    for (const raw of ['<inline-formula', '<tex-math', '<xref', 'table-wrap']) {
+      assert.ok(!body.includes(raw), `no raw JATS (${raw}) anywhere in the rendered article`);
+    }
+    assert.ok(/<th[^>]*colspan=/.test(html) && /<th[^>]*rowspan=/.test(html), 'complex tables keep their multi-span headers');
+    assert.ok(/href="#tab:T2"/.test(html), 'an in-cell cross-reference to Table 2 resolves');
     console.log('PASS: real PNAS article imports and renders');
   }
 
@@ -682,6 +689,45 @@ graph TD
     assert.ok(html.includes('class="katex"') && html.includes('class="cite"'),
       'doc56: body math + cite render too');
     console.log('PASS: import #105 — formulas / footnotes / citations in body + table cells');
+  }
+
+  // ── #106: complex (HTML-layout) tables convert their cells like body content ──
+  {
+    const xml = readFileSync(join(FIXTURES, 'document-57-jats-complex-table.xml'), 'utf8');
+    const tree = importJats(xml);
+    assert.equal(errorNodes(tree).length, 0, 'doc57: no error nodes');
+
+    // The complex table is the no-format escape hatch carrying a tree-resident grid.
+    const tables = tagged(tree, 'table');
+    assert.equal(tables.length, 2, 'doc57: two complex tables');
+    const first = tables.find((t) => t.id === 'tab:first');
+    assert.ok(first && Array.isArray(first._htmlTable?.rows), 'doc57: grid stamp present');
+    // Layout preserved: a two-row header with a rowspan + a colspan cell.
+    const headRows = first._htmlTable.rows.filter((r) => r.section === 'head');
+    assert.equal(headRows.length, 2, 'doc57: two header rows preserved');
+    assert.ok(headRows[0].cells.some((c) => c.rowspan === 2) && headRows[0].cells.some((c) => c.colspan === 2),
+      'doc57: span attributes preserved on the grid');
+    // node.content (the .emd payload) carries the grid with NO raw JATS.
+    for (const raw of ['<inline-formula', '<tex-math', '<xref', '<fn']) {
+      assert.ok(!first.content.includes(raw), `doc57: .emd content has no raw JATS (${raw})`);
+    }
+
+    // Rendered (single import — importJats holds per-run footnote state): cells
+    // resolve (formula / cite / cross-ref), the table footnote hoists, spans kept.
+    const proc = buildEnscribePipeline({ embedResources: true });
+    const html = proc.stringify(proc.runSync(tree));
+    const body = html.replace(/<style[\s\S]*?<\/style>/g, '');
+    for (const raw of ['<inline-formula', '<tex-math', '<xref', 'table-wrap']) {
+      assert.ok(!body.includes(raw), `doc57: no raw JATS (${raw}) in rendered complex tables`);
+    }
+    assert.ok(html.includes('class="katex"'), 'doc57: a cell formula renders (KaTeX)');
+    assert.ok(html.includes('<cite class="cite" data-keys="bib-smith2020">(Smith, 2020)</cite>'),
+      'doc57: a cell citation resolves');
+    assert.ok(/href="#tab:first"/.test(html), 'doc57: an in-cell cross-reference resolves');
+    assert.ok(/data-note-id="note-1"/.test(html), 'doc57: the in-cell (table) footnote hoists to a marker');
+    assert.ok(/<th[^>]*rowspan="2"/.test(html) && /<th[^>]*colspan="2"/.test(html),
+      'doc57: multi-span headers preserved in the render');
+    console.log('PASS: import #106 — complex (HTML-layout) tables convert + resolve cells');
   }
 
   console.log('All JATS import tests passed.');

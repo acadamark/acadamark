@@ -6075,7 +6075,7 @@ const _table = Object.freeze({
     },
     "content": {
       "type": "opaque-or-structured",
-      "notes": "When a format positional is present (csv, tsv, json, yaml, md), pipe\ncontent is an opaque data string parsed by the corresponding parser.\nWhen no format is present, content is treated as raw HTML (escape-hatch).\nThe long-form structural path (<table>...<tr>...</table>) is handled by\nthe same handler with recursive cell content; this path is partially\nimplemented and may produce basic results.\n",
+      "notes": "When a format positional is present (csv, tsv, json, yaml, md), pipe\ncontent is an opaque data string parsed by the corresponding parser.\nWhen no format is present, content is treated as raw HTML (escape-hatch).\nThe long-form structural path (<table>...<tr>...</table>) is handled by\nthe same handler with recursive cell content; this path is partially\nimplemented and may produce basic results.\nThe JATS importer reuses this no-format path for complex (colspan / rowspan /\nmulti-row-header) tables it can't express as a flat enscribe table (#106): it\nkeeps the grid as an HTML layout but stamps `_htmlTable` with each cell's\nconverted, resolvable inline (formula → math, xref → ref/cite, fn → note), so\nthe handler renders the grid with resolved cells rather than the raw passthrough.\n",
     },
     "content_handler": "table",
     "jats_counterpart": {

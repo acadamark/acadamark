@@ -64,6 +64,18 @@ export function walkReplace(nodes, tagname, process) {
           }
         }
       }
+      // #106: recurse into a complex (HTML-layout) table's grid cells (see
+      // discover.js). Lets ref/cite/note resolution reach a cross-reference,
+      // citation, or footnote authored inside a complex table cell — the cell's
+      // inline array is mutated in place and the handler reads the same array.
+      // No-op without the `_htmlTable` stamp → byte-identical.
+      if (node._htmlTable && Array.isArray(node._htmlTable.rows)) {
+        for (const row of node._htmlTable.rows) {
+          for (const cell of row.cells ?? []) {
+            if (cell && Array.isArray(cell.inline)) walkReplace(cell.inline, tagname, process);
+          }
+        }
+      }
       i++;
     }
   }

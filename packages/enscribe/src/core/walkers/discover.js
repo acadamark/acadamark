@@ -55,6 +55,18 @@ function walkDiscover(nodes, visitors) {
         }
       }
     }
+    // #106: recurse into a complex (HTML-layout) table's grid cells. The JATS
+    // importer stamps `_htmlTable` (rows → cells, each carrying converted inline
+    // mdast) on the no-format escape-hatch table so its cell refs/cites/notes/math
+    // resolve like body content. Same descent as `_parsedCells`, different shape
+    // (cells live under `row.cells`). No-op without the stamp → byte-identical.
+    if (node._htmlTable && Array.isArray(node._htmlTable.rows)) {
+      for (const row of node._htmlTable.rows) {
+        for (const cell of row.cells ?? []) {
+          if (cell && Array.isArray(cell.inline)) walkDiscover(cell.inline, visitors);
+        }
+      }
+    }
   }
 }
 

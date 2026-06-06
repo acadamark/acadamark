@@ -440,6 +440,59 @@ function buildTableBodyFromParsedCells(state, node, parsedCells) {
   return children;
 }
 
+// ─── #106: complex (HTML-layout) table rendering ────────────────────────────
+//
+// The JATS importer can't express a colspan/rowspan/multi-row-header table in
+// enscribe's flat table formats, so it preserves the grid LAYOUT but still runs
+// each cell through the same inline conversion as body content, stamping
+// `node._htmlTable = { rows: [{ section: 'head'|'body', cells: [{ header,
+// colspan, rowspan, align, inline }] }] }` with already-resolved inline mdast
+// (the shared walkers descended the stamp so refs/cites/notes resolved in the
+// mdast phase). This builder renders that grid — spans and multi-row headers
+// preserved — with each cell's inline converted via the normal child pipeline.
+
+function makeGridCell(state, node, cell) {
+  const props = {};
+  if (cell.colspan) props.colSpan = cell.colspan;
+  if (cell.rowspan) props.rowSpan = cell.rowspan;
+  if (cell.align) props.align = cell.align;
+  return {
+    type: 'element',
+    tagName: cell.header ? 'th' : 'td',
+    properties: props,
+    children: Array.isArray(cell.inline)
+      ? convertChildren(state, node, cell.inline)
+      : [makeTextNode(cell?.text ?? '')],
+  };
+}
+
+function buildHtmlTableBodyHast(state, node, grid) {
+  const children = [];
+  let section = null;
+  let rows = [];
+  const flush = () => {
+    if (!rows.length) return;
+    children.push({
+      type: 'element',
+      tagName: section === 'head' ? 'thead' : 'tbody',
+      properties: {},
+      children: rows,
+    });
+    rows = [];
+  };
+  for (const row of grid.rows ?? []) {
+    if (row.section !== section) { flush(); section = row.section; }
+    rows.push({
+      type: 'element',
+      tagName: 'tr',
+      properties: {},
+      children: (row.cells ?? []).map((c) => makeGridCell(state, node, c)),
+    });
+  }
+  flush();
+  return children;
+}
+
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 /**
@@ -474,6 +527,23 @@ export function tableHandler(state, node, _vocab, options) {
   // to extract). For the no-format raw-HTML escape-hatch path the same
   // applies — the body is raw HTML.
   const { captionHast, titleHast } = extractFrameableChildren(state, node);
+
+  // #106: complex (HTML-layout) imported table — render the stamped grid
+  // (spans / multi-row headers preserved), each cell's resolved inline converted
+  // via the normal child pipeline. Checked before the no-format raw branch below:
+  // an imported complex table is also format-less, but it carries `_htmlTable`.
+  if (node._htmlTable) {
+    return renderFrameable({
+      kind: 'table',
+      bodyHast: buildHtmlTableBodyHast(state, node, node._htmlTable),
+      wrapperEl: 'table',
+      wrapperProps: tableProps,
+      captionHast,
+      titleHast,
+      computedNumber: node.computedNumber ?? null,
+      scope: node._scope ?? null,
+    });
+  }
 
   // No format word → raw HTML pass-through (escape-hatch form).
   // Caption/title not rendered in this escape-hatch path (author wrote

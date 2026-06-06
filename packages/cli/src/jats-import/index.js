@@ -44,6 +44,19 @@
 //             parsed-cell representation. So an imported table's cells carry
 //             rendering, resolving math / cites / notes in HTML and JATS both,
 //             and round-trip through canonical `.emd`.
+//   Slice 8 (#106) — special content inside COMPLEX (colspan / rowspan / multi-row
+//             header) tables. Such a table can't become a flat enscribe table, so
+//             its grid LAYOUT is preserved as the no-format `<table>` escape hatch
+//             — but its cells run through the SAME `convertInline` as Slice 7, and
+//             the grid is stamped on `node._htmlTable` (rows → cells with converted
+//             inline mdast). The shared walkers descend the stamp so cell refs /
+//             cites / notes / math resolve; the HTML handler and JATS emitter
+//             render / emit the grid (spans preserved). `<table-wrap-foot>` <fn>s
+//             are collected so an in-cell `<xref ref-type="fn">` hoists. So a real
+//             paper's formula-and-cross-reference-heavy complex tables import with
+//             no raw verbatim JATS in any cell, in HTML and JATS both. (Re-rendering
+//             the resulting `.emd` does not yet re-resolve those cells — that needs
+//             a pipeline-side parser for inline-in-raw-HTML cells; tracked in #108.)
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
@@ -742,14 +755,23 @@ function convertTableWrap(tw) {
 
   const result = tableToCsv(innerTable);
   if (result.complex) {
-    // Complex table (colspan / rowspan): it can't become CSV. Emit the no-format
-    // `<table>` escape hatch — Enscribe passes the rows through as raw HTML but
-    // still wraps them in `<table id=…>`, so the table is numbered and its
-    // cross-references resolve. JATS inline tags in cells map to HTML equivalents.
-    noteDropped('table-wrap(colspan/rowspan → raw-HTML table)');
-    const capHtml = caption ? `<caption>${escapeXmlText(caption)}</caption>` : '';
-    const rows = innerTable.children.filter(isEl).map(serializeHtml).join('');
-    return makeOpaqueTag('table', capHtml + rows, { contentHandler: 'table', id, kwargs: caption ? { caption } : {} });
+    // Complex table (colspan / rowspan / multi-row header): it can't become a flat
+    // CSV. #106: keep the grid LAYOUT but run every cell through the same inline
+    // conversion as body content. The importer stamps `_htmlTable` (grid rows →
+    // cells with converted, resolvable inline mdast) which the HTML handler and
+    // JATS emitter render, and the shared walkers descend so cell refs / cites /
+    // notes / math resolve like body content. `node.content` carries the same grid
+    // as escape-hatch HTML with Enscribe inline *source* in cells (escaped), so the
+    // `.emd` output has no raw JATS either. (Re-rendering that `.emd` does not yet
+    // re-resolve the cells — that needs a pipeline-side parser; tracked in #108.)
+    // No noteDropped here: the table is fully converted, not dropped.
+    collectFootnotes(tw); // <table-wrap-foot> <fn>s, so in-cell <xref ref-type="fn"> inline
+    const grid = buildHtmlGrid(innerTable);
+    const node = makeOpaqueTag('table', htmlGridToSource(grid), {
+      contentHandler: 'table', id, kwargs: caption ? { caption } : {},
+    });
+    node._htmlTable = grid;
+    return node;
   }
   const kwargs = caption ? { caption } : {};
   // #105: opt the markup-bearing columns into Enscribe inline parsing (#21).
@@ -760,25 +782,79 @@ function convertTableWrap(tw) {
   return makeOpaqueTag('table', result.csv, { contentHandler: 'table', positional: ['csv'], id, kwargs, booleans });
 }
 
-// JATS inline tags → their HTML equivalents (for the raw-HTML complex-table path).
-const JATS_TO_HTML_TAG = {
-  italic: 'i', bold: 'b', monospace: 'code', underline: 'u', strike: 's', sc: 'span', roman: 'span',
-};
+// ─── #106: complex (HTML-layout) table grid ─────────────────────────────────
+//
+// A colspan/rowspan/multi-row-header table keeps its grid but its cells convert
+// like body content. `buildHtmlGrid` walks the inner <table> into
+// `{ rows: [{ section: 'head'|'body', cells: [{ header, colspan, rowspan, align,
+// inline }] }] }`, each cell's `inline` produced by the SAME `convertInline` used
+// in the body (formula → math, <xref> → ref/cite, <xref fn> → note, formatting).
+
+/** Walk one `<tr>` into a grid row of converted cells. */
+function buildGridRow(tr, section) {
+  const cells = tr.children
+    .filter((c) => c.name === 'th' || c.name === 'td')
+    .map((cell) => {
+      const out = { header: cell.name === 'th', inline: convertInline(cell.children) };
+      const cs = parseInt(cell.attributes.colspan, 10);
+      const rs = parseInt(cell.attributes.rowspan, 10);
+      if (cs > 1) out.colspan = cs;
+      if (rs > 1) out.rowspan = rs;
+      if (cell.attributes.align) out.align = cell.attributes.align;
+      return out;
+    });
+  return { section, cells };
+}
+
+/** Inner `<table>` → grid `{ rows }`, preserving thead/tbody sectioning. */
+function buildHtmlGrid(table) {
+  const rows = [];
+  for (const child of table.children.filter(isEl)) {
+    if (child.name === 'thead') {
+      for (const tr of childrenEls(child, 'tr')) rows.push(buildGridRow(tr, 'head'));
+    } else if (child.name === 'tbody' || child.name === 'tfoot') {
+      for (const tr of childrenEls(child, 'tr')) rows.push(buildGridRow(tr, 'body'));
+    } else if (child.name === 'tr') {
+      rows.push(buildGridRow(child, 'body'));
+    }
+  }
+  return { rows };
+}
 
 /**
- * Serialize a parsed element to an HTML string (for the complex-table escape
- * hatch): JATS inline tags become HTML, presentational table attributes
- * (colspan / rowspan / align / …) are kept, namespaced attributes are dropped.
+ * Serialize a grid back to escape-hatch HTML for `node.content` (the `.emd`
+ * payload): real `<thead>`/`<tbody>`/`<tr>`/`<th>`/`<td>` layout tags with span /
+ * align attributes, and each cell's converted inline as Enscribe *source*
+ * (`<$…$>`, `<cite @k>`, `<ref @id>`, `<note | …>`) escaped as HTML text — so the
+ * `.emd` carries the full table with no raw JATS. (Re-parsing this to re-resolve
+ * the cells is the deferred pipeline-side step; tracked separately.)
  */
-function serializeHtml(node) {
-  if (node.name === '#text') return escapeXmlText(node.value);
-  const tag = JATS_TO_HTML_TAG[node.name] || node.name;
-  const attrs = Object.entries(node.attributes ?? {})
-    .filter(([k]) => k !== 'xmlns' && !k.includes(':'))
-    .map(([k, v]) => ` ${k}="${escapeXmlAttr(v)}"`)
-    .join('');
-  const inner = (node.children ?? []).map(serializeHtml).join('');
-  return `<${tag}${attrs}>${inner}</${tag}>`;
+function htmlGridToSource(grid) {
+  let out = '';
+  let section = null;
+  let buf = '';
+  const flush = () => {
+    if (!buf) return;
+    const el = section === 'head' ? 'thead' : 'tbody';
+    out += `<${el}>${buf}</${el}>`;
+    buf = '';
+  };
+  for (const row of grid.rows) {
+    if (row.section !== section) { flush(); section = row.section; }
+    let r = '<tr>';
+    for (const cell of row.cells) {
+      const tag = cell.header ? 'th' : 'td';
+      let attrs = '';
+      if (cell.colspan) attrs += ` colspan="${cell.colspan}"`;
+      if (cell.rowspan) attrs += ` rowspan="${cell.rowspan}"`;
+      if (cell.align) attrs += ` align="${escapeXmlAttr(cell.align)}"`;
+      r += `<${tag}${attrs}>${escapeXmlText(inlineToCanonicalSource(cell.inline))}</${tag}>`;
+    }
+    r += '</tr>';
+    buf += r;
+  }
+  flush();
+  return out;
 }
 
 /**
@@ -794,13 +870,22 @@ function serializeHtml(node) {
  * mis-parsed as markdown).
  */
 function tableToCsv(table) {
-  const hasHeader = collectEls(table, 'thead').length > 0;
-  let complex = false;
-  const rows = collectEls(table, 'tr').map((tr) => {
+  const theadEl = collectEls(table, 'thead')[0] ?? null;
+  const hasHeader = theadEl != null;
+  const trs = collectEls(table, 'tr');
+
+  // Detect complexity BEFORE converting any cell. A flat CSV can't express a
+  // colspan/rowspan or a multi-row header, so such a table is handled by the
+  // #106 grid path in convertTableWrap — converting its cells here would be
+  // wasted work and would look up footnotes before the table's <table-wrap-foot>
+  // is collected (a spurious "xref-fn unresolved" warning).
+  const spanned = trs.some((tr) =>
+    tr.children.some((c) => (c.name === 'th' || c.name === 'td') && (c.attributes.colspan || c.attributes.rowspan)));
+  const multiRowHeader = theadEl ? childrenEls(theadEl, 'tr').length > 1 : false;
+  if (spanned || multiRowHeader) return { complex: true };
+
+  const rows = trs.map((tr) => {
     const cells = tr.children.filter((c) => c.name === 'th' || c.name === 'td');
-    for (const cell of cells) {
-      if (cell.attributes.colspan || cell.attributes.rowspan) complex = true;
-    }
     return cells.map((cell) => {
       const markup = (cell.children ?? []).some((c) => c.name !== '#text');
       const src = markup
@@ -809,7 +894,6 @@ function tableToCsv(table) {
       return { src, markup };
     });
   });
-  if (complex) return { complex: true };
 
   // Which BODY columns carry markup? The header row holds the column names.
   const bodyRows = hasHeader ? rows.slice(1) : rows;

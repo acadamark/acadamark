@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.3 20210610//EN" "https://jats.nlm.nih.gov/archiving/1.3/JATS-archivearticle1-3.dtd">
+<article article-type="research-article" xml:lang="en" dtd-version="1.3">
+  <front>
+    <article-meta>
+      <title-group>
+        <article-title>Complex tables with rich cells</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author"><string-name>Test Author</string-name></contrib>
+      </contrib-group>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="sec:tables">
+      <title>Two related tables</title>
+      <p>The body also carries a formula <inline-formula><tex-math><![CDATA[x^2]]></tex-math></inline-formula>,
+        a citation <xref ref-type="bibr" rid="bib-smith2020">Smith</xref>, and a cross-reference to
+        <xref ref-type="table" rid="first">the first table</xref>.</p>
+      <table-wrap id="first">
+        <label>1</label>
+        <caption><p>A multi-row header with spans, plus a formula, a citation, and a table footnote in cells.</p></caption>
+        <table>
+          <thead>
+            <tr>
+              <th rowspan="2">Sample</th>
+              <th colspan="2">Measurements</th>
+            </tr>
+            <tr>
+              <th>energy</th>
+              <th>note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A</td>
+              <td><inline-formula><tex-math><![CDATA[E=mc^2]]></tex-math></inline-formula></td>
+              <td>baseline<xref ref-type="fn" rid="tf-1">*</xref></td>
+            </tr>
+            <tr>
+              <td>B</td>
+              <td align="right"><inline-formula><tex-math><![CDATA[\rho^2]]></tex-math></inline-formula></td>
+              <td>see <xref ref-type="bibr" rid="bib-smith2020">Smith</xref></td>
+            </tr>
+          </tbody>
+        </table>
+        <table-wrap-foot>
+          <fn id="tf-1"><label>*</label><p>A footnote attached to the first table.</p></fn>
+        </table-wrap-foot>
+      </table-wrap>
+      <table-wrap id="second">
+        <label>2</label>
+        <caption><p>A second table whose cell cross-references the first.</p></caption>
+        <table>
+          <thead>
+            <tr><th>Quantity</th><th colspan="3">Values by group</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>derived from Table <xref ref-type="table" rid="first">1</xref></td>
+              <td colspan="3">pooled estimate</td>
+            </tr>
+          </tbody>
+        </table>
+      </table-wrap>
+    </sec>
+  </body>
+  <back>
+    <ref-list>
+      <ref id="bib-smith2020">
+        <element-citation publication-type="journal">
+          <person-group person-group-type="author"><string-name>Ada Smith</string-name></person-group>
+          <article-title>On Cells</article-title>
+          <source>Journal of Tables</source>
+          <year>2020</year>
+        </element-citation>
+      </ref>
+    </ref-list>
+  </back>
+</article>

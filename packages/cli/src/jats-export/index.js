@@ -976,6 +976,15 @@ function emitTableInner(node, indent) {
     return emitParsedCellsTable(node._parsedCells, indent);
   }
 
+  // #106: complex (HTML-layout) imported table. The importer stamped `_htmlTable`
+  // (grid rows → cells, each carrying resolved inline mdast); emit the real
+  // `<thead>`/`<tbody>` grid — spans / multi-row headers preserved — with each
+  // cell's inline via the shared `emitInlines`. Replaces the comment placeholder
+  // the no-format escape hatch used to emit (which dropped the table's content).
+  if (node._htmlTable) {
+    return emitHtmlTableGrid(node._htmlTable, indent);
+  }
+
   const format = node.tagname === 'table' ? (node.positional?.[0] ?? null)
                : node.tagname;
   const rawData = typeof node.content === 'string' ? node.content : '';
@@ -1056,6 +1065,49 @@ function emitParsedCellsTable(parsedCells, indent) {
     }
     out += `${pad}  </tbody>\n`;
   }
+  out += `${pad}</table>\n`;
+  return out;
+}
+
+/**
+ * #106: emit the inner `<table>` from the JATS importer's `_htmlTable` grid
+ * stamp (complex / HTML-layout tables: colspan / rowspan / multi-row headers).
+ * Rows are grouped into `<thead>`/`<tbody>` by their section; each cell becomes a
+ * `<th>`/`<td>` carrying its span/align attributes and its resolved inline via
+ * the shared `emitInlines` (so a cell formula is an `<inline-formula>`, a resolved
+ * cross-ref an `<xref>`, a citation an `<xref ref-type="bibr">`, a footnote an
+ * `<xref ref-type="fn">` — never raw verbatim JATS).
+ */
+function emitHtmlTableGrid(grid, indent) {
+  const pad = ' '.repeat(indent);
+  const cellXml = (cell) => {
+    const tag = cell.header ? 'th' : 'td';
+    let attrs = '';
+    if (cell.colspan) attrs += ` colspan="${escapeXmlAttr(String(cell.colspan))}"`;
+    if (cell.rowspan) attrs += ` rowspan="${escapeXmlAttr(String(cell.rowspan))}"`;
+    if (cell.align) attrs += ` align="${escapeXmlAttr(String(cell.align))}"`;
+    const content = Array.isArray(cell.inline)
+      ? emitInlines(cell.inline)
+      : escapeXml(String(cell?.text ?? ''));
+    return `${pad}      <${tag}${attrs}>${content}</${tag}>\n`;
+  };
+
+  let out = `${pad}<table>\n`;
+  let section = null;
+  let buf = '';
+  const flush = () => {
+    if (!buf) return;
+    const el = section === 'head' ? 'thead' : 'tbody';
+    out += `${pad}  <${el}>\n${buf}${pad}  </${el}>\n`;
+    buf = '';
+  };
+  for (const row of grid.rows ?? []) {
+    if (row.section !== section) { flush(); section = row.section; }
+    buf += `${pad}    <tr>\n`;
+    for (const cell of row.cells ?? []) buf += cellXml(cell);
+    buf += `${pad}    </tr>\n`;
+  }
+  flush();
   out += `${pad}</table>\n`;
   return out;
 }

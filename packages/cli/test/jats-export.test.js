@@ -962,6 +962,25 @@ function validateWithXmllint(fixtureName, jatsXml) {
   validateWithXmllint('doc56', jats);
 }
 
+// ─── Integration: doc-57 complex (HTML-layout) table re-export, DTD-valid (#106) ─
+
+{
+  const xml = readFileSync(join(FIXTURES_DIR, 'document-57-jats-complex-table.xml'), 'utf8');
+  const tree = buildEnscribePipeline({ assetsDir: FIXTURES_DIR }).runSync(importJats(xml));
+  const jats = enscribeToJats(tree);
+
+  // The complex table re-exports as a real grid (replacing the old comment
+  // placeholder) — spans preserved, cell content converted, no raw verbatim JATS.
+  check('doc57: complex table → real <table-wrap>/<table> grid (not placeholder)',
+    jats.includes('<table-wrap') && !/<!-- table data; format=raw -->/.test(jats));
+  check('doc57: header spans preserved in re-export',
+    /<th[^>]*rowspan="2"/.test(jats) && /<th[^>]*colspan="2"/.test(jats));
+  check('doc57: cell formula → <inline-formula> in re-export', jats.includes('<inline-formula>'));
+  check('doc57: cell cross-ref → <xref ref-type="table"> in re-export', /<xref ref-type="table"/.test(jats));
+  check('doc57: cell citation → <xref ref-type="bibr"> in re-export', /<xref ref-type="bibr"/.test(jats));
+  validateWithXmllint('doc57', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

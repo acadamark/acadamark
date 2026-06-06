@@ -85,6 +85,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] JATS import — math (`<tex-math>` and MathML)
 - [x] JATS import — figures, tables, cross-references, and footnotes
 - [x] JATS import — formulas, footnotes, and citations inside `<table-wrap>` cells (converted to the opt-in parsed-cell form so they render and resolve in HTML and JATS both, not flattened to text)
+- [x] JATS import — complex (colspan/rowspan/multi-row-header) tables keep their HTML grid layout but convert every cell like body content (no raw verbatim JATS in any cell; cell refs/cites/notes/math resolve; `<table-wrap-foot>` footnotes hoist; JATS re-export emits a real grid, not a placeholder)
 - [x] JATS import — theorem family, DSL blocks, and code listings
 - [x] JATS import — reduction policy (reader content preserved, publishing metadata dropped)
 - [x] JATS import — a real published article demonstration (NLM JATS sample, on the docs site)
