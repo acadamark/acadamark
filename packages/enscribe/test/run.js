@@ -41,6 +41,7 @@ import { run as runMapAttributes } from './map-attributes.test.js';
 import { run as runDslRegistry } from './dsl-registry.test.js';
 import { run as runHostAcceptSets } from './lib/host-accept-sets.test.js';
 import { run as runShorthandExpansions } from './lib/shorthand-expansions.test.js';
+import { run as runHtmlTableCells } from './plugins/html-table-cells.test.js';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -81,6 +82,7 @@ const suites = [
   ['lib/theme',                    runTheme],
   ['lib/chapter-nav',              runChapterNav],
   ['config-options',               runConfigOptions],
+  ['plugins/html-table-cells',     runHtmlTableCells],
 ];
 
 let failed = 0;

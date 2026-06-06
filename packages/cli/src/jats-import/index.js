@@ -54,9 +54,10 @@
 //             render / emit the grid (spans preserved). `<table-wrap-foot>` <fn>s
 //             are collected so an in-cell `<xref ref-type="fn">` hoists. So a real
 //             paper's formula-and-cross-reference-heavy complex tables import with
-//             no raw verbatim JATS in any cell, in HTML and JATS both. (Re-rendering
-//             the resulting `.emd` does not yet re-resolve those cells — that needs
-//             a pipeline-side parser for inline-in-raw-HTML cells; tracked in #108.)
+//             no raw verbatim JATS in any cell, in HTML and JATS both. (#108 closed
+//             the round-trip: re-rendering the resulting `.emd` re-resolves those
+//             cells via the enscribeHtmlTableCells pipeline plugin, which re-stamps
+//             `_htmlTable` from the escape-hatch content.)
 
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
@@ -762,8 +763,8 @@ function convertTableWrap(tw) {
     // JATS emitter render, and the shared walkers descend so cell refs / cites /
     // notes / math resolve like body content. `node.content` carries the same grid
     // as escape-hatch HTML with Enscribe inline *source* in cells (escaped), so the
-    // `.emd` output has no raw JATS either. (Re-rendering that `.emd` does not yet
-    // re-resolve the cells — that needs a pipeline-side parser; tracked in #108.)
+    // `.emd` output has no raw JATS either, and (#108) re-rendering that `.emd`
+    // re-resolves the cells via the enscribeHtmlTableCells pipeline plugin.)
     // No noteDropped here: the table is fully converted, not dropped.
     collectFootnotes(tw); // <table-wrap-foot> <fn>s, so in-cell <xref ref-type="fn"> inline
     const grid = buildHtmlGrid(innerTable);
@@ -826,8 +827,9 @@ function buildHtmlGrid(table) {
  * payload): real `<thead>`/`<tbody>`/`<tr>`/`<th>`/`<td>` layout tags with span /
  * align attributes, and each cell's converted inline as Enscribe *source*
  * (`<$…$>`, `<cite @k>`, `<ref @id>`, `<note | …>`) escaped as HTML text — so the
- * `.emd` carries the full table with no raw JATS. (Re-parsing this to re-resolve
- * the cells is the deferred pipeline-side step; tracked separately.)
+ * `.emd` carries the full table with no raw JATS. (#108: the enscribeHtmlTableCells
+ * pipeline plugin re-parses exactly this content on render and re-resolves the
+ * cells — the escaped inline source is entity-decoded and re-parsed to mdast.)
  */
 function htmlGridToSource(grid) {
   let out = '';

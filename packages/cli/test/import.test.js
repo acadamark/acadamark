@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { importJats } from '../src/jats-import/index.js';
 import { buildEnscribePipeline } from '@enscribejs/enscribe';
 import { enscribeToJats } from '../src/jats-export/index.js';
+import { serializeCanonical } from '../src/serialize-canonical.js';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
@@ -728,6 +729,29 @@ graph TD
     assert.ok(/<th[^>]*rowspan="2"/.test(html) && /<th[^>]*colspan="2"/.test(html),
       'doc57: multi-span headers preserved in the render');
     console.log('PASS: import #106 — complex (HTML-layout) tables convert + resolve cells');
+  }
+
+  // ── #108: import → .emd → render round-trip resolves complex-table cells ─────
+  {
+    const xml = readFileSync(join(FIXTURES, 'document-57-jats-complex-table.xml'), 'utf8');
+    // A: direct import → render (reference).
+    const procA = buildEnscribePipeline({ embedResources: false });
+    const htmlA = procA.stringify(procA.runSync(importJats(xml)));
+    // B: import → .emd → render (the round-trip #108 closes — the .emd's no-format
+    // <table> escape hatch must re-resolve its cells, not show literal source).
+    const emd = serializeCanonical(importJats(xml));
+    const htmlB = buildEnscribePipeline({ embedResources: false }).processSync(emd).toString();
+
+    const tableOf = (h) => (h.match(/<table\b[^>]*id="tab:first"[\s\S]*?<\/table>/) || [''])[0];
+    const tB = tableOf(htmlB);
+    assert.ok(!/&lt;cite|&lt;ref|&lt;\$|<cite @|<note \|/.test(tB), 'doc57 .emd: no literal Enscribe source leaks');
+    assert.ok(/<cite class="cite"[^>]*>\(Smith, 2020\)<\/cite>/.test(tB), 'doc57 .emd: cell cite resolves');
+    assert.ok(/href="#tab:first"/.test(htmlB), 'doc57 .emd: cell cross-ref resolves');
+    assert.ok(tB.includes('class="katex"'), 'doc57 .emd: cell formula renders');
+    assert.ok(/data-note-id="note-1"/.test(htmlB), 'doc57 .emd: table footnote hoists');
+    // The round-trip is exact: the complex-table HTML is identical to direct import.
+    assert.equal(tableOf(htmlA), tB, 'doc57: .emd-render complex table identical to direct-import render');
+    console.log('PASS: import #108 — import → .emd → render round-trip resolves cells identically');
   }
 
   console.log('All JATS import tests passed.');

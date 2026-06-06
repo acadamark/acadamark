@@ -127,6 +127,7 @@ import { enscribeSectionNesting } from './plugins/section-nesting.js';
 // #21: opt-in Enscribe inline markup in data-format table cells. Runs in the
 // mdast phase so cell <ref>/<cite> become tree-resident before resolution.
 import { enscribeTableCellParse } from './plugins/table-cell-parse.js';
+import { enscribeHtmlTableCells } from './plugins/html-table-cells.js';
 import { enscribeNotes } from './plugins/notes.js';
 // Phase 5 slice 5c (2026-05-28): re-export enscribeNotePlacement so the
 // JATS test pipeline can include it (it produces __note-list /
@@ -616,6 +617,15 @@ export function enscribeInterpreter(options = {}) {
   //     leaving footnotes-in-cells out of scope; #105 moves it earlier to bring
   //     them in. A no-op for tables without an opt-in → byte-identical.)
   this.use(enscribeTableCellParse, { assetsDir });
+
+  // 5.6 (#108): re-resolve Enscribe inline inside a no-format raw-HTML <table>
+  //     escape hatch (the form the JATS importer serializes complex tables to in
+  //     `.emd`). Parses the HTML-grid content, recovers each cell's inline source,
+  //     and stamps the same `_htmlTable` shape #106 defined — so cell refs / cites
+  //     / notes / math resolve on a fresh `.emd` render, closing the
+  //     import-jats --emd → render round-trip. Runs with the cell-parse pass,
+  //     before notes. A no-op for any table without a raw-HTML grid → byte-identical.
+  this.use(enscribeHtmlTableCells);
 
   // 6. Notes: register note elements (record-only); splice __note-marker nodes
   //    into the tree; store pending data for the apply-numbers stage.
