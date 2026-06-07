@@ -981,6 +981,37 @@ function validateWithXmllint(fixtureName, jatsXml) {
   validateWithXmllint('doc57', jats);
 }
 
+// ─── #107: imported <date> re-exports as a valid <pub-date> ─────────────────
+
+{
+  const mk = (dateXml) => `<article article-type="research-article" xml:lang="en" dtd-version="1.3">
+<front><article-meta>
+<title-group><article-title>Date round-trip</article-title></title-group>
+<contrib-group><contrib contrib-type="author"><string-name>A. Author</string-name></contrib></contrib-group>
+${dateXml}
+<abstract><p>An abstract.</p></abstract>
+</article-meta></front>
+<body><sec id="s"><title>S</title><p>Body.</p></sec></body>
+</article>`;
+  const toJats = (xml) => enscribeToJats(buildEnscribePipeline({}).runSync(importJats(xml)));
+
+  // Full date → <year>/<month>/<day> child elements (month/day zero-padded by the
+  // importer), positioned before <abstract>; the broken path emitted an invalid
+  // `<pub-date or date (in history)>` with the bare date string as text.
+  const full = toJats(mk('<pub-date pub-type="epub"><year>2020</year><month>3</month><day>1</day></pub-date>'));
+  check('doc107: full date → <pub-date><year><month><day>',
+    /<pub-date><year>2020<\/year><month>03<\/month><day>01<\/day><\/pub-date>/.test(full));
+  check('doc107: <pub-date> emitted before <abstract>', full.indexOf('<pub-date>') < full.indexOf('<abstract>') && full.includes('<pub-date>'));
+  check('doc107: no malformed "pub-date or date" tag', !/pub-date or date/.test(full));
+  validateWithXmllint('doc107-full', full);
+
+  // Year-only → <year> only, still valid.
+  const yearOnly = toJats(mk('<pub-date><year>1999</year></pub-date>'));
+  check('doc107: year-only → <pub-date><year> only',
+    /<pub-date><year>1999<\/year><\/pub-date>/.test(yearOnly));
+  validateWithXmllint('doc107-year', yearOnly);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

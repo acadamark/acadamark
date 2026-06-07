@@ -145,11 +145,13 @@ function emitArticleMetaChildren(metaNode, indent) {
   const subtitleNode = content.find(c => isEnscribeTag(c, 'article-subtitle'));
   const authorNodes  = content.filter(c => isEnscribeTag(c, 'author'));
   const abstractNode = content.find(c => isEnscribeTag(c, 'abstract'));
+  const dateNode     = content.find(c => isEnscribeTag(c, 'date'));
   const otherChildren = content.filter(c =>
     !isEnscribeTag(c, 'article-title') &&
     !isEnscribeTag(c, 'article-subtitle') &&
     !isEnscribeTag(c, 'author') &&
-    !isEnscribeTag(c, 'abstract')
+    !isEnscribeTag(c, 'abstract') &&
+    !isEnscribeTag(c, 'date')
   );
 
   let out = '';
@@ -172,10 +174,16 @@ function emitArticleMetaChildren(metaNode, indent) {
     }
     out += `${pad}</contrib-group>\n`;
   }
+  // #107: <date> needs its own handler — the generic vocab path used the vocab's
+  // `jats_counterpart.element` string ("pub-date or date (in history)") verbatim as
+  // a tag name and wrapped the bare date string as text, both invalid. Emit a real
+  // <pub-date> with <year>/<month>/<day> child elements, in <article-meta> BEFORE
+  // <abstract> (DTD order).
+  if (dateNode) out += emitPubDate(dateNode, indent);
   if (abstractNode) {
     out += `${pad}<abstract>\n${emitBodyChildren(abstractNode.content, indent + 2)}${pad}</abstract>\n`;
   }
-  // Other lifted children (doi, date, license, etc.) — emit by vocab
+  // Other lifted children (doi, license, etc.) — emit by vocab
   // lookup. For slice 5a's minimal scope this is best-effort: emit the
   // JATS counterpart element if vocab declares one; skip if not.
   for (const child of otherChildren) {
@@ -188,6 +196,29 @@ function emitArticleMetaChildren(metaNode, indent) {
     }
   }
   return out;
+}
+
+/**
+ * #107: emit `<pub-date>` from a `<date>` node whose text is `YYYY[-MM[-DD]]`
+ * (the importer's format) — as `<year>`/`<month>`/`<day>` child elements (year
+ * required, month/day optional; any subset is valid JATS). A non-numeric date
+ * falls back to `<string-date>` (also valid). Empty → nothing.
+ */
+function emitPubDate(dateNode, indent) {
+  const pad = ' '.repeat(indent);
+  const text = extractText(dateNode.content).trim();
+  if (!text) return '';
+  const m = /^(\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$/.exec(text);
+  let inner;
+  if (m) {
+    const [, year, month, day] = m;
+    inner = `<year>${year}</year>`;
+    if (month) inner += `<month>${month}</month>`;
+    if (day) inner += `<day>${day}</day>`;
+  } else {
+    inner = `<string-date>${escapeXml(text)}</string-date>`;
+  }
+  return `${pad}<pub-date>${inner}</pub-date>\n`;
 }
 
 function emitBody(bodyNode) {
