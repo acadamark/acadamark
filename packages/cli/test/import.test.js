@@ -825,5 +825,27 @@ graph TD
     console.log('PASS: import #113 — figures emitted from <p>/<floats-group>/<fig-group>; cross-refs resolve');
   }
 
+  // ── #114: <ref><citation-alternatives> descends to the structured citation ───
+  {
+    const xml =
+      '<article><front><article-meta><title-group><article-title>T</article-title></title-group></article-meta></front>' +
+      '<body><sec id="s"><title>S</title><p>As shown <xref ref-type="bibr" rid="CR1">1</xref>.</p></sec></body>' +
+      '<back><ref-list><title>References</title>' +
+      '<ref id="CR1"><label>1.</label><citation-alternatives>' +
+      '<element-citation publication-type="journal"><person-group person-group-type="author">' +
+      '<name><surname>Smith</surname><given-names>A</given-names></name></person-group>' +
+      '<article-title>On Things</article-title><source>J. Things</source><year>2020</year></element-citation>' +
+      '<mixed-citation>Smith A. On Things. J. Things 2020.</mixed-citation>' +
+      '</citation-alternatives></ref>' +
+      '</ref-list></back></article>';
+    const tree = importJats(xml);
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const html = proc.stringify(proc.runSync(tree)).replace(/<style[\s\S]*?<\/style>/g, '');
+    assert.ok(!/\?\?cite/.test(html), 'doc114: citation-alternatives cite resolves (no ??cite)');
+    assert.ok(/<cite class="cite"[^>]*data-keys="CR1"/.test(html), 'doc114: cite resolved to the reference key');
+    assert.ok(/Smith/.test(html), 'doc114: the structured element-citation fields feed the bibliography');
+    console.log('PASS: import #114 — <ref><citation-alternatives> descends to the structured citation');
+  }
+
   console.log('All JATS import tests passed.');
 }

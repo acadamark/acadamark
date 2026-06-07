@@ -452,18 +452,28 @@ const BIBTEX_FIELD_ORDER = [
  */
 function convertRef(ref, index) {
   const key = ref.attributes.id || `ref${index + 1}`;
+  // #114: a <ref> may wrap its citation(s) in <citation-alternatives> — several
+  // representations of the same reference, typically a structured
+  // <element-citation> plus a loose <mixed-citation> (Nature Communications). The
+  // citation is then a grandchild of <ref>, so descend into the wrapper and prefer
+  // the structured form. (The element is <citation-alternatives>, not a bare NLM
+  // 2.x <citation> as first surmised — that earlier diagnosis mis-matched the
+  // `<citation` prefix; bare <citation>/<nlm-citation> are still handled below.)
+  const host = childEl(ref, 'citation-alternatives') || ref;
   const citation =
-    childEl(ref, 'element-citation') ||
-    childEl(ref, 'mixed-citation') ||
-    childEl(ref, 'nlm-citation') ||
-    childEl(ref, 'citation');
+    childEl(host, 'element-citation') ||
+    childEl(host, 'mixed-citation') ||
+    childEl(host, 'nlm-citation') ||
+    childEl(host, 'citation');
   if (!citation) { noteDropped('ref(no-citation)'); return null; }
 
   const { bibType, fields } = extractCitationFields(citation);
 
-  // mixed-citation with no structured fields → preserve the free text as a note.
+  // A loosely-structured citation (mixed/nlm/bare) with no extractable fields →
+  // preserve its free text as a note rather than emit an empty entry.
   const hasStructure = fields.title || fields.author || fields.journal || fields.year;
-  if (citation.name === 'mixed-citation' && !hasStructure) {
+  const LOOSE = new Set(['mixed-citation', 'nlm-citation', 'citation']);
+  if (LOOSE.has(citation.name) && !hasStructure) {
     const note = textOf(citation).replace(/\s+/g, ' ').trim();
     return formatBibtexEntry('misc', key, note ? { note } : {});
   }
