@@ -32,8 +32,24 @@ export const PREDICATES = data.predicates;
 export const FORMS = data.forms;
 export const FORM_NAMES = data.formNames;
 
-/** element → { area, disposition } (render-quality §2 coverage map). */
-export const DISPOSITION = data.dispositions;
+// Live-vocabulary elements that are absent from render-quality.md §2's coverage
+// map but map cleanly to an existing area (so the manifest need not orphan them
+// as needs-review). These are AUTHORING ALIASES, not distinct render targets:
+//   quote   — the shorthand alias of <blockquote> (renders as <blockquote>); RQ-BLK.
+//   diagram — the DSL host element for the mermaid/abc engines (renders as the
+//             same <pre data-enscribe-dsl> contract as <mermaid>/<abc>); RQ-DSL.
+// Disposition `alias` → one cell, covered by exercising the alias form; its
+// predicate is the target area's (already verified). This is a DELIBERATE,
+// documented override layered on top of the generated/drift-checked §2 data —
+// NOT part of spec-data.generated.json. render-quality §2 should arguably add
+// rows for both (noted in the #5 report); until then this assigns them.
+const ALIAS_OVERRIDES = {
+  quote: { area: 'RQ-BLK', disposition: 'alias' },
+  diagram: { area: 'RQ-DSL', disposition: 'alias' },
+};
+
+/** element → { area, disposition } (render-quality §2 coverage map + alias overrides). */
+export const DISPOSITION = { ...data.dispositions, ...ALIAS_OVERRIDES };
 
 /** [ { bare, tagname }, … ] — the idioms.md normalization table. */
 export const IDIOMS = data.idioms;

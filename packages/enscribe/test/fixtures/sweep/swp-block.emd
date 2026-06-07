@@ -29,6 +29,9 @@ An ordinary paragraph of body prose introduces the lists below.
 A longer quotation can span a block and is set apart from the body prose.
 </blockquote>
 
+<!-- cell: quote/alias -->
+<quote | The quote shorthand renders as a blockquote.>
+
 <!-- cell: hr/form:slash -->
 <hr />
 

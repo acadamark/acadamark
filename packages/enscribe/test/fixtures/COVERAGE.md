@@ -8,9 +8,9 @@
 ## Summary
 
 - **Behavior cells:** 369  ·  **fixtures:** 58  ·  **annexed (generated) elements:** 19
-- **Covered:** 59 (16%)
-- **By status:** `deferred` 18 · `gap` 290 · `needs-review` 2 · `pass` 59
-- **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `needs-review` 2 · `no-output` 4 · `specified` 325
+- **Covered:** 61 (17%)
+- **By status:** `deferred` 18 · `gap` 290 · `pass` 61
+- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 325
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -145,6 +145,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `ol` | kwarg:reversed | specified | — | 🔴 gap |
 | `ol` | form:long | specified | `sweep/swp-block.emd` | 🟢 pass |
 | `p` | blanket | generic-implicit | `sweep/swp-block.emd` | 🟢 pass |
+| `quote` | alias | alias | `sweep/swp-block.emd` | 🟢 pass |
 | `summary` | blanket | generic-implicit | `sweep/swp-block.emd` | 🟢 pass |
 | `ul` | base | specified | — | 🔴 gap |
 | `ul` | id | specified | — | 🔴 gap |
@@ -270,6 +271,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `abc` | class | specified | — | 🔴 gap |
 | `abc` | form:pipe | specified | — | 🔴 gap |
 | `abc` | form:long | specified | `sweep/swp-dsl.emd` | 🟢 pass |
+| `diagram` | alias | alias | `sweep/swp-dsl.emd` | 🟢 pass |
 | `mermaid` | base | specified | — | 🔴 gap |
 | `mermaid` | id | specified | — | 🔴 gap |
 | `mermaid` | class | specified | — | 🔴 gap |
@@ -464,13 +466,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `book-part` | kwarg:note-position | specified | — | 🔴 gap |
 | `book-part` | form:pipe | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book-part` | form:long | specified | — | 🔴 gap |
-
-## ? — live-vocabulary elements with no coverage-map row (needs-review)
-
-| element | cell | status |
-|---|---|---|
-| `diagram` | base | 🔵 needs-review |
-| `quote` | base | 🔵 needs-review |
 
 ## Annex — generated / not-authored-directly elements
 

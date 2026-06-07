@@ -24,3 +24,10 @@ T:Scale
 K:C
 C D E F | G A B c |
 </abc>
+
+<section | Diagram host>
+The `<diagram>` host element selects its engine by positional; it renders the
+same DSL contract markup as the engine-named tags.
+
+<!-- cell: diagram/alias -->
+<diagram mermaid | graph TD; P --> Q>

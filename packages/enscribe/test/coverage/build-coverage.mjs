@@ -92,6 +92,7 @@ for (const el of [...allElements].sort()) {
   if (info.disposition === 'generic-implicit') { push('blanket'); continue; }
   if (info.disposition === 'no-output') { push('no-output'); continue; }
   if (info.disposition === 'deferred-presentation') { push('deferred'); continue; }
+  if (info.disposition === 'alias') { push('alias'); continue; }
 
   // specified → full behavior-variant expansion
   push('base'); push('id'); push('class');

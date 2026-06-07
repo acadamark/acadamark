@@ -7,16 +7,15 @@
   },
   "byStatus": {
     "gap": 290,
-    "pass": 59,
-    "deferred": 18,
-    "needs-review": 2
+    "pass": 61,
+    "deferred": 18
   },
   "byDisposition": {
     "specified": 325,
     "generic-implicit": 20,
     "deferred-presentation": 18,
     "no-output": 4,
-    "needs-review": 2
+    "alias": 2
   },
   "cells": [
     {
@@ -2212,14 +2211,30 @@
       "status": "pass"
     },
     {
-      "key": "diagram/base",
+      "key": "diagram/alias",
       "element": "diagram",
-      "behavior": "base",
-      "area": "?",
-      "disposition": "needs-review",
-      "predicates": [],
-      "coveredBy": [],
-      "status": "needs-review"
+      "behavior": "alias",
+      "area": "RQ-DSL",
+      "disposition": "alias",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [
+        "sweep/swp-dsl.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "display-math/base",
@@ -4948,14 +4963,21 @@
       "status": "pass"
     },
     {
-      "key": "quote/base",
+      "key": "quote/alias",
       "element": "quote",
-      "behavior": "base",
-      "area": "?",
-      "disposition": "needs-review",
-      "predicates": [],
-      "coveredBy": [],
-      "status": "needs-review"
+      "behavior": "alias",
+      "area": "RQ-BLK",
+      "disposition": "alias",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
+      ],
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "ref/base",
