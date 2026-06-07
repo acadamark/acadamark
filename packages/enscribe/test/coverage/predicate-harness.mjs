@@ -110,6 +110,9 @@ const M_CHECKS = {
   'RQ-NOTE-M1': (h) => /<sup id="noteref-\d+"/.test(h),
   'RQ-XREF-M1': (h) => /class="ref"/.test(h),
   'RQ-BOOK-M1': (h) => /<book>/.test(h) && /<book-front/.test(h) && /<book-body/.test(h) && /<book-back/.test(h),
+  'RQ-INL-M1': (h) => /<em[\s>]/.test(h) && /<strong[\s>]/.test(h),
+  'RQ-INL-M2': (h) => ['b', 'i', 'u', 's', 'sub', 'sup', 'span', 'q', 'kbd', 'var', 'samp', 'output', 'code']
+    .every((t) => new RegExp(`<${t}[\\s>]`).test(h)),
 };
 
 // ── Fixture discovery ────────────────────────────────────────────────────────

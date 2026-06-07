@@ -135,16 +135,6 @@
     "pass": null,
     "status": "untested"
   },
-  "RQ-INL-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-INL-M2": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-FRM-M3": {
     "kind": "M",
     "pass": null,
@@ -372,6 +362,14 @@
     "pass": true
   },
   "RQ-BOOK-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-INL-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-INL-M2": {
     "kind": "M",
     "pass": true
   },

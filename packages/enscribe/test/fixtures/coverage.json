@@ -2,13 +2,13 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 376,
-    "fixtures": 53,
+    "fixtures": 54,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 347,
-    "deferred": 18,
-    "pass": 11
+    "gap": 330,
+    "pass": 28,
+    "deferred": 18
   },
   "byDisposition": {
     "specified": 334,
@@ -198,8 +198,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "abc/base",
@@ -936,8 +938,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "bib-entry/base",
@@ -1832,8 +1836,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "code-block/deferred",
@@ -2564,8 +2570,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "em/form:long",
@@ -2578,8 +2586,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "email/deferred",
@@ -3688,8 +3698,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "img/base",
@@ -3936,8 +3948,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "keywords/deferred",
@@ -4792,8 +4806,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "p/blanket",
@@ -5016,8 +5032,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "quote/base",
@@ -5331,8 +5349,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "samp/blanket",
@@ -5345,8 +5365,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "section/base",
@@ -5527,8 +5549,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "strong/base",
@@ -5583,8 +5607,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "strong/form:long",
@@ -5611,8 +5637,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "sub-section/base",
@@ -6073,8 +6101,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "svg/base",
@@ -6927,8 +6957,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "ul/base",
@@ -7016,8 +7048,10 @@
         "RQ-INL-M2",
         "RQ-INL-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-inline.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "version/deferred",
@@ -7185,6 +7219,7 @@
     "document-6-cross-references.emd",
     "document-7-tables.emd",
     "document-8-citations.emd",
-    "document-9-demo.emd"
+    "document-9-demo.emd",
+    "sweep/swp-inline.emd"
   ]
 }

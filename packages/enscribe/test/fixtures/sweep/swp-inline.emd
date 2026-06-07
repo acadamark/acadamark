@@ -1,0 +1,48 @@
+<meta type=article>
+  <title | Inline Formatting Sweep>
+</meta>
+
+<section | Semantic versus visual inline>
+The two semantic inline elements are
+<!-- cell: em/form:pipe -->
+<em | emphasis> and
+<!-- cell: strong/form:pipe -->
+<strong | strong importance>. Their visual-only cousins, reached only by writing
+the tag explicitly, are
+<!-- cell: b/blanket -->
+<b | bold>,
+<!-- cell: i/blanket -->
+<i | italic>,
+<!-- cell: u/blanket -->
+<u | underline>, and
+<!-- cell: s/blanket -->
+<s | struck through>.
+
+<!-- cell: em/form:long -->
+The same-line long form also works: <em>emphasised</em> and <strong>important</strong>.
+
+<section | The rest of the inline set>
+Monospaced
+<!-- cell: code/blanket -->
+<code | render()> code, a
+<!-- cell: span/blanket -->
+<span | styled span>, a
+<!-- cell: q/blanket -->
+<q | short quotation>, an
+<!-- cell: abbr/blanket -->
+<abbr title="HyperText Markup Language" | HTML> abbreviation, a
+<!-- cell: kbd/blanket -->
+<kbd | Ctrl+C> keystroke, a
+<!-- cell: var/blanket -->
+<var | x> variable, a
+<!-- cell: samp/blanket -->
+<samp | sample output> sample, and an
+<!-- cell: output/blanket -->
+<output | 42> result.
+
+Water is written H
+<!-- cell: sub/blanket -->
+<sub | 2>O, and the area scales as r
+<!-- cell: sup/blanket -->
+<sup | 2>. The same is reachable with the TeX shortcuts H_{2}O and x^{2}, which
+lower to sub/sup respectively.

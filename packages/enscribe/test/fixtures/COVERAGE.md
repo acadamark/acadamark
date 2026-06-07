@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **Behavior cells:** 376  ·  **fixtures:** 53  ·  **annexed (generated) elements:** 19
-- **Covered:** 11 (3%)
-- **By status:** `deferred` 18 · `gap` 347 · `pass` 11
+- **Behavior cells:** 376  ·  **fixtures:** 54  ·  **annexed (generated) elements:** 19
+- **Covered:** 28 (7%)
+- **By status:** `deferred` 18 · `gap` 330 · `pass` 28
 - **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 334
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
@@ -161,32 +161,32 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
-| `abbr` | blanket | generic-implicit | — | 🔴 gap |
-| `b` | blanket | generic-implicit | — | 🔴 gap |
-| `code` | blanket | generic-implicit | — | 🔴 gap |
+| `abbr` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `b` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `code` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `em` | base | specified | — | 🔴 gap |
 | `em` | id | specified | — | 🔴 gap |
 | `em` | class | specified | — | 🔴 gap |
-| `em` | form:pipe | specified | — | 🔴 gap |
-| `em` | form:long | specified | — | 🔴 gap |
-| `i` | blanket | generic-implicit | — | 🔴 gap |
+| `em` | form:pipe | specified | `sweep/swp-inline.emd` | 🟢 pass |
+| `em` | form:long | specified | `sweep/swp-inline.emd` | 🟢 pass |
+| `i` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `inline-code` | deferred | deferred-presentation | — | 🟡 deferred |
-| `kbd` | blanket | generic-implicit | — | 🔴 gap |
-| `output` | blanket | generic-implicit | — | 🔴 gap |
-| `q` | blanket | generic-implicit | — | 🔴 gap |
-| `s` | blanket | generic-implicit | — | 🔴 gap |
-| `samp` | blanket | generic-implicit | — | 🔴 gap |
-| `span` | blanket | generic-implicit | — | 🔴 gap |
+| `kbd` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `output` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `q` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `s` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `samp` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `span` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `strong` | base | specified | — | 🔴 gap |
 | `strong` | id | specified | — | 🔴 gap |
 | `strong` | class | specified | — | 🔴 gap |
-| `strong` | form:pipe | specified | — | 🔴 gap |
+| `strong` | form:pipe | specified | `sweep/swp-inline.emd` | 🟢 pass |
 | `strong` | form:long | specified | — | 🔴 gap |
-| `sub` | blanket | generic-implicit | — | 🔴 gap |
-| `sup` | blanket | generic-implicit | — | 🔴 gap |
+| `sub` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `sup` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `term` | deferred | deferred-presentation | — | 🟡 deferred |
-| `u` | blanket | generic-implicit | — | 🔴 gap |
-| `var` | blanket | generic-implicit | — | 🔴 gap |
+| `u` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
+| `var` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 
 ## RQ-FRM — Frameables
 
