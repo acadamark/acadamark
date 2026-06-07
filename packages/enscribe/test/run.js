@@ -42,6 +42,7 @@ import { run as runDslRegistry } from './dsl-registry.test.js';
 import { run as runHostAcceptSets } from './lib/host-accept-sets.test.js';
 import { run as runShorthandExpansions } from './lib/shorthand-expansions.test.js';
 import { run as runHtmlTableCells } from './plugins/html-table-cells.test.js';
+import { run as runSmartTypography } from './smart-typography.test.js';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -83,6 +84,7 @@ const suites = [
   ['lib/chapter-nav',              runChapterNav],
   ['config-options',               runConfigOptions],
   ['plugins/html-table-cells',     runHtmlTableCells],
+  ['smart-typography',             runSmartTypography],
 ];
 
 let failed = 0;

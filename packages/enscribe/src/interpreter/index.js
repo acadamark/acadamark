@@ -118,6 +118,7 @@ import remarkRecursiveContent from '../parser/recursive-content.js';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 import rehypeFormat from 'rehype-format';
+import { smartTypography } from './smart-typography.js';
 
 import { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown } from './plugins/normalize-to-canonical.js';
 import { enscribeConfigDiscovery } from './plugins/config-discovery.js';
@@ -532,6 +533,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
  * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
+ * @param {boolean} [options.smartTypography=true] Smart typography (#54): curly quotes, en/em dashes, and ellipses in prose display output. A display-projection on the HTML side only — never the canonical AST / `.emd` / JATS. `false` disables it.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -551,6 +553,10 @@ export function enscribeInterpreter(options = {}) {
   // Phase 8 Slice 3: single-chapter book navigation. Defaults on for a book
   // that has a ToC (the ToC is the chapter selector); `false` forces it off.
   const chapterNavOption = options.chapterNav;
+  // #54: smart typography — display-projection punctuation (curly quotes, dashes,
+  // ellipses) on the HTML side only. On by default; `smartTypography: false` opts
+  // out. Never touches the canonical AST / `.emd` / JATS (see smart-typography.js).
+  const smartTypoOption = options.smartTypography;
 
   // G3: Register remarkMath on the outer processor so top-level bare $...$ is
   // tokenized. Must be registered before parse time (here, in the setup phase,
@@ -698,6 +704,14 @@ export function enscribeInterpreter(options = {}) {
       },
       allowDangerousHtml: true,
     });
+
+    // #54: smart typography — curly quotes / en-em dashes / ellipsis on the prose
+    // text of the rendered hast. Runs right after toHast, on the content tree only
+    // (before any asset <style>/<script> are injected), and skips verbatim
+    // subtrees (code / pre / math / raw) so their content stays byte-identical. A
+    // pure display projection — the mdast tree (and the JATS export that consumes
+    // it) is untouched. `smartTypography: false` opts out.
+    if (smartTypoOption !== false) smartTypography(hast);
 
     // Phase 8 Slice 1: table-of-contents. Runs before asset injection so the
     // assets land outside the layout wrapper (at the top of the body), and before

@@ -254,12 +254,18 @@ function reconstructOpener(node) {
   return s;
 }
 
+// A literal-source text node: escaped raw HTML / echoed unknown-tag syntax shown
+// verbatim to the reader. `data.verbatim` (ignored by the HTML serializer → no
+// output change) marks it exempt from the #54 smart-typography pass, so the
+// displayed source keeps its straight quotes / dashes byte-identical.
+const lit = (value) => ({ type: 'text', value, data: { verbatim: true } });
+
 function makeUnknownElement(state, node) {
   const opener = reconstructOpener(node);
 
   // Slash / self-closing form: echo `<tag ... />`.
   if (node.selfClosing) {
-    return { type: 'text', value: opener + ' />' };
+    return lit(opener + ' />');
   }
 
   const content = node.content;
@@ -270,7 +276,7 @@ function makeUnknownElement(state, node) {
   // to `&#x3C;`/bare. Used by both the long and pipe forms.
   const renderArrayBetween = (openStr, closeStr) => {
     const kids = convertChildren(state, node, content);
-    return [{ type: 'text', value: openStr }, ...kids, { type: 'text', value: closeStr }];
+    return [lit(openStr), ...kids, lit(closeStr)];
   };
 
   // Reconstruct in the SAME form the author used, so the displayed literal
@@ -279,11 +285,11 @@ function makeUnknownElement(state, node) {
     // Long form: `<tag ...>content</tag>`.
     const close = '</' + node.tagname + '>';
     if (content == null || content === '' || (Array.isArray(content) && content.length === 0)) {
-      return { type: 'text', value: opener + '>' + close };
+      return lit(opener + '>' + close);
     }
     if (typeof content === 'string') {
       // Opaque / not-yet-reparsed long-form content: show it verbatim.
-      return { type: 'text', value: opener + '>' + content + close };
+      return lit(opener + '>' + content + close);
     }
     return renderArrayBetween(opener + '>', close);
   }
@@ -291,11 +297,11 @@ function makeUnknownElement(state, node) {
   // Short form.
   if (content == null) {
     // Bare opener: the author wrote `<tag ...>` with no content and no slash.
-    return { type: 'text', value: opener + '>' };
+    return lit(opener + '>');
   }
   if (typeof content === 'string') {
     // Pipe form, opaque / not-yet-reparsed content: `<tag ... | content>`.
-    return { type: 'text', value: opener + ' |' + content + '>' };
+    return lit(opener + ' |' + content + '>');
   }
   // Pipe form, re-parsed array content: `<tag ... | content>`.
   return renderArrayBetween(opener + ' | ', '>');
@@ -323,5 +329,5 @@ export function htmlNodeHandler(state, node) {
     return { type: 'raw', value };
   }
   // Non-vocabulary tag (or unparseable): no HTML passthrough — escape literally.
-  return { type: 'text', value };
+  return lit(value);
 }

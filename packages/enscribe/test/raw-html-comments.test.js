@@ -101,7 +101,9 @@ export function run() {
   }
   {
     const html = render('text <!-- oops no close');
-    assert.ok(html.includes(`${LT}!-- oops no close`), 'unclosed comment shown literally');
+    // Shown literally (not stripped). It's ordinary prose text, so smart
+    // typography (#54) applies like anywhere else — the `--` becomes an en dash.
+    assert.ok(html.includes(`${LT}!– oops no close`), 'unclosed comment shown literally (typography applies to its prose)');
     console.log('PASS: unclosed comment → literal text');
   }
 
