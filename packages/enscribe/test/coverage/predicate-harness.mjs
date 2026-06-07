@@ -119,6 +119,9 @@ const M_CHECKS = {
   'RQ-MATH-M3': (h) => ['math', 'align', 'cases', 'matrix', 'eqnarray'].every((t) => new RegExp(`<${t}>`).test(h)),
   'RQ-BLK-M1': (h) => ['p', 'blockquote', 'ol', 'ul', 'li', 'hr'].every((t) => new RegExp(`<${t}[\\s/>]`).test(h)),
   'RQ-BLK-M2': (h) => ['details', 'summary', 'dl', 'dt', 'dd'].every((t) => new RegExp(`<${t}[\\s>]`).test(h)),
+  'RQ-DSL-M1': (h) => /<pre class="mermaid"[^>]*data-enscribe-dsl="mermaid"/.test(h),
+  'RQ-DSL-M2': (h) => /<pre class="abc"[^>]*data-enscribe-dsl="abc"/.test(h),
+  'RQ-DSL-M3': (h) => /(mermaid|abc)/.test(h) && /figure-label/.test(h),
 };
 
 // ── Fixture discovery ────────────────────────────────────────────────────────

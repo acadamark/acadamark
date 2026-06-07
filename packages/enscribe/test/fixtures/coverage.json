@@ -2,12 +2,12 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 369,
-    "fixtures": 57,
+    "fixtures": 58,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 293,
-    "pass": 56,
+    "gap": 290,
+    "pass": 59,
     "deferred": 18,
     "needs-review": 2
   },
@@ -322,8 +322,10 @@
         "RQ-DSL-SOURCE-M1",
         "RQ-DSL-SOURCE-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-dsl.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "abstract/deferred",
@@ -4326,8 +4328,10 @@
         "RQ-DSL-SOURCE-M1",
         "RQ-DSL-SOURCE-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-dsl.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "mermaid/form:long",
@@ -4350,8 +4354,10 @@
         "RQ-DSL-SOURCE-M1",
         "RQ-DSL-SOURCE-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-dsl.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "meta/no-output",
@@ -7071,6 +7077,7 @@
     "document-8-citations.emd",
     "document-9-demo.emd",
     "sweep/swp-block.emd",
+    "sweep/swp-dsl.emd",
     "sweep/swp-inline.emd",
     "sweep/swp-math.emd",
     "sweep/swp-theorem.emd"

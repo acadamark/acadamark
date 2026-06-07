@@ -1,0 +1,26 @@
+<meta type=article>
+  <title | External DSL Sweep>
+</meta>
+
+<section | Mermaid diagrams>
+In the default (skip) render mode each external-DSL block emits only its contract
+markup — a `<pre>` carrying the source verbatim and a `data-enscribe-dsl` hook —
+with no rendering library inlined.
+
+<!-- cell: mermaid/form:long -->
+<mermaid #fig:flow caption="A simple two-node flowchart.">
+graph TD
+A[Start] --> B[End]
+</mermaid>
+
+<!-- cell: mermaid/form:pipe -->
+<mermaid | graph LR; X --> Y>
+
+<section | ABC music notation>
+<!-- cell: abc/form:long -->
+<abc #fig:tune caption="A four-bar C-major scale.">
+X:1
+T:Scale
+K:C
+C D E F | G A B c |
+</abc>

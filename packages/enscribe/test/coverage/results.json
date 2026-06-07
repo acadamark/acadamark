@@ -165,21 +165,6 @@
     "pass": null,
     "status": "untested"
   },
-  "RQ-DSL-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-DSL-M2": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-DSL-M3": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-DSL-SKIP-M1": {
     "kind": "M",
     "pass": null,
@@ -364,6 +349,18 @@
     "pass": true
   },
   "RQ-BLK-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-DSL-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-DSL-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-DSL-M3": {
     "kind": "M",
     "pass": true
   },

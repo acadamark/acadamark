@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **Behavior cells:** 369  ·  **fixtures:** 57  ·  **annexed (generated) elements:** 19
-- **Covered:** 56 (15%)
-- **By status:** `deferred` 18 · `gap` 293 · `needs-review` 2 · `pass` 56
+- **Behavior cells:** 369  ·  **fixtures:** 58  ·  **annexed (generated) elements:** 19
+- **Covered:** 59 (16%)
+- **By status:** `deferred` 18 · `gap` 290 · `needs-review` 2 · `pass` 59
 - **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `needs-review` 2 · `no-output` 4 · `specified` 325
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
@@ -269,12 +269,12 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `abc` | id | specified | — | 🔴 gap |
 | `abc` | class | specified | — | 🔴 gap |
 | `abc` | form:pipe | specified | — | 🔴 gap |
-| `abc` | form:long | specified | — | 🔴 gap |
+| `abc` | form:long | specified | `sweep/swp-dsl.emd` | 🟢 pass |
 | `mermaid` | base | specified | — | 🔴 gap |
 | `mermaid` | id | specified | — | 🔴 gap |
 | `mermaid` | class | specified | — | 🔴 gap |
-| `mermaid` | form:pipe | specified | — | 🔴 gap |
-| `mermaid` | form:long | specified | — | 🔴 gap |
+| `mermaid` | form:pipe | specified | `sweep/swp-dsl.emd` | 🟢 pass |
+| `mermaid` | form:long | specified | `sweep/swp-dsl.emd` | 🟢 pass |
 
 ## RQ-MATH — Math
 
