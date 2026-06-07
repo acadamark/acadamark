@@ -206,6 +206,13 @@ function convertArticle(article) {
   if (body) collectStatements(body);
   if (body) out.push(...convertBlocks(body.children, 0));
 
+  // #113: <floats-group> (a sibling of <body>) collects figures/tables that have
+  // no in-body anchor (bioRxiv). Emit them in document order (after the body) so
+  // their ids exist and cross-references resolve. Placement is document-order
+  // only — not the floats' original page positions.
+  const floatsGroup = childEl(article, 'floats-group');
+  if (floatsGroup) out.push(...convertBlocks(floatsGroup.children, 0));
+
   // Reader-facing apparatus (acknowledgments, funding, author notes,
   // appendices, glossary) preserved as sections after the body, then the
   // bibliography. Pure publishing metadata is dropped (see DROPPED_METADATA).
@@ -1094,9 +1101,40 @@ function convertSec(sec, depth) {
   return [sectionTag, ...convertBlocks(bodyChildren, depth + 1)];
 }
 
+// #113: a JATS <p> may carry block floats (<fig>, <table-wrap>) mid-paragraph,
+// which can't nest in an HTML <p>. Hoist each float to a block sibling at the
+// point it appears; the surrounding inline content forms the paragraph(s), so the
+// float's id exists and cross-references to it resolve. The no-float fast path
+// returns the single paragraph unchanged (byte-identical for every other <p>).
+const PARA_HOIST = new Set(['fig', 'table-wrap']);
+function convertParagraph(node, depth) {
+  if (!node.children.some((c) => PARA_HOIST.has(c.name))) {
+    return { type: 'paragraph', children: convertInline(node.children) };
+  }
+  const out = [];
+  let run = [];
+  const flushRun = () => {
+    if (run.some((c) => c.name !== '#text' || c.value.trim())) {
+      out.push({ type: 'paragraph', children: convertInline(run) });
+    }
+    run = [];
+  };
+  for (const c of node.children) {
+    if (PARA_HOIST.has(c.name)) {
+      flushRun();
+      const block = convertBlock(c, depth);
+      if (block) out.push(...(Array.isArray(block) ? block : [block]));
+    } else {
+      run.push(c);
+    }
+  }
+  flushRun();
+  return out;
+}
+
 function convertBlock(node, depth) {
   switch (node.name) {
-    case 'p':         return { type: 'paragraph', children: convertInline(node.children) };
+    case 'p':         return convertParagraph(node, depth);
     case 'list':      return convertList(node, depth);
     case 'disp-quote':return { type: 'blockquote', children: convertBlocks(node.children, depth) };
     case 'disp-formula': {
@@ -1106,6 +1144,17 @@ function convertBlock(node, depth) {
     }
     case 'fig':         return convertFigure(node);
     case 'table-wrap':  return convertTableWrap(node);
+    // #113: a multi-panel figure group (eLife). Unwrap it so each contained
+    // <fig>/<table-wrap> is emitted and its id exists (cross-refs resolve). A
+    // group-level <caption> emits as a lead paragraph; the group <label> is
+    // dropped (Enscribe numbers itself).
+    case 'fig-group': {
+      const out = [];
+      const groupCap = captionInline(node);
+      if (groupCap.length) out.push({ type: 'paragraph', children: groupCap });
+      out.push(...convertBlocks(node.children.filter((c) => c.name !== 'caption' && c.name !== 'label'), depth));
+      return out;
+    }
     case 'statement':   return convertStatement(node);
     case 'def-list':    return convertDefList(node);
     // <boxed-text> (a sidebar / call-out box) → <aside> (the export's reverse),

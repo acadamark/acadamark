@@ -788,5 +788,42 @@ graph TD
     console.log('PASS: import #112 — descends the <pmc-articleset> envelope (single, bare, multi)');
   }
 
+  // ── #113: figures emitted from <p>, <floats-group>, <fig-group>; refs resolve ─
+  {
+    const fig = (id) => `<fig id="${id}"><label>${id}</label><caption><p>Cap ${id}</p></caption><graphic xlink:href="${id}.png"/></fig>`;
+    const wrap = (bodyInner, floats = '') =>
+      `<article><front><article-meta><title-group><article-title>T</article-title></title-group></article-meta></front>` +
+      `<body>${bodyInner}</body>${floats}</article>`;
+    const render = (xml) => {
+      const tree = importJats(xml);
+      const proc = buildEnscribePipeline({ embedResources: false });
+      return { tree, html: proc.stringify(proc.runSync(tree)) };
+    };
+
+    // (a) <fig> mid-<p> → hoisted to a block sibling; cross-ref resolves.
+    {
+      const xml = wrap(`<sec id="s"><title>S</title><p>See <xref ref-type="fig" rid="F1">1</xref>.${fig('F1')}</p></sec>`);
+      const { tree, html } = render(xml);
+      assert.equal(tagged(tree, 'fig').length, 1, 'doc113a: in-<p> fig emitted');
+      assert.ok(/<figure\b/.test(html), 'doc113a: in-<p> fig renders as a block <figure>');
+      assert.ok(/href="#fig:F1"/.test(html) && !/\?\?ref/.test(html), 'doc113a: in-<p> fig cross-ref resolves');
+    }
+    // (b) <floats-group> (sibling of body) → fig emitted; cross-ref resolves.
+    {
+      const xml = wrap(`<sec id="s"><title>S</title><p>See <xref ref-type="fig" rid="F1">1</xref>.</p></sec>`, `<floats-group>${fig('F1')}</floats-group>`);
+      const { tree, html } = render(xml);
+      assert.equal(tagged(tree, 'fig').length, 1, 'doc113b: floats-group fig emitted');
+      assert.ok(/href="#fig:F1"/.test(html) && !/\?\?ref/.test(html), 'doc113b: floats-group fig cross-ref resolves');
+    }
+    // (c) <fig-group> → both contained figs emitted; cross-refs resolve.
+    {
+      const xml = wrap(`<sec id="s"><title>S</title><p>See <xref ref-type="fig" rid="F1">1</xref> and <xref ref-type="fig" rid="F2">2</xref>.</p><fig-group id="g"><caption><p>Group</p></caption>${fig('F1')}${fig('F2')}</fig-group></sec>`);
+      const { tree, html } = render(xml);
+      assert.equal(tagged(tree, 'fig').length, 2, 'doc113c: fig-group both figs emitted');
+      assert.ok(/href="#fig:F1"/.test(html) && /href="#fig:F2"/.test(html) && !/\?\?ref/.test(html), 'doc113c: fig-group cross-refs resolve');
+    }
+    console.log('PASS: import #113 — figures emitted from <p>/<floats-group>/<fig-group>; cross-refs resolve');
+  }
+
   console.log('All JATS import tests passed.');
 }
