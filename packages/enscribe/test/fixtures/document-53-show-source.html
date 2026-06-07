@@ -1103,7 +1103,7 @@ body:has(.enscribe-layout--toc) {
         With <code>&#x3C;config show-source=true /></code> on, a rendered-from-DSL block emits the
         authored source alongside the rendered output, inside a native
         <code>&#x3C;details>&#x3C;summary>See source&#x3C;/summary>&#x3C;pre>…&#x3C;/pre>&#x3C;/details></code> control. No
-        JavaScript: <code>&#x3C;details></code> is a native HTML toggle. The disclosure's <code>&#x3C;pre></code> is
+        JavaScript: <code>&#x3C;details></code> is a native HTML toggle. The disclosure’s <code>&#x3C;pre></code> is
         plain (no <code>mermaid</code> class, no <code>data-enscribe-dsl</code>), so a live in-browser scan or
         a build-time static render never touches it — the source survives verbatim.
       </p>
@@ -1148,7 +1148,7 @@ C C G G | A A G2 |</pre>
         </details>
       
       <p>
-        The control's look is a theme concern: the document says <i>what</i> (source is
+        The control’s look is a theme concern: the document says <i>what</i> (source is
         available, via the <code>enscribe-source</code> class hook); the theme says <i>how</i> (it can
         be styled to look like a button). The baseline here is the unstyled native
         control.

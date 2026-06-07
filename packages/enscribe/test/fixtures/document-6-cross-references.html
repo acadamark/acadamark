@@ -1372,9 +1372,9 @@ note-list li {
     </section>
     <section>
       <section-title>References to equations</section-title>
-      <p>Reference to numbered labeled with config prefix override (renders "Eq. 1"): see <a href="#eqn:newton" class="ref">Eq. 1</a>.</p>
-      <p>Reference to numbered labeled without override would use default prefix. The second equation has no label and cannot be referenced. The third is unnumbered labeled (renders label-tail "energy"): see <a href="#eqn:energy" class="ref">energy</a>.</p>
-      <p>Reference to a second unnumbered labeled (renders "alt-form"): see <a href="#eqn:alt-form" class="ref">alt-form</a>.</p>
+      <p>Reference to numbered labeled with config prefix override (renders “Eq. 1”): see <a href="#eqn:newton" class="ref">Eq. 1</a>.</p>
+      <p>Reference to numbered labeled without override would use default prefix. The second equation has no label and cannot be referenced. The third is unnumbered labeled (renders label-tail “energy”): see <a href="#eqn:energy" class="ref">energy</a>.</p>
+      <p>Reference to a second unnumbered labeled (renders “alt-form”): see <a href="#eqn:alt-form" class="ref">alt-form</a>.</p>
       <p>Reference to missing label (produces error): <a href="#eqn:nonexistent" class="ref-error">??ref: eqn:nonexistent??</a>.</p>
     </section>
     <section>
@@ -1394,22 +1394,22 @@ note-list li {
         <img src="assets/elephant.jpg" alt="Another elephant (stand-in for an unnumbered labeled figure).">
         <figcaption>Another elephant (stand-in for an unnumbered labeled figure).</figcaption>
       </figure>
-      <p>Reference to numbered figure (renders "figure 1"): see <a href="#fig:elephant" class="ref">figure 1</a>.</p>
+      <p>Reference to numbered figure (renders “figure 1”): see <a href="#fig:elephant" class="ref">figure 1</a>.</p>
     </section>
     <section>
       <section-title>Notes</section-title>
       <p>A labeled endnote<sup id="noteref-1" data-note-id="note:galton"><a href="#note:galton">1</a></sup> demonstrating a colon-id note.</p>
       <p>An unlabeled note<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> demonstrating auto-id behavior.</p>
-      <p>Reference to labeled note (renders "note 1"): see <a href="#note:galton" class="ref">note 1</a>.</p>
+      <p>Reference to labeled note (renders “note 1”): see <a href="#note:galton" class="ref">note 1</a>.</p>
       <note-list class="footnotes">
         <ol>
-          <li id="note:galton"><sup>1</sup> Galton coined the term "regression" in 1886 while studying the heights of parents and their adult children. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+          <li id="note:galton"><sup>1</sup> Galton coined the term “regression” in 1886 while studying the heights of parents and their adult children. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
         </ol>
       </note-list>
     </section>
     <section>
       <section-title>Edge cases</section-title>
-      <p>A numbered equation with an unregistered prefix (id prefix "custom" is not in the prefix dictionary):</p>
+      <p>A numbered equation with an unregistered prefix (id prefix “custom” is not in the prefix dictionary):</p>
       <display-math id="custom:thing"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span></span></span></span></span><span class="equation-number">(3)</span></display-math>
       <p>Reference to an id with a colon but an unregistered prefix (renders just the number, no word): <a href="#custom:thing" class="ref">3</a>.</p>
       <p>Reference to an id without a colon — not in the label index (produces error): <a href="#not-a-label" class="ref-error">??ref: not-a-label??</a>.</p>

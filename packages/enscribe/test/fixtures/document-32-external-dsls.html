@@ -1102,7 +1102,7 @@ body:has(.enscribe-layout--toc) {
       <p>
         A simple flowchart authored with <code>&#x3C;mermaid></code>. The handler emits a
         <code>&#x3C;pre class="mermaid" data-enscribe-dsl="mermaid"></code> wrapper preserving
-        the source. Mermaid's CDN library (if loaded by the consumer) scans for
+        the source. Mermaid’s CDN library (if loaded by the consumer) scans for
         <code>class="mermaid"</code> and replaces the content with rendered SVG at view
         time; a build-time pre-render pass finds the same blocks via
         <code>data-enscribe-dsl="mermaid"</code>.
@@ -1118,7 +1118,7 @@ body:has(.enscribe-layout--toc) {
     <section>
       <section-title>Mermaid sequence diagram</section-title>
       <p>
-        A different diagram type confirms the handler doesn't assume any
+        A different diagram type confirms the handler doesn’t assume any
         specific Mermaid grammar — it preserves whatever source the author
         writes.
       </p>
@@ -1134,7 +1134,7 @@ body:has(.enscribe-layout--toc) {
       <p>
         A short ABC notation excerpt. The handler emits a
         <code>&#x3C;pre class="abc" data-enscribe-dsl="abc"></code> wrapper preserving the
-        source verbatim. abcjs has no DOM auto-scan; the consumer's page needs
+        source verbatim. abcjs has no DOM auto-scan; the consumer’s page needs
         a small init script (sample in the vocab entry) that finds each marked
         element and calls <code>ABCJS.renderAbc</code>.
       </p>
@@ -1151,7 +1151,7 @@ C C G G | A A G2 | F F E E | D D C2 |</pre>
         This fixture exercises both external DSLs end-to-end. The handlers
         preserve source verbatim and add the CDN-compatible class plus the
         enscribe-specific <code>data-enscribe-dsl</code> marker. No rendering happens
-        at enscribe time — that's the whole point of "external."
+        at enscribe time — that’s the whole point of “external.”
       </p>
     </section>
   </article-body>

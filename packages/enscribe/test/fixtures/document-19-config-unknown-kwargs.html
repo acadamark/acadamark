@@ -1088,7 +1088,7 @@ body:has(.enscribe-layout--toc) {
       <p>
         This document deliberately abuses <code>&#x3C;config></code> to trigger the unknown-kwarg
         warnings (formerly AUD-13). <code>title=</code> is a metadata-shaped kwarg and should
-        trigger the "did you mean <code>&#x3C;meta></code>?" hint. <code>foo-bar=</code> is an unknown kwarg
+        trigger the “did you mean <code>&#x3C;meta></code>?” hint. <code>foo-bar=</code> is an unknown kwarg
         and should trigger the generic unknown-kwarg warning. Both kwargs must be
         dropped from the config map — they were silently absorbed before the fix
         and would have shown up nowhere in the rendered output.

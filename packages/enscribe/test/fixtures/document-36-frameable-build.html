@@ -1393,7 +1393,7 @@ note-list li {
         <sub-section-title>DSL counter assignments</sub-section-title>
         <p>
           Slice 3a wired the math envs into the equation counter. Slice 3b
-          extends NUMBERED_TAGNAMES with the DSL handlers' counter assignments:
+          extends NUMBERED_TAGNAMES with the DSL handlers’ counter assignments:
           <code>&#x3C;csv></code> and <code>&#x3C;tsv></code> share the <code>table</code> counter with <code>&#x3C;table></code>; <code>&#x3C;mermaid></code>
           and <code>&#x3C;abc></code> share the <code>figure</code> counter with <code>&#x3C;fig></code>.
         </p>
@@ -1435,16 +1435,16 @@ note-list li {
         
         <p>
           Cross-references resolve with the right prefixes — <a href="#tab:salaries" class="ref">table 1</a>
-          resolves to "table 3" (1: the <code>&#x3C;fig src=elephant.jpg></code> aliased above
-          counts as a <code>&#x3C;fig></code> registration; 2: the zebra; ... actually wait,
-          the table counter is independent — this is "table 1"). And
-          <a href="#fig:flow" class="ref">figure 3</a> resolves to "figure 3" (1: elephant, 2: zebra, 3: flow).
+          resolves to “table 3” (1: the <code>&#x3C;fig src=elephant.jpg></code> aliased above
+          counts as a <code>&#x3C;fig></code> registration; 2: the zebra; … actually wait,
+          the table counter is independent — this is “table 1”). And
+          <a href="#fig:flow" class="ref">figure 3</a> resolves to “figure 3” (1: elephant, 2: zebra, 3: flow).
         </p>
       </sub-section>
       <sub-section>
         <sub-section-title>Theorem-family label rendering</sub-section-title>
         <p>
-          Slice 3b's theorem-family handler renders the "Theorem N (Name)." label
+          Slice 3b’s theorem-family handler renders the “Theorem N (Name).” label
           spans that slice 3a left deferred (the registry-side numbering landed in
           3a; the visible labels in 3b).
         </p>
@@ -1454,7 +1454,7 @@ note-list li {
         </theorem>
         <lemma><span class="lemma-label">Lemma 2.</span> Every nonempty subset of the natural numbers has a least element.</lemma>
         <proof><span class="proof-label">Proof.</span> By induction on the size of the subset.</proof>
-        <p>Cross-reference to <a href="#thm:fundamental" class="ref">theorem 1</a> resolves to "theorem 1".</p>
+        <p>Cross-reference to <a href="#thm:fundamental" class="ref">theorem 1</a> resolves to “theorem 1”.</p>
       </sub-section>
       <sub-section>
         <sub-section-title>The +border frameable surface</sub-section-title>

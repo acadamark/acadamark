@@ -1374,24 +1374,24 @@ note-list li {
       <section-title>Cross-reference using the ref-prefix override</section-title>
       <p>
         The <code>&#x3C;config ref-prefix-eqn="Eq."></code> at the document top must produce
-        "Eq. 1" when this section references an equation. The config kwarg is on a
+        “Eq. 1” when this section references an equation. The config kwarg is on a
         top-level <code>&#x3C;config></code> (existing path), proving the existing single-top-level
         discovery still works alongside the new recursive walk.
       </p>
       <display-math id="eqn:newton"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.1389em;">F</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ma</span></span></span></span></span><span class="equation-number">(1)</span></display-math>
       <p>
-        Newton's second law is shown in <a href="#eqn:newton" class="ref">Eq. 1</a> — this should render as
-        "Eq. 1" (not "equation 1") because of the ref-prefix override above.
+        Newton’s second law is shown in <a href="#eqn:newton" class="ref">Eq. 1</a> — this should render as
+        “Eq. 1” (not “equation 1”) because of the ref-prefix override above.
       </p>
     </section>
     <section>
       <section-title>Nested config block is now read</section-title>
       <p>
-        A nested <code>&#x3C;config></code> block (formerly PG-9, "deeply-nested <code>&#x3C;config></code> not
-        read") is now discovered by the recursive walk. The block below sits
+        A nested <code>&#x3C;config></code> block (formerly PG-9, “deeply-nested <code>&#x3C;config></code> not
+        read”) is now discovered by the recursive walk. The block below sits
         inside this section, not at root; before the fix its <code>ref-prefix-fig</code>
         override would be silently ignored. With the fix, a figure ref following
-        it should render with "Fig." instead of "figure".
+        it should render with “Fig.” instead of “figure”.
       </p>
     </section>
   </article-body>
