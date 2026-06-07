@@ -1,0 +1,398 @@
+{
+  "RQ-DOC-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-DOC-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-DOC-S3": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-DOC-S4": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-META-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-BLK-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-BLK-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-INL-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S3": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S4": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S5": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S6": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-FRM-S7": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-DSL-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-DSL-SOURCE-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-MATH-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-MATH-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-MATH-S3": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-THM-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-THM-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-XREF-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-XREF-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-NOTE-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-NOTE-S2": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-BIB-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-BOOK-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-TOC-S1": {
+    "kind": "S",
+    "pass": true
+  },
+  "RQ-DOC-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DOC-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DOC-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-META-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-META-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-META-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BLK-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BLK-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-INL-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-INL-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M4": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M5": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M6": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M7": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M8": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M9": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-FRM-M10": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-SKIP-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-LIVE-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-LIVE-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-STATIC-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-STATIC-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-SOURCE-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-MATH-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-MATH-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-MATH-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-MATH-M4": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-THM-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-THM-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-XREF-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-XREF-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-XREF-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-XREF-M4": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-NOTE-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-NOTE-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-NOTE-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BIB-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BIB-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BIB-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BIB-M4": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M3": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M4": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M5": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M6": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-TOC-M1": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-TOC-M2": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-DSL-LIVE-O1": {
+    "kind": "O",
+    "pass": null,
+    "status": "observable"
+  },
+  "RQ-DSL-STATIC-O1": {
+    "kind": "O",
+    "pass": null,
+    "status": "observable"
+  }
+}

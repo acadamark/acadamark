@@ -43,6 +43,7 @@ import { run as runHostAcceptSets } from './lib/host-accept-sets.test.js';
 import { run as runShorthandExpansions } from './lib/shorthand-expansions.test.js';
 import { run as runHtmlTableCells } from './plugins/html-table-cells.test.js';
 import { run as runSmartTypography } from './smart-typography.test.js';
+import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -85,6 +86,7 @@ const suites = [
   ['config-options',               runConfigOptions],
   ['plugins/html-table-cells',     runHtmlTableCells],
   ['smart-typography',             runSmartTypography],
+  ['coverage/predicate-harness',   runPredicateHarness],
 ];
 
 let failed = 0;
