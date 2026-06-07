@@ -1,5 +1,6 @@
 ---
 semantic_role: ol
+category: block-prose
 html_output:
   element: ol
   is_html_native: true

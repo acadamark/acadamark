@@ -24,6 +24,34 @@ each element. The tables below group elements by role. Elements listed
 here without an entry are reserved (their per-element specs are open work
 in the roadmap).
 
+### Element categories (the `category` field)
+
+Each element entry declares a `category` in its frontmatter — the
+machine-readable form of the role grouping the tables below express in
+prose. It exists so consumers can group the vocabulary mechanically (the
+docs-site coverage gallery walks the entries and groups by `category`,
+so completeness is structural rather than hand-maintained). The canonical
+category values are:
+
+`document-containers` · `structural-regions` · `sections` ·
+`block-prose` · `frameables` · `math` · `code` ·
+`inline-formatting` · `citations-and-references` ·
+`structured-data-containers` · `metadata` · `theorem-family`
+
+Every element entry carries exactly one of these. A consumer that
+encounters a `category` outside this set should surface it loudly rather
+than silently dropping the element — an unknown category means a new value
+was introduced without being added here.
+
+An element that the pipeline *produces* rather than the author *writes* —
+the structural region wrappers (`article-front`, `book-body`, …) and the
+generated title/subtitle wrappers (`section-title`, `article-subtitle`, …) —
+additionally declares `authoring: generated`. This marks it as having no
+direct authoring form, so a consumer expecting authored examples (again,
+the coverage gallery) treats a missing example as expected for these
+entries rather than as a coverage hole. Its absence means the element is
+authored directly.
+
 ### Container elements
 
 Three distinct top-level containers, each with front/body/back regions (for articles and books). Following BITS (the JATS sibling for books) precedent, distinct elements are used for distinct structural roles rather than collapsing them under attribute disambiguation.

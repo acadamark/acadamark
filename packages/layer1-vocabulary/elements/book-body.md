@@ -1,5 +1,7 @@
 ---
 semantic_role: book-body
+category: structural-regions
+authoring: generated
 html_output:
   element: book-body
   is_html_native: false

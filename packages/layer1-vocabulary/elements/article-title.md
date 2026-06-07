@@ -1,5 +1,7 @@
 ---
 semantic_role: article-title
+category: metadata
+authoring: generated
 html_output:
   element: article-title
   is_html_native: false

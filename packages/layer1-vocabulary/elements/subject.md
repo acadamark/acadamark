@@ -1,5 +1,6 @@
 ---
 semantic_role: subject
+category: metadata
 html_output:
   element: subject
   is_html_native: false

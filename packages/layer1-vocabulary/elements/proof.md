@@ -1,5 +1,6 @@
 ---
 semantic_role: proof
+category: theorem-family
 html_output:
   element: proof
   is_html_native: false

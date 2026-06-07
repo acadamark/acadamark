@@ -1,5 +1,7 @@
 ---
 semantic_role: book-front
+category: structural-regions
+authoring: generated
 html_output:
   element: book-front
   is_html_native: false

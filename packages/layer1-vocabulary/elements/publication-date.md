@@ -1,5 +1,6 @@
 ---
 semantic_role: publication-date
+category: metadata
 html_output:
   element: publication-date
   is_html_native: false

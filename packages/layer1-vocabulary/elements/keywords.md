@@ -1,5 +1,6 @@
 ---
 semantic_role: keywords
+category: metadata
 html_output:
   element: keywords
   is_html_native: false

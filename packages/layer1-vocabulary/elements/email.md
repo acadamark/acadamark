@@ -1,5 +1,6 @@
 ---
 semantic_role: email
+category: metadata
 html_output:
   element: email
   is_html_native: false

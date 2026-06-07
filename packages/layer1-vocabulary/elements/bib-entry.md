@@ -1,5 +1,6 @@
 ---
 semantic_role: bib-entry
+category: citations-and-references
 html_output:
   element: bib-entry
   is_html_native: false

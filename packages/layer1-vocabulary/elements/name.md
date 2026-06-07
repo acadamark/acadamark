@@ -1,5 +1,6 @@
 ---
 semantic_role: name
+category: metadata
 html_output:
   element: name
   is_html_native: false

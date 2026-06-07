@@ -1,5 +1,6 @@
 ---
 semantic_role: note-list
+category: block-prose
 html_output:
   element: note-list
   is_html_native: false

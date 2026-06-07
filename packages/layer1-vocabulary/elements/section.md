@@ -1,5 +1,6 @@
 ---
 semantic_role: section
+category: sections
 html_output:
   element: section
   is_html_native: true

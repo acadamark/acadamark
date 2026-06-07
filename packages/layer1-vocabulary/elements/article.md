@@ -1,5 +1,6 @@
 ---
 semantic_role: article
+category: document-containers
 html_output:
   element: article
   is_html_native: true

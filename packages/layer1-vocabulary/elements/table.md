@@ -1,5 +1,6 @@
 ---
 semantic_role: table
+category: frameables
 html_output:
   element: table
   is_html_native: true

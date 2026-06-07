@@ -1,5 +1,6 @@
 ---
 semantic_role: code-block
+category: code
 html_output:
   element: code-block
   is_html_native: false
@@ -22,6 +23,18 @@ content:
   notes: |
     The pipe content is verbatim code source. No markdown idioms or enscribe
     constructs are interpreted inside the code block. Newlines are preserved.
+shorthand_examples:
+  - source: '<``` python | print("hello, world") ```>'
+    layer1_html: '<pre><code class="language-python">print("hello, world")</code></pre>'
+    notes: |
+      The triple-backtick sigil. The first positional token is the
+      language (emitted as a `language-X` class on the <code>); the pipe
+      separates it from the verbatim, newline-preserving content.
+  - source: '<``` this is all content ```>'
+    layer1_html: '<pre><code>this is all content</code></pre>'
+    notes: |
+      The no-pipe form: the entire body is opaque content with no language
+      extraction.
 interpreter_strategy: handler
 handler_module: ./handlers/code-block.js
 jats_counterpart:

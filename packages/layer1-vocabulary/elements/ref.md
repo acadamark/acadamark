@@ -1,5 +1,6 @@
 ---
 semantic_role: ref
+category: citations-and-references
 html_output:
   element: ref
   is_html_native: false

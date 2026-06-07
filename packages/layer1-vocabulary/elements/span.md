@@ -1,5 +1,6 @@
 ---
 semantic_role: span
+category: inline-formatting
 html_output:
   element: span
   is_html_native: true

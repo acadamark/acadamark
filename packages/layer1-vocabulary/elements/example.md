@@ -1,5 +1,6 @@
 ---
 semantic_role: example
+category: theorem-family
 html_output:
   element: example
   is_html_native: false

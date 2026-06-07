@@ -1,5 +1,6 @@
 ---
 semantic_role: cite
+category: citations-and-references
 html_output:
   element: cite
   is_html_native: true

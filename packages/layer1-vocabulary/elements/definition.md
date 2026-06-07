@@ -1,5 +1,6 @@
 ---
 semantic_role: definition
+category: theorem-family
 html_output:
   element: definition
   is_html_native: false

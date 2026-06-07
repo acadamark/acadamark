@@ -1,5 +1,6 @@
 ---
 semantic_role: affiliation
+category: metadata
 html_output:
   element: affiliation
   is_html_native: false

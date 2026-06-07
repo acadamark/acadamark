@@ -1,5 +1,6 @@
 ---
 semantic_role: term
+category: inline-formatting
 html_output:
   element: term
   is_html_native: false

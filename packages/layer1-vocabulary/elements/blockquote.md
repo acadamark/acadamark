@@ -1,5 +1,6 @@
 ---
 semantic_role: blockquote
+category: block-prose
 html_output:
   element: blockquote
   is_html_native: true

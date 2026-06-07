@@ -1,5 +1,6 @@
 ---
 semantic_role: author
+category: structured-data-containers
 html_output:
   element: author
   is_html_native: false

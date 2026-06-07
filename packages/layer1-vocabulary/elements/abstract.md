@@ -1,5 +1,6 @@
 ---
 semantic_role: abstract
+category: metadata
 html_output:
   element: abstract
   is_html_native: false

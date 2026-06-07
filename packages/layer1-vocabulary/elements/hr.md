@@ -1,5 +1,6 @@
 ---
 semantic_role: hr
+category: block-prose
 html_output:
   element: hr
   is_html_native: true

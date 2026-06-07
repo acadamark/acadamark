@@ -1,5 +1,6 @@
 ---
 semantic_role: inline-math
+category: math
 html_output:
   element: inline-math
   is_html_native: false
@@ -16,6 +17,13 @@ content:
     as a string; it is not parsed as prose. The author is responsible for
     valid LaTeX math syntax.
 content_handler: math
+shorthand_examples:
+  - source: 'The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.'
+    layer1_html: '<p>The identity <inline-math><span class="katex">…</span></inline-math> holds for right triangles.</p>'
+    notes: |
+      The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
+      wrapped in <inline-math> for CSS targeting. The sigil carries no
+      attributes — id and classes are not supported for inline math.
 interpreter_strategy: handler
 handler_module: ./handlers/math.js
 jats_counterpart:

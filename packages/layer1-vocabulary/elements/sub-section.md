@@ -1,5 +1,6 @@
 ---
 semantic_role: sub-section
+category: sections
 html_output:
   element: sub-section
   is_html_native: false

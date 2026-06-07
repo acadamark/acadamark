@@ -1,5 +1,6 @@
 ---
 semantic_role: inline-code
+category: code
 html_output:
   element: inline-code
   is_html_native: false
@@ -22,6 +23,19 @@ content:
   notes: |
     The pipe content is verbatim code source. No markdown idioms or enscribe
     constructs are interpreted inside inline code.
+shorthand_examples:
+  - source: 'Assign with <` x = 1 `> at the top of the function.'
+    layer1_html: '<p>Assign with <code>x = 1</code> at the top of the function.</p>'
+    notes: |
+      The single-backtick sigil. With no pipe, the whole body is opaque
+      code content rendered as <code> (the same output as a markdown
+      backtick span).
+  - source: 'Call <` python | factorial(n) `> to recurse.'
+    layer1_html: '<p>Call <code class="language-python">factorial(n)</code> to recurse.</p>'
+    notes: |
+      The first positional token before the pipe is the language, emitted
+      as a `language-X` class on the <code> (discoverable by highlighters;
+      the interpreter applies no highlighting itself).
 interpreter_strategy: handler
 handler_module: ./handlers/inline-code.js
 jats_counterpart:

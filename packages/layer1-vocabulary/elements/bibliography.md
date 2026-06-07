@@ -1,5 +1,6 @@
 ---
 semantic_role: bibliography
+category: citations-and-references
 html_output:
   element: bibliography
   is_html_native: false

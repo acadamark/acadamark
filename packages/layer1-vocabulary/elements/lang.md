@@ -1,5 +1,6 @@
 ---
 semantic_role: lang
+category: metadata
 html_output:
   element: lang
   is_html_native: false

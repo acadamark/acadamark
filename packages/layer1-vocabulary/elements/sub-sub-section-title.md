@@ -1,5 +1,7 @@
 ---
 semantic_role: sub-sub-section-title
+category: sections
+authoring: generated
 html_output:
   element: sub-sub-section-title
   is_html_native: false

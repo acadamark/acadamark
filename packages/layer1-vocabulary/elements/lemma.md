@@ -1,5 +1,6 @@
 ---
 semantic_role: lemma
+category: theorem-family
 html_output:
   element: lemma
   is_html_native: false

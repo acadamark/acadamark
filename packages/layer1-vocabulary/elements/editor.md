@@ -1,5 +1,6 @@
 ---
 semantic_role: editor
+category: metadata
 html_output:
   element: editor
   is_html_native: false

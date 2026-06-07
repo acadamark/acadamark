@@ -1,5 +1,7 @@
 ---
 semantic_role: article-front
+category: structural-regions
+authoring: generated
 html_output:
   element: article-front
   is_html_native: false

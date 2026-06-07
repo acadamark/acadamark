@@ -1,5 +1,6 @@
 ---
 semantic_role: library
+category: structured-data-containers
 html_output:
   element: library
   is_html_native: false

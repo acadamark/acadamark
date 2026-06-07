@@ -1,5 +1,6 @@
 ---
 semantic_role: proposition
+category: theorem-family
 html_output:
   element: proposition
   is_html_native: false

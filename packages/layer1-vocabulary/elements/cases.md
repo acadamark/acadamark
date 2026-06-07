@@ -1,5 +1,6 @@
 ---
 semantic_role: cases
+category: math
 html_output:
   element: cases
   is_html_native: false

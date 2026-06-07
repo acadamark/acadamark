@@ -1,5 +1,6 @@
 ---
 semantic_role: summary
+category: block-prose
 html_output:
   element: summary
   is_html_native: true

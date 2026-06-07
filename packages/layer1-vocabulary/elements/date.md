@@ -1,5 +1,6 @@
 ---
 semantic_role: date
+category: metadata
 html_output:
   element: date
   is_html_native: false

@@ -1,5 +1,6 @@
 ---
 semantic_role: diagram
+category: frameables
 html_output:
   element: diagram
   is_html_native: false

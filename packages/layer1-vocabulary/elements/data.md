@@ -1,5 +1,6 @@
 ---
 semantic_role: data
+category: structured-data-containers
 html_output:
   element: data
   is_html_native: false

@@ -1,5 +1,6 @@
 ---
 semantic_role: book
+category: document-containers
 html_output:
   element: book
   is_html_native: false

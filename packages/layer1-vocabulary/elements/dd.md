@@ -1,5 +1,6 @@
 ---
 semantic_role: dd
+category: block-prose
 html_output:
   element: dd
   is_html_native: true

@@ -1,5 +1,6 @@
 ---
 semantic_role: remark
+category: theorem-family
 html_output:
   element: remark
   is_html_native: false

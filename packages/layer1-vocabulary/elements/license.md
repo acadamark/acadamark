@@ -1,5 +1,6 @@
 ---
 semantic_role: license
+category: metadata
 html_output:
   element: license
   is_html_native: false

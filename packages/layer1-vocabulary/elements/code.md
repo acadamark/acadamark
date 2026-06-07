@@ -1,5 +1,6 @@
 ---
 semantic_role: code
+category: code
 html_output:
   element: code
   is_html_native: true

@@ -1,5 +1,6 @@
 ---
 semantic_role: display-math
+category: math
 html_output:
   element: display-math
   is_html_native: false
@@ -27,6 +28,13 @@ content:
     as a string; it is not parsed as prose. The author is responsible for
     valid LaTeX math syntax.
 content_handler: math-display
+shorthand_examples:
+  - source: '<$$ \sum_{i=1}^{n} x_i = X $$>'
+    layer1_html: '<display-math><span class="katex-display">…</span><span class="equation-number">(1)</span></display-math>'
+    notes: |
+      The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
+      numbered by default (the equation number is appended after the KaTeX
+      output).
 interpreter_strategy: handler
 handler_module: ./handlers/math.js
 jats_counterpart:

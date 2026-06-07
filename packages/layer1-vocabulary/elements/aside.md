@@ -1,5 +1,6 @@
 ---
 semantic_role: aside
+category: block-prose
 html_output:
   element: aside
   is_html_native: true

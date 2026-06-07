@@ -1,5 +1,6 @@
 ---
 semantic_role: samp
+category: inline-formatting
 html_output:
   element: samp
   is_html_native: true

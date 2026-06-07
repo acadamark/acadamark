@@ -1,5 +1,6 @@
 ---
 semantic_role: meta
+category: structured-data-containers
 html_output:
   element: meta
   is_html_native: false

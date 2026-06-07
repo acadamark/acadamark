@@ -1,5 +1,6 @@
 ---
 semantic_role: doi
+category: metadata
 html_output:
   element: doi
   is_html_native: false

@@ -1,5 +1,6 @@
 ---
 semantic_role: svg
+category: frameables
 html_output:
   element: svg
   is_html_native: true

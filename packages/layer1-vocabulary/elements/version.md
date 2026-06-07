@@ -1,5 +1,6 @@
 ---
 semantic_role: version
+category: metadata
 html_output:
   element: version
   is_html_native: false

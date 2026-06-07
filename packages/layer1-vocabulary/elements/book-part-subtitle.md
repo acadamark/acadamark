@@ -1,5 +1,7 @@
 ---
 semantic_role: book-part-subtitle
+category: metadata
+authoring: generated
 html_output:
   element: book-part-subtitle
   is_html_native: false

@@ -1,5 +1,6 @@
 ---
 semantic_role: glossary-entry
+category: block-prose
 html_output:
   element: glossary-entry
   is_html_native: false

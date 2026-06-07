@@ -1,5 +1,6 @@
 ---
 semantic_role: figure
+category: frameables
 html_output:
   element: fig
   is_html_native: false

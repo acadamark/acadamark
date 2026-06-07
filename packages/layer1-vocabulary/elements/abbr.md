@@ -1,5 +1,6 @@
 ---
 semantic_role: abbr
+category: inline-formatting
 html_output:
   element: abbr
   is_html_native: true

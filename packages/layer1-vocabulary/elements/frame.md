@@ -1,5 +1,6 @@
 ---
 semantic_role: frame
+category: frameables
 html_output:
   element: frame
   is_html_native: false

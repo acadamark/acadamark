@@ -99,6 +99,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Quickstart guide (interactive in-browser playground)
 - [x] Authoring Guide (fourteen chapters, with rendered demonstrations)
 - [x] Layer 1 Vocabulary Reference (MDN-style, element by element)
+- [x] Vocabulary coverage gallery (generated from the vocab entries; every element's authoring examples, source beside rendered output, with loud GAP markers)
 - [x] JATS-relationship article
 - [x] Imported-article demonstration page (a real published paper, via `import-jats`)
 - [x] Static site build (`npm run docs:build`)
@@ -114,7 +115,6 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Bundled JATS/BITS DTDs for offline `xmllint` validation
 - [x] Published to npm
 - [ ] Generated `.d.ts` types for the browser library
-- [ ] Fixture-corpus consolidation + the comprehensive demonstrative fixture
 
 ## Current position
 

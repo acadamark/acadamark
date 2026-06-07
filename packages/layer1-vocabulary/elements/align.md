@@ -1,5 +1,6 @@
 ---
 semantic_role: align
+category: math
 html_output:
   element: align
   is_html_native: false
