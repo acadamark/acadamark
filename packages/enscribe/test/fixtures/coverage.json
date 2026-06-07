@@ -1,20 +1,22 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 376,
+    "cells": 369,
     "fixtures": 56,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 315,
+    "gap": 306,
     "pass": 43,
-    "deferred": 18
+    "deferred": 18,
+    "needs-review": 2
   },
   "byDisposition": {
-    "specified": 334,
+    "specified": 325,
     "generic-implicit": 20,
     "deferred-presentation": 18,
-    "no-output": 4
+    "no-output": 4,
+    "needs-review": 2
   },
   "cells": [
     {
@@ -195,8 +197,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -327,13 +329,13 @@
       "key": "abstract/deferred",
       "element": "abstract",
       "behavior": "deferred",
-      "area": "RQ-BLK",
+      "area": "RQ-META",
       "disposition": "deferred-presentation",
       "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -347,8 +349,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -788,8 +790,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -803,8 +805,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -818,8 +820,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -833,8 +835,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -848,8 +850,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -863,8 +865,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -878,8 +880,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -893,8 +895,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -908,8 +910,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -923,8 +925,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -937,8 +939,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -1161,9 +1163,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1176,9 +1178,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1191,9 +1193,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1206,9 +1208,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1221,9 +1223,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1236,9 +1238,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1251,9 +1253,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1262,16 +1264,12 @@
       "key": "book/base",
       "element": "book",
       "behavior": "base",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [
         "context/ctx-book-complete.emd"
@@ -1282,16 +1280,12 @@
       "key": "book/id",
       "element": "book",
       "behavior": "id",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1300,16 +1294,12 @@
       "key": "book/class",
       "element": "book",
       "behavior": "class",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1318,16 +1308,12 @@
       "key": "book/kwarg:numbering-style",
       "element": "book",
       "behavior": "kwarg:numbering-style",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1336,16 +1322,12 @@
       "key": "book/kwarg:note-position",
       "element": "book",
       "behavior": "kwarg:note-position",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1354,16 +1336,12 @@
       "key": "book/form:pipe",
       "element": "book",
       "behavior": "form:pipe",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1372,16 +1350,12 @@
       "key": "book/form:long",
       "element": "book",
       "behavior": "form:long",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1390,16 +1364,12 @@
       "key": "book-part/base",
       "element": "book-part",
       "behavior": "base",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1408,16 +1378,12 @@
       "key": "book-part/id",
       "element": "book-part",
       "behavior": "id",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1426,16 +1392,12 @@
       "key": "book-part/class",
       "element": "book-part",
       "behavior": "class",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1444,16 +1406,12 @@
       "key": "book-part/kwarg:book-part-type",
       "element": "book-part",
       "behavior": "kwarg:book-part-type",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [
         "context/ctx-book-complete.emd"
@@ -1464,16 +1422,12 @@
       "key": "book-part/kwarg:numbering-style",
       "element": "book-part",
       "behavior": "kwarg:numbering-style",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1482,16 +1436,12 @@
       "key": "book-part/kwarg:note-position",
       "element": "book-part",
       "behavior": "kwarg:note-position",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1500,16 +1450,12 @@
       "key": "book-part/form:pipe",
       "element": "book-part",
       "behavior": "form:pipe",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [
         "context/ctx-book-complete.emd"
@@ -1520,16 +1466,12 @@
       "key": "book-part/form:long",
       "element": "book-part",
       "behavior": "form:long",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
-        "RQ-BOOK-M1",
-        "RQ-BOOK-M2",
-        "RQ-BOOK-M3",
-        "RQ-BOOK-M4",
-        "RQ-BOOK-M5",
-        "RQ-BOOK-M6",
-        "RQ-BOOK-S1"
+        "RQ-TOC-M1",
+        "RQ-TOC-M2",
+        "RQ-TOC-S1"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -1837,8 +1779,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -1849,13 +1791,13 @@
       "key": "code-block/deferred",
       "element": "code-block",
       "behavior": "deferred",
-      "area": "RQ-BLK",
+      "area": "RQ-META",
       "disposition": "deferred-presentation",
       "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -1869,8 +1811,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2116,8 +2058,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2131,8 +2073,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -2145,9 +2087,9 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2252,9 +2194,9 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2263,97 +2205,11 @@
       "key": "diagram/base",
       "element": "diagram",
       "behavior": "base",
-      "area": "RQ-DSL",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-DSL-M1",
-        "RQ-DSL-M2",
-        "RQ-DSL-M3",
-        "RQ-DSL-SKIP-M1",
-        "RQ-DSL-LIVE-M1",
-        "RQ-DSL-LIVE-M2",
-        "RQ-DSL-LIVE-O1",
-        "RQ-DSL-STATIC-M1",
-        "RQ-DSL-STATIC-M2",
-        "RQ-DSL-STATIC-O1",
-        "RQ-DSL-S1",
-        "RQ-DSL-SOURCE-M1",
-        "RQ-DSL-SOURCE-S1"
-      ],
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
       "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "diagram/id",
-      "element": "diagram",
-      "behavior": "id",
-      "area": "RQ-DSL",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-DSL-M1",
-        "RQ-DSL-M2",
-        "RQ-DSL-M3",
-        "RQ-DSL-SKIP-M1",
-        "RQ-DSL-LIVE-M1",
-        "RQ-DSL-LIVE-M2",
-        "RQ-DSL-LIVE-O1",
-        "RQ-DSL-STATIC-M1",
-        "RQ-DSL-STATIC-M2",
-        "RQ-DSL-STATIC-O1",
-        "RQ-DSL-S1",
-        "RQ-DSL-SOURCE-M1",
-        "RQ-DSL-SOURCE-S1"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "diagram/class",
-      "element": "diagram",
-      "behavior": "class",
-      "area": "RQ-DSL",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-DSL-M1",
-        "RQ-DSL-M2",
-        "RQ-DSL-M3",
-        "RQ-DSL-SKIP-M1",
-        "RQ-DSL-LIVE-M1",
-        "RQ-DSL-LIVE-M2",
-        "RQ-DSL-LIVE-O1",
-        "RQ-DSL-STATIC-M1",
-        "RQ-DSL-STATIC-M2",
-        "RQ-DSL-STATIC-O1",
-        "RQ-DSL-S1",
-        "RQ-DSL-SOURCE-M1",
-        "RQ-DSL-SOURCE-S1"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "diagram/kwarg:caption",
-      "element": "diagram",
-      "behavior": "kwarg:caption",
-      "area": "RQ-DSL",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-DSL-M1",
-        "RQ-DSL-M2",
-        "RQ-DSL-M3",
-        "RQ-DSL-SKIP-M1",
-        "RQ-DSL-LIVE-M1",
-        "RQ-DSL-LIVE-M2",
-        "RQ-DSL-LIVE-O1",
-        "RQ-DSL-STATIC-M1",
-        "RQ-DSL-STATIC-M2",
-        "RQ-DSL-STATIC-O1",
-        "RQ-DSL-S1",
-        "RQ-DSL-SOURCE-M1",
-        "RQ-DSL-SOURCE-S1"
-      ],
-      "coveredBy": [],
-      "status": "gap"
+      "status": "needs-review"
     },
     {
       "key": "display-math/base",
@@ -2474,9 +2330,9 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2490,8 +2346,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -2504,9 +2360,9 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2520,8 +2376,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -2534,8 +2390,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2548,8 +2404,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2562,8 +2418,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -2576,8 +2432,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -2592,8 +2448,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -2609,8 +2465,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -3599,13 +3455,13 @@
       "key": "glossary/deferred",
       "element": "glossary",
       "behavior": "deferred",
-      "area": "RQ-BLK",
+      "area": "RQ-META",
       "disposition": "deferred-presentation",
       "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -3614,13 +3470,13 @@
       "key": "glossary-entry/deferred",
       "element": "glossary-entry",
       "behavior": "deferred",
-      "area": "RQ-BLK",
+      "area": "RQ-META",
       "disposition": "deferred-presentation",
       "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -3633,9 +3489,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -3648,9 +3504,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -3663,9 +3519,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -3678,9 +3534,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -3693,9 +3549,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -3708,8 +3564,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -3832,12 +3688,13 @@
       "key": "inline-code/deferred",
       "element": "inline-code",
       "behavior": "deferred",
-      "area": "RQ-INL",
+      "area": "RQ-META",
       "disposition": "deferred-presentation",
       "predicates": [
-        "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -3960,8 +3817,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -3977,8 +3834,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -3992,8 +3849,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -4098,9 +3955,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4113,9 +3970,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4128,9 +3985,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4143,9 +4000,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4158,9 +4015,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4173,9 +4030,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4189,8 +4046,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4204,8 +4061,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -4487,8 +4344,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4502,8 +4359,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4517,8 +4374,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4532,8 +4389,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4547,8 +4404,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4562,8 +4419,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4704,9 +4561,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4719,9 +4576,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4734,9 +4591,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4749,9 +4606,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4764,9 +4621,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4779,9 +4636,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4794,9 +4651,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -4810,8 +4667,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -4824,8 +4681,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -4840,9 +4697,9 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -5040,8 +4897,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -5054,8 +4911,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -5066,76 +4923,11 @@
       "key": "quote/base",
       "element": "quote",
       "behavior": "base",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
-      ],
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
       "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "quote/id",
-      "element": "quote",
-      "behavior": "id",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "quote/class",
-      "element": "quote",
-      "behavior": "class",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "quote/kwarg:cite",
-      "element": "quote",
-      "behavior": "kwarg:cite",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "quote/kwarg:type",
-      "element": "quote",
-      "behavior": "kwarg:type",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-M2",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
+      "status": "needs-review"
     },
     {
       "key": "ref/base",
@@ -5373,8 +5165,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -5389,8 +5181,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -5573,8 +5365,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -5589,8 +5381,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -5603,8 +5395,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -5617,8 +5409,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -5631,8 +5423,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -5647,8 +5439,8 @@
       "disposition": "specified",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -5661,8 +5453,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -6006,8 +5798,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -6110,9 +5902,9 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -6125,8 +5917,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -6643,12 +6435,13 @@
       "key": "term/deferred",
       "element": "term",
       "behavior": "deferred",
-      "area": "RQ-INL",
+      "area": "RQ-META",
       "disposition": "deferred-presentation",
       "predicates": [
-        "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -6985,8 +6778,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -7001,9 +6794,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -7016,9 +6809,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -7031,9 +6824,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -7046,9 +6839,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -7061,9 +6854,9 @@
       "disposition": "specified",
       "predicates": [
         "RQ-BLK-M1",
-        "RQ-BLK-M2",
         "RQ-BLK-S1",
-        "RQ-BLK-S2"
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
       ],
       "coveredBy": [],
       "status": "gap"
@@ -7076,8 +6869,8 @@
       "disposition": "generic-implicit",
       "predicates": [
         "RQ-INL-M1",
-        "RQ-INL-M2",
-        "RQ-INL-S1"
+        "RQ-INL-S1",
+        "RQ-INL-M2"
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
@@ -7093,8 +6886,8 @@
       "predicates": [
         "RQ-META-M1",
         "RQ-META-M2",
-        "RQ-META-M3",
-        "RQ-META-S1"
+        "RQ-META-S1",
+        "RQ-META-M3"
       ],
       "coveredBy": [],
       "status": "deferred"
@@ -7128,37 +6921,37 @@
     },
     {
       "element": "book-back",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {
       "element": "book-body",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {
       "element": "book-front",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {
       "element": "book-part-subtitle",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {
       "element": "book-part-title",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {
       "element": "book-subtitle",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {
       "element": "book-title",
-      "area": "RQ-BOOK",
+      "area": "RQ-TOC",
       "parentFixture": null
     },
     {

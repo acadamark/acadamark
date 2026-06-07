@@ -1,0 +1,1605 @@
+{
+  "_generatedFrom": "notes/specs/{render-quality,tag-forms-reference,idioms}.md via test/coverage/gen-spec-data.mjs",
+  "areas": [
+    [
+      "RQ-DOC",
+      "Document structure (article)"
+    ],
+    [
+      "RQ-META",
+      "Author and meta blocks"
+    ],
+    [
+      "RQ-BLK",
+      "Block prose"
+    ],
+    [
+      "RQ-INL",
+      "Inline prose"
+    ],
+    [
+      "RQ-FRM",
+      "Frameables"
+    ],
+    [
+      "RQ-DSL",
+      "External DSLs"
+    ],
+    [
+      "RQ-MATH",
+      "Math"
+    ],
+    [
+      "RQ-THM",
+      "Theorem family"
+    ],
+    [
+      "RQ-XREF",
+      "Cross-references and citations"
+    ],
+    [
+      "RQ-NOTE",
+      "Footnotes"
+    ],
+    [
+      "RQ-BIB",
+      "Bibliography"
+    ],
+    [
+      "RQ-BOOK",
+      "Book documents"
+    ],
+    [
+      "RQ-TOC",
+      "Table-of-contents sidebar and scroll-spy"
+    ]
+  ],
+  "predicates": [
+    {
+      "id": "RQ-DOC-M1",
+      "area": "RQ-DOC",
+      "kind": "M",
+      "asserts": "the document is wrapped in `<article>`; front-matter (`<meta>`) is inside `<article-front>`, body content inside `<article-body>`, back-matter (`<note-list>`, `<bibliography>`, `<config>`) inside `<article-back>`. Empty regions are suppressed (a document with no back-matter has no `<article-back>`)."
+    },
+    {
+      "id": "RQ-DOC-M2",
+      "area": "RQ-DOC",
+      "kind": "M",
+      "asserts": "`<meta>` in the front carries `data-document-type=\"article\"`; the document title is an `<article-title>` and the subtitle an `<article-subtitle>`, both inside `<meta>`."
+    },
+    {
+      "id": "RQ-DOC-M3",
+      "area": "RQ-DOC",
+      "kind": "M",
+      "asserts": "sections render as `<section>` / `<sub-section>` / `<sub-sub-section>` (by depth), each with its title as a first-child `<section-title>` / `<sub-section-title>` / `<sub-sub-section-title>`."
+    },
+    {
+      "id": "RQ-DOC-S1",
+      "area": "RQ-DOC",
+      "kind": "S",
+      "asserts": "`article-front` carries a bottom separation rule (`border-bottom`) and `article-back` a top separation rule (`border-top`), so the three regions are visually demarcated."
+    },
+    {
+      "id": "RQ-DOC-S2",
+      "area": "RQ-DOC",
+      "kind": "S",
+      "asserts": "`article-title` renders `display: block`, sans-serif, at the largest heading size (`--enscribe-h1-size`), `font-weight: 700`; `article-subtitle` renders block, sans, at `--enscribe-h2-size`, lighter weight, in the secondary text colour."
+    },
+    {
+      "id": "RQ-DOC-S3",
+      "area": "RQ-DOC",
+      "kind": "S",
+      "asserts": "section titles render `display: block`, sans, `font-weight: 700`, at descending sizes (`section-title` = `--enscribe-h2-size`, `sub-section-title` = `--enscribe-h3-size`, `sub-sub-section-title` = `--enscribe-h4-size`), forming a visible hierarchy."
+    },
+    {
+      "id": "RQ-DOC-S4",
+      "area": "RQ-DOC",
+      "kind": "S",
+      "asserts": "`<meta data-document-type>` is `display: contents`, so its children flow as direct descendants of `<article-front>` for layout."
+    },
+    {
+      "id": "RQ-META-M1",
+      "area": "RQ-META",
+      "kind": "M",
+      "asserts": "each author renders as an `<author>` element; multiple authors are sibling `<author>` elements inside `<meta>`."
+    },
+    {
+      "id": "RQ-META-M2",
+      "area": "RQ-META",
+      "kind": "M",
+      "asserts": "a per-author `+corresponding` flag normalises to a bare boolean `corresponding` attribute on the `<author>` element (`<author corresponding>`), the idiomatic HTML boolean-attribute form."
+    },
+    {
+      "id": "RQ-META-S1",
+      "area": "RQ-META",
+      "kind": "S",
+      "asserts": "`<author>` renders `display: inline`, sans, in the secondary text colour; consecutive authors are separated by a comma-space via `author + author::before { content: \", \" }`, producing a comma-separated byline."
+    },
+    {
+      "id": "RQ-META-M3",
+      "area": "RQ-META",
+      "kind": "M",
+      "asserts": "`<meta>`, `<config>`, and `<data>`/`<library>` produce no rendered body output. `<meta>` is `display: contents` (its styled children show; the container does not); `<config>`, `<data>`, and `<library>` are suppressed by the handler (render to `null`)."
+    },
+    {
+      "id": "RQ-BLK-M1",
+      "area": "RQ-BLK",
+      "kind": "M",
+      "asserts": "paragraphs render `<p>`; block quotations `<blockquote>` (the `<quote>` shorthand expands to it); ordered/unordered lists `<ol>`/`<ul>` with `<li>` children; thematic breaks `<hr>`. `data-*` attributes (`data-list-type`, `data-blockquote-type`, `data-hr-type`) are preserved."
+    },
+    {
+      "id": "RQ-BLK-S1",
+      "area": "RQ-BLK",
+      "kind": "S",
+      "asserts": "`blockquote` renders visually distinct from body prose: a left border (`border-left`), italic body, secondary text colour, and horizontal inset."
+    },
+    {
+      "id": "RQ-BLK-S2",
+      "area": "RQ-BLK",
+      "kind": "S",
+      "asserts": "paragraphs carry inter-paragraph spacing (`margin-bottom`); lists carry left indentation (`padding-left`)."
+    },
+    {
+      "id": "RQ-BLK-M2",
+      "area": "RQ-BLK",
+      "kind": "M",
+      "asserts": "`details`, `summary`, `dl`, `dt`, `dd` pass through as the same HTML-native tags, with `data-*` attributes preserved. They render via browser defaults; the spec verifies pass-through, not appearance. (`aside` is **no longer** generic-implicit: it gained the frameable surface in #31 and is a specified boxed-prose frameable — see §8.)"
+    },
+    {
+      "id": "RQ-INL-M1",
+      "area": "RQ-INL",
+      "kind": "M",
+      "asserts": "emphasis renders `<em>`, strong importance `<strong>`. The HTML-native inline set passes through unchanged."
+    },
+    {
+      "id": "RQ-INL-S1",
+      "area": "RQ-INL",
+      "kind": "S",
+      "asserts": "`strong` renders `font-weight: 700`; `em` renders `font-style: italic`."
+    },
+    {
+      "id": "RQ-INL-M2",
+      "area": "RQ-INL",
+      "kind": "M",
+      "asserts": "`b`, `i`, `u`, `s`, `sub`, `sup`, `span`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, and inline `code` pass through as HTML-native tags. The browser default rendering is correct for these (italic `<var>`, monospace `<kbd>`/`<samp>`, quotation marks for `<q>`); `data-*` attributes are preserved. `code` additionally receives dedicated monospace/background styling (§ shared with code blocks)."
+    },
+    {
+      "id": "RQ-FRM-M1",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "a figure renders `<figure>` wrapping an optional `<img src alt>` (when `src` is given) and a `<figcaption>`. When numbered, the caption begins with `<span class=\"figure-label\">Figure N.</span>` followed by a space, then the caption text. A `name`/title adds a separate `<figcaption class=\"title\">` above the body."
+    },
+    {
+      "id": "RQ-FRM-M2",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "a table renders `<table>` with a `<caption>`; when numbered the caption begins `<span class=\"table-label\">Table N.</span>`. Headers render `<thead><tr><th>`, body rows `<tbody><tr><td>`. A `csv`/`tsv` block renders a real `<table>` — the `<csv>`/`<tsv>` element does not appear in output."
+    },
+    {
+      "id": "RQ-FRM-M3",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "an `svg` renders an inline HTML-native `<svg>` with source preserved. Bare (no caption/title/number) it emits the `<svg>` alone; when captioned/numbered the `<svg>` is wrapped in a `<figure>` whose `<figcaption>` carries the `figure-label` (`<figcaption>` is not a valid child of `<svg>`, so the caption rides on the wrapper)."
+    },
+    {
+      "id": "RQ-FRM-M4",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "a `frame` renders `<figure class=\"frameable-border\">` — a bordered callout reusing the shared frameable `<figure>` wrapper, not the deprecated HTML `<frame>` frameset element. A title renders as a leading `<figcaption class=\"title\">`; a caption renders `<figcaption>`."
+    },
+    {
+      "id": "RQ-FRM-M5",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "the `+border` flag adds the `frameable-border` class to the frameable's wrapper element; figures and tables share one figure/table counter respectively with the DSLs and `svg`."
+    },
+    {
+      "id": "RQ-FRM-M6",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "when present, the **title** is the **first child** of the wrapper (rendered above the body) and carries the class `title`: `<figcaption class=\"title\">` (figure family), `<caption class=\"title\">` (table family), or `<p class=\"title\">` (boxed prose / `aside`). The **caption** is the **last child** (after the body) for the figure and boxed-prose families; for `<table>` the `<caption>` is emitted as the table's first child (HTML requires `<caption>` to precede the rows) and `caption-side: top` keeps it visually at the top. The bottom caption is a bare `<figcaption>` / `<caption>` for the figure/table families, and a `<p class=\"caption\">` for boxed prose."
+    },
+    {
+      "id": "RQ-FRM-M7",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "when a frameable is numbered but has no caption text, the caption element renders the label span **alone** — `<figcaption><span class=\"figure-label\">Figure N.</span></figcaption>` — never an empty or absent caption. When the frameable is neither numbered nor captioned, no caption element is emitted at all."
+    },
+    {
+      "id": "RQ-FRM-M8",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "for a figure with `src`, the `<img>`'s `alt` is filled from a fallback chain: the explicit `alt=` kwarg if given, else the caption's plain text, else the pipe/body content's plain text. (The `<img>` always carries an `alt` attribute.)"
+    },
+    {
+      "id": "RQ-FRM-M9",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "a frameable adds its wrapper only when it carries something to frame. **`fig` and `frame` always wrap** in `<figure>` (the figure / bordered box is the construct itself). **`table` / `csv` / `tsv` always render** as `<table>`. **`svg`, `mermaid`, `abc` wrap only when captioned, titled, or numbered** — bare, they emit the lone `<svg>` / pass-through contract. Because `svg` / `mermaid` / `abc` are **numbered by default** (they share the figure counter), a bare `<svg>` / `<mermaid>` / `<abc>` *is* numbered and therefore frames; `-numbered` (with no caption or title) is what yields the truly lone form. (`frame` is unnumbered by default but always wraps, because its border/box — not a number — is the point.)"
+    },
+    {
+      "id": "RQ-FRM-M10",
+      "area": "RQ-FRM",
+      "kind": "M",
+      "asserts": "an `<aside>` keeps the semantic `<aside>` element (it is **not** wrapped in `<figure>`, since `<figcaption>` is invalid outside `<figure>`); its title renders `<p class=\"title\">` (first child) and its caption `<p class=\"caption\">` (last child), using the same `.title`/`.caption` hooks (`RQ-FRM-S5`/`S6`). `+border` (default **on** for `<aside>`) adds `frameable-border`. A numbered `<aside>` joins its **own** `Box` counter (`<span class=\"box-label\">Box N.</span>`), not the figure counter, and is unnumbered by default. The `type` kwarg is preserved as `data-aside-type`."
+    },
+    {
+      "id": "RQ-FRM-S1",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "`.figure-label` and `.table-label` render `font-weight: 700` (the number/label is prominent within the caption)."
+    },
+    {
+      "id": "RQ-FRM-S2",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "`figure` renders `display: block`, centred, with vertical margin; `figcaption` and `caption` render at small size, secondary colour, left-aligned (caption text reads as caption, not body)."
+    },
+    {
+      "id": "RQ-FRM-S3",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "`table` renders `border-collapse`, full content width; `th`/`td` are bordered; `th` is header-styled (subtle background, sans, uppercase, accent colour); `thead th` carries a heavier bottom border."
+    },
+    {
+      "id": "RQ-FRM-S4",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "the `frameable-border` class renders a visible outline box around the frameable (a `border` on `.frameable-border`), setting the bordered callout off from the body text around it."
+    },
+    {
+      "id": "RQ-FRM-S5",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "`.title` (the shared title hook for `<figcaption class=\"title\">` / `<caption class=\"title\">` / `<p class=\"title\">`) renders **visually distinct from the bottom caption**: `font-weight: 700`, body-size (`--enscribe-text-base`), primary text colour, with bottom margin separating it from the body. Without this the title would inherit the small/secondary caption look (`RQ-FRM-S2`) and be indistinguishable from the caption — so the spec's \"title top, caption bottom, visually distinct\" promise depends on this `S` predicate."
+    },
+    {
+      "id": "RQ-FRM-S6",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "`.caption` (the boxed-prose bottom caption, `<p class=\"caption\">`) renders at the same small size and secondary colour as `figcaption`/`caption`, so the `aside`-family caption reads as a caption rather than as body prose."
+    },
+    {
+      "id": "RQ-FRM-S7",
+      "area": "RQ-FRM",
+      "kind": "S",
+      "asserts": "the default theme styles the admonition `aside` types: `aside[data-aside-type=\"note\"|\"info\"|\"tip\"|\"warning\"|\"caution\"]` each render a per-type accent (a `border-left-color` from an `--enscribe-callout-*` custom property), a light background tint, and a type icon via `::before` (CSS-only — no markup is injected). The generic `sidebar` / `callout` types receive no admonition styling (the plain box only). Each variant is signalled by three cues — accent, icon, and the title — so colour is never the sole distinguisher."
+    },
+    {
+      "id": "RQ-DSL-M1",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "a `mermaid` block renders `<pre class=\"mermaid\" data-enscribe-dsl=\"mermaid\">` with the Mermaid source preserved verbatim as text content."
+    },
+    {
+      "id": "RQ-DSL-M2",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "an `abc` block renders `<pre class=\"abc\" data-enscribe-dsl=\"abc\">` with the ABC source preserved verbatim. The wrapper is `<pre>` (matching Mermaid): the HTML formatter leaves `<pre>` content untouched, so the line-oriented ABC source survives serialization without reflow or indentation."
+    },
+    {
+      "id": "RQ-DSL-M3",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "both share the figure counter; when captioned/numbered, a sibling `<figcaption>` carries the `figure-label` (`Figure N.`)."
+    },
+    {
+      "id": "RQ-DSL-SKIP-M1",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "in skip mode the rendered HTML is the contract markup only: no library asset nodes, no init call, no inline SVG."
+    },
+    {
+      "id": "RQ-DSL-LIVE-M1",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "a present DSL conditionally gets its library — an inline `<script>` carrying the bundled source, **or** a `<script src>` to the pinned CDN — plus an init call. An absent DSL gets nothing; a mermaid-only document gets only mermaid assets (assets are gated on DSL presence)."
+    },
+    {
+      "id": "RQ-DSL-LIVE-M2",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "the contract markup (per `RQ-DSL-M1`/`M2`) is preserved unchanged alongside the emitted assets."
+    },
+    {
+      "id": "RQ-DSL-LIVE-O1",
+      "area": "RQ-DSL",
+      "kind": "O",
+      "asserts": "opened in a browser with library access, the sources render to SVG (diagram, notation)."
+    },
+    {
+      "id": "RQ-DSL-STATIC-M1",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "in abc-static mode each `abc` contract element is **replaced** (not wrapped) by an inline `<svg class=\"enscribe-abc-rendered\">` of the rendered notation: no `<pre class=\"abc\">` / `data-enscribe-dsl=\"abc\"` wrapper survives, and no client-side abcjs library or init `<script>` is emitted (the render already happened at build time)."
+    },
+    {
+      "id": "RQ-DSL-STATIC-M2",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "an `id` on the `abc` element is carried onto the rendered `<svg>` (so cross-references to the block still resolve); an anonymous block's `<svg>` carries no id."
+    },
+    {
+      "id": "RQ-DSL-STATIC-O1",
+      "area": "RQ-DSL",
+      "kind": "O",
+      "asserts": "opened in a browser, including offline with JavaScript disabled, the `<svg>` shows the rendered notation (it is in the markup, not produced by a script at view time)."
+    },
+    {
+      "id": "RQ-DSL-S1",
+      "area": "RQ-DSL",
+      "kind": "S",
+      "asserts": "the `<pre>` carrying Mermaid source is styled as a code block (so an un-rendered diagram degrades to readable source, not invisible text) — graceful degradation in skip mode and in live mode before the library runs. No dedicated rule for `.abc`/`.mermaid` *rendered* output is required of the default theme."
+    },
+    {
+      "id": "RQ-DSL-SOURCE-M1",
+      "area": "RQ-DSL",
+      "kind": "M",
+      "asserts": "with `show-source` on, each rendered-from-DSL block (`mermaid`, `abc`) emits, as the **final sibling** of its figure block (after the contract markup and any caption), a `<details class=\"enscribe-source\">` whose `<summary>` reads \"See source\" and whose `<pre>` holds the verbatim authored source. That disclosure `<pre>` is **plain** — no `mermaid` / `abc` class, no `data-enscribe-dsl` — so the live scanner and the static renderer never touch it; it preserves the source in every render mode. Default off → byte-identical contract markup (no `<details>`)."
+    },
+    {
+      "id": "RQ-DSL-SOURCE-S1",
+      "area": "RQ-DSL",
+      "kind": "S",
+      "asserts": "the default theme styles the disclosure so it reads as an intentional control: the `<summary>` is a small, button-like label (uppercase, muted, bordered, rounded — the same palette as the ToC summary and the frameable box / `<pre>`, no new tokens), and the inner `<pre>` keeps the base code-block look. Styling only; the markup is unchanged, so this is a pure embedded-`<style>` diff in the HTML fixtures (markup + JATS byte-identical)."
+    },
+    {
+      "id": "RQ-MATH-M1",
+      "area": "RQ-MATH",
+      "kind": "M",
+      "asserts": "inline math renders `<inline-math>` wrapping KaTeX HTML (`<span class=\"katex\">…`); it is never numbered."
+    },
+    {
+      "id": "RQ-MATH-M2",
+      "area": "RQ-MATH",
+      "kind": "M",
+      "asserts": "display math renders `<display-math>` wrapping `<span class=\"katex-display\">…`; when numbered, a sibling `<span class=\"equation-number\">(N)</span>` is appended (parenthesised number, no period). Numbering is conditional on the document/element numbering config."
+    },
+    {
+      "id": "RQ-MATH-M3",
+      "area": "RQ-MATH",
+      "kind": "M",
+      "asserts": "the environment tags render their own wrapper element (`<align>`, `<cases>`, `<matrix>`, `<eqnarray>`, `<math>`) around the KaTeX-rendered block."
+    },
+    {
+      "id": "RQ-MATH-M4",
+      "area": "RQ-MATH",
+      "kind": "M",
+      "asserts": "rendered output contains KaTeX HTML (a `.katex` / `.katex-display` span), not raw TeX source. (`throwOnError: false` means even invalid TeX renders to a visible KaTeX error node, never raw source.)"
+    },
+    {
+      "id": "RQ-MATH-S1",
+      "area": "RQ-MATH",
+      "kind": "S",
+      "asserts": "`display-math` renders `display: flex` with vertical margin; `display-math > .katex-display` grows to fill (`flex: 1`); `display-math > .equation-number` renders flush-right (does not grow), sans, small, secondary colour."
+    },
+    {
+      "id": "RQ-MATH-S2",
+      "area": "RQ-MATH",
+      "kind": "S",
+      "asserts": "`inline-math` renders `display: inline`."
+    },
+    {
+      "id": "RQ-MATH-S3",
+      "area": "RQ-MATH",
+      "kind": "S",
+      "asserts": "the environment wrappers (`math`, `align`, `cases`, `matrix`, `eqnarray`) render as display blocks with vertical margin, and an `.equation-number` contained in any of them is presented consistently with the `display-math` case (flush-right). *(The default theme's equation-number rule is currently scoped to `display-math >` only; consistency across the environment wrappers is the intended standard.)*"
+    },
+    {
+      "id": "RQ-THM-M1",
+      "area": "RQ-THM",
+      "kind": "M",
+      "asserts": "each statement renders as its own element (`<theorem>`, `<lemma>`, `<corollary>`, `<proposition>`, `<definition>`, `<example>`, `<remark>`, `<proof>`), whose first child is a `<span class=\"{kind}-label\">` (e.g. `theorem-label`, `proof-label`), followed by a space, then the body."
+    },
+    {
+      "id": "RQ-THM-M2",
+      "area": "RQ-THM",
+      "kind": "M",
+      "asserts": "the label text is `Kind N.` when numbered, `Kind N (Name).` when a `name` kwarg is present, and `Kind.` when unnumbered (the default for `remark`/`proof`). The propositional family shares one counter; `definition`/`example` each have their own; `remark`/`proof` are unnumbered unless `+numbered`."
+    },
+    {
+      "id": "RQ-THM-S1",
+      "area": "RQ-THM",
+      "kind": "S",
+      "asserts": "each theorem-family element renders `display: block` with vertical margin, so the statement is set off from body prose rather than flowing inline."
+    },
+    {
+      "id": "RQ-THM-S2",
+      "area": "RQ-THM",
+      "kind": "S",
+      "asserts": "each `.{kind}-label` span renders with prominence (`font-weight: 700`), visually distinguishing the run-in label from the statement body."
+    },
+    {
+      "id": "RQ-XREF-M1",
+      "area": "RQ-XREF",
+      "kind": "M",
+      "asserts": "a resolved ref renders `<a href=\"#id\" class=\"ref\">TEXT</a>`. The `-link` flag renders `<span class=\"ref\">TEXT</span>` instead (no anchor)."
+    },
+    {
+      "id": "RQ-XREF-M2",
+      "area": "RQ-XREF",
+      "kind": "M",
+      "asserts": "resolved ref text is `{prefix-word} {number}` for a known id prefix (`figure 3`, `equation 1`, `table 2`, `section 2.1`, `theorem 4`, `listing 1` for code), the bare number for an unknown prefix, and the id's label-tail for an unnumbered target. The prefix word is config-overridable per document (`ref-prefix-eqn=Eq.` yields `Eq. 3`). In a book the number is chapter-prefixed (§15)."
+    },
+    {
+      "id": "RQ-XREF-M3",
+      "area": "RQ-XREF",
+      "kind": "M",
+      "asserts": "an unresolved ref renders `<a href=\"#id\" class=\"ref-error\">??ref: id??</a>` — visible in output, so authors see broken references immediately."
+    },
+    {
+      "id": "RQ-XREF-M4",
+      "area": "RQ-XREF",
+      "kind": "M",
+      "asserts": "a resolved citation renders `<cite class=\"cite\" data-keys=\"…\">` wrapping the CSL-formatted marker; an unresolved citation renders `<cite class=\"cite-error\" data-keys=\"…\">??cite: key??</cite>`."
+    },
+    {
+      "id": "RQ-XREF-S1",
+      "area": "RQ-XREF",
+      "kind": "S",
+      "asserts": "`a.ref` renders as a link (link colour, no wavy underline); `a.ref-error` renders in the error colour with a wavy underline and `cursor: help`."
+    },
+    {
+      "id": "RQ-XREF-S2",
+      "area": "RQ-XREF",
+      "kind": "S",
+      "asserts": "`cite.cite` renders `cursor: pointer` (signalling the hover-preview affordance); `cite.cite-error` renders in the error colour."
+    },
+    {
+      "id": "RQ-NOTE-M1",
+      "area": "RQ-NOTE",
+      "kind": "M",
+      "asserts": "an in-text note renders `<sup id=\"noteref-N\" data-note-id=\"note-N\"><a href=\"#note-N\">N</a></sup>`."
+    },
+    {
+      "id": "RQ-NOTE-M2",
+      "area": "RQ-NOTE",
+      "kind": "M",
+      "asserts": "collected notes render a `<note-list>` containing an `<ol>`, placed in the back-matter region. The `note-list` class reflects placement: `endnotes` (default), `footnotes` (placement `foot`), or `notes` (mixed placements in one document)."
+    },
+    {
+      "id": "RQ-NOTE-M3",
+      "area": "RQ-NOTE",
+      "kind": "M",
+      "asserts": "each note renders `<li id=\"note-N\">` containing a `<sup>N</sup>` marker, the note body, and a backref `<a href=\"#noteref-N\" class=\"note-backref\" aria-label=\"back to text\">↩</a>`. A `placement=side` note adds the `sidenote-fallback` class to its `<li>`."
+    },
+    {
+      "id": "RQ-NOTE-S1",
+      "area": "RQ-NOTE",
+      "kind": "S",
+      "asserts": "`note-list` renders `display: block`, small/secondary, set off above by a top border; its \"Notes\" heading is supplied by `note-list::before { content: \"Notes\" }` (no heading element is emitted); its `<ol>` renders `list-style: none` (visible numbering comes from the `<sup>`); `note-list li` renders a hanging indent."
+    },
+    {
+      "id": "RQ-NOTE-S2",
+      "area": "RQ-NOTE",
+      "kind": "S",
+      "asserts": "`sup[data-note-id]` renders a small sans superscript in the link colour with `cursor: pointer`; `.note-backref` renders muted."
+    },
+    {
+      "id": "RQ-BIB-M1",
+      "area": "RQ-BIB",
+      "kind": "M",
+      "asserts": "the bibliography renders a `<bibliography>` element in the back-matter region (`<article-back>` for an article, `<book-back>` for a book), containing a heading and a `<div class=\"csl-bib-body\">` of `<div class=\"csl-entry\">` entries."
+    },
+    {
+      "id": "RQ-BIB-M2",
+      "area": "RQ-BIB",
+      "kind": "M",
+      "asserts": "the bibliography heading **is** an emitted element — `<h2>References</h2>` (in contrast to the note-list heading, which is a CSS pseudo-element)."
+    },
+    {
+      "id": "RQ-BIB-M3",
+      "area": "RQ-BIB",
+      "kind": "M",
+      "asserts": "each entry div carries both `data-csl-entry-id=\"KEY\"` and an injected `id=\"ref-KEY\"` (the hover-preview lookup target)."
+    },
+    {
+      "id": "RQ-BIB-M4",
+      "area": "RQ-BIB",
+      "kind": "M",
+      "asserts": "when no citations resolve, no bibliography is emitted, and an author-placed `<bibliography>` tag is removed."
+    },
+    {
+      "id": "RQ-BIB-S1",
+      "area": "RQ-BIB",
+      "kind": "S",
+      "asserts": "`bibliography h2` renders sans, at `--enscribe-h3-size`, `font-weight: 700`; `.csl-bib-body` renders at small size; `.csl-entry` renders with a hanging indent and inter-entry spacing."
+    },
+    {
+      "id": "RQ-BOOK-M1",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "a book renders `<book>` wrapping `<book-front>` / `<book-body>` / `<book-back>`; each division renders `<book-part book-part-type=\"…\">`, routed by type (chapter/part/introduction/conclusion → body; preface/foreword/dedication → front; appendix/glossary/colophon → back)."
+    },
+    {
+      "id": "RQ-BOOK-M2",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "the book title renders `<book-title>`; each book-part's title renders `<book-part-title>` inside a synthesised per-part `<meta>`."
+    },
+    {
+      "id": "RQ-BOOK-M3",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "an `<author>` at the top of a book-part is absorbed into that book-part's synthesised `<meta>`, distinct from the book-level author — so a chapter can carry its own author."
+    },
+    {
+      "id": "RQ-BOOK-M4",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "with the book default `counter-reset-scope=chapter`, figures/tables/equations/theorems renumber per chapter, and a resolved cross-reference renders chapter-prefixed: `figure 1.3` (chapter.figure) or `figure 1.2.3` (chapter.section.figure). The caption label on the target carries the *same* chapter-prefixed number as the cross-reference resolving to it — a caption reading `Figure 1.3.` is referred to as `figure 1.3`, never as a bare `Figure 3.` — so captions and references agree. This agreement is output-target-independent: it holds both in the HTML rendering (the caption/label and the `<a class=\"ref\">` cross-reference both carry the chapter-prefixed number) and in the JATS export (the `<label>` on the `<fig>` / `<table-wrap>` / `<disp-formula>` / `<statement>` and the `<xref>` resolving to it both carry it). In no output target does a target's label show a bare `Figure 3.` while a reference to it shows `figure 1.3`."
+    },
+    {
+      "id": "RQ-BOOK-M5",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "with the book default `note-scope=chapter`, footnotes are collected per chapter rather than once for the whole document."
+    },
+    {
+      "id": "RQ-BOOK-M6",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "a book gets a single document-wide bibliography at the end of `<book-back>`."
+    },
+    {
+      "id": "RQ-BOOK-S1",
+      "area": "RQ-BOOK",
+      "kind": "S",
+      "asserts": "the book structural containers and titles render with book-appropriate prominence: `book-title` as the most prominent heading on the page (block, at least `--enscribe-h1-size`), `book-part-title` as a chapter-level heading (block, prominent, clearly above section-title scale), and `book-front`/`book-body`/`book-back` as block regions. *(The default theme's article rules do not currently extend to the book elements; book-appropriate styling is the intended standard.)*"
+    },
+    {
+      "id": "RQ-TOC-M1",
+      "area": "RQ-TOC",
+      "kind": "M",
+      "asserts": "a ToC document carries the `<nav class=\"enscribe-toc\">` sidebar with nested entries linking to the section ids, and every listed section carries the matching `id`. (Pre-existing; scroll-spy relies on it.)"
+    },
+    {
+      "id": "RQ-TOC-M2",
+      "area": "RQ-TOC",
+      "kind": "M",
+      "asserts": "a ToC document also carries the inline scroll-spy `<script>`. It is a PURE progressive enhancement: it adds no content or meaning to the markup — the active hook (`aria-current=\"location\"` plus the `enscribe-toc-active` / `enscribe-toc-active-trail` classes) is set at runtime, not present statically — and the ToC navigates without it. A non-ToC document carries no sidebar and no script."
+    },
+    {
+      "id": "RQ-TOC-S1",
+      "area": "RQ-TOC",
+      "kind": "S",
+      "asserts": "the default theme styles the scroll-spy active state from the existing palette: the active entry (`a[aria-current]` / `.enscribe-toc-active`) is emphasised (link colour + bold) and its ancestor trail (`.enscribe-toc-active-trail`) given a subtler emphasis, so the hook is not shipped bare (the #103 lesson). JS off → the hook is never set and the ToC renders exactly as before."
+    }
+  ],
+  "dispositions": {
+    "a": {
+      "area": "RQ-XREF",
+      "disposition": "specified"
+    },
+    "abbr": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "abc": {
+      "area": "RQ-DSL",
+      "disposition": "specified"
+    },
+    "abstract": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "affiliation": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "align": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "article": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "article-back": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "article-body": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "article-front": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "article-subtitle": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "article-title": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "aside": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "author": {
+      "area": "RQ-META",
+      "disposition": "specified"
+    },
+    "b": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "bib-entry": {
+      "area": "RQ-BIB",
+      "disposition": "specified"
+    },
+    "bibliography": {
+      "area": "RQ-BIB",
+      "disposition": "specified"
+    },
+    "blockquote": {
+      "area": "RQ-BLK",
+      "disposition": "specified"
+    },
+    "book": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-back": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-body": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-front": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-part": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-part-subtitle": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-part-title": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-subtitle": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "book-title": {
+      "area": "RQ-TOC",
+      "disposition": "specified"
+    },
+    "cases": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "cite": {
+      "area": "RQ-XREF",
+      "disposition": "specified"
+    },
+    "code": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "code-block": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "config": {
+      "area": "RQ-META",
+      "disposition": "no-output"
+    },
+    "corollary": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "csv": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "data": {
+      "area": "RQ-META",
+      "disposition": "no-output"
+    },
+    "date": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "dd": {
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit"
+    },
+    "definition": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "details": {
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit"
+    },
+    "display-math": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "dl": {
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit"
+    },
+    "doi": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "dt": {
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit"
+    },
+    "editor": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "em": {
+      "area": "RQ-INL",
+      "disposition": "specified"
+    },
+    "email": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "eqnarray": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "example": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "fig": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "figure": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "frame": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "glossary": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "glossary-entry": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "hr": {
+      "area": "RQ-BLK",
+      "disposition": "specified"
+    },
+    "i": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "img": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "inline-code": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "inline-math": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "kbd": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "keywords": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "lang": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "lemma": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "li": {
+      "area": "RQ-BLK",
+      "disposition": "specified"
+    },
+    "library": {
+      "area": "RQ-META",
+      "disposition": "no-output"
+    },
+    "license": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "math": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "matrix": {
+      "area": "RQ-MATH",
+      "disposition": "specified"
+    },
+    "mermaid": {
+      "area": "RQ-DSL",
+      "disposition": "specified"
+    },
+    "meta": {
+      "area": "RQ-META",
+      "disposition": "no-output"
+    },
+    "name": {
+      "area": "RQ-META",
+      "disposition": "specified"
+    },
+    "note": {
+      "area": "RQ-NOTE",
+      "disposition": "specified"
+    },
+    "note-list": {
+      "area": "RQ-NOTE",
+      "disposition": "specified"
+    },
+    "ol": {
+      "area": "RQ-BLK",
+      "disposition": "specified"
+    },
+    "orcid": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "output": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "p": {
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit"
+    },
+    "proof": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "proposition": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "publication-date": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "q": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "ref": {
+      "area": "RQ-XREF",
+      "disposition": "specified"
+    },
+    "remark": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "s": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "samp": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "section": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "section-subtitle": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "section-title": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "span": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "strong": {
+      "area": "RQ-INL",
+      "disposition": "specified"
+    },
+    "sub": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "sub-section": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "sub-section-subtitle": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "sub-section-title": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "sub-sub-section": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "sub-sub-section-subtitle": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "sub-sub-section-title": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "subject": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "subtitle": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "summary": {
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit"
+    },
+    "sup": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "svg": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "table": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "term": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    },
+    "theorem": {
+      "area": "RQ-THM",
+      "disposition": "specified"
+    },
+    "title": {
+      "area": "RQ-DOC",
+      "disposition": "specified"
+    },
+    "tsv": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
+    "u": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "ul": {
+      "area": "RQ-BLK",
+      "disposition": "specified"
+    },
+    "var": {
+      "area": "RQ-INL",
+      "disposition": "generic-implicit"
+    },
+    "version": {
+      "area": "RQ-META",
+      "disposition": "deferred-presentation"
+    }
+  },
+  "forms": {
+    "a": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "abbr": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "abc": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "abstract": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "affiliation": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "align": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "article": [
+      "·",
+      "—",
+      "✓"
+    ],
+    "article-back": [
+      "—",
+      "—",
+      "—"
+    ],
+    "article-body": [
+      "—",
+      "—",
+      "—"
+    ],
+    "article-front": [
+      "—",
+      "—",
+      "—"
+    ],
+    "article-subtitle": [
+      "—",
+      "—",
+      "—"
+    ],
+    "article-title": [
+      "—",
+      "—",
+      "—"
+    ],
+    "aside": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "author": [
+      "—",
+      "·",
+      "✓"
+    ],
+    "b": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "bib-entry": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "bibliography": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "blockquote": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "book": [
+      "·",
+      "—",
+      "✓"
+    ],
+    "book-back": [
+      "—",
+      "—",
+      "—"
+    ],
+    "book-body": [
+      "—",
+      "—",
+      "—"
+    ],
+    "book-front": [
+      "—",
+      "—",
+      "—"
+    ],
+    "book-part": [
+      "·",
+      "—",
+      "✓"
+    ],
+    "book-part-subtitle": [
+      "—",
+      "—",
+      "—"
+    ],
+    "book-part-title": [
+      "—",
+      "—",
+      "—"
+    ],
+    "book-subtitle": [
+      "—",
+      "—",
+      "—"
+    ],
+    "book-title": [
+      "—",
+      "—",
+      "—"
+    ],
+    "cases": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "cite": [
+      "✓",
+      "✓",
+      "·"
+    ],
+    "code": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "code-block": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "config": [
+      "—",
+      "✓",
+      "✓"
+    ],
+    "corollary": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "csv": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "data": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "date": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "dd": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "definition": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "details": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "display-math": [
+      "✓",
+      "—",
+      "—"
+    ],
+    "dl": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "doi": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "dt": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "editor": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "em": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "email": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "eqnarray": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "example": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "fig": [
+      "✓",
+      "✓",
+      "✓"
+    ],
+    "frame": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "glossary": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "glossary-entry": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "hr": [
+      "—",
+      "✓",
+      "—"
+    ],
+    "i": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "img": [
+      "—",
+      "✓",
+      "—"
+    ],
+    "inline-code": [
+      "✓",
+      "—",
+      "—"
+    ],
+    "inline-math": [
+      "✓",
+      "—",
+      "—"
+    ],
+    "kbd": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "keywords": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "lang": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "lemma": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "li": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "library": [
+      "—",
+      "✓",
+      "—"
+    ],
+    "license": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "math": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "matrix": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "mermaid": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "meta": [
+      "—",
+      "·",
+      "✓"
+    ],
+    "name": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "note": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "note-list": [
+      "—",
+      "—",
+      "—"
+    ],
+    "ol": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "orcid": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "output": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "p": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "proof": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "proposition": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "publication-date": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "q": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "ref": [
+      "·",
+      "✓",
+      "—"
+    ],
+    "remark": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "s": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "samp": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "section": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "section-subtitle": [
+      "—",
+      "—",
+      "—"
+    ],
+    "section-title": [
+      "—",
+      "—",
+      "—"
+    ],
+    "span": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "strong": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "sub": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "sub-section": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "sub-section-subtitle": [
+      "—",
+      "—",
+      "—"
+    ],
+    "sub-section-title": [
+      "—",
+      "—",
+      "—"
+    ],
+    "sub-sub-section": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "sub-sub-section-subtitle": [
+      "—",
+      "—",
+      "—"
+    ],
+    "sub-sub-section-title": [
+      "—",
+      "—",
+      "—"
+    ],
+    "subject": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "subtitle": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "summary": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "sup": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "svg": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "table": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "term": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "theorem": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "title": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "tsv": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "u": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "ul": [
+      "—",
+      "—",
+      "✓"
+    ],
+    "var": [
+      "✓",
+      "—",
+      "✓"
+    ],
+    "version": [
+      "✓",
+      "—",
+      "✓"
+    ]
+  },
+  "formNames": [
+    "pipe",
+    "slash",
+    "long"
+  ],
+  "idioms": [
+    {
+      "bare": "# Heading",
+      "tagname": "section"
+    },
+    {
+      "bare": "## Heading",
+      "tagname": "sub-section"
+    },
+    {
+      "bare": "### Heading",
+      "tagname": "sub-sub-section"
+    },
+    {
+      "bare": "*emphasis*",
+      "tagname": "i"
+    },
+    {
+      "bare": "**strong**",
+      "tagname": "b"
+    },
+    {
+      "bare": "~~struck~~",
+      "tagname": "s"
+    },
+    {
+      "bare": " code ",
+      "tagname": "inline-code"
+    },
+    {
+      "bare": "$x$",
+      "tagname": "inline-math"
+    },
+    {
+      "bare": "$$x$$",
+      "tagname": "display-math"
+    },
+    {
+      "bare": "\\",
+      "tagname": "table"
+    }
+  ]
+}

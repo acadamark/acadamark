@@ -23,21 +23,32 @@ through the parent document that produces them, and listed in the manifest annex
 
 | File | Role |
 |---|---|
-| `spec-data.mjs` | Transcribed source-of-truth: per-element disposition + area + tag-forms (from `render-quality.md` §2 / `tag-forms-reference.md`), the render-quality predicate registry, the `idioms.md` normalization table. Provenance noted inline. |
-| `build-coverage.mjs` | The generator. Derives cells from the live `VOCABULARY` + sigil map + `spec-data.mjs`, scans fixtures for `<!-- cell: … -->` markers, reads `results.json`, emits `../fixtures/coverage.json` + `../fixtures/COVERAGE.md`. |
-| `results.json` | (optional) predicate-check verdicts written by the predicate harness: `{ "RQ-DOC-M1": { "pass": true }, "RQ-FRM-S4": { "pass": false, "bug": "#NN" } }`. |
+| `gen-spec-data.mjs` | **The parse = source of truth.** Reads `notes/specs/{render-quality,tag-forms-reference,idioms}.md` and emits `spec-data.generated.json` (predicates, dispositions+areas, forms, idioms). Run by hand or by the build step; reads `notes/` only here and in the drift check. |
+| `spec-data.generated.json` | Committed build artifact emitted by `gen-spec-data.mjs`. Kept honest by the drift check. |
+| `spec-data.test.js` | **Drift check.** Re-runs the parse and `deepEqual`s against the committed JSON; fails if stale. SKIPs when `notes/specs/` is absent (shipped checkout), so the test path never hard-depends on `notes/`. |
+| `spec-data.mjs` | Thin loader: imports `spec-data.generated.json` and re-exports it; computes derived helpers (`GENERATED`, `MARKDOWN_ELEMENTS`). |
+| `build-coverage.mjs` | The manifest generator. Derives cells from the live `VOCABULARY` + sigil map + `spec-data.mjs`, scans fixtures for `<!-- cell: … -->` markers, reads `results.json`, emits `../fixtures/coverage.json` + `../fixtures/COVERAGE.md`. |
+| `predicate-harness.mjs` | Runs M/S/O predicate checks keyed to `RQ-…` ids; writes `results.json`. |
+| `results.json` | Predicate-check verdicts: `{ "RQ-DOC-M1": { "pass": true }, "RQ-FRM-S4": { "pass": false, "bug": "#NN" } }`. |
 | `../fixtures/COVERAGE.md` | **The instrument.** Generated; never hand-edited. |
 | `../fixtures/coverage.json` | Machine form of the manifest. |
 
-## Why transcribe instead of reading `notes/specs/` live
+## Generated, not hand-copied — and notes/-independent at runtime
 
-The generator runs in the test/build step, and the `notes/` leak guard forbids
-referencing `notes/` at runtime. `spec-data.mjs` mirrors the spec facts once so the
-generator stays decoupled from notes/ markdown (which mixes tables with prose and
-would be fragile to parse) and deterministic. The *element list, kwargs, content
-type, and strategy are NOT transcribed* — they are read live from `VOCABULARY`; the
-sigil register is read live from `core/tagname-sigil-map.js`. When a `notes/spec`
-changes, `spec-data.mjs` is the one place to reconcile.
+The coverage facts that live in `notes/specs/` (the ~85 predicates, the §2
+dispositions, the tag-forms table, the idioms) are **parsed once** by
+`gen-spec-data.mjs` into `spec-data.generated.json` — the parse is the source of
+truth. A hand-copy can silently rot against its source (the exact failure #5
+exists to prevent); the **drift check** (`spec-data.test.js`) regenerates and diffs
+in the test step and fails if the committed copy is stale.
+
+Runtime stays independent of `notes/`: the manifest generator and harness import
+the committed JSON, never the specs live. The only code that reads `notes/` is the
+generator and the drift check, both at build/test time and only when `notes/` is
+present (the drift check SKIPs otherwise). The *element list, kwargs, content type,
+and strategy are not parsed from specs* — they are read live from `VOCABULARY`; the
+sigil register live from `core/tagname-sigil-map.js`. To reconcile after a
+`notes/spec` change: `node test/coverage/gen-spec-data.mjs`.
 
 ## Cell identity
 

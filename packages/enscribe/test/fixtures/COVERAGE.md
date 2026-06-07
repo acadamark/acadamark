@@ -7,10 +7,10 @@
 
 ## Summary
 
-- **Behavior cells:** 376  ·  **fixtures:** 56  ·  **annexed (generated) elements:** 19
-- **Covered:** 43 (11%)
-- **By status:** `deferred` 18 · `gap` 315 · `pass` 43
-- **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 334
+- **Behavior cells:** 369  ·  **fixtures:** 56  ·  **annexed (generated) elements:** 19
+- **Covered:** 43 (12%)
+- **By status:** `deferred` 18 · `gap` 306 · `needs-review` 2 · `pass` 43
+- **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `needs-review` 2 · `no-output` 4 · `specified` 325
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -67,10 +67,11 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 ## RQ-META — Author and meta blocks
 
-**Predicates:** `RQ-META-M1`, `RQ-META-M2`, `RQ-META-M3`, `RQ-META-S1`
+**Predicates:** `RQ-META-M1`, `RQ-META-M2`, `RQ-META-S1`, `RQ-META-M3`
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
+| `abstract` | deferred | deferred-presentation | — | 🟡 deferred |
 | `affiliation` | deferred | deferred-presentation | — | 🟡 deferred |
 | `author` | base | specified | — | 🔴 gap |
 | `author` | id | specified | — | 🔴 gap |
@@ -82,12 +83,16 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `author` | kwarg:corresponding | specified | — | 🔴 gap |
 | `author` | form:slash | specified | — | 🔴 gap |
 | `author` | form:long | specified | — | 🔴 gap |
+| `code-block` | deferred | deferred-presentation | — | 🟡 deferred |
 | `config` | no-output | no-output | — | 🔴 gap |
 | `data` | no-output | no-output | — | 🔴 gap |
 | `date` | deferred | deferred-presentation | — | 🟡 deferred |
 | `doi` | deferred | deferred-presentation | — | 🟡 deferred |
 | `editor` | deferred | deferred-presentation | — | 🟡 deferred |
 | `email` | deferred | deferred-presentation | — | 🟡 deferred |
+| `glossary` | deferred | deferred-presentation | — | 🟡 deferred |
+| `glossary-entry` | deferred | deferred-presentation | — | 🟡 deferred |
+| `inline-code` | deferred | deferred-presentation | — | 🟡 deferred |
 | `keywords` | deferred | deferred-presentation | — | 🟡 deferred |
 | `lang` | deferred | deferred-presentation | — | 🟡 deferred |
 | `library` | no-output | no-output | — | 🔴 gap |
@@ -101,15 +106,15 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `orcid` | deferred | deferred-presentation | — | 🟡 deferred |
 | `publication-date` | deferred | deferred-presentation | — | 🟡 deferred |
 | `subject` | deferred | deferred-presentation | — | 🟡 deferred |
+| `term` | deferred | deferred-presentation | — | 🟡 deferred |
 | `version` | deferred | deferred-presentation | — | 🟡 deferred |
 
 ## RQ-BLK — Block prose
 
-**Predicates:** `RQ-BLK-M1`, `RQ-BLK-M2`, `RQ-BLK-S1`, `RQ-BLK-S2`
+**Predicates:** `RQ-BLK-M1`, `RQ-BLK-S1`, `RQ-BLK-S2`, `RQ-BLK-M2`
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
-| `abstract` | deferred | deferred-presentation | — | 🟡 deferred |
 | `blockquote` | base | specified | — | 🔴 gap |
 | `blockquote` | id | specified | — | 🔴 gap |
 | `blockquote` | class | specified | — | 🔴 gap |
@@ -117,13 +122,10 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `blockquote` | kwarg:type | specified | — | 🔴 gap |
 | `blockquote` | form:pipe | specified | — | 🔴 gap |
 | `blockquote` | form:long | specified | — | 🔴 gap |
-| `code-block` | deferred | deferred-presentation | — | 🟡 deferred |
 | `dd` | blanket | generic-implicit | — | 🔴 gap |
 | `details` | blanket | generic-implicit | — | 🔴 gap |
 | `dl` | blanket | generic-implicit | — | 🔴 gap |
 | `dt` | blanket | generic-implicit | — | 🔴 gap |
-| `glossary` | deferred | deferred-presentation | — | 🟡 deferred |
-| `glossary-entry` | deferred | deferred-presentation | — | 🟡 deferred |
 | `hr` | base | specified | — | 🔴 gap |
 | `hr` | id | specified | — | 🔴 gap |
 | `hr` | class | specified | — | 🔴 gap |
@@ -143,11 +145,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `ol` | kwarg:reversed | specified | — | 🔴 gap |
 | `ol` | form:long | specified | — | 🔴 gap |
 | `p` | blanket | generic-implicit | — | 🔴 gap |
-| `quote` | base | specified | — | 🔴 gap |
-| `quote` | id | specified | — | 🔴 gap |
-| `quote` | class | specified | — | 🔴 gap |
-| `quote` | kwarg:cite | specified | — | 🔴 gap |
-| `quote` | kwarg:type | specified | — | 🔴 gap |
 | `summary` | blanket | generic-implicit | — | 🔴 gap |
 | `ul` | base | specified | — | 🔴 gap |
 | `ul` | id | specified | — | 🔴 gap |
@@ -157,7 +154,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 ## RQ-INL — Inline prose
 
-**Predicates:** `RQ-INL-M1`, `RQ-INL-M2`, `RQ-INL-S1`
+**Predicates:** `RQ-INL-M1`, `RQ-INL-S1`, `RQ-INL-M2`
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
@@ -170,7 +167,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `em` | form:pipe | specified | `sweep/swp-inline.emd` | 🟢 pass |
 | `em` | form:long | specified | `sweep/swp-inline.emd` | 🟢 pass |
 | `i` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
-| `inline-code` | deferred | deferred-presentation | — | 🟡 deferred |
 | `kbd` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `output` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `q` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
@@ -184,7 +180,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `strong` | form:long | specified | — | 🔴 gap |
 | `sub` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `sup` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
-| `term` | deferred | deferred-presentation | — | 🟡 deferred |
 | `u` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `var` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 
@@ -275,10 +270,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `abc` | class | specified | — | 🔴 gap |
 | `abc` | form:pipe | specified | — | 🔴 gap |
 | `abc` | form:long | specified | — | 🔴 gap |
-| `diagram` | base | specified | — | 🔴 gap |
-| `diagram` | id | specified | — | 🔴 gap |
-| `diagram` | class | specified | — | 🔴 gap |
-| `diagram` | kwarg:caption | specified | — | 🔴 gap |
 | `mermaid` | base | specified | — | 🔴 gap |
 | `mermaid` | id | specified | — | 🔴 gap |
 | `mermaid` | class | specified | — | 🔴 gap |
@@ -452,9 +443,9 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `bibliography` | kwarg:type | specified | — | 🔴 gap |
 | `bibliography` | form:long | specified | — | 🔴 gap |
 
-## RQ-BOOK — Book documents
+## RQ-TOC — Table-of-contents sidebar and scroll-spy
 
-**Predicates:** `RQ-BOOK-M1`, `RQ-BOOK-M2`, `RQ-BOOK-M3`, `RQ-BOOK-M4`, `RQ-BOOK-M5`, `RQ-BOOK-M6`, `RQ-BOOK-S1`
+**Predicates:** `RQ-TOC-M1`, `RQ-TOC-M2`, `RQ-TOC-S1`
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
@@ -474,6 +465,13 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `book-part` | form:pipe | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book-part` | form:long | specified | — | 🔴 gap |
 
+## ? — live-vocabulary elements with no coverage-map row (needs-review)
+
+| element | cell | status |
+|---|---|---|
+| `diagram` | base | 🔵 needs-review |
+| `quote` | base | 🔵 needs-review |
+
 ## Annex — generated / not-authored-directly elements
 
 These elements have an all-`—` tag-forms row: they cannot be authored standalone and get **no fixture**. They are exercised through the parent context fixture that produces them (§7.4). A blank parent is itself a visible gap until a context fixture instantiates it.
@@ -485,13 +483,13 @@ These elements have an all-`—` tag-forms row: they cannot be authored standalo
 | `article-front` | RQ-DOC | — |
 | `article-subtitle` | RQ-DOC | — |
 | `article-title` | RQ-DOC | — |
-| `book-back` | RQ-BOOK | — |
-| `book-body` | RQ-BOOK | — |
-| `book-front` | RQ-BOOK | — |
-| `book-part-subtitle` | RQ-BOOK | — |
-| `book-part-title` | RQ-BOOK | — |
-| `book-subtitle` | RQ-BOOK | — |
-| `book-title` | RQ-BOOK | — |
+| `book-back` | RQ-TOC | — |
+| `book-body` | RQ-TOC | — |
+| `book-front` | RQ-TOC | — |
+| `book-part-subtitle` | RQ-TOC | — |
+| `book-part-title` | RQ-TOC | — |
+| `book-subtitle` | RQ-TOC | — |
+| `book-title` | RQ-TOC | — |
 | `note-list` | RQ-NOTE | — |
 | `section-subtitle` | RQ-DOC | — |
 | `section-title` | RQ-DOC | — |
