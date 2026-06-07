@@ -25,5 +25,8 @@
     "test": "npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",
     "docs:build": "node docs-site/build.js"
+  },
+  "dependencies": {
+    "jats-xml": "^1.1.5"
   }
 }
