@@ -47,7 +47,7 @@ Define `a ≡ b` iff `lower(a) == lower(b)` byte-for-byte. `lower` is the canoni
 
 - **Never lost:** semantic content, element identity / IDs, cross-references, meaning-bearing attribute values, content order.
 - **May be normalized:** whitespace (per the policy below), choice among equivalent idioms, attribute ordering, omitted or defaulted attributes.
-- **Verbatim-exempt (byte-preserved):** code blocks, `pre`, and math source — excluded from whitespace normalization entirely.
+- **Verbatim-exempt (byte-preserved):** any node whose textual content is literal and significant — its exact characters must survive unchanged. Instances: code blocks, `pre`, math source, echoed raw / unknown-tag source, and diagnostic display (e.g. parse-error spans). Defined by this property, not a fixed list, so new literal-text node kinds are covered without amending the spec. Excluded from whitespace normalization *and* from any display transform (e.g. smart typography).
 
 ## Idiom precedence (default lift policy)
 

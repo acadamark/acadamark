@@ -14,6 +14,14 @@
 // (<inline-math>/<display-math>, including the KaTeX MathML LaTeX annotation), and
 // raw <script>/<style>/<svg>. Attribute values (e.g. link/URL targets in an href)
 // are never touched — only text nodes are visited.
+//
+// Quote context across an opaque inline span (<code>, inline-math, or a
+// data.verbatim literal) behaves as after a WORD char: an apostrophe immediately
+// after the span closes (`parseCsv`'s → ’s), not opens — regardless of the span's
+// literal last char (option (b): an inline span is a token). A trailing space in
+// the FOLLOWING text still resets context to whitespace. Diagnostic error spans
+// (parse-error / tag-error) are emitted data.verbatim at the interpreter so their
+// literal grammar/regex tokens (Expected "$", ="'[\],]) are displayed unaltered.
 
 // Verbatim subtrees: their text is left exactly as authored.
 const SKIP = new Set(['code', 'pre', 'inline-math', 'display-math', 'script', 'style', 'svg']);
@@ -25,6 +33,19 @@ const INLINE = new Set([
   'a', 'em', 'strong', 'b', 'i', 'u', 's', 'span', 'sup', 'sub', 'cite', 'abbr',
   'mark', 'small', 'q', 'time', 'ins', 'del', 'var', 'wbr', 'br', 'code',
 ]);
+
+// Opaque inline spans: their text is verbatim (SKIP) AND, on exit, quote context
+// behaves as after a WORD char — an apostrophe right after `code`/inline-math
+// closes (`parseCsv`'s → ’s), not opens, regardless of the span's literal last
+// char (option (b): an inline span is a token). A trailing space in the FOLLOWING
+// text still resets context to whitespace, so a span + space + quote opens
+// normally. Block-level verbatim (pre, display-math, script, …) are NOT here —
+// they reset context like any block boundary.
+const VERBATIM_INLINE = new Set(['code', 'inline-math']);
+
+// The quote context left after an opaque inline span or inline literal: a word
+// char, so a following apostrophe/quote closes (option (b)).
+const WORD = 'x';
 
 // A quote is OPENING when preceded by start-of-block, whitespace, an opening
 // bracket, a dash, or an already-opened curly quote (nested quotes).
@@ -75,18 +96,31 @@ export function smartTypography(tree) {
   let prev = '';
   const walk = (node, skip) => {
     if (node.type === 'text') {
-      // Verbatim subtree, or a literal-source text node (escaped raw HTML /
-      // echoed unknown-tag syntax, flagged data.verbatim) → leave byte-identical.
-      if (skip || node.data?.verbatim) return;
+      // Inside a verbatim subtree (SKIP / opaque inline span): byte-identical.
+      // The enclosing element's exit rule owns the quote context, so leave prev.
+      if (skip) return;
+      // Inline literal text (escaped raw HTML / echoed unknown-tag syntax /
+      // diagnostic error token, flagged data.verbatim): byte-identical, and
+      // behaves as a WORD for the quote context that follows (option (b)).
+      if (node.data?.verbatim) { prev = WORD; return; }
       node.value = educate(node.value, prev);
       if (node.value) prev = node.value[node.value.length - 1];
       return;
     }
     if (node.type === 'raw') { prev = ''; return; } // opaque raw HTML island
     if (node.type !== 'element' && node.type !== 'root') return;
-    const here = skip || (node.tagName != null && SKIP.has(node.tagName));
-    if (node.type === 'element' && node.tagName != null && !INLINE.has(node.tagName)) prev = '';
+    const tag = node.tagName;
+    const here = skip || (tag != null && SKIP.has(tag));
+    // A block boundary resets quote context. Inline elements (INLINE) and opaque
+    // inline spans (VERBATIM_INLINE) do not — a quote may span them.
+    if (node.type === 'element' && tag != null && !INLINE.has(tag) && !VERBATIM_INLINE.has(tag)) {
+      prev = '';
+    }
     for (const child of node.children ?? []) walk(child, here);
+    // Exiting an opaque inline span: quote context behaves as after a word, so a
+    // following apostrophe closes. (The curl bug was prev staying at the pre-span
+    // space because the span's skipped text never advanced it.)
+    if (node.type === 'element' && tag != null && VERBATIM_INLINE.has(tag)) prev = WORD;
   };
   walk(tree, false);
   return tree;

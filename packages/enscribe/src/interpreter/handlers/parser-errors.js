@@ -50,7 +50,9 @@ export function parseErrorHandler(_state, node) {
     type: 'element',
     tagName: 'span',
     properties: { className: ['parse-error'] },
-    children: [{ type: 'text', value: text }],
+    // data.verbatim: the message embeds the literal source fragment (e.g. an
+    // escape sequence in quotes); smart typography (#54) must not curl it.
+    children: [{ type: 'text', value: text, data: { verbatim: true } }],
   };
   if (node.position) el.position = node.position;
   return el;
@@ -77,7 +79,9 @@ export function tagErrorHandler(_state, node) {
     type: 'element',
     tagName: 'span',
     properties: { className: ['tag-error'] },
-    children: [{ type: 'text', value: text }],
+    // data.verbatim: the message lists literal grammar/regex tokens (e.g.
+    // Expected "$", ="'[\],]); smart typography (#54) must not curl them.
+    children: [{ type: 'text', value: text, data: { verbatim: true } }],
   };
   if (node.position) el.position = node.position;
   return el;

@@ -58,4 +58,39 @@ export function run() {
       'smartTypography:false → no typographic substitution anywhere');
     console.log('PASS: smart-typography — disabled by smartTypography:false');
   }
+
+  // ── opaque inline span: an apostrophe immediately after inline code / inline
+  //    math CLOSES (option b — the span is a token, word-like for quote context),
+  //    regardless of the span's literal last char; a trailing space before a
+  //    quote still OPENS. This is the #54 curl-bug fix (was: opening quote because
+  //    the span's skipped text never advanced quote context). ──────────────────
+  {
+    assert.ok(html("Code `x`'s.").includes('<code>x</code>’s'),
+      "apostrophe right after inline code closes (`x`'s → ’s)");
+    assert.ok(html("Punct `f()`'s.").includes('<code>f()</code>’s'),
+      'apostrophe after a punctuation-ending code span still closes (token, not its last char)');
+    assert.ok(html("Math $x$'s.").includes('</inline-math>’s'),
+      "apostrophe right after inline math closes ($x$'s → ’s)");
+    assert.ok(!html("Code `x`'s.").includes('<code>x</code>‘s'),
+      'regression guard: no OPENING quote immediately after an inline span (the original #54 bug)');
+    assert.ok(html("Space `x` 'q'.").includes('<code>x</code> ‘q’'),
+      'span + space + quote opens normally (the trailing space resets context to whitespace)');
+    console.log('PASS: smart-typography — apostrophe after opaque inline span closes; span+space opens');
+  }
+
+  // ── diagnostic error spans (parse-error / tag-error) display LITERAL grammar /
+  //    regex / source tokens — smart typography must leave them byte-identical
+  //    (marked data.verbatim at the interpreter). ───────────────────────────────
+  {
+    const tagErr = region(html('before <u, v> after'), /<span class="tag-error">[\s\S]*?<\/span>/);
+    assert.ok(tagErr, 'a malformed tag emits a tag-error span');
+    assert.ok(!/[“”‘’]/.test(tagErr), 'tag-error literal tokens are NOT curled');
+    assert.ok(tagErr.includes('"'), 'tag-error keeps its straight-quoted grammar tokens');
+
+    const parseErr = region(html('<aside | has \\z escape>'), /<span class="parse-error">[\s\S]*?<\/span>/);
+    assert.ok(parseErr, 'an unknown escape in tag content emits a parse-error span');
+    assert.ok(!/[“”‘’]/.test(parseErr), 'parse-error literal source fragment is NOT curled');
+    assert.ok(parseErr.includes('"'), 'parse-error keeps the straight quotes around its source fragment');
+    console.log('PASS: smart-typography — parse-error / tag-error tokens left verbatim');
+  }
 }

@@ -263,7 +263,10 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "??tag: <aside | This aside opens with a pipe and never closes.\n\nAuthor-intended body text that follows, never visible as body in\nthe rendered output — by Option A's EOF-only design, this content\nis swallowed into the error node's source. The bounded cost is\nacceptable: the error renders visibly at the open position, and\nthe missing post-tag content is itself a strong author signal.\n — Expected \"$\", \"$$\", \"<\", \">\", \"\\\\\", \"^\", \"_\", \"`\", \"``\", or [^>\\\\] but end of input found.??"
+                      "value": "??tag: <aside | This aside opens with a pipe and never closes.\n\nAuthor-intended body text that follows, never visible as body in\nthe rendered output — by Option A's EOF-only design, this content\nis swallowed into the error node's source. The bounded cost is\nacceptable: the error renders visibly at the open position, and\nthe missing post-tag content is itself a strong author signal.\n — Expected \"$\", \"$$\", \"<\", \">\", \"\\\\\", \"^\", \"_\", \"`\", \"``\", or [^>\\\\] but end of input found.??",
+                      "data": {
+                        "verbatim": true
+                      }
                     }
                   ],
                   "position": {

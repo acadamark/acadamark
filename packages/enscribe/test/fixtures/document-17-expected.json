@@ -384,7 +384,10 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "??parse: unknown-escape-sequence \"\\\\z\"??"
+                          "value": "??parse: unknown-escape-sequence \"\\\\z\"??",
+                          "data": {
+                            "verbatim": true
+                          }
                         }
                       ]
                     },
