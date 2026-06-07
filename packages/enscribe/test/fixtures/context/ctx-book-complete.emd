@@ -1,0 +1,27 @@
+<meta type=book>
+  <title | Field Methods in Savanna Ecology>
+  <subtitle | A Practical Handbook>
+  <author | The Enscribe Team>
+</meta>
+
+<!-- cell: book/base -->
+<!-- cell: book-part/form:pipe -->
+<preface | About this Handbook>
+This preface sits in the book's front matter and introduces the handbook.
+
+<!-- cell: book-part/kwarg:book-part-type -->
+<chapter | Counting Elephants>
+Aerial transects remain the standard method. See <ref @fig:transect> for the
+grid layout; in a book it resolves to a chapter-scoped number.
+
+<fig #fig:transect src="transect.png" | A standard aerial-transect grid.>
+
+<chapter | Estimating Browse Pressure>
+<author | Guest Contributor>
+This chapter carries its own author, distinct from the book-level author, and
+renumbers its figures from one.
+
+<fig #fig:browse src="browse.png" | A browse-damage scoring rubric.>
+
+<appendix | Field Data Sheets>
+Reproducible blank data sheets for transect counts, placed in the back matter.

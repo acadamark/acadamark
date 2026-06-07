@@ -115,27 +115,7 @@
     "kind": "S",
     "pass": true
   },
-  "RQ-DOC-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-DOC-M2": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-DOC-M3": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-META-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-META-M2": {
     "kind": "M",
     "pass": null,
     "status": "untested"
@@ -161,16 +141,6 @@
     "status": "untested"
   },
   "RQ-INL-M2": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-FRM-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-FRM-M2": {
     "kind": "M",
     "pass": null,
     "status": "untested"
@@ -265,11 +235,6 @@
     "pass": null,
     "status": "untested"
   },
-  "RQ-MATH-M2": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-MATH-M3": {
     "kind": "M",
     "pass": null,
@@ -290,11 +255,6 @@
     "pass": null,
     "status": "untested"
   },
-  "RQ-XREF-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-XREF-M2": {
     "kind": "M",
     "pass": null,
@@ -306,11 +266,6 @@
     "status": "untested"
   },
   "RQ-XREF-M4": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-NOTE-M1": {
     "kind": "M",
     "pass": null,
     "status": "untested"
@@ -341,11 +296,6 @@
     "status": "untested"
   },
   "RQ-BIB-M4": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-BOOK-M1": {
     "kind": "M",
     "pass": null,
     "status": "untested"
@@ -384,6 +334,46 @@
     "kind": "M",
     "pass": null,
     "status": "untested"
+  },
+  "RQ-DOC-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-DOC-M3": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-META-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-META-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-FRM-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-FRM-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-MATH-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-NOTE-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-XREF-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-BOOK-M1": {
+    "kind": "M",
+    "pass": true
   },
   "RQ-DSL-LIVE-O1": {
     "kind": "O",

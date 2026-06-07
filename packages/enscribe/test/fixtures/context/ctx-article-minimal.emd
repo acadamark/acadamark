@@ -1,0 +1,10 @@
+<meta type=article>
+  <title | The Smallest Valid Article>
+</meta>
+
+<!-- cell: article/base -->
+<!-- cell: section/form:pipe -->
+<section | Introduction>
+A single section with one paragraph and no apparatus. The front-matter holds only
+the title; the back-matter regions are empty and are therefore suppressed
+(RQ-DOC-M1, minimal form).

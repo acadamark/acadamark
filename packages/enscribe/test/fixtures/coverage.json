@@ -2,12 +2,13 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 376,
-    "fixtures": 50,
+    "fixtures": 53,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 358,
-    "deferred": 18
+    "gap": 347,
+    "deferred": 18,
+    "pass": 11
   },
   "byDisposition": {
     "specified": 334,
@@ -437,8 +438,10 @@
         "RQ-DOC-S3",
         "RQ-DOC-S4"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-minimal.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "article/id",
@@ -1264,8 +1267,10 @@
         "RQ-BOOK-M6",
         "RQ-BOOK-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-book-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "book/id",
@@ -1444,8 +1449,10 @@
         "RQ-BOOK-M6",
         "RQ-BOOK-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-book-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "book-part/kwarg:numbering-style",
@@ -1498,8 +1505,10 @@
         "RQ-BOOK-M6",
         "RQ-BOOK-S1"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-book-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "book-part/form:long",
@@ -2419,8 +2428,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "display-math/register:markdown",
@@ -3024,8 +3035,10 @@
         "RQ-FRM-S6",
         "RQ-FRM-S7"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "fig/form:slash",
@@ -5404,8 +5417,11 @@
         "RQ-DOC-S3",
         "RQ-DOC-S4"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd",
+        "context/ctx-article-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "section/kwarg:numbering-style",
@@ -5440,8 +5456,11 @@
         "RQ-DOC-S3",
         "RQ-DOC-S4"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd",
+        "context/ctx-article-minimal.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "section/form:long",
@@ -5700,8 +5719,10 @@
         "RQ-DOC-S3",
         "RQ-DOC-S4"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "sub-section/form:long",
@@ -5862,8 +5883,10 @@
         "RQ-DOC-S3",
         "RQ-DOC-S4"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "sub-sub-section/form:long",
@@ -6414,8 +6437,10 @@
         "RQ-FRM-S6",
         "RQ-FRM-S7"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "context/ctx-article-complete.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "table/kwarg:src",
@@ -7108,6 +7133,9 @@
     }
   ],
   "fixtures": [
+    "context/ctx-article-complete.emd",
+    "context/ctx-article-minimal.emd",
+    "context/ctx-book-complete.emd",
     "document-1-minimal.emd",
     "document-10-shortcuts.emd",
     "document-11-bare-math.emd",

@@ -98,7 +98,18 @@ const S_CHECKS = {
 // (Registry seeded with a few that are checkable on any document containing the
 // construct; most are wired per-fixture as the catalog is authored.)
 const M_CHECKS = {
-  // 'RQ-FRM-M1': (html) => /<figure>[\s\S]*<figcaption/.test(html),
+  // Verified against the family-1 context fixtures (final render). A predicate
+  // passes if it holds in at least one marked fixture that exercises it.
+  'RQ-DOC-M1': (h) => /<article-front/.test(h) && /<article-body/.test(h),
+  'RQ-DOC-M3': (h) => /<section[\s>]/.test(h) && /<sub-section[\s>]/.test(h) && /<sub-sub-section[\s>]/.test(h),
+  'RQ-META-M1': (h) => /<author[\s>]/.test(h),
+  'RQ-META-M2': (h) => /<author[^>]*\scorresponding[\s>]/.test(h),
+  'RQ-FRM-M1': (h) => /<figure[^>]*>/.test(h) && /<figcaption/.test(h) && /figure-label/.test(h),
+  'RQ-FRM-M2': (h) => /<table>/.test(h) && /<caption/.test(h) && /table-label/.test(h),
+  'RQ-MATH-M2': (h) => /<display-math/.test(h) && /equation-number/.test(h),
+  'RQ-NOTE-M1': (h) => /<sup id="noteref-\d+"/.test(h),
+  'RQ-XREF-M1': (h) => /class="ref"/.test(h),
+  'RQ-BOOK-M1': (h) => /<book>/.test(h) && /<book-front/.test(h) && /<book-body/.test(h) && /<book-back/.test(h),
 };
 
 // ── Fixture discovery ────────────────────────────────────────────────────────

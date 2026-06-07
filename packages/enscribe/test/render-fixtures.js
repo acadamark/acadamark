@@ -19,7 +19,7 @@
  * Writes: test/fixtures/*.html  (one per .emd)
  */
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, resolve } from 'node:path';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
@@ -134,17 +134,28 @@ function renderFixture(emdPath) {
   const fragment = String(processor.processSync(src));
   const html = wrapInHtmlShell(fragment, name);
 
-  const outPath = join(FIXTURES_DIR, `${name}.html`);
+  // The .html is written beside its .emd (same directory), so fixtures organised
+  // into subdirectories (context/, sweep/, …; #5) render in place.
+  const outPath = join(dirname(emdPath), `${name}.html`);
   writeFileSync(outPath, html, 'utf8');
-  console.log(`  wrote ${basename(outPath)}`);
+  console.log(`  wrote ${basename(emdPath, '.emd')}.html`);
 }
 
-// Find all source fixtures in the fixtures directory and render them.
-// `.emd` is the canonical extension; `.enscribe` is accepted as an alias.
-const emdFiles = readdirSync(FIXTURES_DIR)
-  .filter(f => f.endsWith('.emd') || f.endsWith('.enscribe'))
-  .sort()
-  .map(f => join(FIXTURES_DIR, f));
+// Find all source fixtures, recursing into subdirectories (#5 organises the
+// systematic fixtures under context/, sweep/, register/, …). The `archive/`
+// directory holds migrated-out redundant fixtures and is skipped. `.emd` is the
+// canonical extension; `.enscribe` is accepted as an alias.
+function findEmd(dir) {
+  const out = [];
+  for (const f of readdirSync(dir)) {
+    if (f === 'archive') continue;
+    const p = join(dir, f);
+    if (statSync(p).isDirectory()) out.push(...findEmd(p));
+    else if (f.endsWith('.emd') || f.endsWith('.enscribe')) out.push(p);
+  }
+  return out;
+}
+const emdFiles = findEmd(FIXTURES_DIR).sort();
 
 console.log(`Rendering ${emdFiles.length} fixture(s)...`);
 for (const emdPath of emdFiles) {

@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **Behavior cells:** 376  ·  **fixtures:** 50  ·  **annexed (generated) elements:** 19
-- **Covered:** 0 (0%)
-- **By status:** `deferred` 18 · `gap` 358
+- **Behavior cells:** 376  ·  **fixtures:** 53  ·  **annexed (generated) elements:** 19
+- **Covered:** 11 (3%)
+- **By status:** `deferred` 18 · `gap` 347 · `pass` 11
 - **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 334
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
@@ -20,7 +20,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
-| `article` | base | specified | — | 🔴 gap |
+| `article` | base | specified | `context/ctx-article-minimal.emd` | 🟢 pass |
 | `article` | id | specified | — | 🔴 gap |
 | `article` | class | specified | — | 🔴 gap |
 | `article` | kwarg:numbering-style | specified | — | 🔴 gap |
@@ -30,9 +30,9 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `section` | base | specified | — | 🔴 gap |
 | `section` | id | specified | — | 🔴 gap |
 | `section` | class | specified | — | 🔴 gap |
-| `section` | kwarg:sec-type | specified | — | 🔴 gap |
+| `section` | kwarg:sec-type | specified | `context/ctx-article-complete.emd` `context/ctx-article-complete.emd` | 🟢 pass |
 | `section` | kwarg:numbering-style | specified | — | 🔴 gap |
-| `section` | form:pipe | specified | — | 🔴 gap |
+| `section` | form:pipe | specified | `context/ctx-article-complete.emd` `context/ctx-article-minimal.emd` | 🟢 pass |
 | `section` | form:long | specified | — | 🔴 gap |
 | `section` | register:sigil | specified | — | 🔴 gap |
 | `section` | register:markdown | specified | — | 🔴 gap |
@@ -41,7 +41,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `sub-section` | class | specified | — | 🔴 gap |
 | `sub-section` | kwarg:sec-type | specified | — | 🔴 gap |
 | `sub-section` | kwarg:numbering-style | specified | — | 🔴 gap |
-| `sub-section` | form:pipe | specified | — | 🔴 gap |
+| `sub-section` | form:pipe | specified | `context/ctx-article-complete.emd` | 🟢 pass |
 | `sub-section` | form:long | specified | — | 🔴 gap |
 | `sub-section` | register:sigil | specified | — | 🔴 gap |
 | `sub-section` | register:markdown | specified | — | 🔴 gap |
@@ -50,7 +50,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `sub-sub-section` | class | specified | — | 🔴 gap |
 | `sub-sub-section` | kwarg:sec-type | specified | — | 🔴 gap |
 | `sub-sub-section` | kwarg:numbering-style | specified | — | 🔴 gap |
-| `sub-sub-section` | form:pipe | specified | — | 🔴 gap |
+| `sub-sub-section` | form:pipe | specified | `context/ctx-article-complete.emd` | 🟢 pass |
 | `sub-sub-section` | form:long | specified | — | 🔴 gap |
 | `sub-sub-section` | register:sigil | specified | — | 🔴 gap |
 | `sub-sub-section` | register:markdown | specified | — | 🔴 gap |
@@ -216,7 +216,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `fig` | kwarg:width | specified | — | 🔴 gap |
 | `fig` | kwarg:type | specified | — | 🔴 gap |
 | `fig` | kwarg:caption | specified | — | 🔴 gap |
-| `fig` | form:pipe | specified | — | 🔴 gap |
+| `fig` | form:pipe | specified | `context/ctx-article-complete.emd` | 🟢 pass |
 | `fig` | form:slash | specified | — | 🔴 gap |
 | `fig` | form:long | specified | — | 🔴 gap |
 | `figure` | base | specified | — | 🔴 gap |
@@ -252,7 +252,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `table` | id | specified | — | 🔴 gap |
 | `table` | class | specified | — | 🔴 gap |
 | `table` | kwarg:parse-columns | specified | — | 🔴 gap |
-| `table` | kwarg:caption | specified | — | 🔴 gap |
+| `table` | kwarg:caption | specified | `context/ctx-article-complete.emd` | 🟢 pass |
 | `table` | kwarg:src | specified | — | 🔴 gap |
 | `table` | kwarg:type | specified | — | 🔴 gap |
 | `table` | form:pipe | specified | — | 🔴 gap |
@@ -303,7 +303,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `display-math` | id | specified | — | 🔴 gap |
 | `display-math` | class | specified | — | 🔴 gap |
 | `display-math` | form:pipe | specified | — | 🔴 gap |
-| `display-math` | register:sigil | specified | — | 🔴 gap |
+| `display-math` | register:sigil | specified | `context/ctx-article-complete.emd` | 🟢 pass |
 | `display-math` | register:markdown | specified | — | 🔴 gap |
 | `eqnarray` | base | specified | — | 🔴 gap |
 | `eqnarray` | id | specified | — | 🔴 gap |
@@ -458,7 +458,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
-| `book` | base | specified | — | 🔴 gap |
+| `book` | base | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book` | id | specified | — | 🔴 gap |
 | `book` | class | specified | — | 🔴 gap |
 | `book` | kwarg:numbering-style | specified | — | 🔴 gap |
@@ -468,10 +468,10 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `book-part` | base | specified | — | 🔴 gap |
 | `book-part` | id | specified | — | 🔴 gap |
 | `book-part` | class | specified | — | 🔴 gap |
-| `book-part` | kwarg:book-part-type | specified | — | 🔴 gap |
+| `book-part` | kwarg:book-part-type | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book-part` | kwarg:numbering-style | specified | — | 🔴 gap |
 | `book-part` | kwarg:note-position | specified | — | 🔴 gap |
-| `book-part` | form:pipe | specified | — | 🔴 gap |
+| `book-part` | form:pipe | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book-part` | form:long | specified | — | 🔴 gap |
 
 ## Annex — generated / not-authored-directly elements

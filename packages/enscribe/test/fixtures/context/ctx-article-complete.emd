@@ -1,0 +1,52 @@
+<meta type=article>
+  <title | Megaherbivores as Ecosystem Engineers>
+  <subtitle | Evidence from Sub-Saharan Savanna Systems>
+  <author #goodall affiliation="Gombe Institute" orcid=0000-0002-1825-0097 email=jg@gombe.example +corresponding | Jane Goodall>
+  <author affiliation="Royal Society" | David Attenborough>
+  <date | 2026-05-01>
+  <doi | 10.1234/megaherbivores.2026>
+  <keywords | elephants, savanna, carbon, ecosystem engineering>
+  <abstract | We present evidence that elephant populations shape regional climate by remodelling woody vegetation and soil carbon storage.>
+</meta>
+
+<!-- cell: section/form:pipe -->
+<!-- cell: section/kwarg:sec-type -->
+<section #intro sec-type=intro | Introduction>
+Elephant populations have been **declining** for decades, and their role as
+ecosystem engineers is *understated* in most climate models. We revisit the
+question with three decades of census data.<note | "Megaherbivore" follows Owen-Smith's 1988 usage: body mass above 1000 kg.>
+
+A landmark survey <cite @goodall1971> first quantified the link between browsing
+pressure and canopy turnover; see <ref @fig:elephant> and <ref @tab:density>.
+
+<!-- cell: section/kwarg:sec-type -->
+<section #methods sec-type=methods | Methods>
+
+<!-- cell: sub-section/form:pipe -->
+<sub-section | Data sources>
+We compiled census data from twelve national parks.
+
+<!-- cell: sub-sub-section/form:pipe -->
+<sub-sub-section | Satellite imagery>
+Woody cover came from MODIS at 250 m resolution.
+
+<section #results sec-type=results | Results>
+The relationship between density $d$ and turnover is summarised by the model
+
+<!-- cell: display-math/register:sigil -->
+<$$ #eq:turnover | T = \alpha d + \beta \log(r) $$>
+
+A robust positive correlation holds across all parks (see <ref @eq:turnover>).
+
+<!-- cell: fig/form:pipe -->
+<figure #fig:elephant src="elephant.jpg" | An adult African elephant in Tanzania.>
+
+<!-- cell: table/kwarg:caption -->
+<table #tab:density csv caption="Elephant density and woody-cover turnover, by region." |
+Region, Density, Turnover
+Serengeti, 2.1, 0.34
+Kruger, 1.8, 0.29
+>
+
+<section #discussion sec-type=discussion | Discussion>
+Reintroduction may be a cost-effective climate intervention.<note placement=foot | This claim concerns degraded savanna only, not closed-canopy forest.>
