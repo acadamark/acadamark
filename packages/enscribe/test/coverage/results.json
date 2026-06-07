@@ -220,27 +220,7 @@
     "pass": null,
     "status": "untested"
   },
-  "RQ-MATH-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-MATH-M3": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-MATH-M4": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-THM-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-THM-M2": {
     "kind": "M",
     "pass": null,
     "status": "untested"
@@ -370,6 +350,22 @@
     "pass": true
   },
   "RQ-INL-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-THM-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-THM-M2": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-MATH-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-MATH-M3": {
     "kind": "M",
     "pass": true
   },

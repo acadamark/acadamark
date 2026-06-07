@@ -1,0 +1,36 @@
+<meta type=article>
+  <title | Theorem Family Sweep>
+</meta>
+
+<section | Statements>
+The propositional family shares one counter; definition and example each own a
+counter; remark and proof are unnumbered by default.
+
+<!-- cell: theorem/form:pipe -->
+<theorem | For every prime $p$ there are infinitely many primes congruent to $1 \pmod p$.>
+
+<!-- cell: theorem/kwarg:name -->
+<theorem name="Pythagoras" | In a right triangle, $a^2 + b^2 = c^2$.>
+
+<!-- cell: lemma/form:pipe -->
+<lemma | Every bounded monotone sequence of reals converges.>
+
+<!-- cell: corollary/form:pipe -->
+<corollary | A continuous function on a closed interval attains its maximum.>
+
+<!-- cell: proposition/form:pipe -->
+<proposition | The empty set is a subset of every set.>
+
+<!-- cell: definition/form:pipe -->
+<definition | A set is countable if it is finite or in bijection with the naturals.>
+
+<!-- cell: example/form:pipe -->
+<example | The set of rational numbers is countable.>
+
+<!-- cell: remark/form:pipe -->
+<remark | The same argument generalises to any countable union of countable sets.>
+
+<!-- cell: proof/form:long -->
+<proof>
+The claim follows directly from the definitions given above.
+</proof>

@@ -2,12 +2,12 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 376,
-    "fixtures": 54,
+    "fixtures": 56,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 330,
-    "pass": 28,
+    "gap": 315,
+    "pass": 43,
     "deferred": 18
   },
   "byDisposition": {
@@ -422,8 +422,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-math.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "article/base",
@@ -1601,8 +1603,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-math.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "cite/base",
@@ -1943,8 +1947,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "corollary/form:long",
@@ -2218,8 +2224,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "definition/form:long",
@@ -2435,7 +2443,8 @@
         "RQ-MATH-S3"
       ],
       "coveredBy": [
-        "context/ctx-article-complete.emd"
+        "context/ctx-article-complete.emd",
+        "sweep/swp-math.emd"
       ],
       "status": "pass"
     },
@@ -2675,8 +2684,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-math.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "example/base",
@@ -2750,8 +2761,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "example/form:long",
@@ -3916,8 +3929,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-math.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "inline-math/register:markdown",
@@ -4055,8 +4070,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "lemma/form:long",
@@ -4262,8 +4279,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-math.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "matrix/base",
@@ -4334,8 +4353,10 @@
         "RQ-MATH-S2",
         "RQ-MATH-S3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-math.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "mermaid/base",
@@ -4913,8 +4934,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "proposition/base",
@@ -4988,8 +5011,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "proposition/form:long",
@@ -5320,8 +5345,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "remark/form:long",
@@ -6683,8 +6710,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "theorem/form:pipe",
@@ -6698,8 +6727,10 @@
         "RQ-THM-S1",
         "RQ-THM-S2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-theorem.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "theorem/form:long",
@@ -7220,6 +7251,8 @@
     "document-7-tables.emd",
     "document-8-citations.emd",
     "document-9-demo.emd",
-    "sweep/swp-inline.emd"
+    "sweep/swp-inline.emd",
+    "sweep/swp-math.emd",
+    "sweep/swp-theorem.emd"
   ]
 }

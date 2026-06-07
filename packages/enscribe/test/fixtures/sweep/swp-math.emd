@@ -1,0 +1,46 @@
+<meta type=article>
+  <title | Mathematics Sweep>
+</meta>
+
+<section | Inline and display math>
+Inline math such as
+<!-- cell: inline-math/register:sigil -->
+<$ e^{i\pi} + 1 = 0 $> flows within the line and is never numbered. A numbered
+display equation:
+
+<!-- cell: display-math/register:sigil -->
+<$$ #eq:gauss | \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi} $$>
+
+is cross-referenced as <ref @eq:gauss>.
+
+<section | Environments>
+The long-form environments each render their own wrapper around the KaTeX block.
+
+<!-- cell: math/form:long -->
+<math>
+\sum_{i=1}^{n} x_i = X
+</math>
+
+<!-- cell: align/form:long -->
+<align>
+x^2 + y^2 &= z^2 \\
+a + b &= c
+</align>
+
+<!-- cell: cases/form:long -->
+<cases>
+x^2 & \text{if } x \ge 0 \\
+-x^2 & \text{otherwise}
+</cases>
+
+<!-- cell: matrix/form:long -->
+<matrix>
+1 & 2 \\
+3 & 4
+</matrix>
+
+<!-- cell: eqnarray/form:long -->
+<eqnarray>
+a &=& b \\
+c &=& d
+</eqnarray>

@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **Behavior cells:** 376  ·  **fixtures:** 54  ·  **annexed (generated) elements:** 19
-- **Covered:** 28 (7%)
-- **By status:** `deferred` 18 · `gap` 330 · `pass` 28
+- **Behavior cells:** 376  ·  **fixtures:** 56  ·  **annexed (generated) elements:** 19
+- **Covered:** 43 (11%)
+- **By status:** `deferred` 18 · `gap` 315 · `pass` 43
 - **By disposition:** `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 334
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
@@ -294,35 +294,35 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `align` | base | specified | — | 🔴 gap |
 | `align` | id | specified | — | 🔴 gap |
 | `align` | class | specified | — | 🔴 gap |
-| `align` | form:long | specified | — | 🔴 gap |
+| `align` | form:long | specified | `sweep/swp-math.emd` | 🟢 pass |
 | `cases` | base | specified | — | 🔴 gap |
 | `cases` | id | specified | — | 🔴 gap |
 | `cases` | class | specified | — | 🔴 gap |
-| `cases` | form:long | specified | — | 🔴 gap |
+| `cases` | form:long | specified | `sweep/swp-math.emd` | 🟢 pass |
 | `display-math` | base | specified | — | 🔴 gap |
 | `display-math` | id | specified | — | 🔴 gap |
 | `display-math` | class | specified | — | 🔴 gap |
 | `display-math` | form:pipe | specified | — | 🔴 gap |
-| `display-math` | register:sigil | specified | `context/ctx-article-complete.emd` | 🟢 pass |
+| `display-math` | register:sigil | specified | `context/ctx-article-complete.emd` `sweep/swp-math.emd` | 🟢 pass |
 | `display-math` | register:markdown | specified | — | 🔴 gap |
 | `eqnarray` | base | specified | — | 🔴 gap |
 | `eqnarray` | id | specified | — | 🔴 gap |
 | `eqnarray` | class | specified | — | 🔴 gap |
-| `eqnarray` | form:long | specified | — | 🔴 gap |
+| `eqnarray` | form:long | specified | `sweep/swp-math.emd` | 🟢 pass |
 | `inline-math` | base | specified | — | 🔴 gap |
 | `inline-math` | id | specified | — | 🔴 gap |
 | `inline-math` | class | specified | — | 🔴 gap |
 | `inline-math` | form:pipe | specified | — | 🔴 gap |
-| `inline-math` | register:sigil | specified | — | 🔴 gap |
+| `inline-math` | register:sigil | specified | `sweep/swp-math.emd` | 🟢 pass |
 | `inline-math` | register:markdown | specified | — | 🔴 gap |
 | `math` | base | specified | — | 🔴 gap |
 | `math` | id | specified | — | 🔴 gap |
 | `math` | class | specified | — | 🔴 gap |
-| `math` | form:long | specified | — | 🔴 gap |
+| `math` | form:long | specified | `sweep/swp-math.emd` | 🟢 pass |
 | `matrix` | base | specified | — | 🔴 gap |
 | `matrix` | id | specified | — | 🔴 gap |
 | `matrix` | class | specified | — | 🔴 gap |
-| `matrix` | form:long | specified | — | 🔴 gap |
+| `matrix` | form:long | specified | `sweep/swp-math.emd` | 🟢 pass |
 
 ## RQ-THM — Theorem family
 
@@ -334,49 +334,49 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `corollary` | id | specified | — | 🔴 gap |
 | `corollary` | class | specified | — | 🔴 gap |
 | `corollary` | kwarg:name | specified | — | 🔴 gap |
-| `corollary` | form:pipe | specified | — | 🔴 gap |
+| `corollary` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `corollary` | form:long | specified | — | 🔴 gap |
 | `definition` | base | specified | — | 🔴 gap |
 | `definition` | id | specified | — | 🔴 gap |
 | `definition` | class | specified | — | 🔴 gap |
 | `definition` | kwarg:name | specified | — | 🔴 gap |
-| `definition` | form:pipe | specified | — | 🔴 gap |
+| `definition` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `definition` | form:long | specified | — | 🔴 gap |
 | `example` | base | specified | — | 🔴 gap |
 | `example` | id | specified | — | 🔴 gap |
 | `example` | class | specified | — | 🔴 gap |
 | `example` | kwarg:name | specified | — | 🔴 gap |
-| `example` | form:pipe | specified | — | 🔴 gap |
+| `example` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `example` | form:long | specified | — | 🔴 gap |
 | `lemma` | base | specified | — | 🔴 gap |
 | `lemma` | id | specified | — | 🔴 gap |
 | `lemma` | class | specified | — | 🔴 gap |
 | `lemma` | kwarg:name | specified | — | 🔴 gap |
-| `lemma` | form:pipe | specified | — | 🔴 gap |
+| `lemma` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `lemma` | form:long | specified | — | 🔴 gap |
 | `proof` | base | specified | — | 🔴 gap |
 | `proof` | id | specified | — | 🔴 gap |
 | `proof` | class | specified | — | 🔴 gap |
 | `proof` | kwarg:name | specified | — | 🔴 gap |
 | `proof` | form:pipe | specified | — | 🔴 gap |
-| `proof` | form:long | specified | — | 🔴 gap |
+| `proof` | form:long | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `proposition` | base | specified | — | 🔴 gap |
 | `proposition` | id | specified | — | 🔴 gap |
 | `proposition` | class | specified | — | 🔴 gap |
 | `proposition` | kwarg:name | specified | — | 🔴 gap |
-| `proposition` | form:pipe | specified | — | 🔴 gap |
+| `proposition` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `proposition` | form:long | specified | — | 🔴 gap |
 | `remark` | base | specified | — | 🔴 gap |
 | `remark` | id | specified | — | 🔴 gap |
 | `remark` | class | specified | — | 🔴 gap |
 | `remark` | kwarg:name | specified | — | 🔴 gap |
-| `remark` | form:pipe | specified | — | 🔴 gap |
+| `remark` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `remark` | form:long | specified | — | 🔴 gap |
 | `theorem` | base | specified | — | 🔴 gap |
 | `theorem` | id | specified | — | 🔴 gap |
 | `theorem` | class | specified | — | 🔴 gap |
-| `theorem` | kwarg:name | specified | — | 🔴 gap |
-| `theorem` | form:pipe | specified | — | 🔴 gap |
+| `theorem` | kwarg:name | specified | `sweep/swp-theorem.emd` | 🟢 pass |
+| `theorem` | form:pipe | specified | `sweep/swp-theorem.emd` | 🟢 pass |
 | `theorem` | form:long | specified | — | 🔴 gap |
 
 ## RQ-XREF — Cross-references and citations
