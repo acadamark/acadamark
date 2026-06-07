@@ -1,0 +1,7162 @@
+{
+  "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
+  "totals": {
+    "cells": 376,
+    "fixtures": 50,
+    "annexed": 19
+  },
+  "byStatus": {
+    "gap": 358,
+    "deferred": 18
+  },
+  "byDisposition": {
+    "specified": 334,
+    "generic-implicit": 20,
+    "deferred-presentation": 18,
+    "no-output": 4
+  },
+  "cells": [
+    {
+      "key": "a/base",
+      "element": "a",
+      "behavior": "base",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/id",
+      "element": "a",
+      "behavior": "id",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/class",
+      "element": "a",
+      "behavior": "class",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/kwarg:href",
+      "element": "a",
+      "behavior": "kwarg:href",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/kwarg:target",
+      "element": "a",
+      "behavior": "kwarg:target",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/kwarg:rel",
+      "element": "a",
+      "behavior": "kwarg:rel",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/kwarg:title",
+      "element": "a",
+      "behavior": "kwarg:title",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/form:pipe",
+      "element": "a",
+      "behavior": "form:pipe",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/form:long",
+      "element": "a",
+      "behavior": "form:long",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "a/register:markdown",
+      "element": "a",
+      "behavior": "register:markdown",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abbr/blanket",
+      "element": "abbr",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abc/base",
+      "element": "abc",
+      "behavior": "base",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abc/id",
+      "element": "abc",
+      "behavior": "id",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abc/class",
+      "element": "abc",
+      "behavior": "class",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abc/form:pipe",
+      "element": "abc",
+      "behavior": "form:pipe",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abc/form:long",
+      "element": "abc",
+      "behavior": "form:long",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "abstract/deferred",
+      "element": "abstract",
+      "behavior": "deferred",
+      "area": "RQ-BLK",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "affiliation/deferred",
+      "element": "affiliation",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "align/base",
+      "element": "align",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "align/id",
+      "element": "align",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "align/class",
+      "element": "align",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "align/form:long",
+      "element": "align",
+      "behavior": "form:long",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/base",
+      "element": "article",
+      "behavior": "base",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/id",
+      "element": "article",
+      "behavior": "id",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/class",
+      "element": "article",
+      "behavior": "class",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/kwarg:numbering-style",
+      "element": "article",
+      "behavior": "kwarg:numbering-style",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/kwarg:note-position",
+      "element": "article",
+      "behavior": "kwarg:note-position",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/form:pipe",
+      "element": "article",
+      "behavior": "form:pipe",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "article/form:long",
+      "element": "article",
+      "behavior": "form:long",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/base",
+      "element": "aside",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/id",
+      "element": "aside",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/class",
+      "element": "aside",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/kwarg:type",
+      "element": "aside",
+      "behavior": "kwarg:type",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/kwarg:title",
+      "element": "aside",
+      "behavior": "kwarg:title",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/kwarg:caption",
+      "element": "aside",
+      "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/form:pipe",
+      "element": "aside",
+      "behavior": "form:pipe",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "aside/form:long",
+      "element": "aside",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/base",
+      "element": "author",
+      "behavior": "base",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/id",
+      "element": "author",
+      "behavior": "id",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/class",
+      "element": "author",
+      "behavior": "class",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/kwarg:name",
+      "element": "author",
+      "behavior": "kwarg:name",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/kwarg:affiliation",
+      "element": "author",
+      "behavior": "kwarg:affiliation",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/kwarg:orcid",
+      "element": "author",
+      "behavior": "kwarg:orcid",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/kwarg:email",
+      "element": "author",
+      "behavior": "kwarg:email",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/kwarg:corresponding",
+      "element": "author",
+      "behavior": "kwarg:corresponding",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/form:slash",
+      "element": "author",
+      "behavior": "form:slash",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "author/form:long",
+      "element": "author",
+      "behavior": "form:long",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "b/blanket",
+      "element": "b",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bib-entry/base",
+      "element": "bib-entry",
+      "behavior": "base",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bib-entry/id",
+      "element": "bib-entry",
+      "behavior": "id",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bib-entry/class",
+      "element": "bib-entry",
+      "behavior": "class",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bib-entry/kwarg:type",
+      "element": "bib-entry",
+      "behavior": "kwarg:type",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bib-entry/form:long",
+      "element": "bib-entry",
+      "behavior": "form:long",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/base",
+      "element": "bibliography",
+      "behavior": "base",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/id",
+      "element": "bibliography",
+      "behavior": "id",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/class",
+      "element": "bibliography",
+      "behavior": "class",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/kwarg:source",
+      "element": "bibliography",
+      "behavior": "kwarg:source",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/kwarg:style",
+      "element": "bibliography",
+      "behavior": "kwarg:style",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/kwarg:sort",
+      "element": "bibliography",
+      "behavior": "kwarg:sort",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/kwarg:type",
+      "element": "bibliography",
+      "behavior": "kwarg:type",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "bibliography/form:long",
+      "element": "bibliography",
+      "behavior": "form:long",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/base",
+      "element": "blockquote",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/id",
+      "element": "blockquote",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/class",
+      "element": "blockquote",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/kwarg:cite",
+      "element": "blockquote",
+      "behavior": "kwarg:cite",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/kwarg:type",
+      "element": "blockquote",
+      "behavior": "kwarg:type",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/form:pipe",
+      "element": "blockquote",
+      "behavior": "form:pipe",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "blockquote/form:long",
+      "element": "blockquote",
+      "behavior": "form:long",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/base",
+      "element": "book",
+      "behavior": "base",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/id",
+      "element": "book",
+      "behavior": "id",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/class",
+      "element": "book",
+      "behavior": "class",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/kwarg:numbering-style",
+      "element": "book",
+      "behavior": "kwarg:numbering-style",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/kwarg:note-position",
+      "element": "book",
+      "behavior": "kwarg:note-position",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/form:pipe",
+      "element": "book",
+      "behavior": "form:pipe",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book/form:long",
+      "element": "book",
+      "behavior": "form:long",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/base",
+      "element": "book-part",
+      "behavior": "base",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/id",
+      "element": "book-part",
+      "behavior": "id",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/class",
+      "element": "book-part",
+      "behavior": "class",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/kwarg:book-part-type",
+      "element": "book-part",
+      "behavior": "kwarg:book-part-type",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/kwarg:numbering-style",
+      "element": "book-part",
+      "behavior": "kwarg:numbering-style",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/kwarg:note-position",
+      "element": "book-part",
+      "behavior": "kwarg:note-position",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/form:pipe",
+      "element": "book-part",
+      "behavior": "form:pipe",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "book-part/form:long",
+      "element": "book-part",
+      "behavior": "form:long",
+      "area": "RQ-BOOK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BOOK-M1",
+        "RQ-BOOK-M2",
+        "RQ-BOOK-M3",
+        "RQ-BOOK-M4",
+        "RQ-BOOK-M5",
+        "RQ-BOOK-M6",
+        "RQ-BOOK-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cases/base",
+      "element": "cases",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cases/id",
+      "element": "cases",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cases/class",
+      "element": "cases",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cases/form:long",
+      "element": "cases",
+      "behavior": "form:long",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/base",
+      "element": "cite",
+      "behavior": "base",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/id",
+      "element": "cite",
+      "behavior": "id",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/class",
+      "element": "cite",
+      "behavior": "class",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:keys",
+      "element": "cite",
+      "behavior": "kwarg:keys",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:page",
+      "element": "cite",
+      "behavior": "kwarg:page",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:chapter",
+      "element": "cite",
+      "behavior": "kwarg:chapter",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:section",
+      "element": "cite",
+      "behavior": "kwarg:section",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:prefix",
+      "element": "cite",
+      "behavior": "kwarg:prefix",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:suffix",
+      "element": "cite",
+      "behavior": "kwarg:suffix",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/kwarg:style",
+      "element": "cite",
+      "behavior": "kwarg:style",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/form:pipe",
+      "element": "cite",
+      "behavior": "form:pipe",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/form:slash",
+      "element": "cite",
+      "behavior": "form:slash",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "cite/form:long",
+      "element": "cite",
+      "behavior": "form:long",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "code/blanket",
+      "element": "code",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "code-block/deferred",
+      "element": "code-block",
+      "behavior": "deferred",
+      "area": "RQ-BLK",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "config/no-output",
+      "element": "config",
+      "behavior": "no-output",
+      "area": "RQ-META",
+      "disposition": "no-output",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "corollary/base",
+      "element": "corollary",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "corollary/id",
+      "element": "corollary",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "corollary/class",
+      "element": "corollary",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "corollary/kwarg:name",
+      "element": "corollary",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "corollary/form:pipe",
+      "element": "corollary",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "corollary/form:long",
+      "element": "corollary",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "csv/base",
+      "element": "csv",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "csv/id",
+      "element": "csv",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "csv/class",
+      "element": "csv",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "csv/form:pipe",
+      "element": "csv",
+      "behavior": "form:pipe",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "csv/form:long",
+      "element": "csv",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "data/no-output",
+      "element": "data",
+      "behavior": "no-output",
+      "area": "RQ-META",
+      "disposition": "no-output",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "date/deferred",
+      "element": "date",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "dd/blanket",
+      "element": "dd",
+      "behavior": "blanket",
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "definition/base",
+      "element": "definition",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "definition/id",
+      "element": "definition",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "definition/class",
+      "element": "definition",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "definition/kwarg:name",
+      "element": "definition",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "definition/form:pipe",
+      "element": "definition",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "definition/form:long",
+      "element": "definition",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "details/blanket",
+      "element": "details",
+      "behavior": "blanket",
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "diagram/base",
+      "element": "diagram",
+      "behavior": "base",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "diagram/id",
+      "element": "diagram",
+      "behavior": "id",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "diagram/class",
+      "element": "diagram",
+      "behavior": "class",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "diagram/kwarg:caption",
+      "element": "diagram",
+      "behavior": "kwarg:caption",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "display-math/base",
+      "element": "display-math",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "display-math/id",
+      "element": "display-math",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "display-math/class",
+      "element": "display-math",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "display-math/form:pipe",
+      "element": "display-math",
+      "behavior": "form:pipe",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "display-math/register:sigil",
+      "element": "display-math",
+      "behavior": "register:sigil",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "display-math/register:markdown",
+      "element": "display-math",
+      "behavior": "register:markdown",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "dl/blanket",
+      "element": "dl",
+      "behavior": "blanket",
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "doi/deferred",
+      "element": "doi",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "dt/blanket",
+      "element": "dt",
+      "behavior": "blanket",
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "editor/deferred",
+      "element": "editor",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "em/base",
+      "element": "em",
+      "behavior": "base",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "em/id",
+      "element": "em",
+      "behavior": "id",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "em/class",
+      "element": "em",
+      "behavior": "class",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "em/form:pipe",
+      "element": "em",
+      "behavior": "form:pipe",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "em/form:long",
+      "element": "em",
+      "behavior": "form:long",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "email/deferred",
+      "element": "email",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "eqnarray/base",
+      "element": "eqnarray",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "eqnarray/id",
+      "element": "eqnarray",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "eqnarray/class",
+      "element": "eqnarray",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "eqnarray/form:long",
+      "element": "eqnarray",
+      "behavior": "form:long",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "example/base",
+      "element": "example",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "example/id",
+      "element": "example",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "example/class",
+      "element": "example",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "example/kwarg:name",
+      "element": "example",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "example/form:pipe",
+      "element": "example",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "example/form:long",
+      "element": "example",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/base",
+      "element": "fig",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/id",
+      "element": "fig",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/class",
+      "element": "fig",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/kwarg:src",
+      "element": "fig",
+      "behavior": "kwarg:src",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/kwarg:alt",
+      "element": "fig",
+      "behavior": "kwarg:alt",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/kwarg:align",
+      "element": "fig",
+      "behavior": "kwarg:align",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/kwarg:width",
+      "element": "fig",
+      "behavior": "kwarg:width",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/kwarg:type",
+      "element": "fig",
+      "behavior": "kwarg:type",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/kwarg:caption",
+      "element": "fig",
+      "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/form:pipe",
+      "element": "fig",
+      "behavior": "form:pipe",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/form:slash",
+      "element": "fig",
+      "behavior": "form:slash",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "fig/form:long",
+      "element": "fig",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/base",
+      "element": "figure",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/id",
+      "element": "figure",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/class",
+      "element": "figure",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/kwarg:src",
+      "element": "figure",
+      "behavior": "kwarg:src",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/kwarg:alt",
+      "element": "figure",
+      "behavior": "kwarg:alt",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/kwarg:align",
+      "element": "figure",
+      "behavior": "kwarg:align",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/kwarg:width",
+      "element": "figure",
+      "behavior": "kwarg:width",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/kwarg:type",
+      "element": "figure",
+      "behavior": "kwarg:type",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "figure/kwarg:caption",
+      "element": "figure",
+      "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/base",
+      "element": "frame",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/id",
+      "element": "frame",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/class",
+      "element": "frame",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/kwarg:title",
+      "element": "frame",
+      "behavior": "kwarg:title",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/kwarg:caption",
+      "element": "frame",
+      "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/kwarg:type",
+      "element": "frame",
+      "behavior": "kwarg:type",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/form:pipe",
+      "element": "frame",
+      "behavior": "form:pipe",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "frame/form:long",
+      "element": "frame",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "glossary/deferred",
+      "element": "glossary",
+      "behavior": "deferred",
+      "area": "RQ-BLK",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "glossary-entry/deferred",
+      "element": "glossary-entry",
+      "behavior": "deferred",
+      "area": "RQ-BLK",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "hr/base",
+      "element": "hr",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "hr/id",
+      "element": "hr",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "hr/class",
+      "element": "hr",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "hr/kwarg:type",
+      "element": "hr",
+      "behavior": "kwarg:type",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "hr/form:slash",
+      "element": "hr",
+      "behavior": "form:slash",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "i/blanket",
+      "element": "i",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "img/base",
+      "element": "img",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "img/id",
+      "element": "img",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "img/class",
+      "element": "img",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "img/form:slash",
+      "element": "img",
+      "behavior": "form:slash",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "inline-code/deferred",
+      "element": "inline-code",
+      "behavior": "deferred",
+      "area": "RQ-INL",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "inline-math/base",
+      "element": "inline-math",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "inline-math/id",
+      "element": "inline-math",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "inline-math/class",
+      "element": "inline-math",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "inline-math/form:pipe",
+      "element": "inline-math",
+      "behavior": "form:pipe",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "inline-math/register:sigil",
+      "element": "inline-math",
+      "behavior": "register:sigil",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "inline-math/register:markdown",
+      "element": "inline-math",
+      "behavior": "register:markdown",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "kbd/blanket",
+      "element": "kbd",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "keywords/deferred",
+      "element": "keywords",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "lang/deferred",
+      "element": "lang",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "lemma/base",
+      "element": "lemma",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "lemma/id",
+      "element": "lemma",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "lemma/class",
+      "element": "lemma",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "lemma/kwarg:name",
+      "element": "lemma",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "lemma/form:pipe",
+      "element": "lemma",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "lemma/form:long",
+      "element": "lemma",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "li/base",
+      "element": "li",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "li/id",
+      "element": "li",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "li/class",
+      "element": "li",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "li/kwarg:value",
+      "element": "li",
+      "behavior": "kwarg:value",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "li/form:pipe",
+      "element": "li",
+      "behavior": "form:pipe",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "li/form:long",
+      "element": "li",
+      "behavior": "form:long",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "library/no-output",
+      "element": "library",
+      "behavior": "no-output",
+      "area": "RQ-META",
+      "disposition": "no-output",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "license/deferred",
+      "element": "license",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "math/base",
+      "element": "math",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "math/id",
+      "element": "math",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "math/class",
+      "element": "math",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "math/form:long",
+      "element": "math",
+      "behavior": "form:long",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "matrix/base",
+      "element": "matrix",
+      "behavior": "base",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "matrix/id",
+      "element": "matrix",
+      "behavior": "id",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "matrix/class",
+      "element": "matrix",
+      "behavior": "class",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "matrix/form:long",
+      "element": "matrix",
+      "behavior": "form:long",
+      "area": "RQ-MATH",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-MATH-M1",
+        "RQ-MATH-M2",
+        "RQ-MATH-M3",
+        "RQ-MATH-M4",
+        "RQ-MATH-S1",
+        "RQ-MATH-S2",
+        "RQ-MATH-S3"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "mermaid/base",
+      "element": "mermaid",
+      "behavior": "base",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "mermaid/id",
+      "element": "mermaid",
+      "behavior": "id",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "mermaid/class",
+      "element": "mermaid",
+      "behavior": "class",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "mermaid/form:pipe",
+      "element": "mermaid",
+      "behavior": "form:pipe",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "mermaid/form:long",
+      "element": "mermaid",
+      "behavior": "form:long",
+      "area": "RQ-DSL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DSL-M1",
+        "RQ-DSL-M2",
+        "RQ-DSL-M3",
+        "RQ-DSL-SKIP-M1",
+        "RQ-DSL-LIVE-M1",
+        "RQ-DSL-LIVE-M2",
+        "RQ-DSL-LIVE-O1",
+        "RQ-DSL-STATIC-M1",
+        "RQ-DSL-STATIC-M2",
+        "RQ-DSL-STATIC-O1",
+        "RQ-DSL-S1",
+        "RQ-DSL-SOURCE-M1",
+        "RQ-DSL-SOURCE-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "meta/no-output",
+      "element": "meta",
+      "behavior": "no-output",
+      "area": "RQ-META",
+      "disposition": "no-output",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "name/base",
+      "element": "name",
+      "behavior": "base",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "name/id",
+      "element": "name",
+      "behavior": "id",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "name/class",
+      "element": "name",
+      "behavior": "class",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "name/form:pipe",
+      "element": "name",
+      "behavior": "form:pipe",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "name/form:long",
+      "element": "name",
+      "behavior": "form:long",
+      "area": "RQ-META",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/base",
+      "element": "note",
+      "behavior": "base",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/id",
+      "element": "note",
+      "behavior": "id",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/class",
+      "element": "note",
+      "behavior": "class",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/kwarg:placement",
+      "element": "note",
+      "behavior": "kwarg:placement",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/kwarg:position",
+      "element": "note",
+      "behavior": "kwarg:position",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/kwarg:type",
+      "element": "note",
+      "behavior": "kwarg:type",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/form:pipe",
+      "element": "note",
+      "behavior": "form:pipe",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "note/form:long",
+      "element": "note",
+      "behavior": "form:long",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/base",
+      "element": "ol",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/id",
+      "element": "ol",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/class",
+      "element": "ol",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/kwarg:type",
+      "element": "ol",
+      "behavior": "kwarg:type",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/kwarg:start",
+      "element": "ol",
+      "behavior": "kwarg:start",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/kwarg:reversed",
+      "element": "ol",
+      "behavior": "kwarg:reversed",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ol/form:long",
+      "element": "ol",
+      "behavior": "form:long",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "orcid/deferred",
+      "element": "orcid",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "output/blanket",
+      "element": "output",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "p/blanket",
+      "element": "p",
+      "behavior": "blanket",
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proof/base",
+      "element": "proof",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proof/id",
+      "element": "proof",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proof/class",
+      "element": "proof",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proof/kwarg:name",
+      "element": "proof",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proof/form:pipe",
+      "element": "proof",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proof/form:long",
+      "element": "proof",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proposition/base",
+      "element": "proposition",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proposition/id",
+      "element": "proposition",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proposition/class",
+      "element": "proposition",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proposition/kwarg:name",
+      "element": "proposition",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proposition/form:pipe",
+      "element": "proposition",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "proposition/form:long",
+      "element": "proposition",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "publication-date/deferred",
+      "element": "publication-date",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "q/blanket",
+      "element": "q",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "quote/base",
+      "element": "quote",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "quote/id",
+      "element": "quote",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "quote/class",
+      "element": "quote",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "quote/kwarg:cite",
+      "element": "quote",
+      "behavior": "kwarg:cite",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "quote/kwarg:type",
+      "element": "quote",
+      "behavior": "kwarg:type",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/base",
+      "element": "ref",
+      "behavior": "base",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/id",
+      "element": "ref",
+      "behavior": "id",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/class",
+      "element": "ref",
+      "behavior": "class",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/kwarg:target",
+      "element": "ref",
+      "behavior": "kwarg:target",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/kwarg:type",
+      "element": "ref",
+      "behavior": "kwarg:type",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/kwarg:format",
+      "element": "ref",
+      "behavior": "kwarg:format",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/form:pipe",
+      "element": "ref",
+      "behavior": "form:pipe",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ref/form:slash",
+      "element": "ref",
+      "behavior": "form:slash",
+      "area": "RQ-XREF",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-XREF-M1",
+        "RQ-XREF-M2",
+        "RQ-XREF-M3",
+        "RQ-XREF-M4",
+        "RQ-XREF-S1",
+        "RQ-XREF-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "remark/base",
+      "element": "remark",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "remark/id",
+      "element": "remark",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "remark/class",
+      "element": "remark",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "remark/kwarg:name",
+      "element": "remark",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "remark/form:pipe",
+      "element": "remark",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "remark/form:long",
+      "element": "remark",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "s/blanket",
+      "element": "s",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "samp/blanket",
+      "element": "samp",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/base",
+      "element": "section",
+      "behavior": "base",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/id",
+      "element": "section",
+      "behavior": "id",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/class",
+      "element": "section",
+      "behavior": "class",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/kwarg:sec-type",
+      "element": "section",
+      "behavior": "kwarg:sec-type",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/kwarg:numbering-style",
+      "element": "section",
+      "behavior": "kwarg:numbering-style",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/form:pipe",
+      "element": "section",
+      "behavior": "form:pipe",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/form:long",
+      "element": "section",
+      "behavior": "form:long",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/register:sigil",
+      "element": "section",
+      "behavior": "register:sigil",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "section/register:markdown",
+      "element": "section",
+      "behavior": "register:markdown",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "span/blanket",
+      "element": "span",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "strong/base",
+      "element": "strong",
+      "behavior": "base",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "strong/id",
+      "element": "strong",
+      "behavior": "id",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "strong/class",
+      "element": "strong",
+      "behavior": "class",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "strong/form:pipe",
+      "element": "strong",
+      "behavior": "form:pipe",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "strong/form:long",
+      "element": "strong",
+      "behavior": "form:long",
+      "area": "RQ-INL",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub/blanket",
+      "element": "sub",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/base",
+      "element": "sub-section",
+      "behavior": "base",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/id",
+      "element": "sub-section",
+      "behavior": "id",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/class",
+      "element": "sub-section",
+      "behavior": "class",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/kwarg:sec-type",
+      "element": "sub-section",
+      "behavior": "kwarg:sec-type",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/kwarg:numbering-style",
+      "element": "sub-section",
+      "behavior": "kwarg:numbering-style",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/form:pipe",
+      "element": "sub-section",
+      "behavior": "form:pipe",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/form:long",
+      "element": "sub-section",
+      "behavior": "form:long",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/register:sigil",
+      "element": "sub-section",
+      "behavior": "register:sigil",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-section/register:markdown",
+      "element": "sub-section",
+      "behavior": "register:markdown",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/base",
+      "element": "sub-sub-section",
+      "behavior": "base",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/id",
+      "element": "sub-sub-section",
+      "behavior": "id",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/class",
+      "element": "sub-sub-section",
+      "behavior": "class",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/kwarg:sec-type",
+      "element": "sub-sub-section",
+      "behavior": "kwarg:sec-type",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/kwarg:numbering-style",
+      "element": "sub-sub-section",
+      "behavior": "kwarg:numbering-style",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/form:pipe",
+      "element": "sub-sub-section",
+      "behavior": "form:pipe",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/form:long",
+      "element": "sub-sub-section",
+      "behavior": "form:long",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/register:sigil",
+      "element": "sub-sub-section",
+      "behavior": "register:sigil",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sub-sub-section/register:markdown",
+      "element": "sub-sub-section",
+      "behavior": "register:markdown",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "subject/deferred",
+      "element": "subject",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "subtitle/base",
+      "element": "subtitle",
+      "behavior": "base",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "subtitle/id",
+      "element": "subtitle",
+      "behavior": "id",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "subtitle/class",
+      "element": "subtitle",
+      "behavior": "class",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "subtitle/form:pipe",
+      "element": "subtitle",
+      "behavior": "form:pipe",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "subtitle/form:long",
+      "element": "subtitle",
+      "behavior": "form:long",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "summary/blanket",
+      "element": "summary",
+      "behavior": "blanket",
+      "area": "RQ-BLK",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "sup/blanket",
+      "element": "sup",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/base",
+      "element": "svg",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/id",
+      "element": "svg",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/class",
+      "element": "svg",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/kwarg:width",
+      "element": "svg",
+      "behavior": "kwarg:width",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/kwarg:height",
+      "element": "svg",
+      "behavior": "kwarg:height",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/kwarg:viewBox",
+      "element": "svg",
+      "behavior": "kwarg:viewBox",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/kwarg:caption",
+      "element": "svg",
+      "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/form:long",
+      "element": "svg",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/base",
+      "element": "table",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/id",
+      "element": "table",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/class",
+      "element": "table",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/kwarg:parse-columns",
+      "element": "table",
+      "behavior": "kwarg:parse-columns",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/kwarg:caption",
+      "element": "table",
+      "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/kwarg:src",
+      "element": "table",
+      "behavior": "kwarg:src",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/kwarg:type",
+      "element": "table",
+      "behavior": "kwarg:type",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/form:pipe",
+      "element": "table",
+      "behavior": "form:pipe",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/form:long",
+      "element": "table",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "table/register:markdown",
+      "element": "table",
+      "behavior": "register:markdown",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "term/deferred",
+      "element": "term",
+      "behavior": "deferred",
+      "area": "RQ-INL",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    },
+    {
+      "key": "theorem/base",
+      "element": "theorem",
+      "behavior": "base",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "theorem/id",
+      "element": "theorem",
+      "behavior": "id",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "theorem/class",
+      "element": "theorem",
+      "behavior": "class",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "theorem/kwarg:name",
+      "element": "theorem",
+      "behavior": "kwarg:name",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "theorem/form:pipe",
+      "element": "theorem",
+      "behavior": "form:pipe",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "theorem/form:long",
+      "element": "theorem",
+      "behavior": "form:long",
+      "area": "RQ-THM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-THM-M1",
+        "RQ-THM-M2",
+        "RQ-THM-S1",
+        "RQ-THM-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "title/base",
+      "element": "title",
+      "behavior": "base",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "title/id",
+      "element": "title",
+      "behavior": "id",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "title/class",
+      "element": "title",
+      "behavior": "class",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "title/form:pipe",
+      "element": "title",
+      "behavior": "form:pipe",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "title/form:long",
+      "element": "title",
+      "behavior": "form:long",
+      "area": "RQ-DOC",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-DOC-M1",
+        "RQ-DOC-M2",
+        "RQ-DOC-M3",
+        "RQ-DOC-S1",
+        "RQ-DOC-S2",
+        "RQ-DOC-S3",
+        "RQ-DOC-S4"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "tsv/base",
+      "element": "tsv",
+      "behavior": "base",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "tsv/id",
+      "element": "tsv",
+      "behavior": "id",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "tsv/class",
+      "element": "tsv",
+      "behavior": "class",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "tsv/form:pipe",
+      "element": "tsv",
+      "behavior": "form:pipe",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "tsv/form:long",
+      "element": "tsv",
+      "behavior": "form:long",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "u/blanket",
+      "element": "u",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ul/base",
+      "element": "ul",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ul/id",
+      "element": "ul",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ul/class",
+      "element": "ul",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ul/kwarg:type",
+      "element": "ul",
+      "behavior": "kwarg:type",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "ul/form:long",
+      "element": "ul",
+      "behavior": "form:long",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-M2",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "var/blanket",
+      "element": "var",
+      "behavior": "blanket",
+      "area": "RQ-INL",
+      "disposition": "generic-implicit",
+      "predicates": [
+        "RQ-INL-M1",
+        "RQ-INL-M2",
+        "RQ-INL-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "version/deferred",
+      "element": "version",
+      "behavior": "deferred",
+      "area": "RQ-META",
+      "disposition": "deferred-presentation",
+      "predicates": [
+        "RQ-META-M1",
+        "RQ-META-M2",
+        "RQ-META-M3",
+        "RQ-META-S1"
+      ],
+      "coveredBy": [],
+      "status": "deferred"
+    }
+  ],
+  "annex": [
+    {
+      "element": "article-back",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "article-body",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "article-front",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "article-subtitle",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "article-title",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "book-back",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "book-body",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "book-front",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "book-part-subtitle",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "book-part-title",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "book-subtitle",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "book-title",
+      "area": "RQ-BOOK",
+      "parentFixture": null
+    },
+    {
+      "element": "note-list",
+      "area": "RQ-NOTE",
+      "parentFixture": null
+    },
+    {
+      "element": "section-subtitle",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "section-title",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "sub-section-subtitle",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "sub-section-title",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "sub-sub-section-subtitle",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    },
+    {
+      "element": "sub-sub-section-title",
+      "area": "RQ-DOC",
+      "parentFixture": null
+    }
+  ],
+  "fixtures": [
+    "document-1-minimal.emd",
+    "document-10-shortcuts.emd",
+    "document-11-bare-math.emd",
+    "document-12-bare-table.emd",
+    "document-13-code-refs.emd",
+    "document-14-hash-sigil-headings.emd",
+    "document-15-bare-headings.emd",
+    "document-16-section-form-convergence.emd",
+    "document-17-parser-edge-cases.emd",
+    "document-18-config-edge-cases.emd",
+    "document-19-config-unknown-kwargs.emd",
+    "document-2-realistic.emd",
+    "document-20-apparatus-reconciliation.emd",
+    "document-21-meta-kwargs-and-children.emd",
+    "document-22-apparatus-positioning.emd",
+    "document-23-multi-paragraph-tag-content.emd",
+    "document-24-unclosed-tag-at-eof.emd",
+    "document-25-meta-allowlist-elements.emd",
+    "document-26-deferred-vocab-sub1.emd",
+    "document-27-author-structured-interface.emd",
+    "document-28-deferred-vocab-sub2.emd",
+    "document-29-deferred-vocab-sub3.emd",
+    "document-3-edge-cases.emd",
+    "document-30-csv-tsv-code-handlers.emd",
+    "document-31-math-envs.emd",
+    "document-32-external-dsls.emd",
+    "document-33-per-section-footnotes.emd",
+    "document-34-mixed-footnote-placement.emd",
+    "document-35-numbering-extension.emd",
+    "document-36-frameable-build.emd",
+    "document-37-caption-as-content.emd",
+    "document-38-book-structure.emd",
+    "document-4-math-minimal.emd",
+    "document-44-cross-feature-monograph.emd",
+    "document-45-calibration.emd",
+    "document-46-reproducible-research.emd",
+    "document-47-abc-static.emd",
+    "document-48-pipe-form-inline-math.emd",
+    "document-49-callout-types.emd",
+    "document-5-linear-regression.emd",
+    "document-50-border-looks.emd",
+    "document-51-section-numbering.emd",
+    "document-52-book-numbering.emd",
+    "document-53-show-source.emd",
+    "document-54-toc-scrollspy.emd",
+    "document-55-table-cell-parse.emd",
+    "document-6-cross-references.emd",
+    "document-7-tables.emd",
+    "document-8-citations.emd",
+    "document-9-demo.emd"
+  ]
+}
