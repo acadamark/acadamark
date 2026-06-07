@@ -526,3 +526,289 @@ My recommendation: don't let me revise the design pass until you make this call,
 >I'm trying to understand the call, but the language is thick. 
 >
 >Please go back over designs A and B for me.
+
+Fair — I've been stacking jargon. Let me strip it out and walk through it with one tiny table. Say a paper has this:
+
+```
+            Sales
+         Q1     Q2
+North    10     12
+South     8      9
+```
+
+"Sales" spans the two columns; North/South run down the side. Here are the two approaches, plainly.
+
+**Design A — what already shipped.** Think of it as a smart photocopier. It keeps the table looking exactly like the original — same grid, same spanning header, same merged cells — and it goes into each box and fixes the contents, so any formula, reference, or footnote inside a cell works properly. What it does *not* do is understand the table. It has no idea that North and South are regions, that Q1 and Q2 are quarters, or that the numbers are sales. It reproduces the picture faithfully, with the text in each box corrected. The table looks right and reads right; the software doesn't know what it means.
+
+**The "B" approach — teach enscribe what the table means.** Instead of storing a picture of a grid, store three things: the data (the four numbers), the labels that locate each number (region = North/South, quarter = Q1/Q2), and a separate recipe for laying it out. Once the software understands a table that way, it can do what the photocopier can't — flip it so quarters run down the side, total it, restyle it, or let a screen reader actually say "South, Q2, 9." That's the dimensional model from the white paper. Nothing more than: data + labels + layout, kept apart.
+
+Here's the catch, and it's the whole reason there's a decision. There are two ways to *get* that understanding into the software:
+
+- **Let the importer reverse-engineer it** from a published table's markup. The spike tried exactly this on your four real tables. It only managed the two plain, near-flat ones — the tables that barely benefit from being understood. On the two fancy genotype matrices, where understanding would actually pay off, it couldn't read the structure: the publisher tagged things inconsistently, and one whole category was hiding inside ordinary-looking subheading rows. So automatic understanding works only where it's least useful.
+- **Have a person write the table and say what's what.** When *you* author a table, you can tell enscribe "these are regions, these are quarters" directly. No guessing — so the ambiguity that defeats the importer never even comes up. This is the thing I kept calling "Front-end B."
+
+One quick label cleanup, since I muddied it: "Design A" is the shipped photocopier. The "B" that matters for *this* decision is the authoring approach — a person writing tables with their structure declared. (There was an older, unrelated "Design B" earlier in the project about parsing inside raw HTML; that one's dead, superseded by what shipped. Ignore it.)
+
+So the call, in plain terms:
+
+- **Stay with Design A.** Imported tables already come out looking and reading correctly. The software won't understand them, but maybe it doesn't need to. Nothing more to build.
+- **Build the understanding — aimed at authors, not import.** Because authors can hand over the structure the importer can't recover. Import just keeps Design A as a safety net for anything uncertain.
+
+And the honest question underneath: do you, and researchers like you, actually want to write tables by declaring their structure — and get pivoting, accessibility, and easy restyling back in return? If yes, build it, for authoring. If what you really need is "tables just come out right," Design A already does that, and the rest can wait.
+
+No rush on deciding. If any single piece is still murky — the photocopier, the labels-vs-picture idea, or why import can't guess — point at it and I'll go slower there.
+
+
+>So hold on a second. There is a bigger point here that is getting missed.
+>
+>What we want is to be able to understand the table enough to be able to reproduce it as displayed. We don't need to understand the intention.
+>
+>Our awesome new grammar is great in that once we provide enough information about the data, there is no ambiguity about how it will get displayed. 
+>
+>Going the other way is going to be inherently lossy. But that doesn't make the grammar useless.
+>
+>1. We get a great way to enable the first case: table information to table display
+>2. We get a sufficient, but not unique, way to encode a displayed table so that the >information in that table can be faithfully displayed again in exactly the same way.
+>
+>We just need enough rules so that the parser examines a displayed table and creates a >description that would lead to the same displayed table. We do not need to fully >  understand the intention.
+
+Yes — and what you've done is move the goalpost from a place it can't be reached to a place it can. "Understand the table" was the wrong target. "Reproduce the table as displayed" is the right one, and it's reachable.
+
+The distinction in one line: we were trying to recover the table's *meaning* — is this row a real category or just a divider? — which the markup often can't tell us. You're pointing out we only need to recover its *look*, and the look is right there in front of us.
+
+And there's a consequence of your point 1 that makes point 2 not just true but *safe*. The grammar runs forward perfectly: a description produces exactly one display, no ambiguity. So the importer can always check its own work. Take the published table, produce a description, draw that description, and hold it up against the original. Match → done. No match → use a more literal description and try again. Recovery stops being a guess you hope is right and becomes a search with an answer key. You can be as ambitious as you like at spotting structure, because you'll never ship a wrong table — a wrong guess just fails the check, and you back off.
+
+That dissolves the spike's bad news. The spike was right that you can't recover T2's *intent* from its markup — that disease-stage row really is indistinguishable from a decorative divider. But you don't need its intent. You need a description that redraws T2 identically, and you can find one and *verify* it by drawing it. The spike measured the impossible thing; you've said we don't need it.
+
+It also changes what Design A *is*. It's not a separate fallback system sitting next to the grammar — it's the most literal thing the grammar can say: "draw exactly these cells in exactly this grid." So there's one system with a dial on it. At one end, the literal description (what Design A already does, always safe). At the other, a more structured description that buys you accessibility and restyling. The draw-and-check tells you how far toward the structured end you can push for any given table.
+
+Two caveats, both small. This assumes the grammar can express any layout you throw at it — true for your four tables, worth confirming more broadly, and the literal end always catches whatever it can't. And it's lossy on intent: if someone imports a table, then edits it, and starts treating a divider-turned-grouping as if it were real data, they can be misled. That's a documented limit of editing imports, not a flaw in faithful redisplay.
+
+So the call gets simpler. The thing that made me hedge — "import recovery is fundamentally weak" — was an artifact of aiming at the wrong goal. With redisplay as the goal and draw-and-check as the safety net, the grammar is worth building as the single core: forward is authoring, backward is faithful import that absorbs Design A as its simplest case. What's left to decide is scope and timing, not whether it can work.
+
+This reframes the backward direction and Design A's role in both the white paper and the design pass. Want me to fold it in?
+
+>Yes please!
+
+# Design Pass — Native Table Grammar (forward render + backward redisplay)
+
+*enscribe design document. Status: **revised after design review and a
+read-only recovery spike.** This is a design pass, not an implementation
+prompt. It fixes the model and the two directional mappings, stages the build,
+and records the decisions taken and still open. Per-slice prompts derive from
+this.*
+
+*This document does not restate CC's standing process (investigation, the
+spec⇄code loop, per-change byte-identity verification, fixture discipline).
+Those apply unchanged. It records only what cannot be derived from the code: the
+model, the mappings, the staging, and the open decisions.*
+
+---
+
+## 1. Status & motivation (read this first)
+
+The bug that originally motivated this work is **fixed and shipped** (#106).
+Complex tables import with their cell contents converted through the #21/#105
+inline pipeline; the rendered output contains no raw JATS; the previously false
+import note is corrected. The leaked-JATS grep gate is **already green.** The
+paper renders. There is **no time pressure.**
+
+So this milestone is **not a bug fix.** Its value is a single table grammar with
+two uses:
+
+- **Forward (description → display):** deterministic rendering. Its primary
+  consumer is **authoring** — a way to write tables whose structure is explicit,
+  earning pivoting, accessibility, and restyling.
+- **Backward (display → description):** reading a published table back into the
+  grammar well enough to **reproduce it**, verified by drawing the result and
+  comparing. Not intent-recovery.
+
+A read-only spike ran backward-recovery over the paper's tables and found an
+inversion worth carrying: the tables that would benefit most from the model (the
+genotype crosstabs) are exactly the ones whose *intent* cannot be read from
+their markup, while the ones that recover cleanly (the relational parameter
+tables) barely need the model. The reframe in §3 dissolves the apparent
+problem — recovery does not need intent — but the lesson stands: **the model's
+reliable value is in authoring (forward); backward-recovery is a verifiable
+redisplay resting on an already-shipped literal floor.** Whether to build this
+at all is a conscious feature bet on authoring, to be made on its merits, not
+carried by the (solved) bug. The rest of this document is the design *if* the
+bet is taken.
+
+## 2. The model (normative) — the forward map
+
+A table is represented internally as four things plus a fifth that is reserved
+but not yet rendered. This model defines the **forward** direction; §3 covers
+backward.
+
+- **Dimension** — `{ name, label, members }`. `members` is an *ordered* list,
+  flat or an outline (a tree of members). A member is `{ id, label, meta? }`.
+  Member labels may be compound (a combined category "W/W or Δ32/Δ32" is one
+  member, not a merge).
+- **Measure** — `{ name, label, type, unit?, format? }`. `type ∈ {number, text,
+  inline, ...}`. A table has at least one measure; the common case is exactly
+  one and it is implicit. A measure of type `inline` holds enscribe inline
+  content (see §6).
+- **Fact** — a mapping `{dimension → member}` (exactly one member per
+  dimension) to `{measure → value}`. Value shape follows the measure's type.
+- **Derived fact** *(reserved; rendering deferred)* — `{ scope, function,
+  position }`, computed from facts, never stored among them.
+- **Display** — `{ projection, structure, cosmetics }`.
+  - `projection`: `{ rows: [dim...], cols: [dim...] }`. With more than one
+    measure, the measure axis may sit on rows or cols like any dimension.
+  - `structure`: span-vs-repeat per outline level; member order; derived
+    placement; absent-cell rendering.
+  - `cosmetics`: alignment, emphasis, borders.
+
+The internal representation stores **facts + dimensions + measures + display**,
+never a pre-baked grid. The grid is computed from the projection at render time.
+This is the load-bearing decision: the grid is an output, not the source of
+truth — which is exactly what makes the forward map deterministic and, in turn,
+makes the backward map checkable (§3).
+
+## 3. The two directions (the spine of the design)
+
+The grammar runs **forward** — description → display — deterministically: one
+description yields exactly one table, no ambiguity. Authoring uses this
+directly.
+
+The **backward** direction — a displayed table → a description — cannot recover
+the author's intention (a full-width row may be a real grouping or a decorative
+divider; identical look, so markup cannot say which). It is lossy and
+non-unique. But it does **not need intent.** It needs a description that, drawn
+forward, reproduces the original. Because forward is deterministic, backward can
+**verify itself**: emit a candidate, render it, compare to the source; match →
+accept; mismatch → use a more literal description and retry. Recovery is a
+search with an answer key (the original table), not a guess.
+
+This makes the grammar one expressive **range**, not two systems:
+
+- **Literal end** — "draw exactly these cells in this grid." Always reproduces,
+  always safe. **This is what #106 already does.**
+- **Structured end** — recovers grouping and spanners, earning accessibility and
+  restyling.
+
+Backward-recovery slides along this range, recovering as far as the draw-and-
+check bears and no further. Two completenesses differ: *display* completeness
+(reproduce any look) is all backward needs, and the literal end guarantees it;
+*semantic* completeness (capture any meaning) is not required.
+
+**Archival stance (signed-off).** For tables recovered toward the structured
+end, enscribe's canonical form is a *display-faithful description* that may
+assert structure the source did not intend. This is a deliberate choice of
+faithful redisplay over intent-preservation, scoped by how far draw-and-check
+permits; the literal end preserves the grid as-is. The looseness bites only on
+the import-then-edit path, where a recovered grouping might be edited as if it
+were real data — a documented limitation, not an import flaw.
+
+## 4. Authoring (Layer 2) — the forward direction's primary consumer
+
+The model is settled; the **authoring surface is the open question** (§8).
+Recommended first: **Front-end B — the author writes the grid much as it appears
+and annotates which rows and columns are which dimensions and which are
+measures.** The compiler builds the facts. Rationale: it matches hand-authoring
+and the look of real tables, and — the elegant part — it is the *same engine* as
+backward-recovery, run with the ambiguities resolved by a human instead of by
+draw-and-check. The author is the disambiguation channel the importer lacks.
+Front-end A (tidy facts + a `display` block) is a later, concise alternative.
+Surface syntax is **TBD pending §8**, and should be shaped by the real
+ambiguities the spike surfaced, not guessed.
+
+## 5. JATS mapping (backward + export)
+
+**Backward (import).** The goal is a description that **redisplays** the source
+table, verified by draw-and-check (§3) — not dimension-recovery as an end in
+itself. Read spanning headers and grouping as *candidate* structure, render,
+compare; keep what reproduces, fall toward the literal end where it does not.
+The literal end is the shipped grid-preserving conversion (#106); it is not a
+separate fallback system but the bottom of this range.
+
+**Export.** Project to a JATS **XHTML** table, `colspan`/`rowspan` from the
+display. **CALS is out of scope** — no consumer is asking; do not build it.
+
+**Fidelity bar.** Redisplay-faithful: the exported/rendered table reproduces the
+source's displayed structure (cells, text, spans, grouping) under the draw-and-
+check comparison. Byte-identity is not the bar; faithful *appearance* is. The
+comparison's exact tolerance is the one detail left to pin (§8).
+
+## 6. Cell content
+
+A fact value of type `inline` is enscribe inline content, tree-resident so the
+existing #21/#105 resolution passes (formula, xref, cite, note) reach it with no
+special-casing. This is already true at the literal end (#106) — which is why
+the leaked-content grep gate is green today, and why that gate cannot, by
+itself, demonstrate any *structured* recovery (see §9). Reconcile here the two
+cell-content backlog items: the `importJats` module-level footnote state
+(double-counts on a second call in one process) and table-scoped
+`<table-wrap-foot>` rendering fidelity.
+
+## 7. Scope & staging
+
+- **The core is the grammar** (forward render + the description model). Build
+  this first; everything else reuses it.
+- **Authoring (Front-end B)** is the primary, highest-value consumer of the
+  forward direction and the place the model's value is reliably realized — the
+  author resolves the ambiguity the importer cannot. Lead here if building.
+- **Backward-recovery (import)** is the same engine in reverse with draw-and-
+  check. It slides from the literal floor (#106, already shipped) toward
+  structured recovery as the check permits. **Do not build it as a separate
+  guessing system.**
+- **Not exercised by the acceptance set, so not pre-built:** a **units** policy
+  (no units rows in the paper; units are prose inside cells) and a
+  **totals/derived** import policy (no summary rows). Both are known-unhandled;
+  reserve the model slot for derived, and add a policy only when a real table
+  demands it.
+- **The literal floor is the escape hatch.** Preserve-grid-and-convert-cells
+  (#106) catches any layout the structured end cannot express. A distinct
+  raw-cell mechanism is needed only for layouts the grammar's display tier
+  cannot express *at all* — rare, and below even the literal floor.
+
+## 8. Open questions (decisions still genuinely open)
+
+Several earlier questions are now settled: export = XHTML (CALS dropped);
+fidelity = redisplay-faithful via draw-and-check; detection = search-and-verify,
+not guess; units = not inferred and not exercised; compound members = label-only
+for now. What remains:
+
+1. **Authoring surface syntax (Front-end B).** The real open one. Shape it to
+   the spike's ambiguities rather than deciding it up front.
+2. **Draw-and-check comparison tolerance.** What counts as "reproduces" — exact
+   cell/text/span match, or a defined visual-equivalence?
+3. **How far up the range to recover on import.** Draw-and-check makes any level
+   *safe*, so this is a quality/effort dial, not a correctness risk: recover
+   aggressively for accessibility, or stay literal unless structure is obvious?
+4. **Derived facts** authoring syntax: reserve now, or defer entirely.
+5. **Compound members as sets** ("W/W or Δ32/Δ32"): label-only suffices for
+   render; revisit when pivot/filter arrives, where a member-that-is-a-set
+   matters.
+
+## 9. Gates (must discriminate the new work)
+
+The leaked-JATS grep gate is **already green** via #106 and therefore **cannot**
+prove this milestone did anything. Replace it with gates that discriminate:
+
+- **Redisplay round-trip.** For each table in the acceptance set, the importer's
+  recovered description, drawn forward, reproduces the source's displayed
+  structure under the chosen tolerance (§8.2).
+- **Structured-recovery assertions where the spike found recovery safe** (the
+  relational parameter tables): the recovered description names the expected
+  dimension(s) and measure(s).
+- **Negative assertions where the spike found intent unreadable** (the genotype
+  crosstabs): the importer reproduces the display via a more literal description
+  and **does not force-fit** a wrong structure.
+- The cell-content / backlog items (§6) resolved.
+
+## 10. What not to do
+
+- **Do not retire the literal floor (#106).** It is load-bearing — the spike
+  found the crosstabs rest on it — and it is the bottom of the grammar's own
+  range, not a competing system.
+- **Do not aim backward-recovery at intent.** Aim at redisplay, and verify by
+  drawing.
+- **Do not build import as a separate guessing path.** It is the forward engine
+  in reverse, with draw-and-check.
+- **Do not bake the grid into the canonical source.** The grid is an output.
+- **Do not pre-build units or totals policies.** Not exercised; add when a real
+  table demands one.
+- **Do not pin the authoring surface syntax** before the spike's ambiguities
+  shape it, and **do not** mix derived facts into the fact set.
