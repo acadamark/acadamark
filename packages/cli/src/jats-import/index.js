@@ -97,7 +97,31 @@ function parseXml(xml) {
   parser.write(xml).close();
   if (firstError) throw new Error(`JATS parse error: ${firstError.message}`);
 
-  return root.children.find((c) => c.name === 'article' || c.name === 'book') ?? null;
+  // #112: find the document root tolerantly — it may be the immediate root (a bare
+  // `<article>`/`<book>`) or nested inside an envelope (PMC efetch wraps it as
+  // `<pmc-articleset>…<article>…</article></pmc-articleset>`). Take the outermost
+  // `<article>`/`<book>` at any depth. An article-set may legitimately hold more
+  // than one article (multi-id efetch): import the first and warn, never hard-fail.
+  const roots = findDocRoots(root);
+  if (roots.length > 1) {
+    // eslint-disable-next-line no-console
+    console.warn(`[jats-import] note: source contains ${roots.length} <article>/<book> elements (article-set); importing the first`);
+  }
+  return roots[0] ?? null;
+}
+
+/**
+ * Collect the OUTERMOST `<article>`/`<book>` elements (document roots) at any
+ * depth, without descending into one once found (so a nested `<sub-article>` or a
+ * second article-set member never shadows the top-level document). Depth-first, so
+ * the first result is the first document in source order.
+ */
+function findDocRoots(node, acc = []) {
+  for (const c of node.children ?? []) {
+    if (c.name === 'article' || c.name === 'book') acc.push(c);
+    else if (c.name !== '#text') findDocRoots(c, acc);
+  }
+  return acc;
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────

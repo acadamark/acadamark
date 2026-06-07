@@ -754,5 +754,39 @@ graph TD
     console.log('PASS: import #108 — import → .emd → render round-trip resolves cells identically');
   }
 
+  // ── #112: descend into the <pmc-articleset> envelope (PMC efetch wrapper) ─────
+  {
+    const article = (title) =>
+      `<article><front><article-meta><title-group><article-title>${title}</article-title>` +
+      `</title-group></article-meta></front><body><sec id="s"><title>S</title><p>x</p></sec></body></article>`;
+
+    // Wrapped single article: imports (no "no article root" error).
+    const wrapped = importJats(`<pmc-articleset>${article('Wrapped')}</pmc-articleset>`);
+    assert.equal(errorNodes(wrapped).length, 0, 'doc112: enveloped article imports without error');
+    assert.deepEqual(tagged(wrapped, 'title')[0]?.content, [{ type: 'text', value: 'Wrapped' }],
+      'doc112: title recovered from inside the article-set envelope');
+
+    // Bare <article> root still imports, unchanged.
+    const bare = importJats(article('Bare'));
+    assert.deepEqual(tagged(bare, 'title')[0]?.content, [{ type: 'text', value: 'Bare' }],
+      'doc112: a bare <article> root still imports');
+
+    // Article-set with multiple articles → import the first + warn (no crash).
+    const warns = [];
+    const orig = console.warn;
+    console.warn = (...a) => warns.push(a.join(' '));
+    let multi;
+    try {
+      multi = importJats(`<pmc-articleset>${article('First')}${article('Second')}</pmc-articleset>`);
+    } finally {
+      console.warn = orig;
+    }
+    assert.deepEqual(tagged(multi, 'title')[0]?.content, [{ type: 'text', value: 'First' }],
+      'doc112: multi-article set imports the FIRST article');
+    assert.ok(warns.some((w) => /article-set/.test(w) && /\b2\b/.test(w)),
+      'doc112: multi-article set warns (no hard-fail)');
+    console.log('PASS: import #112 — descends the <pmc-articleset> envelope (single, bare, multi)');
+  }
+
   console.log('All JATS import tests passed.');
 }
