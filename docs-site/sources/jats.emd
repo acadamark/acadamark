@@ -87,8 +87,8 @@ drops pure publishing metadata, warning about anything it does not recognize.
 Import lets a published article — otherwise locked in JATS at a publisher or an
 archive — be pulled back into editable Enscribe source: to correct an erratum, to
 re-display it on the open web without a JATS viewer, or to build on it. For a live
-demonstration, see the **<a demo-paper.html | imported PubMed Central article>** —
-a real published paper converted into Enscribe automatically by `enscribe
+demonstration, see the **<a demos.html | demo papers>** — real published articles
+from a spread of publishers, converted into Enscribe automatically by `enscribe
 import-jats`.
 
 <# A worked example #>

@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article
+  PUBLIC "-//NLM//DTD Journal Publishing DTD v3.0 20080202//EN" "http://dtd.nlm.nih.gov/publishing/3.0/journalpublishing3.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article" dtd-version="3.0" xml:lang="EN">
+<front>
+<journal-meta><journal-id journal-id-type="publisher-id">plos</journal-id><journal-id journal-id-type="nlm-ta">PLoS Genet</journal-id><journal-id journal-id-type="pmc">plosgen</journal-id><!--===== Grouping journal title elements =====--><journal-title-group><journal-title>PLoS Genetics</journal-title></journal-title-group><issn pub-type="ppub">1553-7390</issn><issn pub-type="epub">1553-7404</issn><publisher>
+<publisher-name>Public Library of Science</publisher-name>
+<publisher-loc>San Francisco, USA</publisher-loc></publisher></journal-meta>
+<article-meta><article-id pub-id-type="publisher-id">09-PLGE-RA-0807R2</article-id><article-id pub-id-type="doi">10.1371/journal.pgen.1000741</article-id><article-categories><subj-group subj-group-type="heading"><subject>Research Article</subject></subj-group><subj-group subj-group-type="Discipline"><subject>Genetics and Genomics/Complex Traits</subject><subject>Genetics and Genomics/Genetics of Disease</subject></subj-group></article-categories><title-group><article-title>On the Analysis of Genome-Wide Association Studies in Family-Based Designs: A Universal, Robust Analysis Approach and an Application to Four Genome-Wide Association Studies</article-title><alt-title alt-title-type="running-head">On the Analysis of Genome-Wide Association Studies</alt-title></title-group><contrib-group>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Won</surname><given-names>Sungho</given-names></name><xref ref-type="aff" rid="aff1"><sup>1</sup></xref><xref ref-type="aff" rid="aff2"><sup>2</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Wilk</surname><given-names>Jemma B.</given-names></name><xref ref-type="aff" rid="aff3"><sup>3</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Mathias</surname><given-names>Rasika A.</given-names></name><xref ref-type="aff" rid="aff4"><sup>4</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>O'Donnell</surname><given-names>Christopher J.</given-names></name><xref ref-type="aff" rid="aff5"><sup>5</sup></xref><xref ref-type="aff" rid="aff6"><sup>6</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Silverman</surname><given-names>Edwin K.</given-names></name><xref ref-type="aff" rid="aff7"><sup>7</sup></xref><xref ref-type="aff" rid="aff8"><sup>8</sup></xref><xref ref-type="aff" rid="aff9"><sup>9</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Barnes</surname><given-names>Kathleen</given-names></name><xref ref-type="aff" rid="aff10"><sup>10</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>O'Connor</surname><given-names>George T.</given-names></name><xref ref-type="aff" rid="aff11"><sup>11</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Weiss</surname><given-names>Scott T.</given-names></name><xref ref-type="aff" rid="aff7"><sup>7</sup></xref><xref ref-type="aff" rid="aff9"><sup>9</sup></xref><xref ref-type="aff" rid="aff12"><sup>12</sup></xref></contrib>
+<contrib contrib-type="author" xlink:type="simple"><name name-style="western"><surname>Lange</surname><given-names>Christoph</given-names></name><xref ref-type="aff" rid="aff9"><sup>9</sup></xref><xref ref-type="aff" rid="aff12"><sup>12</sup></xref><xref ref-type="aff" rid="aff13"><sup>13</sup></xref><xref ref-type="corresp" rid="cor1"><sup>*</sup></xref></contrib>
+</contrib-group><aff id="aff1"><label>1</label><addr-line>Department of Statistics, Chung-Ang University, Seoul, Korea</addr-line>       </aff><aff id="aff2"><label>2</label><addr-line>Research Center for Data Science, Chung-Ang University, Seoul, Korea</addr-line>       </aff><aff id="aff3"><label>3</label><addr-line>Department of Neurology, Boston University School of Medicine, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff4"><label>4</label><addr-line>Genometrics Section, Inherited Disease Research Branch, National Human Genome Research Institute, National Institutes of Health, Baltimore, Maryland, United States of America</addr-line>       </aff><aff id="aff5"><label>5</label><addr-line>National Heart, Lung, and Blood Institute and Framingham Heart Study, Bethesda, Maryland, United States of America</addr-line>       </aff><aff id="aff6"><label>6</label><addr-line>Cardiology Division, Massachusetts General Hospital, Harvard Medical School, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff7"><label>7</label><addr-line>Channing Laboratory, Department of Medicine, Brigham and Women's Hospital, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff8"><label>8</label><addr-line>Division of Pulmonary and Critical Care Medicine, Brigham and Women's Hospital, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff9"><label>9</label><addr-line>Harvard Medical School, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff10"><label>10</label><addr-line>Department of Medicine, School of Medicine, Johns Hopkins University, Baltimore, Maryland, United States of America</addr-line>       </aff><aff id="aff11"><label>11</label><addr-line>Pulmonary Center, Boston University School of Medicine, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff12"><label>12</label><addr-line>Center for Genomic Medicine, Brigham and Women's Hospital, Boston, Massachusetts, United States of America</addr-line>       </aff><aff id="aff13"><label>13</label><addr-line>Department of Biostatistics, Harvard School of Public Health, Boston, Massachusetts, United States of America</addr-line>       </aff><contrib-group>
+<contrib contrib-type="editor" xlink:type="simple"><name name-style="western"><surname>Schork</surname><given-names>Nicholas J.</given-names></name>
+<role>Editor</role>
+<xref ref-type="aff" rid="edit1"/></contrib>
+</contrib-group><aff id="edit1">University of California San Diego and The Scripps Research Institute, United States of America</aff><author-notes>
+<corresp id="cor1">* E-mail: <email xlink:type="simple">clange@hsph.harvard.edu</email></corresp>
+<fn fn-type="con"><p>Conceived and designed the experiments: SW CL. Performed the experiments: SW. Analyzed the data: SW JBW RM CJO EKS KB GTO STW. Contributed reagents/materials/analysis tools: SW. Wrote the paper: SW CL.</p></fn>
+<fn fn-type="conflict"><p>The authors have declared that no competing interests exist.</p></fn></author-notes><pub-date pub-type="collection"><month>11</month><year>2009</year></pub-date><pub-date pub-type="epub"><day>26</day><month>11</month><year>2009</year></pub-date><volume>5</volume><issue>11</issue><elocation-id>e1000741</elocation-id><history>
+<date date-type="received"><day>18</day><month>5</month><year>2009</year></date>
+<date date-type="accepted"><day>26</day><month>10</month><year>2009</year></date>
+</history><!--===== Grouping copyright info into permissions =====--><permissions><copyright-year>2009</copyright-year><license><license-p>This is an open-access article distributed under the terms of the Creative Commons Public Domain declaration which stipulates that, once placed in the public domain, this work may be freely reproduced, distributed, transmitted, modified, built upon, or otherwise used by anyone for any lawful purpose.</license-p></license></permissions><abstract>
+<p>For genome-wide association studies in family-based designs, we propose a new, universally applicable approach. The new test statistic exploits all available information about the association, while, by virtue of its design, it maintains the same robustness against population admixture as traditional family-based approaches that are based exclusively on the within-family information. The approach is suitable for the analysis of almost any trait type, e.g. binary, continuous, time-to-onset, multivariate, etc., and combinations of those. We use simulation studies to verify all theoretically derived properties of the approach, estimate its power, and compare it with other standard approaches. We illustrate the practical implications of the new analysis method by an application to a lung-function phenotype, forced expiratory volume in one second (FEV1) in 4 genome-wide association studies.</p>
+</abstract><abstract abstract-type="summary"><title>Author Summary</title>
+<p>In genome-wide association studies, the multiple testing problem and confounding due to population stratification have been intractable issues. Family-based designs have considered only the transmission of genotypes from founder to nonfounder to prevent sensitivity to the population stratification, which leads to the loss of information. Here we propose a novel analysis approach that combines mutually independent FBAT and screening statistics in a robust way. The proposed method is more powerful than any other, while it preserves the complete robustness of family-based association tests, which only achieves much smaller power level. Furthermore, the proposed method is virtually as powerful as population-based approaches/designs, even in the absence of population stratification. By nature of the proposed method, it is always robust as long as FBAT is valid, and the proposed method achieves the optimal efficiency if our linear model for screening test reasonably explains the observed data in terms of covariance structure and population admixture. We illustrate the practical relevance of the approach by an application in 4 genome-wide association studies.</p>
+</abstract><funding-group><funding-statement>The CAMP Genetics Ancillary Study is supported by U01 HL075419, U01 HL65899, P01 HL083069, R01 HL086601, and T32 HL07427 from the National Heart, Lung, and Blood Institute, National Institutes of Health. CL is supported by the National Institutes of Health grant R01MH081862. Framingham Heart Study genotype and phenotype data are publicly available through the NHLBI's SNP Health Association Resource (SHARe) initiative (<ext-link ext-link-type="uri" xlink:href="http://public.nhlbi.nih.gov/GeneticsGenomics/home/share.aspx" xlink:type="simple">http://public.nhlbi.nih.gov/GeneticsGenomics/home/share.aspx</ext-link>). The British 1958 Birth Cohort DNA collection is funded by the Medic Research Council grant G00000934 and the Wellcome Trust grant 068545/Z/02. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.</funding-statement></funding-group><counts><page-count count="9"/></counts></article-meta>
+</front>
+<body><sec id="s1">
+<title>Introduction</title>
+<p>During the analysis phase of genome-wide association studies, one is confronted with numerous statistical challenges. One of them is the decision about the “right” balance between maximization of the statistical power and, at the same time, robustness against confounding. In family-based designs, the possible range of analysis options spans from a traditional family-based association analysis <xref ref-type="bibr" rid="pgen.1000741-Aulchenko1">[1]</xref>–<xref ref-type="bibr" rid="pgen.1000741-Lange1">[4]</xref>, e.g. TDT, PDT, FBAT, to the application of population-based analysis methods that have been adapted to family-data <xref ref-type="bibr" rid="pgen.1000741-Aulchenko1">[1]</xref>–<xref ref-type="bibr" rid="pgen.1000741-Elston1">[3]</xref>. While, by definition, the first group of approaches is completely immune to population admixture and model misspecification of the phenotype, and can be applied to any phenotype that is permissible in the family-based association testing framework (FBAT <xref ref-type="bibr" rid="pgen.1000741-Lange1">[4]</xref>–<xref ref-type="bibr" rid="pgen.1000741-Lange2">[6]</xref>), the second category of approaches maximizes the statistical power by a population-based analysis. The phenotypes are modeled as a function of the genotype, and population-based methods such as genomic control <xref ref-type="bibr" rid="pgen.1000741-Devlin1">[7]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Devlin2">[8]</xref>, STRUCTURE <xref ref-type="bibr" rid="pgen.1000741-Pritchard1">[9]</xref> and EIGENSTRAT <xref ref-type="bibr" rid="pgen.1000741-Price1">[10]</xref>, are applied to account for the effects of population admixture and stratification. Hybrid-approaches that combine elements of both population-based and family-based analysis methods, e.g. VanSteen algorithm <xref ref-type="bibr" rid="pgen.1000741-VanSteen1">[11]</xref> and Ionita weighting-schemes <xref ref-type="bibr" rid="pgen.1000741-IonitaLaza1">[12]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Murphy1">[13]</xref> have been suggested to bridge between the 2 types of analysis strategies. Contrary to the other methods that combine family data and unrelated samples <xref ref-type="bibr" rid="pgen.1000741-Nagelkerke1">[14]</xref>–<xref ref-type="bibr" rid="pgen.1000741-Zhu1">[17]</xref>, such hybrid testing strategies maintain the 2 key features of the family-based association tests: The robustness against confounding due to population admixture and heterogeneity, and the analysis flexibility of the approach with respect to the choice of the target phenotype. Such 2-stage testing strategies utilize the information about the association at a population-level, the between-family component, to prioritize SNPs for the second step of the approach in which they are tested formally for association with a family-based test. The hybrid approaches can achieve power levels that are similar to approaches in which standard population-based methods are applied to family-data, but the optimal combination of the 2 sources of information (the between-family component and the within-family component) is not straightforward in the hybrid approaches.</p>
+<p>In this communication, we propose a new family-based association test for genome-wide association studies that combines all sources of information about association, the between and the within-family information, into one single test statistic. The new test is robust against population-admixture even though both components, the between and the within-family components, are used to assess the evidence for association. The approach is applicable to all phenotypes or combinations of phenotypes that can be handled in the FBAT-approach, e.g. binary, continuous, time-to-onset, multivariate, etc <xref ref-type="bibr" rid="pgen.1000741-Lange1">[4]</xref>–<xref ref-type="bibr" rid="pgen.1000741-Lange2">[6]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Lange3">[18]</xref>. While the correct model specification for the phenotypes will increase the power of the proposed test statistic, misspecification of the phenotypic model does not affect the validity of the approach. Using extensive simulation studies, we verify the theoretically derived properties of the test statistic, assess its power and compare it with other standard approaches. An application to the Framing heart study (FHS) illustrates the value of the approach in practice. A new genetic locus for the lung-function phenotype, FEV1 (forced expiratory volume in the first second) is discovered and replicated in 3 independent, genome-wide association studies.</p>
+</sec><sec id="s2" sec-type="methods">
+<title>Methods</title>
+<p>We assume that in a family-based association study, <italic>n</italic> family members have been genotyped at <italic>m</italic> loci with a genome-wide SNP-chip. For each marker locus, a family-based association test is constructed based on the offspring phenotype and the within-family information. The within-family information is defined as the difference between the observed, genetic marker score and the expected, genetic marker score, which is computed conditional upon both the parental genotypes/sufficient statistic <xref ref-type="bibr" rid="pgen.1000741-Rabinowitz1">[19]</xref> under the assumption of Mendelian transmissions. We denote the family-based association test for the <italic>i</italic>th marker locus by <italic>FBAT<sub>i</sub></italic>. Such an FBAT statistic can be the standard TDT, an FBAT for quantitative/qualitative traits, FBAT-GEE for multivariate traits, etc <xref ref-type="bibr" rid="pgen.1000741-Lange1">[4]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Lange2">[6]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Lange3">[18]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Spielman1">[20]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Lange4">[21]</xref>. Similarly, for the <italic>i</italic>th marker, the between-family information can be used to assess the evidence for association at a population-based level by computing a VanSteen-type <xref ref-type="bibr" rid="pgen.1000741-VanSteen1">[11]</xref> “screening statistic” <italic>T<sub>i</sub></italic>. The screening statistic is computed based on the data for offspring phenotype and the parental genotypes/sufficient statistic. The statistic <italic>T<sub>i</sub></italic> can be a Wald test for the genetic effect size that is estimated based on the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-Lange5">[22]</xref>, or the estimated power of the family-based test <italic>FBAT<sub>i</sub></italic> <xref ref-type="bibr" rid="pgen.1000741-Lange6">[23]</xref>, either of which is feasible. However, while the <italic>FBAT<sub>i</sub></italic> statistic is robust against population stratification, the screening statistic <italic>T<sub>i</sub></italic> is susceptible to confounding. For this reason, the VanSteen-type testing strategies have restrictively used the between-family information as weights for p-values of the <italic>FBAT-</italic>statistic, but never as a component in the test statistic itself.</p>
+<sec id="s2a">
+<title>Construction of an overall family-based association test including the population-based and family-based components</title>
+<p>In order to construct a family-based association test that incorporates both the within and the between-family information, the Z-statistics that correspond to the p-values of <italic>FBAT<sub>i</sub></italic> and <italic>T<sub>i</sub></italic> are computed. The statistic <italic>Z<sub>α</sub><sup>*</sup></italic> is the <italic>α</italic> quantile of standard normal distribution. <italic>pFBAT<sub>i</sub></italic> and <italic>pT<sub>i</sub></italic> are the p-value of the FBAT-statistics and one sided p-value of the screening statistic where the direction of the one sided screening statistic is defined by the directionality of <italic>FBAT<sub>i</sub></italic>. Based on the statistical independence of <italic>FBAT<sub>i</sub></italic> and <italic>T<sub>i</sub></italic> <xref ref-type="bibr" rid="pgen.1000741-VanSteen1">[11]</xref> under the null-hypothesis, we can obtain an overall family-based association test statistic <italic>Z<sub>i</sub></italic> by combining both Z-statistics in a weighted sum, <disp-formula><graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.e001" xlink:type="simple"/></disp-formula>where the parameters <italic>w<sub>FBAT</sub></italic> and <italic>w<sub>T</sub></italic> are standardized weights so that the overall family-based association test <italic>Z<sub>i</sub></italic> has a normal distribution with mean 0 and variance 1, i.e. <italic>w<sub>FBAT</sub></italic><sup>2</sup>+<italic>w<sub>T</sub></italic><sup>2</sup> = 1. In the literature, this approach of combining two test statistics is known as the Liptak-method <xref ref-type="bibr" rid="pgen.1000741-Liptak1">[24]</xref>. However, the Liptak-method varies here from its standard application in that the 2 test statistics have to be combined so that confounding in the screening statistic <italic>T<sub>i</sub></italic> cannot affect the validity of the overall family-based association test statistic <italic>Z<sub>i</sub></italic>. In the context of a genome-wide association study (GWAS), we are able to achieve this goal by using rank-based p-values for the screening statistic <italic>T<sub>i</sub></italic> instead of their asymptotic p-values.</p>
+<p>The “screening statistics” <italic>T<sub>i</sub></italic> are sorted based on their evidence for association so that <italic>T</italic><sub>(<italic>m</italic>)</sub> denotes the screening statistic with the least amount of evidence for association and <italic>T</italic><sub>(1)</sub> the screening statistic with the largest amount of evidence for association. The rank-based p-value, (<italic>i</italic> – 0.5)/<italic>m</italic>, is then assigned to the ordered screening test statistics <italic>T</italic><sub>(<italic>i</italic>)</sub>. If there is a tie, then the average of the ranks will be used for the computation of the rank-based p-value for the <italic>i</italic>th marker. Since the null-hypothesis will be true for the vast majority of the SNPs in a GWAS, the rank-based p-values provide an alternative way to assess the significance of the population-based screening statistic <italic>T<sub>i</sub></italic>. The overall association test <italic>Z<sub>i</sub></italic> is then computed based on the Z-score for the asymptotic p-value of the FBAT-statistic and the <italic>Z</italic>-score for the ranked-based p-value of the screening statistic <italic>T<sub>i</sub></italic>. In <xref ref-type="supplementary-material" rid="pgen.1000741.s001">Text S1</xref> we show that the overall association test <italic>Z<sub>i</sub></italic> maintains the global significance level <italic>α</italic>, under any situations including population admixture and stratification. This can be understood intuitively as well. The smallest rank-based p-value is 0.5/<italic>m</italic>. Using the Bonferroni-correction to adjust for multiple testing, the individual, adjusted significance level is <italic>α</italic>/<italic>m</italic> which will always be smaller than the smallest rank-based p-value, 0.5/<italic>m</italic>, unless the pre-specified global significance level <italic>α</italic> is great than 0.5. This implies that the overall family-based association test can never achieve genome-wide significance just based on the rank-based p-values alone. The FBAT-statistic has to contribute evidence for the association as well in order for the overall family-based association test to reach genome-wide significance. Finally, we have to address the specification of the weights <italic>w<sub>FBAT</sub></italic> and <italic>w<sub>T</sub></italic> in the overall family-based association test statistic <italic>Z<sub>i</sub></italic>. While any combination of weights <italic>w<sub>FBAT</sub></italic> and <italic>w<sub>T</sub></italic> will provide a valid test statistic <italic>Z<sub>i</sub></italic>, the most powerful overall statistic <italic>Z<sub>i</sub></italic> is approximately achieved when the ratio of the weights is equal to the ratio of the standardized effect sizes, the expected effect size of the regression coefficient divided by its (estimated) standard deviation. For quantitative traits in unascertained samples, one can show that optimal power levels are achieved for equal weights, i.e. <italic>w<sub>FBAT</sub></italic> = <italic>w<sub>T</sub></italic>. In general, the equal weighting scheme seems to provide good power levels for any disease mode of inheritance and for different trait types, e.g. binary traits, time-to-onset, etc. The theoretical derivation of optimal weighting schemes for such scenarios is ongoing research and will be published subsequently.</p>
+<p>Furthermore, it is important to note that, instead of the Liptak-method, Fisher's method for combining p-values could have been used as well to construct an overall family-based association test which would have the same robustness properties as the overall-test based on the Liptak-method. However, simulation studies (data not shown) suggest that the highest power levels are consistently achieved with the Liptak method. We therefore omit the approach based on Fisher's method here.</p>
+</sec></sec><sec id="s3">
+<title>Results</title>
+<sec id="s3a">
+<title>Type I error for 500K GWAS</title>
+<p>In the first part of the simulation study, the type-1 error of the proposed family-based association test denoted as LIP was assessed in the absence and in the presence of population admixture, and we use the Wald test based on the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-Lange5">[22]</xref> with between-family component for <italic>pT<sub>i</sub></italic> in our all simulations. For various scenarios, we verified that the proposed overall family-based association test maintains the <italic>α</italic>-level.</p>
+<p>For simplicity, we assume in the simulation studies that the random samples are given, i.e. no ascertainment, and that the parental genotypes are known. Assuming Hardy-Weinberg equilibrium, the parental genotypes are generated by drawing from Bernoulli distributions defined by the allele frequencies. The offspring genotypes are obtained by simulated Mendelian transmissions from the parents to the offspring. For the <italic>j</italic>th trio, the offspring phenotype <italic>Y<sub>j</sub></italic> is simulated from a Normal distribution with mean <italic>aX<sub>j</sub></italic> and variance 1, i.e. <italic>N</italic>(<italic>aX<sub>j</sub></italic>, 1), where the parameter <italic>a</italic> represents the genetic effect size and the variable <italic>X<sub>j</sub></italic> denotes the offspring genotype. Under the null-hypothesis of no association, the genetic effect size parameter <italic>a</italic> will be set to 0.</p>
+<p>For scenarios in which population admixture is present, we assume that the admixture is created by the presence of 2 subpopulations whose phenotypic means differ by 0.2. The allele frequencies for each marker in the two subpopulations are generated by the Balding-Nichols model <xref ref-type="bibr" rid="pgen.1000741-Balding1">[25]</xref>. That is, for each marker, the allele frequency in an ancestral population is generated from a uniform distribution between 0.1 and 0.9, <italic>U</italic>(0.1, 0.9). Then, the marker allele frequencies for the two subpopulations are independently sampled from the beta distributions (<italic>p</italic>(1−<italic>F<sub>ST</sub></italic>)/<italic>F<sub>ST</sub></italic>, (1−<italic>p</italic>)(1−<italic>F<sub>ST</sub></italic>)/<italic>F<sub>ST</sub></italic>) for the whole markers in each replicate of the simulated GWAS. A survey reported <italic>F<sub>ST</sub></italic> estimates with a median of 0.008 and 90<italic>th</italic> percentile of 0.028 among Europeans, and the corresponding values are 0.027 and 0.14 among Africans, and 0.043 and 0.12 among Asians <xref ref-type="bibr" rid="pgen.1000741-CavalliSforza1">[26]</xref>. The value for Wright's <italic>F<sub>ST</sub></italic> was assumed to be 0.05, 0.1, 0.2, or 0.3. Each trio was assigned to the one of the 2 subpopulations with 50% probability.</p>
+<p>In the absence and presence of the population stratification (<italic>F<sub>ST</sub></italic> = 0.05, 0.1, 0.2, and 0.3), <xref ref-type="table" rid="pgen-1000741-t001">Table 1</xref> shows the empirical type-1 error rates of the overall association test statistic <italic>Z<sub>i</sub></italic> for a GWAS with 500,000 SNPs. The estimates for the empirical significance levels in <xref ref-type="table" rid="pgen-1000741-t001">Table 1</xref> are based on 2,000 replicates. The empirical genome-wide significance level is calculated as the proportion of replicates for which the minimum p-values among the 500,000 markers is less than 0.05/500,000. We consider the proposed equal weights for <italic>w<sub>FBAT</sub></italic> and <italic>w<sub>T</sub></italic>, for genome-wide significance level 0.05 and <xref ref-type="table" rid="pgen-1000741-t001">Table 1</xref> shows that the type-1 error rate is preserved well. For different significance levels, we calculate in <xref ref-type="table" rid="pgen-1000741-t002">Table 2</xref> the empirical proportions of SNPs for which the overall family-based association test <italic>Z<sub>i</sub></italic> is significant at the <italic>α</italic>-levels of 0.05, 0.01, 10<sup>−3</sup>, 10<sup>−4</sup> and 10<sup>−5</sup>. The simulation studies are conducted in the absence and in the presence of population admixture. <xref ref-type="table" rid="pgen-1000741-t002">Table 2</xref> does not provide any evidence for a departure of the empirical significance levels from the theoretical levels, both in the absence and presence of population substructure. These results confirm our theoretical conclusions that <italic>Z<sub>i</sub></italic> is robust against population stratification and maintains correct type-1 error.</p>
+<table-wrap id="pgen-1000741-t001" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t001</object-id><label>Table 1</label><caption>
+<title>Empirical type-1 error for 500K GWAS at genome-wide significance level 0.05.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t001-1" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t001" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1"><italic>F<sub>ST</sub></italic></td>
+<td align="left" colspan="1" rowspan="1">Empirical error rate</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.00</td>
+<td align="left" colspan="1" rowspan="1">0.0505</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.05</td>
+<td align="left" colspan="1" rowspan="1">0.0395</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.10</td>
+<td align="left" colspan="1" rowspan="1">0.0425</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.20</td>
+<td align="left" colspan="1" rowspan="1">0.0450</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.30</td>
+<td align="left" colspan="1" rowspan="1">0.0445</td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt101"><label/><p>The number of trios, <italic>N<sub>trio</sub></italic>, is assumed to be 1,000 and the empirical type-1 error of the minimum p-value for GWAS at 500K GWAS is calculated with 2,000 replicates.</p></fn></table-wrap-foot></table-wrap><table-wrap id="pgen-1000741-t002" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t002</object-id><label>Table 2</label><caption>
+<title>Average of empirical proportion at 500K GWAS.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t002-2" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t002" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1"><italic>F<sub>ST</sub></italic></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 5×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−5</sup></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.00</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.97×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.91×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.86×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.66×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.05</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.97×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.91×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.85×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.76×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.10</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.96×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.88×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.78×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.79×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.20</td>
+<td align="left" colspan="1" rowspan="1">4.99×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.95×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.87×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.76×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.60×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.30</td>
+<td align="left" colspan="1" rowspan="1">4.98×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.92×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.82×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.68×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.40×10<sup>−6</sup></td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt102"><label/><p>The number of trios, <italic>N<sub>trio</sub></italic>, is assumed to be 1,000 and the empirical proportions of SNPs whose p-values for <italic>Z<sub>i</sub></italic> are less than <italic>c</italic> in each replicate for 500K GWAS are averaged over 2,000 replicates.</p></fn></table-wrap-foot></table-wrap>
+<p>In the next set of simulation studies, we assess the effects of the local population stratification on the overall family-based association test. We generate local population stratification under the following assumptions: there are two subpopulations, <italic>G</italic><sub>1</sub> and <italic>G</italic><sub>2</sub> which distinguish themselves from each other in 2 marker regions. We assume that a subject can be from all possible 4 combinations at the 2 particular regions, e.g. (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>1</sub>), (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>2</sub>), (<italic>G</italic><sub>2</sub>, <italic>G</italic><sub>1</sub>) and (<italic>G</italic><sub>2</sub>, <italic>G</italic><sub>2</sub>). Both regions consist of 10K SNPs and 90K SNPs respectively and if subjects are from the same subpopulation in each genetic region, their assumed allele frequencies of the markers in the corresponding region are equal. For example, the allele frequencies of each marker in the marker region 1 are the same for samples in (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>1</sub>) and (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>2</sub>), but they are different for (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>1</sub>) and (<italic>G</italic><sub>2</sub>, <italic>G</italic><sub>2</sub>). In the simulation study, we generate the parental genotypes based on these allele frequency assumptions and obtain the offspring genotypes based on simulated Mendelian transmissions. Using the Balding-Nichols model we considered <italic>F<sub>ST</sub></italic>'s of 0.001, 0.005, 0.01 and 0.05 in the simulation studies. The offspring's phenotype was generated under the null hypothesis, but we assumed that each sub-population strata had a different phenotypic mean: 0 for (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>1</sub>), 0.2 for (<italic>G</italic><sub>1</sub>, <italic>G</italic><sub>2</sub>), 0.4 for (<italic>G</italic><sub>2</sub>, <italic>G</italic><sub>1</sub>) and 0.6 for (<italic>G</italic><sub>2</sub>, <italic>G</italic><sub>2</sub>). Each replicate consists of 2,000 trios with equal number of trios for all 4 possible combinations. The data was analyzed with the proposed overall family-based association test and with standard linear regression after adjusting population admixture with EIGENSTRAT <xref ref-type="bibr" rid="pgen.1000741-Price1">[10]</xref>. For EIGENSTRAT, we applied the principal component analysis to the mean of the paternal and maternal genotypes at each locus because parents of each offspring are from the same subpopulation, and then the residuals obtained from regressing offspring genotypes and phenotypes with eigenvectors respectively are used to calculate the generalized Armitage trend test <xref ref-type="bibr" rid="pgen.1000741-Armitage1">[27]</xref>. <xref ref-type="table" rid="pgen-1000741-t003">Table 3</xref> provides the empirical type-1 error for both analysis approaches based on 2,000 replicates. While EIGENSTRAT exhibits an inflated type-1 error, the proposed overall family test maintains the theoretical significance level.</p>
+<table-wrap id="pgen-1000741-t003" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t003</object-id><label>Table 3</label><caption>
+<title>Average of empirical proportion at 100K GWAS.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t003-3" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t003" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1">Method</td>
+<td align="left" colspan="1" rowspan="1"><italic>F<sub>ST</sub></italic></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 5×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1"><italic>c</italic> = 1×10<sup>−5</sup></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">EIGENSTRAT</td>
+<td align="left" colspan="1" rowspan="1">0.001</td>
+<td align="left" colspan="1" rowspan="1">5.07×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">1.02×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">1.04×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">1.05×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">1.02×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">5.44×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">1.17×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">1.36×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">1.72×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">2.45×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.01</td>
+<td align="left" colspan="1" rowspan="1">5.86×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">1.39×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">2.09×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">3.62×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">7.57×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.05</td>
+<td align="left" colspan="1" rowspan="1">8.20×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">3.24×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">1.32×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">6.58×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">3.39×10<sup>−3</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">LIP</td>
+<td align="left" colspan="1" rowspan="1">0.001</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.99×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.93×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.89×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.70×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.99×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">1.00×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">1.01×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">1.00×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.01</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.99×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.97×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.96×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.99×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.05</td>
+<td align="left" colspan="1" rowspan="1">5.00×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">9.98×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">9.94×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">9.89×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">9.98×10<sup>−6</sup></td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt103"><label/><p>The number of trios, <italic>N<sub>trio</sub></italic>, is assumed to be 1,000. The empirical proportions of SNPs whose p-values for <italic>Z<sub>i</sub></italic> are less than <italic>c</italic> in each replicate for 500K GWAS are averaged over 2000 replicates when there is local population stratification. LIP stands for the proposed method using Liptak method to combine <italic>pFBAT<sub>i</sub></italic> and <italic>pT<sub>i</sub></italic>.</p></fn></table-wrap-foot></table-wrap></sec><sec id="s3b">
+<title>Empirical power with simulation for 500K GWA for quantitative trait</title>
+<p>For the analysis of quantitative traits, <xref ref-type="table" rid="pgen-1000741-t004">Table 4</xref> provides the empirical power for 500K GWAS from 2000 replicates when there is no population stratification. Under the assumption of an additive disease model for a quantitative trait, the genetic effect, <italic>a</italic>, is given as a function of the heritability, <italic>h</italic><sup>2</sup>, the minor allele frequency <italic>p<sub>D</sub></italic><sub>ı</sub> and the phenotypic variance, <italic>σ</italic><sup>2</sup>, by: <italic>a</italic> = <italic>σh</italic>/[2<italic>p</italic>(1−<italic>p</italic>)(1−<italic>h</italic><sup>2</sup>) ]<sup>0.5</sup>. In the simulation study, we assume heritabilities of <italic>h</italic><sup>2</sup> = 0.001, 0.005, 0.01 and 0.015 for 2,000, 2,500 and 3,000 trios. The allele frequency of the disease locus, <italic>p<sub>D</sub></italic><sub>ı</sub>, is 0.3 and the phenotypic variance is 1. We compare the achieved power levels of the proposed overall family-based association test, <italic>Z<sub>i</sub></italic>, with the weighting approach by Ionita-Laza et al <xref ref-type="bibr" rid="pgen.1000741-IonitaLaza1">[12]</xref>, the original VanSteen approach <xref ref-type="bibr" rid="pgen.1000741-VanSteen1">[11]</xref>, the QTDT approach <xref ref-type="bibr" rid="pgen.1000741-Abecasis1">[28]</xref> and population-based analysis, i.e. using linear regression of the phenotype <italic>Y</italic> on the genotype <italic>X</italic>. Bonferroni correction is used to adjust for multiple testing in the population-based analysis, FBAT, QTDT and the proposed method. The results in <xref ref-type="table" rid="pgen-1000741-t004">Table 4</xref> suggest that the proposed association test achieves power levels that represent a major improvement over the existing methods for family-based association tests (VanSteen <xref ref-type="bibr" rid="pgen.1000741-VanSteen1">[11]</xref> or Ionita-Laza <xref ref-type="bibr" rid="pgen.1000741-IonitaLaza1">[12]</xref>). Our approach reaches the same power levels as the population-based analysis. For the power comparisons that are shown in <xref ref-type="fig" rid="pgen-1000741-g001">Figure 1</xref>, <xref ref-type="fig" rid="pgen-1000741-g002">Figure 2</xref>, and <xref ref-type="fig" rid="pgen-1000741-g003">Figure 3</xref>, the number of trios is assumed to be 1,000 in 500K GWAS and the empirical powers are calculated based on 10,000 replicates at an <italic>α</italic>-level of 0.001 for the all genetic models. The results confirm that the Liptak's method combining <italic>T<sub>i</sub></italic> and <italic>FBAT<sub>i</sub></italic> has similar power to the population-based method, and the choice of equal weights performs well. The simulation results in <xref ref-type="table" rid="pgen-1000741-t004">Table 4</xref> also suggest that QTDT <xref ref-type="bibr" rid="pgen.1000741-Abecasis1">[28]</xref> approach achieves similar power levels as the standard FBAT approach, which is consistent with previously reported findings in the literature <xref ref-type="bibr" rid="pgen.1000741-Diao1">[29]</xref>. However, both standard FBAT and QTDT are still much less powerful than the proposed overall family-based association test. <xref ref-type="table" rid="pgen-1000741-t005">Table 5</xref> shows the empirical power for a GWAS with 100,000 SNPs in the presence of population stratification. For the parameters of this simulation study, we assume <italic>F<sub>ST</sub></italic> = 0.001, 0.005, 0.01, and 0.05, and the additive mode of inheritance at the disease locus with values for the heritability of <italic>h</italic><sup>2</sup> = 0.005, 0.01 and 0.015. The disease allele frequency <italic>p<sub>D</sub></italic><sub>ı</sub> in the ancestral population is assumed to be 0.3. The phenotypic data is simulated so that their phenotypic means for two subpopulations are 0 and 0.2 respectively. Each individual/trio is assigned to either subpopulation with probability 0.5. The parental genotypes are used to estimate the ancestry for EIGENSTRAT as before. Various methods have been suggested to adjust the population stratification in a population-based designs and we compare the proposed methods with the EIGENSTRAT approach <xref ref-type="bibr" rid="pgen.1000741-Price1">[10]</xref>. In order to maximize the power of the proposed method, we apply the EIGENSTRAT approach to the population-based component <italic>T<sub>i</sub></italic> of our approach, i.e. principal component analysis based on the parental genotypes and the offspring's phenotype is integrated into the generalized Armitage test for <italic>T<sub>i</sub></italic> <xref ref-type="bibr" rid="pgen.1000741-Armitage1">[27]</xref>. To keep the power comparisons unbiased, the population-based components of the approaches by VanSteen and Ionita-Laza are also adjusted for population admixture, using the EIGENSTRAT approach. The results in <xref ref-type="table" rid="pgen-1000741-t005">Table 5</xref> show that the proposed test statistic <italic>Z<sub>i</sub></italic> is considerably more powerful than population-based analysis adjusted with EIGENSTRAT. QTDT is slightly more powerful than FBAT, but it is much less powerful than LIP as is in <xref ref-type="table" rid="pgen-1000741-t004">Table 4</xref>. This suggests that EIGENSTRAT should be applied only to between-family component in family-based association studies. Our unpublished work showed that the proposed approach can be less powerful than the combination of population-based analysis and EIGENSTRAT if <italic>pT<sub>i</sub></italic> is calculated from the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-VanSteen1">[11]</xref>,<xref ref-type="bibr" rid="pgen.1000741-Lange5">[22]</xref> without adjusting population stratification.</p>
+<fig id="pgen-1000741-g001" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.g001</object-id><label>Figure 1</label><caption>
+<title>Empirical power at 0.001 significance level for additive disease.</title>
+<p>POP is the empirical power of the standard population-based method. T is the empirical power of the Wald test based on the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-Lange5">[22]</xref> for between-faimly components. LIP is the empirical power of the combined p-values with Liptak's method. In this figure, FBAT and T are completely overlapped.</p>
+</caption><graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.g001" xlink:type="simple"/></fig><fig id="pgen-1000741-g002" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.g002</object-id><label>Figure 2</label><caption>
+<title>Empirical power at 0.001 significance level for dominant disease.</title>
+<p>POP is the empirical power of the standard population-based method. T is the empirical power of the Wald test based on the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-Lange5">[22]</xref> for between-faimly components. LIP is the empirical power of the combined p-values with Liptak's method. In this figure, FBAT and T are completely overlapped.</p>
+</caption><graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.g002" xlink:type="simple"/></fig><fig id="pgen-1000741-g003" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.g003</object-id><label>Figure 3</label><caption>
+<title>Empirical power at 0.001 significance level for recessive disease.</title>
+<p>POP is the empirical power of the standard population-based method. T is the empirical power of the Wald test based on the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-Lange5">[22]</xref> for between-family components. LIP is the empirical power of the combined p-values with Liptak's method. In this figure, FBAT and T are completely overlapped.</p>
+</caption><graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.g003" xlink:type="simple"/></fig><table-wrap id="pgen-1000741-t004" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t004</object-id><label>Table 4</label><caption>
+<title>Empirical power for GWAS under no population stratification.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t004-4" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t004" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1"><italic>N<sub>trio</sub></italic></td>
+<td align="left" colspan="1" rowspan="1"><italic>h</italic><sup>2</sup></td>
+<td align="left" colspan="1" rowspan="1">POP</td>
+<td align="left" colspan="1" rowspan="1">FBAT</td>
+<td align="left" colspan="1" rowspan="1">QTDT</td>
+<td align="left" colspan="1" rowspan="1">LIP</td>
+<td align="left" colspan="1" rowspan="1">VAN</td>
+<td align="left" colspan="1" rowspan="1">ION</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">2,000</td>
+<td align="left" colspan="1" rowspan="1">0.001</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0200</td>
+<td align="left" colspan="1" rowspan="1">0.0025</td>
+<td align="left" colspan="1" rowspan="1">0.0010</td>
+<td align="left" colspan="1" rowspan="1">0.0185</td>
+<td align="left" colspan="1" rowspan="1">0.0080</td>
+<td align="left" colspan="1" rowspan="1">0.0130</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.01</td>
+<td align="left" colspan="1" rowspan="1">0.2085</td>
+<td align="left" colspan="1" rowspan="1">0.0125</td>
+<td align="left" colspan="1" rowspan="1">0.0180</td>
+<td align="left" colspan="1" rowspan="1">0.1955</td>
+<td align="left" colspan="1" rowspan="1">0.0990</td>
+<td align="left" colspan="1" rowspan="1">0.1505</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.5725</td>
+<td align="left" colspan="1" rowspan="1">0.0765</td>
+<td align="left" colspan="1" rowspan="1">0.0150</td>
+<td align="left" colspan="1" rowspan="1">0.5350</td>
+<td align="left" colspan="1" rowspan="1">0.3045</td>
+<td align="left" colspan="1" rowspan="1">0.4515</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">2,500</td>
+<td align="left" colspan="1" rowspan="1">0.001</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0385</td>
+<td align="left" colspan="1" rowspan="1">0.0030</td>
+<td align="left" colspan="1" rowspan="1">0.0030</td>
+<td align="left" colspan="1" rowspan="1">0.0370</td>
+<td align="left" colspan="1" rowspan="1">0.0155</td>
+<td align="left" colspan="1" rowspan="1">0.0210</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.01</td>
+<td align="left" colspan="1" rowspan="1">0.3970</td>
+<td align="left" colspan="1" rowspan="1">0.0430</td>
+<td align="left" colspan="1" rowspan="1">0.0430</td>
+<td align="left" colspan="1" rowspan="1">0.3760</td>
+<td align="left" colspan="1" rowspan="1">0.2025</td>
+<td align="left" colspan="1" rowspan="1">0.2960</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.8135</td>
+<td align="left" colspan="1" rowspan="1">0.1420</td>
+<td align="left" colspan="1" rowspan="1">0.1790</td>
+<td align="left" colspan="1" rowspan="1">0.7995</td>
+<td align="left" colspan="1" rowspan="1">0.5525</td>
+<td align="left" colspan="1" rowspan="1">0.7380</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">3,000</td>
+<td align="left" colspan="1" rowspan="1">0.001</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0740</td>
+<td align="left" colspan="1" rowspan="1">0.0020</td>
+<td align="left" colspan="1" rowspan="1">0.0070</td>
+<td align="left" colspan="1" rowspan="1">0.0675</td>
+<td align="left" colspan="1" rowspan="1">0.0325</td>
+<td align="left" colspan="1" rowspan="1">0.0495</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.01</td>
+<td align="left" colspan="1" rowspan="1">0.5720</td>
+<td align="left" colspan="1" rowspan="1">0.0810</td>
+<td align="left" colspan="1" rowspan="1">0.0855</td>
+<td align="left" colspan="1" rowspan="1">0.5495</td>
+<td align="left" colspan="1" rowspan="1">0.3175</td>
+<td align="left" colspan="1" rowspan="1">0.4710</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.9175</td>
+<td align="left" colspan="1" rowspan="1">0.2665</td>
+<td align="left" colspan="1" rowspan="1">0.3265</td>
+<td align="left" colspan="1" rowspan="1">0.8980</td>
+<td align="left" colspan="1" rowspan="1">0.7055</td>
+<td align="left" colspan="1" rowspan="1">0.8630</td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt104"><label/><p>Empirical powers are calculated from 2,000 replicates at the genome-wide significance level 0.05 from Bonferroni method under no population stratification. LIP stands for the proposed method using Liptak method to combine <italic>pFBAT<sub>i</sub></italic> and <italic>pT<sub>i</sub></italic>.VAN and ION indicate the VanSteen approach screening top 20 SNPs and Ionita approach using an exponential weighting scheme with partitioning parameters of <italic>K</italic> = 7 and <italic>r</italic> = 2 respectively. FBAT are the results only from the within-family component and POP is the standard population-based method.</p></fn></table-wrap-foot></table-wrap><table-wrap id="pgen-1000741-t005" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t005</object-id><label>Table 5</label><caption>
+<title>Empirical power for GWAS under population stratification.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t005-5" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t005" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1"><italic>F<sub>ST</sub></italic></td>
+<td align="left" colspan="1" rowspan="1"><italic>h</italic><sup>2</sup></td>
+<td align="left" colspan="1" rowspan="1">FBAT</td>
+<td align="left" colspan="1" rowspan="1">QTDT</td>
+<td align="left" colspan="1" rowspan="1">LIP</td>
+<td align="left" colspan="1" rowspan="1">VAN</td>
+<td align="left" colspan="1" rowspan="1">ION</td>
+<td align="left" colspan="1" rowspan="1">EIG</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.001</td>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0010</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.010</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0030</td>
+<td align="left" colspan="1" rowspan="1">0.1157</td>
+<td align="left" colspan="1" rowspan="1">0.0826</td>
+<td align="left" colspan="1" rowspan="1">0.1157</td>
+<td align="left" colspan="1" rowspan="1">0.0579</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0085</td>
+<td align="left" colspan="1" rowspan="1">0.3884</td>
+<td align="left" colspan="1" rowspan="1">0.2975</td>
+<td align="left" colspan="1" rowspan="1">0.3471</td>
+<td align="left" colspan="1" rowspan="1">0.2562</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.010</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0020</td>
+<td align="left" colspan="1" rowspan="1">0.0909</td>
+<td align="left" colspan="1" rowspan="1">0.0579</td>
+<td align="left" colspan="1" rowspan="1">0.0661</td>
+<td align="left" colspan="1" rowspan="1">0.0661</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0080</td>
+<td align="left" colspan="1" rowspan="1">0.3223</td>
+<td align="left" colspan="1" rowspan="1">0.2810</td>
+<td align="left" colspan="1" rowspan="1">0.3140</td>
+<td align="left" colspan="1" rowspan="1">0.1901</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.01</td>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0015</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.010</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0010</td>
+<td align="left" colspan="1" rowspan="1">0.0909</td>
+<td align="left" colspan="1" rowspan="1">0.0826</td>
+<td align="left" colspan="1" rowspan="1">0.0579</td>
+<td align="left" colspan="1" rowspan="1">0.0331</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0135</td>
+<td align="left" colspan="1" rowspan="1">0.3636</td>
+<td align="left" colspan="1" rowspan="1">0.2975</td>
+<td align="left" colspan="1" rowspan="1">0.3388</td>
+<td align="left" colspan="1" rowspan="1">0.2645</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">0.05</td>
+<td align="left" colspan="1" rowspan="1">0.005</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+<td align="left" colspan="1" rowspan="1">0.01653</td>
+<td align="left" colspan="1" rowspan="1">0.0330</td>
+<td align="left" colspan="1" rowspan="1">0.0248</td>
+<td align="left" colspan="1" rowspan="1">0.0000</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.010</td>
+<td align="left" colspan="1" rowspan="1">0.0083</td>
+<td align="left" colspan="1" rowspan="1">0.0035</td>
+<td align="left" colspan="1" rowspan="1">0.0992</td>
+<td align="left" colspan="1" rowspan="1">0.0744</td>
+<td align="left" colspan="1" rowspan="1">0.0826</td>
+<td align="left" colspan="1" rowspan="1">0.0165</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">0.015</td>
+<td align="left" colspan="1" rowspan="1">0.0165</td>
+<td align="left" colspan="1" rowspan="1">0.0080</td>
+<td align="left" colspan="1" rowspan="1">0.3140</td>
+<td align="left" colspan="1" rowspan="1">0.2645</td>
+<td align="left" colspan="1" rowspan="1">0.2727</td>
+<td align="left" colspan="1" rowspan="1">0.2066</td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt105"><label/><p>The number of trios, <italic>N<sub>trio</sub></italic>, is assumed to be 1,000. Empirical powers are calculated from 2,000 replicates at the genome-wide significance level 0.05 from Bonferroni method under no population stratification. LIP stands for the proposed method using Liptak method to combine <italic>pFBAT<sub>i</sub></italic> and <italic>pT<sub>i</sub></italic>. VAN and ION indicate the VanSteen approach selecting top 20 SNP and Ionita approach using an exponential weighting scheme with partitioning parameters of <italic>K</italic> = 5 and <italic>r</italic> = 2 respectively. FBAT indicates the empirical power only from <italic>FBAT<sub>i</sub></italic> and EIG indicates the empirical power from EIGENSTRAT.</p></fn></table-wrap-foot></table-wrap></sec><sec id="s3c">
+<title>Applications to a genome-wide association in the Framingham Heart study</title>
+<p>For the assessment of the severity of pulmonary diseases, the lung volume of air that a subject can blow out within one second after taking a deep breath is an important endo-phenotype. It is referred to as the forced expiratory volume in one second (FEV1). FEV1 is an important measure for lung function and we apply the proposed method to a family-based GWAS of FEV1. The proposed method is applied to 550K GWAS Framingham Heart Study (FHS) data set for FEV1, and then we confirm whether the selected SNPs are replicated in the British 1958 Birth Cohort (BBC), another population sample, as well as two samples of asthmatics in the the Childhood Asthma management program (CAMP) <xref ref-type="bibr" rid="pgen.1000741-1">[30]</xref> and an Afro-Caribbean group of families from Barbados (ACG) <xref ref-type="bibr" rid="pgen.1000741-Barnes1">[31]</xref>. In FHS, 9,274 subjects were genotyped and 10,816 subjects of those had at least one FEV1 measurement. Of the 8637 participants with genotyping and FEV1 measures, only those with a call rate of 97% or higher were included. We adjusted the covariates, age, sex and the quadratic term of height that are known to be associated with FEV1. For within-family components, the FBAT statistic for quantitative trait was applied. Markers were excluded from the analysis if the number of informative families was less than 20, or the minor allele frequency was less than 0.05. In total, 306,264 SNPs were used for analysis and, based on the number of SNPs, rank-based empirical p-values, <italic>pT<sub>i</sub></italic>, and the genome-wide significance level was obtained with Bonferroni correction. When we let <italic>n</italic> and <italic>n<sub>inf</sub></italic> be the total number of individuals and the number of informative trios respectively, <italic>n<sub>inf</sub></italic>: (2<italic>n</italic>−<italic>n<sub>inf</sub></italic>) are used for the weights of <italic>Z<sub>i</sub></italic> because some of parental phenotypes are available.</p>
+<p><xref ref-type="table" rid="pgen-1000741-t006">Table 6</xref> shows the p-values for the top 10 SNPs from the proposed method. In our analysis, the genome-wide significance level at 0.05 is 1.636×10<sup>−7</sup> and our results show that only the first ranked SNP, rs805294, is significant at the genome-wide level 0.2 with Bonferroni correction. For rs805294, we also checked the significance in other data sets, BBC, CAMP <xref ref-type="bibr" rid="pgen.1000741-1">[30]</xref> and ACG <xref ref-type="bibr" rid="pgen.1000741-Barnes1">[31]</xref>. In CAMP, 1215 subjects in 422 families were genotyped and there are 488 informative trios for rs809254 and in ACG, there were only 33 informative trios (<xref ref-type="table" rid="pgen-1000741-t007">Table 7</xref>). In the BBC, 1372 unrelated subjects were genotyped with the Affymetrix chip and 1323 unrelated subjects genotyped with the Illumina chip. In CAMP and ACG, age, sex and the quadratic terms of heights were adjusted and in the BBC, age, sex, height, recent chest infection and nurse were adjusted. <xref ref-type="table" rid="pgen-1000741-t007">Table 7</xref> also shows that rs805294 is significant and their directions are same for the considered studies except for the ACG sample. In particular, in the ACG study, the MAF of the SNP is different from other studies, which indicates a different local LD structure; The ACG sample is from an Afro-Caribbean population, contrary to the other studies which only include Caucasian study subjects. In addition, the ACG sample lacks statistical power for this particular SNP, i.e. there are only 33 informative trios in this sample. Thus, the inconsistent finding in the ACG study could be attributable to genetic heterogeneity, i.e. different local LD structure/flip-flop phenomena <xref ref-type="bibr" rid="pgen.1000741-Lin1">[32]</xref>, or insufficient statistical power. For meta analysis, the sample sizes are used as weights for Liptak's method and we use 13∶13∶5∶1 = FHS∶BBC∶CAMP∶ACG as weights because the between-family information is used only for FHS. If the p-value from Illumina gene chip in BBC and the p-values from FHS, CAMP and ACG are combined, then the p-values by Liptak's method using proposed weights and Fisher's method are 1.534×10<sup>−8</sup> and 1.081×10<sup>−7</sup> respectively, and they become 4.625×10<sup>−9</sup> and 3.554×10<sup>−8</sup> if the p-values from one-tailed tests are used for BBC, CAMP and ACG with the same direction of FHS. If the p-value from the Affymetrix gene chip in BBC is combined with the other studies, then they are 3.787×10<sup>−8</sup> (Liptak's method) and 1.890×10<sup>−7</sup> (Fisher's method) for two-tailed tests, and 1.098×10<sup>−8</sup> (Liptak's method) and 6.236×10<sup>−8</sup> (Fisher's method) for one-tailed tests. As a result we can conclude that rs805294 is significantly associated with FEV1 at a genome-wide scale and the gene, LY6G6C, associated with rs805293 will be investigated in further studies.</p>
+<table-wrap id="pgen-1000741-t006" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t006</object-id><label>Table 6</label><caption>
+<title>Applications to forced expiratory volume in one second in Framingham Heart study.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t006-6" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t006" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1">SNP</td>
+<td align="left" colspan="1" rowspan="1">Chrom</td>
+<td align="left" colspan="1" rowspan="1">Position</td>
+<td align="left" colspan="1" rowspan="1">MAF</td>
+<td align="left" colspan="1" rowspan="1">Num. Info. Fam.</td>
+<td align="left" colspan="1" rowspan="1"><italic>FBAT<sub>i</sub></italic></td>
+<td align="left" colspan="1" rowspan="1"><italic>pT<sub>i</sub></italic></td>
+<td align="left" colspan="1" rowspan="1"><italic>Z<sub>i</sub></italic></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs805294</td>
+<td align="left" colspan="1" rowspan="1">6</td>
+<td align="left" colspan="1" rowspan="1">31796196</td>
+<td align="left" colspan="1" rowspan="1">0.340</td>
+<td align="left" colspan="1" rowspan="1">918</td>
+<td align="left" colspan="1" rowspan="1">4.300×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">2.073×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">5.929×10<sup>−7</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs10863838</td>
+<td align="left" colspan="1" rowspan="1">1</td>
+<td align="left" colspan="1" rowspan="1">208750806</td>
+<td align="left" colspan="1" rowspan="1">0.450</td>
+<td align="left" colspan="1" rowspan="1">1016</td>
+<td align="left" colspan="1" rowspan="1">7.408×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">2.535×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">2.553×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs6794842</td>
+<td align="left" colspan="1" rowspan="1">3</td>
+<td align="left" colspan="1" rowspan="1">119308208</td>
+<td align="left" colspan="1" rowspan="1">0.331</td>
+<td align="left" colspan="1" rowspan="1">950</td>
+<td align="left" colspan="1" rowspan="1">3.226×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">2.400×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">6.654×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs804963</td>
+<td align="left" colspan="1" rowspan="1">14</td>
+<td align="left" colspan="1" rowspan="1">85918211</td>
+<td align="left" colspan="1" rowspan="1">0.460</td>
+<td align="left" colspan="1" rowspan="1">1031</td>
+<td align="left" colspan="1" rowspan="1">9.786×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">2.775×10<sup>−6</sup></td>
+<td align="left" colspan="1" rowspan="1">7.060×10<sup>−6</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs525914</td>
+<td align="left" colspan="1" rowspan="1">11</td>
+<td align="left" colspan="1" rowspan="1">119200660</td>
+<td align="left" colspan="1" rowspan="1">0.187</td>
+<td align="left" colspan="1" rowspan="1">711</td>
+<td align="left" colspan="1" rowspan="1">9.204×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">1.888×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">2.081×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs1886280</td>
+<td align="left" colspan="1" rowspan="1">10</td>
+<td align="left" colspan="1" rowspan="1">89347496</td>
+<td align="left" colspan="1" rowspan="1">0.362</td>
+<td align="left" colspan="1" rowspan="1">971</td>
+<td align="left" colspan="1" rowspan="1">1.797×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">2.297×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">2.511×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs710469</td>
+<td align="left" colspan="1" rowspan="1">3</td>
+<td align="left" colspan="1" rowspan="1">188467212</td>
+<td align="left" colspan="1" rowspan="1">0.491</td>
+<td align="left" colspan="1" rowspan="1">1058</td>
+<td align="left" colspan="1" rowspan="1">3.202×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">1.388×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1">2.639×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs10799746</td>
+<td align="left" colspan="1" rowspan="1">1</td>
+<td align="left" colspan="1" rowspan="1">22497833</td>
+<td align="left" colspan="1" rowspan="1">0.168</td>
+<td align="left" colspan="1" rowspan="1">651</td>
+<td align="left" colspan="1" rowspan="1">1.388×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">3.538×10<sup>−4</sup></td>
+<td align="left" colspan="1" rowspan="1">2.748×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs1225888</td>
+<td align="left" colspan="1" rowspan="1">20</td>
+<td align="left" colspan="1" rowspan="1">15972225</td>
+<td align="left" colspan="1" rowspan="1">0.449</td>
+<td align="left" colspan="1" rowspan="1">1007</td>
+<td align="left" colspan="1" rowspan="1">7.518×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">1.736×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">2.994×10<sup>−5</sup></td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">rs4638547</td>
+<td align="left" colspan="1" rowspan="1">15</td>
+<td align="left" colspan="1" rowspan="1">71122046</td>
+<td align="left" colspan="1" rowspan="1">0.377</td>
+<td align="left" colspan="1" rowspan="1">999</td>
+<td align="left" colspan="1" rowspan="1">3.454×10<sup>−5</sup></td>
+<td align="left" colspan="1" rowspan="1">2.760×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">3.549×10<sup>−5</sup></td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt106"><label/><p>The number of markers is 306,264 and the genome-wide significance level at 0.05 is 1.636 × 10<sup>−7</sup>. The top 10 SNPs from <italic>Z<sub>i</sub></italic> are selected, assuming additive disease mode of inheritance. For <italic>pT<sub>i</sub></italic>, the estimated powers are used and the weights for LIP are calculated with the number of informative trios.</p></fn></table-wrap-foot></table-wrap><table-wrap id="pgen-1000741-t007" position="float"><object-id pub-id-type="doi">10.1371/journal.pgen.1000741.t007</object-id><label>Table 7</label><caption>
+<title>Descriptive statistics and results of rs805294 in different studies.</title>
+</caption><!--===== Grouping alternate versions of objects =====--><alternatives><graphic id="pgen-1000741-t007-7" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.t007" xlink:type="simple"/><table><colgroup span="1"><col align="left" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/><col align="center" span="1"/></colgroup>
+<thead>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">FHS</td>
+<td align="left" colspan="2" rowspan="1">British Cohort</td>
+<td align="left" colspan="1" rowspan="1">CAMP</td>
+<td align="left" colspan="1" rowspan="1">BAR</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1">Affy</td>
+<td align="left" colspan="1" rowspan="1">Illumina</td>
+<td align="left" colspan="1" rowspan="1"/>
+<td align="left" colspan="1" rowspan="1"/>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" colspan="1" rowspan="1">Num. Info. Fam.</td>
+<td align="left" colspan="1" rowspan="1">918</td>
+<td align="left" colspan="1" rowspan="1">-</td>
+<td align="left" colspan="1" rowspan="1">-</td>
+<td align="left" colspan="1" rowspan="1">488</td>
+<td align="left" colspan="1" rowspan="1">33</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">Sample Size</td>
+<td align="left" colspan="1" rowspan="1">-</td>
+<td align="left" colspan="1" rowspan="1">1372</td>
+<td align="left" colspan="1" rowspan="1">1323</td>
+<td align="left" colspan="1" rowspan="1">-</td>
+<td align="left" colspan="1" rowspan="1">-</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">MAF</td>
+<td align="left" colspan="1" rowspan="1">0.34</td>
+<td align="left" colspan="1" rowspan="1">0.36</td>
+<td align="left" colspan="1" rowspan="1">0.36</td>
+<td align="left" colspan="1" rowspan="1">0.33</td>
+<td align="left" colspan="1" rowspan="1">0.22</td>
+</tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">P-values</td>
+<td align="left" colspan="1" rowspan="1"><bold>−</bold>5.929×10<sup>−7</sup></td>
+<td align="left" colspan="1" rowspan="1"><bold>−</bold>1.234×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1"><bold>−</bold>6.534×10<sup>−3</sup></td>
+<td align="left" colspan="1" rowspan="1"><bold>−</bold>1.370×10<sup>−2</sup></td>
+<td align="left" colspan="1" rowspan="1">7.84×10<sup>−1</sup></td>
+</tr>
+</tbody>
+</table></alternatives><table-wrap-foot><fn id="nt107"><label/><p>The negative sign of the P-values indicates that the minor alleles are under-expressed in cases.</p></fn></table-wrap-foot></table-wrap></sec></sec><sec id="s4">
+<title>Discussion</title>
+<p>Genome-wide association studies have become one of the most important tools for the identification of new disease loci in the human genome. However, even though advances in genotyping technology have enabled a new generation of genetic association studies that provide robust and replicable findings, population stratification/genetic heterogeneity and the multiple testing problems continue to be the major issues in the statistical analysis that have to be resolved in each study. While family-based association tests provide analysis results that are completely robust against confounding due to population-substructures, the analysis approach is not optimal in terms of statistical power. Numerous approaches have been suggested to minimize this disadvantage of family-based association tests but the previous approaches had to compromise either in terms of robustness or in terms of efficiency.</p>
+<p>In this communication, we develop an approach that efficiently utilizes all available data, while maintaining complete robustness against confounding due to population substructure. The proposed methods combines the p-values of the family-based tests (the within-component) with the rank-based p-values for population-based analysis (the between component) to achieve optimal power levels. The use of rank-based p-values for the population-based component is similar in spirit to the genomic control approach. In principle, the genomic control functions as rescaling the variance inflated due to population stratification under the assumption of the constant <italic>F<sub>ST</sub></italic>. Rank-based p-value directly rescales the statistics based on their ranks, which always generates the uniformly distributed p-value and provides validity even for varying <italic>F<sub>ST</sub></italic> due to local population stratification etc.</p>
+<p>Although our simulations are limited to independent unascertained samples and quantitative traits, the proposed work can be easily extended to ascertained samples, large pedigree, or different trait types, etc. By replacing the parental genotypes with the sufficient statistics by Rabinowitz&amp;Laird <xref ref-type="bibr" rid="pgen.1000741-Rabinowitz1">[19]</xref>, the FBAT-statistic and the screening-statistic can be adopted straight-forwardly to designs with extended pedigrees <xref ref-type="bibr" rid="pgen.1000741-Lange6">[23]</xref>. Similarly, parental phenotypes can be incorporated into the conditional mean model <xref ref-type="bibr" rid="pgen.1000741-Lange6">[23]</xref> or its non-parametric extensions <xref ref-type="bibr" rid="pgen.1000741-Jiang1">[33]</xref> as additional outcome variables. The optimal weights can vary between the different scenarios and further theoretical investigation is currently ongoing, but limited initial simulation studies suggest that equal weights, while not always the most powerful choice in such situation, will always result in more powerful analysis than currently used methods.</p>
+</sec><sec id="s5">
+<title>Supporting Information</title>
+<supplementary-material id="pgen.1000741.s001" mimetype="application/msword" position="float" xlink:href="info:doi/10.1371/journal.pgen.1000741.s001" xlink:type="simple"><label>Text S1</label><caption>
+<p>The validity of the proposed method.</p>
+<p>(0.04 MB DOC)</p>
+</caption></supplementary-material></sec></body>
+<back>
+<ack>
+<p>Framingham Heart Study genotype and phenotype data are publicly available through the NHLBI's SNP Health Association Resource (SHARe) initiative (<ext-link ext-link-type="uri" xlink:href="http://public.nhlbi.nih.gov/GeneticsGenomics/home/share.aspx" xlink:type="simple">http://public.nhlbi.nih.gov/GeneticsGenomics/home/share.aspx</ext-link>). We acknowledge the CAMP investigators and research team for collection of CAMP Genetic Ancillary Study data and use of genotype data from the British 1958 Birth Cohort DNA collection. We further acknowledge the families in Barbados for their generous participation in this study. We are grateful to Drs. Raana Naidu, Paul Levett, Malcolm Howitt and Pissamai Maul, Trevor Maul, and Bernadette Gray for their contributions in the field; Dr. Malcolm Howitt and the Polyclinic and A&amp;E Department physicians in Barbados for their efforts and their continued support; as well as Drs. Henry Fraser and Anselm Hennis at the Chronic Disease Research Centre.</p>
+</ack>
+<ref-list>
+<title>References</title>
+<ref id="pgen.1000741-Aulchenko1"><label>1</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Aulchenko</surname><given-names>YS</given-names></name>
+<name name-style="western"><surname>de Koning</surname><given-names>DJ</given-names></name>
+<name name-style="western"><surname>Haley</surname><given-names>C</given-names></name>
+</person-group>             <year>2007</year>             <article-title>Genomewide rapid association using mixed model and regression: a fast and simple method for genomewide pedigree-based quantitative trait loci association analysis.</article-title>             <source>Genetics</source>             <volume>177</volume>             <fpage>577</fpage>             <lpage>585</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Chen1"><label>2</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Chen</surname><given-names>WM</given-names></name>
+<name name-style="western"><surname>Abecasis</surname><given-names>GR</given-names></name>
+</person-group>             <year>2007</year>             <article-title>Family-based association tests for genomewide association scans.</article-title>             <source>Am J Hum Genet</source>             <volume>81</volume>             <fpage>913</fpage>             <lpage>926</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Elston1"><label>3</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Elston</surname><given-names>RC</given-names></name>
+<name name-style="western"><surname>Gray-McGuire</surname><given-names>C</given-names></name>
+</person-group>             <year>2004</year>             <article-title>A review of the ‘Statistical Analysis for Genetic Epidemiology’ (S.A.G.E.) software package.</article-title>             <source>Hum Genomics</source>             <volume>1</volume>             <fpage>456</fpage>             <lpage>459</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lange1"><label>4</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Blacker</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+</person-group>             <year>2004</year>             <article-title>Family-based association tests for survival and times-to-onset analysis.</article-title>             <source>Stat Med</source>             <volume>23</volume>             <fpage>179</fpage>             <lpage>189</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Laird1"><label>5</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+<name name-style="western"><surname>Horvath</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Xu</surname><given-names>X</given-names></name>
+</person-group>             <year>2000</year>             <article-title>Implementing a unified approach to family-based tests of association.</article-title>             <source>Genet Epidemiol</source>             <volume>19</volume>             <supplement>Suppl 1</supplement>             <fpage>S36</fpage>             <lpage>42</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lange2"><label>6</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Silverman</surname><given-names>EK</given-names></name>
+<name name-style="western"><surname>Xu</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Weiss</surname><given-names>ST</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+</person-group>             <year>2003</year>             <article-title>A multivariate family-based association test using generalized estimating equations: FBAT-GEE.</article-title>             <source>Biostatistics</source>             <volume>4</volume>             <fpage>195</fpage>             <lpage>206</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Devlin1"><label>7</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Devlin</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Roeder</surname><given-names>K</given-names></name>
+</person-group>             <year>1999</year>             <article-title>Genomic control for association studies.</article-title>             <source>Biometrics</source>             <volume>55</volume>             <fpage>997</fpage>             <lpage>1004</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Devlin2"><label>8</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Devlin</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Roeder</surname><given-names>K</given-names></name>
+<name name-style="western"><surname>Wasserman</surname><given-names>L</given-names></name>
+</person-group>             <year>2001</year>             <article-title>Genomic control, a new approach to genetic-based association studies.</article-title>             <source>Theor Popul Biol</source>             <volume>60</volume>             <fpage>155</fpage>             <lpage>166</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Pritchard1"><label>9</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Pritchard</surname><given-names>JK</given-names></name>
+<name name-style="western"><surname>Stephens</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Donnelly</surname><given-names>P</given-names></name>
+</person-group>             <year>2000</year>             <article-title>Inference of population structure using multilocus genotype data.</article-title>             <source>Genetics</source>             <volume>155</volume>             <fpage>945</fpage>             <lpage>959</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Price1"><label>10</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Price</surname><given-names>AL</given-names></name>
+<name name-style="western"><surname>Patterson</surname><given-names>NJ</given-names></name>
+<name name-style="western"><surname>Plenge</surname><given-names>RM</given-names></name>
+<name name-style="western"><surname>Weinblatt</surname><given-names>ME</given-names></name>
+<name name-style="western"><surname>Shadick</surname><given-names>NA</given-names></name>
+<etal/></person-group>             <year>2006</year>             <article-title>Principal components analysis corrects for stratification in genome-wide association studies.</article-title>             <source>Nat Genet</source>             <volume>38</volume>             <fpage>904</fpage>             <lpage>909</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-VanSteen1"><label>11</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Van Steen</surname><given-names>K</given-names></name>
+<name name-style="western"><surname>McQueen</surname><given-names>MB</given-names></name>
+<name name-style="western"><surname>Herbert</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Raby</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Lyon</surname><given-names>H</given-names></name>
+<etal/></person-group>             <year>2005</year>             <article-title>Genomic screening and replication using the same data set in family-based association testing.</article-title>             <source>Nat Genet</source>             <volume>37</volume>             <fpage>683</fpage>             <lpage>691</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-IonitaLaza1"><label>12</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Ionita-Laza</surname><given-names>I</given-names></name>
+<name name-style="western"><surname>McQueen</surname><given-names>MB</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+</person-group>             <year>2007</year>             <article-title>Genomewide weighted hypothesis testing in family-based association studies, with an application to a 100K scan.</article-title>             <source>Am J Hum Genet</source>             <volume>81</volume>             <fpage>607</fpage>             <lpage>614</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Murphy1"><label>13</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Murphy</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Weiss</surname><given-names>ST</given-names></name>
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+</person-group>             <year>2008</year>             <article-title>Screening and replication using the same data set: testing strategies for family-based studies in which all probands are affected.</article-title>             <source>PLoS Genet</source>             <volume>4</volume>             <fpage>e1000197</fpage>             <comment>doi:<ext-link ext-link-type="uri" xlink:href="http://dx.doi.org/10.1371/journal.pgen.1000197" xlink:type="simple">10.1371/journal.pgen.1000197</ext-link></comment>          </element-citation></ref>
+<ref id="pgen.1000741-Nagelkerke1"><label>14</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Nagelkerke</surname><given-names>NJ</given-names></name>
+<name name-style="western"><surname>Hoebee</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Teunis</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Kimman</surname><given-names>TG</given-names></name>
+</person-group>             <year>2004</year>             <article-title>Combining the transmission disequilibrium test and case-control methodology using generalized logistic regression.</article-title>             <source>Eur J Hum Genet</source>             <volume>12</volume>             <fpage>964</fpage>             <lpage>970</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Epstein1"><label>15</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Epstein</surname><given-names>MP</given-names></name>
+<name name-style="western"><surname>Veal</surname><given-names>CD</given-names></name>
+<name name-style="western"><surname>Trembath</surname><given-names>RC</given-names></name>
+<name name-style="western"><surname>Barker</surname><given-names>JN</given-names></name>
+<name name-style="western"><surname>Li</surname><given-names>C</given-names></name>
+<etal/></person-group>             <year>2005</year>             <article-title>Genetic association analysis using data from triads and unrelated subjects.</article-title>             <source>Am J Hum Genet</source>             <volume>76</volume>             <fpage>592</fpage>             <lpage>608</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Chen2"><label>16</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Chen</surname><given-names>YH</given-names></name>
+<name name-style="western"><surname>Lin</surname><given-names>HW</given-names></name>
+</person-group>             <year>2008</year>             <article-title>Simple association analysis combining data from trios/sibships and unrelated controls.</article-title>             <source>Genet Epidemiol</source>             <volume>32</volume>             <fpage>520</fpage>             <lpage>527</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Zhu1"><label>17</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Zhu</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Li</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Cooper</surname><given-names>RS</given-names></name>
+<name name-style="western"><surname>Elston</surname><given-names>RC</given-names></name>
+</person-group>             <year>2008</year>             <article-title>A unified association analysis approach for family and unrelated samples correcting for stratification.</article-title>             <source>Am J Hum Genet</source>             <volume>82</volume>             <fpage>352</fpage>             <lpage>365</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lange3"><label>18</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>DeMeo</surname><given-names>DL</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+</person-group>             <year>2002</year>             <article-title>Power and design considerations for a general class of family-based association tests: quantitative traits.</article-title>             <source>Am J Hum Genet</source>             <volume>71</volume>             <fpage>1330</fpage>             <lpage>1341</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Rabinowitz1"><label>19</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Rabinowitz</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>N</given-names></name>
+</person-group>             <year>2000</year>             <article-title>A unified approach to adjusting association tests for population admixture with arbitrary pedigree structure and arbitrary missing marker information.</article-title>             <source>Hum Hered</source>             <volume>50</volume>             <fpage>211</fpage>             <lpage>223</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Spielman1"><label>20</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Spielman</surname><given-names>RS</given-names></name>
+<name name-style="western"><surname>Ewens</surname><given-names>WJ</given-names></name>
+</person-group>             <year>1998</year>             <article-title>A sibship test for linkage in the presence of association: the sib transmission/disequilibrium test.</article-title>             <source>Am J Hum Genet</source>             <volume>62</volume>             <fpage>450</fpage>             <lpage>458</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lange4"><label>21</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+</person-group>             <year>2002</year>             <article-title>On a general class of conditional tests for family-based association studies in genetics: the asymptotic distribution, the conditional power, and optimality considerations.</article-title>             <source>Genet Epidemiol</source>             <volume>23</volume>             <fpage>165</fpage>             <lpage>180</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lange5"><label>22</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Lyon</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>DeMeo</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Raby</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Silverman</surname><given-names>EK</given-names></name>
+<etal/></person-group>             <year>2003</year>             <article-title>A new powerful non-parametric two-stage approach for testing multiple phenotypes in family-based association studies.</article-title>             <source>Hum Hered</source>             <volume>56</volume>             <fpage>10</fpage>             <lpage>17</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lange6"><label>23</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lange</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>DeMeo</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Silverman</surname><given-names>EK</given-names></name>
+<name name-style="western"><surname>Weiss</surname><given-names>ST</given-names></name>
+<name name-style="western"><surname>Laird</surname><given-names>NM</given-names></name>
+</person-group>             <year>2003</year>             <article-title>Using the noninformative families in family-based association tests: a powerful new testing strategy.</article-title>             <source>Am J Hum Genet</source>             <volume>73</volume>             <fpage>801</fpage>             <lpage>811</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Liptak1"><label>24</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Liptak</surname><given-names>T</given-names></name>
+</person-group>             <year>1958</year>             <article-title>On the combination of independent tests.</article-title>             <source>Magyar Tud Akad Mat Kutato' IntKo''zl</source>             <volume>3</volume>             <fpage>171</fpage>          </element-citation></ref>
+<ref id="pgen.1000741-Balding1"><label>25</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Balding</surname><given-names>DJ</given-names></name>
+<name name-style="western"><surname>Nichols</surname><given-names>RA</given-names></name>
+</person-group>             <year>1995</year>             <article-title>A method for quantifying differentiation between populations at multi-allelic loci and its implications for investigating identity and paternity.</article-title>             <source>Genetica</source>             <volume>96</volume>             <fpage>10</fpage>          </element-citation></ref>
+<ref id="pgen.1000741-CavalliSforza1"><label>26</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Cavalli-Sforza</surname><given-names>LL</given-names></name>
+<name name-style="western"><surname>Piazza</surname><given-names>A</given-names></name>
+</person-group>             <year>1993</year>             <article-title>Human genomic diversity in Europe: a summary of recent research and prospects for the future.</article-title>             <source>Eur J Hum Genet</source>             <volume>1</volume>             <fpage>16</fpage>          </element-citation></ref>
+<ref id="pgen.1000741-Armitage1"><label>27</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Armitage</surname><given-names>P</given-names></name>
+</person-group>             <year>1955</year>             <article-title>Tests for linear trends in proportions and frequencies.</article-title>             <source>Biometrics</source>             <volume>11</volume>             <fpage>375</fpage>             <lpage>386</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Abecasis1"><label>28</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Abecasis</surname><given-names>GR</given-names></name>
+<name name-style="western"><surname>Cardon</surname><given-names>LR</given-names></name>
+<name name-style="western"><surname>Cookson</surname><given-names>WO</given-names></name>
+</person-group>             <year>2000</year>             <article-title>A general test of association for quantitative traits in nuclear families.</article-title>             <source>Am J Hum Genet</source>             <volume>66</volume>             <fpage>279</fpage>             <lpage>292</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Diao1"><label>29</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Diao</surname><given-names>G</given-names></name>
+<name name-style="western"><surname>Lin</surname><given-names>DY</given-names></name>
+</person-group>             <year>2006</year>             <article-title>Improving the power of association tests for quantitative traits in family studies.</article-title>             <source>Genet Epidemiol</source>             <volume>30</volume>             <fpage>301</fpage>             <lpage>313</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-1"><label>30</label><element-citation publication-type="journal" xlink:type="simple">             <year>1999</year>             <article-title> The Childhood Asthma Management Program (CAMP): design, rationale, and methods. Childhood Asthma Management Program Research Group.</article-title>             <source>Control Clin Trials</source>             <volume>20</volume>             <fpage>91</fpage>             <lpage>120</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Barnes1"><label>31</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Barnes</surname><given-names>KC</given-names></name>
+<name name-style="western"><surname>Neely</surname><given-names>JD</given-names></name>
+<name name-style="western"><surname>Duffy</surname><given-names>DL</given-names></name>
+<name name-style="western"><surname>Freidhoff</surname><given-names>LR</given-names></name>
+<name name-style="western"><surname>Breazeale</surname><given-names>DR</given-names></name>
+<etal/></person-group>             <year>1996</year>             <article-title>Linkage of asthma and total serum IgE concentration to markers on chromosome 12q: evidence from Afro-Caribbean and Caucasian populations.</article-title>             <source>Genomics</source>             <volume>37</volume>             <fpage>41</fpage>             <lpage>50</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Lin1"><label>32</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Lin</surname><given-names>PI</given-names></name>
+<name name-style="western"><surname>Vance</surname><given-names>JM</given-names></name>
+<name name-style="western"><surname>Pericak-Vance</surname><given-names>MA</given-names></name>
+<name name-style="western"><surname>Martin</surname><given-names>ER</given-names></name>
+</person-group>             <year>2007</year>             <article-title>No gene is an island: the flip-flop phenomenon.</article-title>             <source>Am J Hum Genet</source>             <volume>80</volume>             <fpage>531</fpage>             <lpage>538</lpage>          </element-citation></ref>
+<ref id="pgen.1000741-Jiang1"><label>33</label><element-citation publication-type="journal" xlink:type="simple">             <person-group person-group-type="author">
+<name name-style="western"><surname>Jiang</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>Harrington</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Raby</surname><given-names>BA</given-names></name>
+<name name-style="western"><surname>Bertram</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Blacker</surname><given-names>D</given-names></name>
+<etal/></person-group>             <year>2006</year>             <article-title>Family-based association test for time-to-onset data with time-dependent differences between the hazard functions.</article-title>             <source>Genet Epidemiol</source>             <volume>30</volume>             <fpage>124</fpage>             <lpage>132</lpage>          </element-citation></ref>
+</ref-list>
+
+</back>
+</article>

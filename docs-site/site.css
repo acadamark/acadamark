@@ -196,28 +196,28 @@ body.playground .site-header {
   }
 }
 
-/* Attribution / import-provenance call-out on the Demo Paper page. */
-.article aside.import-note {
-  margin: 0 0 2.5rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--accent);
-  border-radius: 6px;
-  background: var(--editor-bg);
+/* The demos index: a list of imported-paper links, each with its journal under
+   the title. (Each links to a self-contained standalone paper render.) */
+.demo-list {
+  list-style: none;
+  margin: 1.5rem 0;
+  padding: 0;
+}
+
+.demo-list .demo-item {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.demo-list .demo-item a {
+  font-weight: 600;
+}
+
+.demo-list .demo-journal {
+  display: block;
+  margin-top: 0.15rem;
   color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.article aside.import-note p {
-  margin: 0.5rem 0;
-}
-
-.article aside.import-note p:first-child {
-  margin-top: 0;
-}
-
-.article aside.import-note p:last-child {
-  margin-bottom: 0;
+  font-size: 0.85rem;
 }
 
 /* "See source" disclosure (#8 / #19) — reveals the authored DSL source behind a

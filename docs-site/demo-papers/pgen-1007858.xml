@@ -1,0 +1,2739 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.1d3 20150301//EN" "http://jats.nlm.nih.gov/publishing/1.1d3/JATS-journalpublishing1.dtd">
+<article article-type="research-article" dtd-version="1.1d3" xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">
+<front>
+<journal-meta>
+<journal-id journal-id-type="nlm-ta">PLoS Genet</journal-id>
+<journal-id journal-id-type="publisher-id">plos</journal-id>
+<journal-id journal-id-type="pmc">plosgen</journal-id>
+<journal-title-group>
+<journal-title>PLOS Genetics</journal-title>
+</journal-title-group>
+<issn pub-type="ppub">1553-7390</issn>
+<issn pub-type="epub">1553-7404</issn>
+<publisher>
+<publisher-name>Public Library of Science</publisher-name>
+<publisher-loc>San Francisco, CA USA</publisher-loc>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="doi">10.1371/journal.pgen.1007858</article-id>
+<article-id pub-id-type="publisher-id">PGENETICS-D-18-00854</article-id>
+<article-categories>
+<subj-group subj-group-type="heading">
+<subject>Research Article</subject>
+</subj-group>
+<subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Cell biology</subject><subj-group><subject>Chromosome biology</subject><subj-group><subject>Chromosomal aberrations</subject><subj-group><subject>Chromosomal translocations</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Cell biology</subject><subj-group><subject>Chromosome biology</subject><subj-group><subject>Chromosomal aberrations</subject><subj-group><subject>Chromosomal deletions</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Molecular biology</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Sequencing techniques</subject><subj-group><subject>Genome sequencing</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Research and analysis methods</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Sequencing techniques</subject><subj-group><subject>Genome sequencing</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Computational biology</subject><subj-group><subject>Genome complexity</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>Genomics</subject><subj-group><subject>Genome complexity</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Physical sciences</subject><subj-group><subject>Astronomical sciences</subject><subj-group><subject>Celestial objects</subject><subj-group><subject>Supernovae</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Molecular biology</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Gene mapping</subject><subj-group><subject>Chromosome mapping</subject></subj-group></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Research and analysis methods</subject><subj-group><subject>Molecular biology techniques</subject><subj-group><subject>Gene mapping</subject><subj-group><subject>Chromosome mapping</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Computational biology</subject><subj-group><subject>Comparative genomics</subject></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>Genomics</subject><subj-group><subject>Comparative genomics</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Research and analysis methods</subject><subj-group><subject>Database and informatics methods</subject><subj-group><subject>Biological databases</subject><subj-group><subject>Genomic databases</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Computational biology</subject><subj-group><subject>Genome analysis</subject><subj-group><subject>Genomic databases</subject></subj-group></subj-group></subj-group></subj-group><subj-group subj-group-type="Discipline-v3"><subject>Biology and life sciences</subject><subj-group><subject>Genetics</subject><subj-group><subject>Genomics</subject><subj-group><subject>Genome analysis</subject><subj-group><subject>Genomic databases</subject></subj-group></subj-group></subj-group></subj-group></subj-group></article-categories>
+<title-group>
+<article-title>Comprehensive structural variation genome map of individuals carrying complex chromosomal rearrangements</article-title>
+<alt-title alt-title-type="running-head">Deciphering complex chromosomal rearrangements with multiple technologies</alt-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" equal-contrib="yes" xlink:type="simple">
+<name name-style="western">
+<surname>Eisfeldt</surname>
+<given-names>Jesper</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Conceptualization</role>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Software</role>
+<role content-type="http://credit.casrai.org/">Visualization</role>
+<role content-type="http://credit.casrai.org/">Writing – original draft</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff002"><sup>2</sup></xref>
+</contrib>
+<contrib contrib-type="author" equal-contrib="yes" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-3120-1625</contrib-id>
+<name name-style="western">
+<surname>Pettersson</surname>
+<given-names>Maria</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Visualization</role>
+<role content-type="http://credit.casrai.org/">Writing – original draft</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff003"><sup>3</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-0243-0018</contrib-id>
+<name name-style="western">
+<surname>Vezzi</surname>
+<given-names>Francesco</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Software</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff004"><sup>4</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Wincent</surname>
+<given-names>Josephine</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Resources</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff005"><sup>5</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0001-6813-3051</contrib-id>
+<name name-style="western">
+<surname>Käller</surname>
+<given-names>Max</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Resources</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff006"><sup>6</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Gruselius</surname>
+<given-names>Joel</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Resources</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff007"><sup>7</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0001-5831-385X</contrib-id>
+<name name-style="western">
+<surname>Nilsson</surname>
+<given-names>Daniel</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Data curation</role>
+<role content-type="http://credit.casrai.org/">Methodology</role>
+<role content-type="http://credit.casrai.org/">Software</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff002"><sup>2</sup></xref>
+<xref ref-type="aff" rid="aff003"><sup>3</sup></xref>
+<xref ref-type="aff" rid="aff005"><sup>5</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<name name-style="western">
+<surname>Syk Lundberg</surname>
+<given-names>Elisabeth</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Resources</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff003"><sup>3</sup></xref>
+<xref ref-type="aff" rid="aff005"><sup>5</sup></xref>
+</contrib>
+<contrib contrib-type="author" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0002-2090-298X</contrib-id>
+<name name-style="western">
+<surname>Carvalho</surname>
+<given-names>Claudia M. B.</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Conceptualization</role>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff008"><sup>8</sup></xref>
+</contrib>
+<contrib contrib-type="author" corresp="yes" xlink:type="simple">
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+<role content-type="http://credit.casrai.org/">Conceptualization</role>
+<role content-type="http://credit.casrai.org/">Formal analysis</role>
+<role content-type="http://credit.casrai.org/">Funding acquisition</role>
+<role content-type="http://credit.casrai.org/">Investigation</role>
+<role content-type="http://credit.casrai.org/">Project administration</role>
+<role content-type="http://credit.casrai.org/">Supervision</role>
+<role content-type="http://credit.casrai.org/">Writing – original draft</role>
+<role content-type="http://credit.casrai.org/">Writing – review &amp; editing</role>
+<xref ref-type="aff" rid="aff001"><sup>1</sup></xref>
+<xref ref-type="aff" rid="aff003"><sup>3</sup></xref>
+<xref ref-type="aff" rid="aff005"><sup>5</sup></xref>
+<xref ref-type="corresp" rid="cor001">*</xref>
+</contrib>
+</contrib-group>
+<aff id="aff001"><label>1</label> <addr-line>Department of Molecular Medicine and Surgery, Karolinska Institutet, Stockholm, Sweden</addr-line></aff>
+<aff id="aff002"><label>2</label> <addr-line>Science for Life Laboratory, Karolinska Institutet Science Park, Solna, Sweden</addr-line></aff>
+<aff id="aff003"><label>3</label> <addr-line>Center for Molecular Medicine, Karolinska Institutet, Stockholm, Sweden</addr-line></aff>
+<aff id="aff004"><label>4</label> <addr-line>Science for Life Laboratory, Department of Biochemistry and Biophysics, Stockholm University, Stockholm, Sweden</addr-line></aff>
+<aff id="aff005"><label>5</label> <addr-line>Department of Clinical Genetics, Karolinska University Hospital, Stockholm, Sweden</addr-line></aff>
+<aff id="aff006"><label>6</label> <addr-line>Science for Life Laboratory, School of Engineering Sciences in Chemistry, Biotechnology and Health, KTH Royal Institute of Technology, Stockholm, Sweden</addr-line></aff>
+<aff id="aff007"><label>7</label> <addr-line>Science for Life Laboratory, Department of Biosciences and Nutrition, Karolinska Institutet, Stockholm, Sweden</addr-line></aff>
+<aff id="aff008"><label>8</label> <addr-line>Department of Molecular and Human Genetics, Baylor College of Medicine, Houston TX, United States of America</addr-line></aff>
+<contrib-group>
+<contrib contrib-type="editor" xlink:type="simple">
+<name name-style="western">
+<surname>Spinner</surname>
+<given-names>Nancy B.</given-names>
+</name>
+<role>Editor</role>
+<xref ref-type="aff" rid="edit1"/>
+</contrib>
+</contrib-group>
+<aff id="edit1"><addr-line>University of Pennsylvania, UNITED STATES</addr-line></aff>
+<author-notes>
+<fn fn-type="conflict" id="coi001">
+<p>The authors have declared that no competing interests exist.</p>
+</fn>
+<corresp id="cor001">* E-mail: <email xlink:type="simple">anna.lindstrand@ki.se</email></corresp>
+</author-notes>
+<pub-date pub-type="epub">
+<day>8</day>
+<month>2</month>
+<year>2019</year>
+</pub-date>
+<pub-date pub-type="collection">
+<month>2</month>
+<year>2019</year>
+</pub-date>
+<volume>15</volume>
+<issue>2</issue>
+<elocation-id>e1007858</elocation-id>
+<history>
+<date date-type="received">
+<day>27</day>
+<month>4</month>
+<year>2018</year>
+</date>
+<date date-type="accepted">
+<day>28</day>
+<month>11</month>
+<year>2018</year>
+</date>
+</history>
+<permissions>
+<copyright-year>2019</copyright-year>
+<copyright-holder>Eisfeldt et al</copyright-holder>
+<license xlink:href="http://creativecommons.org/licenses/by/4.0/" xlink:type="simple">
+<license-p>This is an open access article distributed under the terms of the <ext-link ext-link-type="uri" xlink:href="http://creativecommons.org/licenses/by/4.0/" xlink:type="simple">Creative Commons Attribution License</ext-link>, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</license-p>
+</license>
+</permissions>
+<self-uri content-type="pdf" xlink:href="info:doi/10.1371/journal.pgen.1007858"/>
+<abstract>
+<p>Complex chromosomal rearrangements (CCRs) are rearrangements involving more than two chromosomes or more than two breakpoints. Whole genome sequencing (WGS) allows for outstanding high resolution characterization on the nucleotide level in unique sequences of such rearrangements, but problems remain for mapping breakpoints in repetitive regions of the genome, which are known to be prone to rearrangements. Hence, multiple complementary WGS experiments are sometimes needed to solve the structures of CCRs. We have studied three individuals with CCRs: Case 1 and Case 2 presented with <italic>de novo</italic> karyotypically balanced, complex interchromosomal rearrangements (46,XX,t(2;8;15)(q35;q24.1;q22) and 46,XY,t(1;10;5)(q32;p12;q31)), and Case 3 presented with a <italic>de novo</italic>, extremely complex intrachromosomal rearrangement on chromosome 1. Molecular cytogenetic investigation revealed cryptic deletions in the breakpoints of chromosome 2 and 8 in Case 1, and on chromosome 10 in Case 2, explaining their clinical symptoms. In Case 3, 26 breakpoints were identified using WGS, disrupting five known disease genes. All rearrangements were subsequently analyzed using optical maps, linked-read WGS, and short-read WGS. In conclusion, we present a case series of three unique <italic>de novo</italic> CCRs where we by combining the results from the different technologies fully solved the structure of each rearrangement. The power in combining short-read WGS with long-molecule sequencing or optical mapping in these unique <italic>de novo</italic> CCRs in a clinical setting is demonstrated.</p>
+</abstract>
+<abstract abstract-type="summary">
+<title>Author summary</title>
+<p>Unexpected complexities are common findings in the breakpoints of karyotypically balanced complex chromosomal rearrangements (CCRs). Such findings are of clinical importance, as they may be the cause of mendelian phenotypes in the rearrangement carrier. Whole genome sequencing (WGS) allows for high resolution characterization of CCRs, but problems remain for mapping breakpoints located in repetitive regions of the genome, which are known to be prone to rearrangements. In our study, we use multiple complementary WGS experiments to solve the structures of three CCRs originally identified by karyotyping. In all cases, the genomic structure of the derivative chromosomes was resolved and a molecular genetic explanation of the clinical symptoms of the patients was obtained. Furthermore, we compare the performance, sensitivity and resolution of four different WGS techniques for solving these CCRs in a clinical diagnostic laboratory set.</p>
+</abstract>
+<funding-group>
+<award-group id="award001">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/501100009252</institution-id>
+<institution>Science for Life Laboratory</institution>
+</institution-wrap>
+</funding-source>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award002">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/501100004359</institution-id>
+<institution>Vetenskapsrådet</institution>
+</institution-wrap>
+</funding-source>
+<award-id>2013-2603, 2017-02936</award-id>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award003">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/501100003748</institution-id>
+<institution>Svenska Sällskapet för Medicinsk Forskning</institution>
+</institution-wrap>
+</funding-source>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award004">
+<funding-source>
+<institution>Marianne and Marcus Wallenberg foundation</institution>
+</funding-source>
+<award-id>2014-0084</award-id>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award005">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/501100004348</institution-id>
+<institution>Stockholms Läns Landsting</institution>
+</institution-wrap>
+</funding-source>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<award-group id="award006">
+<funding-source>
+<institution-wrap>
+<institution-id institution-id-type="funder-id">http://dx.doi.org/10.13039/501100003792</institution-id>
+<institution>Hjärnfonden</institution>
+</institution-wrap>
+</funding-source>
+<award-id>Ulf Lundahl memory fund</award-id>
+<principal-award-recipient>
+<contrib-id authenticated="true" contrib-id-type="orcid">http://orcid.org/0000-0003-0806-5602</contrib-id>
+<name name-style="western">
+<surname>Lindstrand</surname>
+<given-names>Anna</given-names>
+</name>
+</principal-award-recipient>
+</award-group>
+<funding-statement>This work was supported by the SciLifeLab national sequencing projects grant; The Swedish Research Council [2013-2603, 2017-02936]; The Swedish Society for Medical Research big grant; the Marianne and Marcus Wallenberg foundation [2014.0084]; the Stockholm City Council; the Ulf Lundahl memory fund through the Swedish Brain Foundation and the Erik Rönnberg Foundation. Funds were also provided under the Eunice Kennedy Shriver National Institute of Child Health and Human Development (NICHD R03 HD092569) to C.M.B.C. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.</funding-statement>
+</funding-group>
+<counts>
+<fig-count count="4"/>
+<table-count count="10"/>
+<page-count count="26"/>
+</counts>
+<custom-meta-group>
+<custom-meta id="data-availability">
+<meta-name>Data Availability</meta-name>
+<meta-value>The consent provided by the research subjects did not permit sharing of the entire genome-wide data set. All relevant data generated from Bionano optical maps (xmap files) are presented in Supplementary <xref ref-type="supplementary-material" rid="pgen.1007858.s009">S1 Dataset</xref>. Bam files from all cases indicating the structural variants are deposited in European Nucleotide Archive (ENA), accession number ERP108299. Copy number variants from all cases have been submitted to ClinVar (Case 1 – accession numbers SCV000864010, SCV000864011, SCV000864012. Case 2 – accession number SCV000864013. Case 3 – accession numbers SCV000864014, SCV000864015, SCV000864016, SCV000864017, SCV000864018, SCV000864019, SCV000864020).</meta-value>
+</custom-meta>
+</custom-meta-group>
+</article-meta>
+</front>
+<body>
+<sec id="sec001" sec-type="intro">
+<title>Introduction</title>
+<p>Complex chromosomal rearrangements (CCRs) are rearrangements involving more than two chromosomes or more than two breakpoints [<xref ref-type="bibr" rid="pgen.1007858.ref001">1</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref002">2</xref>]. Balanced, <italic>de novo</italic>, CCRs are extremely rare and more than half are associated with an affected phenotype [<xref ref-type="bibr" rid="pgen.1007858.ref003">3</xref>]. Traditionally in a diagnostic laboratory, karyotypically detected complex rearrangements are further analyzed using methods such as array comparative genomic hybridization (aCGH) and fluorescence <italic>in situ</italic> hybridization (FISH). Which method to choose and the number of experiments needed to resolve its genomic structure will be dependent on the characteristics of the rearrangements under scrutiny. These characteristics include the number of potential breakpoints, as well as if the rearrangement includes unbalanced events such as cryptic deletions, which are commonly the cause of the affected phenotype [<xref ref-type="bibr" rid="pgen.1007858.ref004">4</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref005">5</xref>]. Additionally, factors such as cost, patient phenotype, time, availability of tests and interests of the lab (diagnostic versus research) will all be considered in deciding which methodology to choose.</p>
+<p>More recently, whole genome sequencing (WGS) has been used to study complex rearrangements. Compared to the standard cytogenetic techniques, WGS offers a wide range of advantages, including high resolution and the ability to detect rearrangements of any size and type in a single experiment, providing important clues for the mechanism of formation [<xref ref-type="bibr" rid="pgen.1007858.ref006">6</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref007">7</xref>]. Furthermore, it may be critical for diagnosis of genetic diseases as well as for genotype-phenotype studies. However, solving the structure of a complex rearrangement is costly and time consuming, mainly due to the sheer amount of breakpoints involved, the large variety in sizes and types of structural variants involved, challenges in interpretation, as well as specific limitation detection of the WGS method of choice.</p>
+<p>Today, Illumina sequencing technology is the most commonly used second-generation WGS technology [<xref ref-type="bibr" rid="pgen.1007858.ref008">8</xref>]. Illumina sequencing is cost efficient and provides high quality data with a wide range of library preparation methods available. Each of these library preparation methods produces data at different cost and with different properties. In particular, the long insert-size mate-pair (MP) sequencing protocols have been useful for analyzing structural variation, mainly due to its high span coverage which potentially could bridge regions that are hard to map, such as repetitive regions [<xref ref-type="bibr" rid="pgen.1007858.ref007">7</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref009">9</xref>]. On the other hand, the higher coverage PCR-free paired-end (PE) libraries enables the use of split reads for exact breakpoint analysis, and highly precise read depth CNV detection [<xref ref-type="bibr" rid="pgen.1007858.ref010">10</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref011">11</xref>]. These different protocols provide a flexible framework for analyzing different types of variations and answering different questions.</p>
+<p>However, it is not obvious which method to choose when faced with the problem of solving a complex rearrangement. Even though WGS comes with a range of advantages it has important limitations, including low sensitivity in repetitive regions. Furthermore, haplotyping of long genomic segments is still a challenge for WGS even using single-molecule sequencing technologies. Therefore, phasing multiple rearrangement breakpoints that may have been created concomitantly in complex rearrangements including CCRs and chromothripsis events, can be a daunting task. Moreover, the breakpoints found using WGS commonly needs to be validated using orthogonal techniques, most commonly breakpoint PCR and Sanger sequencing. Hence, even when using WGS, the analysis of complex rearrangements is difficult, and a large number of experiments may be needed.</p>
+<p>Bionano optical mapping is a technology that enables detection of large structural variants across the entire genome, potentially helpful to resolve long haplotypes including detection of genomic variants in <italic>cis</italic>. In contrast to the short-read WGS methods commonly used today, Bionano optical mapping utilize long DNA molecules (&gt;100 kb). The usage of long input DNA molecules enables the optical maps to span repetitive and poorly mapped regions of the genome. Further, each optical map may span multiple adjacent breakpoints, providing additional information on how the breakpoints relate to each other. Bionano optical maps show great promise for SV detection and phasing [<xref ref-type="bibr" rid="pgen.1007858.ref012">12</xref>], although optical maps are currently limited by lower resolution compared to sequencing technologies and the availability of the technology itself. Linked-read sequencing is a method provided by 10X Genomics, where linked reads are used to detect structural variation and allows for detection of SVs located within repetitive regions using barcoding of long DNA molecules [<xref ref-type="bibr" rid="pgen.1007858.ref013">13</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref014">14</xref>] but it is also limited by availability of a comprehensive software and high false-positive rate.</p>
+<p>In this study, we have characterized three unique CCRs combining multiple technologies including standard cytogenetic techniques (aCGH and FISH), followed by short- and long-read approaches in addition to Bionano optical mapping. For short-reads, we used two different sequencing protocols, Illumina 30X PCR-free PE WGS and Illumina Nextera MP WGS, whereas linked-read sequencing using 10X Genomics Chromium was used to obtain synthetic long-reads. By combining next generation sequencing and cytogenetic techniques, we were able to fully characterize the molecular structures of each unique CCR. Lastly, we performed a comprehensive comparison of each methodology applied here concerning the resolution and sensitivity to detect SVs of different sizes throughout the genome, which we discuss in detail.</p>
+</sec>
+<sec id="sec002" sec-type="results">
+<title>Results</title>
+<p>Results for the cytogenetic studies are presented in <xref ref-type="supplementary-material" rid="pgen.1007858.s008">S1 Appendix</xref>. BAM files containing all supporting reads for the three rearrangements are available at European Nucleotide Archive (ENA), project number PRJEB26322, and Bionano xmap files are available in the <xref ref-type="supplementary-material" rid="pgen.1007858.s009">S1 Dataset</xref>.</p>
+<sec id="sec003">
+<title>Case 1</title>
+<p>The t(2;8;15) complex rearrangement was first indicated by regular karyotyping, however, this analysis only showed an abnormal derivative chromosome 15 and the karyotype was reported out as 46,XX,del(15)(q?22) (<xref ref-type="supplementary-material" rid="pgen.1007858.s001">S1 Fig</xref>). Further delineating of the chromosomes using FISH and aCGH identified the complex rearrangement involving three chromosomes. Deletions in the breakpoints of chromosomes 2 and 8 were detected using FISH and genome-wide aCGH. Of note, although the 14.5 Mb deletion at 8q23 is within the resolution of classical chromosome analysis, it was not detected, likely masked by the presence of multiple segments involved in the complex rearrangement (<xref ref-type="supplementary-material" rid="pgen.1007858.s001">S1 Fig</xref>). WGS confirmed the aforementioned chromosomal rearrangements and determined the chromosome 2 deletion sizes to be 2.1 Mb and 2.3 Mb, respectively. Additionally, a genomic segment of approximately 970 kb, originally located between the two deleted parts from chromosome 2, was inserted onto chromosome 15 (fragment D, <xref ref-type="fig" rid="pgen.1007858.g001">Fig 1A</xref>) together with a small inverted 12 kb fragment also originating from chromosome 2 (fragment C, <xref ref-type="fig" rid="pgen.1007858.g001">Fig 1A</xref>). The first deletion of 2.1 Mb removed eight protein-coding genes and the second deletion of 2.3 Mb deletion removed three protein-coding genes (<xref ref-type="table" rid="pgen.1007858.t001">Table 1</xref>). The deletion on chromosome 8 was determined to be 14.5 Mb and removed 49 protein-coding genes (<xref ref-type="table" rid="pgen.1007858.t001">Table 1</xref>). The translocation breakpoint on chromosome 15 was balanced with only loss of three nucleotides (<xref ref-type="fig" rid="pgen.1007858.g001">Fig 1A</xref>, <xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>). Analyzing the breakpoint junctions on the nucleotide level, it was observed that no microhomology was present in any of the breakpoint junctions (<xref ref-type="table" rid="pgen.1007858.t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>). In one breakpoint junction, there was a four-nucleotide indel at the junction, and a three-nucleotide indel 14 nucleotides upstream, none of them present in the dbSNP database, therefore potentially originated concomitantly to the CCR (<xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>). According to the WGS results, the molecular karyotype is t(2;8;15)(q34;q23.3;q21.3) seq[GRCh37] g.[chr2:pter_cen_209425831::chr15:55083064_qter] g.[chr8:pter_cen_114508085::chr2:214880375_qter] g.[chr15:pter_cen_55083061::chr2: 211567929_211580844inv::chr2:211580785_212551796::chr8:129040005_qter]. No other rare structural events were detected in the microarray or WGS data.</p>
+<fig id="pgen.1007858.g001" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.g001</object-id>
+<label>Fig 1</label>
+<caption>
+<title>Molecular characterization of two complex interchromosomal rearrangements.</title>
+<p><bold>(A</bold>) The complex chromosomal rearrangement identified in Case 1, t(2;8;15)(q34;q23.3;q21.3). A schematic illustration of the derivative chromosomes 2, 8 and 15 is shown to the left. The 11 genomic fragments are labeled from A-K and colored according to the parental chromosomal origin with chromosome 2 in purple, chromosome 8 in green and chromosome 15 in orange. Three fragments from chromosome 2 have been translocated to both derivative 8 and derivative 15 with one fragment inverted (Fragment C, indicated by the orientation of the letter inside the box). To the right, two linear representations of the whole genome sequencing results are shown. On top, the fragments are outlined on the parental chromosomes with links between fragments illustrated as dashed lines. The bottom diagrams show the final derivative chromosomes. For both fragment copy number status is indicated as black (normal) or red (deleted) and inverted orientation is highlighted in blue and marked by an arrow. (<bold>B</bold>) The complex chromosomal rearrangement identified in Case 2, 46,XY,t(1;10;5)(q31.3;p12.31;q23.2), as in A. The eight genomic fragments are labeled from A-H and chromosome 1 origin is shown in blue, chromosome 5 in green and chromosome 10 in pink.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.g001" xlink:type="simple"/>
+</fig>
+<table-wrap id="pgen.1007858.t001" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t001</object-id>
+<label>Table 1</label> <caption><title>Deletions identified at the breakpoints of the complex chromosomal aberrations.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t001g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t001" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left">Case</th>
+<th align="left">Karyotype</th>
+<th align="left">Hg19 deletion coordinates</th>
+<th align="left">Size (Mb)</th>
+<th align="left">Genes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" rowspan="3">1</td>
+<td align="left" rowspan="3">t(2;8;15)(q34;q23.3;q21.3)</td>
+<td align="left">chr2:209,425,211–211,567,929</td>
+<td align="left">2.1</td>
+<td align="left"><italic>MAP2</italic>, <italic>UNC80</italic>, <italic>RPE</italic>, <italic>KANSL1L</italic>, <italic>ACADL</italic>, <italic>MYL1</italic>, <italic>LANCL1</italic>, <italic>CPS1</italic></td>
+</tr>
+<tr>
+<td align="left">chr2:212,551,755–214,880,375</td>
+<td align="left">2.3</td>
+<td align="left"><italic>ERBB4</italic>, <italic>IKZF2</italic>, <italic>SPAG15</italic></td>
+</tr>
+<tr>
+<td align="left">chr8:114,508,086–129,040,004</td>
+<td align="left">14.5</td>
+<td align="left"><bold><italic>TRPS1</italic></bold>, <italic>EIF3H</italic>, <italic>UTP23</italic>, <italic>RAD21</italic>, <italic>AARD</italic>, <italic>SLC30A8</italic>, <italic>MED30</italic>, <bold><italic>EXT1</italic></bold>, <italic>SAMD12</italic>, <italic>TNFRSF11B</italic>, <italic>COLEC10</italic>, <italic>MAL2</italic>, <italic>ENPP2</italic>, <italic>TAF2</italic>, <italic>DSCC1</italic>, <italic>DEPTOR</italic>, <italic>COL14A1</italic>, <italic>MRPL13</italic>, <italic>MTBP</italic>, <italic>SNTB1</italic>, <italic>HAS2</italic>, <italic>ZHX2</italic>, <italic>DERL1</italic>, <italic>TBC1D31</italic>, <italic>FAM83A</italic>, <italic>C8orf76</italic>, <italic>ZHX1</italic>, <italic>ATAD2</italic>, <italic>WDYHV1</italic>, <italic>FBXO32</italic>, <italic>KLHL38</italic>, <italic>ANXA13</italic>, <italic>FAM91A1</italic>, <italic>FER1L6</italic>, <italic>TMEM65</italic>, <italic>TRMT12</italic>, <italic>RNF139</italic>, <italic>TATDN1</italic>, <italic>NDUFB9</italic>, <italic>MTSS1</italic>, <italic>ZNF572</italic>, <italic>SQLE</italic>, <italic>WASHC5</italic>, <italic>NSMCE2</italic>, <italic>TRIB1</italic>, <italic>FAM84B</italic>, <italic>POU5F1B</italic>, <italic>MYC</italic>, <italic>TMEM75</italic></td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">t(1;10;5)(q31.3;p12.31;q23.2)</td>
+<td align="left">chr10:4,689,760–19,120,882</td>
+<td align="left">14.4</td>
+<td align="left"><italic>AKR1E2</italic>, <italic>AKR1C1</italic>, <italic>AKR1C2</italic>, <italic>AKR1C3</italic>, <italic>AKR1C4</italic>, <italic>UCN3</italic>, <italic>TUBAL3</italic>, <italic>NET1</italic>, <italic>CALML5</italic>, <italic>CALML3</italic>, <italic>ASB13</italic>, <italic>FAM208B</italic>, <italic>GDI2</italic>, <italic>ANKRD16</italic>, <italic>FBXO18</italic>, <italic>IL15RA</italic>, <italic>IL2RA</italic>, <italic>RBM17</italic>, <italic>PFKFB3</italic>, <italic>PRKCQ</italic>, <italic>SFMBT2</italic>, <italic>ITIH5</italic>, <italic>ITIH2</italic>, <italic>KIN</italic>, <italic>ATP5C1</italic>, <italic>TAF3</italic>, <bold><italic>GATA3</italic></bold>, <italic>CELF2</italic>, <italic>USP6NL</italic>, <italic>ECHDC3</italic>, <italic>PROSER2</italic>, <italic>UPF2</italic>, <italic>DHTKD1</italic>, <italic>SEC61A2</italic>, <italic>NUDT5</italic>, <italic>CDC123</italic>, <italic>CAMK1D</italic>, <italic>CCDC3</italic>, <italic>OPTN</italic>, <italic>MCM10</italic>, <italic>UCMA</italic>, <italic>PHYH</italic>, <italic>SEPHS1</italic>, <italic>BEND7</italic>, <italic>PRPF18</italic>, <italic>FRMD4A</italic>, <italic>FAM107B</italic>, <italic>CDNF</italic>, <italic>HSPA14</italic>, <italic>SUV39H2</italic>, <italic>DCLRE1C</italic>, <italic>MEIG1</italic>, <italic>OLAH</italic>, <italic>ACBD7</italic>, <italic>C10orf111</italic>, <italic>RPP38</italic>, <italic>NMT2</italic>, <italic>FAM171A1</italic>, <italic>ITGA8</italic>, <italic>MINDY3</italic>, <italic>PTER</italic>, <italic>C1QL3</italic>, <italic>RSU1</italic>, <italic>CUBN</italic>, <italic>TRDMT1</italic>, <italic>VIM</italic>, <italic>ST8SIA6</italic>, <italic>HACD1</italic>, <italic>STAM</italic>, <italic>TMEM236</italic>, <italic>MRC1</italic>, <italic>SLC39A12</italic>, <italic>CACBN2</italic>, <italic>NSUN6</italic>, <italic>ARL5B</italic></td>
+</tr>
+<tr>
+<td align="left" rowspan="7">3</td>
+<td align="left" rowspan="7">rea(1)</td>
+<td align="left">chr1:3,290,001–3,297,000</td>
+<td align="left">0.007</td>
+<td align="left"><italic>PRDM16</italic></td>
+</tr>
+<tr>
+<td align="left">chr1:7,682,001–7,685,000</td>
+<td align="left">0.003</td>
+<td align="left"><bold><italic>CAMTA1</italic></bold></td>
+</tr>
+<tr>
+<td align="left">chr1:12,030,001–12,898,000</td>
+<td align="left">0.87</td>
+<td align="left"><italic>PLOD1</italic>, <italic>MFN2</italic>, <italic>MIIP</italic>, <italic>TNFRSF8</italic>, <italic>VPS13D</italic>, <italic>DHRS3</italic>, <italic>AADACL4</italic>, <italic>C1orf158</italic>, <italic>PRAMEF12</italic>, <italic>PRAMEF1</italic>, <italic>PRAMEF11</italic></td>
+</tr>
+<tr>
+<td align="left">chr1:14,176,001–14,443,000</td>
+<td align="left">0.27</td>
+<td align="left"><italic>-</italic></td>
+</tr>
+<tr>
+<td align="left">chr1:27,415,001–27,452,000</td>
+<td align="left">0.04</td>
+<td align="left"><italic>SLC9A1</italic></td>
+</tr>
+<tr>
+<td align="left">chr1:236,176,001–236,183,000</td>
+<td align="left">0.007</td>
+<td align="left"><italic>NID1</italic></td>
+</tr>
+<tr>
+<td align="left">chr1:246,031,001–246,033,000</td>
+<td align="left">0.002</td>
+<td align="left"><italic>SMYD3</italic></td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t001fn001"><p>Bold genes indicate known disease-causing OMIM genes explaining all or part of the clinical phenotype.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<table-wrap id="pgen.1007858.t002" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t002</object-id>
+<label>Table 2</label> <caption><title>Overview of breakpoints and genomic regions involved in Case 1 and Case 2.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t002g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t002" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left">Case</th>
+<th align="left">Cytogenetic aberration</th>
+<th align="left">Type of SV</th>
+<th align="left">ChrA</th>
+<th align="left">PosA</th>
+<th align="left">ChrB</th>
+<th align="left">PosB</th>
+<th align="left">MH</th>
+<th align="left">Insertion</th>
+<th align="left">Repeat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" rowspan="5">1</td>
+<td align="left" rowspan="5">t(2;8;15)(q34;q23.3;q21.3)</td>
+<td align="left">Translocation</td>
+<td align="left">15</td>
+<td align="left">55083061</td>
+<td align="left">2</td>
+<td align="left">209425831</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">L1M5/MLT1E1</td>
+</tr>
+<tr>
+<td align="left">Inversion</td>
+<td align="left">2</td>
+<td align="left">211567929</td>
+<td align="left">2</td>
+<td align="left">211580840</td>
+<td align="left">-</td>
+<td align="left">G</td>
+<td align="left">L2/-</td>
+</tr>
+<tr>
+<td align="left">Translocation</td>
+<td align="left">15</td>
+<td align="left">55083064</td>
+<td align="left">2</td>
+<td align="left">211580844</td>
+<td align="left">T</td>
+<td align="left">-</td>
+<td align="left">L1M5/-</td>
+</tr>
+<tr>
+<td align="left">Translocation</td>
+<td align="left">2</td>
+<td align="left">212551796</td>
+<td align="left">8</td>
+<td align="left">129040005</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">L1MD1/L2b</td>
+</tr>
+<tr>
+<td align="left">Translocation</td>
+<td align="left">2</td>
+<td align="left">214880375</td>
+<td align="left">8</td>
+<td align="left">114508085</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">MER72/ERVL-B4-int</td>
+</tr>
+<tr>
+<td align="center" rowspan="4">2</td>
+<td align="left" rowspan="4">t(1;10;5)(q31.3;p12.31;q23.2)</td>
+<td align="left">Translocation</td>
+<td align="left">1</td>
+<td align="left">196997343</td>
+<td align="left">5</td>
+<td align="left">124956736</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">L1MA9/-</td>
+</tr>
+<tr>
+<td align="left">Translocation</td>
+<td align="left">1</td>
+<td align="left">196997344</td>
+<td align="left">10</td>
+<td align="left">20816166</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluJr/L1PA4</td>
+</tr>
+<tr>
+<td align="left">Translocation</td>
+<td align="left">10</td>
+<td align="left">20816168</td>
+<td align="left">5</td>
+<td align="left">124956731</td>
+<td align="left">TA</td>
+<td align="left">-</td>
+<td align="left">L1PA4/-</td>
+</tr>
+<tr>
+<td align="left">Deletion</td>
+<td align="left">10</td>
+<td align="left">4689760</td>
+<td align="left">10</td>
+<td align="left">19120882</td>
+<td align="left">TCA</td>
+<td align="left">-</td>
+<td align="left">-/-</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t002fn001"><p>Genomic positions are given in kb from the p telomere (Hg19). The microhomology (MH) column indicates the presence of microhomology between position A and B, while the insertion column describes any inserted sequence. The repeat column presents any repeat found within 100 bp of the breakpoints that could have mediated the formation of the derivative chromosome. The UCSC repeat masker was used to determine the position of repeats throughout the genome. Chr: chromosome, Pos: position, SV: structural variant, MH: microhomology</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>A total of eight breakpoints and five breakpoint junctions were identified in Case 1. Three out of five of the breakpoint junctions were detected using all four WGS technologies. The 12 kb inversion on chromosome 2 (fragment C, <xref ref-type="fig" rid="pgen.1007858.g001">Fig 1A</xref>) was detected using both short-read sequencing (PCR-free PE and MP) technologies and the linked-reads technology with the Supernova pipeline, but not by optical mapping likely due to its small size. One of the translocation junctions between chromosome 2 and chromosome 8 was not detected using the linked-reads technology (Supernova pipeline). None of the breakpoint junctions in Case 1 were found with the linked-reads technology using the Long Ranger pipeline.</p>
+<p>Finally, eight breakpoints were located within repeats elements. Sequence homology was found in two out of these junctions, however only short stretches of microhomology indicate that no fusion repeat elements were formed (<xref ref-type="table" rid="pgen.1007858.t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>).</p>
+</sec>
+<sec id="sec004">
+<title>Case 2</title>
+<p>The t(1;5;10) complex rearrangement was first identified using regular karyotyping and FISH. A large deletion of 14.4 Mb located at chromosome 10p12 was not detected by the initial chromosome analysis, possibly due to the fact that multiple chromosomal segments were involved and the deletion was located in the translocation breakpoint region. Instead, the deletion was identified during characterization of the rearrangement using FISH and later confirmed by aCGH. The molecular cytogenetics data was reported previously [<xref ref-type="bibr" rid="pgen.1007858.ref015">15</xref>]. WGS confirmed the cytogenetic findings (<xref ref-type="fig" rid="pgen.1007858.g001">Fig 1B</xref>), including the deletion (segment F, <xref ref-type="fig" rid="pgen.1007858.g001">Fig 1B</xref>) that involved 75 protein-coding genes (<xref ref-type="table" rid="pgen.1007858.t001">Table 1</xref>). A total of five breakpoints and four breakpoint junctions were identified. Breakpoint junctions revealed 0 to 3 nt of microhomology, and no SNVs or insertions neither in the junctions or flanking the junctions (<xref ref-type="table" rid="pgen.1007858.t002">Table 2</xref>, <xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>). Three out of five breakpoints of this complex translocation were located within repeat elements, but no evidence for fusion repeats elements were observed in the breakpoint junctions, meaning that the rearrangement produced a truncated repeat (<xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>). The breakpoints of the large deletion on chromosome 10 were both located far from any repeat element (<xref ref-type="table" rid="pgen.1007858.t002">Table 2</xref>). Using the WGS data, the molecular karyotype could be determined to be t(1;10;5)(q31.3;p12.31;q23.2) seq[GRCh37] g.[chr1:pter_cen_196997343::chr5:124956736_qter] g.[chr5:pter_cen_124956731::chr10: 20816168_pter] g.[chr10:qter_cen_20816166::4689760_19120882del::chr1:196997343_qter]. No other rare structural variants were identified in the microarray or WGS data. All breakpoint junctions indicated by the cytogenetic analysis were found by all four WGS technologies applied, although only PCR-free PE WGS and linked-read sequencing resolved the junctions on the nucleotide level.</p>
+</sec>
+<sec id="sec005">
+<title>Case 3</title>
+<p>First, karyotyping identified an unusual banding pattern on the short arm of chromosome 1. Follow-up analysis using FISH and BAC array identified 14 breakpoint junctions including a 0.87 Mb deletion located at 1p36.2, which was previously reported in Lindstrand et al. (2008) [<xref ref-type="bibr" rid="pgen.1007858.ref016">16</xref>]. Combined analysis of the four different WGS technologies confirmed those 14 breakpoint junctions and unveiled 12 additional ones (<xref ref-type="table" rid="pgen.1007858.t003">Table 3</xref>) originating from chromosomal segments translocated, inverted, and deleted involving both the short and the long arm of chromosome 1 (<xref ref-type="fig" rid="pgen.1007858.g002">Fig 2</xref>). Hence, a total of 33 breakpoints and 26 breakpoint junctions were identified after WGS analysis. The WGS analysis identified seven deletions at the rearrangement breakpoints (<xref ref-type="table" rid="pgen.1007858.t001">Table 1</xref>). In the breakpoint junctions, microhomology was found in 10 junctions (2–6 nt), and one junction contains a 9 bases long non-templated insertion (<xref ref-type="table" rid="pgen.1007858.t003">Table 3</xref>, <xref ref-type="supplementary-material" rid="pgen.1007858.s002">S2 Fig</xref>). Every breakpoint junction contained at least one repeat region, mostly <italic>Alu</italic> elements (<xref ref-type="table" rid="pgen.1007858.t003">Table 3</xref>). The junctions that do not involve <italic>Alu</italic> elements are located within a wide range of distinct types of repeat regions. The second major group of repeats were found to be LINE elements (11 breakpoints), remaining breakpoints seem to be scattered randomly amongst various repeats including simple repeats, LTR elements, and retroviral elements (<xref ref-type="table" rid="pgen.1007858.t003">Table 3</xref>).</p>
+<fig id="pgen.1007858.g002" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.g002</object-id>
+<label>Fig 2</label>
+<caption>
+<title>Molecular characterization of an extremely complex intrachromosomal rearrangement of chromosome 1.</title>
+<p>Whole genome sequencing enabled mapping of the rearranged chromosome 1. Chromosome 1 had been disrupted in 33 positions, and puzzled back together with deletions or inversions of some fragments. Junction numbers and characteristics for each junction are listed in <xref ref-type="table" rid="pgen.1007858.t003">Table 3</xref>. On the left side is a schematic of human chromosome 5 with red boxes indicating regions containing breakpoints. The 34 chromosomal fragments labeled from A-i are shown as a vertical linear diagram with fragment size given in Mb. In the middle the whole genome sequencing results are illustrated. Links between fragments are shown as dashed lines and the junction numbers are given. The final rearranged chromosome is shown on the right with deleted fragments in red and inversions indicated by an arrow.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.g002" xlink:type="simple"/>
+</fig>
+<table-wrap id="pgen.1007858.t003" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t003</object-id>
+<label>Table 3</label> <caption><title>Overview of breakpoints and genomic regions involved in Case 3.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t003g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t003" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left">Jct</th>
+<th align="left">Start</th>
+<th align="left">End</th>
+<th align="left">MH</th>
+<th align="left">Insertion</th>
+<th align="left">Repeat</th>
+<th align="left">Gene brpA</th>
+<th align="left">Gene brpB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">1</td>
+<td align="left">2581232*</td>
+<td align="left">27452000</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">AluSg/AluSz6</td>
+<td align="left"><italic>TTC34</italic></td>
+<td align="left"><bold><italic>SLC9A1</italic></bold></td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2684269*</td>
+<td align="left">14176001</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">-/THE1B</td>
+<td align="left"><italic>TTC34</italic></td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">3290905</td>
+<td align="left">64810516</td>
+<td align="left">G</td>
+<td align="left">-</td>
+<td align="left">-/L3</td>
+<td align="left"><bold><italic>PRDM16</italic></bold></td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">3296814</td>
+<td align="left">236176103</td>
+<td align="left">CT</td>
+<td align="left">-</td>
+<td align="left">(CACCC)n/-</td>
+<td align="left"><bold><italic>PRDM16</italic></bold></td>
+<td align="left"><italic>NID1</italic></td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">7682335</td>
+<td align="left">12897986</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">MIRb/AluYa5</td>
+<td align="left"><bold><italic>CAMTA1</italic></bold></td>
+<td align="left"><italic>-</italic></td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">7685352</td>
+<td align="left">236183504</td>
+<td align="left">CCTCTT</td>
+<td align="left">-</td>
+<td align="left">-/AluSx</td>
+<td align="left"><bold><italic>CAMTA1</italic></bold></td>
+<td align="left"><italic>NID1</italic></td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">10775956</td>
+<td align="left">21736058</td>
+<td align="left">-</td>
+<td align="left">GGTTTAAAC</td>
+<td align="left">(CACCC)n/AluY</td>
+<td align="left"><italic>CASZ1</italic></td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">10775956</td>
+<td align="left">14443177</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">(CACCC)n/THE1B-int</td>
+<td align="left"><italic>CASZ1</italic></td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">11950223</td>
+<td align="left">27642518</td>
+<td align="left">C</td>
+<td align="left">-</td>
+<td align="left">LTR5B/AluSz6</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left">11950229</td>
+<td align="left">237674299</td>
+<td align="left">C</td>
+<td align="left">-</td>
+<td align="left">LTR5B/-</td>
+<td align="left">-</td>
+<td align="left"><bold><italic>RYR2</italic></bold></td>
+</tr>
+<tr>
+<td align="left">11</td>
+<td align="left">12029894</td>
+<td align="left">14870594</td>
+<td align="left">GT</td>
+<td align="left">-</td>
+<td align="left">AluJb/-</td>
+<td align="left"><bold><italic>PLOD1</italic></bold></td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">12</td>
+<td align="left">13975090</td>
+<td align="left">14870595</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">L1MC5/-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">13</td>
+<td align="left">13975102</td>
+<td align="left">35045018</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">L1MC5/MER41B</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">14</td>
+<td align="left">16136097</td>
+<td align="left">23235619</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluSz6/-</td>
+<td align="left">-</td>
+<td align="left"><italic>EPHB2</italic></td>
+</tr>
+<tr>
+<td align="left">15</td>
+<td align="left">16136098</td>
+<td align="left">20149345</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluSz6/L4</td>
+<td align="left">-</td>
+<td align="left"><italic>-</italic></td>
+</tr>
+<tr>
+<td align="left">16</td>
+<td align="left">16147000</td>
+<td align="left">29030516</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluSx/AT_rich</td>
+<td align="left">-</td>
+<td align="left"><italic>GMEB1</italic></td>
+</tr>
+<tr>
+<td align="left">17</td>
+<td align="left">16147001</td>
+<td align="left">23117213</td>
+<td align="left">C</td>
+<td align="left">-</td>
+<td align="left">AluSx/-</td>
+<td align="left">-</td>
+<td align="left"><italic>EPHB2</italic></td>
+</tr>
+<tr>
+<td align="left">18</td>
+<td align="left">20149331</td>
+<td align="left">26177921</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">L4/L1MB7</td>
+<td align="left">-</td>
+<td align="left"><italic>AUNIP</italic></td>
+</tr>
+<tr>
+<td align="left">19</td>
+<td align="left">21736058</td>
+<td align="left">27642518</td>
+<td align="left">C</td>
+<td align="left">-</td>
+<td align="left">AluY/AluSz6</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">20</td>
+<td align="left">23117213</td>
+<td align="left">64810516</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-/L3</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">21</td>
+<td align="left">23235618</td>
+<td align="left">26177922</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-/L1MB7</td>
+<td align="left"><italic>EPHB2</italic></td>
+<td align="left"><italic>AUNIP</italic></td>
+</tr>
+<tr>
+<td align="left">22</td>
+<td align="left">27414473</td>
+<td align="left">29030516</td>
+<td align="left">GGGC</td>
+<td align="left">-</td>
+<td align="left">ERVL-E-in/AT_rich</td>
+<td align="left">-</td>
+<td align="left"><italic>GMEB1</italic></td>
+</tr>
+<tr>
+<td align="left">23</td>
+<td align="left">27667160</td>
+<td align="left">28083088</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluY/AluSx1</td>
+<td align="left">-</td>
+<td align="left"><italic>FAM76A</italic></td>
+</tr>
+<tr>
+<td align="left">24</td>
+<td align="left">27667279</td>
+<td align="left">246033001</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluY/-</td>
+<td align="left">-</td>
+<td align="left"><italic>SMYD3</italic></td>
+</tr>
+<tr>
+<td align="left">25</td>
+<td align="left">28083088</td>
+<td align="left">35045017</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">AluSx1/MER41B</td>
+<td align="left"><italic>FAM76A</italic></td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">26</td>
+<td align="left">237674294</td>
+<td align="left">246030822</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-/L2a</td>
+<td align="left"><bold><italic>RYR2</italic></bold></td>
+<td align="left"><italic>SMYD3</italic></td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t003fn001"><p>Genomic coordinates are given in Hg19. The microhomology (MH) column indicates the presence of any microhomology between the start and end positions, while the insertion column describes any inserted sequence. The repeat column presents any repeat found within 100 bp of the breakpoints. OMIM disease related genes are shown in bold text. Jct: junction, MH: microhomology, N.i.: no information * = estimated breakpoint</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>In total, 26 breakpoint junctions were detected in Case 3 using combined analysis. Two junctions, junction 1 and junction 2, were not detected using any short-read (PCR-free PE and MP) method, likely because they map within low-copy repeats (LCRs) in a 125 kb large intron of <italic>TTC34</italic>. Breakpoints located within such regions may require longer reads to be correctly mapped, and indeed only optical mapping and linked-read sequencing were able to detect those junctions (<xref ref-type="fig" rid="pgen.1007858.g003">Fig 3</xref>, <xref ref-type="table" rid="pgen.1007858.t004">Table 4</xref>). Of note, all 26 breakpoint junctions were detected using the linked-read WGS technology, although we were required to use both the Long Ranger and Supernova pipelines as they complement each other (<xref ref-type="table" rid="pgen.1007858.t004">Table 4</xref>). PCR-free PE WGS detected 24 out of 26 breakpoint junctions, all of them supported by split reads. MP WGS identified 23 out of 26 breakpoint junctions but none of them was solved on the nucleotide level as expected for MP, whereas optical mapping detected 20 out of 26 breakpoint junctions (<xref ref-type="table" rid="pgen.1007858.t004">Table 4</xref>).</p>
+<fig id="pgen.1007858.g003" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.g003</object-id>
+<label>Fig 3</label>
+<caption>
+<title>Detection rate mainly differs between the technologies with small SVs and within repetitive regions.</title>
+<p>In the analysis of Case 1 a small 13kb inversion on chromosome 2 (fragment C, <xref ref-type="fig" rid="pgen.1007858.g001">Fig 1</xref>; Case 1, junction 2, <xref ref-type="table" rid="pgen.1007858.t004">Table 4</xref>) was detected using short-read WGS (PE and MP) <bold>(A)</bold> and linked-read WGS <bold>(B),</bold> but not using optical maps <bold>(C)</bold>. In A and B, paired or linked reads in opposite directions are present on each side of the junction and in C, the links between the optical maps are aligned correctly to the reference. In contrast, two breakpoint junctions from Case 3 (Junction 1 and 2, <xref ref-type="table" rid="pgen.1007858.t003">Table 3</xref>) were not detected using short-read WGS (PE or MP) <bold>(D)</bold>, but was only seen with linked-read WGS <bold>(E)</bold> and optical mapping <bold>(F)</bold>, due to repetitive regions in one of the breakpoints. In D and E, linked and paired reads are present on one side of the junctions, and on the other side are several poorly annotated reads with an unexpectedly high coverage, indicative of repetitive regions. In F, the optical maps are split at positions chr1:2581232 and chr1:2684269 (left), and the same maps continue at chr1:14176001 and chr1:27452000, respectively (right). The short-read WGS data in A, B, D and E is visualized in IGV and the optical maps data in C and F is from Bionano access.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.g003" xlink:type="simple"/>
+</fig>
+<table-wrap id="pgen.1007858.t004" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t004</object-id>
+<label>Table 4</label> <caption><title>Detailed results from the comparison of different sequencing technologies.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t004g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t004" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left"/>
+<th align="left"/>
+<th align="center" colspan="4">Breakpoint junctions</th>
+<th align="center" colspan="2">Short-read PE</th>
+<th align="center" colspan="2">Short-read MP</th>
+<th align="center" colspan="2">Optical maps</th>
+<th align="center" colspan="2">Linked-read<break/>Long Ranger</th>
+<th align="center" colspan="2">Linked-read<break/>Supernova</th>
+</tr>
+<tr>
+<th align="left">Case</th>
+<th align="left">Jct</th>
+<th align="left">ChrA</th>
+<th align="left">Start</th>
+<th align="left">ChrB</th>
+<th align="left">Stop</th>
+<th align="left">Start chrA</th>
+<th align="left">Stop chrB</th>
+<th align="left">Start chrA</th>
+<th align="left">Stop chrB</th>
+<th align="left">Start chrA</th>
+<th align="left">Stop chrB</th>
+<th align="left">Start chrA</th>
+<th align="left">Stop chrB</th>
+<th align="left">Start chrA</th>
+<th align="left">Stop chrB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" rowspan="5">1</td>
+<td align="left">1</td>
+<td align="left">15</td>
+<td align="left">55083064</td>
+<td align="left">2</td>
+<td align="left">209425831</td>
+<td align="left">55083064</td>
+<td align="left">209425831</td>
+<td align="left">55083064</td>
+<td align="left">209425759</td>
+<td align="left">55089032</td>
+<td align="left">209402341</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">55083064</td>
+<td align="left">209425831</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">211567929</td>
+<td align="left">2</td>
+<td align="left">211580954</td>
+<td align="left">211567929</td>
+<td align="left">211580954</td>
+<td align="left">211567929</td>
+<td align="left">211580954</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">211567929</td>
+<td align="left">211567929</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">15</td>
+<td align="left">55083060</td>
+<td align="left">2</td>
+<td align="left">211580725</td>
+<td align="left">55083060</td>
+<td align="left">211580725</td>
+<td align="left">55074707</td>
+<td align="left">211580771</td>
+<td align="left">55065367</td>
+<td align="left">211588781</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">55083060</td>
+<td align="left">211580725</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2</td>
+<td align="left">212551644</td>
+<td align="left">8</td>
+<td align="left">129040042</td>
+<td align="left">212551644</td>
+<td align="left">129040042</td>
+<td align="left">212551653</td>
+<td align="left">129040144</td>
+<td align="left">212542133</td>
+<td align="left">129041041</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">212551644</td>
+<td align="left">129040001</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">2</td>
+<td align="left">214880375</td>
+<td align="left">8</td>
+<td align="left">114508085</td>
+<td align="left">214880375</td>
+<td align="left">114508085</td>
+<td align="left">214886416</td>
+<td align="left">114500483</td>
+<td align="left">214907985</td>
+<td align="left">114499568</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="center" rowspan="4">2</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">196997343</td>
+<td align="left">5</td>
+<td align="left">124956736</td>
+<td align="left">196997343</td>
+<td align="left">124956736</td>
+<td align="left">196994135</td>
+<td align="left">124956869</td>
+<td align="left">196978354</td>
+<td align="left">124976031</td>
+<td align="left">196997346</td>
+<td align="left">124956731</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">196997432</td>
+<td align="left">10</td>
+<td align="left">20816222</td>
+<td align="left">196997432</td>
+<td align="left">20816222</td>
+<td align="left">197000507</td>
+<td align="left">20816587</td>
+<td align="left">197040164</td>
+<td align="left">20824882</td>
+<td align="left">196997340</td>
+<td align="left">20816229</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">10</td>
+<td align="left">20816224</td>
+<td align="left">5</td>
+<td align="left">124956733</td>
+<td align="left">20816224</td>
+<td align="left">124956733</td>
+<td align="left">20812880</td>
+<td align="left">124958603</td>
+<td align="left">20804445</td>
+<td align="left">124913158</td>
+<td align="left">20816227</td>
+<td align="left">124956736</td>
+<td align="left">20816225</td>
+<td align="left">124956734</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">10</td>
+<td align="left">4689832</td>
+<td align="left">10</td>
+<td align="left">19120882</td>
+<td align="left">4689832</td>
+<td align="left">19120882</td>
+<td align="left">4689419</td>
+<td align="left">19120882</td>
+<td align="left">4669757</td>
+<td align="left">19134619</td>
+<td align="left">19120884</td>
+<td align="left">4689840</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="center" rowspan="26">3</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2581232</td>
+<td align="left">1</td>
+<td align="left">27452000</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">2587901</td>
+<td align="left">27464776</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">2624548</td>
+<td align="left">27452144</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">2684269</td>
+<td align="left">1</td>
+<td align="left">14176001</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">2684269</td>
+<td align="left">14173037</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">2625721</td>
+<td align="left">14175578</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">1</td>
+<td align="left">3290905</td>
+<td align="left">1</td>
+<td align="left">64810516</td>
+<td align="left">3290905</td>
+<td align="left">64810516</td>
+<td align="left">3290638</td>
+<td align="left">64810985</td>
+<td align="left">3288732</td>
+<td align="left">64862703</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">3290905</td>
+<td align="left">64810516</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">1</td>
+<td align="left">3296814</td>
+<td align="left">1</td>
+<td align="left">236176103</td>
+<td align="left">3296814</td>
+<td align="left">236176103</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">3295874</td>
+<td align="left">236176381</td>
+<td align="left">3296360</td>
+<td align="left">236176372</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">1</td>
+<td align="left">7682335</td>
+<td align="left">1</td>
+<td align="left">12897986</td>
+<td align="left">7682335</td>
+<td align="left">12897986</td>
+<td align="left">7682260</td>
+<td align="left">12898340</td>
+<td align="left">7681134</td>
+<td align="left">12908586</td>
+<td align="left">7682180</td>
+<td align="left">12898137</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">1</td>
+<td align="left">7685352</td>
+<td align="left">1</td>
+<td align="left">236183504</td>
+<td align="left">7685352</td>
+<td align="left">236183504</td>
+<td align="left">7689171</td>
+<td align="left">236183789</td>
+<td align="left">7685681</td>
+<td align="left">236193515</td>
+<td align="left">7685344</td>
+<td align="left">236183496</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">10775956</td>
+<td align="left">1</td>
+<td align="left">21736058</td>
+<td align="left">10775956</td>
+<td align="left">21736058</td>
+<td align="left">10773838</td>
+<td align="left">21736071</td>
+<td align="left">10768488</td>
+<td align="left">21736601</td>
+<td align="left">10775947</td>
+<td align="left">14443168</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">1</td>
+<td align="left">10775956</td>
+<td align="left">1</td>
+<td align="left">14443177</td>
+<td align="left">10775956</td>
+<td align="left">14443177</td>
+<td align="left">10780413</td>
+<td align="left">14443430</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">10775964</td>
+<td align="left">21736050</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">1</td>
+<td align="left">11950223</td>
+<td align="left">1</td>
+<td align="left">27642518</td>
+<td align="left">11950223</td>
+<td align="left">27642518</td>
+<td align="left">11949895</td>
+<td align="left">27642567</td>
+<td align="left">11947447</td>
+<td align="left">28085587</td>
+<td align="left">11950233</td>
+<td align="left">27642509</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left">1</td>
+<td align="left">11950229</td>
+<td align="left">1</td>
+<td align="left">237674299</td>
+<td align="left">11950229</td>
+<td align="left">237674299</td>
+<td align="left">11952419</td>
+<td align="left">237674508</td>
+<td align="left">14864206</td>
+<td align="left">237679257</td>
+<td align="left">11950220</td>
+<td align="left">237674290</td>
+<td align="left">11950229</td>
+<td align="left">237674299</td>
+</tr>
+<tr>
+<td align="left">11</td>
+<td align="left">1</td>
+<td align="left">12029894</td>
+<td align="left">1</td>
+<td align="left">14870594</td>
+<td align="left">12029894</td>
+<td align="left">14870594</td>
+<td align="left">12029206</td>
+<td align="left">14869373</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">12029904</td>
+<td align="left">14870604</td>
+<td align="left">12029894</td>
+<td align="left">14870594</td>
+</tr>
+<tr>
+<td align="left">12</td>
+<td align="left">1</td>
+<td align="left">13975090</td>
+<td align="left">1</td>
+<td align="left">14870595</td>
+<td align="left">13975090</td>
+<td align="left">14870595</td>
+<td align="left">13974941</td>
+<td align="left">14871025</td>
+<td align="left">13973279</td>
+<td align="left">14872976</td>
+<td align="left">13975098</td>
+<td align="left">14870587</td>
+<td align="left">13975090</td>
+<td align="left">14870595</td>
+</tr>
+<tr>
+<td align="left">13</td>
+<td align="left">1</td>
+<td align="left">13975102</td>
+<td align="left">1</td>
+<td align="left">35045018</td>
+<td align="left">13975102</td>
+<td align="left">35045018</td>
+<td align="left">13977983</td>
+<td align="left">35046971</td>
+<td align="left">13982091</td>
+<td align="left">35047391</td>
+<td align="left">13975094</td>
+<td align="left">35045018</td>
+<td align="left">13975102</td>
+<td align="left">35045018</td>
+</tr>
+<tr>
+<td align="left">14</td>
+<td align="left">1</td>
+<td align="left">16136097</td>
+<td align="left">1</td>
+<td align="left">23235619</td>
+<td align="left">16136097</td>
+<td align="left">23235619</td>
+<td align="left">16135371</td>
+<td align="left">23235980</td>
+<td align="left">16129345</td>
+<td align="left">23237153</td>
+<td align="left">16136105</td>
+<td align="left">23235661</td>
+<td align="left">16136097</td>
+<td align="left">23235619</td>
+</tr>
+<tr>
+<td align="left">15</td>
+<td align="left">1</td>
+<td align="left">16136098</td>
+<td align="left">1</td>
+<td align="left">20149345</td>
+<td align="left">16136098</td>
+<td align="left">20149345</td>
+<td align="left">16139274</td>
+<td align="left">20149848</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">16136089</td>
+<td align="left">20149366</td>
+<td align="left">16136098</td>
+<td align="left">20149345</td>
+</tr>
+<tr>
+<td align="left">16</td>
+<td align="left">1</td>
+<td align="left">16147000</td>
+<td align="left">1</td>
+<td align="left">29030516</td>
+<td align="left">16147000</td>
+<td align="left">29030516</td>
+<td align="left">16146491</td>
+<td align="left">29025749</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">16147010</td>
+<td align="left">29030525</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">17</td>
+<td align="left">1</td>
+<td align="left">16147001</td>
+<td align="left">1</td>
+<td align="left">23117213</td>
+<td align="left">16147001</td>
+<td align="left">23117213</td>
+<td align="left">16149609</td>
+<td align="left">23119367</td>
+<td align="left">16153803</td>
+<td align="left">23120068</td>
+<td align="left">16136105</td>
+<td align="left">23235661</td>
+<td align="left">16147001</td>
+<td align="left">23117213</td>
+</tr>
+<tr>
+<td align="left">18</td>
+<td align="left">1</td>
+<td align="left">20149331</td>
+<td align="left">1</td>
+<td align="left">26177921</td>
+<td align="left">20149331</td>
+<td align="left">26177921</td>
+<td align="left">20149195</td>
+<td align="left">26174604</td>
+<td align="left">20123909</td>
+<td align="left">26163960</td>
+<td align="left">20149340</td>
+<td align="left">26177929</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">19</td>
+<td align="left">1</td>
+<td align="left">21736058</td>
+<td align="left">1</td>
+<td align="left">27642518</td>
+<td align="left">21736058</td>
+<td align="left">27642518</td>
+<td align="left">21735951</td>
+<td align="left">27639797</td>
+<td align="left">21721930</td>
+<td align="left">27627697</td>
+<td align="left">21736067</td>
+<td align="left">27642527</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">20</td>
+<td align="left">1</td>
+<td align="left">23117213</td>
+<td align="left">1</td>
+<td align="left">64810516</td>
+<td align="left">23117213</td>
+<td align="left">64810516</td>
+<td align="left">23117169</td>
+<td align="left">64806842</td>
+<td align="left">23116865</td>
+<td align="left">64808492</td>
+<td align="left">23117222</td>
+<td align="left">64810424</td>
+<td align="left">23117213</td>
+<td align="left">64810516</td>
+</tr>
+<tr>
+<td align="left">21</td>
+<td align="left">1</td>
+<td align="left">23235618</td>
+<td align="left">1</td>
+<td align="left">26177922</td>
+<td align="left">23235618</td>
+<td align="left">26177922</td>
+<td align="left">23235543</td>
+<td align="left">26178144</td>
+<td align="left">23234405</td>
+<td align="left">26178892</td>
+<td align="left">23235614</td>
+<td align="left">26177914</td>
+<td align="left">23235618</td>
+<td align="left">26177922</td>
+</tr>
+<tr>
+<td align="left">22</td>
+<td align="left">1</td>
+<td align="left">27414473</td>
+<td align="left">1</td>
+<td align="left">29030516</td>
+<td align="left">27414473</td>
+<td align="left">29030516</td>
+<td align="left">27413006</td>
+<td align="left">29030699</td>
+<td align="left">27400938</td>
+<td align="left">29032646</td>
+<td align="left">27414484</td>
+<td align="left">29030566</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">23</td>
+<td align="left">1</td>
+<td align="left">27667160</td>
+<td align="left">1</td>
+<td align="left">28083088</td>
+<td align="left">27667160</td>
+<td align="left">28083088</td>
+<td align="left">27667122</td>
+<td align="left">28083292</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+<td align="left">27667283</td>
+<td align="left">28083081</td>
+<td align="left">27667278</td>
+<td align="left">28083088</td>
+</tr>
+<tr>
+<td align="left">24</td>
+<td align="left">1</td>
+<td align="left">27667279</td>
+<td align="left">1</td>
+<td align="left">246033001</td>
+<td align="left">27667279</td>
+<td align="left">246033001</td>
+<td align="left">27669970</td>
+<td align="left">246033207</td>
+<td align="left">27673872</td>
+<td align="left">246031926</td>
+<td align="left">27667271</td>
+<td align="left">246033016</td>
+<td align="left">27667279</td>
+<td align="left">246033001</td>
+</tr>
+<tr>
+<td align="left">25</td>
+<td align="left">1</td>
+<td align="left">28083088</td>
+<td align="left">1</td>
+<td align="left">35045017</td>
+<td align="left">28083088</td>
+<td align="left">35045017</td>
+<td align="left">28082851</td>
+<td align="left">35042558</td>
+<td align="left">28075475</td>
+<td align="left">35043873</td>
+<td align="left">28083097</td>
+<td align="left">35045020</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+<tr>
+<td align="left">26</td>
+<td align="left">1</td>
+<td align="left">237674294</td>
+<td align="left">1</td>
+<td align="left">246030822</td>
+<td align="left">237674294</td>
+<td align="left">246030822</td>
+<td align="left">237674208</td>
+<td align="left">246027906</td>
+<td align="left">237673047</td>
+<td align="left">246031926</td>
+<td align="left">237674304</td>
+<td align="left">246030756</td>
+<td align="left">N.i.</td>
+<td align="left">N.i.</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t004fn001"><p>Genomic coordinates are given in Hg19. Chr: chromosome, Jct: junction, MP: mate-pair, PE: paired-end, N.i.: no information, indicates when the specific breakpoint junction could not be identified by the sequencing technology. Column “Breakpoint junctions” refers to the genomic coordinates for each junction as defined by split reads and further confirmed by PCR/Sanger sequencing.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+</sec>
+<sec id="sec006">
+<title>General method comparison for solving complex chromosomal rearrangements</title>
+<p>Comparing the results of the different technologies, it was found that all technologies tested here could detect the majority of the junctions (Tables <xref ref-type="table" rid="pgen.1007858.t004">4</xref> and <xref ref-type="table" rid="pgen.1007858.t005">5</xref>). PCR-free PE WGS and the linked-read technology present the highest detection rate: PE detected all but two junctions whereas linked-reads detected all but one junction. Moreover, both PCR-free PE WGS and linked-read WGS share the highest resolution (1 bp). MP WGS present a resolution of ~400bp with a false-negative rate of 9% (fails to report three junctions out of the total 35 junctions) (<xref ref-type="table" rid="pgen.1007858.t005">Table 5</xref>). Lastly, optical mapping has the lowest detection rate since it fails to report seven junctions of the total 35 junctions (20%) and the lowest resolution of ~ 7 kb (<xref ref-type="table" rid="pgen.1007858.t005">Table 5</xref>).</p>
+<table-wrap id="pgen.1007858.t005" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t005</object-id>
+<label>Table 5</label> <caption><title>General comparison of the sequencing technologies.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t005g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t005" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left" rowspan="2">Technology</th>
+<th align="center" colspan="3">Number of junctions detected/Total<break/>(Split reads)</th>
+</tr>
+<tr>
+<th align="left">Case 1</th>
+<th align="left">Case 2</th>
+<th align="left">Case 3</th>
+<th align="left">Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Short-read (PE)</td>
+<td align="left">5/5 (5)</td>
+<td align="left">4/4 (4)</td>
+<td align="left">24/26 (23)</td>
+<td align="left">1bp</td>
+</tr>
+<tr>
+<td align="left">Short-read (MP)</td>
+<td align="left">5/5 (0)</td>
+<td align="left">4/4 (0)</td>
+<td align="left">23/26 (0)</td>
+<td align="left">400bp</td>
+</tr>
+<tr>
+<td align="left">Optical maps</td>
+<td align="left">4/5 (4)</td>
+<td align="left">4/4 (4)</td>
+<td align="left">20/26 (20)</td>
+<td align="left">7.2kb</td>
+</tr>
+<tr>
+<td align="left">Linked-read</td>
+<td align="left">4/5 (4)</td>
+<td align="left">4/4 (4)</td>
+<td align="left">26/26 (26)</td>
+<td align="left">1bp</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t005fn001"><p>PE: paired-end, MP: mate-pair. The total number of junctions detected indicates the amount of breakpoint junctions related to the complex chromosomal rearrangement that were detected from the total amount of structural variants for each method. The total number of breakpoint junctions supported by split reads is indicated within parentheses. Resolution is the median distance between the generated calls and the exact breakpoint position.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+</sec>
+<sec id="sec007">
+<title>Delineating and identifying derivative chromosomes from WGS data</title>
+<p>The three CCRs presented here were previously identified using chromosome analysis, therefore the WGS analysis was focused on delineating the structure of the derivative chromosomes. However, to simulate a “WGS first” scenario and evaluate the utility of each of the techniques applied here for SV detection without a prior hypothesis, we ran FindSV developed for PCR-free PE and MP WGS data. The FindSV analysis pipeline is described in the WGS methods section. Generated calls were thereafter ranked based on i) frequency in the SweGen SV database [<xref ref-type="bibr" rid="pgen.1007858.ref017">17</xref>] ii) amount of discordant read pairs and iii) size in base pairs, or chromosomal position. Based on these filtering criteria, calls pinpointing the breakpoints of the complex rearrangements were ranked high in the generated lists of rare SVs in all cases (<xref ref-type="supplementary-material" rid="pgen.1007858.s003">S1 Table</xref>). The FindSV pipeline generated 162 calls from the PCR-free PE data in Case 3 from which 34 well-supported interchromosomal calls were ranked above the intrachromosomal rearrangement on chromosome 1 (<xref ref-type="supplementary-material" rid="pgen.1007858.s003">S1 Table</xref>). These calls are most likely due to mobile elements [<xref ref-type="bibr" rid="pgen.1007858.ref018">18</xref>], therefore we concluded that filtering of PCR-free PE data needs to be optimized to minimize false-positive interchromosomal calls due to repetitive elements and favor ranking of potentially false-negative intrachromosomal rearrangements. Lastly, not all breakpoint junctions will be detected in the FindSV output data. FindSV may fail to detect breakpoint junctions that are located in repetitive regions as well as regions that are poorly covered due to various technical artifacts or low DNA quality. All highly ranked calls are manually inspected in IGV, which allows for detection of additional breakpoints and small aberrations in the junctions.</p>
+<p>Analysis of the linked-read and optical map pipelines in a simulated “WGS-first” scenario was more challenging because both technologies produce a large number of calls (&gt;1000). In addition, there is still a lack of frequency databases for these technologies, which makes filtering and ranking based on public database frequencies currently not possible. We concluded that using optical maps or linked-read sequencing technologies as the initial screening techniques for CCRs might not be feasible with current pipelines until more frequency data is available. Furthermore, optical mapping has a lower resolution limitation which hamper its use to detect smaller and more complex junctions, including the small 12 kb inversion of fragment C in Case 1 (<xref ref-type="fig" rid="pgen.1007858.g003">Fig 3A–3C</xref>).</p>
+<p>Importantly, however, we found that optical mapping and linked-read WGS performs better than short-read WGS in highly repetitive regions or paralogous regions (such as Junctions 1 and 2, Case 3, located within LCRs). Example of the junctions that could not be detected using any of the short-read WGS protocols is shown in <xref ref-type="fig" rid="pgen.1007858.g003">Fig 3D</xref> and <xref ref-type="fig" rid="pgen.1007858.g003">Fig 3E</xref>.</p>
+</sec>
+<sec id="sec008">
+<title>Sensitivity of WGS SV calling compared to CNVs detected by aCGH</title>
+<p>To compare the utility of all WGS technologies used here, we also performed a comparison of all polymorphic CNVs present in the three probands of the present study detected with aCGH (<xref ref-type="supplementary-material" rid="pgen.1007858.s004">S2 Table</xref>). In brief, CNV calls obtained by WGS were compared to those from two different aCGH platforms: a custom designed 400K genome-wide array with ~ 2000 targeted high-resolution genes and a commercial 1M medical exon array from OGT with ~5000 targeted high-resolution genes. The array calls that were also found with at least one of the WGS methods were considered confirmed and hence more likely to be true variants. The sensitivity for detecting such confirmed CNVs in each case and method is given in <xref ref-type="supplementary-material" rid="pgen.1007858.s004">S2 Table</xref> and the summarized sensitivity per method in <xref ref-type="table" rid="pgen.1007858.t006">Table 6</xref>. The data suggest that PCR-free PE WGS has a high detection rate on both small (&lt;0.1 kb) and large (&gt;10 kb) SVs and offers the highest overall detection rate. Linked-read WGS technology has the second highest detection rate, mainly because of the Supernova pipeline and the Long Ranger small deletions algorithm. Lastly, MP WGS and optical mapping perform similarly: both technologies perform well on the larger CNVs, but fail to detect a large number of smaller variants (<xref ref-type="supplementary-material" rid="pgen.1007858.s004">S2 Table</xref>). Overall, it is clear that the high resolution of linked-reads WGS and PCR-free PE WGS allows for the detection of small SVs that MP WGS and optical mapping does not have the required resolution to detect.</p>
+<table-wrap id="pgen.1007858.t006" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t006</object-id>
+<label>Table 6</label> <caption><title>Comparison of the four WGS technologies versus array comparative genomic hybridization.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t006g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t006" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<tbody>
+<tr>
+<td align="left" rowspan="2"><bold>Method</bold></td>
+<td align="center" colspan="4"><bold>Case 1 custom 400K array</bold></td>
+<td align="center" colspan="4"><bold>Case 2 custom 400K array</bold></td>
+<td align="center" colspan="4"><bold>Case 3 custom 400K array</bold></td>
+</tr>
+<tr>
+<td align="center">Total</td>
+<td align="center">Del</td>
+<td align="center">Dup</td>
+<td align="center">Sens</td>
+<td align="center">Total</td>
+<td align="center">Del</td>
+<td align="center">Dup</td>
+<td align="center">Sens</td>
+<td align="center">Total</td>
+<td align="center">Del</td>
+<td align="center">Dup</td>
+<td align="center">Sens</td>
+</tr>
+<tr>
+<td align="left">aCGH</td>
+<td align="center">83</td>
+<td align="center">18</td>
+<td align="center">65</td>
+<td align="center">-</td>
+<td align="center">32</td>
+<td align="center">17</td>
+<td align="center">15</td>
+<td align="center">-</td>
+<td align="center">60</td>
+<td align="center">11</td>
+<td align="center">49</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">aCGH (confirmed variants)</td>
+<td align="center">17</td>
+<td align="center">10</td>
+<td align="center">7</td>
+<td align="center">1</td>
+<td align="center">14</td>
+<td align="center">8</td>
+<td align="center">6</td>
+<td align="center">1</td>
+<td align="center">14</td>
+<td align="center">11</td>
+<td align="center">3</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="left">Bionano</td>
+<td align="center">6</td>
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">0.35</td>
+<td align="center">6</td>
+<td align="center">3</td>
+<td align="center">3</td>
+<td align="center">0.43</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">0.29</td>
+</tr>
+<tr>
+<td align="left">Bionano BssSI</td>
+<td align="center">5</td>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">0.29</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">0.29</td>
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">0.21</td>
+</tr>
+<tr>
+<td align="left">Bionano BspQI</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">0.24</td>
+<td align="center">5</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">0.36</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0.14</td>
+</tr>
+<tr>
+<td align="left">Illumina PE</td>
+<td align="center">13</td>
+<td align="center">9</td>
+<td align="center">4</td>
+<td align="center">0.76</td>
+<td align="center">11</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">0.79</td>
+<td align="center">13</td>
+<td align="center">11</td>
+<td align="center">2</td>
+<td align="center">0.93</td>
+</tr>
+<tr>
+<td align="left">Illumina MP</td>
+<td align="center">10</td>
+<td align="center">7</td>
+<td align="center">3</td>
+<td align="center">0.59</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">0.29</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">0.36</td>
+</tr>
+<tr>
+<td align="left">10X linked reads</td>
+<td align="center">6</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">0.35</td>
+<td align="center">8</td>
+<td align="center">6</td>
+<td align="center">2</td>
+<td align="center">0.57</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">1</td>
+<td align="center">0.64</td>
+</tr>
+<tr>
+<td align="left">10X linked reads<xref ref-type="table-fn" rid="t006fn002">*</xref></td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0.06</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0.14</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0.21</td>
+</tr>
+<tr>
+<td align="left">10X linked reads<xref ref-type="table-fn" rid="t006fn003">**</xref></td>
+<td align="center">4</td>
+<td align="center">4</td>
+<td align="center">0</td>
+<td align="center">0.24</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">1</td>
+<td align="center">0.43</td>
+<td align="center">6</td>
+<td align="center">6</td>
+<td align="center">0</td>
+<td align="center">0.43</td>
+</tr>
+<tr>
+<td align="left">10X linked reads<xref ref-type="table-fn" rid="t006fn004">***</xref></td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0.18</td>
+<td align="center">5</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">0.36</td>
+<td align="center">5</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">0.36</td>
+</tr>
+<tr>
+<td align="left"> </td>
+<td align="center" colspan="4"><bold>Case 1 1M array</bold></td>
+<td align="center" colspan="4"><bold>Case 2 1M array</bold></td>
+<td align="center" colspan="4"><bold>Case 3 1M array</bold></td>
+</tr>
+<tr>
+<td align="left">aCGH</td>
+<td align="center">126</td>
+<td align="center">60</td>
+<td align="center">66</td>
+<td align="center">-</td>
+<td align="center">186</td>
+<td align="center">143</td>
+<td align="center">43</td>
+<td align="center">-</td>
+<td align="center">129</td>
+<td align="center">26</td>
+<td align="center">103</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">aCGH (confirmed variants)</td>
+<td align="center">27</td>
+<td align="center">20</td>
+<td align="center">7</td>
+<td align="center">1</td>
+<td align="center">19</td>
+<td align="center">18</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">24</td>
+<td align="center">17</td>
+<td align="center">7</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="left">Bionano</td>
+<td align="center">12</td>
+<td align="center">7</td>
+<td align="center">5</td>
+<td align="center">0.44</td>
+<td align="center">6</td>
+<td align="center">6</td>
+<td align="center">0</td>
+<td align="center">0.32</td>
+<td align="center">11</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">0.46</td>
+</tr>
+<tr>
+<td align="left">Bionano BssSI</td>
+<td align="center">6</td>
+<td align="center">3</td>
+<td align="center">3</td>
+<td align="center">0.22</td>
+<td align="center">4</td>
+<td align="center">4</td>
+<td align="center">0</td>
+<td align="center">0.21</td>
+<td align="center">9</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">0.38</td>
+</tr>
+<tr>
+<td align="left">Bionano BspQI</td>
+<td align="center">9</td>
+<td align="center">6</td>
+<td align="center">3</td>
+<td align="center">0.33</td>
+<td align="center">4</td>
+<td align="center">4</td>
+<td align="center">0</td>
+<td align="center">0.21</td>
+<td align="center">6</td>
+<td align="center">3</td>
+<td align="center">3</td>
+<td align="center">0.25</td>
+</tr>
+<tr>
+<td align="left">Illumina PE</td>
+<td align="center">21</td>
+<td align="center">17</td>
+<td align="center">4</td>
+<td align="center">0.78</td>
+<td align="center">15</td>
+<td align="center">15</td>
+<td align="center">0</td>
+<td align="center">0.79</td>
+<td align="center">17</td>
+<td align="center">14</td>
+<td align="center">3</td>
+<td align="center">0.71</td>
+</tr>
+<tr>
+<td align="left">Illumina MP</td>
+<td align="center">13</td>
+<td align="center">11</td>
+<td align="center">2</td>
+<td align="center">0.48</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">1</td>
+<td align="center">0.53</td>
+<td align="center">10</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">0.42</td>
+</tr>
+<tr>
+<td align="left">10X linked reads</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">1</td>
+<td align="center">0.33</td>
+<td align="center">13</td>
+<td align="center">13</td>
+<td align="center">0</td>
+<td align="center">0.68</td>
+<td align="center">11</td>
+<td align="center">10</td>
+<td align="center">1</td>
+<td align="center">0.46</td>
+</tr>
+<tr>
+<td align="left">10X linked reads<xref ref-type="table-fn" rid="t006fn002">*</xref></td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0.04</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.05</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0.08</td>
+</tr>
+<tr>
+<td align="left">10X linked reads<xref ref-type="table-fn" rid="t006fn003">**</xref></td>
+<td align="center">5</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">0.19</td>
+<td align="center">8</td>
+<td align="center">8</td>
+<td align="center">0</td>
+<td align="center">0.42</td>
+<td align="center">8</td>
+<td align="center">8</td>
+<td align="center">0</td>
+<td align="center">0.33</td>
+</tr>
+<tr>
+<td align="left">10X linked reads<xref ref-type="table-fn" rid="t006fn004">***</xref></td>
+<td align="center">7</td>
+<td align="center">7</td>
+<td align="center">0</td>
+<td align="center">0.26</td>
+<td align="center">11</td>
+<td align="center">11</td>
+<td align="center">0</td>
+<td align="center">0.58</td>
+<td align="center">9</td>
+<td align="center">9</td>
+<td align="center">0</td>
+<td align="center">0.38</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t006fn001"><p>Total number of detected CNVs, deletions and duplications for each case and technology/pipeline.</p></fn>
+<fn id="t006fn002"><p>*Long Ranger—large SV</p></fn>
+<fn id="t006fn003"><p>** Long Ranger—deletions</p></fn>
+<fn id="t006fn004"><p>*** Supernova. Del: deletion, Dup: duplication, Sens: sensitivity. The aCGH row (confirmed variants) indicates the number of aCGH variants that were confirmed with any of the four WGS technologies. Each sample was analyzed using two arrays: a custom 400K array, as well as a commercial medical exome 1M array.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+</sec>
+<sec id="sec009">
+<title>Comparison of genome wide SV calls from different WGS technologies</title>
+<p>Next, we used the Case 2 WGS data, which were of the best quality among the three cases, to compare the sensitivity, number of calls, reported variant sizes, and reported variant types of the WGS technologies to one-another. Using SVDB (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/SVDB" xlink:type="simple">https://github.com/J35P312/SVDB</ext-link>) [<xref ref-type="bibr" rid="pgen.1007858.ref010">10</xref>], we found that the technologies differ regarding the overlap of the variant calls (<xref ref-type="table" rid="pgen.1007858.t007">Table 7</xref>). In particular, optical mapping and the Illumina based technologies detect only a few hundred (6.6%) overlapping calls (<xref ref-type="table" rid="pgen.1007858.t007">Table 7</xref>). In contrast, MP and PCR-free PE WGS produce the largest fraction of overlapping calls with nearly 71% of the MP calls also detected by PCR-free PE WGS. The overlap between PCR-free PE WGS and linked-reads WGS was 42% (<xref ref-type="table" rid="pgen.1007858.t007">Table 7</xref>).</p>
+<table-wrap id="pgen.1007858.t007" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t007</object-id>
+<label>Table 7</label> <caption><title>Matrix table comparing the amount of genome wide overlapping SV calls detected by four WGS technologies in Case 2.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t007g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t007" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left"/>
+<th align="center">Optical maps</th>
+<th align="center">PE WGS</th>
+<th align="center">MP WGS</th>
+<th align="center">Linked-reads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><bold>Optical maps</bold></td>
+<td align="center">10622 (100%)</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><bold>PE WGS</bold></td>
+<td align="center">318 (6.6%)</td>
+<td align="center">4802 (100%)</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><bold>MP WGS</bold></td>
+<td align="center">229 (36.6%)</td>
+<td align="center">626 (70.9%)</td>
+<td align="center">883 (100%)</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"><bold>Linked-reads</bold></td>
+<td align="center">164 (1.5%)</td>
+<td align="center">2007 (41.8%)</td>
+<td align="center">185 (21%)</td>
+<td align="center">16718 (100%)</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t007fn001"><p>WGS: whole genome sequencing, MP: mate-pair, PE: paired-end, within parentheses: each pairwise comparison given as percentages of overlapping SV calls.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>There are many reasons why the number of overlapping calls may differ between technologies, including artifacts and features specific to each technology and calling pipeline that can influence the output (<xref ref-type="supplementary-material" rid="pgen.1007858.s004">S2 Table</xref>). Bias towards variant types is also observed, for instance optical maps report no duplications and 6733 insertions while PE WGS reports 454 duplications but no insertions (<xref ref-type="table" rid="pgen.1007858.t008">Table 8</xref>). Moreover, due to distinct resolutions, each methodology also present a bias towards the SV sizes it detects. For instance, linked-read WGS and PCR-free PE WGS produce a large fraction of small variant calls (&lt;0.1 kb), in contrast, most of the optical mapping and MP calls are sized 10–100 kb (<xref ref-type="fig" rid="pgen.1007858.g004">Fig 4</xref>).</p>
+<fig id="pgen.1007858.g004" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.g004</object-id>
+<label>Fig 4</label>
+<caption>
+<title>Percentages of the amount and type of structural variant (SV) calls generated by each technology and analysis pipeline, based on size.</title>
+<p>Approximately 90% of calls from Bionano optical mapping are between 10–100 kb in size and few calls are larger than 100 kb or smaller than 1 kb. Calls from paired-end (PE) WGS data is quite evenly spread, with slightly more calls &lt;1 kb. The structural variant calls from the mate-pair (MP) WGS are sized between 10–100 kb. The linked-read WGS data was analyzed using three algorithms with different strengths, the Supernova <italic>de novo</italic> assembler, the Long Ranger large SV algorithm and the Long ranger deletion (Del) algorithm. Combining all callers, the linked-read WGS data produce a very high number of calls &lt;1 kb.</p>
+</caption>
+<graphic mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.g004" xlink:type="simple"/>
+</fig>
+<table-wrap id="pgen.1007858.t008" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t008</object-id>
+<label>Table 8</label> <caption><title>Number of calls per variant type.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t008g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t008" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left"/>
+<th align="center">Total</th>
+<th align="center">Del</th>
+<th align="center">Dup</th>
+<th align="center">Ins</th>
+<th align="center">Inv</th>
+<th align="center">Break-end</th>
+<th align="center">Unknown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><bold>Bionano</bold></td>
+<td align="center">11147</td>
+<td align="center">3050</td>
+<td align="center">0</td>
+<td align="center">7109</td>
+<td align="center">84</td>
+<td align="center">904</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="left"><bold>Bionano BssSI</bold></td>
+<td align="center">7013</td>
+<td align="center">1914</td>
+<td align="center">0</td>
+<td align="center">4342</td>
+<td align="center">64</td>
+<td align="center">693</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="left"><bold>Bionano BspQI</bold></td>
+<td align="center">5480</td>
+<td align="center">1501</td>
+<td align="center">0</td>
+<td align="center">3482</td>
+<td align="center">29</td>
+<td align="center">458</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="left"><bold>PE WGS</bold></td>
+<td align="center">4802</td>
+<td align="center">2310</td>
+<td align="center">454</td>
+<td align="center">0</td>
+<td align="center">373</td>
+<td align="center">1665</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="left"><bold>MP WGS</bold></td>
+<td align="center">883</td>
+<td align="center">494</td>
+<td align="center">279</td>
+<td align="center">0</td>
+<td align="center">29</td>
+<td align="center">81</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="left"><bold>10X linked-reads</bold></td>
+<td align="center">16718</td>
+<td align="center">8596</td>
+<td align="center">726</td>
+<td align="center">484</td>
+<td align="center">1140</td>
+<td align="center">5762</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="left"><bold>Long Ranger SV</bold></td>
+<td align="center">211</td>
+<td align="center">26</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">4</td>
+<td align="center">166</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="left"><bold>Long Ranger Del</bold></td>
+<td align="center">3963</td>
+<td align="center">3933</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">36</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="left"><bold>Supernova</bold></td>
+<td align="center">14495</td>
+<td align="center">6480</td>
+<td align="center">725</td>
+<td align="center">484</td>
+<td align="center">1138</td>
+<td align="center">5668</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t008fn001"><p>Break-end indicates intra- and interchromosomal translocations.</p></fn>
+<fn id="t008fn002"><p>PE: paired-end, MP: mate-pair, SV: structural variant, Del: deletion, Dup: duplication, Ins: insertion, Inv: inversion</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>Next, we compared the overlap between the variant calls and three public datasets: the Database of Genomic Variants (DGV) [<xref ref-type="bibr" rid="pgen.1007858.ref019">19</xref>], the HG002 integrated call-set compiled by the Genome In A Bottle consortium (GIAB) (<ext-link ext-link-type="uri" xlink:href="https://github.com/genome-in-a-bottle" xlink:type="simple">https://github.com/genome-in-a-bottle</ext-link>) [<xref ref-type="bibr" rid="pgen.1007858.ref020">20</xref>], as well as the CNV list published in a previous paper by Conrad et al. (2010) [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>] (<xref ref-type="table" rid="pgen.1007858.t009">Table 9</xref>). Notably, the performance between the technologies differs depending on which database they are compared to. Comparing the methodologies used here to the CNVs reported in Conrad et al. [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>], we found that Bionano and PCR-free PE WGS achieve similar numbers. MP WGS reports fewer variants matching the CNVs listed in Conrad et al, and linked-read WGS detect only a few of those CNVs (<xref ref-type="table" rid="pgen.1007858.t009">Table 9</xref>).</p>
+<table-wrap id="pgen.1007858.t009" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t009</object-id>
+<label>Table 9</label> <caption><title>Comparison between the WGS technologies and three public datasets.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t009g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t009" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<tbody>
+<tr>
+<td align="center" colspan="7"><bold>Conrad et al. (2010)</bold></td>
+</tr>
+<tr>
+<td align="left"><bold>Technology</bold></td>
+<td align="center" colspan="2"><bold>Del</bold></td>
+<td align="center" colspan="4"><bold>Dup</bold></td>
+</tr>
+<tr>
+<td align="left">Bionano</td>
+<td align="center" colspan="2">43</td>
+<td align="center" colspan="4">88</td>
+</tr>
+<tr>
+<td align="left">Bionano BssSI</td>
+<td align="center" colspan="2">34</td>
+<td align="center" colspan="4">61</td>
+</tr>
+<tr>
+<td align="left">Bionano BspQI</td>
+<td align="center" colspan="2">21</td>
+<td align="center" colspan="4">48</td>
+</tr>
+<tr>
+<td align="left">PE WGS</td>
+<td align="center" colspan="2">43</td>
+<td align="center" colspan="4">94</td>
+</tr>
+<tr>
+<td align="left">MP WGS</td>
+<td align="center" colspan="2">26</td>
+<td align="center" colspan="4">69</td>
+</tr>
+<tr>
+<td align="left">10X linked reads</td>
+<td align="center" colspan="2">14</td>
+<td align="center" colspan="4">15</td>
+</tr>
+<tr>
+<td align="left">Long Ranger SV</td>
+<td align="center" colspan="2">2</td>
+<td align="center" colspan="4">3</td>
+</tr>
+<tr>
+<td align="left">Long Ranger Del</td>
+<td align="center" colspan="2">3</td>
+<td align="center" colspan="4">2</td>
+</tr>
+<tr>
+<td align="left">Supernova</td>
+<td align="center" colspan="2">11</td>
+<td align="center" colspan="4">14</td>
+</tr>
+<tr>
+<td align="left">Total</td>
+<td align="center" colspan="2">6960</td>
+<td align="center" colspan="4">4740</td>
+</tr>
+<tr>
+<td align="center" colspan="7"><bold>DGV</bold></td>
+</tr>
+<tr>
+<td align="left"><bold>Technology</bold></td>
+<td align="center"><bold>Complex</bold></td>
+<td align="center"><bold>Del</bold></td>
+<td align="center" colspan="2"><bold>Dup</bold></td>
+<td align="center"><bold>Inv</bold></td>
+<td align="center"><bold>Ins</bold></td>
+</tr>
+<tr>
+<td align="left">Bionano</td>
+<td align="center">83</td>
+<td align="center">1780</td>
+<td align="center" colspan="2">1000</td>
+<td align="center">84</td>
+<td align="center">586</td>
+</tr>
+<tr>
+<td align="left">Bionano BssSI</td>
+<td align="center">60</td>
+<td align="center">1236</td>
+<td align="center" colspan="2">651</td>
+<td align="center">58</td>
+<td align="center">377</td>
+</tr>
+<tr>
+<td align="left">Bionano BspQI</td>
+<td align="center">53</td>
+<td align="center">1032</td>
+<td align="center" colspan="2">613</td>
+<td align="center">53</td>
+<td align="center">390</td>
+</tr>
+<tr>
+<td align="left">PE WGS</td>
+<td align="center">78</td>
+<td align="center">2670</td>
+<td align="center" colspan="2">1036</td>
+<td align="center">167</td>
+<td align="center">96</td>
+</tr>
+<tr>
+<td align="left">MP WGS</td>
+<td align="center">45</td>
+<td align="center">459</td>
+<td align="center" colspan="2">437</td>
+<td align="center">40</td>
+<td align="center">51</td>
+</tr>
+<tr>
+<td align="left">10X linked reads</td>
+<td align="center">50</td>
+<td align="center">4438</td>
+<td align="center" colspan="2">707</td>
+<td align="center">78</td>
+<td align="center">135</td>
+</tr>
+<tr>
+<td align="left">Long Ranger SV</td>
+<td align="center">19</td>
+<td align="center">46</td>
+<td align="center" colspan="2">40</td>
+<td align="center">13</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="left">Long Ranger Del</td>
+<td align="center">16</td>
+<td align="center">2787</td>
+<td align="center" colspan="2">314</td>
+<td align="center">10</td>
+<td align="center">16</td>
+</tr>
+<tr>
+<td align="left">Supernova</td>
+<td align="center">35</td>
+<td align="center">3374</td>
+<td align="center" colspan="2">575</td>
+<td align="center">61</td>
+<td align="center">115</td>
+</tr>
+<tr>
+<td align="left">Total</td>
+<td align="center">578</td>
+<td align="center">258436</td>
+<td align="center" colspan="2">81122</td>
+<td align="center">2652</td>
+<td align="center">36577</td>
+</tr>
+<tr>
+<td align="center" colspan="7"><bold>HG002 integrated call-set</bold></td>
+</tr>
+<tr>
+<td align="left"><bold>Technology</bold></td>
+<td align="center" colspan="2"><bold>Del</bold></td>
+<td align="center" colspan="4"><bold>Ins</bold></td>
+</tr>
+<tr>
+<td align="left">Bionano</td>
+<td align="center" colspan="2">58</td>
+<td align="center" colspan="4">0</td>
+</tr>
+<tr>
+<td align="left">Bionano BssSI</td>
+<td align="center" colspan="2">43</td>
+<td align="center" colspan="4">0</td>
+</tr>
+<tr>
+<td align="left">Bionano BspQI</td>
+<td align="center" colspan="2">35</td>
+<td align="center" colspan="4">0</td>
+</tr>
+<tr>
+<td align="left">PE WGS</td>
+<td align="center" colspan="2">1128</td>
+<td align="center" colspan="4">4</td>
+</tr>
+<tr>
+<td align="left">MP WGS</td>
+<td align="center" colspan="2">79</td>
+<td align="center" colspan="4">0</td>
+</tr>
+<tr>
+<td align="left">10X linked reads</td>
+<td align="center" colspan="2">1859</td>
+<td align="center" colspan="4">8</td>
+</tr>
+<tr>
+<td align="left">Long Ranger SV</td>
+<td align="center" colspan="2">3</td>
+<td align="center" colspan="4">0</td>
+</tr>
+<tr>
+<td align="left">Long Ranger Del</td>
+<td align="center" colspan="2">1467</td>
+<td align="center" colspan="4">1</td>
+</tr>
+<tr>
+<td align="left">Supernova</td>
+<td align="center" colspan="2">1445</td>
+<td align="center" colspan="4">1</td>
+</tr>
+<tr>
+<td align="left">Total</td>
+<td align="center" colspan="2">28773</td>
+<td align="center" colspan="4">30576</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+<table-wrap-foot>
+<fn id="t009fn001"><p>Del: deletion, dup: duplication, inv: inversion, ins: insertion, SV: structural variant, MP: mate-pair, PE: paired-end. The Total row indicates the total number of variants of each type in the three datasets: DGV [<xref ref-type="bibr" rid="pgen.1007858.ref019">19</xref>], the HG002 integrated call-set [<xref ref-type="bibr" rid="pgen.1007858.ref022">22</xref>] and Conrad et al. (2010) [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>]. BssSI and BspQI are the two restriction enzymes used in the Bionano optical mapping experiment, Long Ranger: the 10X Genomics mapping-assembly based pipeline, Supernova: the results of a custom pipeline utilizing the Supernova <italic>de novo</italic> assembler.</p></fn>
+</table-wrap-foot>
+</table-wrap>
+<p>In contrast, linked-read WGS performs better on the DGV database, and detects the largest number of deletions (<xref ref-type="table" rid="pgen.1007858.t009">Table 9</xref>). Despite the high detection rate of these deletions, linked-read WGS performs relatively poor on all other variant types. Similar to the comparison of the Conrad et al. dataset [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>], optical maps and PCR-free PE WGS report nearly the same amount of variants. However, optical maps detect a greater number of insertions, while PCR-free PE WGS detects a greater number of deletions.</p>
+<p>MP WGS detects the smallest number of variants, however, most of the MP variant calls do match a DGV variant indicating that the precision of MP WGS is high. In contrast, a smaller fraction of optical maps and Long Ranger calls are similar to DGV variants, indicating a lower precision of these technologies.</p>
+<p>Lastly, the technologies were compared to the HG002 (GIAB) integrated call-set, which consists of mainly small SVs (&lt;0.1 kb) (<xref ref-type="supplementary-material" rid="pgen.1007858.s006">S4 Table</xref>) detected using both long- and short-read sequencing methods (<ext-link ext-link-type="uri" xlink:href="ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/README_SV_v0.6.txt" xlink:type="simple">ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/README_SV_v0.6.txt</ext-link>). It was found that linked-read WGS and PCR-free PE WGS detect the largest number of those variants, while optical maps and MP WGS produce relatively few hits. These results are not surprising given the resolution and size bias that those methodologies present (<xref ref-type="table" rid="pgen.1007858.t005">Table 5</xref>).</p>
+</sec>
+</sec>
+<sec id="sec010" sec-type="conclusions">
+<title>Discussion</title>
+<p>It has previously been demonstrated that cytogenetically balanced CCRs often contain cryptic deletions in the breakpoints, explaining the clinical phenotype of the carrier patients in many cases [<xref ref-type="bibr" rid="pgen.1007858.ref005">5</xref>]. Here we report two individuals with complex interchromosomal translocations (Case 1 and Case 2) and one individual with a very complex intrachromosomal rearrangement (Case 3) for whom we used multiple combined cytogenetic and molecular methodologies to refine the alterations in their genome content which aided clinical assessment.</p>
+<p>In Case 1, a 5 Mb deletion on chromosome 2 and a 14.5 Mb deletion on chromosome 8 was identified using FISH mapping. Further analysis using aCGH and WGS, showed that the 5 Mb deletion actually consisted of two deletions, 2.1 Mb and 2.3 Mb, respectively. WGS could also demonstrate that a 970 kb genomic segment, originally located in-between the two deletions, had been translocated onto chromosome 15. The deletion on chromosome 8 in Case 1 covers the TRPSII (Trichorhinophalangeal syndrome type II, TRPSII, Langer Gideon Syndrome, LGS, MIM# 150230) locus and most of the characteristic symptoms of TRPSII were present in Case 1.</p>
+<p>In Case 2, the translocated piece of chromosome 10 contained a 14.5 Mb deletion, encompassing the typical region for hypoparathyroidism, sensorineural deafness, and renal disease syndrome (HDRS, Barakat syndrome, MIM# 146255), characterized by the triad hypoparathyroidism, renal dysplasia and hearing loss. The common cause of HDR syndrome is mutations in <italic>GATA3</italic> [<xref ref-type="bibr" rid="pgen.1007858.ref023">23</xref>]. Deletions of 10p are recurrent, and <italic>GATA3</italic> has been pinpointed as the causative gene for HDR syndrome seen in 10p deletions. The size and location of 10p deletions vary, as well as the clinical picture [<xref ref-type="bibr" rid="pgen.1007858.ref015">15</xref>].</p>
+<p>Case 3 presented with mild dysmorphic features, psychomotor delay, ectopic left kidney, minor hearing disability, dysphasia, feeding difficulties, mild short stature, and developmental delay. Thorough analysis of the 26 breakpoints on chromosome 1 revealed six known disease-related OMIM disease genes to be disrupted or affected by a deletion (<italic>RYR2</italic>, <italic>MFN2</italic>, <italic>CAMTA1</italic>, <italic>SLC9A1</italic>, <italic>PRDM16</italic> and <italic>PLOD1</italic>). Two of the OMIM genes (<italic>CAMTA1</italic> and <italic>PRDM16</italic>) were identified using FISH in a previous study of the same case, while remaining genes were novel findings using WGS [<xref ref-type="bibr" rid="pgen.1007858.ref016">16</xref>]. <italic>CAMTA1</italic> is known to cause autosomal dominant cerebellar ataxia (non-progressive) with mild intellectual disability (MIM# 614756), with phenotypes including delayed psychomotor development, cerebellar ataxia, intellectual disability, neonatal hypotonia, and variable dysmorphic features, some of them consistent with the phenotype in Case 3. Remaining genes have not been associated with any phenotypes present in Case 3 and the full phenotype (ectopic kidney, hearing disability) in this individual could not fully be explained by the WGS analysis, but needs further investigation of the genes affected by the rearrangement.</p>
+<p>There are a number of events that could lead to complex rearrangements, including replication-based mechanisms (fork-stalling and template-switching (FoSTeS) model) [<xref ref-type="bibr" rid="pgen.1007858.ref024">24</xref>] and chromothripsis [<xref ref-type="bibr" rid="pgen.1007858.ref025">25</xref>]. WGS allowed for detailed analysis of all breakpoint junctions on the nucleotide level in Case 1 and Case 2, and all junctions but one in the two complex translocations were blunt, with maximum of two nucleotides microhomology. In one breakpoint junction, there were two small insertions of three and four nucleotides, respectively. They did not seem to be duplicated or templated from nearby sequences, which would have indicated a replicative error mechanism, instead the mutational signatures in both Case 1 and Case 2 indicate non-homologous end-joining (NHEJ), characteristic of chromothripsis rearrangement junctions. The characteristics of the breakpoint junctions in Case 3 makes it likely that the complex rearrangement of chromosome 1 formed through a single catastrophic event. These characteristics include randomness of the DNA fragment joins, the DNA fragments appear to be randomly joined in inverted/non-inverted orientation, and the ability to walk along the derivative chromosome [<xref ref-type="bibr" rid="pgen.1007858.ref026">26</xref>]. However, the rearrangement does not include a regularity of oscillating copy-number states [<xref ref-type="bibr" rid="pgen.1007858.ref026">26</xref>], but only involves a small number of randomly spread deletions. In addition, the breakpoints of the q and p arms are separated by a 171 Mb DNA fragment, hence the breakpoints are not clustered as would be expected [<xref ref-type="bibr" rid="pgen.1007858.ref026">26</xref>]. Further, the p and q arms of chromosome 1 seem to have been brought close together in a ring-like formation. Possibly, the p and q arm were brought together before the scattering of the chromosome, otherwise, the fragments of one arm would either be lost, or the fragments would be less prone to translocate between the arms. Hence, the rearrangement of chromosome 1 in Case 3 could have arisen either from the halted formation of a ring chromosome, or even through a chromothripsis event of a ring chromosome.</p>
+<p>The four WGS technologies performed were utilized in three different settings: i) for solving the derivative chromosome structure of the three CCRs, ii) for a comparison of detection rate of polymorphic CNVs first detected by aCGH in the three cases and iii) for a general assessment of genome wide SV calls from the three cases as compared to calls present in the public datasets [<xref ref-type="bibr" rid="pgen.1007858.ref019">19</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref022">22</xref>].</p>
+<p>First, we found that no technology provides a significantly higher detection rate than the others regarding the ability to detect and solve the structure of the <italic>de novo</italic> CCRs presented herein. This is partly a result of the relatively small number of CCR junctions in this study (35), but also due to the high detection rate of all four WGS technologies. Moreover, although those CCRs are complex in nature, the majority of the breakpoint junctions could be uniquely mapped to regions that do not present complex repetitive genomic patterns such as LCRs, satellites, centromeric or telomeric repeats. This is exemplified for LCR-containing junctions 1 and 2 of Case 3 that could only be resolved by optical mapping and linked-read WGS. Those technologies require longer DNA molecules and therefore are more appropriated to resolve repeats than short reads. These regions are also more prone to rearrangements [<xref ref-type="bibr" rid="pgen.1007858.ref027">27</xref>], and hence the ability to resolve junctions mapping within those structures is of great importance.</p>
+<p>Although the detection rates of these methods are similar, the resolutions differ. Both PCR-free PE WGS and linked-read sequencing can resolve most breakpoints to base-pair resolution. In contrast, optical mapping provides the lowest resolution (~7 kb), which likely explains why it failed to detect breakpoints involving the smaller fragments of Case 1 and Case 3.</p>
+<p>To assess whether the CCRs would have been detected in a “WGS-first” scenario the MP and PE WGS data was filtered based on allele frequency, but filtered variant lists of the linked-read and optical mapping calls could not be obtained as there are no frequency databases available for those technologies. Given the low similarity between PCR-free PE WGS and these two methods, the databases such as the SweGen cohort [<xref ref-type="bibr" rid="pgen.1007858.ref017">17</xref>] or 1000 Genomes [<xref ref-type="bibr" rid="pgen.1007858.ref028">28</xref>] would be of very limited use. Hence, in order to make linked-read WGS and optical mapping usable in a clinical setting, large populations would need to be sequenced using these methods, and the data made available through frequency databases.</p>
+<p>Finally, comparing the four technologies to polymorphic CNVs, it was found that PCR-free PE WGS provides the highest sensitivity, closely followed by linked-read sequencing. MP WGS and optical mapping performed similarly, with almost half the detection rate of PCR-free PE WGS. Notably, both these two methods failed in detecting smaller CNVs (&lt;10 kb). Furthermore, PCR-free PE WGS did find a significant number of CNVs that linked-read WGS failed to detect: these CNVs did either belong to Case 1, having partially degraded DNA and too short molecules to be sequenced by linked-read WGS, or the CNVs were subsequently detected using CNVnator instead, which is a read-depth caller and able to detect variants as small as 2 kb [<xref ref-type="bibr" rid="pgen.1007858.ref029">29</xref>]. These variants exemplify that the large amounts of high performing Illumina WGS callers provide an edge over these more recent methods, whose pipelines are less mature, and still undergoing rapid development.</p>
+<p>Lastly, the technologies were evaluated through a general assesment of the calls, as well as through comparison to the DGV [<xref ref-type="bibr" rid="pgen.1007858.ref019">19</xref>], HG002 integrated call-set [<xref ref-type="bibr" rid="pgen.1007858.ref022">22</xref>] and Conrad et al. (2010) datasets [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>]. This comparison provided two valuable insights not found through the previous analyses. First, the technologies produce significantly different amounts of variants: both linked-read WGS and optical mapping produce more than 10,000 calls on a single individual. In contrast, MP WGS generates less than 1000 calls on a single individual. Given the relatively similar detection rate on the CCRs and the fact that nearly all MP WGS calls are found in DGV, the precision of MP WGS is likely to be high compared to optical mapping and linked-read WGS. Second, it is also clear that each method report variants of different types and sizes and that the reported variant not always reflect the nature of the rearrangement in a given sample. This is particularly observed in the optical mapping results, which do not report any duplications at all, even though optical mapping clearly do detect duplications. Similarly, the Long Ranger SV caller for the linked-read WGS data is the only caller to report variants of “unknown” type.</p>
+<p>In aggregate, through this comparison, we found that the four WGS methods produce variants of different sizes and these findings are in accordance to the resolution estimates. Notably, there is only a small overlap between the technologies and we only present two orthogonal methods (Bionano optical mapping and Illumina sequencing). Furthermore, many of the calls presented in DGV [<xref ref-type="bibr" rid="pgen.1007858.ref019">19</xref>] or Conrad et al. [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>] as structural variation are not validated. The results are nevertheless consistent with the previously shown results: MP WGS provides lower detection rate, but higher precision. PCR-free PE WGS, linked-read WGS, and optical mapping detect similar numbers of variants overall, however there are some biases toward certain variant types (for example, optical mapping reports a large number of insertions). Given the similar numbers of detected variants but different numbers of reported variants, the precision of the technologies are likely to be different: we observed that MP WGS provides the highest precision, PCR-free PE WGS the second most precision, and linked-read WGS or optical mapping the worst precision, depending on how the pipelines are combined.</p>
+<p>The present study is limited by the fact that we have not compared any third-generation sequencing technologies, which have shown great promise for detection of structural variation in complex repeat regions [<xref ref-type="bibr" rid="pgen.1007858.ref030">30</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref031">31</xref>]. However, we found that short-read WGS combined with optical mapping is a powerful combination for analyzing CCRs. Combined, these two technologies would enable detection and validation of most breakpoints in two experiments, at maximum resolution. Given the current high cost of single molecule sequencing, a combined approach could be the most cost efficient. In this study we were able to detect all breakpoint junctions except one using linked-read WGS. The only missing breakpoint junction was in Case 1, where the DNA was partly degraded and no replacement DNA was available due to the individual being deceased. Taken together, and looking at the linked-read WGS result for Case 2 and Case 3, we are confident that the missing junction would have been found with better quality input DNA. Hence, in the cases reported here the linked-read sequencing identified all rearrangement breakpoints including those located in repetitive regions and is a valid WGS method of choice to detail complex rearrangements that often have breakpoints in repetitive regions. However, before this can be used in a clinical setting more user-friendly analysis software, as well as better reference data for filtering is desirable.</p>
+<p>In conclusion, these findings demonstrate how different high throughput genomic methods can add clinically relevant information to conventional molecular analysis methods and enable characterization of the true nature of <italic>de novo</italic> CCRs. Finally, Case 3 demonstrates the need for long-molecule sequencing or complementary optical mapping to short-read sequencing to be able to map the structure of a highly complex rearrangement with breakpoints in repetitive regions.</p>
+</sec>
+<sec id="sec011" sec-type="materials|methods">
+<title>Materials and methods</title>
+<p>Materials and methods for the cytogenetic studies are presented in <xref ref-type="supplementary-material" rid="pgen.1007858.s008">S1 Appendix</xref> and quality control (QC) data of the WGS methods are presented in <xref ref-type="supplementary-material" rid="pgen.1007858.s007">S5 Table</xref>.</p>
+<sec id="sec012">
+<title>Ethics statement</title>
+<p>Written informed consent was obtained from the legal guardians of all study participants. The local ethical boards in Stockholm, Sweden approved the study (approval numbers 2012/2106-31/4 and KS 02–145, 20020506).</p>
+</sec>
+<sec id="sec013">
+<title>Cases</title>
+<p>Three cases were studied following referral to the Clinical Genetics at Karolinska University Hospital, Stockholm, Sweden, due to clinical symptoms indicating genetic testing. Parental samples from Case 2 and Case 3 were analyzed using karyotyping and FISH, showing that the rearrangement had occurred <italic>de novo</italic> on the paternal allele [<xref ref-type="bibr" rid="pgen.1007858.ref015">15</xref>, <xref ref-type="bibr" rid="pgen.1007858.ref016">16</xref>]. Parental samples from Case 1 and Case 3 were sequenced using linked-read sequencing, and the rearrangement in Case 1 was also originating from the paternal allele. Clinical parameters and phenotypes of the included cases are presented in <xref ref-type="table" rid="pgen.1007858.t010">Table 10</xref>.</p>
+<table-wrap id="pgen.1007858.t010" position="float">
+<object-id pub-id-type="doi">10.1371/journal.pgen.1007858.t010</object-id>
+<label>Table 10</label> <caption><title>Clinical parameters of included cases.</title></caption>
+<alternatives>
+<graphic id="pgen.1007858.t010g" mimetype="image" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.t010" xlink:type="simple"/>
+<table>
+<colgroup>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+<col align="left" valign="middle"/>
+</colgroup>
+<thead>
+<tr>
+<th align="left">Clinical</th>
+<th align="left">Case 1</th>
+<th align="left">Case 2</th>
+<th align="left">Case 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><bold>Gender</bold></td>
+<td align="left">F</td>
+<td align="left">M</td>
+<td align="left">F</td>
+</tr>
+<tr>
+<td align="left"><bold>Birth (weeks)</bold></td>
+<td align="left">40</td>
+<td align="left">33</td>
+<td align="left">41</td>
+</tr>
+<tr>
+<td align="left"><bold>Weight (g) (SD)</bold></td>
+<td align="left">2600 (-1.6)</td>
+<td align="left">1800 (-3)</td>
+<td align="left">3040 (-0.7)</td>
+</tr>
+<tr>
+<td align="left"><bold>Length (cm) (SD)</bold></td>
+<td align="left">46 (-1.6)</td>
+<td align="left">48 (-0.7)</td>
+<td align="left">49 (-0.2)</td>
+</tr>
+<tr>
+<td align="left"><bold>OFC (cm) (SD)</bold></td>
+<td align="left">33 (-1.2)</td>
+<td align="left">N.i.</td>
+<td align="left">35 (+/-0)</td>
+</tr>
+<tr>
+<td align="left"><bold>ID</bold></td>
+<td align="left">No</td>
+<td align="left">Yes</td>
+<td align="left">Yes</td>
+</tr>
+<tr>
+<td align="left"><bold>Hypotonia</bold></td>
+<td align="left">Yes</td>
+<td align="left">No</td>
+<td align="left">Yes</td>
+</tr>
+<tr>
+<td align="left"><bold>Dysmorphic features</bold></td>
+<td align="left">Long philtrum, thin upper lip, hypertelorism, flat nasal bridge</td>
+<td align="left">High forehead, downslanting palpebral fissures, hypertelorism, midface hypoplasia, short neck, micrognathia, bristly hair, long and flat philtrum, small mouth, small and low set posteriorly rotated ears</td>
+<td align="left">Flat nasal bridge, pointed chin, deep-set eyes</td>
+</tr>
+<tr>
+<td align="left"><bold>Autism</bold></td>
+<td align="left">No</td>
+<td align="left">Yes</td>
+<td align="left">No</td>
+</tr>
+<tr>
+<td align="left"><bold>Developmental delay</bold></td>
+<td align="left">Speech and motor functions</td>
+<td align="left">Slightly delayed motor functions</td>
+<td align="left">Psychomotor</td>
+</tr>
+<tr>
+<td align="left"><bold>Frequent infections</bold></td>
+<td align="left">Upper respiratory tract</td>
+<td align="left">No</td>
+<td align="left">Upper respiratory tract</td>
+</tr>
+<tr>
+<td align="left"><bold>Other</bold></td>
+<td align="left">Malrotation of small intestines, failure to thrive, severe feeding difficulties</td>
+<td align="left">Cleft lip and palate, hydrocephalus, bilateral deafness, stiff walking</td>
+<td align="left">Infectious asthma, unsteady walking, can only construct two word sentences at age 4 years</td>
+</tr>
+</tbody>
+</table>
+</alternatives>
+</table-wrap>
+</sec>
+<sec id="sec014">
+<title>Whole genome sequencing</title>
+<sec id="sec015">
+<title>Short-read whole genome sequencing</title>
+<p>Genomic DNA from three individuals were sequenced using two separate Illumina WGS protocols, a 30X PCR free protocol, as well as a 3X 2.5 kb insert-size mate-pair protocol, at NGI (National Genomics Infrastructure), Stockholm, Sweden (<ext-link ext-link-type="uri" xlink:href="https://ngisweden.scilifelab.se/" xlink:type="simple">https://ngisweden.scilifelab.se/</ext-link>). The data was processed using the NGI-piper and structural variants were analyzed using the FindSV pipeline (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/FindSV" xlink:type="simple">https://github.com/J35P312/FindSV</ext-link>), a pipeline combining CNVnator V0.3.2 [<xref ref-type="bibr" rid="pgen.1007858.ref029">29</xref>] and TIDDIT V2.2.4 [<xref ref-type="bibr" rid="pgen.1007858.ref010">10</xref>]. Briefly, CNVnator detects CNVs based on read depth signatures, while TIDDIT detects a wide range of SVs by searching for clusters of discordant pairs and split-reads. Hence these callers are complementary, and together they make use of all SV signatures within the WGS data. The outputs of these two callers were combined into one single Variant Calling Format (VCF) file, which was annotated by variant effect predictor (VEP) 89 [<xref ref-type="bibr" rid="pgen.1007858.ref032">32</xref>] and filtered based on the VCF file quality flag. The VCF file was subsequently sorted based on a local structural variant frequency database. The PCR-free PE calls were ranked using a database built from the SweGen cohort [<xref ref-type="bibr" rid="pgen.1007858.ref017">17</xref>], while the MP WGS dataset was filtered using an in-house database consisting of 55 samples. Variants identified by TIDDIT [<xref ref-type="bibr" rid="pgen.1007858.ref010">10</xref>], CNVnator [<xref ref-type="bibr" rid="pgen.1007858.ref029">29</xref>], or any of the other methods were visualized using the Integrative Genome Viewer Version 2.4.10 (IGV: <ext-link ext-link-type="uri" xlink:href="http://software.broadinstitute.org/software/igv/" xlink:type="simple">http://software.broadinstitute.org/software/igv/</ext-link>) [<xref ref-type="bibr" rid="pgen.1007858.ref033">33</xref>] and the exact position of the breakpoint junctions could then be determined by alignment of the split reads to the Hg19 reference genome using the BLAST-like alignment tool (BLAT: <ext-link ext-link-type="uri" xlink:href="https://genome.ucsc.edu/cgi-bin/hgBlat" xlink:type="simple">https://genome.ucsc.edu/cgi-bin/hgBlat</ext-link>) [<xref ref-type="bibr" rid="pgen.1007858.ref034">34</xref>]. Lastly, the VCF file was converted into an excel file using the CCCTG_SV script (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/Garbage_heap/tree/master/sv" xlink:type="simple">https://github.com/J35P312/Garbage_heap/tree/master/sv</ext-link>). This script also applies a frequency filter, which removes all variants found in the database, and filters small intergenic SV (&lt;10 kb). For the PCR-free PE WGS data, the script was set to remove all calls supported by less than eight supporting pairs and split reads, while the MP WGS calls were not filtered based on supporting pairs.</p>
+</sec>
+<sec id="sec016">
+<title>Linked-read whole genome sequencing</title>
+<p>All three individuals were sequenced using the 10X Genomics Chromium WGS protocol. Briefly, the input DNA is kept as intact as possible, and the large DNA fragments are commonly referred to as molecules. The molecules are separated into droplets, and a unique barcode sequence is added to each droplet. The molecules are fragmented into ~300 bp fragments that are sequenced on the Illumina sequencer. These ~300 bp fragments are produced in such a way that the first read of each read-pair contains the barcode. Hence, upon sequencing the reads, the barcode is also sequenced, allowing for the linking of reads belonging to the same molecule (<ext-link ext-link-type="uri" xlink:href="https://www.10xgenomics.com/genome/" xlink:type="simple">https://www.10xgenomics.com/genome/</ext-link>). The library was prepared using the 10X Chromium controller and sequenced using the Illumina Hiseq Xten platform at NGI Stockholm. The resulting WGS data was analyzed using two separate pipelines: the default Long Ranger pipeline V2.1.2 (<ext-link ext-link-type="uri" xlink:href="https://support.10xgenomics.com/genome-exome/software/downloads/latest" xlink:type="simple">https://support.10xgenomics.com/genome-exome/software/downloads/latest</ext-link>), as well as a custom <italic>de novo</italic> assembly pipeline based on the output of the Supernova V2.0.0 <italic>de novo</italic> assembler (<ext-link ext-link-type="uri" xlink:href="https://support.10xgenomics.com/de-novo-assembly/software/downloads/latest" xlink:type="simple">https://support.10xgenomics.com/de-novo-assembly/software/downloads/latest</ext-link>). The custom <italic>de novo</italic> assembly pipeline includes mapping of the raw Supernova contigs using the bwa mem intra-contig mode, and extraction of split contigs using a python script (version 0.1.0) (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/Assemblatron" xlink:type="simple">https://github.com/J35P312/Assemblatron</ext-link>).</p>
+</sec>
+<sec id="sec017">
+<title>Optical mapping</title>
+<p>Bionano Genomics (San Diego, CA, USA) produced optical maps by running dual enzymes (BspQI, BssSI) on the Saphyr platform (<ext-link ext-link-type="uri" xlink:href="https://bionanogenomics.com/support-page/saphyr-system" xlink:type="simple">https://bionanogenomics.com/support-page/saphyr-system</ext-link>). The optical maps were analyzed using Bionano-solve (<ext-link ext-link-type="uri" xlink:href="https://bionanogenomics.com/support-page/bionano-solve" xlink:type="simple">https://bionanogenomics.com/support-page/bionano-solve</ext-link>). Briefly, the maps were detected using AutoDetect (version 5.0 svn:DM:r837), and assembled using the <italic>de novo</italic> assembly package AssembleMolecules (version 1.0). The resulting consensus maps were aligned to hg19 using the Bionano RefAligner (version 5649). Lastly, the Smaps were converted to VCF using a custom version of the smap2vcf script (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/smap2vcf" xlink:type="simple">https://github.com/J35P312/smap2vcf</ext-link>), and the variants of interest were visualized using Bionano access.</p>
+</sec>
+</sec>
+<sec id="sec018">
+<title>Evaluation of structural variant calling</title>
+<p>All three cases were analyzed using a custom designed 400K aCGH [<xref ref-type="bibr" rid="pgen.1007858.ref035">35</xref>] and a 1M medical research exome array provided by Oxford Gene Technologies (OGT) (Begbroke, Oxfordshire, UK) (Catalog no. 020100) with exon-resolution in all known medically relevant genes (<ext-link ext-link-type="uri" xlink:href="https://www.ogt.com/products/971_cytosure_medical_research_exome_array" xlink:type="simple">https://www.ogt.com/products/971_cytosure_medical_research_exome_array</ext-link>). The resulting CNVs were converted into VCF files using the array2vcf script (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/convert2vcf" xlink:type="simple">https://github.com/J35P312/convert2vcf</ext-link>). The variant calls produced by the WGS technologies or optical mapping were compared to these CNVs using SVDB merge V1.1.2. A CNV found by both aCGH and any other technology was considered to be a true positive, all other CNVs were assumed to be false positives.</p>
+<p>The variant calls of Case 2 were compared to the DGV, an integrated SV call-set produced by GIAB (<ext-link ext-link-type="uri" xlink:href="ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/README_SV_v0.6.txt" xlink:type="simple">ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/README_SV_v0.6.txt</ext-link>), and the list of CNVs presented in Conrad et al. from 2010 [<xref ref-type="bibr" rid="pgen.1007858.ref021">21</xref>]. The DGV and the Conrad et al. datasets were converted into VCF files using the DGV2vcf and Conrad2vcf scripts (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/convert2vcf" xlink:type="simple">https://github.com/J35P312/convert2vcf</ext-link>). The resulting VCF files were then split into one VCF per variant type, and compared to the WGS technologies using SVDB merge V1.2.2, which was run using the compare_conrad and compare_dgv scripts (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/convert2vcf" xlink:type="simple">https://github.com/J35P312/convert2vcf</ext-link>). The integrated GIAB call-set was downloaded from the GIAB FTP (<ext-link ext-link-type="uri" xlink:href="ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/HG002_SVs_Tier1_v0.6.vcf.gz" xlink:type="simple">ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/HG002_SVs_Tier1_v0.6.vcf.gz</ext-link>), and filtered for variants detected using PacBio or Complete Genomics data. The filtering was performed by reading the CGcalls and PBcalls entries in the info column of the VCF file, and any variant having non-zero CGcalls or PBcalls value were kept while all other variants were filtered out.</p>
+<p>Finally, the four technologies were compared by computing intersect of each pairwise technology-combination, and by calculating the sizes and number of variant calls. These scripts are also made available through (<ext-link ext-link-type="uri" xlink:href="https://github.com/J35P312/convert2vcf" xlink:type="simple">https://github.com/J35P312/convert2vcf</ext-link>). Across all comparisons, two variants were considered similar if their overlap exceed a Jaccard index of 0.4, and if the distance between the breakpoints is less than 100 kb. Any variants not meeting these criteria were considered dis-similar. Throughout these comparisons, only high quality calls were considered: a call was considered to be of high quality if the VCF filter flag was set to PASS.</p>
+</sec>
+<sec id="sec019">
+<title>Breakpoint junction PCR</title>
+<p>Primers flanking all junctions except junction 1 and junction 2 in Case 3 were designed approximately 500 base pairs away from the estimated breakpoints. Same primers were subsequently used for sequencing using the Sanger method. Primer sequences are available on request. Breakpoint PCR was performed by standard methods using Phusion High-Fidelity DNA Polymerase (ThermoFisher Scientific, Waltham, MA, USA). Sequences obtained were aligned using BLAT (UCSC Genome Browser) [<xref ref-type="bibr" rid="pgen.1007858.ref034">34</xref>] and visualized in CodonCode Aligner (CodonCode Corp., Dedham, MA, USA).</p>
+</sec>
+</sec>
+<sec id="sec020">
+<title>Supporting information</title>
+<supplementary-material id="pgen.1007858.s001" mimetype="application/pdf" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s001" xlink:type="simple">
+<label>S1 Fig</label>
+<caption>
+<title>Results from cytogenetic analysis of Case 1.</title>
+<p>Karyotyping revealed a large deletion on chromosome 15 and prompted further analysis with fluorescence <italic>in situ</italic> hybridization (FISH), which revealed that the derivative chromosome 15 was part of a complex translocation involving chromosomes 2, 8 and 15 with deletions on chromosome 2 and 8. Spectral karyotyping (SKY) visualized the rearrangement and confirmed the involvement of chromosomes 2, 8 and 15.</p>
+<p>(PDF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s002" mimetype="application/pdf" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s002" xlink:type="simple">
+<label>S2 Fig</label>
+<caption>
+<title>Breakpoint junction sequences of all sequences that could be mapped to the nucleotide level.</title>
+<p>Junction 3 and 4 in Case 1 had two indels and a single nucleotide insertion, respectively, while remaining two junctions were simple. Junction 7 in Case 3 had a non-templated insertion, remaining junctions in Case 3 were simple. All breakpoint junctions in Case 2 were simple. Little (2–6 nucleotides) to no microhomology was observed in all junctions. Lower case letters indicate deletions, and purple indicates microhomology.</p>
+<p>(PDF)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s003" mimetype="application/vnd.ms-excel" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s003" xlink:type="simple">
+<label>S1 Table</label>
+<caption>
+<title>Ranking of structural variants called by FindSV from short-read mate-pair (MP) and PCR-free paired-end (PE) whole genome sequencing (WGS) data.</title>
+<p>In order to simulate a scenario where conventional cytogenetic methods had not previously detected the chromosomal rearrangements, we performed structural variant calling, filtering and ranking based on supporting reads and size. Calls supporting the rearrangements were ranked high in all cases except for the paired-end (PE) WGS data for Case 3, which reported 34 interchromosomal variants previous to the intrachromosomal rearrangement on chromosome 1.</p>
+<p>(XLS)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s004" mimetype="application/vnd.ms-excel" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s004" xlink:type="simple">
+<label>S2 Table</label>
+<caption>
+<title>Sensitivity assessment for all technologies.</title>
+<p>Sensitivity for each technology was assessed by comparing the generated structural variant calls with copy number variant (CNV) calls from array comparative genomic hybridization (aCGH). A deletion or duplication called by aCGH and any of the technologies was considered a true call.</p>
+<p>(XLS)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s005" mimetype="application/vnd.ms-excel" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s005" xlink:type="simple">
+<label>S3 Table</label>
+<caption>
+<title>Comparison of different types and sizes of structural variants called by the different technologies.</title>
+<p>Comparison of the different types and sizes of structural variants called by the different WGS technologies, as well as a calculation of the amount of calls overlapping between the technologies.</p>
+<p>(XLS)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s006" mimetype="application/vnd.ms-excel" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s006" xlink:type="simple">
+<label>S4 Table</label>
+<caption>
+<title>Size distributions of generated calls for each dataset.</title>
+<p>(XLS)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s007" mimetype="application/vnd.ms-excel" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s007" xlink:type="simple">
+<label>S5 Table</label>
+<caption>
+<title>Quality control (QC) statistics for each method and individual.</title>
+<p>(XLS)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s008" mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s008" xlink:type="simple">
+<label>S1 Appendix</label>
+<caption>
+<title>Materials and Methods and Results for the cytogenetic studies using karyotyping, fluorescence in situ hybridization (FISH) and array comparative genomic hybridization (aCGH).</title>
+<p>(DOCX)</p>
+</caption>
+</supplementary-material>
+<supplementary-material id="pgen.1007858.s009" mimetype="application/zip" position="float" xlink:href="info:doi/10.1371/journal.pgen.1007858.s009" xlink:type="simple">
+<label>S1 Dataset</label>
+<caption>
+<title>Optical maps supporting all breakpoint junctions identified using the optical mapping technology.</title>
+<p>(ZIP)</p>
+</caption>
+</supplementary-material>
+</sec>
+</body>
+<back>
+<ack>
+<p>We are very grateful to the participating families. We would also like to thank UPPMAX for the use of computer infrastructure resources and the support from the National Genomics Infrastructure (NGI) Stockholm at Science for Life Laboratory in providing assistance in massive parallel sequencing.</p>
+</ack>
+<ref-list>
+<title>References</title>
+<ref id="pgen.1007858.ref001"><label>1</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pai</surname> <given-names>GS</given-names></name>, <name name-style="western"><surname>Thomas</surname> <given-names>GH</given-names></name>, <name name-style="western"><surname>Mahoney</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Migeon</surname> <given-names>BR</given-names></name>. <article-title>Complex chromosome rearrangements. Report of a new case and literature review</article-title>. <source>Clinical genetics</source>. <year>1980</year>;<volume>18</volume>(<issue>6</issue>):<fpage>436</fpage>–<lpage>44</lpage>. <object-id pub-id-type="pmid">7449183</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref002"><label>2</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Poot</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Haaf</surname> <given-names>T</given-names></name>. <article-title>Mechanisms of Origin, Phenotypic Effects and Diagnostic Implications of Complex Chromosome Rearrangements</article-title>. <source>Mol Syndromol</source>. <year>2015</year>;<volume>6</volume>(<issue>3</issue>):<fpage>110</fpage>–<lpage>34</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1159/000438812" xlink:type="simple">10.1159/000438812</ext-link></comment> <object-id pub-id-type="pmid">26732513</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref003"><label>3</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Madan</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Nieuwint</surname> <given-names>AW</given-names></name>, <name name-style="western"><surname>van Bever</surname> <given-names>Y</given-names></name>. <article-title>Recombination in a balanced complex translocation of a mother leading to a balanced reciprocal translocation in the child. Review of 60 cases of balanced complex translocations</article-title>. <source>Human genetics</source>. <year>1997</year>;<volume>99</volume>(<issue>6</issue>):<fpage>806</fpage>–<lpage>15</lpage>. <object-id pub-id-type="pmid">9187678</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref004"><label>4</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Tabet</surname> <given-names>AC</given-names></name>, <name name-style="western"><surname>Verloes</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Pilorge</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Delaby</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Delorme</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Nygren</surname> <given-names>G</given-names></name>, <etal>et al</etal>. <article-title>Complex nature of apparently balanced chromosomal rearrangements in patients with autism spectrum disorder</article-title>. <source>Mol Autism</source>. <year>2015</year>;<volume>6</volume>:<fpage>19</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s13229-015-0015-2" xlink:type="simple">10.1186/s13229-015-0015-2</ext-link></comment> <object-id pub-id-type="pmid">25844147</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref005"><label>5</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>De Gregori</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Ciccone</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Magini</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Pramparo</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Gimelli</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Messa</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Cryptic deletions are a common finding in "balanced" reciprocal and complex chromosome rearrangements: a study of 59 patients</article-title>. <source>Journal of medical genetics</source>. <year>2007</year>;<volume>44</volume>(<issue>12</issue>):<fpage>750</fpage>–<lpage>62</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1136/jmg.2007.052787" xlink:type="simple">10.1136/jmg.2007.052787</ext-link></comment> <object-id pub-id-type="pmid">17766364</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref006"><label>6</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Chiang</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Jacobsen</surname> <given-names>JC</given-names></name>, <name name-style="western"><surname>Ernst</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Hanscom</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Heilbut</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Blumenthal</surname> <given-names>I</given-names></name>, <etal>et al</etal>. <article-title>Complex reorganization and predominant non-homologous repair following chromosomal breakage in karyotypically balanced germline rearrangements and transgenic integration</article-title>. <source>Nature genetics</source>. <year>2012</year>;<volume>44</volume>(<issue>4</issue>):<fpage>390</fpage>–7, <lpage>S1</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/ng.2202" xlink:type="simple">10.1038/ng.2202</ext-link></comment> <object-id pub-id-type="pmid">22388000</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref007"><label>7</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Nilsson</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Pettersson</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Gustavsson</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Forster</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Hofmeister</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Wincent</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Whole-Genome Sequencing of Cytogenetically Balanced Chromosome Translocations Identifies Potentially Pathological Gene Disruptions and Highlights the Importance of Microhomology in the Mechanism of Formation</article-title>. <source>Human mutation</source>. <year>2017</year>;<volume>38</volume>(<issue>2</issue>):<fpage>180</fpage>–<lpage>92</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1002/humu.23146" xlink:type="simple">10.1002/humu.23146</ext-link></comment> <object-id pub-id-type="pmid">27862604</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref008"><label>8</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Greenleaf</surname> <given-names>WJ</given-names></name>, <name name-style="western"><surname>Sidow</surname> <given-names>A</given-names></name>. <article-title>The future of sequencing: convergence of intelligent design and market Darwinism</article-title>. <source>Genome Biol</source>. <year>2014</year>;<volume>15</volume>(<issue>3</issue>):<fpage>303</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/gb4168" xlink:type="simple">10.1186/gb4168</ext-link></comment> <object-id pub-id-type="pmid">25000818</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref009"><label>9</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Slamova</surname> <given-names>Z</given-names></name>, <name name-style="western"><surname>Nazaryan-Petersen</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Mehrjouy</surname> <given-names>MM</given-names></name>, <name name-style="western"><surname>Drabova</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Hancarova</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Marikova</surname> <given-names>T</given-names></name>, <etal>et al</etal>. <article-title>Very short DNA segments can be detected and handled by the repair machinery during germline chromothriptic chromosome reassembly</article-title>. <source>Human mutation</source>. <year>2018</year>.</mixed-citation></ref>
+<ref id="pgen.1007858.ref010"><label>10</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Eisfeldt</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Vezzi</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Olason</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Nilsson</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Lindstrand</surname> <given-names>A</given-names></name>. <article-title>TIDDIT, an efficient and comprehensive structural variant caller for massive parallel sequencing data</article-title>. <source>F1000Res</source>. <year>2017</year>;<volume>6</volume>:<fpage>664</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.12688/f1000research.11168.2" xlink:type="simple">10.12688/f1000research.11168.2</ext-link></comment> <object-id pub-id-type="pmid">28781756</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref011"><label>11</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Simioni</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Artiguenave</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Meyer</surname> <given-names>V</given-names></name>, <name name-style="western"><surname>Sgardioli</surname> <given-names>IC</given-names></name>, <name name-style="western"><surname>Viguetti-Campos</surname> <given-names>NL</given-names></name>, <name name-style="western"><surname>Lopes Monlleo</surname> <given-names>I</given-names></name>, <etal>et al</etal>. <article-title>Genomic Investigation of Balanced Chromosomal Rearrangements in Patients with Abnormal Phenotypes</article-title>. <source>Mol Syndromol</source>. <year>2017</year>;<volume>8</volume>(<issue>4</issue>):<fpage>187</fpage>–<lpage>94</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1159/000477084" xlink:type="simple">10.1159/000477084</ext-link></comment> <object-id pub-id-type="pmid">28690484</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref012"><label>12</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Li</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Leung</surname> <given-names>AK</given-names></name>, <name name-style="western"><surname>Kwok</surname> <given-names>TP</given-names></name>, <name name-style="western"><surname>Lai</surname> <given-names>YYY</given-names></name>, <name name-style="western"><surname>Pang</surname> <given-names>IK</given-names></name>, <name name-style="western"><surname>Chung</surname> <given-names>GT</given-names></name>, <etal>et al</etal>. <article-title>OMSV enables accurate and comprehensive identification of large structural variations from nanochannel-based single-molecule optical maps</article-title>. <source>Genome Biol</source>. <year>2017</year>;<volume>18</volume>(<issue>1</issue>):<fpage>230</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s13059-017-1356-2" xlink:type="simple">10.1186/s13059-017-1356-2</ext-link></comment> <object-id pub-id-type="pmid">29195502</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref013"><label>13</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Elyanow</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Wu</surname> <given-names>HT</given-names></name>, <name name-style="western"><surname>Raphael</surname> <given-names>BJ</given-names></name>. <article-title>Identifying structural variants using linked-read sequencing data</article-title>. <source>Bioinformatics</source>. <year>2017</year>.</mixed-citation></ref>
+<ref id="pgen.1007858.ref014"><label>14</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Collins</surname> <given-names>RL</given-names></name>, <name name-style="western"><surname>Brand</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Redin</surname> <given-names>CE</given-names></name>, <name name-style="western"><surname>Hanscom</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Antolik</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Stone</surname> <given-names>MR</given-names></name>, <etal>et al</etal>. <article-title>Defining the diverse spectrum of inversions, complex structural variation, and chromothripsis in the morbid human genome</article-title>. <source>Genome Biol</source>. <year>2017</year>;<volume>18</volume>(<issue>1</issue>):<fpage>36</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s13059-017-1158-6" xlink:type="simple">10.1186/s13059-017-1158-6</ext-link></comment> <object-id pub-id-type="pmid">28260531</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref015"><label>15</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lindstrand</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Malmgren</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Verri</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Benetti</surname> <given-names>E</given-names></name>, <name name-style="western"><surname>Eriksson</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Nordgren</surname> <given-names>A</given-names></name>, <etal>et al</etal>. <article-title>Molecular and clinical characterization of patients with overlapping 10p deletions</article-title>. <source>American journal of medical genetics Part A</source>. <year>2010</year>;<volume>152A</volume>(<issue>5</issue>):<fpage>1233</fpage>–<lpage>43</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1002/ajmg.a.33366" xlink:type="simple">10.1002/ajmg.a.33366</ext-link></comment> <object-id pub-id-type="pmid">20425828</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref016"><label>16</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lindstrand</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Malmgren</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Sahlen</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Xin</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Schoumans</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Blennow</surname> <given-names>E</given-names></name>. <article-title>Molecular cytogenetic characterization of a constitutional, highly complex intrachromosomal rearrangement of chromosome 1, with 14 breakpoints and a 0.5 Mb submicroscopic deletion</article-title>. <source>American journal of medical genetics Part A</source>. <year>2008</year>;<volume>146A</volume>(<issue>24</issue>):<fpage>3217</fpage>–<lpage>22</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1002/ajmg.a.32570" xlink:type="simple">10.1002/ajmg.a.32570</ext-link></comment> <object-id pub-id-type="pmid">19006217</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref017"><label>17</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Ameur</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Dahlberg</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Olason</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Vezzi</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Karlsson</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Martin</surname> <given-names>M</given-names></name>, <etal>et al</etal>. <article-title>SweGen: a whole-genome data resource of genetic variability in a cross-section of the Swedish population</article-title>. <source>European journal of human genetics: EJHG</source>. <year>2017</year>;<volume>25</volume>(<issue>11</issue>):<fpage>1253</fpage>–<lpage>60</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/ejhg.2017.130" xlink:type="simple">10.1038/ejhg.2017.130</ext-link></comment> <object-id pub-id-type="pmid">28832569</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref018"><label>18</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Sedlazeck</surname> <given-names>FJ</given-names></name>, <name name-style="western"><surname>Rescheneder</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Smolka</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Fang</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Nattestad</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>von Haeseler</surname> <given-names>A</given-names></name>, <etal>et al</etal>. <article-title>Accurate detection of complex structural variations using single-molecule sequencing</article-title>. <source>Nat Methods</source>. <year>2018</year>;<volume>15</volume>(<issue>6</issue>):<fpage>461</fpage>–<lpage>8</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41592-018-0001-7" xlink:type="simple">10.1038/s41592-018-0001-7</ext-link></comment> <object-id pub-id-type="pmid">29713083</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref019"><label>19</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>MacDonald</surname> <given-names>JR</given-names></name>, <name name-style="western"><surname>Ziman</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Yuen</surname> <given-names>RK</given-names></name>, <name name-style="western"><surname>Feuk</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Scherer</surname> <given-names>SW</given-names></name>. <article-title>The Database of Genomic Variants: a curated collection of structural variation in the human genome</article-title>. <source>Nucleic acids research</source>. <year>2014</year>;<volume>42</volume>(Database issue):<fpage>D986</fpage>–<lpage>92</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/nar/gkt958" xlink:type="simple">10.1093/nar/gkt958</ext-link></comment> <object-id pub-id-type="pmid">24174537</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref020"><label>20</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Zook</surname> <given-names>JM</given-names></name>, <name name-style="western"><surname>Catoe</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>McDaniel</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Vang</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Spies</surname> <given-names>N</given-names></name>, <name name-style="western"><surname>Sidow</surname> <given-names>A</given-names></name>, <etal>et al</etal>. <article-title>Extensive sequencing of seven human genomes to characterize benchmark reference materials</article-title>. <source>Sci Data</source>. <year>2016</year>;<volume>3</volume>:<fpage>160025</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/sdata.2016.25" xlink:type="simple">10.1038/sdata.2016.25</ext-link></comment> <object-id pub-id-type="pmid">27271295</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref021"><label>21</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Conrad</surname> <given-names>DF</given-names></name>, <name name-style="western"><surname>Pinto</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Redon</surname> <given-names>R</given-names></name>, <name name-style="western"><surname>Feuk</surname> <given-names>L</given-names></name>, <name name-style="western"><surname>Gokcumen</surname> <given-names>O</given-names></name>, <name name-style="western"><surname>Zhang</surname> <given-names>Y</given-names></name>, <etal>et al</etal>. <article-title>Origins and functional impact of copy number variation in the human genome</article-title>. <source>Nature</source>. <year>2010</year>;<volume>464</volume>(<issue>7289</issue>):<fpage>704</fpage>–<lpage>12</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/nature08516" xlink:type="simple">10.1038/nature08516</ext-link></comment> <object-id pub-id-type="pmid">19812545</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref022"><label>22</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Sedlazeck</surname> <given-names>FJ</given-names></name>, <name name-style="western"><surname>Dhroso</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Bodian</surname> <given-names>DL</given-names></name>, <name name-style="western"><surname>Paschall</surname> <given-names>J</given-names></name>, <name name-style="western"><surname>Hermes</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Zook</surname> <given-names>JM</given-names></name>. <article-title>Tools for annotation and comparison of structural variation</article-title>. <source>F1000Res</source>. <year>2017</year>;<volume>6</volume>:<fpage>1795</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.12688/f1000research.12516.1" xlink:type="simple">10.12688/f1000research.12516.1</ext-link></comment> <object-id pub-id-type="pmid">29123647</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref023"><label>23</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Muroya</surname> <given-names>K</given-names></name>, <name name-style="western"><surname>Hasegawa</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Ito</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Nagai</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Isotani</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Iwata</surname> <given-names>Y</given-names></name>, <etal>et al</etal>. <article-title>GATA3 abnormalities and the phenotypic spectrum of HDR syndrome</article-title>. <source>Journal of medical genetics</source>. <year>2001</year>;<volume>38</volume>(<issue>6</issue>):<fpage>374</fpage>–<lpage>80</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1136/jmg.38.6.374" xlink:type="simple">10.1136/jmg.38.6.374</ext-link></comment> <object-id pub-id-type="pmid">11389161</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref024"><label>24</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Lee</surname> <given-names>JA</given-names></name>, <name name-style="western"><surname>Carvalho</surname> <given-names>CM</given-names></name>, <name name-style="western"><surname>Lupski</surname> <given-names>JR</given-names></name>. <article-title>A DNA replication mechanism for generating nonrecurrent rearrangements associated with genomic disorders</article-title>. <source>Cell</source>. <year>2007</year>;<volume>131</volume>(<issue>7</issue>):<fpage>1235</fpage>–<lpage>47</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.cell.2007.11.037" xlink:type="simple">10.1016/j.cell.2007.11.037</ext-link></comment> <object-id pub-id-type="pmid">18160035</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref025"><label>25</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Stephens</surname> <given-names>PJ</given-names></name>, <name name-style="western"><surname>Greenman</surname> <given-names>CD</given-names></name>, <name name-style="western"><surname>Fu</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Yang</surname> <given-names>F</given-names></name>, <name name-style="western"><surname>Bignell</surname> <given-names>GR</given-names></name>, <name name-style="western"><surname>Mudie</surname> <given-names>LJ</given-names></name>, <etal>et al</etal>. <article-title>Massive genomic rearrangement acquired in a single catastrophic event during cancer development</article-title>. <source>Cell</source>. <year>2011</year>;<volume>144</volume>(<issue>1</issue>):<fpage>27</fpage>–<lpage>40</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.cell.2010.11.055" xlink:type="simple">10.1016/j.cell.2010.11.055</ext-link></comment> <object-id pub-id-type="pmid">21215367</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref026"><label>26</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Korbel</surname> <given-names>JO</given-names></name>, <name name-style="western"><surname>Campbell</surname> <given-names>PJ</given-names></name>. <article-title>Criteria for inference of chromothripsis in cancer genomes</article-title>. <source>Cell</source>. <year>2013</year>;<volume>152</volume>(<issue>6</issue>):<fpage>1226</fpage>–<lpage>36</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1016/j.cell.2013.02.023" xlink:type="simple">10.1016/j.cell.2013.02.023</ext-link></comment> <object-id pub-id-type="pmid">23498933</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref027"><label>27</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Dittwald</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Gambin</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Gonzaga-Jauregui</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Carvalho</surname> <given-names>CM</given-names></name>, <name name-style="western"><surname>Lupski</surname> <given-names>JR</given-names></name>, <name name-style="western"><surname>Stankiewicz</surname> <given-names>P</given-names></name>, <etal>et al</etal>. <article-title>Inverted low-copy repeats and genome instability—a genome-wide analysis</article-title>. <source>Human mutation</source>. <year>2013</year>;<volume>34</volume>(<issue>1</issue>):<fpage>210</fpage>–<lpage>20</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1002/humu.22217" xlink:type="simple">10.1002/humu.22217</ext-link></comment> <object-id pub-id-type="pmid">22965494</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref028"><label>28</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Genomes Project</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Auton</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Brooks</surname> <given-names>LD</given-names></name>, <name name-style="western"><surname>Durbin</surname> <given-names>RM</given-names></name>, <name name-style="western"><surname>Garrison</surname> <given-names>EP</given-names></name>, <name name-style="western"><surname>Kang</surname> <given-names>HM</given-names></name>, <etal>et al</etal>. <article-title>A global reference for human genetic variation</article-title>. <source>Nature</source>. <year>2015</year>;<volume>526</volume>(<issue>7571</issue>):<fpage>68</fpage>–<lpage>74</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/nature15393" xlink:type="simple">10.1038/nature15393</ext-link></comment> <object-id pub-id-type="pmid">26432245</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref029"><label>29</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Abyzov</surname> <given-names>A</given-names></name>, <name name-style="western"><surname>Urban</surname> <given-names>AE</given-names></name>, <name name-style="western"><surname>Snyder</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Gerstein</surname> <given-names>M</given-names></name>. <article-title>CNVnator: an approach to discover, genotype, and characterize typical and atypical CNVs from family and population genome sequencing</article-title>. <source>Genome research</source>. <year>2011</year>;<volume>21</volume>(<issue>6</issue>):<fpage>974</fpage>–<lpage>84</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1101/gr.114876.110" xlink:type="simple">10.1101/gr.114876.110</ext-link></comment> <object-id pub-id-type="pmid">21324876</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref030"><label>30</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Cretu Stancu</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>van Roosmalen</surname> <given-names>MJ</given-names></name>, <name name-style="western"><surname>Renkens</surname> <given-names>I</given-names></name>, <name name-style="western"><surname>Nieboer</surname> <given-names>MM</given-names></name>, <name name-style="western"><surname>Middelkamp</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>de Ligt</surname> <given-names>J</given-names></name>, <etal>et al</etal>. <article-title>Mapping and phasing of structural variation in patient genomes using nanopore sequencing</article-title>. <source>Nat Commun</source>. <year>2017</year>;<volume>8</volume>(<issue>1</issue>):<fpage>1326</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/s41467-017-01343-4" xlink:type="simple">10.1038/s41467-017-01343-4</ext-link></comment> <object-id pub-id-type="pmid">29109544</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref031"><label>31</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>English</surname> <given-names>AC</given-names></name>, <name name-style="western"><surname>Salerno</surname> <given-names>WJ</given-names></name>, <name name-style="western"><surname>Hampton</surname> <given-names>OA</given-names></name>, <name name-style="western"><surname>Gonzaga-Jauregui</surname> <given-names>C</given-names></name>, <name name-style="western"><surname>Ambreth</surname> <given-names>S</given-names></name>, <name name-style="western"><surname>Ritter</surname> <given-names>DI</given-names></name>, <etal>et al</etal>. <article-title>Assessing structural variation in a personal genome-towards a human reference diploid genome</article-title>. <source>BMC Genomics</source>. <year>2015</year>;<volume>16</volume>:<fpage>286</fpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1186/s12864-015-1479-3" xlink:type="simple">10.1186/s12864-015-1479-3</ext-link></comment> <object-id pub-id-type="pmid">25886820</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref032"><label>32</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>McLaren</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Pritchard</surname> <given-names>B</given-names></name>, <name name-style="western"><surname>Rios</surname> <given-names>D</given-names></name>, <name name-style="western"><surname>Chen</surname> <given-names>Y</given-names></name>, <name name-style="western"><surname>Flicek</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Cunningham</surname> <given-names>F</given-names></name>. <article-title>Deriving the consequences of genomic variants with the Ensembl API and SNP Effect Predictor</article-title>. <source>Bioinformatics</source>. <year>2010</year>;<volume>26</volume>(<issue>16</issue>):<fpage>2069</fpage>–<lpage>70</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1093/bioinformatics/btq330" xlink:type="simple">10.1093/bioinformatics/btq330</ext-link></comment> <object-id pub-id-type="pmid">20562413</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref033"><label>33</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Robinson</surname> <given-names>JT</given-names></name>, <name name-style="western"><surname>Thorvaldsdottir</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Winckler</surname> <given-names>W</given-names></name>, <name name-style="western"><surname>Guttman</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Lander</surname> <given-names>ES</given-names></name>, <name name-style="western"><surname>Getz</surname> <given-names>G</given-names></name>, <etal>et al</etal>. <article-title>Integrative genomics viewer</article-title>. <source>Nat Biotechnol</source>. <year>2011</year>;<volume>29</volume>(<issue>1</issue>):<fpage>24</fpage>–<lpage>6</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1038/nbt.1754" xlink:type="simple">10.1038/nbt.1754</ext-link></comment> <object-id pub-id-type="pmid">21221095</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref034"><label>34</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Kent</surname> <given-names>WJ</given-names></name>. <article-title>BLAT—the BLAST-like alignment tool</article-title>. <source>Genome research</source>. <year>2002</year>;<volume>12</volume>(<issue>4</issue>):<fpage>656</fpage>–<lpage>64</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1101/gr.229202" xlink:type="simple">10.1101/gr.229202</ext-link></comment> <object-id pub-id-type="pmid">11932250</object-id></mixed-citation></ref>
+<ref id="pgen.1007858.ref035"><label>35</label><mixed-citation publication-type="journal" xlink:type="simple"><name name-style="western"><surname>Pettersson</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Viljakainen</surname> <given-names>H</given-names></name>, <name name-style="western"><surname>Loid</surname> <given-names>P</given-names></name>, <name name-style="western"><surname>Mustila</surname> <given-names>T</given-names></name>, <name name-style="western"><surname>Pekkinen</surname> <given-names>M</given-names></name>, <name name-style="western"><surname>Armenio</surname> <given-names>M</given-names></name>, <etal>et al</etal>. <article-title>Copy Number Variants Are Enriched in Individuals With Early-Onset Obesity and Highlight Novel Pathogenic Pathways</article-title>. <source>J Clin Endocrinol Metab</source>. <year>2017</year>;<volume>102</volume>(<issue>8</issue>):<fpage>3029</fpage>–<lpage>39</lpage>. <comment>doi: <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1210/jc.2017-00565" xlink:type="simple">10.1210/jc.2017-00565</ext-link></comment> <object-id pub-id-type="pmid">28605459</object-id></mixed-citation></ref>
+</ref-list>
+</back>
+</article>

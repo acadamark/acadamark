@@ -41,14 +41,22 @@ const BROWSER_BUNDLE = join(ENSCRIBE_PKG, 'dist', 'enscribe.browser.global.js');
 // build-time constants; the rename, if it happens, updates the repo segment.
 const GITHUB_BLOB_BASE =
   'https://github.com/enscribejs/enscribe/blob/main/docs-site/sources';
-// Repo-root blob base, for pages whose source lives outside docs-site/sources
-// (the Demo Paper's "source" is a JATS XML fixture in the jats-import package).
-const GITHUB_REPO_BASE = 'https://github.com/enscribejs/enscribe/blob/main';
-
-// The imported demo paper's JATS XML (ships as a test fixture; open sample).
-const DEMO_PAPER_XML = join(
-  repoRoot, 'packages', 'cli', 'test', 'fixtures', 'pnas_sample.xml',
-);
+// The demo papers: real published JATS articles, imported live by `importJats`
+// and rendered to self-contained standalone pages (the plain `import-jats` HTML
+// output — no intro banner, no site chrome). The set spans publishers and
+// features: MathML (eLife), clean native tables (PLOS Genetics 1000741), the
+// literal floor / multi-level tables (PLOS Genetics 1007858), Nature
+// Communications, Scientific Reports, and a bioRxiv preprint. The source XMLs are
+// open-licensed samples committed under docs-site/demo-papers/.
+const DEMO_PAPERS_DIR = join(here, 'demo-papers');
+const DEMO_PAPERS = [
+  { slug: 'elife-81952',           file: 'elife-81952.xml',           journal: 'eLife' },
+  { slug: 'pgen-1000741',          file: 'pgen-1000741.xml',          journal: 'PLOS Genetics' },
+  { slug: 'pgen-1007858',          file: 'pgen-1007858.xml',          journal: 'PLOS Genetics' },
+  { slug: 'nature-comms-12910011', file: 'nature-comms-12910011.xml', journal: 'Nature Communications' },
+  { slug: 'sci-reports-5428240',   file: 'sci-reports-5428240.xml',   journal: 'Scientific Reports' },
+  { slug: 'biorxiv-13060793',      file: 'biorxiv-13060793.xml',      journal: 'bioRxiv' },
+];
 
 // Render options mirror the browser façade's defaults: lean output that links
 // fonts / KaTeX CSS to CDNs (fine for a static deploy) and renders any live-link
@@ -73,8 +81,7 @@ const PAGES = [
   { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page', renderOptions: { toc: true } },
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
-  { slug: 'demo-paper',      source: 'demo-paper.emd',      title: 'Demo Paper — enscribe',          nav: 'Demo Paper',      kind: 'jats-import',
-    xml: DEMO_PAPER_XML, sourceUrl: `${GITHUB_REPO_BASE}/packages/cli/test/fixtures/pnas_sample.xml` },
+  { slug: 'demos',           source: null,                  title: 'Demos — enscribe',               nav: 'Demos',           kind: 'demo-index' },
 ];
 
 /** Render an enscribe source string to an HTML fragment. Per-page `extra`
@@ -83,21 +90,87 @@ function renderAcm(source, extra = {}) {
   return String(buildEnscribePipeline({ ...RENDER_OPTIONS, ...extra }).processSync(source));
 }
 
+// Demo papers render self-contained (the plain `import-jats` default embeds
+// KaTeX/fonts), so each page stands alone with no asset paths or CDN.
+const DEMO_RENDER_OPTIONS = { ...RENDER_OPTIONS, embedResources: true, dslMode: 'live-inline' };
+
 /**
- * Render a JATS XML file to an HTML fragment by importing it through
- * `@enscribejs/jats-import` and running the resulting tree through the same
- * pipeline. Rendering from the imported tree directly (not a serialized `.emd`)
- * keeps the demo faithful — the `.emd` round-trip is lossy for a document this
- * complex (raw-HTML tables, dense math).
+ * Import a JATS XML file and render it to a self-contained HTML fragment (the
+ * embedded `<style>` + `<article>` the interpreter emits), rendering from the
+ * imported tree directly (not a serialized `.emd`, which is lossy for documents
+ * this complex). Figures are caption-only — the publishers' image assets aren't
+ * distributed with the article XML, so the `src` kwarg is dropped from every
+ * imported `<fig>` rather than emitting a broken `<img>`. Returns the fragment and
+ * the article title (for the index listing).
  */
-function renderJats(xmlPath) {
+function renderDemoPaper(xmlPath) {
   const tree = importJats(readFileSync(xmlPath, 'utf8'));
-  // The figure image files are not distributed with the XML sample, so render the
-  // figures caption-only (the page's intro note explains this) rather than as
-  // broken <img>s. Drop the `src` kwarg from every imported <fig>.
   stripFigureSrc(tree);
-  const proc = buildEnscribePipeline(RENDER_OPTIONS);
-  return String(proc.stringify(proc.runSync(tree)));
+  // Extract the title BEFORE rendering — runSync mutates the tree in place
+  // (article-structuring lifts the <meta>'s <title>, so it's gone afterwards).
+  const title = extractTitle(tree);
+  const proc = buildEnscribePipeline(DEMO_RENDER_OPTIONS);
+  const fragment = String(proc.stringify(proc.runSync(tree)));
+  return { fragment, title };
+}
+
+/** The article title: the first `<title>` tag in the imported tree (the <meta>'s). */
+function extractTitle(tree) {
+  let title = null;
+  const walk = (n) => {
+    if (title != null || !n || typeof n !== 'object') return;
+    if (n.type === 'enscribeTag' && n.tagname === 'title') { title = inlineText(n.content); return; }
+    for (const k of ['children', 'content']) if (Array.isArray(n[k])) n[k].forEach(walk);
+  };
+  walk(tree);
+  return title || 'Untitled';
+}
+
+/** Plain text of an inline mdast node list. */
+function inlineText(nodes) {
+  return (nodes ?? [])
+    .map((n) => (typeof n.value === 'string' ? n.value : inlineText(n.children)))
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const escapeHtml = (s) => String(s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/**
+ * A standalone demo-paper page: a minimal HTML shell with the article theme
+ * inlined (the fragment already embeds KaTeX/fonts). Just the rendered article —
+ * no site header/nav, no intro banner, no "what was simplified" block.
+ */
+function demoPaperPage(title, journal, fragment, defaultCss) {
+  return (
+    '<!doctype html>\n<html lang="en">\n<head>\n' +
+    '<meta charset="utf-8" />\n<meta name="viewport" content="width=device-width, initial-scale=1" />\n' +
+    `<title>${escapeHtml(title)} — ${escapeHtml(journal)}</title>\n` +
+    `<style>\n${defaultCss}\nbody{margin:0}main.article{max-width:48rem;margin:0 auto;padding:2.5rem 1.25rem}</style>\n` +
+    '</head>\n<body class="jats-import">\n' +
+    `<main class="article">\n${fragment}\n</main>\n</body>\n</html>\n`
+  );
+}
+
+/** The demos index body: one header note + a list of title/journal links, each
+ *  opening its paper render in a new tab. */
+function buildDemoIndexBody(papers) {
+  const items = papers.map((p) =>
+    '        <li class="demo-item">' +
+    `<a href="demo/${p.slug}.html" target="_blank" rel="noopener">${escapeHtml(p.title)}</a> ` +
+    `<span class="demo-journal">${escapeHtml(p.journal)}</span></li>`,
+  ).join('\n');
+  return (
+    '<main class="article">\n' +
+    '      <h1>Demo papers</h1>\n' +
+    "      <p>Real published articles imported from JATS XML by <code>enscribe import-jats</code>, " +
+    "rendered with no manual editing. Figures are caption-only where the publisher's image assets " +
+    'aren’t distributed with the article XML. Each link opens in a new tab.</p>\n' +
+    `      <ul class="demo-list">\n${items}\n      </ul>\n` +
+    '    </main>'
+  );
 }
 
 function stripFigureSrc(node) {
@@ -182,18 +255,31 @@ function main() {
     );
   }
 
+  // Demo papers → self-contained standalone pages under dist/demo/. Render first
+  // so the index can list their (extracted) titles. The article theme is inlined
+  // into each page (the interpreter doesn't emit default.css itself).
+  const demoDir = join(DIST_DIR, 'demo');
+  mkdirSync(demoDir, { recursive: true });
+  const defaultCss = readFileSync(DEFAULT_CSS, 'utf8');
+  const demoIndex = [];
+  for (const paper of DEMO_PAPERS) {
+    const { fragment, title } = renderDemoPaper(join(DEMO_PAPERS_DIR, paper.file));
+    writeFileSync(join(demoDir, `${paper.slug}.html`), demoPaperPage(title, paper.journal, fragment, defaultCss));
+    demoIndex.push({ slug: paper.slug, title, journal: paper.journal });
+    console.log(`[docs:build] wrote dist/demo/${paper.slug}.html (${paper.journal})`);
+  }
+
   for (const page of PAGES) {
-    const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
     let body;
     let headExtra = '';
     if (page.kind === 'playground') {
+      const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       body = buildPlaygroundBody(source);
       headExtra = '<script src="assets/enscribe.browser.global.js"></script>';
-    } else if (page.kind === 'jats-import') {
-      // Intro/attribution (an .emd in sources/) above the article imported live
-      // from the JATS XML fixture.
-      body = buildPageBody(page, `${renderAcm(source)}\n${renderJats(page.xml)}`);
+    } else if (page.kind === 'demo-index') {
+      body = buildDemoIndexBody(demoIndex);
     } else {
+      const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}));
     }
     const html = fillTemplate(template, {
@@ -207,7 +293,7 @@ function main() {
     console.log(`[docs:build] wrote dist/${page.slug}.html (${page.kind})`);
   }
 
-  console.log(`[docs:build] done — ${PAGES.length} pages in ${DIST_DIR}`);
+  console.log(`[docs:build] done — ${PAGES.length} site pages + ${DEMO_PAPERS.length} demo papers in ${DIST_DIR}`);
 }
 
 main();
