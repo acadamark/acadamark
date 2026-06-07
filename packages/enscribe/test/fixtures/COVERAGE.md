@@ -7,7 +7,7 @@
 
 ## Summary
 
-- **Behavior cells:** 369  ·  **fixtures:** 52  ·  **annexed (generated) elements:** 19
+- **Behavior cells:** 369  ·  **fixtures:** 49  ·  **annexed (generated) elements:** 19
 - **Covered:** 68 (18%)
 - **By status:** `deferred` 18 · `gap` 283 · `pass` 68
 - **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 325

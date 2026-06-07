@@ -2,7 +2,7 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 369,
-    "fixtures": 52,
+    "fixtures": 49,
     "annexed": 19
   },
   "byStatus": {
@@ -7105,8 +7105,6 @@
     "document-22-apparatus-positioning.emd",
     "document-23-multi-paragraph-tag-content.emd",
     "document-24-unclosed-tag-at-eof.emd",
-    "document-25-meta-allowlist-elements.emd",
-    "document-26-deferred-vocab-sub1.emd",
     "document-27-author-structured-interface.emd",
     "document-28-deferred-vocab-sub2.emd",
     "document-3-edge-cases.emd",
@@ -7132,7 +7130,6 @@
     "document-6-cross-references.emd",
     "document-7-tables.emd",
     "document-8-citations.emd",
-    "document-9-demo.emd",
     "sweep/swp-block.emd",
     "sweep/swp-dsl.emd",
     "sweep/swp-inline.emd",
