@@ -18,7 +18,7 @@
 
 import { buildEnscribePipeline } from '@enscribejs/enscribe';
 import { importJats } from '@enscribejs/cli/jats-import';
-import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -49,13 +49,18 @@ const GITHUB_BLOB_BASE =
 // Communications, Scientific Reports, and a bioRxiv preprint. The source XMLs are
 // open-licensed samples committed under docs-site/demo-papers/.
 const DEMO_PAPERS_DIR = join(here, 'demo-papers');
+// `assets` is the committed figure-image dir under demo-papers/ (copied into
+// dist/demo/<assets>/ at build, so a fig src of `<assets>/<file>` resolves from
+// the page). Papers without `assets` render figures caption-only. `hrefMap`
+// handles publishers whose <graphic> href differs from the OA package filename
+// (eLife: versioned `.tif` href → de-versioned `.jpg` file).
 const DEMO_PAPERS = [
-  { slug: 'elife-81952',           file: 'elife-81952.xml',           journal: 'eLife' },
+  { slug: 'elife-81952',           file: 'elife-81952.xml',           journal: 'eLife',                   assets: 'PMC9683788',  hrefMap: 'elife' },
   { slug: 'pgen-1000741',          file: 'pgen-1000741.xml',          journal: 'PLOS Genetics' },
   { slug: 'pgen-1007858',          file: 'pgen-1007858.xml',          journal: 'PLOS Genetics' },
-  { slug: 'nature-comms-12910011', file: 'nature-comms-12910011.xml', journal: 'Nature Communications' },
-  { slug: 'sci-reports-5428240',   file: 'sci-reports-5428240.xml',   journal: 'Scientific Reports' },
-  { slug: 'biorxiv-13060793',      file: 'biorxiv-13060793.xml',      journal: 'bioRxiv' },
+  { slug: 'nature-comms-12910011', file: 'nature-comms-12910011.xml', journal: 'Nature Communications',   assets: 'PMC12910011' },
+  { slug: 'sci-reports-5428240',   file: 'sci-reports-5428240.xml',   journal: 'Scientific Reports',      assets: 'PMC5428240' },
+  { slug: 'biorxiv-13060793',      file: 'biorxiv-13060793.xml',      journal: 'bioRxiv',                 assets: 'PMC13060793' },
 ];
 
 // Render options mirror the browser façade's defaults: lean output that links
@@ -103,15 +108,49 @@ const DEMO_RENDER_OPTIONS = { ...RENDER_OPTIONS, embedResources: true, dslMode: 
  * imported `<fig>` rather than emitting a broken `<img>`. Returns the fragment and
  * the article title (for the index listing).
  */
-function renderDemoPaper(xmlPath) {
-  const tree = importJats(readFileSync(xmlPath, 'utf8'));
-  stripFigureSrc(tree);
+function renderDemoPaper(paper) {
+  const tree = importJats(readFileSync(join(DEMO_PAPERS_DIR, paper.file), 'utf8'));
+  wireFigures(tree, paper);
   // Extract the title BEFORE rendering — runSync mutates the tree in place
   // (article-structuring lifts the <meta>'s <title>, so it's gone afterwards).
   const title = extractTitle(tree);
   const proc = buildEnscribePipeline(DEMO_RENDER_OPTIONS);
   const fragment = String(proc.stringify(proc.runSync(tree)));
   return { fragment, title };
+}
+
+/**
+ * Point each imported <fig>'s src at a committed demo asset, or strip it
+ * (caption-only) when the article ships no images. Each image is committed under
+ * docs-site/demo-papers/<assets>/<file> and copied into dist/demo/<assets>/ at
+ * build, so a src of `<assets>/<file>` resolves from dist/demo/<slug>.html. A fig
+ * whose mapped asset isn't committed (e.g. an excluded eLife sub-article figure)
+ * is left caption-only rather than emitting a broken <img>.
+ */
+function wireFigures(tree, paper) {
+  if (!paper.assets) { stripFigureSrc(tree); return; }
+  const committedDir = join(DEMO_PAPERS_DIR, paper.assets);
+  const walk = (n) => {
+    if (!n || typeof n !== 'object') return;
+    if (n.type === 'enscribeTag' && n.tagname === 'fig' && n.kwargs && 'src' in n.kwargs) {
+      const file = mapAssetHref(n.kwargs.src, paper);
+      if (file && existsSync(join(committedDir, file))) {
+        n.kwargs.src = `${paper.assets}/${file}`;
+      } else {
+        const { src, ...rest } = n.kwargs;
+        n.kwargs = rest;
+      }
+    }
+    for (const k of ['children', 'content']) if (Array.isArray(n[k])) n[k].forEach(walk);
+  };
+  walk(tree);
+}
+
+/** Map a JATS <graphic> href to the OA-package filename on disk. */
+function mapAssetHref(href, paper) {
+  // eLife: versioned `.tif` href (elife-…-fig1-v2.tif) → de-versioned `.jpg` file.
+  if (paper.hrefMap === 'elife') return href.replace(/-v\d+\.\w+$/i, '.jpg');
+  return href; // other publishers: href == filename.
 }
 
 /** The article title: the first `<title>` tag in the imported tree (the <meta>'s). */
@@ -263,10 +302,18 @@ function main() {
   const defaultCss = readFileSync(DEFAULT_CSS, 'utf8');
   const demoIndex = [];
   for (const paper of DEMO_PAPERS) {
-    const { fragment, title } = renderDemoPaper(join(DEMO_PAPERS_DIR, paper.file));
+    const { fragment, title } = renderDemoPaper(paper);
     writeFileSync(join(demoDir, `${paper.slug}.html`), demoPaperPage(title, paper.journal, fragment, defaultCss));
+    // Copy the paper's committed figure assets next to its page so the rewritten
+    // `<assets>/<file>` srcs resolve.
+    if (paper.assets) {
+      const fromDir = join(DEMO_PAPERS_DIR, paper.assets);
+      const toDir = join(demoDir, paper.assets);
+      mkdirSync(toDir, { recursive: true });
+      for (const f of readdirSync(fromDir)) copyFileSync(join(fromDir, f), join(toDir, f));
+    }
     demoIndex.push({ slug: paper.slug, title, journal: paper.journal });
-    console.log(`[docs:build] wrote dist/demo/${paper.slug}.html (${paper.journal})`);
+    console.log(`[docs:build] wrote dist/demo/${paper.slug}.html (${paper.journal}${paper.assets ? ', +figures' : ''})`);
   }
 
   for (const page of PAGES) {
