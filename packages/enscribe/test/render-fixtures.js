@@ -51,8 +51,9 @@ const SHELL_CSS = readFileSync(DEFAULT_CSS_PATH, 'utf8');
  * interpreter default (which stays `skip`). Every other fixture renders `skip`.
  */
 const LIVE_INLINE_FIXTURES = new Set([
-  'document-45-calibration',
-  'document-46-reproducible-research',
+  // document-45/46 (the two live-inline demonstratives) were archived in the #5
+  // migration — subsumed by the context + sweep fixtures. No fixture currently
+  // overrides to the self-contained inline bundle; add one here if needed.
 ]);
 
 /**
