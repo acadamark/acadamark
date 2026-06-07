@@ -2,12 +2,12 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 369,
-    "fixtures": 56,
+    "fixtures": 57,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 306,
-    "pass": 43,
+    "gap": 293,
+    "pass": 56,
     "deferred": 18,
     "needs-review": 2
   },
@@ -1242,8 +1242,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "blockquote/form:long",
@@ -1257,8 +1259,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "book/base",
@@ -2091,8 +2095,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "definition/base",
@@ -2198,8 +2204,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "diagram/base",
@@ -2334,8 +2342,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "doi/deferred",
@@ -2364,8 +2374,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "editor/deferred",
@@ -3553,8 +3565,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "i/blanket",
@@ -4019,8 +4033,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "li/form:long",
@@ -4034,8 +4050,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "library/no-output",
@@ -4655,8 +4673,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "orcid/deferred",
@@ -4701,8 +4721,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "proof/base",
@@ -5906,8 +5928,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "sup/blanket",
@@ -6858,8 +6882,10 @@
         "RQ-BLK-S2",
         "RQ-BLK-M2"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "var/blanket",
@@ -7044,6 +7070,7 @@
     "document-7-tables.emd",
     "document-8-citations.emd",
     "document-9-demo.emd",
+    "sweep/swp-block.emd",
     "sweep/swp-inline.emd",
     "sweep/swp-math.emd",
     "sweep/swp-theorem.emd"

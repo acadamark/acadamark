@@ -1,0 +1,49 @@
+<meta type=article>
+  <title | Block Prose Sweep>
+</meta>
+
+<section | Paragraphs and lists>
+<!-- cell: p/blanket -->
+An ordinary paragraph of body prose introduces the lists below.
+
+<!-- cell: ul/form:long -->
+<ul>
+<!-- cell: li/form:pipe -->
+<li | First unordered item>
+<li | Second unordered item>
+</ul>
+
+<!-- cell: ol/form:long -->
+<ol>
+<!-- cell: li/form:long -->
+<li>First step, with a fuller sentence of explanation.</li>
+<li | Second step>
+</ol>
+
+<section | Quotations and breaks>
+<!-- cell: blockquote/form:pipe -->
+<blockquote | All models are wrong, but some are useful.>
+
+<!-- cell: blockquote/form:long -->
+<blockquote>
+A longer quotation can span a block and is set apart from the body prose.
+</blockquote>
+
+<!-- cell: hr/form:slash -->
+<hr />
+
+<section | Definitions and disclosure>
+<!-- cell: dl/blanket -->
+<dl>
+<!-- cell: dt/blanket -->
+<dt | Enscribe>
+<!-- cell: dd/blanket -->
+<dd | An academic publishing system built on HTML, CSS, and JS.>
+</dl>
+
+<!-- cell: details/blanket -->
+<details>
+<!-- cell: summary/blanket -->
+<summary | More information>
+Disclosure content revealed when the summary is toggled.
+</details>

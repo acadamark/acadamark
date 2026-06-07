@@ -125,16 +125,6 @@
     "pass": null,
     "status": "untested"
   },
-  "RQ-BLK-M1": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
-  "RQ-BLK-M2": {
-    "kind": "M",
-    "pass": null,
-    "status": "untested"
-  },
   "RQ-FRM-M3": {
     "kind": "M",
     "pass": null,
@@ -366,6 +356,14 @@
     "pass": true
   },
   "RQ-MATH-M3": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-BLK-M1": {
+    "kind": "M",
+    "pass": true
+  },
+  "RQ-BLK-M2": {
     "kind": "M",
     "pass": true
   },

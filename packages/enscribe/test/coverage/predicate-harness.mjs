@@ -117,6 +117,8 @@ const M_CHECKS = {
   'RQ-THM-M2': (h) => /Theorem \d+\./.test(h) && /Theorem \d+ \(Pythagoras\)\./.test(h) && /Remark\./.test(h),
   'RQ-MATH-M1': (h) => /<inline-math>/.test(h) && /katex/.test(h),
   'RQ-MATH-M3': (h) => ['math', 'align', 'cases', 'matrix', 'eqnarray'].every((t) => new RegExp(`<${t}>`).test(h)),
+  'RQ-BLK-M1': (h) => ['p', 'blockquote', 'ol', 'ul', 'li', 'hr'].every((t) => new RegExp(`<${t}[\\s/>]`).test(h)),
+  'RQ-BLK-M2': (h) => ['details', 'summary', 'dl', 'dt', 'dd'].every((t) => new RegExp(`<${t}[\\s>]`).test(h)),
 };
 
 // ── Fixture discovery ────────────────────────────────────────────────────────
