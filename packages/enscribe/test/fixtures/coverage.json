@@ -2,12 +2,12 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 369,
-    "fixtures": 51,
+    "fixtures": 52,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 290,
-    "pass": 61,
+    "gap": 283,
+    "pass": 68,
     "deferred": 18
   },
   "byDisposition": {
@@ -338,7 +338,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -353,7 +355,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -854,8 +858,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "author/kwarg:orcid",
@@ -869,8 +875,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "author/kwarg:email",
@@ -884,8 +892,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "author/kwarg:corresponding",
@@ -899,8 +909,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "author/form:slash",
@@ -1819,8 +1831,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "corollary/base",
@@ -2066,8 +2080,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "date/deferred",
@@ -2081,7 +2097,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -2376,7 +2394,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -2408,7 +2428,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -2497,7 +2519,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -3868,7 +3892,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -3883,7 +3909,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -4084,8 +4112,10 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
-      "status": "gap"
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "license/deferred",
@@ -4099,7 +4129,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -4711,7 +4743,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -4943,7 +4977,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -5851,7 +5887,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -6495,7 +6533,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     },
     {
@@ -6943,7 +6983,9 @@
         "RQ-META-S1",
         "RQ-META-M3"
       ],
-      "coveredBy": [],
+      "coveredBy": [
+        "sweep/swp-meta.emd"
+      ],
       "status": "deferred"
     }
   ],
@@ -7095,6 +7137,7 @@
     "sweep/swp-dsl.emd",
     "sweep/swp-inline.emd",
     "sweep/swp-math.emd",
+    "sweep/swp-meta.emd",
     "sweep/swp-theorem.emd"
   ]
 }

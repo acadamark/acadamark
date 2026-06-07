@@ -1,0 +1,51 @@
+<meta type=article>
+  <title | Metadata and Apparatus Sweep>
+  <subtitle | Front-matter fields and no-output apparatus>
+  <!-- cell: author/kwarg:affiliation -->
+  <!-- cell: author/kwarg:orcid -->
+  <!-- cell: author/kwarg:email -->
+  <!-- cell: author/kwarg:corresponding -->
+  <author #a1 affiliation="Anthropic" orcid=0000-0002-1825-0097 email=ada@example.org +corresponding | Ada Lovelace>
+  <author | Charles Babbage>
+  <!-- cell: affiliation/deferred -->
+  <affiliation | Anthropic, San Francisco>
+  <!-- cell: orcid/deferred -->
+  <orcid | 0000-0002-1825-0097>
+  <!-- cell: email/deferred -->
+  <email | contact@example.org>
+  <!-- cell: date/deferred -->
+  <date | 2026-06-01>
+  <!-- cell: publication-date/deferred -->
+  <publication-date | 2026-06-07>
+  <!-- cell: doi/deferred -->
+  <doi | 10.1234/meta.sweep>
+  <!-- cell: license/deferred -->
+  <license | CC-BY-4.0>
+  <!-- cell: lang/deferred -->
+  <lang | en>
+  <!-- cell: version/deferred -->
+  <version | 2>
+  <!-- cell: keywords/deferred -->
+  <keywords | metadata, apparatus, coverage>
+  <!-- cell: subject/deferred -->
+  <subject scheme=MSC2020 | 92D40>
+  <!-- cell: editor/deferred -->
+  <editor | Grace Hopper>
+  <!-- cell: abstract/deferred -->
+  <abstract | A short abstract exercising the abstract element in the front matter.>
+</meta>
+
+<!-- cell: config/no-output -->
+<config citation-style="apa" />
+
+<section | Body>
+The front-matter fields, the configuration directive, and the bibliography data
+apparatus below all produce no rendered body output by design. A
+<!-- cell: term/deferred -->
+<term #term:vector | vector> term introduces vocabulary inline.
+
+<!-- cell: data/no-output -->
+<!-- cell: library/no-output -->
+<data>
+<library | @article{lovelace1843, title={Notes}, author={Lovelace, A}, year={1843}}>
+</data>

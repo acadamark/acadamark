@@ -7,9 +7,9 @@
 
 ## Summary
 
-- **Behavior cells:** 369  ·  **fixtures:** 51  ·  **annexed (generated) elements:** 19
-- **Covered:** 61 (17%)
-- **By status:** `deferred` 18 · `gap` 290 · `pass` 61
+- **Behavior cells:** 369  ·  **fixtures:** 52  ·  **annexed (generated) elements:** 19
+- **Covered:** 68 (18%)
+- **By status:** `deferred` 18 · `gap` 283 · `pass` 68
 - **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 325
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
@@ -71,43 +71,43 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
-| `abstract` | deferred | deferred-presentation | — | 🟡 deferred |
-| `affiliation` | deferred | deferred-presentation | — | 🟡 deferred |
+| `abstract` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `affiliation` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
 | `author` | base | specified | — | 🔴 gap |
 | `author` | id | specified | — | 🔴 gap |
 | `author` | class | specified | — | 🔴 gap |
 | `author` | kwarg:name | specified | — | 🔴 gap |
-| `author` | kwarg:affiliation | specified | — | 🔴 gap |
-| `author` | kwarg:orcid | specified | — | 🔴 gap |
-| `author` | kwarg:email | specified | — | 🔴 gap |
-| `author` | kwarg:corresponding | specified | — | 🔴 gap |
+| `author` | kwarg:affiliation | specified | `sweep/swp-meta.emd` | 🟢 pass |
+| `author` | kwarg:orcid | specified | `sweep/swp-meta.emd` | 🟢 pass |
+| `author` | kwarg:email | specified | `sweep/swp-meta.emd` | 🟢 pass |
+| `author` | kwarg:corresponding | specified | `sweep/swp-meta.emd` | 🟢 pass |
 | `author` | form:slash | specified | — | 🔴 gap |
 | `author` | form:long | specified | — | 🔴 gap |
 | `code-block` | deferred | deferred-presentation | — | 🟡 deferred |
-| `config` | no-output | no-output | — | 🔴 gap |
-| `data` | no-output | no-output | — | 🔴 gap |
-| `date` | deferred | deferred-presentation | — | 🟡 deferred |
-| `doi` | deferred | deferred-presentation | — | 🟡 deferred |
-| `editor` | deferred | deferred-presentation | — | 🟡 deferred |
-| `email` | deferred | deferred-presentation | — | 🟡 deferred |
+| `config` | no-output | no-output | `sweep/swp-meta.emd` | 🟢 pass |
+| `data` | no-output | no-output | `sweep/swp-meta.emd` | 🟢 pass |
+| `date` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `doi` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `editor` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `email` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
 | `glossary` | deferred | deferred-presentation | — | 🟡 deferred |
 | `glossary-entry` | deferred | deferred-presentation | — | 🟡 deferred |
 | `inline-code` | deferred | deferred-presentation | — | 🟡 deferred |
-| `keywords` | deferred | deferred-presentation | — | 🟡 deferred |
-| `lang` | deferred | deferred-presentation | — | 🟡 deferred |
-| `library` | no-output | no-output | — | 🔴 gap |
-| `license` | deferred | deferred-presentation | — | 🟡 deferred |
+| `keywords` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `lang` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `library` | no-output | no-output | `sweep/swp-meta.emd` | 🟢 pass |
+| `license` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
 | `meta` | no-output | no-output | — | 🔴 gap |
 | `name` | base | specified | — | 🔴 gap |
 | `name` | id | specified | — | 🔴 gap |
 | `name` | class | specified | — | 🔴 gap |
 | `name` | form:pipe | specified | — | 🔴 gap |
 | `name` | form:long | specified | — | 🔴 gap |
-| `orcid` | deferred | deferred-presentation | — | 🟡 deferred |
-| `publication-date` | deferred | deferred-presentation | — | 🟡 deferred |
-| `subject` | deferred | deferred-presentation | — | 🟡 deferred |
-| `term` | deferred | deferred-presentation | — | 🟡 deferred |
-| `version` | deferred | deferred-presentation | — | 🟡 deferred |
+| `orcid` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `publication-date` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `subject` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `term` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
+| `version` | deferred | deferred-presentation | `sweep/swp-meta.emd` | 🟡 deferred |
 
 ## RQ-BLK — Block prose
 
