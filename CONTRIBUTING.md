@@ -29,7 +29,7 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `format-words.md`, `render-quality.md`, `spec_lift-lower-round-trip.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/release-audits.md` | Spec | The release-audit procedure — the four reconciliations and how each is run. A process spec; see "The release audit." |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
@@ -69,14 +69,22 @@ Each subsystem's blueprint:
 - **Authoring syntax / parser** — `notes/specs/shorthand-syntax.md` (the
   syntactic ground truth), with `notes/specs/escape-rules-spec.md`,
   `notes/specs/multiline-spec.md`, and `notes/specs/recursive-content-spec.md`
-  for the related parser-layer details.
+  for the related parser-layer details, and `notes/specs/tag-forms-reference.md`
+  (the per-tag matrix of which syntactic forms each element supports).
 - **Interpreter / pipeline** — `notes/specs/interpreter.md` (interpreter
   architecture: dispatch, handlers, schema, asset injection) and
-  `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow).
+  `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow),
+  with `notes/specs/core.md` (the inward-pointing, `fs`-free shared foundation
+  the package is built on), `notes/specs/format-words.md` (the host/format-word
+  "kind" convention), and `notes/specs/render-quality.md` (the standard for
+  well-rendered output).
 - **Layer 1 vocabulary** — `notes/specs/layer1-naming.md` (the four naming
-  rules) and `notes/specs/shape-tokens.md` (content-shape machinery). The
+  rules), `notes/specs/shape-tokens.md` (content-shape machinery), and
+  `notes/specs/frameable.md` (the out-of-flow frameable element family). The
   per-element vocabulary entries live separately in
   `packages/layer1-vocabulary/elements/` with `SPEC.md` alongside.
+- **Round-trip transforms** — `notes/specs/spec_lift-lower-round-trip.md`
+  (the correctness model for the `lift` / `lower` register transforms).
 - **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
   processor-delegation principle) and `notes/specs/principles.md`
   (always-renders, parser-knows-nothing-about-meaning, etc.).

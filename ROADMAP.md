@@ -34,27 +34,30 @@ features.
   refinements to the apparatus and qualifying-tag surface (the `<data>`
   container migration, generalizing the qualifying-tag pattern, the frameable
   redesign, bibliography-heading config).
-- **v0.3.0.** New authoring and display features — markup inside table cells,
-  section numbering, frame-border styles, smart typography, multi-column
-  display, margin sidenotes, callouts, executable code blocks, and multi-file
-  authoring.
-- **v0.4.0.** Code syntax highlighting, browser-bundle size optimization,
-  conda-forge packaging, and new sigil shorthands.
-- **future.** Longer-horizon work — render-mode lowering to plain HTML, strict
-  mode, richer external-reference syntax, and other parser / display features
-  as their design questions resolve.
+- **v0.3.0 — shipped.** New authoring and display features — markup inside
+  table cells, section numbering, frame-border styles, smart typography, and
+  callouts — plus the vocabulary coverage gallery, DSL source-view, ToC
+  scroll-spy, default-theme feature-hook styling, and accumulated JATS interop
+  and table fixes.
+- **v0.4.0.** Code syntax highlighting, margin sidenotes, strict mode,
+  browser-bundle size optimization, conda-forge packaging, and new sigil
+  shorthands.
+- **future.** Longer-horizon work — render-mode lowering to plain HTML,
+  multi-column display, richer external-reference syntax, and other parser /
+  display features as their design questions resolve.
 
 ---
 
 ## Current position
 
-**v0.2.5 is released** — the spec-completeness re-sync, shipped on top of the
-v0.2.0 base (rich-document rendering, bidirectional JATS, the browser library and
-`enscribe` CLI, three packages on npm: `@enscribejs/enscribe`, `@enscribejs/cli`,
-`@enscribejs/layer1-vocabulary`). v0.2.5 brought the keystone frameable
-close-out, the docs/specs/code reconciliation from the first release audit, and
-accumulated parser, interop, and tables fixes. **v0.3.0 is next** with new
-authoring and display features; v0.4.0 follows, and the longest-horizon work sits
-under `future`. Every release's items live in
+**v0.3.0 is released** — the new authoring and display features (markup inside
+table cells, section numbering, frame-border styles, smart typography, callouts)
+plus the vocabulary coverage gallery, DSL source-view, and ToC scroll-spy,
+shipped on top of the v0.2.x base (rich-document rendering, bidirectional JATS,
+the browser library and `enscribe` CLI, three packages on npm:
+`@enscribejs/enscribe`, `@enscribejs/cli`, `@enscribejs/layer1-vocabulary`).
+**v0.3.5 is next** — the consolidation pass that resolves the v0.3.0-close
+release-audit findings and ships no new features; v0.4.0 follows, and the
+longest-horizon work sits under `future`. Every release's items live in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues), grouped by
 milestone and label.

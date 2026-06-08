@@ -118,10 +118,12 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 ## Current position
 
-**v0.2.0 is released** — enscribe renders rich documents, converts to and from
-JATS, ships a client-side browser library and the `enscribe` CLI, and is
-published to npm as three scoped packages. The live milestone is **v0.2.5**: the
-spec-completeness re-sync plus accumulated parser, interop, and tables fixes.
-Open work is tracked in
+**v0.3.0 is released** — enscribe renders rich documents (now with markup inside
+table cells, section numbering, frame-border styles, smart typography, callouts,
+the vocabulary coverage gallery, DSL source-view, and ToC scroll-spy), converts
+to and from JATS, ships a client-side browser library and the `enscribe` CLI, and
+is published to npm as three scoped packages. The live milestone is **v0.3.5**:
+the consolidation pass that resolves the v0.3.0-close release-audit findings and
+ships no new features. Open work is tracked in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues) by milestone and
 label; the release plan and targets live in `ROADMAP.md`.
