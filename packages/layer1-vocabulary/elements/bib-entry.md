@@ -80,7 +80,7 @@ related_plugins:
 
 # `<bib-entry>`
 
-The Layer 1 representation of a single bibliography entry. `<bib-entry>` is **generated output**, not an authoring surface: the citation plugins assemble it (and the surrounding `<bibliography>`) from the citation registry, which is populated from BibTeX / CSL-JSON via citation-js. Authors do not write `<bib-entry>` field-by-field; they supply citation data through `<library>` (inline BibTeX / CSL-JSON) or `<bibliography source="…">` (an external file), and citation-js produces the structured entries.
+The Layer 1 representation of a single bibliography entry. `<bib-entry>` is **generated output**, not an authoring surface: the citation plugins assemble it (and the surrounding `<bibliography>`) from the citation registry, which is populated from BibTeX / CSL-JSON via citation-js. Authors do not write `<bib-entry>` field-by-field; they supply citation data through `<library>` (inline BibTeX / CSL-JSON) or `<bibliography source="…" />` (an external file), and citation-js produces the structured entries.
 
 ## Semantic intent
 
@@ -88,14 +88,14 @@ The Layer 1 representation of a single bibliography entry. `<bib-entry>` is **ge
 
 Authors give the citation system entries through two paths, and citation-js does the rest:
 
-- **External file** (`<bibliography source="refs.bib">`) — best for shared bibliographies.
+- **External file** (`<bibliography source="refs.bib" />`) — best for shared bibliographies.
 - **`<library>`** (inline BibTeX / CSL-JSON) — best for pasting entries from a reference manager.
 
 Both flow through citation-js into the citation registry; the bibliography-assembly plugin then renders the cited entries as `<bib-entry>` elements inside `<bibliography>`.
 
 ## Authoring
 
-`<bib-entry>` is not authored directly. Supply the entry as BibTeX or CSL-JSON through `<library>` (or an external file via `<bibliography source="…">`), and the citation plugins generate the `<bib-entry>`:
+`<bib-entry>` is not authored directly. Supply the entry as BibTeX or CSL-JSON through `<library>` (or an external file via `<bibliography source="…" />`), and the citation plugins generate the `<bib-entry>`:
 
 ```
 <data>
@@ -163,7 +163,7 @@ The bibliography-assembly plugin parses these (via citation-js) along with any e
 
 ## Citation resolution
 
-When a citation (`<cite goodall2024>`) is resolved, the resolver looks up the key against the citation registry. The registry is populated from the author-supplied sources — an external bibliography file (`<bibliography source="…">`) and inline `<library>` blocks — parsed through citation-js. The assembled `<bibliography>` then renders the cited entries as `<bib-entry>` elements: `<bib-entry>` is the resolved output, not an input to resolution. If two sources register the same id, a warning is emitted noting the duplicate.
+When a citation (`<cite goodall2024>`) is resolved, the resolver looks up the key against the citation registry. The registry is populated from the author-supplied sources — an external bibliography file (`<bibliography source="…" />`) and inline `<library>` blocks — parsed through citation-js. The assembled `<bibliography>` then renders the cited entries as `<bib-entry>` elements: `<bib-entry>` is the resolved output, not an input to resolution. If two sources register the same id, a warning is emitted noting the duplicate.
 
 ## Rendering
 

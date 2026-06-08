@@ -162,7 +162,7 @@ Three paths give bibliography entries to the citation system:
 
 | Path | Use when |
 |------|----------|
-| External file (`<bibliography source="refs.bib">`) | The bibliography is maintained separately, possibly shared across documents. |
+| External file (`<bibliography source="refs.bib" />`) | The bibliography is maintained separately, possibly shared across documents. |
 | `<library>` | A bibliography block exists in some format and the author wants to paste it inline. |
 | `<bib-entry>` | The author wants to write a structured entry in enscribe form. |
 

@@ -2029,7 +2029,7 @@ const _config = Object.freeze({
         {
           "element": "bibliography",
           "required": false,
-          "notes": "Bibliography source reference (e.g., <bibliography source=\"refs.bib\">).\nConfiguration about where the bibliography file lives.\n",
+          "notes": "Bibliography source reference (e.g., <bibliography source=\"refs.bib\" />).\nConfiguration about where the bibliography file lives.\n",
         },
       ],
     },

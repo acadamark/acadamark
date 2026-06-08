@@ -315,7 +315,7 @@ On `<meta>` only the `type` (article/book/...) kwarg is available; the explicit 
 <chapter | First Chapter>
 Content.
 
-<bibliography source="refs.bib">
+<bibliography source="refs.bib" />
 
 <appendix | Glossary of Terms>
 Glossary content.

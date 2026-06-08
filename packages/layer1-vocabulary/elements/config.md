@@ -68,7 +68,7 @@ content:
     - element: bibliography
       required: false
       notes: |
-        Bibliography source reference (e.g., <bibliography source="refs.bib">).
+        Bibliography source reference (e.g., <bibliography source="refs.bib" />).
         Configuration about where the bibliography file lives.
 content_handler: default
 jats_counterpart:

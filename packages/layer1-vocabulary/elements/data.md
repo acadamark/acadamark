@@ -172,7 +172,7 @@ This paper builds on <cite goodall2024>.
 
 ```
 <config>
-  <bibliography source="refs.bib">
+  <bibliography source="refs.bib" />
 </config>
 
 <data>

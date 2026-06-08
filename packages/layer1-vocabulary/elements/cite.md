@@ -199,7 +199,7 @@ Individual citations can override via the `style` kwarg.
 
 The citation resolver looks up each key against the document's citation registry. The registry is built from:
 
-- External bibliography file (`<bibliography source="refs.bib">`).
+- External bibliography file (`<bibliography source="refs.bib" />`).
 - Inline `<library>` blocks in `<data>`.
 - Inline `<bib-entry>` elements in `<data>`.
 

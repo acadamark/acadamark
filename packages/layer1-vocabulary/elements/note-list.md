@@ -146,7 +146,7 @@ Thanks to colleagues.
 <!-- The placement plugin populates this with collected notes. -->
 </note-list>
 
-<bibliography source="refs.bib">
+<bibliography source="refs.bib" />
 ```
 
 The author writes an empty `<note-list>` to mark where end-notes should appear (between Acknowledgments and Bibliography). The placement plugin populates it.
