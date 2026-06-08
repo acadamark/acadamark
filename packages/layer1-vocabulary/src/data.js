@@ -866,7 +866,7 @@ const _bib_entry = Object.freeze({
       "element": "bib-entry",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Enscribe's <bib-entry> is a custom element representing a single\nbibliography entry in structured enscribe form. Distinct from\n<library> (opaque format) and external file references — this is\nthe enscribe-native way to write a bibliography entry.\n",
+      "notes": "Enscribe's <bib-entry> is a custom element representing a single\nbibliography entry in structured form. It is generated output — the\ncitation plugins assemble it from <library> / external-file sources\n(parsed by citation-js); it is not authored field-by-field.\n",
     },
     "enscribe_attributes": {
       "id": {
