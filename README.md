@@ -61,9 +61,9 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 ## Status
 
-**enscribe v0.1.0 is released.** The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML. v0.1.0 also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
+**enscribe v0.3.0 is released.** The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
-The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for the capability checklist (what works today), [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/`](notes/specs/) for the architecture. A full documentation site — guides, an authoring reference, and an in-browser playground — is built from [`docs-site/`](docs-site/) and launches with v0.2.0.
+The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for the capability checklist (what works today), [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/`](notes/specs/) for the architecture. A full documentation site — guides, an authoring reference, and an in-browser playground — is built from [`docs-site/`](docs-site/).
 
 Found a bug, or want a feature? Open an issue at [github.com/enscribejs/enscribe/issues](https://github.com/enscribejs/enscribe/issues) — that is where all open work lives.
 
