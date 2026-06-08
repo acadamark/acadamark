@@ -14,6 +14,10 @@
   --muted: #57606a;
   --accent: #0969da;
   --editor-bg: #fbfcfd;
+  /* Height reserved for the sticky nav (#126). A conservative value at/above the
+     single-line desktop header height, so anchored headings clear it via
+     scroll-padding-top and the floating ToC sticks below it. */
+  --nav-height: 3.25rem;
 }
 
 * {
@@ -23,6 +27,12 @@
 html,
 body {
   margin: 0;
+}
+
+/* Anchored headings (in-page links, scroll-spy targets) must clear the sticky
+   nav (#126) instead of landing under it. */
+html {
+  scroll-padding-top: var(--nav-height);
 }
 
 body {
@@ -40,6 +50,13 @@ body {
   flex-wrap: wrap;
   padding: 0.6rem 1.25rem;
   border-bottom: 1px solid var(--border);
+  /* #126: keep the nav in view while the page scrolls. Opaque background so
+     content scrolls under it cleanly; z-index above article content and the
+     (also-sticky) floating ToC sidebar. */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
 }
 
 .site-brand {
@@ -84,6 +101,19 @@ main.article:has(.enscribe-layout--toc) {
   max-width: none;
   padding-left: 0;
   padding-right: 0;
+}
+
+/* #126: the floating ToC sidebar is `position: sticky; top: var(--enscribe-space-8)`
+   (2rem) on desktop, set in the package theme (default.css). With the site nav now
+   sticky at top:0, that 2rem offset sits under the nav. Push the ToC's sticky offset
+   (and cap its height) below the nav. Docs-site override only — default.css and the
+   package's fixture output are untouched. Scoped to the same >=900px breakpoint where
+   default.css makes the ToC sticky. */
+@media (min-width: 900px) {
+  .enscribe-toc {
+    top: calc(var(--nav-height) + 0.5rem);
+    max-height: calc(100vh - var(--nav-height) - 1rem);
+  }
 }
 
 .site-footer {
