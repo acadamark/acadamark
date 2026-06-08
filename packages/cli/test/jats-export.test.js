@@ -1012,6 +1012,61 @@ ${dateXml}
   validateWithXmllint('doc107-year', yearOnly);
 }
 
+// ─── heading-is-a-section + title-from-<meta>; JATS "Untitled" default ──────
+// A document with no <meta> title is a valid authoring choice: the article title
+// comes only from <meta>. It renders with no title and does not error; its JATS
+// export fills the required <article-title> with the "Untitled" placeholder so
+// the output stays DTD-valid. (See idioms.md + pipeline.md "Stage 5'".)
+{
+  const src = [
+    '<meta type=article>',
+    '  <author | A. Author>',
+    '</meta>',
+    '',
+    '# A Section',
+    '',
+    'Body text with no document title.',
+    '',
+  ].join('\n');
+
+  // Display: renders with no <article-title>, and does not throw.
+  let html = '';
+  let threw = false;
+  try {
+    html = String(buildEnscribePipeline({}).processSync(src));
+  } catch {
+    threw = true;
+  }
+  check('no-title: HTML render does not error', !threw);
+  check('no-title: HTML has no <article-title> (blank title is a valid choice)',
+    !/<article-title\b/.test(html));
+  check('no-title: the heading became a <section-title>, not the title',
+    html.includes('<section-title>A Section</section-title>'));
+
+  // JATS export: build the post-stage-3 tree, then export.
+  const inner = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+  const tree = unified()
+    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
+    .parse(src);
+  const file = { data: {}, message: () => {} };
+  unified()
+    .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeNormalizeToCanonical)
+    .use(enscribeConfigDiscovery)
+    .use(enscribeBookStructuring)
+    .use(enscribeArticleStructuring)
+    .use(enscribeSectionNesting)
+    .runSync(tree, file);
+  const jats = enscribeToJats(tree);
+
+  check('no-title: JATS fills <article-title>Untitled</article-title>',
+    jats.includes('<article-title>Untitled</article-title>'));
+  check('no-title: the heading is a <sec> <title>, not the article title',
+    jats.includes('<title>A Section</title>'));
+  validateWithXmllint('no-title-untitled', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

@@ -64,6 +64,12 @@ const BITS_BOOK_DOCTYPE_DECL =
   '<!DOCTYPE book PUBLIC "-//NLM//DTD BITS Book Interchange DTD v2.0 20151225//EN" ' +
   '"https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2.dtd">\n';
 
+// Stage 5' (JATS) metadata default. An enscribe article title comes only from
+// <meta>; a document with no <meta> title is a valid authoring choice and has no
+// title. JATS, however, requires <article-title>, so on export a missing title is
+// filled with this placeholder to keep the output DTD-valid. The one tunable.
+const UNTITLED_TITLE = 'Untitled';
+
 /**
  * Export the post-stage-3 mdast tree to JATS XML.
  *
@@ -155,16 +161,16 @@ function emitArticleMetaChildren(metaNode, indent) {
   );
 
   let out = '';
-  if (titleNode || subtitleNode) {
-    out += `${pad}<title-group>\n`;
-    if (titleNode) {
-      out += `${pad}  <article-title>${emitInlines(titleNode.content)}</article-title>\n`;
-    }
-    if (subtitleNode) {
-      out += `${pad}  <subtitle>${emitInlines(subtitleNode.content)}</subtitle>\n`;
-    }
-    out += `${pad}</title-group>\n`;
+  // JATS requires <article-title>. Always emit the title-group; a document with
+  // no <meta> title (a valid authoring choice — the title comes only from <meta>)
+  // gets the UNTITLED_TITLE placeholder so the export stays DTD-valid (the
+  // Stage 5' metadata default).
+  out += `${pad}<title-group>\n`;
+  out += `${pad}  <article-title>${titleNode ? emitInlines(titleNode.content) : UNTITLED_TITLE}</article-title>\n`;
+  if (subtitleNode) {
+    out += `${pad}  <subtitle>${emitInlines(subtitleNode.content)}</subtitle>\n`;
   }
+  out += `${pad}</title-group>\n`;
   if (authorNodes.length > 0) {
     out += `${pad}<contrib-group>\n`;
     for (const author of authorNodes) {

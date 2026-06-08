@@ -89,6 +89,15 @@ re-imports the structural plugins from `enscribe/interpreter` to
 build the post-stage-3 tree; HTML rendering stays in
 `enscribe/interpreter`.
 
+**Stage 5′ (JATS): metadata defaults.** The JATS branch supplies fields the
+enscribe document may leave blank, so the output stays DTD-valid. JATS requires
+`<article-title>`; when the document has no `<meta>` title (a valid authoring
+choice — the title comes only from `<meta>`, per the structural phase above),
+the exporter fills the required title with an `Untitled` placeholder. The
+placeholder lives in one place — `UNTITLED_TITLE` in
+`packages/cli/src/jats-export/index.js`. Other required values (`xml:lang`,
+`dtd-version`, the `article-type` default) are supplied the same way.
+
 The pipeline is wired by the `enscribeInterpreter` unified plugin, which
 registers all stages (2–6) on a single unified processor. The consumer provides
 stage 1 (`remarkParse` + `remarkEnscribe`):
@@ -317,6 +326,13 @@ root
     article-back   (optional; contains <config>, <bibliography>, <note-list>)
   data             (root sibling; outside <article>)
 ```
+
+**Title.** The article title is promoted from the `<title>` inside `<meta>` to
+`<article-title>`. A markdown heading is a *section*, never the title (see
+`idioms.md`), so a document with no `<meta>` title has **no** article title —
+left blank, a valid authoring choice, not an error. (`index.emd`, a `#`-headed
+page with no `<meta>` title, is a live example.) On JATS export a missing title
+is filled with a placeholder — see Stage 5′ below.
 
 **Dependencies:** `remarkRecursiveContent` (needs parsed content to read
 `<meta>` internals). `enscribeConfigDiscovery` has already run (no dependency
