@@ -61,13 +61,13 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 ## Status
 
-Enscribe is implemented. The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML.
+**enscribe v0.3.0 is released.** The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
-The implementation is built on the <a href="https://unifiedjs.com/" | unified> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/master/STATUS.md" | `STATUS.md`> for a current snapshot of what works and what doesn't, <a href="design.html" | the Design article> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/blob/master/notes/specs/interpreter.md" | `notes/specs/interpreter.md`> and <a href="https://github.com/enscribejs/enscribe/blob/master/notes/specs/pipeline.md" | `notes/specs/pipeline.md`> for the architecture.
+The implementation is built on the <a href="https://unifiedjs.com/" | unified> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for a current snapshot of what works and what doesn't, <a href="design.html" | the Design article> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/blob/main/notes/specs/interpreter.md" | `notes/specs/interpreter.md`> and <a href="https://github.com/enscribejs/enscribe/blob/main/notes/specs/pipeline.md" | `notes/specs/pipeline.md`> for the architecture.
 
 ## Reading order
 
-The project has accumulated enough documentation that knowing where to start matters. See the <a href="https://github.com/enscribejs/enscribe/blob/master/CONTRIBUTING.md#reading-order-for-newcomers" | Reading order section in `CONTRIBUTING.md`> for a guided path through the spec and implementation docs.
+The project has accumulated enough documentation that knowing where to start matters. See the <a href="https://github.com/enscribejs/enscribe/blob/main/CONTRIBUTING.md#reading-order-for-newcomers" | Reading order section in `CONTRIBUTING.md`> for a guided path through the spec and implementation docs.
 
 ## Project goals
 
@@ -78,7 +78,7 @@ Enscribe's purpose, in four parts:
 3. **Build** the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.
 4. **Demonstrate** that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from enscribe source through HTML to PDF and other formats using only off-the-shelf tools downstream.
 
-Goals 1 through 3 are substantially achieved; goal 4 is demonstrated for HTML output, with JATS export and other downstream targets still ahead. See <a href="https://github.com/enscribejs/enscribe/blob/master/STATUS.md" | `STATUS.md`> for detail.
+Goals 1 through 3 are achieved; goal 4 is demonstrated for HTML output and for bidirectional JATS conversion, with Pandoc handling other downstream targets. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for detail.
 
 ## Non-goals
 
@@ -89,4 +89,4 @@ Goals 1 through 3 are substantially achieved; goal 4 is demonstrated for HTML ou
 
 ## License
 
-TBD.
+MIT License. See <a href="https://github.com/enscribejs/enscribe/blob/main/LICENSE" | `LICENSE`> for details.
