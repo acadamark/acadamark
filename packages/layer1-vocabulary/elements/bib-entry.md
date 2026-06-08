@@ -1,15 +1,16 @@
 ---
 semantic_role: bib-entry
 category: citations-and-references
+authoring: generated
 html_output:
   element: bib-entry
   is_html_native: false
   default_attributes: {}
   notes: |
     Enscribe's <bib-entry> is a custom element representing a single
-    bibliography entry in structured enscribe form. Distinct from
-    <library> (opaque format) and external file references — this is
-    the enscribe-native way to write a bibliography entry.
+    bibliography entry in structured form. It is generated output — the
+    citation plugins assemble it from <library> / external-file sources
+    (parsed by citation-js); it is not authored field-by-field.
 enscribe_attributes:
   id:
     maps_to: id
@@ -69,44 +70,6 @@ jats_counterpart:
     JATS uses <ref id="..."> as the bibliography entry container,
     with structured content as <element-citation> (when fully structured)
     or <mixed-citation> (when partially structured).
-shorthand_examples:
-  - source: |
-      <bib-entry id=goodall2024 type=article>
-        <author | Jane Goodall>
-        <year | 2024>
-        <title | The Effect of Elephants on Climate>
-        <journal | Nature>
-        <volume | 612>
-        <pages | 234-241>
-        <doi | 10.1038/s41586-024-12345>
-      </bib-entry>
-    layer1_html: |
-      <bib-entry id="goodall2024" data-bib-type="article">
-        <author>Jane Goodall</author>
-        <year>2024</year>
-        <title>The Effect of Elephants on Climate</title>
-        <journal>Nature</journal>
-        <volume>612</volume>
-        <pages>234-241</pages>
-        <doi>10.1038/s41586-024-12345</doi>
-      </bib-entry>
-    notes: |
-      A structured journal article entry. The id (goodall2024) is the
-      citation key.
-  - source: |
-      <bib-entry id=darwin1859 type=book>
-        <author | Charles Darwin>
-        <year | 1859>
-        <title | On the Origin of Species>
-        <publisher | John Murray>
-      </bib-entry>
-    layer1_html: |
-      <bib-entry id="darwin1859" data-bib-type="book">
-        <author>Charles Darwin</author>
-        <year>1859</year>
-        <title>On the Origin of Species</title>
-        <publisher>John Murray</publisher>
-      </bib-entry>
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeBibEntryRegistration
@@ -117,41 +80,40 @@ related_plugins:
 
 # `<bib-entry>`
 
-A structured bibliography entry in enscribe-native form. The author writes structured child elements (author, title, year, etc.) for one bibliography entry. Distinct from `<library>` (opaque format like BibTeX) and external file references.
+The Layer 1 representation of a single bibliography entry. `<bib-entry>` is **generated output**, not an authoring surface: the citation plugins assemble it (and the surrounding `<bibliography>`) from the citation registry, which is populated from BibTeX / CSL-JSON via citation-js. Authors do not write `<bib-entry>` field-by-field; they supply citation data through `<library>` (inline BibTeX / CSL-JSON) or `<bibliography source="…">` (an external file), and citation-js produces the structured entries.
 
 ## Semantic intent
 
-`<bib-entry>` is the way to write a bibliography entry directly in enscribe using structured elements rather than an external format. Each bib-entry has an id (the citation key) and a type, plus content elements appropriate to the type.
+`<bib-entry>` is the structured Layer 1 form of one bibliography entry — the shape citation-js produces after parsing the citation data an author supplied elsewhere. Each entry has an id (the citation key) and a type, plus the fields appropriate to that type. It is emitted into the assembled `<bibliography>`; it is not hand-authored field-by-field.
 
-This is the most explicit path for bibliography entries — every field is its own element. Useful when:
+Authors give the citation system entries through two paths, and citation-js does the rest:
 
-- Writing a small number of entries that don't exist elsewhere.
-- Authors want full control over how each field is represented.
-- The bibliography is part of a fully enscribe-native workflow without external dependencies.
+- **External file** (`<bibliography source="refs.bib">`) — best for shared bibliographies.
+- **`<library>`** (inline BibTeX / CSL-JSON) — best for pasting entries from a reference manager.
 
-For most authoring, the alternatives are easier:
-
-- **External file** (`<bibliography source="refs.bib">`) is best for shared bibliographies.
-- **`<library>`** is best for pasting entries from a reference manager.
-- **`<bib-entry>`** is for inline structured authoring when neither alternative fits.
+Both flow through citation-js into the citation registry; the bibliography-assembly plugin then renders the cited entries as `<bib-entry>` elements inside `<bibliography>`.
 
 ## Authoring
 
+`<bib-entry>` is not authored directly. Supply the entry as BibTeX or CSL-JSON through `<library>` (or an external file via `<bibliography source="…">`), and the citation plugins generate the `<bib-entry>`:
+
 ```
 <data>
-  <bib-entry id=goodall2024 type=article>
-    <author | Jane Goodall>
-    <year | 2024>
-    <title | The Effect of Elephants on Climate>
-    <journal | Nature>
-    <volume | 612>
-    <pages | 234-241>
-    <doi | 10.1038/s41586-024-12345>
-  </bib-entry>
+  <library format=bibtex>
+    @article{goodall2024,
+      author = {Goodall, Jane},
+      title = {The Effect of Elephants on Climate},
+      journal = {Nature},
+      year = {2024},
+      volume = {612},
+      pages = {234-241},
+      doi = {10.1038/s41586-024-12345}
+    }
+  </library>
 </data>
 ```
 
-The id is the citation key (`<cite goodall2024>` resolves against this entry). The type determines which child elements are appropriate.
+The BibTeX key (`goodall2024`) is the citation key: `<cite goodall2024>` resolves against the generated entry, and the entry's type (`article`, `book`, …) follows from the BibTeX entry type.
 
 ## Bibliography entry types
 
@@ -170,46 +132,38 @@ The `type` kwarg distinguishes entry kinds, parallel to BibTeX entry types:
 
 Each type expects certain fields and is rendered with appropriate formatting (italics for journal vs. book title, etc.).
 
-## Field elements
+## Entry fields
 
-The child elements are themselves Layer 1 elements. They follow consistent conventions:
+A generated `<bib-entry>` carries the bibliographic fields citation-js extracted from the BibTeX / CSL-JSON entry. Which fields are present depends on the entry type:
 
-- **`<author>`**, **`<editor>`** — same elements used in document `<meta>`. Multiple instances allowed.
-- **`<year>`** — publication year (separate from full date for bibliographic conventions).
-- **`<title>`** — title of the cited work.
-- **`<journal>`**, **`<book-title>`** — container titles depending on entry type.
-- **`<publisher>`**, **`<institution>`**, **`<school>`** — publishing entities.
-- **`<volume>`**, **`<issue>`**, **`<pages>`** — location within container.
-- **`<doi>`**, **`<isbn>`**, **`<url>`** — identifiers and locators.
+- **author**, **editor** — contributors.
+- **year** — publication year.
+- **title** — title of the cited work.
+- **journal**, **book-title** — container titles, depending on type.
+- **publisher**, **institution**, **school** — publishing entities.
+- **volume**, **issue**, **pages** — location within the container.
+- **doi**, **isbn**, **url** — identifiers and locators.
 
-Other fields (translator, edition, series, edition-number, etc.) are added to the vocabulary as needs emerge. Each field has its own minimal vocabulary entry (or is documented within `<bib-entry>` if too specialized to deserve standalone treatment).
+These are the fields a citation style draws on when rendering the entry. They are produced by citation-js from the author's BibTeX / CSL-JSON — not enscribe vocabulary tags an author writes.
 
 ## Placement
 
-`<bib-entry>` belongs inside `<data>` (in `<article-back>` by convention):
+Generated `<bib-entry>` elements live inside the assembled `<bibliography>` (auto-placed in `<article-back>` / `<book-back>`, or where an explicit empty `<bibliography>` marks). Authors place the *source* data — `<library>` blocks — inside `<data>`:
 
 ```
 <data>
-  <bib-entry id=goodall2024 type=article>
-    ...
-  </bib-entry>
-  <bib-entry id=darwin1859 type=book>
-    ...
-  </bib-entry>
+  <library format=bibtex>
+    @article{goodall2024, ... }
+    @book{darwin1859, ... }
+  </library>
 </data>
 ```
 
-Multiple bib-entries are siblings within `<data>`. The bibliography assembly plugin collects all of them along with entries from `<library>` blocks and external file references.
+The bibliography-assembly plugin parses these (via citation-js) along with any external file references, and renders the cited entries as `<bib-entry>` siblings inside `<bibliography>`.
 
 ## Citation resolution
 
-When a citation (`<cite goodall2024>`) is resolved, the resolver looks up the key against the citation registry. Registry entries come from:
-
-1. External bibliography file (highest priority for shared workflows).
-2. `<library>` blocks (parsed entries).
-3. `<bib-entry>` elements (this element).
-
-The first match wins. If two sources have the same id, a warning is emitted noting the duplicate.
+When a citation (`<cite goodall2024>`) is resolved, the resolver looks up the key against the citation registry. The registry is populated from the author-supplied sources — an external bibliography file (`<bibliography source="…">`) and inline `<library>` blocks — parsed through citation-js. The assembled `<bibliography>` then renders the cited entries as `<bib-entry>` elements: `<bib-entry>` is the resolved output, not an input to resolution. If two sources register the same id, a warning is emitted noting the duplicate.
 
 ## Rendering
 
@@ -245,4 +199,4 @@ The JATS exporter converts each `<bib-entry>` to its JATS form based on the type
 - [`<cite>`](cite.md) — citations that resolve against bibliography entries.
 - [`<library>`](library.md) — opaque-format alternative for bibliography content.
 - [`<bibliography>`](bibliography.md) — the rendered bibliography element.
-- [`<data>`](data.md) — the container for `<bib-entry>` elements.
+- [`<data>`](data.md) — the container for the `<library>` source blocks the entries are generated from.

@@ -1,6 +1,7 @@
 ---
 semantic_role: bibliography
 category: citations-and-references
+authoring: generated
 html_output:
   element: bibliography
   is_html_native: false
@@ -59,76 +60,6 @@ jats_counterpart:
   notes: |
     JATS uses <ref-list> as the bibliography container, with <ref>
     children for each entry. Direct mapping.
-shorthand_examples:
-  - source: |
-      <config>
-        <bibliography source="refs.bib">
-      </config>
-    layer1_html: |
-      <config>
-        <bibliography data-bibliography-source="refs.bib"></bibliography>
-      </config>
-    notes: |
-      Bibliography source declaration in <config>. The source file is
-      read at build time; entries are registered with the citation
-      system. The bibliography itself renders elsewhere (auto-placed
-      in <article-back> by default).
-  - source: |
-      <article | My Paper>
-      <meta>
-        <author | The Author>
-      </meta>
-
-      <section | Body>
-      Cited reference <cite goodall2024>.
-
-      <data>
-        <library format=bibtex>
-          @article{goodall2024, ... }
-        </library>
-      </data>
-    layer1_html: |
-      <article>
-        <article-front>
-          <article-title>My Paper</article-title>
-          <author>The Author</author>
-        </article-front>
-        <article-body>
-          <section>
-            <section-title>Body</section-title>
-            <p>Cited reference <cite data-cite-keys="goodall2024">(Goodall 2024)</cite>.</p>
-          </section>
-        </article-body>
-        <article-back>
-          <data>
-            <library data-format="bibtex">...</library>
-          </data>
-          <bibliography>
-            <bib-entry id="goodall2024" data-bib-type="article">
-              <author>Goodall, Jane</author>
-              <year>2024</year>
-              <title>The Effect of Elephants on Climate</title>
-              ...
-            </bib-entry>
-          </bibliography>
-        </article-back>
-      </article>
-    notes: |
-      The <bibliography> element is auto-generated and placed in
-      <article-back>. The bibliography assembly plugin collects cited
-      entries from all sources (library, bib-entry, external file)
-      and renders them in the bibliography.
-  - source: |
-      <bibliography type=full sort=alpha>
-        <!-- explicit author placement; entries auto-populated -->
-      </bibliography>
-    layer1_html: |
-      <bibliography data-bibliography-type="full" data-bibliography-sort="alpha">
-        ...
-      </bibliography>
-    notes: |
-      Explicit bibliography placement with full=all entries (not just cited).
-      Useful for "selected bibliography" or "further reading" sections.
 interpreter_strategy: schema
 generated_by:
   - plugin: enscribeBibliographyAssembly

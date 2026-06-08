@@ -70,26 +70,6 @@ shorthand_examples:
       A library block in BibTeX format. The library plugin parses this,
       registers entries in the citation system. The <data> block itself
       produces no rendered output.
-  - source: |
-      <data>
-        <bib-entry id=goodall2024>
-          <author | Jane Goodall>
-          <year | 2024>
-          <title | The Effect of Elephants on Climate>
-          <journal | Nature>
-        </bib-entry>
-      </data>
-    layer1_html: |
-      <data>
-        <bib-entry id="goodall2024">
-          <author>Jane Goodall</author>
-          <year>2024</year>
-          <title>The Effect of Elephants on Climate</title>
-          <journal>Nature</journal>
-        </bib-entry>
-      </data>
-    notes: |
-      Inline structured bibliography entry. Enscribe-native form.
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeLibraryParsing
@@ -117,8 +97,7 @@ The placement convention is back-of-document, because reading shouldn't be inter
 
 Resources that are **referenced by other elements** but don't render inline:
 
-- **Inline bibliography blocks**: `<library format=bibtex>...</library>` to paste BibTeX content from a reference manager.
-- **Structured bibliography entries**: `<bib-entry>` for enscribe-native bibliography records.
+- **Inline bibliography blocks**: `<library format=bibtex>...</library>` to paste BibTeX / CSL-JSON content from a reference manager. (`<bib-entry>` is *not* authored here — it is the generated form citation-js produces into `<bibliography>` from these sources.)
 - **Hardcoded image data** (future): base64-encoded image data that figures reference by id.
 - **Datasets** (future): tabular data that tables or figures reference.
 - **Other resource types** (future): anything that fits the "reference, not display" pattern.
@@ -139,7 +118,6 @@ The split between `<meta>`, `<data>`, and `<config>` keeps responsibilities clea
 Resources in `<data>` are referenced from elsewhere by id or key:
 
 - A `<library>` block registers bibliography entries under their bibtex keys (e.g., `goodall2024`). Citations elsewhere (`<cite goodall2024>`) resolve against these entries.
-- A `<bib-entry id=goodall2024>` registers a structured entry under the explicit id. Same resolution.
 - An `<embedded-image id=elephant1>` (future) registers image data. Figures reference it (`<figure src="ref:elephant1">`).
 
 The pattern is consistent: resources have ids; references look up resources by id; the build system handles resolution.
@@ -152,7 +130,7 @@ This means authors can:
 
 - Keep separate `<data>` blocks for different purposes (one for bibliography, one for image data).
 - Add resources progressively as the document grows.
-- Mix inline `<bib-entry>` with imported `<library>` content.
+- Combine multiple `<library>` blocks, in different formats (one BibTeX, one CSL-JSON).
 
 Multiple sources combine into one resource registry. The bibliography rendering shows all *cited* entries (whether from `<library>`, `<bib-entry>`, or external file references), regardless of which `<data>` block they came from.
 
@@ -209,19 +187,6 @@ This paper builds on <cite goodall2024>.
 ```
 
 The external `refs.bib` provides the main bibliography; the inline `<library>` adds an entry not yet in the file.
-
-**Structured inline entry.**
-
-```
-<data>
-  <bib-entry id=goodall2024>
-    <author | Jane Goodall>
-    <year | 2024>
-    <title | The Effect of Elephants on Climate>
-    <journal | Nature>
-  </bib-entry>
-</data>
-```
 
 ## See also
 

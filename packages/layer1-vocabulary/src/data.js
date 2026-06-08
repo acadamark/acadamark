@@ -861,6 +861,7 @@ const _b = Object.freeze({
 const _bib_entry = Object.freeze({
     "semantic_role": "bib-entry",
     "category": "citations-and-references",
+    "authoring": "generated",
     "html_output": {
       "element": "bib-entry",
       "is_html_native": false,
@@ -964,17 +965,6 @@ const _bib_entry = Object.freeze({
       "element": "ref (containing element-citation or mixed-citation)",
       "notes": "JATS uses <ref id=\"...\"> as the bibliography entry container,\nwith structured content as <element-citation> (when fully structured)\nor <mixed-citation> (when partially structured).\n",
     },
-    "shorthand_examples": [
-      {
-        "source": "<bib-entry id=goodall2024 type=article>\n  <author | Jane Goodall>\n  <year | 2024>\n  <title | The Effect of Elephants on Climate>\n  <journal | Nature>\n  <volume | 612>\n  <pages | 234-241>\n  <doi | 10.1038/s41586-024-12345>\n</bib-entry>\n",
-        "layer1_html": "<bib-entry id=\"goodall2024\" data-bib-type=\"article\">\n  <author>Jane Goodall</author>\n  <year>2024</year>\n  <title>The Effect of Elephants on Climate</title>\n  <journal>Nature</journal>\n  <volume>612</volume>\n  <pages>234-241</pages>\n  <doi>10.1038/s41586-024-12345</doi>\n</bib-entry>\n",
-        "notes": "A structured journal article entry. The id (goodall2024) is the\ncitation key.\n",
-      },
-      {
-        "source": "<bib-entry id=darwin1859 type=book>\n  <author | Charles Darwin>\n  <year | 1859>\n  <title | On the Origin of Species>\n  <publisher | John Murray>\n</bib-entry>\n",
-        "layer1_html": "<bib-entry id=\"darwin1859\" data-bib-type=\"book\">\n  <author>Charles Darwin</author>\n  <year>1859</year>\n  <title>On the Origin of Species</title>\n  <publisher>John Murray</publisher>\n</bib-entry>\n",
-      },
-    ],
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
@@ -989,6 +979,7 @@ const _bib_entry = Object.freeze({
 const _bibliography = Object.freeze({
     "semantic_role": "bibliography",
     "category": "citations-and-references",
+    "authoring": "generated",
     "html_output": {
       "element": "bibliography",
       "is_html_native": false,
@@ -1068,23 +1059,6 @@ const _bibliography = Object.freeze({
       "element": "ref-list",
       "notes": "JATS uses <ref-list> as the bibliography container, with <ref>\nchildren for each entry. Direct mapping.\n",
     },
-    "shorthand_examples": [
-      {
-        "source": "<config>\n  <bibliography source=\"refs.bib\">\n</config>\n",
-        "layer1_html": "<config>\n  <bibliography data-bibliography-source=\"refs.bib\"></bibliography>\n</config>\n",
-        "notes": "Bibliography source declaration in <config>. The source file is\nread at build time; entries are registered with the citation\nsystem. The bibliography itself renders elsewhere (auto-placed\nin <article-back> by default).\n",
-      },
-      {
-        "source": "<article | My Paper>\n<meta>\n  <author | The Author>\n</meta>\n\n<section | Body>\nCited reference <cite goodall2024>.\n\n<data>\n  <library format=bibtex>\n    @article{goodall2024, ... }\n  </library>\n</data>\n",
-        "layer1_html": "<article>\n  <article-front>\n    <article-title>My Paper</article-title>\n    <author>The Author</author>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Body</section-title>\n      <p>Cited reference <cite data-cite-keys=\"goodall2024\">(Goodall 2024)</cite>.</p>\n    </section>\n  </article-body>\n  <article-back>\n    <data>\n      <library data-format=\"bibtex\">...</library>\n    </data>\n    <bibliography>\n      <bib-entry id=\"goodall2024\" data-bib-type=\"article\">\n        <author>Goodall, Jane</author>\n        <year>2024</year>\n        <title>The Effect of Elephants on Climate</title>\n        ...\n      </bib-entry>\n    </bibliography>\n  </article-back>\n</article>\n",
-        "notes": "The <bibliography> element is auto-generated and placed in\n<article-back>. The bibliography assembly plugin collects cited\nentries from all sources (library, bib-entry, external file)\nand renders them in the bibliography.\n",
-      },
-      {
-        "source": "<bibliography type=full sort=alpha>\n  <!-- explicit author placement; entries auto-populated -->\n</bibliography>\n",
-        "layer1_html": "<bibliography data-bibliography-type=\"full\" data-bibliography-sort=\"alpha\">\n  ...\n</bibliography>\n",
-        "notes": "Explicit bibliography placement with full=all entries (not just cited).\nUseful for \"selected bibliography\" or \"further reading\" sections.\n",
-      },
-    ],
     "interpreter_strategy": "schema",
     "generated_by": [
       {
@@ -2014,7 +1988,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Both\nthe kwarg form and the structured-children form below are valid\nauthoring spellings; both reduce to the same canonical Layer 1 shape.\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (reserved; future)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\nthe authoring form for <config>; the structured-children entries in\n`content.shape` below (marked *Future*) are a deferred design sketch, not\na current authoring spelling — the `<bibliography source=… />` source\ndeclaration is the only child element <config> takes today.\n",
       },
     },
     "content": {
@@ -2066,13 +2040,14 @@ const _config = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "<config>\n  <bibliography source=\"refs.bib\">\n  <citation-style | author-year>\n</config>\n",
-        "layer1_html": "<config>\n  <bibliography source=\"refs.bib\"></bibliography>\n  <citation-style>author-year</citation-style>\n</config>\n",
-        "notes": "Common configuration: bibliography source file and citation style.\n",
+        "source": "<config citation-style=author-year number-sections=true />",
+        "layer1_html": "<config></config>",
+        "notes": "The authoring form for <config> is kwargs. Settings are read at the\ndiscovery pass into the configuration registry; the element itself\nproduces no body output (it renders as an empty <config>).\n",
       },
       {
-        "source": "<config>\n  <output-format | html>\n  <output-format | jats>\n  <stylesheet | scholarly-default.css>\n  <numbering-style | arabic>\n</config>\n",
-        "layer1_html": "<config>\n  <output-format>html</output-format>\n  <output-format>jats</output-format>\n  <stylesheet>scholarly-default.css</stylesheet>\n  <numbering-style>arabic</numbering-style>\n</config>\n",
+        "source": "<config number-figures=true number-tables=true show-source=true />",
+        "layer1_html": "<config></config>",
+        "notes": "More operational options, all from the live kwarg allowlist\n(citation-style, number-sections, number-figures, number-tables,\nnumber-equations, show-source, parse-data-tables, ref-prefix-*).\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -2208,11 +2183,6 @@ const _data = Object.freeze({
         "source": "<data>\n  <library format=bibtex>\n    @article{goodall2024,\n      author = {Goodall, Jane},\n      title = {The Effect of Elephants on Climate},\n      journal = {Nature},\n      year = {2024}\n    }\n  </library>\n</data>\n",
         "layer1_html": "<data>\n  <library format=\"bibtex\">\n    @article{goodall2024,\n      author = {Goodall, Jane},\n      title = {The Effect of Elephants on Climate},\n      journal = {Nature},\n      year = {2024}\n    }\n  </library>\n</data>\n",
         "notes": "A library block in BibTeX format. The library plugin parses this,\nregisters entries in the citation system. The <data> block itself\nproduces no rendered output.\n",
-      },
-      {
-        "source": "<data>\n  <bib-entry id=goodall2024>\n    <author | Jane Goodall>\n    <year | 2024>\n    <title | The Effect of Elephants on Climate>\n    <journal | Nature>\n  </bib-entry>\n</data>\n",
-        "layer1_html": "<data>\n  <bib-entry id=\"goodall2024\">\n    <author>Jane Goodall</author>\n    <year>2024</year>\n    <title>The Effect of Elephants on Climate</title>\n    <journal>Nature</journal>\n  </bib-entry>\n</data>\n",
-        "notes": "Inline structured bibliography entry. Enscribe-native form.\n",
       },
     ],
     "interpreter_strategy": "schema",

@@ -37,9 +37,11 @@ enscribe_attributes:
         - strict-mode             (reserved; future)
       Unknown kwargs are dropped at the normalize-to-canonical gate with an
       informative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on
-      <config> additionally triggers a "did you mean <meta>?" hint. Both
-      the kwarg form and the structured-children form below are valid
-      authoring spellings; both reduce to the same canonical Layer 1 shape.
+      <config> additionally triggers a "did you mean <meta>?" hint. Kwargs are
+      the authoring form for <config>; the structured-children entries in
+      `content.shape` below (marked *Future*) are a deferred design sketch, not
+      a current authoring spelling — the `<bibliography source=… />` source
+      declaration is the only child element <config> takes today.
 content:
   type: structured
   shape:
@@ -77,32 +79,18 @@ jats_counterpart:
     <config> is decomposed at JATS export — relevant settings affect how
     the export is generated; they don't appear in JATS output.
 shorthand_examples:
-  - source: |
-      <config>
-        <bibliography source="refs.bib">
-        <citation-style | author-year>
-      </config>
-    layer1_html: |
-      <config>
-        <bibliography source="refs.bib"></bibliography>
-        <citation-style>author-year</citation-style>
-      </config>
+  - source: '<config citation-style=author-year number-sections=true />'
+    layer1_html: '<config></config>'
     notes: |
-      Common configuration: bibliography source file and citation style.
-  - source: |
-      <config>
-        <output-format | html>
-        <output-format | jats>
-        <stylesheet | scholarly-default.css>
-        <numbering-style | arabic>
-      </config>
-    layer1_html: |
-      <config>
-        <output-format>html</output-format>
-        <output-format>jats</output-format>
-        <stylesheet>scholarly-default.css</stylesheet>
-        <numbering-style>arabic</numbering-style>
-      </config>
+      The authoring form for <config> is kwargs. Settings are read at the
+      discovery pass into the configuration registry; the element itself
+      produces no body output (it renders as an empty <config>).
+  - source: '<config number-figures=true number-tables=true show-source=true />'
+    layer1_html: '<config></config>'
+    notes: |
+      More operational options, all from the live kwarg allowlist
+      (citation-style, number-sections, number-figures, number-tables,
+      number-equations, show-source, parse-data-tables, ref-prefix-*).
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeConfigDiscovery
@@ -160,18 +148,10 @@ For the common case of a paper with simple settings, kwargs on `<article>` are s
 <article note-position=end numbering-style=arabic | My Paper>
 ```
 
-For documents with richer configuration, a `<config>` block keeps things organized:
+For documents with richer configuration, a `<config>` element gathers the settings as kwargs:
 
 ```
-<config>
-  <output-format | html>
-  <output-format | jats>
-  <citation-style | author-year>
-  <numbering-style | arabic>
-  <note-position | end>
-  <stylesheet | scholarly-default.css>
-  <bibliography source="refs.bib">
-</config>
+<config citation-style=author-year number-sections=true number-figures=true number-tables=true show-source=true />
 ```
 
 ## Placement convention
@@ -205,50 +185,38 @@ For most documents, a single `<config>` block at the back is the cleanest patter
 **Minimal config (most papers).**
 
 ```
-<article note-position=end numbering-style=arabic | My Paper>
+<config citation-style=author-year number-sections=true />
 
-<config>
-  <bibliography source="refs.bib">
-  <citation-style | author-year>
-</config>
+<bibliography source="refs.bib" />
 ```
 
-The container kwargs handle simple settings; `<config>` handles bibliography source and citation style.
+Citation style and numbering ride as kwargs on `<config>`; the bibliography source is declared with a self-closing `<bibliography source=… />`.
 
-**Richer config (documents with multiple outputs and styling).**
+**Richer config (documents with several settings).**
 
 ```
-<config>
-  <output-format | html>
-  <output-format | pdf>
-  <output-format | jats>
-  <citation-style | numbered>
-  <numbering-style | arabic>
-  <note-position | foot>
-  <stylesheet | journal-template.css>
-  <theme | classical>
-  <bibliography source="refs.bib">
-</config>
+<config
+  citation-style=numbered
+  number-sections=true
+  number-figures=true
+  number-tables=true
+  number-equations=true
+  show-source=true
+  parse-data-tables=true />
 ```
 
 **Per-document override.**
 
 ```
-<config>
-  <citation-style | author-year>
-</config>
+<config citation-style=author-year />
 
-<article-body>
-  <section | Introduction>
-  Body content with citations.
-</article-body>
+<section | Introduction>
+Body content with citations.
 
-<config>
-  <citation-style | numbered>
-</config>
+<config citation-style=numbered />
 ```
 
-A second `<config>` block changes the citation style for citations declared after it. (This is a contrived example; most documents have one config and don't need overrides.)
+A second `<config>` changes the citation style for citations declared after it. (This is a contrived example; most documents have one config and don't need overrides.)
 
 ## Design context
 

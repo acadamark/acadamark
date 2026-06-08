@@ -44,13 +44,15 @@ than silently dropping the element — an unknown category means a new value
 was introduced without being added here.
 
 An element that the pipeline *produces* rather than the author *writes* —
-the structural region wrappers (`article-front`, `book-body`, …) and the
-generated title/subtitle wrappers (`section-title`, `article-subtitle`, …) —
-additionally declares `authoring: generated`. This marks it as having no
-direct authoring form, so a consumer expecting authored examples (again,
-the coverage gallery) treats a missing example as expected for these
-entries rather than as a coverage hole. Its absence means the element is
-authored directly.
+the structural region wrappers (`article-front`, `book-body`, …), the
+generated title/subtitle wrappers (`section-title`, `article-subtitle`, …),
+and generated apparatus output assembled by the citation plugins
+(`bibliography`, `bib-entry`) — additionally declares `authoring: generated`.
+These elements are produced by a pipeline plugin; an explicit-form escape
+hatch may render but is not the authoring path. The marker tells a consumer
+expecting authored examples (again, the coverage gallery) to treat a
+missing example as expected for these entries rather than as a coverage
+hole. Its absence means the element is authored directly.
 
 ### Container elements
 
