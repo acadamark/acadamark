@@ -83,7 +83,7 @@ The plugin walks the tree depth-first. For each node with string content and `co
 
 Eventually, content strings contain only plain text (no nested enscribe constructs and no markdown idioms with their own substructure), and the recursion bottoms out.
 
-A maximum recursion depth of 10 is enforced as a sanity check. When a node would be parsed beyond that depth, the plugin **converts the node in place to an `enscribeParseError`**: it sets `subtype: "max-recursion-depth"` and `source: "<tagname>"`, drops the node's `content` / `contentHandler` / `isOpaqueContent` fields, and stops descending. This should never trigger in practice; it guards against infinite loops from malformed input or future bugs.
+A maximum recursion depth of 10 is enforced as a sanity check. When a node would be parsed beyond that depth, the plugin **converts the node in place to a sparse `enscribeParseError`**: it sets `subtype: "max-recursion-depth"` and `source: "<tagname>"`, clears every other `enscribeTag` field (keeping only `position`), and stops descending. This should never trigger in practice; it guards against infinite loops from malformed input or future bugs.
 
 ## The `enscribeParseError` node shape
 
@@ -104,9 +104,7 @@ A maximum recursion depth of 10 is enforced as a sanity check. When a node would
 - `source` is the verbatim fragment.
 - `position` is added by mdast tooling.
 
-**Construction.** Fresh nodes use `makeParseError(subtype, source)` (`@enscribejs/enscribe/core/error-nodes.js`); the grammar (`enscribe.peggy`) emits the sparse shape directly. The recursion-limit case produces it by **in-place mutation** of the offending `enscribeTag` node (stamping `type` / `subtype` / `source`, dropping `content` / `contentHandler` / `isOpaqueContent`).
-
-> **Known inconsistency.** The in-place max-recursion site does not strip the mutated node's remaining `enscribeTag` fields (`tagname`, `positional`, …), so that one node is not fully sparse — unlike the grammar-emitted nodes and the `makeParseError` builder. The dominant shape is the sparse one above; consumers read only `type` / `subtype` / `source`. Tracked as a code-bug finding (not fixed in this docs slice).
+**Construction.** Fresh nodes use `makeParseError(subtype, source)` (`@enscribejs/enscribe/core/error-nodes.js`); the grammar (`enscribe.peggy`) emits the sparse shape directly. The recursion-limit case produces it by **in-place mutation** of the offending `enscribeTag` node — stamping `type` / `subtype` / `source` and clearing every other tag field, so it ends in the same sparse shape (with `position` preserved). Every `enscribeParseError`, whatever its construction site, is therefore uniformly sparse.
 
 ## The `isOpaqueContent` flag
 

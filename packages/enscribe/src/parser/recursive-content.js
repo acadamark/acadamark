@@ -64,12 +64,20 @@ function processNodes(subtree, processor, depth) {
     if (node.content === null) return SKIP
 
     if (depth >= MAX_DEPTH) {
+      // Reduce the offending tag to the canonical sparse `enscribeParseError`
+      // shape — { type, subtype, source, position? } — matching the grammar-
+      // emitted nodes and the from-markdown shortcut sites. The node arrives
+      // here fully populated as an `enscribeTag`, so clear every field first;
+      // clearing all keys (rather than a hand-maintained delete-list) keeps the
+      // node sparse even if `enscribeTag` later gains a field. Preserve only
+      // `position`, which the sibling in-place error sites also carry.
+      const source = `<${node.tagname}>`
+      const { position } = node
+      for (const key of Object.keys(node)) delete node[key]
       node.type = 'enscribeParseError'
       node.subtype = 'max-recursion-depth'
-      node.source = `<${node.tagname}>`
-      delete node.content
-      delete node.contentHandler
-      delete node.isOpaqueContent
+      node.source = source
+      if (position) node.position = position
       return SKIP
     }
 

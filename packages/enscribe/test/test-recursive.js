@@ -370,5 +370,44 @@ function parseInlineShortcut(src, tagname) {
   console.log('PASS RC-20: ^{see <cite @jones>} in prose → cite node inside sup after recursive-content')
 }
 
+// ─── Test RC-21: max-recursion enscribeParseError is uniformly sparse (#84) ──
+// The recursion-limit node must carry only the canonical sparse fields —
+// { type, subtype, source, position? } — with no residual enscribeTag fields
+// (tagname, positional, booleans, kwargs, id, classes, form, atRefs,
+// selfClosing) and no dropped content fields. Pins the fix for #84.
+{
+  let src = 'deepest content'
+  for (let i = 0; i < 11; i++) src = `<aside | ${src}>`
+  const tree = parse(src)
+  function findDeepest(node) {
+    if (!Array.isArray(node.content)) return node
+    const child = node.content.find(
+      (n) => n.type === 'enscribeTag' || n.type === 'enscribeParseError',
+    )
+    return child ? findDeepest(child) : node
+  }
+  const err = findDeepest(tree.children[0])
+  assert.equal(err.type, 'enscribeParseError', 'deepest is enscribeParseError')
+  assert.equal(err.subtype, 'max-recursion-depth', 'subtype set')
+  assert.equal(err.source, '<aside>', 'source is <tagname>')
+
+  // No own-key beyond the canonical sparse set { type, subtype, source, position }.
+  const ALLOWED = new Set(['type', 'subtype', 'source', 'position'])
+  const extra = Object.keys(err).filter((k) => !ALLOWED.has(k))
+  assert.deepEqual(extra, [], `no residual fields beyond the sparse set (got ${JSON.stringify(extra)})`)
+
+  // Belt-and-suspenders: each known former residual must be absent as an own key.
+  for (const field of [
+    'tagname', 'positional', 'booleans', 'kwargs', 'id', 'classes', 'form',
+    'atRefs', 'selfClosing', 'content', 'contentHandler', 'isOpaqueContent',
+  ]) {
+    assert.ok(
+      !Object.prototype.hasOwnProperty.call(err, field),
+      `residual enscribeTag field "${field}" must be absent`,
+    )
+  }
+  console.log('PASS RC-21: max-recursion enscribeParseError is uniformly sparse (#84)')
+}
+
 console.log('\nAll recursive-content tests passed.')
-console.log('\n20/20 recursive-content tests passed.')
+console.log('\n21/21 recursive-content tests passed.')
