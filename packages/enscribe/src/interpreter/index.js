@@ -293,53 +293,47 @@ function getTippyJs() {
 
 // ─── CSS injection helpers ────────────────────────────────────────────────────
 
-/** Walk a hast tree and return true if it contains any math elements. */
-function hasMathElements(node) {
-  if (
-    node.type === 'element' &&
-    (node.tagName === 'inline-math' || node.tagName === 'display-math')
-  ) {
-    return true;
-  }
-  return (node.children ?? []).some(hasMathElements);
-}
-
-/** Walk a hast tree and return true if it contains any note marker elements. */
-function hasNoteMarkers(node) {
-  if (
-    node.type === 'element' &&
-    node.tagName === 'sup' &&
-    node.properties?.dataNoteId
-  ) {
-    return true;
-  }
-  return (node.children ?? []).some(hasNoteMarkers);
-}
-
-/** Walk a hast tree and return true if it contains any resolved ref links. */
-function hasRefLinks(node) {
-  if (
-    node.type === 'element' &&
-    node.tagName === 'a' &&
-    Array.isArray(node.properties?.className) &&
-    node.properties.className.includes('ref')
-  ) {
-    return true;
-  }
-  return (node.children ?? []).some(hasRefLinks);
-}
-
-/** Walk a hast tree and return true if it contains any resolved cite markers. */
-function hasCiteLinks(node) {
-  if (
-    node.type === 'element' &&
-    node.tagName === 'cite' &&
-    Array.isArray(node.properties?.className) &&
-    node.properties.className.includes('cite')
-  ) {
-    return true;
-  }
-  return (node.children ?? []).some(hasCiteLinks);
+/**
+ * Single-pass asset detection (#48). One walk of the rendered hast collects
+ * every content-presence signal the compiler's conditional asset injection
+ * needs, replacing the former one-walk-per-asset predicates (a separate full
+ * traversal each for math, note markers, ref links, cite links, and one
+ * `hasDslMarker` walk per registered DSL). Each flag uses the exact same
+ * per-node predicate as before, so the emitted assets — and therefore the
+ * output — are byte-identical; this only removes redundant traversals.
+ *
+ * @param {object} root  hast root (or any node)
+ * @returns {{ math: boolean, notes: boolean, refLinks: boolean,
+ *             citeLinks: boolean, dslNames: Set<string> }}
+ */
+function detectAssets(root) {
+  const found = {
+    math: false,
+    notes: false,
+    refLinks: false,
+    citeLinks: false,
+    dslNames: new Set(),
+  };
+  (function walk(node) {
+    if (node.type === 'element') {
+      const props = node.properties ?? {};
+      const tag = node.tagName;
+      if (tag === 'inline-math' || tag === 'display-math') {
+        found.math = true;
+      } else if (tag === 'sup' && props.dataNoteId) {
+        found.notes = true;
+      } else if (tag === 'a' && Array.isArray(props.className) && props.className.includes('ref')) {
+        found.refLinks = true;
+      } else if (tag === 'cite' && Array.isArray(props.className) && props.className.includes('cite')) {
+        found.citeLinks = true;
+      }
+      // A DSL contract marker rides on a container element; collect it
+      // independently of the tag-name checks above (a node is never both).
+      if (props.dataEnscribeDsl) found.dslNames.add(props.dataEnscribeDsl);
+    }
+    for (const child of node.children ?? []) walk(child);
+  })(root);
+  return found;
 }
 
 function makeStyleElement(css) {
@@ -407,28 +401,12 @@ function buildHoverPreviewAssets(mode) {
 }
 
 // ─── External-DSL assets ──────────────────────────────────────────────────────
-
-/**
- * Walk a hast tree; return true if it contains a container carrying the given
- * DSL's contract marker (data-enscribe-dsl === name). Same detector shape as
- * hasMathElements / hasNoteMarkers above.
- */
-function hasDslMarker(node, name) {
-  if (node.type === 'element' && node.properties?.dataEnscribeDsl === name) {
-    return true;
-  }
-  return (node.children ?? []).some((child) => hasDslMarker(child, name));
-}
-
-/**
- * Does the document use this DSL? Defaults to the contract-marker walk above; a
- * registration MAY override it via its optional `detector` field. No built-in
- * registration overrides it in v0.1.0 — this is the forward hook for custom
- * DSLs registered through the planned v0.2.0 public API.
- */
-function documentUsesDsl(root, dsl) {
-  return dsl.detector ? dsl.detector(root) : hasDslMarker(root, dsl.name);
-}
+//
+// DSL presence is detected in the single detectAssets pass (#48): its
+// `dslNames` set holds the `data-enscribe-dsl` markers found anywhere in the
+// tree. A registration MAY still override detection via its optional `detector`
+// field (the forward hook for custom DSLs) — that override is applied at the
+// call site in the compiler, falling back to the precomputed set otherwise.
 
 /**
  * Build the asset nodes for one DSL in a live mode. Mirrors
@@ -720,6 +698,13 @@ export function enscribeInterpreter(options = {}) {
     // it) is untouched. `smartTypography: false` opts out.
     if (smartTypoOption !== false) smartTypography(hast);
 
+    // #48: detect every content asset in ONE walk (math / notes / refs / cites /
+    // DSL markers), here on the content tree before any asset injection. The
+    // injected <style>/<script>/<link> nodes and the ToC <nav> match none of the
+    // predicates, so detecting before they are added is result-identical to the
+    // former per-asset walks at each injection site — just one traversal, not six.
+    const assets = detectAssets(hast);
+
     // Phase 8 Slice 1: table-of-contents. Runs before asset injection so the
     // assets land outside the layout wrapper (at the top of the body), and before
     // rehype-format so the generated <nav> is formatted with everything else.
@@ -780,7 +765,7 @@ export function enscribeInterpreter(options = {}) {
     // Inject KaTeX CSS if the document uses math and the mode is not 'skip'.
     // Detection is done by walking the hast tree for inline-math / display-math
     // elements, so CSS is only added when actually needed.
-    if (cssMode !== 'skip' && hasMathElements(hast)) {
+    if (cssMode !== 'skip' && assets.math) {
       const cssNode =
         cssMode === 'link'
           ? makeLinkElement(KATEX_CDN_URL)
@@ -790,7 +775,7 @@ export function enscribeInterpreter(options = {}) {
 
     // Inject hover preview assets if the document has note markers, ref links,
     // or cite markers, and the mode is not 'skip'.
-    if (hoverMode !== 'skip' && (hasNoteMarkers(hast) || hasRefLinks(hast) || hasCiteLinks(hast))) {
+    if (hoverMode !== 'skip' && (assets.notes || assets.refLinks || assets.citeLinks)) {
       const assets = buildHoverPreviewAssets(hoverMode);
       // Prepend CSS, append JS (after DOM) — both before main content.
       // In practice: CSS <style>/<link> first, then JS <script> last.
@@ -811,7 +796,10 @@ export function enscribeInterpreter(options = {}) {
     // See src/dsl/registry.js and notes/specs/render-quality.md §9.
     const staticDsls = [];
     for (const dsl of getRegisteredDsls()) {
-      if (!documentUsesDsl(hast, dsl)) continue;
+      // #48: default detection reads the single-pass result; a custom DSL
+      // `detector` still overrides (the forward hook documentUsesDsl provided).
+      const usesDsl = dsl.detector ? dsl.detector(hast) : assets.dslNames.has(dsl.name);
+      if (!usesDsl) continue;
       const mode = resolveDslMode(dsl.name, options);
       if (mode === 'skip') continue;
       if (mode === 'static') {

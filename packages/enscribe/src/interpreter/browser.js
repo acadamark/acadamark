@@ -26,6 +26,52 @@ const BROWSER_DEFAULTS = {
   dslMode: 'live-link',
 };
 
+// #48: memoize the built pipeline. The pipeline build depends only on the
+// resolved options (the plugin set is fixed; options configure the interpreter),
+// NOT on the source — which arrives later, per call, via processSync. So one
+// processor can be reused across every render() that shares options. The
+// playground re-renders on each debounced keystroke with stable options, so this
+// turns N pipeline builds into 1. A unified processor is reusable across
+// processSync calls — per-render state lives on the VFile, never the processor —
+// and this was verified output-identical to a fresh build per call. The cache is
+// keyed on the resolved options, so changing any option uses (and caches) a
+// distinct pipeline; a stale pipeline is never served. Unbounded by design: the
+// key space is the set of distinct option combinations a session uses, which is
+// tiny (the playground uses one).
+const _pipelineCache = new Map();
+
+/**
+ * Stable string key for a resolved-options object: entries sorted by name, then
+ * JSON-encoded. The documented option values are primitives (booleans / strings
+ * / null), so this is a faithful, collision-free key.
+ */
+function pipelineKey(resolvedOptions) {
+  const entries = Object.entries(resolvedOptions).sort(([a], [b]) =>
+    a < b ? -1 : a > b ? 1 : 0,
+  );
+  return JSON.stringify(entries);
+}
+
+/**
+ * The memoized render pipeline for these options, built (and cached) on first
+ * use and reused thereafter. render() and renderInto() go through it. Exported
+ * for tests (a reuse / instance-identity check); not part of the documented
+ * public surface.
+ *
+ * @param {object} [options] - pipeline options; override BROWSER_DEFAULTS as needed.
+ * @returns {import('unified').Processor}
+ */
+export function getPipeline(options = {}) {
+  const resolved = { ...BROWSER_DEFAULTS, ...options };
+  const key = pipelineKey(resolved);
+  let processor = _pipelineCache.get(key);
+  if (!processor) {
+    processor = buildEnscribePipeline(resolved);
+    _pipelineCache.set(key, processor);
+  }
+  return processor;
+}
+
 /**
  * Render enscribe source to an HTML string.
  *
@@ -34,8 +80,7 @@ const BROWSER_DEFAULTS = {
  * @returns {string} Serialized HTML.
  */
 export function render(source, options = {}) {
-  const processor = buildEnscribePipeline({ ...BROWSER_DEFAULTS, ...options });
-  return String(processor.processSync(source));
+  return String(getPipeline(options).processSync(source));
 }
 
 /**

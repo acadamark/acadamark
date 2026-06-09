@@ -1076,9 +1076,16 @@ entry `src/browser.js`. It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
 which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
 browser-safe defaults (external fonts / KaTeX CSS, linked third-party
-hover-preview libraries, live-link DSL); a caller can override any of them. tsup
-bundles the entry into an ESM module and an IIFE global (`window.enscribe`);
-see `tsup.config.js`.
+hover-preview libraries, live-link DSL); a caller can override any of them. For
+the live-editor case (#48), the built pipeline is **memoized on the resolved
+options**: the build depends only on those options, not on the per-call source
+(which arrives via `processSync`), so a live editor re-rendering on each
+keystroke reuses one pipeline instead of rebuilding it per render. A changed
+option keys a distinct cached pipeline, so a stale one is never served.
+Relatedly, the shared compiler detects content assets (math, note markers, ref /
+cite links, DSL contract markers) in a **single tree walk** rather than one walk
+per asset — both are output-neutral perf changes. tsup bundles the entry into an
+ESM module and an IIFE global (`window.enscribe`); see `tsup.config.js`.
 
 The Node-only asset paths (font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads)
 are dead code under the browser defaults, but their `fs` / `path` / `url` /
