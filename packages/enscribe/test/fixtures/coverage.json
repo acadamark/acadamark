@@ -1,17 +1,17 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 369,
+    "cells": 355,
     "fixtures": 49,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 283,
-    "pass": 68,
+    "gap": 272,
+    "pass": 65,
     "deferred": 18
   },
   "byDisposition": {
-    "specified": 325,
+    "specified": 311,
     "generic-implicit": 20,
     "deferred-presentation": 18,
     "no-output": 4,
@@ -4007,100 +4007,6 @@
       "status": "gap"
     },
     {
-      "key": "li/base",
-      "element": "li",
-      "behavior": "base",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "li/id",
-      "element": "li",
-      "behavior": "id",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "li/class",
-      "element": "li",
-      "behavior": "class",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "li/kwarg:value",
-      "element": "li",
-      "behavior": "kwarg:value",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "li/form:pipe",
-      "element": "li",
-      "behavior": "form:pipe",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [
-        "sweep/swp-block.emd"
-      ],
-      "status": "pass"
-    },
-    {
-      "key": "li/form:long",
-      "element": "li",
-      "behavior": "form:long",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [
-        "sweep/swp-block.emd"
-      ],
-      "status": "pass"
-    },
-    {
       "key": "library/no-output",
       "element": "library",
       "behavior": "no-output",
@@ -4133,6 +4039,68 @@
         "sweep/swp-meta.emd"
       ],
       "status": "deferred"
+    },
+    {
+      "key": "list/base",
+      "element": "list",
+      "behavior": "base",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "list/id",
+      "element": "list",
+      "behavior": "id",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "list/class",
+      "element": "list",
+      "behavior": "class",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "list/form:long",
+      "element": "list",
+      "behavior": "form:long",
+      "area": "RQ-BLK",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BLK-M1",
+        "RQ-BLK-S1",
+        "RQ-BLK-S2",
+        "RQ-BLK-M2"
+      ],
+      "coveredBy": [
+        "sweep/swp-block.emd"
+      ],
+      "status": "pass"
     },
     {
       "key": "math/base",
@@ -4623,113 +4591,6 @@
       ],
       "coveredBy": [],
       "status": "gap"
-    },
-    {
-      "key": "ol/base",
-      "element": "ol",
-      "behavior": "base",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ol/id",
-      "element": "ol",
-      "behavior": "id",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ol/class",
-      "element": "ol",
-      "behavior": "class",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ol/kwarg:type",
-      "element": "ol",
-      "behavior": "kwarg:type",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ol/kwarg:start",
-      "element": "ol",
-      "behavior": "kwarg:start",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ol/kwarg:reversed",
-      "element": "ol",
-      "behavior": "kwarg:reversed",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ol/form:long",
-      "element": "ol",
-      "behavior": "form:long",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [
-        "sweep/swp-block.emd"
-      ],
-      "status": "pass"
     },
     {
       "key": "orcid/deferred",
@@ -6875,83 +6736,6 @@
       ],
       "coveredBy": [
         "sweep/swp-inline.emd"
-      ],
-      "status": "pass"
-    },
-    {
-      "key": "ul/base",
-      "element": "ul",
-      "behavior": "base",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ul/id",
-      "element": "ul",
-      "behavior": "id",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ul/class",
-      "element": "ul",
-      "behavior": "class",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ul/kwarg:type",
-      "element": "ul",
-      "behavior": "kwarg:type",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "ul/form:long",
-      "element": "ul",
-      "behavior": "form:long",
-      "area": "RQ-BLK",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BLK-M1",
-        "RQ-BLK-S1",
-        "RQ-BLK-S2",
-        "RQ-BLK-M2"
-      ],
-      "coveredBy": [
-        "sweep/swp-block.emd"
       ],
       "status": "pass"
     },

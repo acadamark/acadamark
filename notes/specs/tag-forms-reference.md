@@ -107,9 +107,7 @@ each title element is the section's promoted title.
 | `<dl>` | — | — | ✓ | Definition list; long form only. |
 | `<dt>` | ✓ | — | ✓ | Pipe form for short terms; long form for richer content. |
 | `<dd>` | ✓ | — | ✓ | Pipe form for short definitions; long form for richer content. |
-| `<ol>` | — | — | ✓ | Ordered list; container for `<li>`. |
-| `<ul>` | — | — | ✓ | Unordered list; container for `<li>`. |
-| `<li>` | ✓ | — | ✓ | Pipe form for short items; long form for multi-paragraph items. |
+| `<list>` | — | — | ✓ | Canonical list construct; long form only. Items are the block-scoped paired sigil `<- … ->` / `<* … *>` (or the `-` / `*` markdown idiom); `<list ordered>` for ordered. `<ul>` / `<ol>` / `<li>` are its render output, not authoring vocabulary. |
 
 ### Frameables (figures, tables, diagrams)
 

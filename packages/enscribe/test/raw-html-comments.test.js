@@ -66,6 +66,41 @@ export function run() {
     console.log('PASS: recognized tag nested in unknown tag still renders');
   }
 
+  // ── #137 lists cleanup: ul/ol/li are NOT authoring vocabulary ──────────────
+  // `<list>` is the canonical list element (it lowers to a mdast list/listItem,
+  // never consulting these tagnames); `<ul>` / `<ol>` / `<li>` are its render
+  // OUTPUT only. Authored directly they are unknown tags, so they take the same
+  // literal-escape path as any other non-vocabulary tag — and crucially must NOT
+  // render as real HTML list elements. See notes/specs/lists.md §"Layer 1,
+  // render, JATS" and the vocabulary SPEC.md lists row.
+  {
+    const html = render('<ul>\n<li | First item>\n<li | Second item>\n</ul>');
+    assert.ok(
+      html.includes(`${LT}ul>${LT}li | First item>${LT}li | Second item>${LT}/ul>`),
+      'authored <ul> with pipe-form <li> items echoes its source literally',
+    );
+    assert.ok(!html.includes('<ul>'), 'no real <ul> element rendered');
+    assert.ok(!html.includes('<li>'), 'no real <li> element rendered');
+    console.log('PASS: authored <ul>/<li> → literal escape (not a real list)');
+  }
+  {
+    const html = render('<ol>\n<li | Step one>\n</ol>');
+    assert.ok(
+      html.includes(`${LT}ol>${LT}li | Step one>${LT}/ol>`),
+      'authored <ol> echoes its source literally',
+    );
+    assert.ok(!html.includes('<ol>'), 'no real <ol> element rendered');
+    console.log('PASS: authored <ol> → literal escape');
+  }
+  {
+    // A bare <li> in both registers echoes its original syntax (pipe / long).
+    const pipe = render('A <li | lone item> B');
+    assert.ok(pipe.includes(`${LT}li | lone item>`), 'bare <li | …> echoes pipe form literally');
+    const long = render('A <li>lone</li> B');
+    assert.ok(long.includes(`${LT}li>lone${LT}/li>`), 'bare <li>…</li> echoes long form literally');
+    console.log('PASS: bare <li> (pipe and long) → literal escape');
+  }
+
   // ── Issue 2b: non-vocab raw HTML escaped; vocabulary tags still render ──────
   {
     // `<div>hi</div>` inline is a non-vocab tag: echoes its original long-form

@@ -30,6 +30,7 @@ import {
   enscribeBookStructuring,
   enscribeArticleStructuring,
   enscribeSectionNesting,
+  enscribeListStructuring,
   enscribeNotes,
   enscribeNotePlacement,
   enscribeNumbering,
@@ -269,7 +270,10 @@ function validateWithXmllint(fixtureName, jatsXml) {
   // Run the same transform pipeline as doc-39 but also include
   // numbering + apply-numbers + ref-resolution so display-math and
   // frameables get computedNumber populated (required for <label>
-  // emission per slice 5b).
+  // emission per slice 5b). enscribeListStructuring (after section-nesting,
+  // before numbering — the real-pipeline order) lowers the <list> construct
+  // this fixture authors; without it the <list> tag never becomes a JATS
+  // <list> (the doc137 test below sidesteps this by using buildEnscribePipeline).
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
@@ -278,6 +282,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
     .use(enscribeBookStructuring)
     .use(enscribeArticleStructuring)
     .use(enscribeSectionNesting)
+    .use(enscribeListStructuring)
     .use(enscribeNumbering)
     .use(function applyNumbers() {
       return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };

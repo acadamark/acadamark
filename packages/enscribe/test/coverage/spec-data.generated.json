@@ -815,10 +815,6 @@
       "area": "RQ-THM",
       "disposition": "specified"
     },
-    "li": {
-      "area": "RQ-BLK",
-      "disposition": "specified"
-    },
     "library": {
       "area": "RQ-META",
       "disposition": "no-output"
@@ -826,6 +822,10 @@
     "license": {
       "area": "RQ-META",
       "disposition": "deferred-presentation"
+    },
+    "list": {
+      "area": "RQ-BLK",
+      "disposition": "specified"
     },
     "math": {
       "area": "RQ-MATH",
@@ -853,10 +853,6 @@
     },
     "note-list": {
       "area": "RQ-NOTE",
-      "disposition": "specified"
-    },
-    "ol": {
-      "area": "RQ-BLK",
       "disposition": "specified"
     },
     "orcid": {
@@ -994,10 +990,6 @@
     "u": {
       "area": "RQ-INL",
       "disposition": "generic-implicit"
-    },
-    "ul": {
-      "area": "RQ-BLK",
-      "disposition": "specified"
     },
     "var": {
       "area": "RQ-INL",
@@ -1314,11 +1306,6 @@
       "—",
       "✓"
     ],
-    "li": [
-      "✓",
-      "—",
-      "✓"
-    ],
     "library": [
       "—",
       "✓",
@@ -1326,6 +1313,11 @@
     ],
     "license": [
       "✓",
+      "—",
+      "✓"
+    ],
+    "list": [
+      "—",
       "—",
       "✓"
     ],
@@ -1363,11 +1355,6 @@
       "—",
       "—",
       "—"
-    ],
-    "ol": [
-      "—",
-      "—",
-      "✓"
     ],
     "orcid": [
       "✓",
@@ -1536,11 +1523,6 @@
     ],
     "u": [
       "✓",
-      "—",
-      "✓"
-    ],
-    "ul": [
-      "—",
       "—",
       "✓"
     ],

@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 105 vocabulary entries.
+// Source files: 102 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -3772,72 +3772,6 @@ const _lemma = Object.freeze({
     "_sourceFile": "lemma.md",
   });
 
-const _li = Object.freeze({
-    "semantic_role": "li",
-    "category": "block-prose",
-    "html_output": {
-      "element": "li",
-      "is_html_native": true,
-      "default_attributes": {},
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "value": {
-          "maps_to": {
-            "html": "value",
-          },
-          "notes": "For ordered lists, sets the explicit number for this item.\nSubsequent items are numbered relative to this value. Maps to\nHTML's standard value attribute on <li>.\n",
-        },
-      },
-    },
-    "content": {
-      "type": "prose",
-      "becomes": "children",
-    },
-    "content_handler": "default",
-    "jats_counterpart": {
-      "element": "list-item",
-      "notes": "Direct mapping to JATS <list-item>. The value attribute (when\npresent) is preserved.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "- A list item.",
-        "layer1_html": "<li>A list item.</li>",
-        "notes": "Inside a markdown-style list, the dash syntax produces an <li>\nautomatically. No explicit <li> tag needed.\n",
-      },
-      {
-        "source": "<li | A list item with explicit tag.>",
-        "layer1_html": "<li>A list item with explicit tag.</li>",
-        "notes": "The explicit form is used inside an explicit <ul> or <ol> when\nthe item needs attributes.\n",
-      },
-      {
-        "source": "<li #important type=highlighted | A noteworthy item.>\n",
-        "layer1_html": "<li id=\"important\" data-highlighted=\"true\">A noteworthy item.</li>\n",
-      },
-      {
-        "source": "<li |\nA multi-paragraph list item.\n\nThe second paragraph of the item.\n>\n",
-        "layer1_html": "<li>\n  <p>A multi-paragraph list item.</p>\n  <p>The second paragraph of the item.</p>\n</li>\n",
-      },
-      {
-        "source": "<ol>\n  <li | First item>\n  <li value=10 | Item ten>\n  <li | Item eleven>\n</ol>\n",
-        "layer1_html": "<ol>\n  <li>First item</li>\n  <li value=\"10\">Item ten</li>\n  <li>Item eleven</li>\n</ol>\n",
-        "notes": "The value attribute on <li> sets a specific number. Subsequent\nitems count from there.\n",
-      },
-    ],
-    "interpreter_strategy": "schema",
-    "_sourceFile": "li.md",
-  });
-
 const _library = Object.freeze({
     "semantic_role": "library",
     "category": "structured-data-containers",
@@ -4392,97 +4326,6 @@ const _note = Object.freeze({
       },
     ],
     "_sourceFile": "note.md",
-  });
-
-const _ol = Object.freeze({
-    "semantic_role": "ol",
-    "category": "block-prose",
-    "html_output": {
-      "element": "ol",
-      "is_html_native": true,
-      "default_attributes": {},
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "type": {
-          "maps_to": {
-            "html": "data-list-type",
-          },
-          "values": [
-            "arabic",
-            "alpha",
-            "alpha-upper",
-            "roman",
-            "roman-upper",
-            "other",
-          ],
-          "default": "arabic",
-          "notes": "The numbering style for ordered list items. Values match common\nlist-style-type CSS values, abbreviated for readability.\n",
-        },
-        "start": {
-          "maps_to": {
-            "html": "start",
-          },
-          "notes": "The starting number for the list. Maps to HTML's standard start\nattribute on <ol>. Default is 1.\n",
-        },
-        "reversed": {
-          "maps_to": {
-            "html": "reversed",
-          },
-          "notes": "If present, the list counts backward (5, 4, 3, 2, 1 instead of\n1, 2, 3, 4, 5). Maps to HTML's standard reversed attribute.\n",
-        },
-      },
-    },
-    "content": {
-      "type": "structured",
-      "shape": [
-        {
-          "element": "li",
-          "required": false,
-          "multiple": true,
-          "contains": [
-            "inline",
-            "block",
-          ],
-        },
-      ],
-    },
-    "content_handler": "default",
-    "jats_counterpart": {
-      "element": "list",
-      "attributes": {
-        "list-type": "order",
-      },
-      "notes": "JATS uses <list list-type=\"order\"> for ordered lists. The\nnumbering style is preserved via the content-type attribute.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "1. First step\n2. Second step\n3. Third step\n",
-        "layer1_html": "<ol>\n  <li>First step</li>\n  <li>Second step</li>\n  <li>Third step</li>\n</ol>\n",
-        "notes": "Plain markdown ordered lists work without explicit enscribe tags.\nThis is the most common authoring path.\n",
-      },
-      {
-        "source": "<ol #procedure type=arabic start=5>\n1. Fifth step\n2. Sixth step\n3. Seventh step\n</ol>\n",
-        "layer1_html": "<ol id=\"procedure\" start=\"5\">\n  <li>Fifth step</li>\n  <li>Sixth step</li>\n  <li>Seventh step</li>\n</ol>\n",
-        "notes": "The numbers in the source markdown are ignored; the start kwarg\nsets the actual numbering. The list renders as 5, 6, 7 because\nstart=5 was specified.\n",
-      },
-      {
-        "source": "<ol type=alpha-upper>\n1. First option\n2. Second option\n3. Third option\n</ol>\n",
-        "layer1_html": "<ol data-list-type=\"alpha-upper\">\n  <li>First option</li>\n  <li>Second option</li>\n  <li>Third option</li>\n</ol>\n",
-      },
-    ],
-    "interpreter_strategy": "schema",
-    "_sourceFile": "ol.md",
   });
 
 const _orcid = Object.freeze({
@@ -6454,82 +6297,6 @@ const _u = Object.freeze({
     "_sourceFile": "u.md",
   });
 
-const _ul = Object.freeze({
-    "semantic_role": "ul",
-    "category": "block-prose",
-    "html_output": {
-      "element": "ul",
-      "is_html_native": true,
-      "default_attributes": {},
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "type": {
-          "maps_to": {
-            "html": "data-list-type",
-          },
-          "values": [
-            "bullet",
-            "checklist",
-            "glossary",
-            "navigation",
-            "other",
-          ],
-          "notes": "Optional classification of the list's role. Affects rendering\n(checklists get checkboxes; navigation lists get layout treatment).\n",
-        },
-      },
-    },
-    "content": {
-      "type": "structured",
-      "shape": [
-        {
-          "element": "li",
-          "required": false,
-          "multiple": true,
-          "contains": [
-            "inline",
-            "block",
-          ],
-        },
-      ],
-    },
-    "content_handler": "default",
-    "jats_counterpart": {
-      "element": "list",
-      "attributes": {
-        "list-type": "bullet",
-      },
-      "notes": "JATS uses <list list-type=\"bullet\"> for unordered lists. The\nlist-type attribute is preserved at export. Enscribe's optional\ntype kwarg (checklist, glossary, etc.) is transformed during export:\ntype=checklist becomes list-type=\"bullet\" with content-type=\"checklist\".\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "- First item\n- Second item\n- Third item\n",
-        "layer1_html": "<ul>\n  <li>First item</li>\n  <li>Second item</li>\n  <li>Third item</li>\n</ul>\n",
-        "notes": "Plain markdown unordered lists work without explicit enscribe tags.\nThis is the most common authoring path. Use plain markdown when no\nattributes are needed on the list or items.\n",
-      },
-      {
-        "source": "<ul #key-points type=checklist>\n- First item\n- Second item\n- Third item\n</ul>\n",
-        "layer1_html": "<ul id=\"key-points\" data-list-type=\"checklist\">\n  <li>First item</li>\n  <li>Second item</li>\n  <li>Third item</li>\n</ul>\n",
-      },
-      {
-        "source": "<ul .featured>\n  <li | First item with <em | emphasis>.>\n  <li | Second item.>\n</ul>\n",
-        "layer1_html": "<ul class=\"featured\">\n  <li>First item with <em>emphasis</em>.</li>\n  <li>Second item.</li>\n</ul>\n",
-      },
-    ],
-    "interpreter_strategy": "schema",
-    "_sourceFile": "ul.md",
-  });
-
 const _var = Object.freeze({
     "semantic_role": "var",
     "category": "inline-formatting",
@@ -6682,7 +6449,6 @@ export const VOCABULARY = Object.freeze({
   "keywords": _keywords,
   "lang": _lang,
   "lemma": _lemma,
-  "li": _li,
   "library": _library,
   "license": _license,
   "math": _math,
@@ -6691,7 +6457,6 @@ export const VOCABULARY = Object.freeze({
   "name": _name,
   "note-list": _note_list,
   "note": _note,
-  "ol": _ol,
   "orcid": _orcid,
   "output": _output,
   "p": _p,
@@ -6725,7 +6490,6 @@ export const VOCABULARY = Object.freeze({
   "theorem": _theorem,
   "title": _title,
   "u": _u,
-  "ul": _ul,
   "var": _var,
   "version": _version,
   "quote": _blockquote,  // alias

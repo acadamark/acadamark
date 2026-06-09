@@ -7,10 +7,10 @@
 
 ## Summary
 
-- **Behavior cells:** 369  ·  **fixtures:** 49  ·  **annexed (generated) elements:** 19
-- **Covered:** 68 (18%)
-- **By status:** `deferred` 18 · `gap` 283 · `pass` 68
-- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 325
+- **Behavior cells:** 355  ·  **fixtures:** 49  ·  **annexed (generated) elements:** 19
+- **Covered:** 65 (18%)
+- **By status:** `deferred` 18 · `gap` 272 · `pass` 65
+- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 311
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -131,27 +131,13 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `hr` | class | specified | — | 🔴 gap |
 | `hr` | kwarg:type | specified | — | 🔴 gap |
 | `hr` | form:slash | specified | `sweep/swp-block.emd` | 🟢 pass |
-| `li` | base | specified | — | 🔴 gap |
-| `li` | id | specified | — | 🔴 gap |
-| `li` | class | specified | — | 🔴 gap |
-| `li` | kwarg:value | specified | — | 🔴 gap |
-| `li` | form:pipe | specified | `sweep/swp-block.emd` | 🟢 pass |
-| `li` | form:long | specified | `sweep/swp-block.emd` | 🟢 pass |
-| `ol` | base | specified | — | 🔴 gap |
-| `ol` | id | specified | — | 🔴 gap |
-| `ol` | class | specified | — | 🔴 gap |
-| `ol` | kwarg:type | specified | — | 🔴 gap |
-| `ol` | kwarg:start | specified | — | 🔴 gap |
-| `ol` | kwarg:reversed | specified | — | 🔴 gap |
-| `ol` | form:long | specified | `sweep/swp-block.emd` | 🟢 pass |
+| `list` | base | specified | — | 🔴 gap |
+| `list` | id | specified | — | 🔴 gap |
+| `list` | class | specified | — | 🔴 gap |
+| `list` | form:long | specified | `sweep/swp-block.emd` | 🟢 pass |
 | `p` | blanket | generic-implicit | `sweep/swp-block.emd` | 🟢 pass |
 | `quote` | alias | alias | `sweep/swp-block.emd` | 🟢 pass |
 | `summary` | blanket | generic-implicit | `sweep/swp-block.emd` | 🟢 pass |
-| `ul` | base | specified | — | 🔴 gap |
-| `ul` | id | specified | — | 🔴 gap |
-| `ul` | class | specified | — | 🔴 gap |
-| `ul` | kwarg:type | specified | — | 🔴 gap |
-| `ul` | form:long | specified | `sweep/swp-block.emd` | 🟢 pass |
 
 ## RQ-INL — Inline prose
 

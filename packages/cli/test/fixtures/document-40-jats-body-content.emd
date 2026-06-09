@@ -11,17 +11,17 @@ with prose to verify the slice 5b paragraph-grouping fix.
 
 An unordered list:
 
-<ul>
-<li | First item with *emphasis*.>
-<li | Second item.>
-</ul>
+<list>
+<- First item with *emphasis*. ->
+<- Second item. ->
+</list>
 
 An ordered list:
 
-<ol>
-<li | One>
-<li | Two>
-</ol>
+<list ordered>
+<- One ->
+<- Two ->
+</list>
 
 A definition list:
 

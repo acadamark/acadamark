@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 108 primary + 2 aliases ('quote', 'figure') = 110.
+// Entry count: 102 primary + 2 aliases ('quote', 'figure') = 104.
 // Recent additions:
 // - 2026-Q2: Phase 3 slice 3b — `fig.md`, `svg.md`, `frame.md` added
 //   as the three settled frameable members that lacked vocab entries
@@ -71,9 +71,13 @@ function check(label, cond) {
 //   (the diagram host; the engine is the format-word positional). Net:
 //   108 → 107 primary. Then `csv.md` / `tsv.md` removed (retired to `<table>`
 //   gate shorthands → `<table csv>` / `<table tsv>`). Net: 107 → 105 primary.
+// - 2026-06-08: #137 lists cleanup — `ul.md` / `ol.md` / `li.md` removed.
+//   `<ul>` / `<ol>` / `<li>` are render output of the `<list>` construct, not
+//   authoring vocabulary (notes/specs/lists.md); `<list>` lowers to mdast
+//   list/listItem and never consults these entries. Net: 105 → 102 primary.
 check(
-  `VOCABULARY has 107 entries (105 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 107,
+  `VOCABULARY has 104 entries (102 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 104,
 );
 
 // Build-time loader has nothing to report in normal state.
@@ -83,7 +87,6 @@ check('VOCABULARY_ERRORS is empty', VOCABULARY_ERRORS.length === 0);
 const required = [
   'article', 'section', 'sub-section', 'sub-sub-section',
   'p', 'aside', 'blockquote', 'hr', 'figure',
-  'ul', 'ol', 'li',
   'em', 'strong', 'code',
   'meta',
   'inline-math', 'display-math',

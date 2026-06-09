@@ -6,19 +6,16 @@
 <!-- cell: p/blanket -->
 An ordinary paragraph of body prose introduces the lists below.
 
-<!-- cell: ul/form:long -->
-<ul>
-<!-- cell: li/form:pipe -->
-<li | First unordered item>
-<li | Second unordered item>
-</ul>
+<!-- cell: list/form:long -->
+<list>
+<- First unordered item ->
+<- Second unordered item ->
+</list>
 
-<!-- cell: ol/form:long -->
-<ol>
-<!-- cell: li/form:long -->
-<li>First step, with a fuller sentence of explanation.</li>
-<li | Second step>
-</ol>
+<list ordered>
+<- First step, with a fuller sentence of explanation. ->
+<- Second step ->
+</list>
 
 <section | Quotations and breaks>
 <!-- cell: blockquote/form:pipe -->

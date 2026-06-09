@@ -138,7 +138,7 @@ accounted for as one of three dispositions.
 |---|---|---|
 | Specified — document structure | `article`, `article-front/body/back`, `article-title`, `article-subtitle`, `section`/`sub-section`/`sub-sub-section` (+ `-title`/`-subtitle`), `title`, `subtitle` | §3 |
 | Specified — author & meta | `author`, `name` | §4 |
-| Specified — block prose | `blockquote`, `hr`, `ul`/`ol`/`li` | §6 |
+| Specified — block prose | `blockquote`, `hr`, `list` | §6 |
 | Specified — inline prose | `em`, `strong` | §7 |
 | Specified — frameables | `fig`(`figure`), `img`, `table`, `csv`, `tsv`, `svg`, `frame`, `aside` (boxed prose) | §8 |
 | Specified — external DSLs | `mermaid`, `abc` | §9 |
