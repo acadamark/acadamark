@@ -81,7 +81,7 @@ const RENDER_OPTIONS = {
 // docs-site content arc (Slices 3b–3f) is complete: Home, Design, Quickstart, the
 // full Authoring Guide, the Layer 1 Vocabulary Reference, and the JATS article.
 const PAGES = [
-  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                       nav: 'Home',            kind: 'page' },
+  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                       nav: 'Home',            kind: 'page', renderOptions: { toc: 'auto' } },
   { slug: 'design',          source: 'design.emd',          title: 'Design — enscribe',              nav: 'Design',          kind: 'page', renderOptions: { toc: 'auto' } },
   { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',          nav: 'Quickstart',      kind: 'playground' },
   { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page', renderOptions: { toc: true } },

@@ -1,14 +1,17 @@
-# Enscribe
+<meta type=article>
+  <title | Enscribe>
+  <author | The Enscribe Project>
+</meta>
 
 An academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top — combining the simplicity of markdown with the expressiveness needed for scholarly work.
 
-## Motto
+# Motto
 
 > Not re-inventing the wheel. Re-discovering the wheel.
 
 In this case, HTML is the wheel.
 
-## If you write academic documents
+# If you write academic documents
 
 You already have a tool for this, and you already know its cost.
 
@@ -20,15 +23,15 @@ If you write in **Word**, everything is visible and nothing is structured — eq
 
 All three share one assumption: the rich, finished document is something you *compile to* or *export to*. But the renderer for rich, structured documents already exists, runs on every device, and needs nothing installed — the web browser. HTML is a mature, semantic document format. What's missing isn't the renderer. It's a way to *write* HTML that doesn't make you quit. That's what enscribe is.
 
-## The idea in one paragraph
+# The idea in one paragraph
 
 Markdown's success comes from a simple bargain: a small set of typing conventions that map cleanly onto HTML. For academic writing, that bargain breaks down — citations, cross-references, figure numbering, theorems, and structured sections all require extensions, and every project that has tried to add them (RMarkdown, Bookdown, Quarto, Pandoc filters) has invented its own incompatible flavor. Meanwhile, HTML+CSS+JS is already a complete, universally supported typesetting system. Enscribe proposes that the right move isn't another markdown extension — it's a rigorous set of HTML conventions for academic content, plus a uniform shorthand for authoring them that's easier on the fingers than raw HTML.
 
-## Why HTML?
+# Why HTML?
 
 HTML+CSS+JS already does most of what academic typesetting needs. It's universally rendered (every browser, every platform). It's exportable to nearly anything via existing tools (Pandoc going *outward* from HTML is mature and reliable). It composes — every JS library, every CSS framework, every web component slots in. The only things HTML lacks are (1) a standard vocabulary for academic semantics like citations and cross-references, and (2) an authoring syntax that doesn't make humans want to quit. Enscribe adds both.
 
-## What enscribe is, in two layers
+# What enscribe is, in two layers
 
 **Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, captioned figures, citations, cross-references, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
 
@@ -40,7 +43,7 @@ HTML+CSS+JS already does most of what academic typesetting needs. It's universal
 
 Both registers compile to the same Layer 1 HTML.
 
-## A taste
+# A taste
 
 ```
 ## Introduction
@@ -59,17 +62,17 @@ We followed the protocol described in <cite jones2024>.
 
 Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, and a cross-reference to that figure. Referenceable elements take a typed colon-id (`#fig:elephant`), so a reference names both the kind of target and the target itself. The whole example compiles to standard, semantic HTML that any browser can render and any converter can process.
 
-## Status
+# Status
 
 **enscribe v0.3.0 is released.** The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, citations, cross-references, figures, math, code, tables, and notes all render to self-contained HTML. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
 The implementation is built on the <a href="https://unifiedjs.com/" | unified> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for a current snapshot of what works and what doesn't, <a href="design.html" | the Design article> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/blob/main/notes/specs/interpreter.md" | `notes/specs/interpreter.md`> and <a href="https://github.com/enscribejs/enscribe/blob/main/notes/specs/pipeline.md" | `notes/specs/pipeline.md`> for the architecture.
 
-## Reading order
+# Reading order
 
 The project has accumulated enough documentation that knowing where to start matters. See the <a href="https://github.com/enscribejs/enscribe/blob/main/CONTRIBUTING.md#reading-order-for-newcomers" | Reading order section in `CONTRIBUTING.md`> for a guided path through the spec and implementation docs.
 
-## Project goals
+# Project goals
 
 Enscribe's purpose, in four parts:
 
@@ -80,13 +83,13 @@ Enscribe's purpose, in four parts:
 
 Goals 1 through 3 are achieved; goal 4 is demonstrated for HTML output and for bidirectional JATS conversion, with Pandoc handling other downstream targets. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for detail.
 
-## Non-goals
+# Non-goals
 
 - Replacing markdown for the things markdown already does well.
 - Replacing LaTeX for math typesetting (we delegate to KaTeX/MathJax).
 - Building a parser from scratch (we delegate to the unified ecosystem).
 - Inventing yet another markdown flavor with its own bespoke extensions.
 
-## License
+# License
 
 MIT License. See <a href="https://github.com/enscribejs/enscribe/blob/main/LICENSE" | `LICENSE`> for details.
