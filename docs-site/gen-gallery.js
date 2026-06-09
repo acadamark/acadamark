@@ -113,7 +113,21 @@ function renderElement(spec, render, assetSet) {
     parts.push(`      <p class="gallery-aliases">Authoring shorthand: ${list}</p>`);
   }
 
-  if (examples.length) {
+  if (spec['requires-context']) {
+    // #132 (Option A — annotate, don't inject context): some examples are
+    // context-dependent (book-part shorthands need a book; <cite> needs a loaded
+    // bibliography) and degrade to a misleading "unknown tag" render when the
+    // gallery renders them in isolation. Show a short note instead of that render
+    // — a third state alongside the GAP marker and the `authoring: generated`
+    // note, reusing the same muted note style.
+    const ctx = spec['requires-context'];
+    const note = ctx === 'book'
+      ? 'Renders only within a book.'
+      : ctx === 'bibliography'
+        ? 'Resolves against a loaded bibliography.'
+        : `Requires ${escapeHtml(ctx)} context.`;
+    parts.push(`      <p class="gallery-generated">${note}</p>`);
+  } else if (examples.length) {
     for (const ex of examples) parts.push(renderExample(ex, render, assetSet));
   } else if (spec.authoring === 'generated') {
     parts.push(
@@ -166,7 +180,7 @@ export function buildGallery({ render }) {
     if (!specs || specs.length === 0) continue;
     specs.sort((a, b) => (a.html_output?.element || '').localeCompare(b.html_output?.element || ''));
     const catId = `cat-${cat}`;
-    toc.push(`<a href="#${catId}">${escapeHtml(label)}</a>`);
+    toc.push(`<li><a href="#${catId}">${escapeHtml(label)}</a></li>`);
     const elementBlocks = specs.map((s) => renderElement(s, render, assetSet)).join('\n');
     sections.push(
       `  <section class="gallery-category" id="${catId}">\n` +
@@ -186,11 +200,26 @@ export function buildGallery({ render }) {
     'example shows as a loud <span class="gallery-gap-inline">GAP</span> marker rather than ' +
     'silently absent.</p>';
 
+  // #135: the category nav is the floating side-ToC the doc pages use — reuse the
+  // `.enscribe-layout--toc` grid + `.enscribe-toc` sidebar chrome (styled in
+  // default.css + site.css), not the old inline top `.gallery-toc` bar.
+  const categoryNav =
+    '    <nav class="enscribe-toc" aria-label="Categories">\n' +
+    '      <details class="enscribe-toc-details" open>\n' +
+    '        <summary class="enscribe-toc-summary">Categories</summary>\n' +
+    `        <ul>${toc.join('')}</ul>\n` +
+    '      </details>\n' +
+    '    </nav>';
+
   const body =
     '<main class="article gallery">\n' +
+    '  <div class="enscribe-layout enscribe-layout--toc">\n' +
+    `${categoryNav}\n` +
+    '    <div class="enscribe-body">\n' +
     `${intro}\n` +
-    `  <nav class="gallery-toc" aria-label="Categories">${toc.join('\n    ')}</nav>\n` +
     `${sections.join('\n')}\n` +
+    '    </div>\n' +
+    '  </div>\n' +
     '    </main>\n' +
     '    <footer class="site-footer">\n' +
     '      Generated from the <a href="https://github.com/enscribejs/enscribe/tree/main/packages/layer1-vocabulary/elements">Layer 1 vocabulary entries</a> by <code>docs-site/gen-gallery.js</code>.\n' +

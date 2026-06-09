@@ -1341,6 +1341,7 @@ const _book_part_title = Object.freeze({
 const _book_part = Object.freeze({
     "semantic_role": "book-part",
     "category": "document-containers",
+    "requires-context": "book",
     "html_output": {
       "element": "book-part",
       "is_html_native": false,
@@ -1729,6 +1730,7 @@ const _cases = Object.freeze({
 const _cite = Object.freeze({
     "semantic_role": "cite",
     "category": "citations-and-references",
+    "requires-context": "bibliography",
     "html_output": {
       "element": "cite",
       "is_html_native": true,

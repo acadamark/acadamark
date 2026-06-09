@@ -1,6 +1,7 @@
 ---
 semantic_role: book-part
 category: document-containers
+requires-context: book
 html_output:
   element: book-part
   is_html_native: false

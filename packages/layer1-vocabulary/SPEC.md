@@ -54,6 +54,17 @@ expecting authored examples (again, the coverage gallery) to treat a
 missing example as expected for these entries rather than as a coverage
 hole. Its absence means the element is authored directly.
 
+A related marker, `requires-context: <book | bibliography>`, flags an element
+whose authored examples are **context-dependent** — they render correctly only
+inside a larger document: a `<book>` for the book-part shorthands
+(`requires-context: book`), a loaded bibliography for `<cite>`
+(`requires-context: bibliography`). Rendered in isolation (as the coverage
+gallery does) such an example degrades to a misleading "unknown tag" output, so
+the gallery shows a short note ("Renders only within a book." / "Resolves
+against a loaded bibliography.") instead of the isolated render. Like
+`authoring: generated`, it is a gallery-display hint, not a parser/interpreter
+input.
+
 ### Container elements
 
 Three distinct top-level containers, each with front/body/back regions (for articles and books). Following BITS (the JATS sibling for books) precedent, distinct elements are used for distinct structural roles rather than collapsing them under attribute disambiguation.

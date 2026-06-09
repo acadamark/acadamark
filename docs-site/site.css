@@ -290,27 +290,6 @@ main.article.gallery {
   color: var(--muted);
 }
 
-.gallery-toc {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  margin: 1.25rem 0 2rem;
-  padding: 0.9rem 1.1rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--editor-bg);
-  font-size: 0.85rem;
-}
-
-.gallery-toc a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.gallery-toc a:hover {
-  text-decoration: underline;
-}
-
 .gallery-category {
   margin: 2.5rem 0;
 }

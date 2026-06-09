@@ -1,6 +1,7 @@
 ---
 semantic_role: cite
 category: citations-and-references
+requires-context: bibliography
 html_output:
   element: cite
   is_html_native: true
