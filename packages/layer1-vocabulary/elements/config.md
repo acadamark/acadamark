@@ -32,9 +32,9 @@ enscribe_attributes:
         - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)
         - display-style           (reserved; future)
         - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')
+        - markdown                (live; consumed by markdown-mode → strict mode #36: 'on' default / 'literal' / 'strict' — turns the markdown register off, leaving canonical + sigil; realizes the former reserved `strict-mode`)
         - bibliography-position   (reserved; future)
         - reference-library       (reserved; future)
-        - strict-mode             (reserved; future)
       Unknown kwargs are dropped at the normalize-to-canonical gate with an
       informative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on
       <config> additionally triggers a "did you mean <meta>?" hint. Kwargs are

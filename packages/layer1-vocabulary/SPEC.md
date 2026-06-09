@@ -204,6 +204,8 @@ Citations, cross-references, and notes are first-class elements with their own s
 | `<ref>` | `<xref ref-type="fig|sec|eq|...">` | Cross-reference (to a numbered element). |
 | `<note>` | `<fn>` | Footnote/endnote/sidenote (inline marker). |
 | `<marginnote>` | `<boxed-text content-type="marginnote">` | Unnumbered margin aside (Tufte margin note), authored inline with `<marginnote \| body>`. Renders `<aside class="enscribe-marginnote">` in place and floats into the shared margin column (#33). Distinct from `<note>` — never numbered or collected. The first element whose authoring tagname differs from its HTML element (`marginnote` → `aside`). |
+
+**The vocabulary keys by authoring name, decoupled from the HTML element it renders to (#33).** Each vocabulary entry is keyed by its authoring tagname (its filename stem under `elements/`), not by the HTML element it lowers to. This is what lets an element like `<marginnote>` (which renders `<aside>`) coexist with `<aside>` itself — two distinct entries, no collision — and is the contract the data generator (`build/generate-data-module.js`) enforces.
 | `<abbr>` | `<abbrev>` | Abbreviation. *(Deferred — to be specified when the relevant slice arrives.)* |
 | `<term>` | `<named-content>` | A term being introduced. *(Deferred — to be specified when the relevant slice arrives.)* |
 

@@ -50,6 +50,7 @@ import { run as runSmartTypography } from './smart-typography.test.js';
 import { run as runBrowserMemo } from './browser-memo.test.js';
 import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
+import { run as runMarkdownMode } from './markdown-mode.test.js';
 
 const suites = [
   ['plugins/config-discovery',     runConfigDiscovery],
@@ -92,6 +93,7 @@ const suites = [
   ['lib/sidenotes',                runSidenotes],
   ['article-appendices',           runArticleAppendices],
   ['marginnote',                   runMarginnote],
+  ['markdown-mode',                runMarkdownMode],
   ['lib/chapter-nav',              runChapterNav],
   ['config-options',               runConfigOptions],
   ['plugins/html-table-cells',     runHtmlTableCells],

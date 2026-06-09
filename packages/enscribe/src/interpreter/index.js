@@ -159,7 +159,7 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_MARKDOWN_MODE } from '../core/file-data-keys.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -183,6 +183,12 @@ import { applyToc } from './lib/toc.js';
 // existing fixtures — stay byte-identical.
 import { applySidenotes, markMarginLayout } from './lib/sidenotes.js';
 import { MARGIN_CSS } from './assets/margin-css.js';
+// #36 strict mode: the markdown register switch — parse on; re-parse idioms-off
+// for literal/strict (the markdown idioms become plain text everywhere, while
+// canonical + sigil keep interpreting). flagMarkdownText + STRICT_FLAG_CSS add
+// the strict lint, injected only in strict (the sidenote-injection model).
+import { resolveMarkdownMode, disableMarkdownIdioms, flagMarkdownText } from './lib/markdown-mode.js';
+import { STRICT_FLAG_CSS } from './assets/strict-flag-css.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
@@ -529,6 +535,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
  * @param {boolean} [options.smartTypography=true] Smart typography (#54): curly quotes, en/em dashes, and ellipses in prose display output. A display-projection on the HTML side only — never the canonical AST / `.emd` / JATS. `false` disables it.
+ * @param {'on'|'literal'|'strict'} [options.markdown='on'] Markdown register switch (#36, strict mode). 'on' (default) interprets all three registers — today's behavior, byte-identical. 'literal' turns the markdown register off: `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters (no escaping) while canonical tags and sigils stay live everywhere, including inside tag pipe bodies. 'strict' is literal plus a visible lint wrapping would-be-markdown text in a flag span (scoped CSS injected only in strict). Native inferences (blank-line→paragraph, section nesting) stay on in all states. Layer 1 / JATS are unaffected. Also settable per-document via `<config markdown=…>`; the option wins.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -574,8 +581,23 @@ export function enscribeInterpreter(options = {}) {
   // are tokenized and normalized on both surfaces.
   const innerProcessor = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
 
-  // 1. Parse pipe-content strings into mdast children.
-  this.use(remarkRecursiveContent, { processor: innerProcessor });
+  // #36 strict mode: the idioms-OFF processors. Same enscribe extension (so tags
+  // + sigils interpret), but the markdown-register idioms are disabled and
+  // remark-gfm / remark-math are NOT added (so bare $ / pipe tables / strikethrough
+  // are off too). Used by resolveMarkdownMode to re-parse the source, and by
+  // recursive-content for sub-parses, when the mode is literal/strict.
+  const offProcessor = unified().use(remarkParse).use(remarkEnscribe).use(disableMarkdownIdioms);
+
+  // #36 (step 0): resolve the markdown mode (option ?? <config markdown> ?? 'on')
+  // and, when literal/strict, re-parse the source idioms-off and swap the tree —
+  // before recursive-content, so its sub-parses run idioms-off too. A strict
+  // no-op for 'on' → the default parse is used unchanged (byte-identical).
+  this.use(resolveMarkdownMode, { offProcessor, option: options.markdown });
+
+  // 1. Parse pipe-content strings into mdast children. In literal/strict mode the
+  //    inner processor is the idioms-off one (markdown register off in sub-parses
+  //    too); recursive-content selects it via the file.data markdown mode.
+  this.use(remarkRecursiveContent, { processor: innerProcessor, processorOff: offProcessor });
 
   // 1.5. The normalize-to-canonical gate. Runs after step 1 so both outer
   //      and inner processor runs have completed. Runs before step 2 so no
@@ -743,6 +765,17 @@ export function enscribeInterpreter(options = {}) {
     if (relocatedSidenotes || assets.marginnote) {
       markMarginLayout(hast);
       hast.children.unshift(makeStyleElement(MARGIN_CSS));
+    }
+
+    // #36 strict mode: flag would-be-markdown text and inject the flag CSS — only
+    // in strict. In 'on'/'literal' this is a strict no-op, so their output is
+    // byte-identical (the sidenote/margin CSS-injection model). The mode was
+    // resolved by resolveMarkdownMode (file.data); the literal/strict tree already
+    // has the markdown register off (re-parsed idioms-off), so the lint runs over
+    // text that genuinely passed through literally.
+    if ((file?.data?.[ENSCRIBE_MARKDOWN_MODE]) === 'strict') {
+      flagMarkdownText(hast);
+      hast.children.unshift(makeStyleElement(STRICT_FLAG_CSS));
     }
 
     // Phase 8 Slice 3: inject the chapter-navigation script for a book that has a

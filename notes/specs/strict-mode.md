@@ -50,8 +50,9 @@ This is purely a Layer 2 → Layer 1 *interpretation* setting — it changes how
 
 The `<config>` kwarg sets the mode per document. A single project-wide setting (one declaration covering every file) is deferred to multi-file authoring (#72) — it's question 4 in that issue. Document-level lands here; the project-level inheritance arrives with the manifest.
 
-## To confirm
+## Resolved (build, #36)
 
-- **The kwarg name.** Proposed `markdown` (`<config markdown=strict>`); alternative `idioms`. A naming call.
-- **The flagged set.** The principle is "the markdown register, in full" — by the three-register design that's exactly the idioms with a canonical/sigil equivalent. The build enumerates the precise set from the vocab's markdown-register entries rather than from a hand-list here.
-- **Flag false-positive tolerance** — confirm the lint is a nudge, not a rule (it can over-flag, and that's acceptable).
+- **The kwarg name is `markdown`** — `<config markdown=on|literal|strict>`, with a matching `markdown` render option (the option wins over the in-document `<config>`, mirroring `note-position`). It realizes the former reserved `strict-mode` config key, which is retired.
+- **The mechanism is "parse on; re-parse with markdown disabled."** The document is parsed normally first (so config-discovery can find `<config markdown>` anywhere). For `literal`/`strict`, the source is re-parsed with the CommonMark/gfm/math idiom constructs disabled (micromark `disable`), so `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` are plain text *everywhere*, including inside tag pipe bodies (the recursive-content sub-parses run idioms-off too). No source-slicing or AST reconstruction. The `on` path is the unchanged single parse → byte-identical default. See `packages/enscribe/src/interpreter/lib/markdown-mode.js`.
+- **The flagged set is the markdown register in full** — emphasis `*…*`, inline code `` `…` ``, leading `#`/`>`/`-`/`+`/`*`/ordered-list markers, and `[…](…)`. The strict lint scans literal text nodes line by line (block markers are line-anchored), so every line of a literal block — a bullet list, a quote — is flagged, not just its first.
+- **The lint is a nudge, not a rule.** It always renders the text and errs toward flagging; a false positive is harmless. (`[…](…)` is flagged even though enscribe does not currently interpret a markdown link idiom — it is would-be-markdown, and over-flagging is sanctioned.)

@@ -46,7 +46,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Links with a positional URL (`<a url | text>`)
 - [x] Book structure — chapters, parts, front/back matter
 - [x] Lists — the `<list>` / `<list ordered>` construct with paired-sigil items `<- … ->` / `<* … *>` (strict-safe) and the `-` / `*` markdown idiom; lowers to standard `<ul>` / `<ol>` + `<li>`, inheriting the HTML render and the JATS `<list>` mapping. Multi-paragraph items, nesting, and a bare `<li>` marker are deferred to a later slice.
-- [ ] Strict mode — disable markdown idioms (unblocked by the list construct above)
+- [x] Strict mode — the markdown register switch (#36): `<config markdown=on|literal|strict>` (or the `markdown` render option, which wins). `literal` turns the markdown register off — `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters everywhere, including inside tag pipe bodies, with no escaping — while canonical tags and sigils stay live; `strict` adds a visible lint flagging would-be-markdown text (scoped CSS injected only in strict). `on` (default) is the unchanged single parse → byte-identical. Native inferences (blank-line→paragraph, section nesting) stay on in all states; Layer 1 / JATS are unaffected. Mechanism: parse on, then re-parse idioms-off (micromark `disable`) for literal/strict
 - [ ] `<html-passthrough>` — needs a spec first
 - [ ] Multi-file source — `enscribe.yml` + `<include>`
 - [ ] Executable code blocks — JS / Arquero / Vega-Lite

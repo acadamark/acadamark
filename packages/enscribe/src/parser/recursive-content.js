@@ -34,11 +34,12 @@
  */
 
 import { visit, SKIP } from 'unist-util-visit'
+import { ENSCRIBE_MARKDOWN_MODE } from '../core/file-data-keys.js'
 
 const MAX_DEPTH = 10
 
 export default function remarkRecursiveContent(options = {}) {
-  const { processor } = options
+  const { processor, processorOff } = options
   if (!processor) {
     throw new Error(
       'remarkRecursiveContent requires a { processor } option — ' +
@@ -46,8 +47,13 @@ export default function remarkRecursiveContent(options = {}) {
     )
   }
 
-  return (tree) => {
-    processNodes(tree, processor, 0)
+  return (tree, file) => {
+    // #36 strict mode: in literal/strict the sub-parses must run idioms-off too,
+    // so the markdown register is off inside tag pipe bodies as well. Select the
+    // idioms-off inner processor when resolveMarkdownMode flagged the mode.
+    const mode = file?.data?.[ENSCRIBE_MARKDOWN_MODE]
+    const proc = processorOff && (mode === 'literal' || mode === 'strict') ? processorOff : processor
+    processNodes(tree, proc, 0)
   }
 }
 
