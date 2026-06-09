@@ -6,12 +6,14 @@ import { run_tests as runCliTests } from './cli.test.js';
 import { run_tests as runLiftTests } from './lift.test.js';
 import { run_tests as runPandocTests } from './pandoc-import.test.js';
 import { run_tests as runJatsImportTests } from './import.test.js';
+import { run_tests as runRoundtripComplexTests } from './roundtrip-complex.test.js';
 
 try {
   runCliTests();
   runLiftTests();
   runPandocTests();
   runJatsImportTests();
+  runRoundtripComplexTests();
   process.exit(0);
 } catch (err) {
   console.error('FAIL:', err?.message ?? err);
