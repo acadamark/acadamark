@@ -74,6 +74,14 @@ export function run_tests() {
       'Compare a < b and use a pipe and backslash carefully.',
     'data + library + bibliography':
       'Text <cite @a>.\n\n<data>\n<library |\n@misc{a, title={T}, year={2020}}\n>\n</data>\n\n<bibliography>\n</bibliography>',
+    // Lists (#140): every item register lifts to the canonical `<li>` marker, and
+    // multi-paragraph / nested / arg-bearing lists round-trip as a fixed point.
+    'lists — every item register (<li> / <-> / <*> / `-`)':
+      '<list>\n<li> canonical\n<-> dash sigil\n<*> star sigil\n- markdown idiom\n</list>',
+    'lists — multi-paragraph item (peer-close)':
+      '<list>\n<li> First line of the item.\n\nA second paragraph in the same item.\n<li> A short item.\n</list>',
+    'lists — nested, ordered, with args':
+      '<list ordered marker=lower-roman start=2 reversed>\n<li> One\n<list>\n<li> Nested a\n<li> Nested b\n</list>\n<li> Two\n</list>',
   };
   for (const [label, src] of Object.entries(synthetic)) {
     checkRoundTrip(label, src);
@@ -86,6 +94,7 @@ export function run_tests() {
     'document-45-calibration.emd',
     'document-5-linear-regression.emd',
     'document-7-tables.emd',
+    'document-56-lists.emd',
   ];
   for (const f of fixtures) {
     const p = join(INTERP_FIXTURES, f);

@@ -8,13 +8,13 @@ An ordinary paragraph of body prose introduces the lists below.
 
 <!-- cell: list/form:long -->
 <list>
-<- First unordered item ->
-<- Second unordered item ->
+<li> First unordered item
+<li> Second unordered item
 </list>
 
 <list ordered>
-<- First step, with a fuller sentence of explanation. ->
-<- Second step ->
+<li> First step, with a fuller sentence of explanation.
+<li> Second step
 </list>
 
 <section | Quotations and breaks>

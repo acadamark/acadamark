@@ -29,7 +29,7 @@ export async function run() {
     '@article{a2023, title={T}, author={A}, year={2023}, journal={J}}\n</library>\n</data>';
   const NOTES = '# N\n\nA note <note | see this> and a ref <ref #sec:t>.\n\n# T\n\nbody';
   const PLAIN = 'Just prose, no assets at all.';
-  const LIST = '<list>\n<- one ->\n<- two ->\n</list>';
+  const LIST = '<list>\n<li> one\n<li> two\n</list>';
   const MULTI = '# A\n\nx\n\n# B\n\ny\n\n# C\n\nz\n\n# D\n\nw';
 
   // 1. Output-equality vs a fresh build, interleaving sources/options through

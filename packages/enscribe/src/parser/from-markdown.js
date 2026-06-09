@@ -94,14 +94,14 @@ function exitEnscribeTag(token) {
     return
   }
 
-  // List item marker: the block-scoped paired sigil `<- content ->` /
-  // `<* content *>`. The flow-only tokenizeItemMarkerFlow (syntax.js) found the
-  // boundaries; source starts with `<-` or `<*`. Handled directly without Peggy
-  // — no grammar rule — mirroring the shortcut path above. buildItemMarkerNode
-  // produces a default-content enscribeTag the recursive-content pass re-parses
-  // and enscribeListStructuring lowers to a markdown list item. See
-  // notes/specs/lists.md §"Items".
-  if (source[0] === '<' && (source[1] === '-' || source[1] === '*')) {
+  // List item marker: the open markers `<li>` / `<->` / `<*>` (notes/specs/lists.md
+  // §"Item markers"). The flow-only tokenizeItemMarkerFlow (syntax.js) found the
+  // boundaries; the span is the marker plus its same-line content. Handled directly
+  // without Peggy — no grammar rule — mirroring the shortcut path above.
+  // buildItemMarkerNode produces a default-content `list-item` enscribeTag the
+  // recursive-content pass re-parses, and enscribeListStructuring lowers it
+  // (peer-close: the item's following blocks attach to it) to a markdown list item.
+  if (source.startsWith('<li>') || source.startsWith('<->') || source.startsWith('<*>')) {
     buildItemMarkerNode(node, source)
     this.exit(token)
     return
@@ -177,37 +177,40 @@ function buildShortcutNode(node, source) {
 }
 
 /**
- * Build a list item-marker enscribeTag node in-place from the serialized source.
+ * Build an open list item-marker enscribeTag node in-place from the serialized
+ * source.
  *
- * The marker is the paired sigil `<- content ->` or `<* content *>`; `content`
- * is everything between the opening `<` + marker run and the closing marker run
- * + `>`. The node is a default-content tag — its `content` string is re-parsed
- * by remarkRecursiveContent into inline mdast (so inline tags like `<cite>`
- * inside an item work) — and is later lowered to a markdown `listItem` by
- * enscribeListStructuring. The transient `tagname` (`list-item`) never reaches a
- * renderer; it is consumed by that lowering pass.
+ * The marker is one of `<li>` (named), `<->`, or `<*>` (sigils); the item's
+ * same-line content is whatever follows the marker's `>` on the line (a single
+ * separating space is dropped). The node is a default-content tag — its `content`
+ * string is re-parsed by remarkRecursiveContent into inline mdast (so inline tags
+ * like `<cite>` inside an item work) — and is later lowered to a markdown
+ * `listItem` by enscribeListStructuring, which also absorbs the item's FOLLOWING
+ * blocks (further paragraphs, a nested `<list>`) per the open-marker / peer-close
+ * model. The transient `tagname` (`list-item`) never reaches a renderer; it is
+ * consumed by that lowering pass.
  *
  * @param {object} node   - The enscribeTag stub to modify in-place.
- * @param {string} source - Serialized token text, e.g. "<- first item ->".
+ * @param {string} source - Serialized token text, e.g. "<li> first item".
  */
 function buildItemMarkerNode(node, source) {
-  const marker = source[1] // '-' or '*'
-
-  if (source[source.length - 1] !== '>') {
-    // Defensive: the sigil finder only emits this construct on a closing `>`, so
+  // marker kind + index just past the marker's closing `>`.
+  let marker, afterMarker
+  if (source.startsWith('<li>')) { marker = 'li'; afterMarker = 4 }
+  else if (source.startsWith('<->')) { marker = '-'; afterMarker = 3 }
+  else if (source.startsWith('<*>')) { marker = '*'; afterMarker = 3 }
+  else {
+    // Defensive: the marker tokenizer only emits `<li>` / `<->` / `<*>` spans, so
     // this should be unreachable. Treat a malformed span as a parse error rather
     // than silently dropping it.
-    Object.assign(node, { type: 'enscribeParseError', subtype: 'unterminated-item-marker', source })
+    Object.assign(node, { type: 'enscribeParseError', subtype: 'unrecognized-item-marker', source })
     return
   }
 
-  // Strip the opening `<` + run of marker chars, and the trailing run of marker
-  // chars + `>` (the paired sigil close), leaving the item content.
-  let i = 1;
-  while (i < source.length && source[i] === marker) i++;
-  let j = source.length - 2; // index just before the closing `>`
-  while (j >= i && source[j] === marker) j--;
-  const content = source.slice(i, j + 1);
+  // Same-line content after the marker; one separating space (if present) is the
+  // marker/content delimiter and is dropped. The remainder is re-parsed downstream.
+  let content = source.slice(afterMarker)
+  if (content.startsWith(' ')) content = content.slice(1)
 
   Object.assign(node, {
     type: 'enscribeTag',

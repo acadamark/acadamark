@@ -16,8 +16,9 @@
 //      …) are not registered as opaque content handlers (only the sigils are), so
 //      `<inline-math>x^2</inline-math>` re-parses as prose and loses the math.
 //      The sigils are the canonical Enscribe forms for these opaque elements.
-//   2. Lists have no canonical Enscribe tag; they re-emit as markdown list syntax
-//      (`- item` / `1. item`), which is the only Enscribe representation of a list.
+//   2. Lists re-emit as the canonical `<list>` / `<li>` open-marker construct
+//      (notes/specs/lists.md); the `markdown` target keeps the bare `- item` /
+//      `1. item` idiom.
 //   3. Markdown links de-lift to `<span>` during normalization (Enscribe has no
 //      markdown-link form); the span's literal text is preserved.
 
@@ -263,17 +264,71 @@ function serializeBlockquote(node) {
 }
 
 function serializeList(node) {
+  // The `markdown` target keeps the bare `- item` / `1. item` idiom; canonical and
+  // shorthand emit the canonical `<list>` / `<li>` open-marker construct (round-trip
+  // faithful — re-parsing the output yields the same list). See notes/specs/lists.md.
+  if (TARGET === 'markdown') return serializeMarkdownList(node);
+
+  const args = serializeListArgs(node);
+  const items = (node.children ?? []).map(serializeListItem).join('\n');
+  return `<list${args}>\n${items}\n</list>`;
+}
+
+/** Bare markdown list (`- item` / `N. item`) — the `lower --markdown` register. */
+function serializeMarkdownList(node) {
   const ordered = node.ordered === true;
   let start = ordered ? (node.start ?? 1) : 0;
   const items = (node.children ?? []).map((item) => {
     const marker = ordered ? `${start++}. ` : '- ';
-    // A list item's children are blocks (usually one paragraph); flatten the
-    // common single-paragraph case onto the marker line.
     const body = serializeBlocks(item.children ?? []);
     const lines = body.split('\n');
     return marker + lines.map((l, i) => (i === 0 ? l : '  ' + l)).join('\n');
   });
   return items.join('\n');
+}
+
+/** The `<list …>` argument string: ordered, marker=, start, reversed. */
+function serializeListArgs(node) {
+  const parts = [];
+  const ordered = node.ordered === true;
+  if (ordered) parts.push('ordered');
+  const style = node.data?.hProperties?.style;
+  const m = typeof style === 'string' && /list-style-type:\s*([\w-]+)/.exec(style);
+  if (m) parts.push(`marker=${m[1]}`);
+  if (ordered && node.start != null && node.start !== 1) parts.push(`start=${node.start}`);
+  if (ordered && node.data?.hProperties?.reversed) parts.push('reversed');
+  return parts.length ? ' ' + parts.join(' ') : '';
+}
+
+/**
+ * Serialize one `listItem` as an open-marker item: the first paragraph rides the
+ * `<li>` marker line; any further blocks (more paragraphs, a nested `<list>`)
+ * follow on their own lines (peer-closed by the next marker / `</list>`).
+ */
+function serializeListItem(item) {
+  const children = item.children ?? [];
+  if (children.length === 0) return '<li>';
+
+  const out = [];
+  let tail = children.slice(1);
+  if (children[0].type === 'paragraph') {
+    out.push(`<li> ${serializeInline(children[0].children ?? [])}`);
+  } else {
+    out.push('<li>'); // first block is not a paragraph (e.g. a nested list) → bare marker
+    tail = children;
+  }
+  for (const block of tail) {
+    if (block.type === 'list') {
+      out.push(serializeList(block)); // a nested list on its own lines
+    } else if (block.type === 'paragraph') {
+      out.push(''); // blank line → a further paragraph of the same item
+      out.push(serializeInline(block.children ?? []));
+    } else {
+      out.push('');
+      out.push(serializeBlock(block));
+    }
+  }
+  return out.join('\n');
 }
 
 function fence(lang, value) {

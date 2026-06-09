@@ -1,0 +1,89 @@
+<meta type=article>
+  <title | Lists>
+  <author | Enscribe>
+</meta>
+
+<section | Item registers>
+
+The same list, written four ways — the canonical `<li>` marker, the `<->` and
+`<*>` sigils, and the markdown `-` / `*` idiom — lowers to identical output.
+
+<list>
+<li> Canonical named marker
+<li> Another item
+</list>
+
+<list>
+<-> Dash sigil marker
+<-> Another item
+</list>
+
+<list>
+<*> Star sigil marker
+<*> Another item
+</list>
+
+<list>
+- Markdown idiom
+- Another item
+</list>
+
+<section | Multi-paragraph items>
+
+An item runs from its marker to the next one, so it can hold several paragraphs
+with no indentation.
+
+<list>
+<li> A single-line item.
+<li> An item with more to say.
+
+This second paragraph belongs to the same item — it follows the marker until the
+next one, no indentation required.
+
+And a third paragraph, still the same item.
+<li> Back to a short item.
+</list>
+
+<section | Nested lists>
+
+A `<list>` inside an item nests; the outer list resumes at the next marker. A
+nested list may itself be ordered.
+
+<list>
+<li> Groceries
+<list>
+<li> Apples
+<li> Bread
+</list>
+<li> Errands
+<list ordered>
+<li> Post office
+<li> Bank
+</list>
+<li> Done
+</list>
+
+<section | Marker schemes, start, and reversed>
+
+`marker=` sets the CSS `list-style-type`; `start` and `reversed` control an
+ordered list's numbering.
+
+<list marker=square>
+<li> Square bullets,
+<li> set with marker=square.
+</list>
+
+<list ordered marker=lower-roman>
+<li> Lower-roman numbering,
+<li> set with marker=lower-roman.
+</list>
+
+<list ordered start=5>
+<li> This list starts at five,
+<li> then six.
+</list>
+
+<list ordered reversed>
+<li> This list counts
+<li> down.
+</list>

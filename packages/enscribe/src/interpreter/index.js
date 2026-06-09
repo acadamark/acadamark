@@ -948,6 +948,10 @@ export function liftToCanonicalMdast(source) {
   unified()
     .use(remarkRecursiveContent, { processor: inner })
     .use(enscribeNormalizeToCanonical)
+    // Lower `<list>` (and its open markers) to a mdast list so the serializer sees
+    // the canonical list shape — and so lift is idempotent (re-parsing the emitted
+    // `<list>` / `<li>` lowers to the same list).
+    .use(enscribeListStructuring)
     .runSync(tree);
   return tree;
 }

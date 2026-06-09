@@ -1086,13 +1086,13 @@ ${dateXml}
     '</meta>',
     '',
     '<list>',
-    '<- first item ->',
-    '<- second item ->',
+    '<li> first item',
+    '<li> second item',
     '</list>',
     '',
     '<list ordered>',
-    '<- step one ->',
-    '<- step two ->',
+    '<li> step one',
+    '<li> step two',
     '</list>',
   ].join('\n');
   const proc = buildEnscribePipeline();

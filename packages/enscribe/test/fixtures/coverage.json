@@ -1,21 +1,23 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 355,
-    "fixtures": 49,
+    "cells": 356,
+    "fixtures": 50,
     "annexed": 19
   },
   "byStatus": {
     "gap": 272,
     "pass": 65,
-    "deferred": 18
+    "deferred": 18,
+    "needs-review": 1
   },
   "byDisposition": {
     "specified": 311,
     "generic-implicit": 20,
     "deferred-presentation": 18,
     "no-output": 4,
-    "alias": 2
+    "alias": 2,
+    "needs-review": 1
   },
   "cells": [
     {
@@ -4103,6 +4105,16 @@
       "status": "pass"
     },
     {
+      "key": "marginnote/base",
+      "element": "marginnote",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
+    },
+    {
       "key": "math/base",
       "element": "math",
       "behavior": "base",
@@ -6911,6 +6923,7 @@
     "document-53-show-source.emd",
     "document-54-toc-scrollspy.emd",
     "document-55-table-cell-parse.emd",
+    "document-56-lists.emd",
     "document-6-cross-references.emd",
     "document-7-tables.emd",
     "document-8-citations.emd",

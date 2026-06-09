@@ -18,17 +18,18 @@ const BACKSLASH = 92    // \
 
 // Registered sigil characters. The finder uses this to distinguish sigil tags
 // from named tags. Extend here when new sigils are added (e.g., $ for math).
-// NOTE: `-` / `*` are deliberately NOT here. The list item-marker sigils
-// (`<- … ->` / `<* … *>`, #137) are recognized ONLY at flow (block) position by
-// their own tokenizer below — never inline like `<# … #>` / `<$ … $>`. That
-// block-scoping is exactly what keeps prose `<-`/`->` (R `x <- y`, arrows) safe.
-// See notes/specs/lists.md §"Item sigils are block-scoped".
+// NOTE: `-` / `*` are deliberately NOT here. The open list-item markers
+// (`<->` / `<*>`, and the named `<li>`) are recognized ONLY at flow (block)
+// position by their own tokenizer below — never inline like `<# … #>` /
+// `<$ … $>`. That block-scoping is what keeps prose `<-`/`->` (R `x <- y`,
+// arrows) safe. See notes/specs/lists.md §"Recognition".
 const SIGIL_CHARS = new Set([35, 36, 96]) // #, $, `
 
-// List item-marker chars for the flow-only `<- … ->` / `<* … *>` tokenizer.
-const DASH = 45 // -
-const STAR = 42 // *
-const ITEM_MARKER_CHARS = new Set([DASH, STAR]) // -, *
+// Open list-item marker chars for the flow-only `<li>` / `<->` / `<*>` tokenizer.
+const DASH = 45  // -
+const STAR = 42  // *
+const LI_L = 108 // l
+const LI_I = 105 // i
 
 /** @param {Code} code */
 function isAsciiAlphaCode(code) {
@@ -74,14 +75,15 @@ export function enscribeSyntax() {
   return {
     flow: {
       [LT]: [
+        // Open list-item markers `<li>` / `<->` / `<*>` — flow position ONLY, and
+        // tried FIRST so `<li>` is claimed as a marker ahead of the long-form
+        // tokenizer and micromark's HTML-block construct. The tokenizer requires
+        // `>` immediately after the marker char(s), so `<list>` and every other
+        // `<tag…>` reject here and fall through. Registered only in `flow`, never
+        // `text`, so prose `<-`/`->` (inline) is never claimed.
+        { tokenize: tokenizeItemMarkerFlow, concrete: true },
         { tokenize: makeLongFormTokenizer({ multiLine: true }), concrete: true },
         { tokenize: tokenizeSigilTagFlow, concrete: true },
-        // List item markers `<- … ->` / `<* … *>` — flow position ONLY (a marker
-        // is its own line inside `<list>`). Registered only here, never in `text`,
-        // so prose `<-`/`->` (inline) is never claimed. `-`/`*` after `<` are
-        // rejected by the three tokenizers around it (non-alpha, non-sigil), so
-        // this is purely additive.
-        { tokenize: tokenizeItemMarkerFlow, concrete: true },
         { tokenize: tokenizeNamedTagFlow, concrete: true },
       ],
     },
@@ -408,27 +410,28 @@ function makeNamedTagTokenizer({ multiLine }) {
 // ─── List item-marker tokenizer (flow only) ───────────────────────────────────
 
 /**
- * Flow-position tokenizer for list item markers: `<- content ->` / `<* content *>`.
+ * Flow-position tokenizer for the open list-item markers: `<li>`, `<->`, `<*>`.
  *
- * Block-scoped by design — registered ONLY in `flow`, never `text` — so an
- * inline `<-`/`->` in prose (R `x <- y`, an arrow) is left untouched. The open
- * is `<` + one marker char (`-` or `*`); the close is the **line-final**
- * `marker>` (greedy to the last `->`/`*>` on the line, allowing trailing
- * whitespace). Greedy-to-line-end means an inline arrow inside the item
- * (`<- f maps A -> B ->`) does NOT close early — the inner `->` stays content,
- * only the line-final `->` closes. A line with no line-final `marker>` rejects,
- * so the line falls back to ordinary text.
+ * Open-marker model (notes/specs/lists.md): a marker introduces an item; the
+ * item's content is the flow that FOLLOWS it, peer-closed at lowering by the next
+ * marker / nested `<list>` / `</list>`. The marker has no closer. The construct is
+ * whole-line (like the sibling flow tags), so it claims the marker plus its
+ * same-line content; any following paragraphs are separate blocks that
+ * enscribeListStructuring absorbs into the item.
  *
- * Emits the same `enscribeTag` / `enscribeTagRaw` token pair as the other
- * tokenizers; from-markdown's `exitEnscribeTag` recognizes the `<-`/`<*` source
- * prefix and builds the item node directly (bypassing Peggy — the `^{}`/`_{}`
- * shortcut model), so no grammar rule is involved. See notes/specs/lists.md.
+ * Block-scoped by design — registered ONLY in `flow`, never `text` — so an inline
+ * `<-`/`->` in prose (R `x <- y`, an arrow) is left untouched. The marker requires
+ * `>` immediately after its char(s): a `<-` / `<*` not followed by `>` (the prose
+ * `<- y`) rejects, and `<li…` longer than `<li>` (e.g. `<list>`) rejects at the
+ * next char — both fall through to the other tokenizers.
+ *
+ * Emits the same `enscribeTag` / `enscribeTagRaw` pair as the sibling tokenizers;
+ * from-markdown's `exitEnscribeTag` recognizes the `<li>` / `<->` / `<*>` prefix
+ * and builds the marker node directly (no grammar rule). See notes/specs/lists.md.
  *
  * @type {Tokenizer}
  */
 function tokenizeItemMarkerFlow(effects, ok, nok) {
-  let marker // the marker char (`-` or `*`), fixed at afterLt
-
   return start
 
   /** @param {Code} code */
@@ -440,81 +443,44 @@ function tokenizeItemMarkerFlow(effects, ok, nok) {
     return afterLt
   }
 
-  /** @param {Code} code */
+  /** @param {Code} code — char after `<` */
   function afterLt(code) {
-    if (code !== null && ITEM_MARKER_CHARS.has(code)) {
-      marker = code
+    if (code === DASH || code === STAR) {
       effects.consume(code) // - or *
-      return body
+      return expectGt
+    }
+    if (code === LI_L) {
+      effects.consume(code) // l
+      return afterL
     }
     return nok(code)
   }
 
-  /** @param {Code} code */
-  function body(code) {
-    if (code === null || markdownLineEnding(code)) {
-      // EOL/EOF with no line-final `marker>` — not an item; fall back to text.
-      return nok(code)
-    }
-    if (code === marker) {
-      // Possible close. Greedy: only the line-final `marker>` (followed by ws*
-      // then EOL/EOF) closes; an inline `marker>` mid-line is content.
-      return effects.attempt(
-        { tokenize: tokenizeMarkerClose, partial: true },
-        afterClose,
-        notClose,
-      )(code)
-    }
-    effects.consume(code)
-    return body
-  }
-
-  /** @param {Code} code — the marker char that did not begin the line-final close */
-  function notClose(code) {
-    effects.consume(code) // an inline arrow / literal marker — keep as content
-    return body
-  }
-
-  /** @param {Code} code — first char after the line-final `marker>` (+ ws) */
-  function afterClose(code) {
-    effects.exit('enscribeTagRaw')
-    effects.exit('enscribeTag')
-    return ok(code)
-  }
-
-  /**
-   * Partial: match `marker` + `>` + trailing whitespace, then REQUIRE a line
-   * ending or EOF. Succeeds only for the line-final `marker>`; fails (so body
-   * resumes) for an inline `marker>` with more content after it.
-   * @type {Tokenizer}
-   */
-  function tokenizeMarkerClose(closeEffects, closeOk, closeNok) {
-    return startClose
-
-    /** @param {Code} code */
-    function startClose(code) {
-      if (code !== marker) return closeNok(code)
-      closeEffects.consume(code) // marker
+  /** @param {Code} code — char after `<l` */
+  function afterL(code) {
+    if (code === LI_I) {
+      effects.consume(code) // i
       return expectGt
     }
+    return nok(code) // e.g. `<list>` rejects here (the `s`)
+  }
 
-    /** @param {Code} code */
-    function expectGt(code) {
-      if (code !== GT) return closeNok(code)
-      closeEffects.consume(code) // >
-      return trailing
-    }
+  /** @param {Code} code — the `>` that closes the marker */
+  function expectGt(code) {
+    if (code !== GT) return nok(code)
+    effects.consume(code) // >
+    return content
+  }
 
-    /** @param {Code} code */
-    function trailing(code) {
-      if (code === 32 || code === 9) {
-        closeEffects.consume(code)
-        return trailing
-      }
-      // Line-final → this is the close. Otherwise the `marker>` was inline.
-      if (code === null || markdownLineEnding(code)) return closeOk(code)
-      return closeNok(code)
+  /** @param {Code} code — same-line content following the marker `>` */
+  function content(code) {
+    if (code === null || markdownLineEnding(code)) {
+      effects.exit('enscribeTagRaw')
+      effects.exit('enscribeTag')
+      return ok(code)
     }
+    effects.consume(code)
+    return content
   }
 }
 
@@ -696,6 +662,14 @@ function makeLongFormTokenizer({ multiLine }) {
     // be greedily claimed as a long-form opener with no matching close.
     let prevWasSlash = false
 
+    // Same-name nesting IS depth-counted for the `<list>` container, so a nested
+    // `<list>…</list>` inside an item balances rather than the inner `</list>`
+    // closing the outer list. `nestable` is set once the tag name is known; `depth`
+    // counts the nested `<list>` we are currently inside. Every other long-form tag
+    // keeps the un-counted behavior (the first same-name `</tag>` closes it).
+    let nestable = false
+    let depth = 0
+
     return start
 
     /** @param {Code} code */
@@ -744,6 +718,13 @@ function makeLongFormTokenizer({ multiLine }) {
       //
       // A tag with neither `|` nor `/` before `>` is unambiguously a
       // long-form opener. See DESIGN.md for the durable spec.
+      //
+      // `<list>` is the only same-name-nestable container today: its nested
+      // `<list>…</list>` is depth-counted below so the outer list balances.
+      nestable =
+        tagNameCodes.length === 4 &&
+        tagNameCodes[0] === LI_L && tagNameCodes[1] === LI_I &&
+        tagNameCodes[2] === 115 && tagNameCodes[3] === 116 // l i s t
       return scanOpenAttrs(code)
     }
 
@@ -929,10 +910,20 @@ function makeLongFormTokenizer({ multiLine }) {
       }
       if (markdownLineEnding(code)) {
         effects.exit('enscribeLongFormContent')
-        return effects.attempt(
+        if (!nestable) {
+          // Default: the first matching `</tagname>` line closes the tag.
+          return effects.attempt(
+            { tokenize: tokenizeClose, partial: true },
+            afterClose,
+            notClose,
+          )(code)
+        }
+        // Nestable `<list>`: peek the line and depth-count nested `<list>` openers
+        // / `</list>` closers so the OUTER list closes only on its balanced close.
+        return effects.check(
           { tokenize: tokenizeClose, partial: true },
-          afterClose,
-          notClose,
+          onCloseLine,
+          onNotCloseLine,
         )(code)
       }
       effects.consume(code)
@@ -952,6 +943,77 @@ function makeLongFormTokenizer({ multiLine }) {
       effects.exit('lineEnding')
       effects.enter('enscribeLongFormContent')
       return content
+    }
+
+    /** The next line IS a `</tagname>` (peeked). Inner close → content; balanced → close. */
+    function onCloseLine(code) {
+      if (depth > 0) {
+        depth--
+        return notClose(code) // an inner `</list>` is content, not the close
+      }
+      return effects.attempt(
+        { tokenize: tokenizeClose, partial: true },
+        afterClose,
+        notClose,
+      )(code)
+    }
+
+    /** The next line is not a close — peek for a nested same-name opener. */
+    function onNotCloseLine(code) {
+      return effects.check(
+        { tokenize: tokenizeNestedOpen, partial: true },
+        onOpenLine,
+        notClose,
+      )(code)
+    }
+
+    /** The next line opens a nested `<list>` (peeked): count it, scan it as content. */
+    function onOpenLine(code) {
+      depth++
+      return notClose(code)
+    }
+
+    /**
+     * Peek partial (used via effects.check): matches a line-leading nested
+     * same-name opener — line ending + `<` + the tag name + a boundary char. It
+     * only DECIDES depth; the opener line is consumed as content afterward.
+     * @type {Tokenizer}
+     */
+    function tokenizeNestedOpen(openEffects, openOk, openNok) {
+      let nameIndex = 0
+
+      return startOpen
+
+      /** @param {Code} code */
+      function startOpen(code) {
+        if (!markdownLineEnding(code)) return openNok(code)
+        openEffects.enter('lineEnding')
+        openEffects.consume(code)
+        openEffects.exit('lineEnding')
+        return expectLt
+      }
+
+      /** @param {Code} code */
+      function expectLt(code) {
+        if (code !== LT) return openNok(code)
+        openEffects.consume(code)
+        nameIndex = 0
+        return matchName
+      }
+
+      /** @param {Code} code */
+      function matchName(code) {
+        if (nameIndex < tagNameCodes.length) {
+          if (code !== tagNameCodes[nameIndex]) return openNok(code)
+          openEffects.consume(code)
+          nameIndex++
+          return matchName
+        }
+        // A tag-name-continue char here means a longer name (`<listing>`), not our
+        // opener; any boundary (space, `>`, `/`, EOL) confirms the nested opener.
+        if (code !== null && isTagNameContinueCode(code)) return openNok(code)
+        return openOk(code)
+      }
     }
 
     /** @type {Tokenizer} */

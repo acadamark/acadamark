@@ -7,10 +7,10 @@
 
 ## Summary
 
-- **Behavior cells:** 355  ·  **fixtures:** 49  ·  **annexed (generated) elements:** 19
+- **Behavior cells:** 356  ·  **fixtures:** 50  ·  **annexed (generated) elements:** 19
 - **Covered:** 65 (18%)
-- **By status:** `deferred` 18 · `gap` 272 · `pass` 65
-- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 311
+- **By status:** `deferred` 18 · `gap` 272 · `needs-review` 1 · `pass` 65
+- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `needs-review` 1 · `no-output` 4 · `specified` 311
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -452,6 +452,12 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `book-part` | kwarg:note-position | specified | — | 🔴 gap |
 | `book-part` | form:pipe | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book-part` | form:long | specified | — | 🔴 gap |
+
+## ? — live-vocabulary elements with no coverage-map row (needs-review)
+
+| element | cell | status |
+|---|---|---|
+| `marginnote` | base | 🔵 needs-review |
 
 ## Annex — generated / not-authored-directly elements
 

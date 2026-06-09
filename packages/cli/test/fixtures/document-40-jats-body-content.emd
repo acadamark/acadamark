@@ -12,15 +12,15 @@ with prose to verify the slice 5b paragraph-grouping fix.
 An unordered list:
 
 <list>
-<- First item with *emphasis*. ->
-<- Second item. ->
+<li> First item with *emphasis*.
+<li> Second item.
 </list>
 
 An ordered list:
 
 <list ordered>
-<- One ->
-<- Two ->
+<li> One
+<li> Two
 </list>
 
 A definition list:

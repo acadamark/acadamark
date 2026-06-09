@@ -66,13 +66,13 @@ export function run() {
     console.log('PASS: recognized tag nested in unknown tag still renders');
   }
 
-  // ── #137 lists cleanup: ul/ol/li are NOT authoring vocabulary ──────────────
-  // `<list>` is the canonical list element (it lowers to a mdast list/listItem,
-  // never consulting these tagnames); `<ul>` / `<ol>` / `<li>` are its render
-  // OUTPUT only. Authored directly they are unknown tags, so they take the same
-  // literal-escape path as any other non-vocabulary tag — and crucially must NOT
-  // render as real HTML list elements. See notes/specs/lists.md §"Layer 1,
-  // render, JATS" and the vocabulary SPEC.md lists row.
+  // ── ul/ol/li authored as raw HTML are not vocabulary ──────────────────────
+  // The canonical list is `<list>` (it lowers to a mdast list/listItem); `<ul>` /
+  // `<ol>` are its render OUTPUT, not authoring vocabulary, so authored directly
+  // they escape to literal text — they must NOT render as real list elements.
+  // `<li>` IS the canonical item marker, but only as an open marker at flow
+  // position inside a `<list>` (notes/specs/lists.md §"Recognition"); a pipe-form
+  // `<li | …>` or an inline `<li>…</li>` is not a marker and likewise escapes.
   {
     const html = render('<ul>\n<li | First item>\n<li | Second item>\n</ul>');
     assert.ok(
