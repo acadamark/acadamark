@@ -37,6 +37,7 @@ import { run as runIntegration } from './integration.test.js';
 import { run as runToc } from './lib/toc.test.js';
 import { run as runTheme } from './lib/theme.test.js';
 import { run as runSidenotes } from './lib/sidenotes.test.js';
+import { run as runArticleAppendices } from './article-appendices.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
 import { run as runConfigOptions } from './config-options.test.js';
 import { run as runMapAttributes } from './map-attributes.test.js';
@@ -88,6 +89,7 @@ const suites = [
   ['lib/toc',                      runToc],
   ['lib/theme',                    runTheme],
   ['lib/sidenotes',                runSidenotes],
+  ['article-appendices',           runArticleAppendices],
   ['lib/chapter-nav',              runChapterNav],
   ['config-options',               runConfigOptions],
   ['plugins/html-table-cells',     runHtmlTableCells],

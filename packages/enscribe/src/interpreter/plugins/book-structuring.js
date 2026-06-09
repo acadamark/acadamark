@@ -51,7 +51,7 @@ const BOOK_PART_BACK_TYPES  = new Set(['appendix', 'glossary', 'colophon']);
 // Same as articles: bibliography, note-list, config.
 const BOOK_BACK_TAGS = new Set(['config', 'bibliography', 'note-list']);
 
-function isBookPartTag(node) {
+export function isBookPartTag(node) {
   return isEnscribeTag(node) && node.tagname === 'book-part';
 }
 
@@ -75,7 +75,7 @@ function isBookPartTag(node) {
  * @param {object|null} metaNode — the <meta> tag (kept at root)
  * @returns {Array} new children list with book-parts absorbing their body
  */
-function assembleBookPartContents(children, metaNode) {
+export function assembleBookPartContents(children, metaNode) {
   const out = [];
   let currentBookPart = null;
   for (const node of children) {
@@ -107,7 +107,7 @@ function assembleBookPartContents(children, metaNode) {
   return out;
 }
 
-function bookPartType(node) {
+export function bookPartType(node) {
   return node?.kwargs?.['book-part-type'] ?? 'other';
 }
 
@@ -167,7 +167,7 @@ function isTitleish(node) {
  * Also recursively restructures any nested <book-part>s (the "<part>
  * containing <chapter>s" pattern).
  */
-function restructureBookPart(bookPartNode) {
+export function restructureBookPart(bookPartNode) {
   let content = Array.isArray(bookPartNode.content) ? bookPartNode.content : [];
 
   // Pre-process: lift the leading bare-text title (the pipe-content of

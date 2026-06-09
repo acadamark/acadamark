@@ -576,6 +576,22 @@ export function numberSections(tree, file) {
   if (isEnscribeTag(docRoot, 'article')) {
     const body = findRegionChild(docRoot, 'article-body');
     if (body) numberSectionLevel(structuralChildren(body), '', registry);
+    // #100: article appendices (book-part-type="appendix" in <article-back>, the
+    // article projection of <appendix>) join #57's appendix letter scheme — `A`,
+    // `A.1` — exactly as book-back appendices do below. Same stamp + section
+    // prefix, so "Appendix A" cross-references resolve identically.
+    const articleBack = findRegionChild(docRoot, 'article-back');
+    if (articleBack) {
+      let appendixIdx = 0;
+      for (const part of structuralChildren(articleBack)) {
+        if (!isEnscribeTag(part, 'book-part')) continue;
+        if ((part.kwargs?.['book-part-type'] ?? 'other') !== 'appendix') continue;
+        const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
+        appendixIdx += 1;
+        stampSection(part, letter, registry);                        // appendix heading letter
+        numberSectionLevel(structuralChildren(part), letter, registry); // its sections → "A.1"
+      }
+    }
     return;
   }
 

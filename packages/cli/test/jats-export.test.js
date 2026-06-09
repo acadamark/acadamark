@@ -1110,6 +1110,35 @@ ${dateXml}
   validateWithXmllint('doc137-lists', jats);
 }
 
+// ─── #100: article appendices → <app-group> / <app> in <back> ───────────────
+//
+// Built through the full pipeline (buildEnscribePipeline → enscribeToJats), so
+// numbering letters the appendices (#57) — not a hand-assembled chain (cf. #144).
+{
+  const src = [
+    '<meta type=article>', '<title | Appendix Test>', '</meta>', '',
+    '<config number-sections=true />', '',
+    '# Intro', '', 'See <ref @app:a>.', '',
+    '<appendix #app:a | Notation>', '', 'Body of A.', '', '## Symbols', '', 'Sub content.', '',
+    '<appendix #app:b | Sources>', '', 'Body of B.',
+  ].join('\n');
+  const proc = buildEnscribePipeline();
+  const tree = proc.runSync(proc.parse(src));
+  const jats = enscribeToJats(tree);
+
+  check('doc100-appendices: <app-group> present in <back>', jats.includes('<app-group>'));
+  check('doc100-appendices: both appendices in ONE <app-group>',
+    (jats.match(/<app-group>/g) || []).length === 1 && (jats.match(/<app id=/g) || []).length === 2);
+  check('doc100-appendices: <app id="app:a"> with <label>A</label> + <title>',
+    /<app id="app:a">\s*<label>A<\/label>\s*<title>Notation<\/title>/.test(jats));
+  check('doc100-appendices: <app id="app:b"> lettered B',
+    /<app id="app:b">\s*<label>B<\/label>\s*<title>Sources<\/title>/.test(jats));
+  check('doc100-appendices: appendix sub-section → <sec> labelled A.1',
+    /<sec>\s*<label>A\.1<\/label>\s*<title>Symbols<\/title>/.test(jats));
+  check('doc100-appendices: no <book-part> leaks into article JATS', !jats.includes('<book-part'));
+  validateWithXmllint('doc100-appendices', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

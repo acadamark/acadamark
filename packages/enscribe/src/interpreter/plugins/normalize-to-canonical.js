@@ -116,7 +116,19 @@ const shorthandRegistry = createShorthandRegistry({ reservedNames: RESERVED_NAME
 // `<book-part book-part-type="<name>">`, gated on book context so `<glossary>`
 // keeps its standalone vocab meaning in articles (conditional → exempt from the
 // reservation policy).
+//
+// #100 exception: `appendix` is valid in BOTH book and article context. It has
+// no standalone vocab meaning (no `appendix` element), so it is never ambiguous
+// and expands unconditionally. The placement diverges downstream — book-
+// structuring routes it to <book-back>, article-structuring to <article-back> —
+// and the JATS exporter projects it to <book-part> (book) or <app> (article).
+// `appendix` is not a reserved name, so unconditional registration is permitted.
+shorthandRegistry.register('appendix', {
+  tagname: 'book-part',
+  kwargs: { 'book-part-type': 'appendix' },
+});
 for (const shorthand of BOOK_PART_SHORTHANDS) {
+  if (shorthand === 'appendix') continue; // registered above (article-valid, #100)
   shorthandRegistry.register(shorthand, {
     tagname: 'book-part',
     kwargs: { 'book-part-type': shorthand },

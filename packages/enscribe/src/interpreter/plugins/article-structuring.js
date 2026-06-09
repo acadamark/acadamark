@@ -30,6 +30,15 @@
 import { makeTag } from '../../core/tag.js';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
 import { warnSkippedDocType, warnTitlePrecedence } from '../lib/errors.js';
+// #100: an article `<appendix>` lowers (at the gate) to the same
+// `<book-part book-part-type="appendix">` the book uses. We reuse the book-side
+// body absorption + title promotion, then route the appendix to <article-back>.
+import {
+  assembleBookPartContents,
+  restructureBookPart,
+  isBookPartTag,
+  bookPartType,
+} from './book-structuring.js';
 
 // Tags that belong in <article-back>.
 const BACK_MATTER_TAGS = new Set(['config', 'bibliography', 'note-list']);
@@ -169,7 +178,15 @@ export function enscribeArticleStructuring() {
     // silently. Same disposition for the original warn-and-skip case
     // (was: warn on <meta type=book> at root) — book-structuring now
     // handles those upstream.
-    const bookRoot = findTag(children, 'book') || findTag(children, 'book-part');
+    //
+    // #100: an APPENDIX book-part is exempt — in an article, `<appendix>`
+    // lowers to `<book-part book-part-type="appendix">` at root, and that is
+    // article content this plugin must structure (into <article-back>), not a
+    // sign that book-structuring ran. A standalone book-part *document* is still
+    // caught by the docType check below.
+    const bookRoot =
+      findTag(children, 'book') ||
+      children.some((c) => isBookPartTag(c) && bookPartType(c) !== 'appendix');
     if (bookRoot) {
       return; // already structured by enscribeBookStructuring
     }
@@ -204,11 +221,25 @@ export function enscribeArticleStructuring() {
     const backContent = [];
     const dataSiblings = []; // <data> nodes: stay at root, outside <article>
 
-    for (const node of children) {
+    // #100: an article `<appendix>` lowered (at the gate) to
+    // `<book-part book-part-type="appendix">`. Gather each appendix's following
+    // sections into it (reusing the book-side body absorption), so the partition
+    // routes the whole appendix — promoted title + body — to <article-back>. A
+    // strict no-op when the article has no appendix, so non-appendix articles are
+    // byte-identical.
+    const hasAppendix = children.some(
+      (n) => isBookPartTag(n) && bookPartType(n) === 'appendix',
+    );
+    const items = hasAppendix ? assembleBookPartContents(children, metaNode) : children;
+
+    for (const node of items) {
       if (node === metaNode) continue; // goes to front
       if (node === explicitArticleTag) continue; // structural tag, not body
       if (isEnscribeTag(node, 'data')) {
         dataSiblings.push(node); // extracted to root level
+      } else if (isBookPartTag(node) && bookPartType(node) === 'appendix') {
+        restructureBookPart(node); // promote the pipe title → <book-part-title>
+        backContent.push(node); // article appendices live in <article-back>
       } else if (isBackMatter(node)) {
         backContent.push(node);
       } else {

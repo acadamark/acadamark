@@ -232,7 +232,72 @@ function emitBody(bodyNode) {
 }
 
 function emitBack(backNode) {
-  return `  <back>\n${emitBodyChildren(backNode.content, 4)}  </back>\n`;
+  const content = Array.isArray(backNode.content) ? backNode.content : [];
+  // #100: article appendices — <book-part book-part-type="appendix"> in
+  // <article-back> (the article projection of <appendix>) export as JATS <app>
+  // collected into a single <app-group>. Consecutive appendices share one group.
+  // No appendix → byte-identical to the prior emission.
+  if (!content.some(isArticleAppendixPart)) {
+    return `  <back>\n${emitBodyChildren(content, 4)}  </back>\n`;
+  }
+  let out = `  <back>\n`;
+  let i = 0;
+  while (i < content.length) {
+    if (isArticleAppendixPart(content[i])) {
+      out += `    <app-group>\n`;
+      while (i < content.length && isArticleAppendixPart(content[i])) {
+        out += emitApp(content[i], 6);
+        i += 1;
+      }
+      out += `    </app-group>\n`;
+    } else {
+      // Emit a maximal run of non-appendix back content together, so the
+      // emitBodyChildren group-inline pre-pass behaves exactly as before.
+      const run = [];
+      while (i < content.length && !isArticleAppendixPart(content[i])) {
+        run.push(content[i]);
+        i += 1;
+      }
+      out += emitBodyChildren(run, 4);
+    }
+  }
+  out += `  </back>\n`;
+  return out;
+}
+
+/** True for an article-appendix book-part (book-part-type="appendix"). */
+function isArticleAppendixPart(node) {
+  return isEnscribeTag(node, 'book-part') && (node.kwargs?.['book-part-type'] ?? '') === 'appendix';
+}
+
+/**
+ * Emit one JATS `<app>` from an article appendix book-part (#100). Mirrors the
+ * book-part-meta title/label emission: the appendix's letter (stamped by
+ * numberSections) becomes `<label>`, the `<book-part-title>` (inside the
+ * synthesized `<meta>`) becomes `<title>`, and the remaining content is the body
+ * (sections → `<sec>`, etc.). JATS `<app>` content model: (label?, title?, …, body).
+ */
+function emitApp(appendixPart, indent) {
+  const pad = ' '.repeat(indent);
+  const id = appendixPart.id ? ` id="${escapeXmlAttr(appendixPart.id)}"` : '';
+  const content = Array.isArray(appendixPart.content) ? appendixPart.content : [];
+  const meta = content.find((c) => isEnscribeTag(c, 'meta'));
+  const titleNode = meta && Array.isArray(meta.content)
+    ? meta.content.find((c) => isEnscribeTag(c, 'book-part-title'))
+    : null;
+  // Body = everything except the meta and any per-part note-lists.
+  const body = content.filter((c) => c !== meta && !isEnscribeTag(c, '__note-list'));
+
+  let out = `${pad}<app${id}>\n`;
+  if (titleNode && titleNode.computedSectionNumber != null) {
+    out += `${pad}  <label>${escapeXml(String(titleNode.computedSectionNumber))}</label>\n`;
+  }
+  if (titleNode) {
+    out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
+  }
+  out += emitBodyChildren(body, indent + 2);
+  out += `${pad}</app>\n`;
+  return out;
 }
 
 // ─── BITS book emission (Phase 5 slice 5c) ────────────────────────────────
