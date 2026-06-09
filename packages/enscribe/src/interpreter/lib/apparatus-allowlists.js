@@ -88,7 +88,7 @@ export const CONFIG_KWARGS = new Map([
   // yet; they sit in the config map awaiting implementation.
   ['theme',                   'live'],     // index.js compiler (Phase 8 Slice 2)
   ['display-style',           'reserved'],
-  ['note-position',           'reserved'],
+  ['note-position',           'live'],     // index.js compiler → sidenotes (#33, margin render mode)
   ['bibliography-position',   'reserved'],
   ['reference-library',       'reserved'],
   ['strict-mode',             'reserved'],

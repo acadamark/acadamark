@@ -8,13 +8,14 @@ This follows the core split: semantics live in the tree (a note is a note), and 
 
 ## Selecting it
 
-A **document-level render option** (the existing render-mode / config surface), defaulting to today's bottom-of-document footnote rendering. It's a whole-document mode — every note renders in the margin — not a per-note marking. (Exact config key confirmed during the build.)
+A **document-level render option**, `note-position` — set as the `notePosition` render option or per document via `<config note-position=…>` (the option wins, mirroring `theme`). It reuses the existing reserved `note-position` config key. Values: **`bottom`** (default — today's foot-of-document footnotes) and **`margin`**. It's a whole-document mode — every note renders in the margin — not a per-note marking.
 
 ## Layout and render
 
 - The footnote **marker stays inline** in the text, unchanged — same marker, same numbering as the existing footnote system.
-- The note's **content renders in a wide margin column** (body column + margin column, the Tufte-style layout), added as one layout variant reusing enscribe's existing `.enscribe-layout--*` chrome.
+- The note's **content renders in a wide margin column** (body column + margin column, the Tufte-style layout), added as one layout variant (`.enscribe-layout--sidenotes`) reusing enscribe's existing `.enscribe-layout` / `.enscribe-body` chrome.
 - The note floats into the margin near its marker via CSS.
+- **Implementation:** the compiler copies each note's rendered content from the bottom `<note-list>` into a `<span class="enscribe-sidenote">` after its marker (the mdast tree is untouched), and injects the sidenote CSS as a scoped `<style>` **only in margin mode**. Default (bottom) output is therefore byte-identical — the mode adds nothing unless selected.
 
 ## Mobile
 

@@ -175,6 +175,14 @@ import { formatScopedNumber } from './lib/scoped-number.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc } from './lib/toc.js';
+// #33 (part 1): sidenote render mode. A display-only hast projection that moves
+// numbered-note CONTENT into a margin column beside its marker; a strict no-op
+// unless the `notePosition` option / <config note-position=…> selects 'margin'.
+// The mdast tree (and thus JATS) is untouched. Its CSS (SIDENOTES_CSS) is
+// injected only in margin mode, so default output — and the existing fixtures —
+// stay byte-identical.
+import { applySidenotes } from './lib/sidenotes.js';
+import { SIDENOTES_CSS } from './assets/sidenotes-css.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
@@ -512,6 +520,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
  * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
  * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
+ * @param {'bottom'|'margin'} [options.notePosition='bottom'] Note render position (#33). 'bottom' (default) keeps numbered notes at the foot of the document; 'margin' projects each note's content into a wide margin column beside its marker (Tufte-style sidenotes) and injects the scoped sidenote CSS, falling back to the bottom rendering below a breakpoint. Display-only — markers, numbering, the note tree, and JATS are unchanged, and bottom-mode output (default) is byte-identical. Also settable per-document via `<config note-position=…>`; the option wins.
  * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
  * @param {boolean} [options.smartTypography=true] Smart typography (#54): curly quotes, en/em dashes, and ellipses in prose display output. A display-projection on the HTML side only — never the canonical AST / `.emd` / JATS. `false` disables it.
@@ -711,6 +720,22 @@ export function enscribeInterpreter(options = {}) {
     // A strict no-op when `toc` is off → byte-identical output for non-ToC docs.
     // Returns 'book' / 'article' / null so chapter-nav can gate on a book ToC.
     const tocType = applyToc(hast, tocOption);
+
+    // #33 (part 1): sidenote render mode. Resolved like `theme` — the
+    // `notePosition` option wins over a `<config note-position=…>` document
+    // setting; default 'bottom'. In 'margin' mode applySidenotes projects each
+    // note's content into a margin <span> beside its marker and marks the layout,
+    // and the scoped sidenote CSS is injected; a strict no-op otherwise, so
+    // bottom-footnote output (the default) is byte-identical and the existing
+    // fixtures are untouched. Display-only: the mdast tree (and the JATS export
+    // that consumes it) is unchanged. Runs after applyToc so it can reuse /
+    // co-mark the layout wrapper, and before rehype-format so the injected spans
+    // are formatted with everything else. applySidenotes returns false when the
+    // document has no notes, so the CSS is injected only when something uses it.
+    const notePosition = options.notePosition ?? (configMap && configMap.get('note-position')) ?? 'bottom';
+    if (notePosition === 'margin' && applySidenotes(hast)) {
+      hast.children.unshift(makeStyleElement(SIDENOTES_CSS));
+    }
 
     // Phase 8 Slice 3: inject the chapter-navigation script for a book that has a
     // ToC (which assigns the book-part ids the script navigates by). Default on;

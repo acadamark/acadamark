@@ -31,7 +31,7 @@ enscribe_attributes:
         - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)
         - theme                   (reserved; future)
         - display-style           (reserved; future)
-        - note-position           (reserved; future)
+        - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')
         - bibliography-position   (reserved; future)
         - reference-library       (reserved; future)
         - strict-mode             (reserved; future)
