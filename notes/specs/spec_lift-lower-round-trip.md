@@ -27,7 +27,7 @@ The AST is the single source of truth. The registers are surface syntaxes over i
 
 ## The laws
 
-1. **Faithful serialization (both directions).** `parse(lower(a)) ≡ a` and `parse(lift(a)) ≡ a` for every AST `a`. Neither serializer may change meaning. This is the core contract; lossiness bugs (#6) are violations of it.
+1. **Faithful serialization (both directions).** `parse(lower(a)) ≡ a` and `parse(lift(a)) ≡ a` for every AST `a`. Neither serializer may change meaning. This is the core contract; lossiness bugs are violations of it. (The specific losses #6 named — merged-cell table IDs, dense-math delimiters — are fixed; the live law-1 violation is #141, where re-parsing dense serialized output blows up exponentially.)
 
 2. **Lower is a normal form (byte-idempotent).** `lower(parse(lower(a))) == lower(a)`, byte-for-byte. Canonical output is canonical input's fixed point.
 
@@ -65,4 +65,4 @@ The laws hold regardless of strict mode. Strict mode adds a stronger requirement
 
 ## Scope
 
-This covers the `.emd` authoring registers only. The JATS axis (`import-jats` / `export-jats`) is a separate round trip with its own, lossier contract and is out of scope here. (#6 is the lossiness bug against law 1; #66 is the pipeline-spec re-sync; neither is this document.)
+This covers the `.emd` authoring registers only. The JATS axis (`import-jats` / `export-jats`) is a separate round trip with its own, lossier contract and is out of scope here. (#141 is the live law-1 lossiness bug — re-parsing dense serialized output blows up; #6's named modes, merged-cell table IDs and dense math, are fixed; #66 is the pipeline-spec re-sync; none is this document.)
