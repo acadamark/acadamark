@@ -1660,6 +1660,15 @@ function emitInlines(children) {
                `rid="${escapeXmlAttr(noteId)}">${escapeXml(String(number))}</xref>`;
         continue;
       }
+      // #33 part 2: <marginnote> — an unnumbered margin aside, authored inline.
+      // Maps to JATS <boxed-text content-type="marginnote">; the inline body is
+      // wrapped in a <p> (boxed-text takes block content). Emitted at the authored
+      // position inside the surrounding <p> (JATS <p> admits <boxed-text>).
+      if (child.tagname === 'marginnote') {
+        const mid = child.id ? ` id="${escapeXmlAttr(child.id)}"` : '';
+        out += `<boxed-text${mid} content-type="marginnote"><p>${emitInlines(child.content)}</p></boxed-text>`;
+        continue;
+      }
       // <a> → JATS link. An external href maps to <ext-link>; an internal
       // #fragment maps to <xref> (per a.md's JATS mapping). The xlink
       // namespace is already declared on the JATS root (also used by <graphic>).

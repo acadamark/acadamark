@@ -203,6 +203,7 @@ Citations, cross-references, and notes are first-class elements with their own s
 | `<cite>` | `<xref ref-type="bibr">` | Citation reference (to a bibliography entry). |
 | `<ref>` | `<xref ref-type="fig|sec|eq|...">` | Cross-reference (to a numbered element). |
 | `<note>` | `<fn>` | Footnote/endnote/sidenote (inline marker). |
+| `<marginnote>` | `<boxed-text content-type="marginnote">` | Unnumbered margin aside (Tufte margin note), authored inline with `<marginnote \| body>`. Renders `<aside class="enscribe-marginnote">` in place and floats into the shared margin column (#33). Distinct from `<note>` — never numbered or collected. The first element whose authoring tagname differs from its HTML element (`marginnote` → `aside`). |
 | `<abbr>` | `<abbrev>` | Abbreviation. *(Deferred — to be specified when the relevant slice arrives.)* |
 | `<term>` | `<named-content>` | A term being introduced. *(Deferred — to be specified when the relevant slice arrives.)* |
 

@@ -80,16 +80,22 @@ function injectSpans(node, map) {
 }
 
 /**
- * Tag the layout wrapper `.enscribe-layout--sidenotes`. If applyToc already
- * wrapped the document element, add the class to that wrapper; otherwise wrap the
- * document element (article/book) the same way applyToc does.
+ * Mark the document's layout wrapper as a margin layout
+ * (`.enscribe-layout--margin`) — the shared column used by BOTH sidenotes and
+ * marginnotes (#33). If applyToc already wrapped the document element, add the
+ * class to that wrapper (so a ToC + margin content co-mark one wrapper);
+ * otherwise wrap the document element (article/book) the same way applyToc does.
+ *
+ * Exported and factored out of relocation (#33 part 2) so the compiler can
+ * establish the margin column for a marginnote-present document independent of
+ * any note relocation.
  */
-function markLayout(hast) {
+export function markMarginLayout(hast) {
   const kids = hast.children ?? [];
   const layout = kids.find((c) => c.type === 'element' && hasClass(c, 'enscribe-layout'));
   if (layout) {
-    if (!hasClass(layout, 'enscribe-layout--sidenotes')) {
-      layout.properties.className = [...(layout.properties.className ?? []), 'enscribe-layout--sidenotes'];
+    if (!hasClass(layout, 'enscribe-layout--margin')) {
+      layout.properties.className = [...(layout.properties.className ?? []), 'enscribe-layout--margin'];
     }
     return;
   }
@@ -98,22 +104,26 @@ function markLayout(hast) {
   );
   if (idx === -1) return;
   const docEl = kids[idx];
-  kids[idx] = el('div', { className: ['enscribe-layout', 'enscribe-layout--sidenotes'] }, [
+  kids[idx] = el('div', { className: ['enscribe-layout', 'enscribe-layout--margin'] }, [
     el('main', { className: ['enscribe-body'] }, [docEl]),
   ]);
 }
 
 /**
- * Apply the margin (sidenote) projection to a hast tree, in place.
+ * Relocate numbered-note content into the margin (sidenote mode): inject a margin
+ * <span> beside each marker. Returns true if any note was relocated.
+ *
+ * Does NOT mark the layout — the caller calls markMarginLayout when EITHER
+ * sidenotes relocated OR a marginnote is present, so the shared margin column is
+ * established for both (#33 part 2 factored the marking out of relocation).
  *
  * @param {import('hast').Root} hast
- * @returns {boolean} true if any note was projected (false → no notes, no-op)
+ * @returns {boolean} true if any note was relocated (false → no notes, no-op)
  */
 export function applySidenotes(hast) {
   const notes = new Map();
   collectNotes(hast, notes);
   if (notes.size === 0) return false;
   injectSpans(hast, notes);
-  markLayout(hast);
   return true;
 }

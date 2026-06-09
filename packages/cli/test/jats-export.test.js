@@ -1139,6 +1139,24 @@ ${dateXml}
   validateWithXmllint('doc100-appendices', jats);
 }
 
+// ─── #33 part 2: <marginnote> → <boxed-text content-type="marginnote"> ──────
+{
+  const src = [
+    '<meta type=article>', '<title | Marginnote Test>', '</meta>', '',
+    '# Intro', '',
+    'A claim that needs a remark.<marginnote #m1 | An aside set in the margin.> It holds.',
+  ].join('\n');
+  const proc = buildEnscribePipeline();
+  const tree = proc.runSync(proc.parse(src));
+  const jats = enscribeToJats(tree);
+
+  check('doc-marginnote: <boxed-text content-type="marginnote"> emitted',
+    /<boxed-text id="m1" content-type="marginnote"><p>An aside set in the margin\.<\/p><\/boxed-text>/.test(jats));
+  check('doc-marginnote: emitted at the authored position (inside the paragraph)',
+    /A claim that needs a remark\.<boxed-text/.test(jats));
+  validateWithXmllint('doc-marginnote', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

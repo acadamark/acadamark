@@ -34,7 +34,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Tables — the `<table>` host with CSV, TSV, JSON, YAML, and Markdown format words (`<csv>` / `<tsv>` kept as gate shorthands → `<table csv>` / `<table tsv>`)
 - [x] Opt-in markup in data-table cells — data-format cells are literal by default; `+parse-text` / `parse-columns="…"` / `-parse-text` (and a doc-wide `<config parse-data-tables>`) opt cells into Enscribe inline markup (links, emphasis, cross-refs, cites, inline code/math), parsed in HTML and JATS both, with the stored data payload left literal
 - [x] Inline and display math (KaTeX); numbered equations
-- [x] Notes — footnotes / endnotes / sidenotes
+- [x] Notes — footnotes / endnotes / sidenotes, plus a **margin render mode** (#33): `note-position=margin` (option or `<config>`) relocates numbered notes into a margin column beside their markers (display-only — markers, numbering, and JATS unchanged; mobile falls back to bottom footnotes), and `<marginnote>` sets an unnumbered, uncounted aside in the same margin in place (JATS `<boxed-text content-type="marginnote">`)
 - [x] Citations and bibliography — citation-js, the `<library>` storage host (`<library bibtex | …>` format word), inline BibTeX / CSL-JSON, CSL styles
 - [x] Cross-references to figures, equations, tables, sections, code blocks, theorems
 - [x] Theorem family — `<theorem>`, `<lemma>`, `<definition>`, `<proof>`, … (shared / own / unnumbered counters)
@@ -66,7 +66,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] ToC scroll-spy — highlights the current section (and its ancestor trail) in the sidebar as the reader scrolls, via an injected inline `IntersectionObserver` script with `aria-current`; ships with the ToC sidebar, a pure progressive enhancement (the first first-party hand-authored render JS)
 - [x] Single-chapter-at-a-time book navigation (JS, progressive enhancement)
 - [x] Display themes (default, modern, compact — custom-property overrides)
-- [ ] Multi-column display and margin sidenotes
+- [ ] Multi-column display
 - [ ] Pagination and print-targeted output
 
 ## CLI — the `enscribe` command (`@enscribejs/cli`)

@@ -27,12 +27,12 @@ export async function run() {
 
   // ── default (bottom) mode: no sidenote spans, no margin layout ──────────────
   assert.ok(!bottom.includes('enscribe-sidenote'), 'default mode emits no sidenote spans');
-  assert.ok(!bottom.includes('enscribe-layout--sidenotes'), 'default mode emits no sidenote layout');
+  assert.ok(!bottom.includes('enscribe-layout--margin'), 'default mode emits no margin layout');
   console.log('PASS: default (bottom) note rendering is unchanged');
 
   // ── margin mode: content projected to the margin, marker + numbering intact ──
-  assert.ok(margin.includes('class="enscribe-layout enscribe-layout--sidenotes"'), 'margin mode marks the layout wrapper');
-  assert.ok(margin.includes('.enscribe-layout--sidenotes .enscribe-sidenote {'), 'margin mode injects the scoped sidenote CSS');
+  assert.ok(margin.includes('class="enscribe-layout enscribe-layout--margin"'), 'margin mode marks the (shared) margin layout wrapper');
+  assert.ok(margin.includes('.enscribe-layout--margin .enscribe-sidenote'), 'margin mode injects the scoped sidenote CSS');
   assert.ok(margin.includes('<sup id="noteref-1" data-note-id="note-1">'), 'inline marker 1 kept');
   assert.ok(margin.includes('<sup id="noteref-2" data-note-id="note-2">'), 'inline marker 2 kept');
   assert.ok(

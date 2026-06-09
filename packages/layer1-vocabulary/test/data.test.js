@@ -24,7 +24,7 @@ function check(label, cond) {
   }
 }
 
-// Entry count: 102 primary + 2 aliases ('quote', 'figure') = 104.
+// Entry count: 103 primary + 2 aliases ('quote', 'figure') = 105.
 // Recent additions:
 // - 2026-Q2: Phase 3 slice 3b — `fig.md`, `svg.md`, `frame.md` added
 //   as the three settled frameable members that lacked vocab entries
@@ -75,9 +75,12 @@ function check(label, cond) {
 //   `<ul>` / `<ol>` / `<li>` are render output of the `<list>` construct, not
 //   authoring vocabulary (notes/specs/lists.md); `<list>` lowers to mdast
 //   list/listItem and never consults these entries. Net: 105 → 102 primary.
+// - 2026-06-09: #33 part 2 — `marginnote.md` added (an unnumbered inline margin
+//   aside; the first element whose authoring tagname, `marginnote`, differs from
+//   its HTML element, `aside`). Net: 102 → 103 primary.
 check(
-  `VOCABULARY has 104 entries (102 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 104,
+  `VOCABULARY has 105 entries (103 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 105,
 );
 
 // Build-time loader has nothing to report in normal state.

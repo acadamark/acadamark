@@ -163,6 +163,15 @@ export const enscribeTagHandler = createEnscribeTagHandler();
 function schemaDispatch(state, node, vocab) {
   const tagName = vocab.html_output?.element ?? node.tagname;
   const properties = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
+  // #33 part 2: apply the vocab entry's fixed default attributes. Only `class`
+  // is used today (a <marginnote>'s `enscribe-marginnote` class), merged onto any
+  // author-supplied classes. Every existing element declares
+  // `default_attributes: {}`, so this is inert for them — output byte-identical.
+  const defaultAttrs = vocab.html_output?.default_attributes;
+  if (defaultAttrs && defaultAttrs.class) {
+    const fixed = String(defaultAttrs.class).split(/\s+/).filter(Boolean);
+    properties.className = [...(properties.className ?? []), ...fixed];
+  }
   const children = convertContent(state, node, vocab);
 
   // #57: section numbering. When the section-numbering pass stamped a computed

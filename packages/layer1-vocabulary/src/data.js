@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 102 vocabulary entries.
+// Source files: 103 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -1990,7 +1990,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (reserved; future)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\nthe authoring form for <config>; the structured-children entries in\n`content.shape` below (marked *Future*) are a deferred design sketch, not\na current authoring spelling — the `<bibliography source=… />` source\ndeclaration is the only child element <config> takes today.\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\n  - strict-mode             (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\nthe authoring form for <config>; the structured-children entries in\n`content.shape` below (marked *Future*) are a deferred design sketch, not\na current authoring spelling — the `<bibliography source=… />` source\ndeclaration is the only child element <config> takes today.\n",
       },
     },
     "content": {
@@ -3911,6 +3911,55 @@ const _license = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "license.md",
+  });
+
+const _marginnote = Object.freeze({
+    "semantic_role": "marginnote",
+    "category": "inline-formatting",
+    "html_output": {
+      "element": "aside",
+      "is_html_native": true,
+      "default_attributes": {
+        "class": "enscribe-marginnote",
+      },
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+    },
+    "content": {
+      "type": "prose",
+      "becomes": "children",
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "boxed-text",
+      "attributes": {
+        "content-type": "marginnote",
+      },
+      "notes": "JATS models a sidebar / aside as <boxed-text>; content-type=\"marginnote\"\nmarks the identity for round-trip. The inline-authored body is wrapped in a\n<p> (boxed-text takes block content).\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "The result holds.<marginnote | A caveat, set in the margin.>",
+        "layer1_html": "<p>The result holds.<aside class=\"enscribe-marginnote\">A caveat, set in the margin.</aside></p>",
+        "notes": "An unnumbered margin aside, authored in place. Unlike a numbered <note>,\nit is not collected, numbered, or relocated — it renders where written and\nfloats into the margin column (note-position is irrelevant to it).\n",
+      },
+      {
+        "source": "<marginnote #m1 | A margin note with an id.>",
+        "layer1_html": "<aside id=\"m1\" class=\"enscribe-marginnote\">A margin note with an id.</aside>",
+      },
+    ],
+    "interpreter_strategy": "schema",
+    "_sourceFile": "marginnote.md",
   });
 
 const _math = Object.freeze({
@@ -6451,6 +6500,7 @@ export const VOCABULARY = Object.freeze({
   "lemma": _lemma,
   "library": _library,
   "license": _license,
+  "marginnote": _marginnote,
   "math": _math,
   "matrix": _matrix,
   "meta": _meta,

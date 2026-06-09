@@ -175,14 +175,14 @@ import { formatScopedNumber } from './lib/scoped-number.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc } from './lib/toc.js';
-// #33 (part 1): sidenote render mode. A display-only hast projection that moves
-// numbered-note CONTENT into a margin column beside its marker; a strict no-op
-// unless the `notePosition` option / <config note-position=…> selects 'margin'.
-// The mdast tree (and thus JATS) is untouched. Its CSS (SIDENOTES_CSS) is
-// injected only in margin mode, so default output — and the existing fixtures —
-// stay byte-identical.
-import { applySidenotes } from './lib/sidenotes.js';
-import { SIDENOTES_CSS } from './assets/sidenotes-css.js';
+// #33: the margin column. applySidenotes (part 1) relocates numbered-note content
+// into the margin when note-position=margin; markMarginLayout establishes the
+// shared margin layout, factored out so it also fires for a <marginnote>-present
+// document (part 2). The mdast tree (and thus JATS) is untouched. MARGIN_CSS is
+// injected only when the margin is actually used, so default output — and the
+// existing fixtures — stay byte-identical.
+import { applySidenotes, markMarginLayout } from './lib/sidenotes.js';
+import { MARGIN_CSS } from './assets/margin-css.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
@@ -320,6 +320,7 @@ function detectAssets(root) {
     notes: false,
     refLinks: false,
     citeLinks: false,
+    marginnote: false,
     dslNames: new Set(),
   };
   (function walk(node) {
@@ -334,6 +335,10 @@ function detectAssets(root) {
         found.refLinks = true;
       } else if (tag === 'cite' && Array.isArray(props.className) && props.className.includes('cite')) {
         found.citeLinks = true;
+      } else if (tag === 'aside' && Array.isArray(props.className) && props.className.includes('enscribe-marginnote')) {
+        // #33 part 2: a <marginnote> renders to <aside class="enscribe-marginnote">.
+        // Its presence (independent of note-position) requires the margin column.
+        found.marginnote = true;
       }
       // A DSL contract marker rides on a container element; collect it
       // independently of the tag-name checks above (a node is never both).
@@ -721,20 +726,23 @@ export function enscribeInterpreter(options = {}) {
     // Returns 'book' / 'article' / null so chapter-nav can gate on a book ToC.
     const tocType = applyToc(hast, tocOption);
 
-    // #33 (part 1): sidenote render mode. Resolved like `theme` — the
-    // `notePosition` option wins over a `<config note-position=…>` document
-    // setting; default 'bottom'. In 'margin' mode applySidenotes projects each
-    // note's content into a margin <span> beside its marker and marks the layout,
-    // and the scoped sidenote CSS is injected; a strict no-op otherwise, so
-    // bottom-footnote output (the default) is byte-identical and the existing
-    // fixtures are untouched. Display-only: the mdast tree (and the JATS export
-    // that consumes it) is unchanged. Runs after applyToc so it can reuse /
-    // co-mark the layout wrapper, and before rehype-format so the injected spans
-    // are formatted with everything else. applySidenotes returns false when the
-    // document has no notes, so the CSS is injected only when something uses it.
+    // #33: the margin column. Two independent triggers, either of which needs the
+    // margin layout + CSS:
+    //   - note-position=margin (part 1): relocate numbered-note content into the
+    //     margin (applySidenotes; resolved like `theme` — the `notePosition`
+    //     option wins over a `<config note-position=…>` setting, default 'bottom');
+    //   - ≥1 <marginnote> present (part 2): the aside is authored in place and
+    //     needs the margin to float into, INDEPENDENT of note-position.
+    // markMarginLayout marks the (shared) layout and MARGIN_CSS is injected only
+    // when one of those fires — so a default document adds nothing (byte-identical
+    // fixtures). Display-only: the mdast tree (and the JATS export that consumes
+    // it) is unchanged. Runs after applyToc so it can co-mark the layout wrapper,
+    // and before rehype-format so any injected spans are formatted with the rest.
     const notePosition = options.notePosition ?? (configMap && configMap.get('note-position')) ?? 'bottom';
-    if (notePosition === 'margin' && applySidenotes(hast)) {
-      hast.children.unshift(makeStyleElement(SIDENOTES_CSS));
+    const relocatedSidenotes = notePosition === 'margin' && applySidenotes(hast);
+    if (relocatedSidenotes || assets.marginnote) {
+      markMarginLayout(hast);
+      hast.children.unshift(makeStyleElement(MARGIN_CSS));
     }
 
     // Phase 8 Slice 3: inject the chapter-navigation script for a book that has a

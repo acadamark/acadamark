@@ -116,8 +116,15 @@ function loadVocabularySource(vocabDir) {
     //     jats: content-type
     // The generator preserves object forms as-is.
     liftMapsToToTargetForm(spec);
-    const key = spec.html_output?.element;
-    if (!key) continue;
+    // Key by the authoring tagname (the filename stem), NOT html_output.element.
+    // For every element the two coincide (em.md → <em>, fig.md → <fig>), EXCEPT
+    // where an authoring tag renders to a SHARED element — e.g. <marginnote> →
+    // <aside> (#33 part 2). Keying by element collided <marginnote> with <aside>
+    // and silently overwrote it; keying by the filename (the tag the author
+    // writes) is the correct identity and is byte-identical for every pre-existing
+    // element (verified: filename === html_output.element for all of them).
+    if (!spec.html_output?.element) continue; // not a renderable vocab element
+    const key = file.replace(/\.md$/, '');
     if (entries.has(key)) {
       // eslint-disable-next-line no-console
       console.warn(`[layer1-vocabulary] duplicate vocabulary key "${key}" in ${file}`);
