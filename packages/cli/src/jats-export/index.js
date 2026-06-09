@@ -672,6 +672,12 @@ function emitBlock(node, indent) {
     if (node.type === 'paragraph') {
       return `${pad}<p>${emitInlines(node.children)}</p>\n`;
     }
+    // #137: a markdown list node — the shape `<list>` lowers to (and the shape a
+    // bare `-`/`1.` list produces). emitListJats handles enscribeTag <ul>/<ol>;
+    // this is the remark `list`/`listItem` analogue.
+    if (node.type === 'list') {
+      return emitMarkdownListJats(node, indent);
+    }
     return '';
   }
   // enscribeTag block
@@ -1150,6 +1156,33 @@ function emitHtmlTableGrid(grid, indent) {
 }
 
 // ─── List emission (Phase 5 slice 5b) ─────────────────────────────────────
+
+/**
+ * Emit JATS `<list>` for a markdown `list` node (the shape `<list>` lowers to,
+ * #137, and the shape a bare `-`/`1.` list produces). The list's `ordered` flag
+ * picks the list-type (`order` / `bullet`); each `listItem`'s block children
+ * (paragraphs) become `<list-item>` content via emitBodyChildren.
+ *
+ * Counterpart to emitListJats, which handles the enscribeTag `<ul>`/`<ol>` form;
+ * adding this also gives a bare markdown list a JATS mapping (previously absent).
+ *
+ * @param {object} node   - mdast list node
+ * @param {number} indent
+ * @returns {string}
+ */
+function emitMarkdownListJats(node, indent) {
+  const pad = ' '.repeat(indent);
+  const listType = node.ordered ? 'order' : 'bullet';
+  let out = `${pad}<list list-type="${listType}">\n`;
+  for (const item of node.children ?? []) {
+    if (!item || item.type !== 'listItem') continue;
+    out += `${pad}  <list-item>\n`;
+    out += emitBodyChildren(item.children, indent + 4);
+    out += `${pad}  </list-item>\n`;
+  }
+  out += `${pad}</list>\n`;
+  return out;
+}
 
 /**
  * Emit JATS `<list list-type="bullet|order">` for `<ul>` / `<ol>`.

@@ -29,7 +29,7 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `format-words.md`, `render-quality.md`, `spec_lift-lower-round-trip.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `format-words.md`, `render-quality.md`, `spec_lift-lower-round-trip.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/release-audits.md` | Spec | The release-audit procedure — the four reconciliations and how each is run. A process spec; see "The release audit." |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |

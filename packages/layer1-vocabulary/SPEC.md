@@ -179,12 +179,14 @@ Almost all standard HTML.
 |---------|------------------|---------|
 | `<p>` | `<p>` | Paragraph. |
 | `<table>` | `<table>` | Table (with full HTML `<thead>`, `<tbody>`, etc.). |
-| `<ul>`, `<ol>`, `<li>` | `<list>` | Lists. |
+| `<ul>`, `<ol>`, `<li>` | `<list>` | Lists — render output of the `<list>` construct (see *Lists* below). |
 | `<dl>`, `<dt>`, `<dd>` | `<def-list>` | Definition lists. *(Deferred — to be specified when the relevant slice arrives.)* |
 | `<blockquote>` | `<disp-quote>` | Long quotation. |
 | `<pre><code>` | `<code>` | Display code. *(Deferred — `<pre>` does not yet have a per-element entry; to be specified with the code-block slice.)* |
 | `<aside>` | `<boxed-text>` | Sidebar / pull-out box. |
 | `<hr>` | `<hr>` | Horizontal rule. |
+
+**Lists (#137).** `<list>` / `<list ordered>` is the canonical authoring element; `<ul>` / `<ol>` / `<li>` are its HTML **render output, not authoring vocabulary**. The `ordered` flag selects an ordered list (`<ol>`); the default is unordered (`<ul>`). Items are written with the **block-scoped** paired sigil `<- content ->` (or the alternate `<* content *>`) — recognized only at flow position, never inline, so prose `<-` / `->` is safe — or the `-` / `*` markdown idiom. A `<list>` lowers to a markdown list node and reuses the existing list render; on export it becomes JATS `<list list-type="bullet|order">` with `<list-item>`. Multi-paragraph items, tag-based nesting, a bare `<li>` marker, and the ordered numbering scheme + `start` are deferred. See `notes/specs/lists.md`.
 
 ### Inline content
 

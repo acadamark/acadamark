@@ -44,7 +44,8 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Inline SVG — the `<svg>` frameable element (bare inline, or captioned / numbered → wrapped in `<figure>`); the canonical home for framed inline SVG (no `<fig svg>`)
 - [x] Links with a positional URL (`<a url | text>`)
 - [x] Book structure — chapters, parts, front/back matter
-- [ ] Strict mode — disable markdown idioms
+- [x] Lists — the `<list>` / `<list ordered>` construct with paired-sigil items `<- … ->` / `<* … *>` (strict-safe) and the `-` / `*` markdown idiom; lowers to standard `<ul>` / `<ol>` + `<li>`, inheriting the HTML render and the JATS `<list>` mapping. Multi-paragraph items, nesting, and a bare `<li>` marker are deferred to a later slice.
+- [ ] Strict mode — disable markdown idioms (unblocked by the list construct above)
 - [ ] `<html-passthrough>` — needs a spec first
 - [ ] Multi-file source — `enscribe.yml` + `<include>`
 - [ ] Executable code blocks — JS / Arquero / Vega-Lite

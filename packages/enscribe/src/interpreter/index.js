@@ -125,6 +125,9 @@ import { enscribeConfigDiscovery } from './plugins/config-discovery.js';
 import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
+// #137: lower the `<list>` construct (+ `<-`/`<*` markers, `-`/`*` idiom) to a
+// markdown list node, reusing the existing list render + JATS mapping.
+import { enscribeListStructuring } from './plugins/list-structuring.js';
 // #21: opt-in Enscribe inline markup in data-format table cells. Runs in the
 // mdast phase so cell <ref>/<cite> become tree-resident before resolution.
 import { enscribeTableCellParse } from './plugins/table-cell-parse.js';
@@ -180,7 +183,7 @@ import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
 // sidebar is rendered; a pure progressive enhancement over the existing ToC.
 import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 
-export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
+export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 
@@ -604,6 +607,10 @@ export function enscribeInterpreter(options = {}) {
   this.use(enscribeBookStructuring);
   this.use(enscribeArticleStructuring);
   this.use(enscribeSectionNesting);
+  // #137: lower `<list>` to a markdown list node. Runs after section nesting so
+  // a `<list>` (sectionDepth 0, carried as section body content) is lowered
+  // wherever it landed; before the semantic plugins, which see a plain list.
+  this.use(enscribeListStructuring);
 
   // 5. Citation index (index-build, not a tree transformation): parse <library>
   //    content from <data> nodes (deep-collected wherever they land — at root

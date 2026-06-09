@@ -94,6 +94,19 @@ function exitEnscribeTag(token) {
     return
   }
 
+  // List item marker: the block-scoped paired sigil `<- content ->` /
+  // `<* content *>`. The flow-only tokenizeItemMarkerFlow (syntax.js) found the
+  // boundaries; source starts with `<-` or `<*`. Handled directly without Peggy
+  // — no grammar rule — mirroring the shortcut path above. buildItemMarkerNode
+  // produces a default-content enscribeTag the recursive-content pass re-parses
+  // and enscribeListStructuring lowers to a markdown list item. See
+  // notes/specs/lists.md §"Items".
+  if (source[0] === '<' && (source[1] === '-' || source[1] === '*')) {
+    buildItemMarkerNode(node, source)
+    this.exit(token)
+    return
+  }
+
   try {
     const parsed = peggyParse(source)
     Object.assign(node, parsed)
@@ -153,6 +166,57 @@ function buildShortcutNode(node, source) {
     contentHandler: 'default',
     content,
     isOpaqueContent: false,
+    positional: [],
+    booleans: {},
+    kwargs: {},
+    id: null,
+    classes: [],
+    atRefs: [],
+    selfClosing: false,
+  })
+}
+
+/**
+ * Build a list item-marker enscribeTag node in-place from the serialized source.
+ *
+ * The marker is the paired sigil `<- content ->` or `<* content *>`; `content`
+ * is everything between the opening `<` + marker run and the closing marker run
+ * + `>`. The node is a default-content tag — its `content` string is re-parsed
+ * by remarkRecursiveContent into inline mdast (so inline tags like `<cite>`
+ * inside an item work) — and is later lowered to a markdown `listItem` by
+ * enscribeListStructuring. The transient `tagname` (`list-item`) never reaches a
+ * renderer; it is consumed by that lowering pass.
+ *
+ * @param {object} node   - The enscribeTag stub to modify in-place.
+ * @param {string} source - Serialized token text, e.g. "<- first item ->".
+ */
+function buildItemMarkerNode(node, source) {
+  const marker = source[1] // '-' or '*'
+
+  if (source[source.length - 1] !== '>') {
+    // Defensive: the sigil finder only emits this construct on a closing `>`, so
+    // this should be unreachable. Treat a malformed span as a parse error rather
+    // than silently dropping it.
+    Object.assign(node, { type: 'enscribeParseError', subtype: 'unterminated-item-marker', source })
+    return
+  }
+
+  // Strip the opening `<` + run of marker chars, and the trailing run of marker
+  // chars + `>` (the paired sigil close), leaving the item content.
+  let i = 1;
+  while (i < source.length && source[i] === marker) i++;
+  let j = source.length - 2; // index just before the closing `>`
+  while (j >= i && source[j] === marker) j--;
+  const content = source.slice(i, j + 1);
+
+  Object.assign(node, {
+    type: 'enscribeTag',
+    form: 'item-marker',
+    tagname: 'list-item',
+    marker,
+    content,
+    isOpaqueContent: false,
+    contentHandler: 'default',
     positional: [],
     booleans: {},
     kwargs: {},

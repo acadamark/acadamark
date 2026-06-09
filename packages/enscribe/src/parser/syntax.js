@@ -18,7 +18,17 @@ const BACKSLASH = 92    // \
 
 // Registered sigil characters. The finder uses this to distinguish sigil tags
 // from named tags. Extend here when new sigils are added (e.g., $ for math).
+// NOTE: `-` / `*` are deliberately NOT here. The list item-marker sigils
+// (`<- … ->` / `<* … *>`, #137) are recognized ONLY at flow (block) position by
+// their own tokenizer below — never inline like `<# … #>` / `<$ … $>`. That
+// block-scoping is exactly what keeps prose `<-`/`->` (R `x <- y`, arrows) safe.
+// See notes/specs/lists.md §"Item sigils are block-scoped".
 const SIGIL_CHARS = new Set([35, 36, 96]) // #, $, `
+
+// List item-marker chars for the flow-only `<- … ->` / `<* … *>` tokenizer.
+const DASH = 45 // -
+const STAR = 42 // *
+const ITEM_MARKER_CHARS = new Set([DASH, STAR]) // -, *
 
 /** @param {Code} code */
 function isAsciiAlphaCode(code) {
@@ -66,6 +76,12 @@ export function enscribeSyntax() {
       [LT]: [
         { tokenize: makeLongFormTokenizer({ multiLine: true }), concrete: true },
         { tokenize: tokenizeSigilTagFlow, concrete: true },
+        // List item markers `<- … ->` / `<* … *>` — flow position ONLY (a marker
+        // is its own line inside `<list>`). Registered only here, never in `text`,
+        // so prose `<-`/`->` (inline) is never claimed. `-`/`*` after `<` are
+        // rejected by the three tokenizers around it (non-alpha, non-sigil), so
+        // this is purely additive.
+        { tokenize: tokenizeItemMarkerFlow, concrete: true },
         { tokenize: tokenizeNamedTagFlow, concrete: true },
       ],
     },
@@ -385,6 +401,119 @@ function makeNamedTagTokenizer({ multiLine }) {
       effects.exit('enscribeTagRaw')
       effects.exit('enscribeTag')
       return ok(code)
+    }
+  }
+}
+
+// ─── List item-marker tokenizer (flow only) ───────────────────────────────────
+
+/**
+ * Flow-position tokenizer for list item markers: `<- content ->` / `<* content *>`.
+ *
+ * Block-scoped by design — registered ONLY in `flow`, never `text` — so an
+ * inline `<-`/`->` in prose (R `x <- y`, an arrow) is left untouched. The open
+ * is `<` + one marker char (`-` or `*`); the close is the **line-final**
+ * `marker>` (greedy to the last `->`/`*>` on the line, allowing trailing
+ * whitespace). Greedy-to-line-end means an inline arrow inside the item
+ * (`<- f maps A -> B ->`) does NOT close early — the inner `->` stays content,
+ * only the line-final `->` closes. A line with no line-final `marker>` rejects,
+ * so the line falls back to ordinary text.
+ *
+ * Emits the same `enscribeTag` / `enscribeTagRaw` token pair as the other
+ * tokenizers; from-markdown's `exitEnscribeTag` recognizes the `<-`/`<*` source
+ * prefix and builds the item node directly (bypassing Peggy — the `^{}`/`_{}`
+ * shortcut model), so no grammar rule is involved. See notes/specs/lists.md.
+ *
+ * @type {Tokenizer}
+ */
+function tokenizeItemMarkerFlow(effects, ok, nok) {
+  let marker // the marker char (`-` or `*`), fixed at afterLt
+
+  return start
+
+  /** @param {Code} code */
+  function start(code) {
+    if (code !== LT) return nok(code)
+    effects.enter('enscribeTag')
+    effects.enter('enscribeTagRaw')
+    effects.consume(code) // <
+    return afterLt
+  }
+
+  /** @param {Code} code */
+  function afterLt(code) {
+    if (code !== null && ITEM_MARKER_CHARS.has(code)) {
+      marker = code
+      effects.consume(code) // - or *
+      return body
+    }
+    return nok(code)
+  }
+
+  /** @param {Code} code */
+  function body(code) {
+    if (code === null || markdownLineEnding(code)) {
+      // EOL/EOF with no line-final `marker>` — not an item; fall back to text.
+      return nok(code)
+    }
+    if (code === marker) {
+      // Possible close. Greedy: only the line-final `marker>` (followed by ws*
+      // then EOL/EOF) closes; an inline `marker>` mid-line is content.
+      return effects.attempt(
+        { tokenize: tokenizeMarkerClose, partial: true },
+        afterClose,
+        notClose,
+      )(code)
+    }
+    effects.consume(code)
+    return body
+  }
+
+  /** @param {Code} code — the marker char that did not begin the line-final close */
+  function notClose(code) {
+    effects.consume(code) // an inline arrow / literal marker — keep as content
+    return body
+  }
+
+  /** @param {Code} code — first char after the line-final `marker>` (+ ws) */
+  function afterClose(code) {
+    effects.exit('enscribeTagRaw')
+    effects.exit('enscribeTag')
+    return ok(code)
+  }
+
+  /**
+   * Partial: match `marker` + `>` + trailing whitespace, then REQUIRE a line
+   * ending or EOF. Succeeds only for the line-final `marker>`; fails (so body
+   * resumes) for an inline `marker>` with more content after it.
+   * @type {Tokenizer}
+   */
+  function tokenizeMarkerClose(closeEffects, closeOk, closeNok) {
+    return startClose
+
+    /** @param {Code} code */
+    function startClose(code) {
+      if (code !== marker) return closeNok(code)
+      closeEffects.consume(code) // marker
+      return expectGt
+    }
+
+    /** @param {Code} code */
+    function expectGt(code) {
+      if (code !== GT) return closeNok(code)
+      closeEffects.consume(code) // >
+      return trailing
+    }
+
+    /** @param {Code} code */
+    function trailing(code) {
+      if (code === 32 || code === 9) {
+        closeEffects.consume(code)
+        return trailing
+      }
+      // Line-final → this is the close. Otherwise the `marker>` was inline.
+      if (code === null || markdownLineEnding(code)) return closeOk(code)
+      return closeNok(code)
     }
   }
 }

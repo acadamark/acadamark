@@ -1067,6 +1067,44 @@ ${dateXml}
   validateWithXmllint('no-title-untitled', jats);
 }
 
+// ─── #137: <list> construct → JATS <list> ─────────────────────────────────
+//
+// Uses buildEnscribePipeline (the canonical assembly the real CLI export path
+// runs) rather than a hand-assembled chain, so enscribeListStructuring is
+// included — the hand-chains above predate it and are intentionally not edited
+// here (they cover list-free fixtures). `<list>` lowers to a markdown list
+// node, which the exporter emits as <list list-type="bullet|order">.
+{
+  const src = [
+    '<meta type=article>',
+    '<title | Lists>',
+    '</meta>',
+    '',
+    '<list>',
+    '<- first item ->',
+    '<- second item ->',
+    '</list>',
+    '',
+    '<list ordered>',
+    '<- step one ->',
+    '<- step two ->',
+    '</list>',
+  ].join('\n');
+  const proc = buildEnscribePipeline();
+  const tree = proc.runSync(proc.parse(src));
+  const jats = enscribeToJats(tree);
+
+  check('doc137: <list> → <list list-type="bullet">',
+    jats.includes('<list list-type="bullet">'));
+  check('doc137: <list ordered> → <list list-type="order">',
+    jats.includes('<list list-type="order">'));
+  check('doc137: item lowers to <list-item><p>…</p>',
+    /<list-item>\s*<p>first item<\/p>\s*<\/list-item>/.test(jats));
+  check('doc137: no <ul>/<ol> leak into JATS',
+    !jats.includes('<ul>') && !jats.includes('<ol>'));
+  validateWithXmllint('doc137-lists', jats);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');
