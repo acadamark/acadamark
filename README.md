@@ -30,7 +30,7 @@ HTML+CSS+JS already does most of what academic typesetting needs. It's universal
 
 ## What enscribe is, in two layers
 
-**Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, captioned figures, citations, cross-references, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
+**Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is `<ul>`/`<ol>`/`<li>`); a class plus `data-*` carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
 
 **Layer 2 — Authoring shorthand.** A compact syntax that translates losslessly into Layer 1 HTML. It comes in two registers:
 

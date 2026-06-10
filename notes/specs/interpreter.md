@@ -151,7 +151,7 @@ The shared walkers themselves live in
 called out in §3. The centralization originated as an
 interpreter-internal property and broadened to span all consumers when
 the `@enscribejs/enscribe/core` extraction made the walkers available to other
-output generators (the forthcoming JATS export and any future target);
+output generators (the JATS export and any future target);
 the multithreading caveat above continues to apply. See
 `notes/specs/core.md` for the architecture-decision record
 covering this broadening and the package boundaries it sits within.

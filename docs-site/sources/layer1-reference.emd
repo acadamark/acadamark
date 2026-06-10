@@ -227,11 +227,15 @@ the pipe.
 <## #el:config | `<config>` ##>
 **Category** metadata · **renders** `<config>` · **content** structured. Document-
 level settings, written as keyword attributes and placed at the document's end.
-**Attributes (live):** `citation-style`, `number-equations` / `number-figures` /
-`number-tables` / `number-theorems` / `number-definitions` / `number-examples`,
-`counter-reset-scope`, `note-scope`, and any `ref-prefix-*` key. The settings are
-consumed by the pipeline; render-time options like `embedResources` belong to the
-rendering API, not here (see <a href="authoring-guide.html#sec:render" | ch. 14>).
+**Attributes (live):** `citation-style`, `number-sections`, `number-equations` /
+`number-figures` / `number-tables` / `number-theorems` / `number-definitions` /
+`number-examples`, `counter-reset-scope`, `note-scope`, `note-position`
+(`bottom` / `margin` — render numbered notes as side notes), `strict-mode`
+(`off` / `sigil` / `canonical` — the strictness register switch, see
+<a href="authoring-guide.html#sec:strict" | ch. 15>), and any `ref-prefix-*` key.
+The settings are consumed by the pipeline; render-time options like
+`embedResources` belong to the rendering API, not here (see
+<a href="authoring-guide.html#sec:render" | ch. 14>).
 
 ```html
 <config citation-style="apa" number-figures="false"></config>
@@ -360,6 +364,24 @@ also works). The markdown form wraps its content in a `<p>`.
 
 ```html
 <blockquote>A short quotation.</blockquote>
+```
+
+<## #el:list | `<list>` ##>
+**Category** block · **renders** `<ul>` / `<ol>` + `<li>` (HTML-native) ·
+**content** items. A list. The item marker has three forms — the canonical
+`<li>`, the sigil `<->` / `<*>`, and the markdown `-` / `*` — and all lower to the
+same output. This is the inaugural **HTML-shaped Layer 1** case: the vocabulary
+keys `list` / `li` for authoring, but the rendered Layer 1 is plain
+`<ul>` / `<ol>` / `<li>` (see <a href="design.html" | Design> for the model).
+**Authoring:** `<list>` with `<li>` items; `<list ordered>` renders `<ol>`.
+**Attributes:** `ordered` boolean, `marker=` (CSS `list-style-type`), `start`,
+`reversed`. See <a href="authoring-guide.html#sec:block" | Authoring Guide ch. 4>.
+
+```html
+<ul>
+  <li>An item.</li>
+  <li>Another item.</li>
+</ul>
 ```
 
 <## #el:code-block | `<code-block>` ##>
@@ -594,6 +616,23 @@ hover preview on supporting surfaces) and a collected list at the document's foo
 
 ```html
 Some text<note id="note-1">A substantive note about the text.</note>.
+```
+
+With `note-position=margin` in `<config>`, a numbered note renders as a *side
+note* — its body set in the margin beside the marker instead of collected at the
+foot — with no change to the note tree, its number, or its JATS. Below the margin
+breakpoint it falls back to the foot-of-document list.
+
+<## #el:marginnote | `<marginnote>` ##>
+**Category** footnote · **renders** `<aside class="enscribe-marginnote">` ·
+**content** prose. An *unnumbered* margin aside, authored in place — the Tufte
+margin note, distinct from a numbered `<note>`. It is never numbered, collected,
+or back-referenced; it floats into the same margin column as side notes (and
+falls back to an inline-block aside on narrow screens). **Authoring:**
+`text<marginnote | …>`. **Attributes:** `id`.
+
+```html
+The result holds.<aside class="enscribe-marginnote">A caveat, set in the margin.</aside>
 ```
 
 <# #cat:ref | Cross-reference elements #>

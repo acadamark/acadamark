@@ -33,6 +33,7 @@ recording it in the spec.
 | `notes/release-audits.md` | Spec | The release-audit procedure — the four reconciliations and how each is run. A process spec; see "The release audit." |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
+| `docs-site/sources/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, the Layer 1 Reference, and the generated Gallery. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
 | GitHub Issues | Open work | ALL open work — bugs, enhancements, features, open questions — grouped by milestone and label. The home for open-work detail. (Not a repo file.) |
 | `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
@@ -98,6 +99,7 @@ Each subsystem's blueprint:
 ## Where each kind of fact lives
 
 - The intended design of any part of the system → its spec.
+- User-facing how-to (the syntax for a feature, worked examples a reader can copy) → the docs site (`docs-site/sources/`), not the specs. The specs hold intended design; the docs site holds how-to, and every feature's how-to has a page there.
 - Open work of any kind, with detail → [GitHub Issues](https://github.com/enscribejs/enscribe/issues), by milestone and label. Nowhere else.
 - The build sequence and current position → `ROADMAP.md`. Nowhere else.
 - What is true now / what is built → `STATUS.md` checklist.
@@ -150,9 +152,15 @@ slice is not done until code and documentation agree.
 >    shipped, and confirm the checklist still matches reality. STATUS is a
 >    capability checklist, not a changelog — the commit log is the changelog.
 >
-> 4. **Rule 2.** No computable fact was written into any document.
+> 4. **User docs.** Did this slice ship or change a *user-facing* feature? It is
+>    not done until a docs-site page covers it (the Authoring Guide / Quickstart /
+>    Layer 1 Reference, as fits) **and** a test fixture demonstrates it. Code and
+>    tests with no docs page, or no demonstrating fixture, is an incomplete
+>    feature — the gap is closed in this slice, not deferred.
 >
-> 5. **Report** what was reconciled. If a category needed nothing, say so
+> 5. **Rule 2.** No computable fact was written into any document.
+>
+> 6. **Report** what was reconciled. If a category needed nothing, say so
 >    explicitly — a silent skip and a deliberate "nothing needed" must not look
 >    the same.
 

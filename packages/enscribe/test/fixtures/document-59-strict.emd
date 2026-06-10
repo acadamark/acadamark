@@ -1,0 +1,37 @@
+<meta type=article>
+  <title | Strict mode>
+  <author | Enscribe>
+</meta>
+
+<config strict-mode=canonical />
+
+<section | Only canonical tags interpret>
+
+This document is in canonical strict mode: both the markdown and the sigil
+registers are off, so only canonical named tags interpret. Characters that would
+normally be markdown or a sigil pass through as themselves and are flagged with a
+visible lint — a nudge toward the canonical form.
+
+A literal *asterisk pair* is not emphasis here, and a sigil <# like this #> is not
+a heading; both are flagged. A leading marker on its own line is flagged too:
+
+# This is not a heading in canonical mode
+
+The canonical forms still interpret. This <a https://enscribe.dev | link> works,
+and a list is written with the canonical <li> marker, which stays live in
+canonical mode (the sigil and markdown item forms would be flagged instead):
+
+<list>
+<li> A first item, written canonically.
+<li> A second item.
+</list>
+
+The sup/sub math shortcuts also stay live — they are not part of the sigil
+register — so x^{2} and a_{i} still render as superscript and subscript.
+
+<section | The round-trip guarantee>
+
+Because a canonical document uses only the canonical register, it round-trips
+Layer 1 to shorthand and back losslessly: there is no ambiguous markdown heading
+for the serializer to guess at. The sigil rung — markdown off, sigils live —
+shares this property; only the default off mode is lossy by design.

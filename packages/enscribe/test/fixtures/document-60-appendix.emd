@@ -1,0 +1,31 @@
+<meta type=article>
+  <title | Appendices>
+  <author | Enscribe>
+</meta>
+
+<config number-sections=true />
+
+<section | Main body>
+
+An article carries appendices in its back matter, after the body. With section
+numbering on, the body sections number 1, 2, … and the appendices are lettered
+A, B, …; a cross-reference to an appendix renders "Appendix A". See
+<ref @app:notation> for the symbols used here.
+
+<section | A second body section>
+
+More body text, in section 2.
+
+<appendix #app:notation | Notation>
+
+The first appendix. With numbering on it is lettered "A", and a `<ref>` to it
+reads "Appendix A".
+
+<sub-section | Symbols>
+
+A sub-section inside the appendix, numbered A.1.
+
+<appendix | Further details>
+
+A second appendix, lettered "B". The same `<appendix>` element works in a book,
+where it lands in the back matter as a `<book-part>` instead.

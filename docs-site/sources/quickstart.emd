@@ -108,6 +108,26 @@ table it can take an id (`<$$ #eqn:gauss | ... $$>`) so the prose can refer back
 to it. In the playground, try changing the exponent — the equation re-typesets on
 every keystroke.
 
+<# A nested list #>
+
+Lists carry their own marker. Each item starts with `<li>` (or the sigil `<->`,
+or a markdown `-`), and an item runs until the next marker — so nesting is just a
+`<list>` inside an item, with no indentation to count:
+
+<list>
+<li> Gather the data
+<li> Fit the model
+<list ordered>
+<li> Choose the priors
+<li> Run the sampler
+</list>
+<li> Write it up
+</list>
+
+The inner list there is `<list ordered>`, so it numbers while the outer stays
+bulleted. `marker=` (any CSS `list-style-type`), `start`, and `reversed` are there
+when you need them.
+
 <# Data, as a table #>
 
 Tables are laborious in raw HTML and finicky in Markdown, and academic tables are

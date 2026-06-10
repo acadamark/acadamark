@@ -15,9 +15,9 @@ shows all three; where an element has only one form, it says so.
 Each section is self-contained: you can read "Inline elements" without reading
 anything before it. Jump to what you need. This guide is itself an Enscribe
 document, so wherever it is useful it does not just describe an element — it
-*uses* it, and the rendered result sits right below the source. Its fourteen
+*uses* it, and the rendered result sits right below the source. Its fifteen
 chapters cover every Enscribe element and authoring pattern, from the `<meta>`
-block to the rendering API.
+block to strict mode.
 
 <# #sec:structure | Chapter 1. Document structure #>
 
@@ -288,6 +288,61 @@ Block elements stand on their own between paragraphs.
 prose, and separate paragraphs with a blank line. There is no paragraph tag to
 type in ordinary writing.
 
+**Lists.** A list is a `<list>` whose items each begin with a marker. The item
+marker has the usual three forms — the canonical `<li>`, the sigil `<->` (or its
+twin `<*>`), and the markdown `-` (or `*`) — and all of them lower to the same
+`<ul>` / `<li>` output, so they are interchangeable, even within one list:
+
+```
+<list>
+<li> Canonical marker
+<-> Sigil marker
+- Markdown item
+</list>
+```
+
+An item runs from its marker to the next one, so it can hold several paragraphs
+with no indentation: leave a blank line and keep writing until the next marker.
+Rendered, a list whose middle item carries a second paragraph:
+
+<list>
+<li> A short item.
+<-> A longer item.
+
+This second paragraph belongs to the same item — it follows the marker until the
+next one, with no indentation.
+- A third item, in the markdown idiom.
+</list>
+
+**Ordered lists, markers, and count.** `<list ordered>` makes an ordered list.
+`marker=` sets the CSS `list-style-type` and passes straight through, so any CSS
+value works (`square`, `lower-roman`, `upper-alpha`, …); `start=N` and `reversed`
+control an ordered list's numbering. Rendered:
+
+<list ordered marker=lower-roman start=2>
+<li> An ordered item starting at "ii",
+<li> then "iii".
+</list>
+
+**Nesting.** A `<list>` inside an item nests; the outer list resumes at its next
+marker, and a nested list may itself be ordered:
+
+<list>
+<li> Groceries
+<list>
+<li> Apples
+<li> Bread
+</list>
+<li> Errands
+</list>
+
+<aside type=caution>
+**Gotcha — the `<->` / `<*>` item sigils are block-only.** They are recognized
+only at the start of a line inside a list, so an inline arrow in prose (`x <- y`,
+`a -> b`) is never mistaken for an item marker. The canonical `<li>` is the form
+that survives `strict-mode=canonical` (see <a href="#sec:strict" | Chapter 15>).
+</aside>
+
 **Blockquotes.** The markdown `>` works; the canonical `<blockquote>` works
 same-line or multi-line:
 
@@ -555,7 +610,7 @@ block's BibTeX keys and your `<cite>` keys in sync.
 collects at the document's foot; <a href="#sec:xref" | Cross-references>
 (Chapter 9).
 
-<# #sec:foot | Chapter 8. Footnotes #>
+<# #sec:foot | Chapter 8. Footnotes and margin notes #>
 
 A footnote attaches a numbered aside to a point in the text. The element is
 `<note>`, written in pipe form immediately after the word it attaches to, with no
@@ -587,6 +642,43 @@ the word it annotates (`standard.<note | …>`, not `standard. <note | …>`); a
 space before the marker reads as a space between the word and its footnote
 number.
 </aside>
+
+**Margin notes.** A `<marginnote>` is an *unnumbered* aside set in the page
+margin, authored in place — the Tufte-style margin note, distinct from a numbered
+footnote. It is never numbered, collected, or back-referenced; it simply floats
+into the margin beside the text where you wrote it, and its body takes normal
+inline interpretation:
+
+```
+A claim worth a remark.<marginnote | A margin note floats into the margin — no
+number, never collected. *Emphasis* and `code` work inside it.>
+```
+
+Rendered, the margin note sits in the margin beside this line on a wide enough
+screen.<marginnote | This is a margin note. It carries no number and never
+appears in the footnote list — it lives only here, in the margin, beside the text
+that introduced it.> The running text reads straight through it.
+
+**Numbered notes in the margin.** Setting `note-position=margin` in `<config>`
+(or as the `notePosition` render option) projects each *numbered* `<note>` into
+the margin as a *side note*, beside its marker, instead of collecting it at the
+foot of the document:
+
+```
+<config note-position=margin />
+```
+
+The note in the tree, its marker, its number, and its JATS export are all
+unchanged — only the HTML projection moves. Side notes and margin notes share the
+same margin column. (This guide leaves notes at the foot, so the move is
+described here rather than shown; the effect is a numbered note set in the margin
+like the unnumbered margin note above.)
+
+**The responsive fallback.** The margin only exists when the window is wide
+enough. Below that breakpoint there is no margin to float into, so a margin note
+falls back to an inline-block aside in the running text, and a side note falls
+back to the ordinary numbered list at the foot of the document. Same source,
+readable at any width — try narrowing the window.
 
 *Related:* <a href="#sec:cite" | Citations> (Chapter 7);
 <a href="#sec:xref" | Cross-references> (Chapter 9).
@@ -795,6 +887,27 @@ the `counter-reset-scope` and `note-scope` settings in
 footnotes collect at the end of each chapter rather than the end of the document,
 and a book-wide bibliography sits in the back matter.
 
+**Appendices.** `<appendix | Title>` marks an appendix, and it is the one
+structural element that works in *both* document types. In a book it lands in the
+back matter as a `<book-part>` (as in the example above); in an **article** it
+lands in the article's own back matter and exports to JATS `<app>`. With
+`number-sections` on, appendices are lettered — A, B, … — an appendix's
+sub-sections take the letter as a prefix (A.1, A.2), and a `<ref>` to an appendix
+renders "Appendix A":
+
+```
+<config number-sections=true />
+
+<appendix #app:notation | Notation>
+The symbols used in this article.
+
+<sub-section | Greek letters>
+A sub-section of the appendix, numbered A.1.
+```
+
+Here `<ref @app:notation>` reads "Appendix A". The same source works unchanged in
+a book, where the appendix joins the back matter as a chapter-peer.
+
 *Related:* <a href="#sec:structure" | Document structure> (Chapter 1) for `<meta>`
 and `<config>`; <a href="#sec:xref" | Cross-references> (Chapter 9) for scoped
 reference numbers.
@@ -945,11 +1058,57 @@ archival XML format for scholarly publishing — see the
 *Related:* <a href="#sec:structure" | Document structure> (Chapter 1) for the
 in-document `<config>` block, which is distinct from these render-time options.
 
+<# #sec:strict | Chapter 15. Strict mode #>
+
+Most Enscribe constructs have more than one spelling — a canonical tag, a sigil,
+and a markdown idiom — and by default the reader interprets all three.
+`<config strict-mode=…>` (or the `strictMode` render option) lets a committed
+author turn the looser registers off, from the top down. Each value names the
+*loosest* register still interpreted:
+
+- **`off`** (the default) — all three registers interpret. Existing documents are
+  unaffected.
+- **`sigil`** — canonical tags and sigils interpret; the **markdown** register is
+  off. A literal `*`, `#`, backtick, or `>` is just text — no escaping needed —
+  and the reader flags it as would-be-markdown with a visible lint.
+- **`canonical`** — only canonical named tags interpret; the **markdown and
+  sigil** registers are both off. `<# … #>`, `<$ … $>`, and the `<->` / `<*>`
+  item markers pass through as text too, flagged as would-be-sigil.
+
+```
+<config strict-mode=sigil />
+```
+
+The lint always renders the text — it is a nudge toward the canonical form, never
+a hard error — and its styling is injected only when a non-`off` rung is active,
+so an `off` document is byte-for-byte what it was before.
+
+**What stays live in `canonical`.** Two shorthands are exempt, because they are
+not part of the sigil register: the canonical `<li>` list marker (so lists stay
+authorable — a `<list>` with `<li>` items), and the `^{}` / `_{}` super- and
+subscript shortcuts (so `x^{2}` still renders). Everything else must be a
+canonical tag.
+
+**The round-trip guarantee.** Turning a register off costs no expressiveness —
+every looser form has a canonical equivalent — so a `sigil` or `canonical`
+document uses only the registers above the floor, and those round-trip
+Layer 1 ↔ shorthand losslessly. The historically lossy element was the ambiguous
+markdown `#` (a serialized section could have been authored `# Heading` or
+`<section>`); a register-banned document has none, so `enscribe lift` reproduces
+it exactly. The default `off` mode keeps markdown live and is lossy by design —
+lossless round-trip is the property you opt into, with `sigil` or `canonical`,
+when it matters.
+
+*Related:* <a href="#sec:structure" | Document structure> (Chapter 1) for the
+`<config>` block; <a href="#sec:sections" | Sections and headings> (Chapter 2)
+for the three register forms of a single construct.
+
 <# The guide so far #>
 
-That completes the fourteen chapters: document structure, sections, inline and
-block elements, figures, tables, citations, footnotes, cross-references, the
-theorem family, external DSLs, book structure, the argument syntax, and rendering.
+That completes the fifteen chapters: document structure, sections, inline and
+block elements (including lists), figures, tables, citations, footnotes and
+margin notes, cross-references, the theorem family, external DSLs, book structure
+(with appendices), the argument syntax, rendering, and strict mode.
 For the architecture behind the canonical-form model, read the
 <a href="design.html" | Design article>; for a guided tour of the whole feature set
 in one page, see the <a href="quickstart.html" | Quickstart>; and for the output
