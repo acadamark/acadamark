@@ -1224,7 +1224,6 @@ function convertList(node, depth) {
 const INLINE_TAG_MAP = {
   bold: 'b', italic: 'i', underline: 'u', strike: 's', sup: 'sup', sub: 'sub',
 };
-const DROP_INLINE = new Set(); // (formulas handled explicitly below; populated by later slices)
 
 /** A `<cite @key…>` node (shape per the parser: atRefs hold the keys, content null). */
 function citeNode(keys) {
@@ -1284,7 +1283,6 @@ function convertInline(children) {
     if (c.name === 'inline-formula') { out.push(convertFormula(c, /* display */ false)); continue; }
     // A <disp-formula> nested in inline content (uncommon) still becomes display-math.
     if (c.name === 'disp-formula') { out.push(convertFormula(c, /* display */ true)); continue; }
-    if (DROP_INLINE.has(c.name)) { noteDropped(c.name); continue; }
     // Unknown inline wrapper: keep its text content, drop the wrapper.
     noteDropped(c.name);
     out.push(...convertInline(c.children));

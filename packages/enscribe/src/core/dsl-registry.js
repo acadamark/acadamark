@@ -16,8 +16,8 @@
  *
  * **The two-axis model (DESIGN.md §"The two axes: host and language").**
  * This module is the **language / type axis** — the registry understood as a
- * type system. Each identifier (a DSL tag name or sigil token) maps to a
- * language record carrying its content **handler** and its content **opacity**.
+ * type system. Each identifier (a DSL tag name or sigil token) maps to its
+ * content **handler** (the processor its content is delegated to).
  * The host / role axis (which format words a host admits) lives with the hosts,
  * not here — see `interpreter/lib/host-accept-sets.js`, which #85 wired as the
  * accept-set validation in the normalize-to-canonical gate.
@@ -31,7 +31,7 @@
  * read the bindings. #85 removed them as confirmed-inert data: the only
  * directional need that has a real consumer (host → languages, for validation)
  * is served by the `host-accept-sets.js` map, which the gate now consults.
- * `getContentHandler` and `isOpaqueLanguage` are this module's live accessors.
+ * `getContentHandler` is this module's live accessor.
  *
  * `getContentHandler(tagName)` is consumed by the parser (`from-markdown.js`),
  * which sets `node.contentHandler` and the
@@ -55,10 +55,13 @@
  */
 
 /**
- * The language / type axis: identifier → `{ handler, opaque }`.
+ * The language / type axis: identifier → content-handler name.
  *
- * Insertion order is preserved from the pre-reshape flat map so the derived
- * `DSL_REGISTRY` below iterates byte-identically.
+ * (Until #175 each record was `{ handler, opaque }`, with a derived
+ * `DSL_REGISTRY` export and an `isOpaqueLanguage` accessor. The `opaque` layer
+ * was removed as inert: opacity is derived by the parser as
+ * `contentHandler !== 'default'` — its only reader — so the stored flag and the
+ * two accessors had no production consumer. This is now the flat handler map.)
  *
  * Notes on individual entries:
  *   - Sigils (`$`, `$$`, `` ` ``, `` ``` ``) are shorthand forms; drift guards
@@ -76,41 +79,31 @@
  */
 export const LANGUAGES = new Map([
   // ── Math and code sigils (opaque, embedded language) ─────────────────────
-  ['$',   { handler: 'math',         opaque: true }],
-  ['$$',  { handler: 'math-display', opaque: true }],
-  ['`',   { handler: 'code',         opaque: true }],
-  ['```', { handler: 'code-block',   opaque: true }],
+  ['$',   'math'],
+  ['$$',  'math-display'],
+  ['`',   'code'],
+  ['```', 'code-block'],
 
   // ── DSL languages and host entries ───────────────────────────────────────
-  ['csv',      { handler: 'csv',      opaque: true }],
-  ['tsv',      { handler: 'tsv',      opaque: true }],
-  ['math',     { handler: 'math',     opaque: true }],
-  ['code',     { handler: 'code',     opaque: true }],
-  ['mermaid',  { handler: 'mermaid',  opaque: true }],
-  ['abc',      { handler: 'abc',      opaque: true }],
+  ['csv',      'csv'],
+  ['tsv',      'tsv'],
+  ['math',     'math'],
+  ['code',     'code'],
+  ['mermaid',  'mermaid'],
+  ['abc',      'abc'],
   // `diagram` host (#22 slice 3): a directly-authored `<diagram mermaid | …>`
-  // must keep its content opaque at parse time (getContentHandler('diagram')).
-  // The engine (mermaid/abc) is the format-word positional, resolved by the
-  // diagram handler; this entry only governs opacity.
-  ['diagram',  { handler: 'diagram',  opaque: true }],
-  ['matrix',   { handler: 'matrix',   opaque: true }],
-  ['cases',    { handler: 'cases',    opaque: true }],
-  ['align',    { handler: 'align',    opaque: true }],
-  ['eqnarray', { handler: 'eqnarray', opaque: true }],
-  ['table',    { handler: 'table',    opaque: true }],
-  ['library',  { handler: 'library',  opaque: true }],
-  ['svg',      { handler: 'svg',      opaque: true }],
+  // keeps its content opaque at parse time (getContentHandler('diagram') is
+  // non-default). The engine (mermaid/abc) is the format-word positional,
+  // resolved by the diagram handler.
+  ['diagram',  'diagram'],
+  ['matrix',   'matrix'],
+  ['cases',    'cases'],
+  ['align',    'align'],
+  ['eqnarray', 'eqnarray'],
+  ['table',    'table'],
+  ['library',  'library'],
+  ['svg',      'svg'],
 ]);
-
-/**
- * Derived flat content-handler map (identifier → handler). Retained as the
- * historical `DSL_REGISTRY` export for back-compat; byte-identical to the
- * pre-reshape map (same entries, same insertion order). `LANGUAGES` above is
- * the source of truth.
- */
-export const DSL_REGISTRY = new Map(
-  [...LANGUAGES].map(([id, lang]) => [id, lang.handler]),
-);
 
 /**
  * Look up the content handler for a tag name.
@@ -123,18 +116,5 @@ export const DSL_REGISTRY = new Map(
  * @returns {string}
  */
 export function getContentHandler(tagName) {
-  return LANGUAGES.get(tagName)?.handler ?? 'default';
-}
-
-/**
- * Whether a language keeps its content opaque (verbatim source). Unregistered
- * identifiers are not opaque (`'default'` handler → recursive parse). This is
- * the same fact the parser derives as `contentHandler !== 'default'`; the
- * stored `opaque` field is the canonical declaration of it.
- *
- * @param {string} identifier
- * @returns {boolean}
- */
-export function isOpaqueLanguage(identifier) {
-  return LANGUAGES.get(identifier)?.opaque ?? false;
+  return LANGUAGES.get(tagName) ?? 'default';
 }

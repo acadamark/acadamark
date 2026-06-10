@@ -1788,7 +1788,6 @@ function emitRefJats(entry, indent) {
   const pad = ' '.repeat(indent);
   const id = entry.id ?? entry['citation-key'] ?? null;
   const pubType = CSL_TYPE_TO_JATS_PUB_TYPE[entry.type] ?? 'other';
-  const isBook  = entry.type === 'book' || entry.type === 'chapter';
 
   let out = `${pad}<ref id="ref-${escapeXmlAttr(String(id ?? ''))}">\n`;
   out += `${pad}  <element-citation publication-type="${pubType}">\n`;
@@ -1867,10 +1866,6 @@ function emitRefJats(entry, indent) {
     const u = escapeXmlAttr(String(entry.URL));
     out += `${pad}    <ext-link ext-link-type="uri" xlink:href="${u}">${escapeXml(String(entry.URL))}</ext-link>\n`;
   }
-
-  // Suppress unused-variable lint warning for isBook; reserved for
-  // future chapter-vs-book-title differentiation refinement.
-  void isBook;
 
   out += `${pad}  </element-citation>\n`;
   out += `${pad}</ref>\n`;
