@@ -8,6 +8,7 @@ import { run_tests as runPandocTests } from './pandoc-import.test.js';
 import { run_tests as runJatsImportTests } from './import.test.js';
 import { run_tests as runRoundtripComplexTests } from './roundtrip-complex.test.js';
 import { run_tests as runLibrarySrcTests } from './library-src.test.js';
+import { run_tests as runMasterDocumentTests } from './master-document.test.js';
 
 try {
   runCliTests();
@@ -15,6 +16,7 @@ try {
   runPandocTests();
   runJatsImportTests();
   runRoundtripComplexTests();
+  runMasterDocumentTests(); // #190: multi-file master-document walking skeleton
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);
 } catch (err) {

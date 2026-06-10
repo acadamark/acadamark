@@ -106,6 +106,7 @@ The assembler is the multi-file/project system (#72) plus a build model. Its des
 
 ## Open — to decide during the build
 
+- **Self-close requirement for kwarg-only structure entries and `<meta>`** (surfaced by the #190 skeleton). A kwarg-only tag with no pipe body — `<meta type=article …>` or `<section src="intro.emd">` — parses *today* as an **unterminated long-form opener**: the parser waits for a matching `</meta>` / `</section>` and swallows the rest of the file until it errors. To parse, these must self-close: `<meta type=article … />`, `<section src="intro.emd" />`. (The pipe forms — `<section src="…" | Title>` and the inline `<section | Title>` — are unaffected; the pipe terminates the tag.) The examples in this spec (§`<meta>`, §Structure entries, §`<data>`) currently omit the slash. The skeleton's fixtures adopted the explicit `/>` form with **no parser change**. To settle: either **(a)** require `/>` on kwarg-only entries and update these examples to match, or **(b)** make `<meta>` / `<section src>` *void* in the master-document context so the bare `<… >` form parses. (b) is parser/grammar work; (a) is a doc change. Decide before the multi-file authoring syntax is documented for authors — this is a chat-surface call, not a Claude Code one.
 - Per-type assembler contracts (the bulk of the work; slice by slice).
 - Website page model for anything outside the nav (a home/landing body, blog-style listings).
 - Embedded-asset format coverage in `<data>` (png shown; others to follow).

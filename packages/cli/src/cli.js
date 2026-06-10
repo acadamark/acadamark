@@ -16,13 +16,14 @@
 // filesystem-bound CLI surface.
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, join } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES } from '@enscribejs/enscribe';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';
 import { detectFormat, runPandoc, findBibtex, convertPandoc, PandocMissingError } from './pandoc-import.js';
+import { assembleMasterDocument } from './master-document/assemble.js';
 
 const require = createRequire(import.meta.url);
 const PKG = require('../package.json');
@@ -38,6 +39,7 @@ Usage:
 
 Commands:
   render <input.emd>       Render an Enscribe document to self-contained HTML
+  build <master.emd>       Assemble a multi-file master document, then render it
   export-jats <input.emd>  Export an Enscribe document to JATS 1.3 XML
   import-jats <input.xml>  Import a JATS XML article (→ HTML, or --emd source)
   import <input>           Import LaTeX / Quarto / DOCX / … via pandoc
@@ -157,6 +159,30 @@ Options:
                        on); --no-chapter-nav renders the whole book as one page.
   --quiet              Suppress warnings
   -h, --help           Show this help
+`;
+
+const BUILD_HELP = `enscribe build — assemble a multi-file master document, then render it
+
+A master document names its child files with <section src="child.emd"> entries;
+build loads each child (paths relative to the master), stitches them into one
+article in document order, and renders that combined article to HTML — the same
+output 'render' would produce for an equivalent single file.
+
+Usage:
+  enscribe build <master.emd> [options]
+
+Options:
+  -o, --output <file>  Write HTML to <file> (default: stdout)
+  --embed              Self-contained HTML, assets inlined (default)
+  --no-embed           Link assets externally (fonts / KaTeX CSS from CDNs)
+  --dsl-mode <mode>    DSL rendering mode: skip, live-link, live-inline, static
+  --quiet              Suppress warnings
+  -h, --help           Show this help
+
+Note:
+  First slice (#190) — assembles <section src> children and inline sections into
+  one article. Cross-file citations/numbering/cross-references, placement markers
+  (toc / endnotes / bibliography), and non-article types are deferred.
 `;
 
 const EXPORT_JATS_HELP = `enscribe export-jats — export an Enscribe document to JATS 1.3 XML
@@ -346,6 +372,34 @@ function doImport(opts) {
   });
 }
 
+function doBuild(opts) {
+  // #190 — multi-file master document, walking skeleton. Parse the master, load
+  // and parse each <section src> child (paths relative to the master file),
+  // assemble into one flat article tree, then run the existing render path.
+  const source = readInput(opts.input);
+  const masterDir = dirname(resolve(opts.input));
+  const embedResources = opts.embed ?? true;
+  const proc = buildEnscribePipeline({
+    embedResources,
+    assetsDir: masterDir,
+    dslMode: standaloneDslMode(opts, embedResources),
+  });
+  return withQuiet(opts.quiet, () => {
+    const tree = assembleMasterDocument({
+      source,
+      readFile: (p) => readFileSync(p, 'utf8'),
+      resolve: (rel) => join(masterDir, rel),
+      parse: (s) => proc.parse(s),
+      warn: (m) => console.warn(m),
+    });
+    // HTML only this slice. An assembled-source (--emd) emit is deferred: the
+    // assembled tree carries section titles in `.content` (what the render path
+    // reads), which serializeCanonical does not round-trip — it would emit empty
+    // `<section | >` markers. Not worth a serializer change for the skeleton (#190).
+    return proc.stringify(proc.runSync(tree));
+  });
+}
+
 function doExportJats(opts) {
   const src = readInput(opts.input);
   // export-jats needs the post-pipeline mdast tree (not HTML): .runSync() runs
@@ -404,6 +458,12 @@ export function run(argv, io = {}) {
           return rendered.then((html) => { emit(html, opts, out); return 0; });
         }
         emit(rendered, opts, out);
+        return 0;
+      }
+      case 'build': {
+        const opts = parseCommandArgs(rest);
+        if (opts.help) { out.write(BUILD_HELP); return 0; }
+        emit(doBuild(opts), opts, out);
         return 0;
       }
       case 'export-jats': {

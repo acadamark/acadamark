@@ -1,0 +1,9 @@
+<meta type=article title="Multi-File Demo" author="Test Author" />
+
+<section src="intro.emd" />
+
+<section src="methods.emd" | Methods Override>
+
+<section | Discussion>
+
+An inline section authored directly in the master document.
