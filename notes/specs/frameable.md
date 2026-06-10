@@ -89,6 +89,14 @@ argument (the traditional "figure", "table", "listing"):
 | `<mermaid>`, `<abc>`, and other DSL-registry block elements | DSL source | `<fig>` / `<graphic>` |
 | `<csv>`, `<tsv>` (standalone) | delimited data → table | `<table-wrap>` |
 
+**`<code>` / `<code-block>` is the not-numbered exception.** It carries the
+frameable surface (title, caption, border) but is **not numbered today** — no
+"Listing N." label and no cross-reference number. The code handler registers it
+`numbered: false`, so `<ref @code:...>` resolves by label, not to a number.
+Numbered code listings are future work; the per-member defaults and counter
+notes below reflect this, and `interpreter.md` §3.7 records the exact change that
+would turn them on.
+
 **Boxed prose** — set-apart block content that is *not* a numbered float
 by nature (the "callout", "sidebar", "methodology box"):
 
@@ -113,7 +121,8 @@ overridable.
 | Nature | Members | `border` default | `numbered` default |
 |---|---|---|---|
 | Content float | `<fig>`, `<svg>`, `<mermaid>`, `<abc>`, DSL blocks | **off** | **on** |
-| Content float | `<table>`, `<csv>`, `<tsv>`, `<code>` | off | on |
+| Content float | `<table>`, `<csv>`, `<tsv>` | off | on |
+| Content float (caption/border only) | `<code>` / `<code-block>` | off | — *(not numbered today; numbered listings are future work)* |
 | Boxed prose | `<frame>`, `<aside>` | **on** | **off** |
 
 The rule: a **float** is, by convention, an unboxed numbered object — a
@@ -125,8 +134,14 @@ the float members start unframed and switch a border *on* when wanted.
 
 Numbered frameables share the **`figure`** counter by default
 (`<fig>`/`<svg>`/`<mermaid>`/`<abc>`/numbered `<frame>`), except
-`<table>`/`<csv>`/`<tsv>` (the `table` counter) and
-`<code>`/`<code-block>` (the `listing` counter).
+`<table>`/`<csv>`/`<tsv>` (the `table` counter).
+
+`<code>` / `<code-block>` is **not numbered today** (registered
+`numbered: false`), so it has no counter — the `listing` counter that would
+number code alongside figures and tables is anticipated but unbuilt.
+`interpreter.md` §3.7 records the exact change that would turn it on (add `code`
+to `NUMBERED_TAGNAMES`, flip `numbered: false`, add a config key). Until then,
+`<code>` is a caption / title / border frameable only.
 
 ## What is not frameable (and the escape hatch)
 
