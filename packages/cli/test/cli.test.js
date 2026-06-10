@@ -214,6 +214,23 @@ export function run_tests() {
     console.log('PASS: import-jats → HTML and --emd');
   }
 
+  // ── import-jats renders imported DSL diagrams by default (#172) ──────────────
+  // article.xml carries a Mermaid figure (<fig specific-use="enscribe-dsl-mermaid">).
+  // Before #172 the import command left dslMode unset → 'skip', shipping the
+  // diagram as un-rendered <pre> source (unlike `render`). Now it inherits the
+  // same standalone DSL posture; --dsl-mode still overrides.
+  {
+    const live = invoke(['import-jats', JATS_FIXTURE]);            // default: embed → live-inline
+    const skip = invoke(['import-jats', JATS_FIXTURE, '--dsl-mode', 'skip']);
+    assert.equal(live.code, 0, 'import-jats exits 0');
+    assert.ok(live.out.includes('data-enscribe-dsl="mermaid"'), 'the imported mermaid figure is present');
+    assert.ok(live.out.includes('mermaid.initialize'),
+      'default import-jats renders the diagram (mermaid runtime injected, not bare <pre>)');
+    assert.ok(!skip.out.includes('mermaid.initialize'),
+      '--dsl-mode skip still ships the diagram un-rendered (explicit override honored)');
+    console.log('PASS: #172 — import-jats renders imported diagrams by default');
+  }
+
   // ── -o writes to a file ─────────────────────────────────────────────────────
   {
     const dir = mkdtempSync(join(tmpdir(), 'enscribe-cli-'));

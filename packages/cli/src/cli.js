@@ -248,6 +248,16 @@ function withQuiet(quiet, fn) {
   }
 }
 
+// The DSL render default for every command that emits a STANDALONE HTML document
+// (render, import-jats, import). The library default is 'skip' — meant for
+// embedding into a host page that wires its own DSL runtime — but a standalone
+// document must render its Mermaid / ABC blocks itself, or they ship as
+// un-rendered <pre> source (#172). Mirror the KaTeX-CSS / fonts posture:
+// embed → self-contained inline, external → CDN link. An explicit --dsl-mode wins.
+function standaloneDslMode(opts, embedResources) {
+  return opts.dslMode ?? (embedResources ? 'live-inline' : 'live-link');
+}
+
 function doRender(opts) {
   const src = readInput(opts.input);
   // CLI default is self-contained (--embed); the library default is external.
@@ -259,7 +269,7 @@ function doRender(opts) {
   // external → CDN link). An explicit --dsl-mode overrides. Math needs no wiring:
   // it is pre-rendered to KaTeX HTML at build time and the CSS rides the same
   // embed/CDN switch (cssMode), so formulas already render.
-  pipeOpts.dslMode = opts.dslMode ?? (pipeOpts.embedResources ? 'live-inline' : 'live-link');
+  pipeOpts.dslMode = standaloneDslMode(opts, pipeOpts.embedResources);
   if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
   if (opts.theme) pipeOpts.theme = opts.theme;
   if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
@@ -310,7 +320,8 @@ function doImportJats(opts) {
     if (opts.emd) return serializeCanonical(tree);
     // HTML: run the imported mdast tree through the interpreter transforms
     // (.runSync) and the HTML compiler (.stringify), self-contained by default.
-    const proc = buildEnscribePipeline({ embedResources: opts.embed ?? true });
+    const embedResources = opts.embed ?? true;
+    const proc = buildEnscribePipeline({ embedResources, dslMode: standaloneDslMode(opts, embedResources) });
     return proc.stringify(proc.runSync(tree));
   });
 }
@@ -329,7 +340,8 @@ function doImport(opts) {
   return withQuiet(opts.quiet, () => {
     const tree = convertPandoc(ast, { bibtex });
     if (opts.emd) return serializeCanonical(tree);
-    const proc = buildEnscribePipeline({ embedResources: opts.embed ?? true });
+    const embedResources = opts.embed ?? true;
+    const proc = buildEnscribePipeline({ embedResources, dslMode: standaloneDslMode(opts, embedResources) });
     return proc.stringify(proc.runSync(tree));
   });
 }
