@@ -1131,4 +1131,4 @@ example of the `render → executeAssets` pattern.
 - `notes/specs/recursive-content-spec.md` — recursive content parsing design.
 - `notes/specs/shorthand-syntax.md` — the authoring syntax at the pipeline input.
 - `notes/specs/layer1-naming.md` — vocabulary element naming rules.
-- `BUILD.md` — slice plan and roadmap for future pipeline stages.
+- `ROADMAP.md` and [GitHub Issues](https://github.com/enscribejs/enscribe/issues) — the release plan and future pipeline work (there is no `BUILD.md`; the build sequence lives in the roadmap and Issues).

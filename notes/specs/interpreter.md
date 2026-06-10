@@ -1775,5 +1775,5 @@ packages/layer1-vocabulary/
 - `notes/specs/layer1-naming.md` — vocabulary element naming rules.
 - `notes/specs/principles.md` — error-recovery philosophy ("documents always render
   to something").
-- `BUILD.md` — slice plan and feature roadmap.
+- `ROADMAP.md` and [GitHub Issues](https://github.com/enscribejs/enscribe/issues) — the release plan and the open/future work (the build sequence lives here, not in a `BUILD.md`).
 - `packages/layer1-vocabulary/SPEC.md` — vocabulary element specification.
