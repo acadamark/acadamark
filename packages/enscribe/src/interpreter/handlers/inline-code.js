@@ -16,6 +16,8 @@
 //
 // No-pipe form: entire body is opaque content; no language extraction occurs.
 
+import { buildCodeProperties } from '../lib/code-props.js';
+
 /**
  * Inline code handler. Called by the interpret-plugin dispatcher when
  * the vocabulary entry for "inline-code" specifies
@@ -28,16 +30,8 @@
 export function inlineCodeHandler(_state, node) {
   const code = typeof node.content === 'string' ? node.content : '';
   const language = node.positional?.[0] ?? null;
-  const id = node.id ?? null;
-
-  // Build class list: language class first, then any sigil-provided classes.
-  const classes = [];
-  if (language) classes.push(`language-${language}`);
-  if (node.classes?.length) classes.push(...node.classes);
-
-  const properties = {};
-  if (classes.length > 0) properties.className = classes;
-  if (id) properties.id = id;
+  // Shared <code> property building (language class + classes + id) — #170.
+  const properties = buildCodeProperties(node, language);
 
   return {
     type: 'element',

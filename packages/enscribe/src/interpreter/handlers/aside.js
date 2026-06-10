@@ -18,7 +18,7 @@
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
-import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFrameableBorder } from '../lib/frameable.js';
 import { convertChildren } from '../lib/ast-helpers.js';
 
 /**
@@ -33,11 +33,9 @@ export function asideHandler(state, node, vocab) {
   const { captionHast, titleHast, bodyContent } = extractFrameableChildren(state, node);
   const bodyHast = convertChildren(state, node, bodyContent);
 
-  // Boxed prose: border defaults TRUE. Suppress with -border / border=false.
-  const borderRaw =
-    node.booleans?.border ??
-    (typeof node.kwargs?.border === 'boolean' ? node.kwargs.border : null);
-  const border = borderRaw === false ? false : true;
+  // Boxed prose: border defaults TRUE; -border / border=false suppresses it.
+  // Shared boolean read with the frame handler (#170).
+  const border = readFrameableBorder(node);
   // #58: border=<name> selects a named look (and implies border-on).
   const borderLook = frameableBorderLook(node);
 

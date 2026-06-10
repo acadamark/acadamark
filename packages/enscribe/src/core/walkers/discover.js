@@ -19,6 +19,7 @@
 // document order, which is required for numbering to be sequential.
 
 import { isEnscribeTag } from '../tag.js';
+import { descendCellArrays } from './cell-descent.js';
 
 /**
  * Recursively walk a node array in document order (pre-order DFS).
@@ -43,30 +44,10 @@ function walkDiscover(nodes, visitors) {
     if (node.children && Array.isArray(node.children)) {
       walkDiscover(node.children, visitors);
     }
-    // #21: recurse into parsed data-table cells. A data-format table's content is
-    // an opaque string (skipped above), but when its cells opted into Enscribe
-    // markup the table-cell-parse plugin stamps `_parsedCells` with per-cell inline
-    // node arrays. Descending them lets discover-based passes (numbering) see cell
-    // content. No-op for every node without the stamp → byte-identical.
-    if (node._parsedCells && Array.isArray(node._parsedCells.rows)) {
-      for (const row of node._parsedCells.rows) {
-        for (const cell of row) {
-          if (cell && Array.isArray(cell.inline)) walkDiscover(cell.inline, visitors);
-        }
-      }
-    }
-    // #106: recurse into a complex (HTML-layout) table's grid cells. The JATS
-    // importer stamps `_htmlTable` (rows → cells, each carrying converted inline
-    // mdast) on the no-format escape-hatch table so its cell refs/cites/notes/math
-    // resolve like body content. Same descent as `_parsedCells`, different shape
-    // (cells live under `row.cells`). No-op without the stamp → byte-identical.
-    if (node._htmlTable && Array.isArray(node._htmlTable.rows)) {
-      for (const row of node._htmlTable.rows) {
-        for (const cell of row.cells ?? []) {
-          if (cell && Array.isArray(cell.inline)) walkDiscover(cell.inline, visitors);
-        }
-      }
-    }
+    // #21 / #106: descend parsed (`_parsedCells`) and complex-HTML (`_htmlTable`)
+    // table cells so discover-based passes (numbering) see their inline content.
+    // Shared with walk-replace.js (#170). No-op without a stamp → byte-identical.
+    descendCellArrays(node, (inline) => walkDiscover(inline, visitors));
   }
 }
 

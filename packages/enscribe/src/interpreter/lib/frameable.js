@@ -256,6 +256,28 @@ export function frameableBorderLook(node) {
   return BORDER_LOOK_TOKEN.test(name) ? name : null;
 }
 
+/**
+ * Read the resolved `border` boolean for a frameable, from the parsed boolean
+ * surface only — `+border` / `-border` (`node.booleans.border`) or a
+ * boolean-typed `kwargs.border` — defaulting to ON. A string-form
+ * `border=<name>` is a named look (see `frameableBorderLook`), not a toggle, so
+ * it does not turn the border off. Shared by the frame and aside handlers (#170).
+ *
+ * NOTE: this deliberately honors only the boolean kwarg form, not a string
+ * `border="true" | "false"` — behavior preserved verbatim from the two former
+ * inline reads. (#170 flagged that this is narrower than `readBoolKwarg`;
+ * reconciling it is a behavior change, out of scope for this output-neutral dedup.)
+ *
+ * @param {object} node
+ * @returns {boolean}
+ */
+export function readFrameableBorder(node) {
+  const borderRaw =
+    node.booleans?.border ??
+    (typeof node.kwargs?.border === 'boolean' ? node.kwargs.border : null);
+  return borderRaw === false ? false : true;
+}
+
 // "See source" disclosure (#19). When a document turns on the `show-source`
 // <config> switch, a rendered-from-DSL block (mermaid / abc) emits the authored
 // source alongside its rendered output, inside a native <details> control — no

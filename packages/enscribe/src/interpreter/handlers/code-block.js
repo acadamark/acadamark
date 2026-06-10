@@ -16,6 +16,8 @@
 //
 // No-pipe form: entire body is opaque content; no language extraction occurs.
 
+import { buildCodeProperties } from '../lib/code-props.js';
+
 /**
  * Code block handler. Called by the interpret-plugin dispatcher when
  * the vocabulary entry for "code-block" specifies
@@ -28,16 +30,8 @@
 export function codeBlockHandler(_state, node) {
   const code = typeof node.content === 'string' ? node.content : '';
   const language = node.positional?.[0] ?? null;
-  const id = node.id ?? null;
-
-  // Build class list: language class first, then any sigil-provided classes.
-  const classes = [];
-  if (language) classes.push(`language-${language}`);
-  if (node.classes?.length) classes.push(...node.classes);
-
-  const codeProperties = {};
-  if (classes.length > 0) codeProperties.className = classes;
-  if (id) codeProperties.id = id;
+  // Shared <code> property building (language class + classes + id) — #170.
+  const codeProperties = buildCodeProperties(node, language);
 
   return {
     type: 'element',

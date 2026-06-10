@@ -23,6 +23,7 @@
 // now delegate here.
 
 import { isEnscribeTag } from '../tag.js';
+import { descendCellArrays } from './cell-descent.js';
 
 /**
  * Walk a node array in-place, replacing enscribeTag nodes of a given tagname.
@@ -52,30 +53,12 @@ export function walkReplace(nodes, tagname, process) {
       if (node.children && Array.isArray(node.children)) {
         walkReplace(node.children, tagname, process);
       }
-      // #21: recurse into parsed data-table cells (see discover.js for the
-      // rationale). This is what lets ref-resolution / cite-resolution resolve a
-      // <ref> / <cite> authored inside an opted-in table cell — the cell's inline
-      // array is mutated in place, and the renderer reads the same array. No-op
-      // for every node without the `_parsedCells` stamp → byte-identical.
-      if (node._parsedCells && Array.isArray(node._parsedCells.rows)) {
-        for (const row of node._parsedCells.rows) {
-          for (const cell of row) {
-            if (cell && Array.isArray(cell.inline)) walkReplace(cell.inline, tagname, process);
-          }
-        }
-      }
-      // #106: recurse into a complex (HTML-layout) table's grid cells (see
-      // discover.js). Lets ref/cite/note resolution reach a cross-reference,
-      // citation, or footnote authored inside a complex table cell — the cell's
-      // inline array is mutated in place and the handler reads the same array.
-      // No-op without the `_htmlTable` stamp → byte-identical.
-      if (node._htmlTable && Array.isArray(node._htmlTable.rows)) {
-        for (const row of node._htmlTable.rows) {
-          for (const cell of row.cells ?? []) {
-            if (cell && Array.isArray(cell.inline)) walkReplace(cell.inline, tagname, process);
-          }
-        }
-      }
+      // #21 / #106: recurse into parsed (`_parsedCells`) and complex-HTML
+      // (`_htmlTable`) table cells so ref / cite / note resolution reaches content
+      // authored inside a table cell — the cell's inline array is mutated in place
+      // and the handler reads the same array. Shared with discover.js (#170).
+      // No-op without a stamp → byte-identical.
+      descendCellArrays(node, (inline) => walkReplace(inline, tagname, process));
       i++;
     }
   }

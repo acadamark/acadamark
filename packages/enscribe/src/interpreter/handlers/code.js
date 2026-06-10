@@ -20,6 +20,8 @@
 //     text from node.content (same shape inline-code.js consumes) and
 //     emits a `<code>` element with the text as a child.
 
+import { buildCodeProperties } from '../lib/code-props.js';
+
 /**
  * Handler for the `<code>` long-form / short-form-with-pipe tag.
  *
@@ -35,18 +37,8 @@
 export function codeHandler(_state, node) {
   const code = typeof node.content === 'string' ? node.content : '';
   const language = node.kwargs?.language ?? null;
-  const id = node.id ?? null;
-
-  // Build class list: language class first, then any author-supplied classes.
-  // Mirrors handlers/inline-code.js's class-building so the two handlers
-  // produce consistent shapes.
-  const classes = [];
-  if (language) classes.push(`language-${language}`);
-  if (node.classes?.length) classes.push(...node.classes);
-
-  const properties = {};
-  if (classes.length > 0) properties.className = classes;
-  if (id) properties.id = id;
+  // Shared <code> property building (language class + classes + id) — #170.
+  const properties = buildCodeProperties(node, language);
 
   return {
     type: 'element',

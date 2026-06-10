@@ -23,7 +23,7 @@
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
-import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFrameableBorder } from '../lib/frameable.js';
 import { convertChildren } from '../lib/ast-helpers.js';
 
 /**
@@ -38,15 +38,9 @@ export function frameHandler(state, node, vocab) {
   const { captionHast, titleHast, bodyContent } = extractFrameableChildren(state, node);
   const bodyHast = convertChildren(state, node, bodyContent);
 
-  // Frame's `border` default is TRUE (per frame.md). Default-off
-  // suppression uses -border / border=false.
-  // readBoolKwarg patterns are scattered; for this single read, use
-  // the boolean kwarg surface directly (parsed +border / -border into
-  // node.booleans; or kwargs.border for kwarg-form).
-  const borderRaw =
-    node.booleans?.border ??
-    (typeof node.kwargs?.border === 'boolean' ? node.kwargs.border : null);
-  const border = borderRaw === false ? false : true;
+  // Frame's `border` default is TRUE (per frame.md); -border / border=false
+  // suppresses it. Shared boolean read with the aside handler (#170).
+  const border = readFrameableBorder(node);
   // #58: border=<name> selects a named look (and implies border-on).
   const borderLook = frameableBorderLook(node);
 
