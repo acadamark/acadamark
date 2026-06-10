@@ -761,25 +761,25 @@ For every prime $p$, there are infinitely many primes congruent to $1 \pmod{p}$.
 }
 ```
 
-### Example 20: List with flags and content
+### Example 20: List with the ordered positional and item markers
 
 ```
-<list +ordered |
-- First item
-- Second item
-- Third item
->
+<list ordered>
+<li> First item
+<li> Second item
+<li> Third item
+</list>
 ```
 
 ```
 {
   tagname: "list",
-  booleans: { ordered: true },
-  content: ["\n- First item\n- Second item\n- Third item\n"]
+  positional: ["ordered"],
+  content: [ /* parsed children: the <li> marker nodes and the flow that follows each */ ]
 }
 ```
 
-(List content is markdown-parsed downstream — the parser just produces the content as text. The list interpreter handles `- ` items.)
+(Items are **bare markers** — `<li>` here, or the `<->` / `<*>` sigils, or `-` / `*` in markdown. An item's content is the flow that follows its marker, peer-closed by the next marker, a nested `<list>`, or `</list>`; there is no pipe and no per-item wrapper. The `ordered` positional selects `<ol>` (a bare `<list>` is `<ul>`). See `notes/specs/lists.md`.)
 
 ### Example 21: Anchor with positional URL and class
 
