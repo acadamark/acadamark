@@ -148,7 +148,10 @@ handler property, not a special case). Two facts follow:
   vocabulary entry and handler and *is* a member of the frameable class
   (`frameable.md`). The svg language sits in the registry only so the tag's
   content is opaque (the SVG XML passes through verbatim); there is **no `<svg>`
-  gate shorthand**, and svg's `(purpose, host)` binding names svg as its own host.
+  gate shorthand**, and svg is registered as its own host on the language axis — a
+bare handler entry (`{ handler: 'svg', opaque: true }`), not a format word on
+another host. (The per-language `(purpose, host)` bindings this once referred to
+were removed by #85 as inert data; see the registry note above.)
 - **`<svg>` framing is the ordinary frameable rule.** A captioned or numbered
   `<svg>` is wrapped in a `<figure>` with its `<figcaption>` inside; a bare
   `<svg -numbered>` with no caption is a lone inline `<svg>`. (`<svg>` is numbered
