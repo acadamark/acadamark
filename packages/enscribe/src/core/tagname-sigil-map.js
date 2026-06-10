@@ -12,7 +12,7 @@
  *
  * Used by:
  *   - The normalize-to-canonical gate (lift direction: sigil → tagname) —
- *     `enscribe/interpreter/src/plugins/normalize-to-canonical.js`.
+ *     `interpreter/plugins/normalize-to-canonical.js`.
  *   - The future lowering pass (lower direction: tagname → sigil) — not
  *     yet built; the reverse map is exported so it exists from day one
  *     and is guaranteed consistent with the lift direction.

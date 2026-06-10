@@ -8,20 +8,23 @@
 // this map just points at it.
 //
 // Slice 2 (output-neutral) wired the first host, `table`, and provided the
-// lookup. Slice 3 declared the `diagram` and storage-host (`library`, `data`)
-// accept-sets below. The lookup is still a declarative substrate: nothing in
-// production dispatch consults `hostAcceptsLanguage` yet — the members migrated
-// via explicit gate shorthands (`normalize-to-canonical.js`) and each host
-// handler still dispatches through its own format table. There is deliberately
-// NO `fig` accept-set: framed inline SVG is the first-class `<svg>` frameable
-// element, not a `<fig svg>` format word. The `<fig svg>` second path was
-// retired (#81) — see `format-words.md` and the svg note in `dsl-registry.js`.
+// lookup; slice 3 declared the `diagram` and storage-host (`library`, `data`)
+// accept-sets below. Since #85 the lookup is consulted in production: the
+// normalize-to-canonical gate validates each format-word host's leading
+// language against its accept-set via `hostAcceptsLanguage` (an observe-only
+// step — an out-of-set language gets a located, non-fatal `file.message`
+// diagnostic and the node still renders). Each host handler additionally
+// dispatches through its own format table. There is deliberately NO `fig`
+// accept-set: framed inline SVG is the first-class `<svg>` frameable element,
+// not a `<fig svg>` format word. The `<fig svg>` second path was retired (#81)
+// — see `format-words.md` and the svg note in `dsl-registry.js`.
 
 import { TABLE_FORMATS } from '../handlers/table.js';
 
 /**
- * Host name → the set of language identifiers it admits. Only `table` is wired
- * this slice; slice 3 adds `diagram`, `fig`, etc.
+ * Host name → the set of language identifiers it admits. Wired hosts: `table`,
+ * `diagram`, and the storage hosts `library` / `data`. There is deliberately no
+ * `fig` accept-set (see the module header).
  */
 export const HOST_ACCEPT_SETS = new Map([
   ['table', new Set(TABLE_FORMATS)],

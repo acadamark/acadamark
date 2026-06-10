@@ -81,11 +81,12 @@ export const CONFIG_KWARGS = new Map([
   // plugin, which reads it through readBoolKwarg's config layer.
   ['parse-data-tables',       'live'],   // plugins/table-cell-parse.js
 
-  // Reserved — the apparatus-tag reconciliation ruling enumerated these as
-  // the intended <config> surface. The implementation per key is future
-  // work; the allowlist accepts them so author input is not rejected
-  // before the consumer lands. Unlike the live keys, no plugin reads these
-  // yet; they sit in the config map awaiting implementation.
+  // The remaining keys, enumerated as intended <config> surface by the
+  // apparatus-tag reconciliation. Most are now LIVE with a named consumer
+  // (see the inline comments). The two still marked 'reserved' —
+  // `display-style` and `bibliography-position` — have no consumer yet; the
+  // allowlist accepts them so author input is not rejected before that
+  // consumer lands.
   ['theme',                   'live'],     // index.js compiler (Phase 8 Slice 2)
   ['display-style',           'reserved'],
   ['note-position',           'live'],     // index.js compiler → sidenotes (#33, margin render mode)

@@ -5,7 +5,9 @@
  * Also runs automatically via the `pretest` npm script.
  *
  * The compiled parser.js is committed to git so downstream users don't need
- * peggy at runtime. CI verifies grammar and compiled parser are in sync.
+ * peggy at runtime. The `pretest` npm script regenerates it before every test
+ * run, so a stale committed parser is caught locally by the suite. (There is no
+ * CI; automating it on push/PR is tracked in #49.)
  */
 
 import peggy from 'peggy'

@@ -53,7 +53,7 @@ import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler } from './handlers/cite.js';
 import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
-// gate (enscribe/interpreter/src/plugins/normalize-to-canonical.js) rewrites
+// gate (interpreter/plugins/normalize-to-canonical.js) rewrites
 // every sigil tagname (sections AND math/code) to its canonical vocabulary
 // name early in the pipeline. By the time a node reaches this handler, its
 // tagname is already the canonical key — see DESIGN.md §"The single gate".

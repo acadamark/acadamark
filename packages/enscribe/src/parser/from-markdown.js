@@ -5,13 +5,14 @@
  * full raw source of each construct. This extension serializes that token and
  * passes it to the Peggy parser, which handles all grammar semantics.
  *
- * For single-line constructs the finder emits one `enscribeTagRaw` chunk.
- * For multi-line flow constructs the finder emits multiple `enscribeTagRaw`
- * chunks (one per line segment) with `lineEnding` sibling tokens between them.
- * `exitEnscribeTagRaw` accumulates each chunk's text; `exitEnscribeTag`
- * joins them (inserting `\n` at each boundary) and passes the full source to
- * the Peggy grammar. Single-line constructs produce a single chunk and behave
- * identically to before.
+ * For single-line constructs the finder emits one `enscribeTagRaw` chunk; for
+ * multi-line flow constructs it emits multiple `enscribeTagRaw` chunks (one per
+ * line segment) with `lineEnding` sibling tokens between them. `exitEnscribeTag`
+ * serializes the *whole* `enscribeTag` token span at once (`sliceSerialize` on
+ * the outer span) and passes that source to the Peggy grammar. (An earlier
+ * per-chunk `_rawChunks` accumulation was removed — it returned "" for lines
+ * after the first on text-position multi-line tags; see the note at
+ * `exitEnscribeTag` below.)
  *
  * For long-form tags the finder emits four token types instead of one raw span:
  *   enscribeLongFormTag        (outer container)
