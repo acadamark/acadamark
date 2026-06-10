@@ -1,0 +1,16 @@
+<meta type=article>
+  <title | Side notes>
+  <author | Enscribe>
+</meta>
+
+<config note-position=margin />
+
+<section | Numbered notes rendered as side notes>
+
+With `note-position=margin`, a numbered note renders as a *side note*: its body appears in the margin beside the marker.<note | This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin.> The numbering and back-reference machinery is untouched; only the HTML projection changes.
+
+A second numbered note shows side notes stacking down the margin column.<note | A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.> Each keeps its number.
+
+<section | Side notes and margin notes share the margin>
+
+Side notes and margin notes occupy the same margin column.<marginnote | This is an unnumbered margin note. It shares the margin with the numbered side notes above — the column is established whenever either is present.> An unnumbered `<marginnote>` sits in the same margin as the numbered side notes.

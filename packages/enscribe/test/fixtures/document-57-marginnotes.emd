@@ -1,0 +1,17 @@
+<meta type=article>
+  <title | Margin notes>
+  <author | Enscribe>
+</meta>
+
+<section | Margin notes in the page margin>
+
+<!-- cell: marginnote/form:pipe -->
+A margin note is an unnumbered aside set in the page margin, authored in place.<marginnote | A margin note floats into the margin beside the text — no number, no back-reference, and never collected into a list.> It is the Tufte-style "margin note", distinct from a numbered footnote.
+
+The body of a margin note takes normal inline interpretation.<marginnote | Inline markup works here: *emphasis*, `code`, and other inline elements all interpret normally.> So emphasis, code, citations, and cross-references all work inside it.
+
+A margin note is independent of `note-position`: it always renders in the margin. A numbered footnote, by contrast, collects to the foot of the document in the default mode.<note | This is an ordinary numbered footnote — numbered, collected, and placed at the foot of the document. The margin notes above are none of those.> The two are deliberately different constructs.
+
+<section | On narrow screens>
+
+Below the margin breakpoint (a narrow window) there is no margin to float into, so a margin note falls back to an inline-block aside in the running text.<marginnote | Resize the window narrow to see this margin note fall back inline.> The text stays readable either way.

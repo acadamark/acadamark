@@ -1,23 +1,21 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 356,
-    "fixtures": 50,
+    "cells": 360,
+    "fixtures": 52,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 272,
-    "pass": 65,
-    "deferred": 18,
-    "needs-review": 1
+    "gap": 276,
+    "pass": 66,
+    "deferred": 18
   },
   "byDisposition": {
-    "specified": 311,
+    "specified": 316,
     "generic-implicit": 20,
     "deferred-presentation": 18,
     "no-output": 4,
-    "alias": 2,
-    "needs-review": 1
+    "alias": 2
   },
   "cells": [
     {
@@ -4108,11 +4106,83 @@
       "key": "marginnote/base",
       "element": "marginnote",
       "behavior": "base",
-      "area": "?",
-      "disposition": "needs-review",
-      "predicates": [],
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
       "coveredBy": [],
-      "status": "needs-review"
+      "status": "gap"
+    },
+    {
+      "key": "marginnote/id",
+      "element": "marginnote",
+      "behavior": "id",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "marginnote/class",
+      "element": "marginnote",
+      "behavior": "class",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "marginnote/form:pipe",
+      "element": "marginnote",
+      "behavior": "form:pipe",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [
+        "document-57-marginnotes.emd"
+      ],
+      "status": "pass"
+    },
+    {
+      "key": "marginnote/form:long",
+      "element": "marginnote",
+      "behavior": "form:long",
+      "area": "RQ-NOTE",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-NOTE-M1",
+        "RQ-NOTE-M2",
+        "RQ-NOTE-M3",
+        "RQ-NOTE-S1",
+        "RQ-NOTE-S2"
+      ],
+      "coveredBy": [],
+      "status": "gap"
     },
     {
       "key": "math/base",
@@ -6924,6 +6994,8 @@
     "document-54-toc-scrollspy.emd",
     "document-55-table-cell-parse.emd",
     "document-56-lists.emd",
+    "document-57-marginnotes.emd",
+    "document-58-sidenotes.emd",
     "document-6-cross-references.emd",
     "document-7-tables.emd",
     "document-8-citations.emd",

@@ -827,6 +827,10 @@
       "area": "RQ-BLK",
       "disposition": "specified"
     },
+    "marginnote": {
+      "area": "RQ-NOTE",
+      "disposition": "specified"
+    },
     "math": {
       "area": "RQ-MATH",
       "disposition": "specified"
@@ -1318,6 +1322,11 @@
     ],
     "list": [
       "—",
+      "—",
+      "✓"
+    ],
+    "marginnote": [
+      "✓",
       "—",
       "✓"
     ],
