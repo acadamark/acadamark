@@ -47,29 +47,29 @@ renderer handles content flow.
 Two layers, similar to the multi-file approach.
 
 **Document-level configuration.** The `<config>` element declares the
-document's column behavior. The exact authoring syntax for that
-declaration is an open design question (MC-Q1 in §"Open design questions"
-below); the spec previously illustrated it with a nested-element form:
+document's column behavior. Per the config-as-data direction
+(`DESIGN.md` §"Design directions" → "Configuration and metadata are
+data"; [#134](https://github.com/enscribejs/enscribe/issues/134)), a flat
+setting like this is a **kwarg** — `<config columns=2>` — which works with
+the existing discovery mechanism without modification:
 
 ```
-<config>
-  <columns count=2>
-</config>
+<config columns=2 />
 ```
 
-Note that this nested-element form is **not supported by `<config>` as it
-currently works** — per `notes/specs/interpreter.md` §3.2 the
-`enscribeConfigDiscovery` plugin reads `<config>` kwargs and does not
-walk nested children (the "nested `<config>` not read" gap is also
-tracked separately in GitHub Issues). The kwarg
-alternative `<config columns=2>` would work with the existing mechanism
-without modification. Which form multi-column adopts (and whether
-adopting the nested form requires also extending `<config>` and/or
-registering a `<columns>` vocabulary element) is undecided.
+Should column configuration ever grow structured (per-region counts,
+named column sets), it belongs in `<config>`'s future **fenced data
+block** — the one data register all structured config uses — *not* a
+nested `<columns>` child element. The earlier sketch of a nested-element
+form (`<config><columns count=2></config>`) is **foreclosed by #134**:
+structured config is authored as data, never as a hand-written child-tag
+tree. (The narrow remaining question — whether column settings need any
+structure beyond a flat kwarg — is MC-Q1 below.)
 
-Whichever form is chosen sets the default for the document body. Front
-matter (title, abstract) and back matter (bibliography, appendices) may
-have their own column conventions per journal style.
+Whichever surface it takes, the document-level setting sets the default
+for the document body. Front matter (title, abstract) and back matter
+(bibliography, appendices) may have their own column conventions per
+journal style.
 
 **Per-region overrides.** A specific section or figure may need a
 different column count. A kwarg on `<section>` or wrapping in a generic
@@ -131,7 +131,7 @@ same undecided value-space and cascade questions from MC-Q3).
 
 ## Cascading and inheritance
 
-A document declaring `<columns count=2>` at the document level lets
+A document declaring `<config columns=2>` at the document level lets
 sections inherit unless they override. This matches how CSS cascades
 work and avoids per-section repetition.
 
@@ -172,16 +172,19 @@ Each is filed as a discussion item in GitHub Issues (surfaced by
 the Front C extensions-cluster spec audit); the decision happens there,
 not in this spec.
 
-- **MC-Q1 — `<config>` syntax for column settings.** The previously-shown
-  nested-element form (`<config><columns count=2></config>`) is not
-  supported by `<config>` as it currently works — the
-  `enscribeConfigDiscovery` plugin (`notes/specs/interpreter.md` §3.2)
-  reads kwargs and does not walk nested children (the gap is also
-  tracked separately as the formerly-PG-9 "nested `<config>` not read"
-  item). The fork: adopt the kwarg form `<config columns=2>` (no new
-  machinery), or adopt the nested-element form (requires extending
-  `<config>`'s reading rules and/or registering a `<columns>` vocabulary
-  element). Either is workable as a design; the choice is undecided.
+- **MC-Q1 — `<config>` surface for column settings.** Largely settled by
+  the config-as-data direction (`DESIGN.md` §"Configuration and metadata
+  are data"; [#134](https://github.com/enscribejs/enscribe/issues/134)): a
+  flat column setting is a kwarg — `<config columns=2>` — and any
+  structured column configuration belongs in `<config>`'s future fenced
+  data block, the one register all structured config uses. The
+  nested-element form (`<config><columns count=2></config>`) is **ruled
+  out** — structured config is never a hand-written child-tag tree. What
+  remains open is narrow and downstream: whether column settings ever need
+  more than a flat kwarg, and the exact key names. (Aside: the older claim
+  that deeply-placed `<config>` blocks are not read is itself stale — that
+  discovery gap is closed; the doc cleanup is tracked in
+  [#162](https://github.com/enscribejs/enscribe/issues/162).)
 
 - **MC-Q2 — render-mode container for `column-count`.** Which container
   carries the CSS `column-count` (and the analogous typeset

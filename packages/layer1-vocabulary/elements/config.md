@@ -17,8 +17,8 @@ enscribe_attributes:
     maps_to: class
   kwargs:
     notes: |
-      <config> accepts an allowlisted set of kwargs as an authoring shorthand
-      for its structured-children configuration interface. The current
+      <config> accepts an allowlisted set of kwargs as its flat authoring
+      form (the settled register for flat config; #134). The current
       allowlist (interpreter-side, see
       packages/enscribe/src/interpreter/lib/apparatus-allowlists.js):
         - citation-style          (live; consumed by cite-resolution)
@@ -39,13 +39,27 @@ enscribe_attributes:
       Unknown kwargs are dropped at the normalize-to-canonical gate with an
       informative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on
       <config> additionally triggers a "did you mean <meta>?" hint. Kwargs are
-      the authoring form for <config>; the structured-children entries in
-      `content.shape` below (marked *Future*) are a deferred design sketch, not
-      a current authoring spelling. <config> takes no child elements today: the
-      retired `<bibliography source=… />` form (#133) is replaced by the body
-      element `<library src>` (see library.md / bibliography.md).
+      <config>'s FLAT authoring form. Structured configuration is settled
+      (#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded
+      data-language island (e.g. YAML), the same pattern <library> uses for
+      BibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured
+      register is future/unbuilt. The `content.shape` entries below name
+      candidate settings such a block would carry; they are a design sketch,
+      not child-tag authoring and not a current spelling. <config> takes no
+      child elements today: the retired `<bibliography source=… />` form (#133)
+      is replaced by the body element `<library src>` (see library.md /
+      bibliography.md). See DESIGN.md "Configuration and metadata are data".
 content:
   type: structured
+  notes: |
+    The `structured` type and the child-element `shape` below predate the
+    config-as-data ruling (#134), which settles that <config>'s structured
+    form is a fenced DATA BLOCK (a bounded data-language island, future and
+    unbuilt) — NOT the child-tag tree this `shape` sketches. The shape
+    entries are retained only as a sketch of which settings such a block
+    might carry; <config> takes no child elements today. Whether to remodel
+    this entry (drop `shape`, change `type`) is a vocab-schema decision left
+    open. See DESIGN.md "Configuration and metadata are data".
   shape:
     - element: output-format
       required: false
@@ -150,6 +164,19 @@ For documents with richer configuration, a `<config>` element gathers the settin
 ```
 <config citation-style=author-year number-sections=true number-figures=true number-tables=true show-source=true />
 ```
+
+## Structured configuration (future)
+
+Flat settings are kwargs (above). For *structured* settings — nested or
+list-valued options — the settled direction (#134) is a fenced **data
+block** inside `<config>`: a bounded island of a data mini-language (e.g.
+YAML) between the tag's delimiters, parsed by an existing library, the same
+"foreign language behind a fence" pattern `<library>` uses for BibTeX. This
+mirrors the YAML front matter RMarkdown and Quarto already use for the same
+job. The structured register is **not built yet** (tracked in #134), and it
+is **never** a tree of child tags (`<config><numbering>…</numbering></config>`)
+— that prose-shaped form is the rejected alternative. See `DESIGN.md`
+§"Configuration and metadata are data" for the full direction.
 
 ## Placement convention
 
