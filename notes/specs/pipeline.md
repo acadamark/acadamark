@@ -224,10 +224,10 @@ html-table-cells, notes, numbering, apply-numbers, ref-resolution,
 cite-resolution, note-placement, bibliography). (Strict-mode resolution runs
 earlier still, before recursive-content — see §0/Stage 2.) Each is registered on
 the unified processor in this order and runs as a unified transform during the
-`processor.run()` step. The per-plugin detail follows in §4.0–§4.10 for the
-plugins that have a subsection; book-structuring is in §4.2.5, list-structuring
-reuses the `lists.md` model, and the table-cell passes (#21/#105, #108) are not
-yet broken out into their own subsections.
+`processor.run()` step. The per-plugin detail follows in §4.0–§4.10; book-structuring is in §4.2.5, the
+opt-in table-cell passes in §4.4.5 / §4.4.6 (#21/#105, #108; full detail in
+`interpreter.md` §3.5.5 / §3.5.6), and list-structuring reuses the `lists.md`
+model.
 
 ### Phase 0 — Normalization
 
@@ -460,6 +460,34 @@ the deep-collect finds `<data>` at root (article) or in `<book-body>` (book).
 
 **No-op case:** If there are no `<data>` nodes, `file.data.enscribeCitations`
 is not set. Cite resolution and bibliography will be no-ops.
+
+#### 4.4.5 enscribeTableCellParse
+
+**Source:** `packages/enscribe/src/interpreter/plugins/table-cell-parse.js`
+
+**What it does:** Opt-in parsing of DATA-format table cells (`<table csv|…>`) as
+Enscribe inline markup — `+parse-text` / `-parse-text` / `parse-columns="…"`, or a
+doc-wide `<config parse-data-tables=true>` (per-table wins). Parsed cells are
+stamped on `node._parsedCells`; a no-op otherwise (byte-identical). Runs here —
+after the citation index, **before** notes / numbering / refs — so a cell
+`<note>` / `<ref>` / `<cite>` is tree-resident for the resolution passes (the
+shared walkers descend `_parsedCells`). Full detail: `interpreter.md` §3.5.5.
+
+**Dependencies:** a stable post-structuring tree; reads `<config
+parse-data-tables>`. Must precede `enscribeNotes` (step 4.5).
+
+#### 4.4.6 enscribeHtmlTableCells
+
+**Source:** `packages/enscribe/src/interpreter/plugins/html-table-cells.js`
+
+**What it does:** Re-resolves Enscribe inline inside a no-format raw-HTML
+`<table>` (the escape-hatch grid) by parsing it and stamping `node._htmlTable`
+(the #106 shape) — closing the JATS-import → render round-trip for complex tables,
+and making a hand-authored raw-HTML grid's cells first-class. A no-op for any
+table that is not a raw-HTML grid. Full detail: `interpreter.md` §3.5.6.
+
+**Dependencies:** runs after `enscribeTableCellParse` (a table already carrying
+`_parsedCells` / `_htmlTable` is skipped); must precede `enscribeNotes`.
 
 #### 4.5 enscribeNotes
 

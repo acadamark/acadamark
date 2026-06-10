@@ -131,10 +131,9 @@ references throughout §3 stay unchanged. `enscribeNormalizeToCanonical`'s `1.5`
 matches the inline `1.5.` comment in the source
 ([src/index.js](../../packages/enscribe/src/interpreter/index.js)). Of the
 inserted plugins, book-structuring has its own detail in §3.3.5, list-structuring
-in `notes/specs/lists.md`, and strict-mode in `notes/specs/strict-mode.md`;
-`enscribeTableCellParse` / `enscribeHtmlTableCells` are the opt-in DATA-table and
-raw-HTML-table cell passes (#21/#105, #108) and are not yet broken out into their
-own §3 subsections.
+in `notes/specs/lists.md`, strict-mode in `notes/specs/strict-mode.md`, and the
+opt-in table-cell passes `enscribeTableCellParse` / `enscribeHtmlTableCells`
+(#21/#105, #108) in §3.5.5 / §3.5.6.
 
 ### Tree-walking is centralized in shared single-pass walkers (design property)
 
@@ -630,6 +629,83 @@ instance is built from the combined CSL-JSON.
 **No-library case:** If no `<data>` nodes exist anywhere in the tree, the
 plugin returns immediately. `file.data.enscribeCitations` is not set.
 Downstream citation plugins check for its presence before proceeding.
+
+---
+
+### 3.5.5 enscribeTableCellParse
+
+**Source:** `packages/enscribe/src/interpreter/plugins/table-cell-parse.js`
+**Step:** 5.5 — after `buildCitationIndex`, before `enscribeNotes`.
+
+**What it does:** A data-format table (`<table csv|tsv|json|yaml|md | …>`) holds
+*data*, so its cells are **literal by default**. This plugin is the opt-in that
+parses selected cells as Enscribe inline markup, stamping the parsed inline mdast
+on `node._parsedCells` (#21 / #105). It is a no-op for any table without an
+opt-in, so non-opted documents are byte-identical. (Markdown / GFM pipe tables
+already inline-parse via `remark-gfm` and are untouched; the no-format raw-HTML
+escape-hatch table is §3.5.6's job.)
+
+**Opt-in surface** (precedence: per-table attribute > global config > literal
+baseline):
+- `+parse-text` — parse every cell.
+- `-parse-text` — force every cell literal (overrides a global default).
+- `parse-columns="a, b"` — parse only the named columns (matched by header name).
+- `<config parse-data-tables=true>` — a doc-wide default; a per-table flag wins.
+
+The all-cells flag goes through `readBoolKwarg` (priority booleans > kwargs >
+config > default); `parse-columns` adds named columns on top.
+
+**Why a plugin, and why at step 5.5:** an opted-in cell may contain a `<note>`,
+`<ref>`, or `<cite>`, which resolve only if they are tree-resident when the
+resolution passes run. So this runs in the mdast phase **before** notes /
+numbering / ref / cite resolution, parsing opted-in cells into `_parsedCells`.
+The shared walkers (`discover` / `walkReplace`) descend that stamp (§"Tree-walking
+is centralized"), so a cell footnote registers / numbers / hoists and a cell
+ref / cite resolves exactly like a body one. (#21 originally ran *after* notes,
+leaving cell footnotes out of scope; #105 moved it before notes.)
+
+**Data stays literal:** parsing is a READ of `node.content` or the `src=` file —
+nothing is written back. A `src=` table needs `assetsDir` (else the cell is left
+literal); a parse / read error leaves the table to the handler (which emits the
+error table). Both render channels — the HTML table handler and the JATS table
+emitter — read `_parsedCells`, so a parsed column parses in both.
+
+**Output:** `node._parsedCells = { headers, rows }`, each cell `{ inline: Node[] }`
+(parsed) or `{ text: string }` (literal); header cells stay literal.
+
+---
+
+### 3.5.6 enscribeHtmlTableCells
+
+**Source:** `packages/enscribe/src/interpreter/plugins/html-table-cells.js`
+**Step:** 5.6 — immediately after §3.5.5.
+
+**What it does:** Re-resolves Enscribe inline inside a **no-format raw-HTML
+`<table>`** (the escape-hatch table) by parsing its HTML grid and stamping
+`node._htmlTable` (#108) — the same shape #106 defines. A no-op for any table
+that is not a raw-HTML grid, so documents without one are byte-identical.
+
+**The round-trip it closes:** the JATS importer serializes a complex
+(HTML-layout) table to `.emd` as the no-format `<table>` escape hatch, whose
+cells carry HTML-escaped Enscribe inline *source* (`<cite @k>` →
+`&lt;cite @k&gt;`, #106's `htmlGridToSource`). On a fresh render of that `.emd`
+the table arrives as an opaque string with **no** `_htmlTable` stamp (the
+importer's in-memory stamp does not survive serialization), so the handler's raw
+branch would emit literal source. This plugin re-parses the grid, decodes each
+cell's source, parses it to canonical inline mdast (the same
+`parseInlineCellToMdast` as §3.5.5), and stamps `_htmlTable` — so the shared
+walkers descend it and both render channels emit it, with no handler changes. It
+also makes a hand-authored raw-HTML `<table>` whose cells carry Enscribe inline
+first-class (`<td>see <cite @k></td>` resolves).
+
+**Scope guard:** only a no-format `<table>` (no positional format) whose content
+looks like a grid (contains `<tr>`); other raw-HTML content is left as raw
+passthrough; a data-format table is left to §3.5.5; a table already carrying
+`_htmlTable` / `_parsedCells` (the importer's direct in-memory path, or §3.5.5)
+is untouched.
+
+**Output:** `node._htmlTable = { rows: [{ section: 'head' | 'body', cells:
+[{ header, inline: Node[], colspan?, rowspan?, align? }] }] }`.
 
 ---
 
