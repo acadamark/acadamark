@@ -8,14 +8,15 @@
 // (liftToCanonicalMdast -> serializeCanonical -> re-parse) and `import-jats`
 // (importJats -> serializeCanonical -> re-parse).
 //
-// Scope: the two #6 failure modes only. (Two unrelated round-trip gaps found
-// while verifying — a whole-PNAS re-parse slowdown and a raw-HTML-cell whitespace
-// drift — are tracked as their own issues, not guarded here.)
+// Scope: the two #6 failure modes, plus the #141 dense-re-parse performance guard
+// (added when #141 was fixed — the whole-PNAS re-parse slowdown the header used to
+// defer; the grammar is now compiled with packrat memoization). A separate
+// raw-HTML-cell whitespace drift (#142) is still tracked on its own, not here.
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { liftToCanonicalMdast } from '@enscribejs/enscribe';
+import { liftToCanonicalMdast, buildEnscribePipeline } from '@enscribejs/enscribe';
 import { serializeCanonical } from '../src/serialize-canonical.js';
 import { importJats } from '../src/jats-import/index.js';
 
@@ -103,5 +104,26 @@ export function run_tests() {
     assert.ok(m1 && m1.id === 'eqn:dense', 'dense math keeps its id on re-parse');
     assert.strictEqual((m1.content ?? '').trim(), (m0.content ?? '').trim(), 'dense math keeps its content on re-parse');
     console.log('PASS: #6 — id-bearing dense math survives the <$$ … $$> round-trip');
+  }
+
+  // ── #141: a dense serialized document re-parses in BOUNDED time ──────────────
+  // Importing the PNAS sample, serializing to .emd, then re-parsing the result
+  // used to backtrack exponentially in the Peggy content rules — ~51s at block 33
+  // of 131, then a hang — on the dense multi-line nested math tags
+  // (`<sub | \n<i | i>,<i | j>,<i | k>\n>`). The grammar is now compiled with
+  // packrat memoization (`cache: true`), making parsing linear; the parse RESULT
+  // is unchanged (proven byte-identical). This guard re-hangs the suite if the
+  // exponential returns. A generous 10s ceiling (the fix parses in ~0.3s; the bug
+  // was tens of seconds then a hang) keeps it robust to machine speed.
+  {
+    const xml = readFileSync(join(__dirname, 'fixtures', 'pnas_sample.xml'), 'utf8');
+    const emd = serializeCanonical(importJats(xml));
+    const t0 = Date.now();
+    buildEnscribePipeline({}).parse(emd);
+    const dt = Date.now() - t0;
+    assert.ok(dt < 10000,
+      `#141: re-parsing the dense serialized PNAS sample must be bounded — took ${dt}ms ` +
+      `(was ~51s at block 33/131 then a hang, before the grammar's packrat memoization).`);
+    console.log(`PASS: #141 — dense serialized document re-parses in bounded time (${dt}ms; was minutes/hang)`);
   }
 }

@@ -40,6 +40,18 @@ The parser is implemented as a hybrid: a small **micromark extension** locates t
 
 The split is chosen for what we call the *freeze property*. micromark's tokenizer is a hand-written state machine — fast, but expensive to extend, and easy to break in subtle ways when modified. Peggy, by contrast, is a declarative PEG grammar where each rule is local and readable, and incremental additions are bounded in scope. By restricting micromark to the narrow job of "find where a tag starts and ends" — and pushing everything *inside* the tag (attribute strings, identifiers, ids, classes, keywords, positionals, flags) into the Peggy grammar — the part of the parser that is hard to change is also the part that should rarely need to change. Future grammar evolution lives in Peggy, where it is visible and bounded.
 
+**The Peggy parser is compiled with packrat memoization** (`cache: true` in
+`build/compile-grammar.js`). The content rules `ContentItem` / `ContentChar` parse
+a named tag's pipe content character by character, and their nested-tag
+alternative overlaps the literal-character fallback (`[^>]` also matches `<`), so a
+`<` inside content can begin a nested tag *or* be a literal — an ambiguity the
+parser resolves by backtracking. Without memoization that backtracking is
+exponential on a dense, multi-line tag carrying several nested inline tags (e.g. a
+serialized `<sub | \n<i | i>,<i | j>,<i | k>\n>`), which hung the re-parse of
+round-tripped dense documents (#141). Memoizing rule results by (rule, position)
+makes parsing linear; it is purely a performance property — the parse result is
+identical with or without it.
+
 ## Grammar (EBNF)
 
 ```ebnf

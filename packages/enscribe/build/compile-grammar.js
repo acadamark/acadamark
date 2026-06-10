@@ -26,6 +26,14 @@ const grammar = readFileSync(grammarPath, 'utf8')
 const source = peggy.generate(grammar, {
   format: 'es',
   output: 'source',
+  // Memoize rule results by (rule, position) — packrat caching. The grammar's
+  // nested-tag content rules (ContentItem / ContentChar) are ambiguous on `<`
+  // (it matches both the nested-tag alternative and the literal-char fallback
+  // `[^>]`), so without memoization a dense, multi-line named tag with several
+  // nested inline tags backtracks exponentially (re-parsing the same positions),
+  // hanging on round-tripped dense documents (#141). Caching makes parsing
+  // linear; it is purely a performance change — the parse RESULT is identical.
+  cache: true,
   // Include source map for readable errors pointing at grammar lines
   grammarSource: 'grammar/enscribe.peggy',
 })
