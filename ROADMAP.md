@@ -59,14 +59,38 @@ features.
   highlighting, browser-bundle size optimization, conda-forge packaging, and new
   sigil shorthands — are *features*, so they moved out to v0.5.0 / future
   (e.g. #17, #25, #27).
-- **v0.5.0.** The next feature release: the remaining HTML-shaped Layer 1
-  element-group migration ([#147](https://github.com/enscribejs/enscribe/issues/147):
-  sections, figures, the semantic-only elements), code syntax highlighting (#17),
-  and other authoring / display features as their issues are scheduled.
-- **future.** Longer-horizon work — render-mode lowering to plain HTML,
-  multi-column display, the master-document / multi-file system
-  (`master-document.md`), and other parser / display features as their design
-  questions resolve.
+- **v0.5.0 — HTML output.** Finish the HTML-shaped reframe: the remaining Layer 1
+  element-group migration ([#147](https://github.com/enscribejs/enscribe/issues/147)
+  — sections, figures, the semantic-only elements), lossy render-mode lowering to
+  plain HTML ([#40](https://github.com/enscribejs/enscribe/issues/40)), and
+  well-formatted rendered output
+  ([#117](https://github.com/enscribejs/enscribe/issues/117)). Carries the must-fix
+  parser-hang bug ([#141](https://github.com/enscribejs/enscribe/issues/141)).
+- **v0.6.0 — advanced layout.** Multi-column display
+  ([#34](https://github.com/enscribejs/enscribe/issues/34) — its multi-column
+  spec-gap folded in), print CSS / pagination
+  ([#35](https://github.com/enscribejs/enscribe/issues/35)), paged per-page
+  footnotes ([#164](https://github.com/enscribejs/enscribe/issues/164)), and
+  composite (multi-panel) figures
+  ([#116](https://github.com/enscribejs/enscribe/issues/116)).
+- **Data model** (epic milestone). The structured data block + asset store — how
+  `<data>` / `<config>` and embedded resources work
+  ([#134](https://github.com/enscribejs/enscribe/issues/134),
+  [#102](https://github.com/enscribejs/enscribe/issues/102)), gated on the open
+  design forks ([#166](https://github.com/enscribejs/enscribe/issues/166),
+  [#168](https://github.com/enscribejs/enscribe/issues/168)) that must settle first.
+- **JATS** (milestone). The scholarly-interchange feature track — import / export /
+  fetch mechanics ([#136](https://github.com/enscribejs/enscribe/issues/136),
+  [#119](https://github.com/enscribejs/enscribe/issues/119),
+  [#142](https://github.com/enscribejs/enscribe/issues/142),
+  [#118](https://github.com/enscribejs/enscribe/issues/118)) — a feature track
+  reached *from* the HTML base, not the core mission.
+
+> **TODO (maintainer fine-tuning).** The reading-polish placement, the
+> infra / health track, and the icebox (longer-horizon parser / display work and
+> the master-document / multi-file system) are being bucketed separately by the
+> maintainer; this release list is not yet their final home. The `future`
+> milestone still holds them until that pass lands.
 
 ---
 
