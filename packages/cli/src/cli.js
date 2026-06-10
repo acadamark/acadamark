@@ -18,7 +18,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES } from '@enscribejs/enscribe';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';
@@ -263,9 +263,28 @@ function doRender(opts) {
   if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
   if (opts.theme) pipeOpts.theme = opts.theme;
   if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
-  return withQuiet(opts.quiet, () =>
-    String(buildEnscribePipeline(pipeOpts).processSync(src)),
+
+  // #133: external <library src> loading. Filesystem paths are read synchronously
+  // inside the pipeline (assetsDir, unchanged). URL sources need an async fetch, so
+  // when any are present this returns a Promise the dispatcher awaits; otherwise it
+  // stays synchronous (so the 33 existing sync test call sites are unaffected).
+  const urlSrcs = collectLibrarySources(src).filter((s) => URL_SCHEME.test(s));
+  const renderSync = (input) =>
+    withQuiet(opts.quiet, () => String(buildEnscribePipeline(pipeOpts).processSync(input)));
+  if (urlSrcs.length === 0) return renderSync(src);
+  return preloadSources(urlSrcs, fetchSourceText).then((loaded) =>
+    renderSync({ value: src, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
   );
+}
+
+// #133: a src string is a URL (async-only) when it carries a scheme.
+const URL_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
+
+/** Fetch a library source URL's text; throws (→ a visible error) on a non-OK response. */
+async function fetchSourceText(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`);
+  return res.text();
 }
 
 function doLift(opts) {
@@ -366,7 +385,13 @@ export function run(argv, io = {}) {
       case 'render': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(RENDER_HELP); return 0; }
-        emit(doRender(opts), opts, out);
+        const rendered = doRender(opts);
+        // #133: doRender returns a Promise only when URL <library src> sources need
+        // fetching; otherwise it is the rendered string (the sync path, unchanged).
+        if (rendered && typeof rendered.then === 'function') {
+          return rendered.then((html) => { emit(html, opts, out); return 0; });
+        }
+        emit(rendered, opts, out);
         return 0;
       }
       case 'export-jats': {

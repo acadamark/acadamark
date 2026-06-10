@@ -168,20 +168,27 @@ export function run() {
     console.log('PASS: library-load: external file via src=');
   }
 
-  // --- Missing src file emits warning and continues ---
+  // --- Missing src file → visible error, not a warning (#133 always-renders) ---
   {
     const lib = makeLibraryTag({ src: 'nonexistent.bib', content: ' ' });
     const tree = makeDataTree([lib]);
     const file = makeFile();
     enscribeLibraryLoad({ assetsDir: ASSETS_DIR })(tree, file);
 
-    // Should warn but not throw; citations may be null or absent.
-    assert.equal(file._warnings.length, 1, 'exactly one warning for missing file');
-    assert.ok(
-      file._warnings[0].includes('nonexistent.bib'),
-      'warning mentions the missing filename',
-    );
-    console.log('PASS: library-load: missing src file emits warning');
+    // #133: a failed external load renders a visible __library-error node naming
+    // the source (injected into the tree), never a silent skip + log message.
+    const errs = [];
+    (function walk(nodes) {
+      for (const n of nodes ?? []) {
+        if (n && n.tagname === '__library-error') errs.push(n);
+        if (Array.isArray(n?.content)) walk(n.content);
+        if (Array.isArray(n?.children)) walk(n.children);
+      }
+    })(tree.children);
+    assert.equal(errs.length, 1, 'exactly one visible __library-error for the missing file');
+    assert.ok(String(errs[0].kwargs?.src).includes('nonexistent.bib'), 'error names the missing source');
+    assert.equal(file._warnings.length, 0, 'no warning — the failure renders visibly, not as a log message');
+    console.log('PASS: library-load: missing src file → visible __library-error (#133)');
   }
 
   // --- No <data> block: no-op ---

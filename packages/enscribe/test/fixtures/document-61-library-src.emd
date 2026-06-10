@@ -1,0 +1,15 @@
+<meta type=article>
+  <title | External library source>
+  <author | Enscribe>
+</meta>
+
+This article loads its bibliography from an external file via `<library src=…>`
+rather than pasting the entries inline. The citation<cite @Loomes2017> resolves
+against the loaded reference, and the formatted list renders below — the
+`<library src>` block itself renders nothing.
+
+<bibliography></bibliography>
+
+<data>
+<library src="references.bib" />
+</data>

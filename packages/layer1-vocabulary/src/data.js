@@ -998,12 +998,6 @@ const _bibliography = Object.freeze({
         },
       },
       "kwargs": {
-        "source": {
-          "maps_to": {
-            "html": "data-bibliography-source",
-          },
-          "notes": "URL or path to an external bibliography file (BibTeX, CSL-JSON, etc.).\nWhen present, the build system reads the file to populate the citation\nregistry.\n",
-        },
         "style": {
           "maps_to": {
             "html": "data-bibliography-style",
@@ -1990,7 +1984,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')\n  - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\nthe authoring form for <config>; the structured-children entries in\n`content.shape` below (marked *Future*) are a deferred design sketch, not\na current authoring spelling — the `<bibliography source=… />` source\ndeclaration is the only child element <config> takes today.\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as an authoring shorthand\nfor its structured-children configuration interface. The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')\n  - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  - reference-library       (reserved; future)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\nthe authoring form for <config>; the structured-children entries in\n`content.shape` below (marked *Future*) are a deferred design sketch, not\na current authoring spelling. <config> takes no child elements today: the\nretired `<bibliography source=… />` form (#133) is replaced by the body\nelement `<library src>` (see library.md / bibliography.md).\n",
       },
     },
     "content": {
@@ -2027,11 +2021,6 @@ const _config = Object.freeze({
           "element": "theme",
           "required": false,
           "notes": "Future: theme reference.",
-        },
-        {
-          "element": "bibliography",
-          "required": false,
-          "notes": "Bibliography source reference (e.g., <bibliography source=\"refs.bib\" />).\nConfiguration about where the bibliography file lives.\n",
         },
       ],
     },
@@ -3820,6 +3809,13 @@ const _library = Object.freeze({
           "required": false,
           "default": "auto",
           "notes": "Attribute-form equivalent of the format-word positional. When both the\npositional and the kwarg are omitted, the library-load plugin\nauto-detects the format via citation-js (works reliably for BibTeX and\nCSL-JSON). A named format is passed to citation-js as a forceType.\n",
+        },
+        "src": {
+          "maps_to": {
+            "html": "data-src",
+          },
+          "required": false,
+          "notes": "External source (#133): a filesystem path, an http(s) URL, or any\nreachable URL (e.g. a GitHub raw link). The reference data is loaded from\nthere and parsed exactly as inline content (same formats; never injected\nas markup). With src= the node's own (empty) body is ignored; inline and\nsrc libraries are both valid and multiple of either merge. A failed load\n(unreachable / 404 / CORS-blocked / parse-fail) renders a visible error\nand never aborts the document (always-renders). Filesystem paths apply on\nthe CLI/build; in the browser a relative path resolves against the\ndocument base URL and is fetched (cross-origin URLs are CORS-limited). A\nURL source needs an async render (the CLI render command / the browser\nrenderAsync); a synchronous render flags it.\n",
         },
       },
     },

@@ -18,7 +18,9 @@
 // for self-contained output), and the finer-grained per-resource options
 // (katexCss / documentFontsCss / per-DSL *Mode) still take precedence.
 
-import { buildEnscribePipeline } from './index.js';
+import { buildEnscribePipeline, collectLibrarySources } from './index.js';
+import { preloadSources } from './lib/preload-library-sources.js';
+import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 
 const BROWSER_DEFAULTS = {
   embedResources: false,
@@ -81,6 +83,68 @@ export function getPipeline(options = {}) {
  */
 export function render(source, options = {}) {
   return String(getPipeline(options).processSync(source));
+}
+
+// #133: a <library src> fast-path gate — true only if the source might carry an
+// external library source, so renderAsync can short-circuit to the sync render
+// for the common (inline / no-src) case without a discovery parse.
+const HAS_LIBRARY_SRC = /<library\b[^>]*\bsrc\s*=/i;
+
+/**
+ * Fetch a library source's text, resolving a relative src against the document
+ * base URL. Throws (→ a visible error) on a non-OK response or a network/CORS
+ * failure — a runtime fact for cross-origin URLs, surfaced, not gated.
+ */
+async function fetchSourceText(src, baseUrl) {
+  const url = baseUrl ? new URL(src, baseUrl).href : src;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`);
+  return res.text();
+}
+
+/**
+ * Render enscribe source to HTML, loading any external `<library src="…">`
+ * sources first (#133). The async counterpart of render(): it pre-fetches each
+ * source (relative paths against `document.baseURI`; cross-origin URLs are
+ * CORS-limited and surface a visible error), then runs the same synchronous
+ * pipeline with the loaded content. Sources that fail to load render a visible
+ * error block; the document still renders (always-renders).
+ *
+ * For a document with no `<library src>` this is just render() — no fetch, no
+ * extra parse.
+ *
+ * @param {string} source - enscribe/markdown source text.
+ * @param {object} [options] - pipeline options (see render()).
+ * @returns {Promise<string>} Serialized HTML.
+ */
+export async function renderAsync(source, options = {}) {
+  if (!HAS_LIBRARY_SRC.test(source)) return render(source, options);
+  const srcs = collectLibrarySources(source);
+  if (srcs.length === 0) return render(source, options);
+  const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
+  const loaded = await preloadSources(srcs, (src) => fetchSourceText(src, baseUrl));
+  return String(
+    getPipeline(options).processSync({ value: source, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
+  );
+}
+
+/**
+ * renderAsync + write into a DOM element (the async counterpart of renderInto).
+ * Like renderInto, the result is assigned via innerHTML, so call executeAssets
+ * after this to activate any injected interactive scripts.
+ *
+ * @param {string|Element} target - a CSS selector or an Element to fill.
+ * @param {string} source - enscribe/markdown source text.
+ * @param {object} [options] - pipeline options (see render()).
+ * @returns {Promise<Element>} The element that was written into.
+ */
+export async function renderIntoAsync(target, source, options = {}) {
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) {
+    throw new Error(`renderIntoAsync: target not found: ${String(target)}`);
+  }
+  el.innerHTML = await renderAsync(source, options);
+  return el;
 }
 
 /**

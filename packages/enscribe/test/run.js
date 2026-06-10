@@ -39,6 +39,7 @@ import { run as runTheme } from './lib/theme.test.js';
 import { run as runSidenotes } from './lib/sidenotes.test.js';
 import { run as runArticleAppendices } from './article-appendices.test.js';
 import { run as runMarginnote } from './marginnote.test.js';
+import { run as runLibrarySrc } from './library-src.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
 import { run as runConfigOptions } from './config-options.test.js';
 import { run as runMapAttributes } from './map-attributes.test.js';
@@ -93,6 +94,7 @@ const suites = [
   ['lib/sidenotes',                runSidenotes],
   ['article-appendices',           runArticleAppendices],
   ['marginnote',                   runMarginnote],
+  ['library-src',                  runLibrarySrc],
   ['strict-mode',                  runStrictMode],
   ['lib/chapter-nav',              runChapterNav],
   ['config-options',               runConfigOptions],

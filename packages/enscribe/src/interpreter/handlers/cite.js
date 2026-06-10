@@ -66,6 +66,32 @@ export function citeErrorHandler(_state, node) {
 }
 
 /**
+ * Handler for __library-error nodes (#133): a <library src> that could not be
+ * loaded (unreachable / 404 / CORS-blocked / parse-fail) or a key collision /
+ * misplacement flag. always-renders: a visible block naming the source, never a
+ * silent drop. Injected into the visible body by library-load.js.
+ *
+ * @param {object} _state - mdast-util-to-hast state (unused)
+ * @param {object} node   - enscribeTag with tagname '__library-error'
+ * @returns {import('hast').Element}
+ */
+export function libraryErrorHandler(_state, node) {
+  const src = node.kwargs?.src ?? '';
+  const message = node.kwargs?.message ?? 'load failed';
+  const label = src ? `could not load library source "${src}": ${message}` : message;
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: {
+      className: ['enscribe-library-error'],
+      role: 'alert',
+      ...(src ? { dataSrc: src } : {}),
+    },
+    children: [{ type: 'text', value: `⚠ ${label}` }],
+  };
+}
+
+/**
  * Handler for __bibliography nodes (the rendered bibliography block).
  *
  * @param {object} _state - mdast-util-to-hast state (unused)

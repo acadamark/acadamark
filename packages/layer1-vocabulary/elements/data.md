@@ -171,11 +171,8 @@ This paper builds on <cite goodall2024>.
 **Mixed: external file plus inline addition.**
 
 ```
-<config>
-  <bibliography source="refs.bib" />
-</config>
-
 <data>
+  <library src="refs.bib" />
   <library format=bibtex>
     @article{recent2024,
       author = {Author, Recent},

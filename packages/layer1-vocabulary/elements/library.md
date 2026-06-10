@@ -35,6 +35,21 @@ enscribe_attributes:
         positional and the kwarg are omitted, the library-load plugin
         auto-detects the format via citation-js (works reliably for BibTeX and
         CSL-JSON). A named format is passed to citation-js as a forceType.
+    src:
+      maps_to: data-src
+      required: false
+      notes: |
+        External source (#133): a filesystem path, an http(s) URL, or any
+        reachable URL (e.g. a GitHub raw link). The reference data is loaded from
+        there and parsed exactly as inline content (same formats; never injected
+        as markup). With src= the node's own (empty) body is ignored; inline and
+        src libraries are both valid and multiple of either merge. A failed load
+        (unreachable / 404 / CORS-blocked / parse-fail) renders a visible error
+        and never aborts the document (always-renders). Filesystem paths apply on
+        the CLI/build; in the browser a relative path resolves against the
+        document base URL and is fetched (cross-origin URLs are CORS-limited). A
+        URL source needs an async render (the CLI render command / the browser
+        renderAsync); a synchronous render flags it.
 content:
   type: opaque
   becomes: 'parsed entries (registered in citation system)'
@@ -162,8 +177,8 @@ Three paths give bibliography entries to the citation system:
 
 | Path | Use when |
 |------|----------|
-| External file (`<bibliography source="refs.bib" />`) | The bibliography is maintained separately, possibly shared across documents. |
-| `<library>` | A bibliography block exists in some format and the author wants to paste it inline. |
+| `<library src="refs.bib">` | The bibliography is maintained as an external file or at a URL, possibly shared across documents (#133). |
+| `<library>` (inline) | A bibliography block exists in some format and the author wants to paste it inline. |
 | `<bib-entry>` | The author wants to write a structured entry in enscribe form. |
 
 `<library>` is most useful for casual authoring or for incremental additions to an externally-maintained bibliography. The author copies a few entries from Zotero or BibTeX, pastes them inline, and the citations work without needing to maintain a separate file.

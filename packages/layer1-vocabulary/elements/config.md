@@ -40,8 +40,9 @@ enscribe_attributes:
       <config> additionally triggers a "did you mean <meta>?" hint. Kwargs are
       the authoring form for <config>; the structured-children entries in
       `content.shape` below (marked *Future*) are a deferred design sketch, not
-      a current authoring spelling — the `<bibliography source=… />` source
-      declaration is the only child element <config> takes today.
+      a current authoring spelling. <config> takes no child elements today: the
+      retired `<bibliography source=… />` form (#133) is replaced by the body
+      element `<library src>` (see library.md / bibliography.md).
 content:
   type: structured
   shape:
@@ -65,11 +66,6 @@ content:
     - element: theme
       required: false
       notes: 'Future: theme reference.'
-    - element: bibliography
-      required: false
-      notes: |
-        Bibliography source reference (e.g., <bibliography source="refs.bib" />).
-        Configuration about where the bibliography file lives.
 content_handler: default
 jats_counterpart:
   element: 'no direct equivalent'
@@ -187,10 +183,12 @@ For most documents, a single `<config>` block at the back is the cleanest patter
 ```
 <config citation-style=author-year number-sections=true />
 
-<bibliography source="refs.bib" />
+<data>
+<library src="refs.bib" />
+</data>
 ```
 
-Citation style and numbering ride as kwargs on `<config>`; the bibliography source is declared with a self-closing `<bibliography source=… />`.
+Citation style and numbering ride as kwargs on `<config>`; the bibliography's reference data comes from a body `<library src>` block (#133), not from `<config>`.
 
 **Richer config (documents with several settings).**
 

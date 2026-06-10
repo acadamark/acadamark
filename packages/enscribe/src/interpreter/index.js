@@ -984,3 +984,35 @@ export function liftToCanonicalMdast(source) {
     .runSync(outerTree);
   return outerTree;
 }
+
+/**
+ * #133: discover every external `<library src="…">` source string in a document,
+ * deduped, in document order. Used by the async pre-load (browser renderAsync /
+ * the CLI render command) to know what to fetch before the synchronous render.
+ *
+ * Reuses `liftToCanonicalMdast` (parse + recursive-content + normalize) so the
+ * `<library>` nodes inside `<data>` are revealed exactly as the real pipeline
+ * sees them — no separate parser, no regex over the source.
+ *
+ * @param {string} source - enscribe/markdown source text.
+ * @returns {string[]} the unique `src` strings.
+ */
+// #133: re-exported so the CLI render command can run the same load-then-fill
+// pre-load (the browser uses them directly from this module).
+export { preloadSources } from './lib/preload-library-sources.js';
+export { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
+
+export function collectLibrarySources(source) {
+  const tree = liftToCanonicalMdast(source);
+  const srcs = [];
+  (function walk(nodes) {
+    for (const n of nodes ?? []) {
+      if (n?.type === 'enscribeTag' && n.tagname === 'library' && n.kwargs?.src) {
+        srcs.push(n.kwargs.src);
+      }
+      if (n?.type === 'enscribeTag' && Array.isArray(n.content)) walk(n.content);
+      if (Array.isArray(n?.children)) walk(n.children);
+    }
+  })(tree.children ?? []);
+  return [...new Set(srcs)];
+}

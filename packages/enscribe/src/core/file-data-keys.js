@@ -15,5 +15,12 @@ export const ENSCRIBE_REGISTRY           = 'enscribeRegistry';
 // processor (and the strict lint) can read it.
 export const ENSCRIBE_STRICT_MODE        = 'enscribeStrictMode';
 export const ENSCRIBE_CITATIONS          = 'enscribeCitations';
+// #133: pre-fetched <library src> content, keyed by the raw src string:
+//   { [src]: { content: string } | { error: string } }
+// Set by the async pre-load pass (browser renderAsync / the CLI render command)
+// before runSync; buildCitationIndex consumes it for src nodes instead of a sync
+// read/fetch (which the browser cannot do). Absent → buildCitationIndex falls back
+// to readFileSync for filesystem paths (the sync CLI/processSync path, unchanged).
+export const ENSCRIBE_LOADED_SOURCES     = 'enscribeLoadedSources';
 export const ENSCRIBE_NOTES_PENDING      = 'enscribeNotesPending';
 export const ENSCRIBE_NUMBERING_PENDING  = 'enscribeNumberingPending';

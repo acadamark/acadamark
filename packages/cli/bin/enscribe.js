@@ -6,4 +6,13 @@
 // before exiting — important when output is piped.
 import { run } from '../src/cli.js';
 
-process.exitCode = run(process.argv.slice(2));
+// #133: run() returns a Promise only for `render` with URL <library src> sources
+// (which need an async fetch); otherwise it is a synchronous exit code.
+const result = run(process.argv.slice(2));
+if (result && typeof result.then === 'function') {
+  result
+    .then((code) => { process.exitCode = code; })
+    .catch((e) => { process.stderr.write(`enscribe: ${e?.message ?? e}\n`); process.exitCode = 1; });
+} else {
+  process.exitCode = result;
+}

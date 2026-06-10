@@ -287,7 +287,7 @@ Use the explicit form when you need a custom id or numbering style on the `<arti
     Body content.
   </article-body>
   <article-back>
-    <bibliography source="refs.bib" />
+    <bibliography></bibliography>
   </article-back>
 </article>
 ```

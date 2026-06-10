@@ -580,9 +580,15 @@ citation engine and the CSL styles the rest of scholarly publishing uses.
 The `<library>` block holds BibTeX entries and lives inside the `<data>` apparatus
 block at the foot of the document. `<cite @key>` places an in-text citation.
 `<bibliography></bibliography>` marks where the formatted reference list renders
-(end of an article; per the book back matter in a book). An external library is
-written `<library src="refs.bib">` instead of inline content, for when the
-bibliography lives in a separate file.
+(end of an article; per the book back matter in a book) — it has no `source`
+kwarg; *where* the references come from is `<library>`'s job. An **external
+library** is written `<library src="refs.bib">` instead of inline content (#133):
+`src` takes a filesystem path, an http(s) URL, or a reachable URL (a GitHub raw
+link, say). Multiple `<library>` blocks — inline and `src` — merge. A source that
+can't be loaded (unreachable, 404, blocked by CORS in the browser, or unparseable)
+renders a visible error naming it and never breaks the document. In the browser a
+URL source is fetched, so render it with the async `renderAsync` (the synchronous
+`render` handles inline / no-`src` documents).
 
 **Arguments and multiple keys.** One `<cite>` can carry several comma-separated
 keys, which render as a single grouped citation:
