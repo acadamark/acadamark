@@ -84,18 +84,23 @@ argument (the traditional "figure", "table", "listing"):
 |---|---|---|
 | `<fig>` | image (from `src`) or arbitrary captioned content | `<fig>` |
 | `<table>` | tabular data (csv/tsv/json/yaml/md) | `<table-wrap>` |
-| `<code>` / `<code-block>` | code source | `<code>` |
+| `<code>` / `<code-block>` (future member — see note below) | code source | `<monospace>` (inline) / `<preformat><code>` (block) |
 | `<svg>` | inline SVG | `<graphic>` |
 | `<mermaid>`, `<abc>`, and other DSL-registry block elements | DSL source | `<fig>` / `<graphic>` |
 | `<csv>`, `<tsv>` (standalone) | delimited data → table | `<table-wrap>` |
 
-**`<code>` / `<code-block>` is the not-numbered exception.** It carries the
-frameable surface (title, caption, border) but is **not numbered today** — no
-"Listing N." label and no cross-reference number. The code handler registers it
-`numbered: false`, so `<ref @code:...>` resolves by label, not to a number.
-Numbered code listings are future work; the per-member defaults and counter
-notes below reflect this, and `interpreter.md` §3.7 records the exact change that
-would turn them on.
+**`<code>` / `<code-block>` is a future frameable member, not a built one.**
+Today it renders as a plain code element — `<code>` (inline) or `<pre><code>`
+(block), carrying only `id`, language, and classes — via `codeHandler` /
+`codeBlockHandler`, which do **not** call `renderFrameable` and accept no
+`title` / `caption` / `border`. The full frameable surface for code (a title, a
+caption, a border) *and* its numbered "Listing N." (a `listing` counter,
+cross-referenceable) are **future work** — the runnable-/numbered-listing design
+that also resolves #158's numbering question. The code handler registers code
+`numbered: false`, so `<ref @code:...>` resolves by label, not a number;
+`interpreter.md` §3.7 records the exact change that would turn numbering on. Code
+is listed here because it is the frameable family's natural next member, not
+because the surface ships today.
 
 **Boxed prose** — set-apart block content that is *not* a numbered float
 by nature (the "callout", "sidebar", "methodology box"):
@@ -122,7 +127,7 @@ overridable.
 |---|---|---|---|
 | Content float | `<fig>`, `<svg>`, `<mermaid>`, `<abc>`, DSL blocks | **off** | **on** |
 | Content float | `<table>`, `<csv>`, `<tsv>` | off | on |
-| Content float (caption/border only) | `<code>` / `<code-block>` | off | — *(not numbered today; numbered listings are future work)* |
+| Future member (surface unbuilt) | `<code>` / `<code-block>` | — | — *(no frameable surface or numbering today; both are future work)* |
 | Boxed prose | `<frame>`, `<aside>` | **on** | **off** |
 
 The rule: a **float** is, by convention, an unboxed numbered object — a
@@ -141,7 +146,8 @@ Numbered frameables share the **`figure`** counter by default
 number code alongside figures and tables is anticipated but unbuilt.
 `interpreter.md` §3.7 records the exact change that would turn it on (add `code`
 to `NUMBERED_TAGNAMES`, flip `numbered: false`, add a config key). Until then,
-`<code>` is a caption / title / border frameable only.
+`<code>` renders as a plain code element with **no** frameable surface — the
+title / caption / border surface is future work too, not only the number.
 
 ## What is not frameable (and the escape hatch)
 
@@ -205,7 +211,7 @@ visual outcome, but making no claim that the content is tangential.
 |---|---|
 | `<fig>` | `<fig>` (with `<graphic>` when `src` is present) |
 | `<table>` / `<csv>` / `<tsv>` | `<table-wrap>` |
-| `<code>` / `<code-block>` | `<code>` |
+| `<code>` / `<code-block>` | `<monospace>` (inline) / `<preformat><code>` (block) |
 | `<svg>`, `<mermaid>`, `<abc>` | `<fig>` / `<graphic>` |
 | `<aside type=X>` | `<boxed-text content-type="X">` (default `content-type="aside"`) |
 | `<frame>` | `<boxed-text>` (numbered `<frame>` wraps in `<fig>` at export) |
@@ -257,8 +263,10 @@ figure counter):
 
 ## Rendering and the build
 
-All frameable members render through the shared `renderFrameable` helper with the
-surface, caption-and-title-as-content, and per-member defaults above. `<aside>` is
+All *built* frameable members render through the shared `renderFrameable` helper
+with the surface, caption-and-title-as-content, and per-member defaults above —
+`<code>` / `<code-block>` excepted, since their frameable surface is future (per
+the members note above); today they render as plain code elements. `<aside>` is
 a built frameable member: it carries `title` / `caption` / `border` (default on) /
 `numbered` (default off, the `box` series) alongside its `type` taxonomy and
 `<boxed-text>` export. Callouts/admonitions are `<aside type=…>` (no separate
