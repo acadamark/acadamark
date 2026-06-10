@@ -40,6 +40,7 @@ import { run as runSidenotes } from './lib/sidenotes.test.js';
 import { run as runArticleAppendices } from './article-appendices.test.js';
 import { run as runBookPartType } from './book-part-type.test.js';
 import { run as runLongFormAtref } from './long-form-atref.test.js';
+import { run as runIdentifierAt } from './identifier-at.test.js';
 import { run as runMarginnote } from './marginnote.test.js';
 import { run as runLibrarySrc } from './library-src.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
@@ -97,6 +98,7 @@ const suites = [
   ['article-appendices',           runArticleAppendices],
   ['book-part-type',               runBookPartType],
   ['long-form-atref',              runLongFormAtref],
+  ['identifier-at',                runIdentifierAt],
   ['marginnote',                   runMarginnote],
   ['library-src',                  runLibrarySrc],
   ['strict-mode',                  runStrictMode],

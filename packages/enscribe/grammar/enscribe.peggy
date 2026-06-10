@@ -500,7 +500,9 @@ QuotedStringValue
 //
 // Two-rule split mirrors the spec EBNF exactly.
 // IdentifierStart excludes structural delimiters AND syntactic prefixes
-//   (+, -, #, ., =) so those characters cannot begin an identifier.
+//   (+, -, #, ., =, @) so those characters cannot begin an identifier. `@` is
+//   the atref prefix (handled by the AtRef rule); excluding it here keeps a bare
+//   `@key` an atref and stops `@` leaking into an id (`#@x`) or value (`k=@x`).
 // IdentifierCont excludes structural delimiters but NOT `=`, which allows
 //   URLs with query strings (e.g. "https://example.com?q=value") to appear
 //   as bare positionals or keyword values without quoting. Keyword parsing is
@@ -510,7 +512,7 @@ QuotedStringValue
 Identifier = $(IdentifierStart IdentifierCont*)
 
 IdentifierStart
-  = [^ \t\n<>|+\-#.="'\[\],]
+  = [^ \t\n<>|+\-#.="'\[\],@]
 
 IdentifierCont
   = [^ \t\n<>|"'\[\],]
