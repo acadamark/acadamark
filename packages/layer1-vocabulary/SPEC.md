@@ -54,6 +54,20 @@ expecting authored examples (again, the coverage gallery) to treat a
 missing example as expected for these entries rather than as a coverage
 hole. Its absence means the element is authored directly.
 
+A stricter sibling, `authoring: output-only`, marks an element that is
+generated output an author *never* writes in any form — there is no authoring
+construct that corresponds to it; it is assembled from *other* authored
+elements. `<note-list>` is the case (#129): the author writes `<note>` (which
+carries its own gallery cell), and the `enscribeNotePlacement` plugin collects
+those notes into a `<note-list>`. Unlike `generated` — which the coverage
+gallery still *shows*, with a "generated" note, because an authoring construct
+produces it — an `output-only` element is **excluded from the gallery entirely**.
+The gallery is the authoring catalog ("every construct an author writes, and only
+those"), and a non-authored element is not an entry in it. The element still
+exists in rendered output and is documented here (its JATS mapping, render-mode
+lowering); it simply has no authoring surface, so it carries no
+`shorthand_examples`.
+
 A related marker, `requires-context: <book | bibliography>`, flags an element
 whose authored examples are **context-dependent** — they render correctly only
 inside a larger document: a `<book>` for the book-part shorthands

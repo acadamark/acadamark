@@ -185,6 +185,13 @@ export function buildGallery({ render }) {
   for (const spec of Object.values(VOCABULARY)) {
     if (seen.has(spec)) continue;
     seen.add(spec);
+    // #129: `authoring: output-only` elements are generated output an author never
+    // writes (e.g. <note-list>, which notes auto-collect into). The gallery is the
+    // authoring catalog — "every construct an author writes, and only those" — so
+    // they are excluded entirely. This is stronger than `authoring: generated`,
+    // which is still shown (with a "generated" note) because an authoring construct
+    // produces it.
+    if (spec.authoring === 'output-only') continue;
     const cat = spec.category || UNCATEGORIZED;
     if (!byCategory.has(cat)) byCategory.set(cat, []);
     byCategory.get(cat).push(spec);
@@ -235,7 +242,7 @@ export function buildGallery({ render }) {
   }
 
   const intro =
-    '  <h1>Vocabulary coverage gallery</h1>\n' +
+    '  <h1>Authoring coverage gallery</h1>\n' +
     '  <p class="gallery-intro">Every authoring construct a user can write, as a look-it-up ' +
     'reference: each Layer 1 element generated from the ' +
     '<a href="https://github.com/enscribejs/enscribe/tree/main/packages/layer1-vocabulary/elements">' +

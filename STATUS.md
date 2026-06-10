@@ -122,7 +122,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 **v0.3.0 is released** — enscribe renders rich documents (now with markup inside
 table cells, section numbering, frame-border styles, smart typography, callouts,
-the vocabulary coverage gallery, DSL source-view, and ToC scroll-spy), converts
+the authoring coverage gallery, DSL source-view, and ToC scroll-spy), converts
 to and from JATS, ships a client-side browser library and the `enscribe` CLI, and
 is published to npm as three scoped packages. The live milestone is **v0.3.5**:
 the consolidation pass that resolves the v0.3.0-close release-audit findings and
