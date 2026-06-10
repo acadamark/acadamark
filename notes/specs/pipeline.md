@@ -54,13 +54,14 @@ source text
     ▼  Stage 1: Source → mdast
     │  remarkParse + remarkEnscribe
     │
-    ▼  Stage 2: Recursive content parsing
-    │  remarkRecursiveContent
+    ▼  Stage 2: Strict-mode resolution, then recursive content parsing
+    │  resolveStrictMode (#36) → remarkRecursiveContent
     │
     ▼  Stage 3: mdast transforms
     │  normalize to canonical → config discovery →
-    │  book structure → article structure →
-    │  section nesting → citation index → notes → numbering →
+    │  book structure → article structure → section nesting →
+    │  list structuring → citation index → table-cell parse →
+    │  html-table cells → notes → numbering →
     │  apply numbers → ref resolution → cite resolution →
     │  note placement → bibliography
     │
@@ -216,12 +217,17 @@ including the mixed-content (escape-errors) path.
 ## 4. Stage 3: mdast transforms
 
 A sequence of mdast-transform plugins runs in order: the normalization pass,
-then configuration discovery, then the structural plugins (article structuring
-and section nesting), then the semantic plugins (citation index, notes,
-numbering, apply-numbers, ref-resolution, cite-resolution, note-placement,
-bibliography). Each is registered on the unified processor in this order and
-runs as a unified transform during the `processor.run()` step. The per-plugin
-detail follows in §4.0–§4.10.
+then configuration discovery, then the structural plugins (book structuring,
+article structuring, section nesting, and list structuring), then the semantic
+plugins (citation index, the opt-in table-cell passes — table-cell-parse and
+html-table-cells, notes, numbering, apply-numbers, ref-resolution,
+cite-resolution, note-placement, bibliography). (Strict-mode resolution runs
+earlier still, before recursive-content — see §0/Stage 2.) Each is registered on
+the unified processor in this order and runs as a unified transform during the
+`processor.run()` step. The per-plugin detail follows in §4.0–§4.10 for the
+plugins that have a subsection; book-structuring is in §4.2.5, list-structuring
+reuses the `lists.md` model, and the table-cell passes (#21/#105, #108) are not
+yet broken out into their own subsections.
 
 ### Phase 0 — Normalization
 
@@ -704,12 +710,17 @@ to have run before it.
 
 | Plugin | Must run after | Produces |
 |--------|---------------|---------|
+| `resolveStrictMode` | `remarkEnscribe` (needs the source) | `file.data.enscribeStrictMode`; off the loosest rung, re-parses via the sigil / canonical processors (#36) |
 | `remarkRecursiveContent` | `remarkEnscribe` (string content set) | `node.content` as `Node[]` |
 | `enscribeNormalizeToCanonical` | `remarkRecursiveContent` (both outer and inner parses complete) | every authored form coerced to canonical Layer 1 nodes — delegated-parser nodes, sigils, shorthands (book-part + DSL), and kwarg lifts |
 | `enscribeConfigDiscovery` | `enscribeNormalizeToCanonical` | `file.data.enscribeConfig` |
+| `enscribeBookStructuring` | `enscribeConfigDiscovery` | book structure (`<book>` front/body/back) for `<meta type=book\|book-part>`; no-op otherwise; runs before article-structuring |
 | `enscribeArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `enscribeSectionNesting` | `enscribeArticleStructuring` | nested section tree |
+| `enscribeListStructuring` | `enscribeSectionNesting` | `<list>` / `<li>` markers lowered to `ul` / `ol` / `li` (#137) |
 | `buildCitationIndex` | `enscribeConfigDiscovery` | `file.data.enscribeCitations` |
+| `enscribeTableCellParse` | `buildCitationIndex` | DATA-format table cells parsed as inline markup when opted in (#21/#105); before notes/numbering/refs |
+| `enscribeHtmlTableCells` | `enscribeTableCellParse` | inline content re-resolved in raw-HTML (`_htmlTable`) cells from a JATS import (#108) |
 | `enscribeNotes` | `remarkRecursiveContent`, `enscribeSectionNesting` | `file.data.enscribeNotesPending`; registry note slots |
 | `enscribeNumbering` | `enscribeNotes` | `file.data.enscribeNumberingPending`; `node.registryType` |
 | `enscribeApplyNumbers` | `enscribeNotes`, `enscribeNumbering` | `node.computedNumber`; label index entries |
@@ -978,8 +989,10 @@ set during a pipeline run:
 | field | type | set by | read by |
 |-------|------|--------|----------|
 | `file.data.enscribeConfig` | `Map<string, string>` | `enscribeConfigDiscovery` | `buildCitationIndex`, `enscribeNumbering`, `enscribeRefResolution` |
+| `file.data.enscribeStrictMode` | `'off' \| 'sigil' \| 'canonical'` | `resolveStrictMode` (#36) | `remarkRecursiveContent`, the compiler (`index.js`) |
 | `file.data.enscribeRegistry` | registry object | first `ensureRegistry(file)` call | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution` |
 | `file.data.enscribeCitations` | `{ cite, order, style }` | `buildCitationIndex` | `enscribeCiteResolution`, `enscribeBibliography` |
+| `file.data.enscribeLoadedSources` | `Map<string, string>` | the caller (browser / CLI) via `processSync` data (#133) | `buildCitationIndex` |
 | `file.data.enscribeNotesPending` | array of `{ node, entry }` | `enscribeNotes` | `enscribeNotePlacement` |
 | `file.data.enscribeNumberingPending` | array of `{ node, entry }` | `enscribeNumbering` | `enscribeApplyNumbers` |
 
@@ -1060,6 +1073,7 @@ and cannot be authored directly.
 | `enscribeCiteResolution` | `__cite-marker` | `<cite class="cite">` |
 | `enscribeCiteResolution` | `__cite-error` | `<cite class="cite-error">` |
 | `enscribeBibliography` | `__bibliography` | `<bibliography>` |
+| `buildCitationIndex` | `__library-error` | `<div class="enscribe-library-error" role="alert">` (#133 — a `<library src>` that could not load) |
 
 The `data` and `library` tagnames (author-written) render as `null` (suppressed):
 their content has been consumed by `buildCitationIndex`. As real vocabulary tags

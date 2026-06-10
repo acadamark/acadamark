@@ -80,14 +80,25 @@ The plugin registration order in `enscribeInterpreter` is:
 ```
 0a. remarkMath                  (parser extension on outer processor)
 0b. remarkGfm                   (parser extension on outer processor)
+0c. resolveStrictMode           (#36 — selects the strict-mode register and, off
+                                 the loosest rung, re-parses via the sigil /
+                                 canonical processors; see notes/specs/strict-mode.md)
     inner processor: remarkParse + remarkEnscribe + remarkMath + remarkGfm
 1.   remarkRecursiveContent     (Phase 2 — content parsing; takes inner processor)
 1.5. enscribeNormalizeToCanonical (Phase 0 — normalize delegated-parser nodes
                                  to canonical enscribeTag nodes)
 2.  enscribeConfigDiscovery    (Phase 1 — discovery)
+2.5. enscribeBookStructuring    (Phase 2 — structural; runs before article-structuring
+                                 and wraps <meta type=book|book-part> documents; §3.3.5)
 3.  enscribeArticleStructuring (Phase 2 — structural)
 4.  enscribeSectionNesting     (Phase 2 — structural)
+4.5. enscribeListStructuring    (Phase 2 — structural; #137 — lowers <list>/<li> markers
+                                 to ul/ol/li; see notes/specs/lists.md)
 5.  buildCitationIndex          (Phase 3 — citation index-build; called via anonymous plugin)
+5.5. enscribeTableCellParse     (Phase 3 — #21/#105 — opt-in parse of DATA-format table
+                                 cells as inline markup; before notes/numbering/refs)
+5.6. enscribeHtmlTableCells     (Phase 3 — #108 — re-resolves inline content in raw-HTML
+                                 (_htmlTable) cells produced by a JATS import)
 6.  enscribeNotes              (Phase 3 — notes; register-only)
 7.  enscribeNumbering          (Phase 3 — numbering; register-only)
 8.  enscribeApplyNumbers       (Phase 3 — apply display numbers; anonymous plugin)
@@ -110,12 +121,20 @@ then runs on a tree whose math and pipe-table nodes are already canonical
 
 `remarkMath` and `remarkGfm` (steps 0a / 0b) are parser-level extensions,
 not mdast transforms, and they affect tokenization during the parse pass;
-they're listed here so the wiring is visible in one place. The step-1.5
-numbering for `enscribeNormalizeToCanonical` matches the inline `1.5.` comment
-in the source ([src/index.js](../../packages/enscribe/src/interpreter/index.js))
-and keeps the existing step-2 through step-12 references in this document
-unchanged. All other Phase 0/1/2/3 plugins retain their original step
-numbers as cited throughout §3 below.
+they're listed here so the wiring is visible in one place. The **fractional
+step numbers** — `1.5` (`enscribeNormalizeToCanonical`), and likewise `0c`
+(`resolveStrictMode`), `2.5` (`enscribeBookStructuring`), `4.5`
+(`enscribeListStructuring`), `5.5` (`enscribeTableCellParse`), and `5.6`
+(`enscribeHtmlTableCells`) — mark plugins inserted *between* the
+originally-numbered steps, so the existing integer step-2 through step-12
+references throughout §3 stay unchanged. `enscribeNormalizeToCanonical`'s `1.5`
+matches the inline `1.5.` comment in the source
+([src/index.js](../../packages/enscribe/src/interpreter/index.js)). Of the
+inserted plugins, book-structuring has its own detail in §3.3.5, list-structuring
+in `notes/specs/lists.md`, and strict-mode in `notes/specs/strict-mode.md`;
+`enscribeTableCellParse` / `enscribeHtmlTableCells` are the opt-in DATA-table and
+raw-HTML-table cell passes (#21/#105, #108) and are not yet broken out into their
+own §3 subsections.
 
 ### Tree-walking is centralized in shared single-pass walkers (design property)
 
@@ -1066,6 +1085,7 @@ before the vocabulary lookup.
 | `__cite-marker` | `citeMarkerHandler` | `<cite class="cite" data-keys="...">FORMATTED HTML</cite>` |
 | `__cite-error` | `citeErrorHandler` | `<cite class="cite-error" data-keys="...">??cite: KEY??</cite>` |
 | `__bibliography` | `bibliographyHandler` | `<bibliography>HEADING + BIB HTML</bibliography>` |
+| `__library-error` | `libraryErrorHandler` | `<div class="enscribe-library-error" role="alert">...</div>` (#133 — a `<library src>` that could not load; created by `library-load.js`) |
 
 **SUPPRESSED_APPARATUS.** Separately, `<data>` and `<library>` are **real
 vocabulary tags** (they have `data.md` / `library.md` entries) whose rendered body
@@ -1093,6 +1113,7 @@ functions. Elements with `interpreter_strategy: handler` go through this path.
 | `./handlers/svg.js` | `svgHandler` | `svg` |
 | `./handlers/frame.js` | `frameHandler` | `frame` |
 | `./handlers/theorem.js` | `theoremFamilyHandler` | `theorem`, `lemma`, `corollary`, `proposition`, `definition`, `example`, `remark`, `proof` |
+| `./handlers/aside.js` | `asideHandler` | `aside` (frameable boxed-prose member; #31) |
 
 The retired `<mermaid>` / `<abc>` tags have no handler entries of their own:
 the gate expands them to `<diagram mermaid>` / `<diagram abc>`, and
@@ -1445,8 +1466,10 @@ Plugins communicate via `file.data`. Fields set during a pipeline run:
 | field | set by | read by |
 |-------|--------|---------|
 | `file.data.enscribeConfig` | `enscribeConfigDiscovery` | `buildCitationIndex`, `enscribeNumbering`, `enscribeRefResolution` |
+| `file.data.enscribeStrictMode` | `resolveStrictMode` (#36) | `remarkRecursiveContent`, the compiler (`index.js`) |
 | `file.data.enscribeRegistry` | first `ensureRegistry(file)` call | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution` |
 | `file.data.enscribeCitations` | `buildCitationIndex` | `enscribeCiteResolution`, `enscribeBibliography` |
+| `file.data.enscribeLoadedSources` | the caller (browser / CLI) via `processSync` data (#133 — pre-loaded `<library src>` content) | `buildCitationIndex` |
 | `file.data.enscribeNotesPending` | `enscribeNotes` | `enscribeNotePlacement` |
 | `file.data.enscribeNumberingPending` | `enscribeNumbering` | `enscribeApplyNumbers` |
 
@@ -1579,6 +1602,7 @@ not yet render visibly.
 | Unresolved `<ref>` | `<a class="ref-error" href="#id">??ref: id??</a>` |
 | Missing citation key | `<cite class="cite-error" data-keys="k">??cite: k??</cite>` |
 | Table parse failure | `<table class="table-parse-error">??table-error: msg??</table>` |
+| `<library src>` load failure (#133) | `<div class="enscribe-library-error" role="alert">⚠ could not load library source "src": msg</div>` |
 
 An unknown / non-vocabulary tag is **not** in this table: it is no longer an
 error marker. It renders as the literal source text the author typed, with
@@ -1718,9 +1742,13 @@ packages/enscribe/src/interpreter/
   plugins/
     normalize-to-canonical.js   enscribeNormalizeToCanonical (step 1.5; alias enscribeNormalizeMarkdown)
     config-discovery.js         enscribeConfigDiscovery
+    book-structuring.js         enscribeBookStructuring (books; runs before article-structuring)
     article-structuring.js      enscribeArticleStructuring
     section-nesting.js          enscribeSectionNesting
+    list-structuring.js         enscribeListStructuring (#137; lowers <list>/<li> to ul/ol/li)
     library-load.js             buildCitationIndex; enscribeLibraryLoad (wrapper for external callers)
+    table-cell-parse.js         enscribeTableCellParse (#21/#105; opt-in DATA-cell inline parse)
+    html-table-cells.js         enscribeHtmlTableCells (#108; raw-HTML table cell re-resolution)
     notes.js                    enscribeNotes (register-only)
     note-placement.js           enscribeNotePlacement
     numbering.js                enscribeNumbering
@@ -1738,15 +1766,17 @@ packages/enscribe/src/interpreter/
     code-block.js               codeBlockHandler
     inline-code.js              inlineCodeHandler
     theorem.js                  theoremFamilyHandler (theorem/lemma/…/proof)
+    aside.js                    asideHandler (frameable boxed-prose member; #31)
     notes.js                    noteMarkerHandler, noteListHandler, noteListItemHandler
     ref.js                      refMarkerHandler, refErrorHandler
-    cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler
+    cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler
   lib/
     registry.js                 createRegistry(); ensureRegistry()
     host-accept-sets.js         HOST_ACCEPT_SETS; hostAcceptsLanguage(host, lang) — consulted by the gate as format-word validation (#85)
     shorthand-expansions.js     createShorthandRegistry() — the gate's shared expansion map
     ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
     bool-kwarg.js               readBoolKwarg()
+    strict-mode.js              resolveStrictMode (step 0c, #36); detectStrictMode, disableMarkdownIdioms, flagStrictText
     discover.js                 discover() — shared read-only pre-order DFS walker
     walk-replace.js             walkReplace() — shared in-place node replacement walker
     walk-normalize.js           walkNormalize() — pre-order DFS used by the gate
