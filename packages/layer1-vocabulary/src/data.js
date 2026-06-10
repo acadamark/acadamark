@@ -1987,42 +1987,8 @@ const _config = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
-      "notes": "The `structured` type and the child-element `shape` below predate the\nconfig-as-data ruling (#134), which settles that <config>'s structured\nform is a fenced DATA BLOCK (a bounded data-language island, future and\nunbuilt) — NOT the child-tag tree this `shape` sketches. The shape\nentries are retained only as a sketch of which settings such a block\nmight carry; <config> takes no child elements today. Whether to remodel\nthis entry (drop `shape`, change `type`) is a vocab-schema decision left\nopen. See DESIGN.md \"Configuration and metadata are data\".\n",
-      "shape": [
-        {
-          "element": "output-format",
-          "required": false,
-          "multiple": true,
-          "notes": "Future: target output formats (html, pdf, jats, presentation, etc.).",
-        },
-        {
-          "element": "citation-style",
-          "required": false,
-          "notes": "Future: citation rendering style (numbered, author-year, footnote, etc.).",
-        },
-        {
-          "element": "numbering-style",
-          "required": false,
-          "notes": "Future: numbering style for figures, equations, sections.",
-        },
-        {
-          "element": "note-position",
-          "required": false,
-          "notes": "Live (#33): document-level note render mode — bottom (default) / margin. (Where notes collect is the per-note placement kwarg + note-scope, not this setting.)",
-        },
-        {
-          "element": "stylesheet",
-          "required": false,
-          "multiple": true,
-          "notes": "Future: stylesheet references for rendering.",
-        },
-        {
-          "element": "theme",
-          "required": false,
-          "notes": "Future: theme reference.",
-        },
-      ],
+      "type": "none",
+      "notes": "<config> takes no child-element content. Its authoring form is kwargs\n(the flat config register documented in the kwargs block above), and it\nrenders as an empty <config></config>. Structured config is settled (#134)\nto be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX — NOT a tree of child tags; that structured register is future and\nunbuilt. An earlier `type: structured` plus a child-element `shape` list\n(output-format, citation-style, numbering-style, note-position, stylesheet,\ntheme) modeled the rejected child-tag form and was removed in #167. See\nDESIGN.md \"Configuration and metadata are data\". (The `category:` field is\nleft unchanged here pending the taxonomy discussion in #166.)\n",
     },
     "content_handler": "default",
     "jats_counterpart": {

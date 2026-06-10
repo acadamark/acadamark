@@ -50,37 +50,19 @@ enscribe_attributes:
       is replaced by the body element `<library src>` (see library.md /
       bibliography.md). See DESIGN.md "Configuration and metadata are data".
 content:
-  type: structured
+  type: none
   notes: |
-    The `structured` type and the child-element `shape` below predate the
-    config-as-data ruling (#134), which settles that <config>'s structured
-    form is a fenced DATA BLOCK (a bounded data-language island, future and
-    unbuilt) — NOT the child-tag tree this `shape` sketches. The shape
-    entries are retained only as a sketch of which settings such a block
-    might carry; <config> takes no child elements today. Whether to remodel
-    this entry (drop `shape`, change `type`) is a vocab-schema decision left
-    open. See DESIGN.md "Configuration and metadata are data".
-  shape:
-    - element: output-format
-      required: false
-      multiple: true
-      notes: 'Future: target output formats (html, pdf, jats, presentation, etc.).'
-    - element: citation-style
-      required: false
-      notes: 'Future: citation rendering style (numbered, author-year, footnote, etc.).'
-    - element: numbering-style
-      required: false
-      notes: 'Future: numbering style for figures, equations, sections.'
-    - element: note-position
-      required: false
-      notes: 'Live (#33): document-level note render mode — bottom (default) / margin. (Where notes collect is the per-note placement kwarg + note-scope, not this setting.)'
-    - element: stylesheet
-      required: false
-      multiple: true
-      notes: 'Future: stylesheet references for rendering.'
-    - element: theme
-      required: false
-      notes: 'Future: theme reference.'
+    <config> takes no child-element content. Its authoring form is kwargs
+    (the flat config register documented in the kwargs block above), and it
+    renders as an empty <config></config>. Structured config is settled (#134)
+    to be authored as a fenced DATA BLOCK inside <config> — a bounded
+    data-language island (e.g. YAML), the same pattern <library> uses for
+    BibTeX — NOT a tree of child tags; that structured register is future and
+    unbuilt. An earlier `type: structured` plus a child-element `shape` list
+    (output-format, citation-style, numbering-style, note-position, stylesheet,
+    theme) modeled the rejected child-tag form and was removed in #167. See
+    DESIGN.md "Configuration and metadata are data". (The `category:` field is
+    left unchanged here pending the taxonomy discussion in #166.)
 content_handler: default
 jats_counterpart:
   element: 'no direct equivalent'
