@@ -99,7 +99,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Home (what enscribe is)
 - [x] Design article (architecture and rationale)
 - [x] Quickstart guide (interactive in-browser playground)
-- [x] Authoring Guide (fourteen chapters, with rendered demonstrations)
+- [x] Authoring Guide (with rendered demonstrations)
 - [x] Layer 1 Vocabulary Reference (MDN-style, element by element)
 - [x] Authoring coverage gallery (the completeness surface — every construct a user can write: each vocab element generated from its entries, plus a curated non-vocabulary supplement for Layer-2 constructs with no vocab entry, e.g. `<list>`; source beside rendered output, with loud GAP markers) (#143)
 - [x] JATS-relationship article
@@ -129,7 +129,10 @@ and from JATS — now framed as an export translation from an HTML-shaped Layer 
 groups tracked under [#147](https://github.com/enscribejs/enscribe/issues/147)) —
 ships a client-side browser library and the `enscribe` CLI, and is published to
 npm as three scoped packages. (v0.3.5, the v0.3.0-close consolidation pass,
-shipped between.) The next milestone is **v0.4.5** (code highlighting, bundle
-size, conda-forge, new sigils). Open work is tracked in
+shipped between.) **v0.4.5** — the v0.4.0-close consolidation pass — is closing,
+draining the audit findings (#148–#183); per the cadence it ships no new
+features. **v0.5.0 is next**, starting from that coherent baseline with the
+HTML-shaped element-group migration (#147) and the deferred feature work
+(code syntax highlighting #17, …). Open work is tracked in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues) by milestone and
 label; the release plan and targets live in `ROADMAP.md`.

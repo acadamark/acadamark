@@ -51,12 +51,20 @@ features.
   renders as custom Layer 1 elements and migrates group-by-group under
   [#147](https://github.com/enscribejs/enscribe/issues/147). A full docs-site
   pass (feature pages, governance tier) shipped alongside.
-- **v0.4.5.** Code syntax highlighting, browser-bundle size optimization,
-  conda-forge packaging, and new sigil shorthands (carried from the v0.4.0 plan).
-- **future.** Longer-horizon work — the remaining HTML-shaped Layer 1
+- **v0.4.5 — consolidation pass (closing).** Per the cadence, a `.x.5` ships no
+  new features — it resolves the `.x.0`-close release-audit findings. v0.4.5
+  drained the v0.4.0-close audit set (#148–#155) plus a second coherence-debt
+  wave surfaced by a v0.4.5-close health-check (#156–#183), so v0.5.0 begins from
+  a coherent baseline. The four items once slated here — code syntax
+  highlighting, browser-bundle size optimization, conda-forge packaging, and new
+  sigil shorthands — are *features*, so they moved out to v0.5.0 / future
+  (e.g. #17, #25, #27).
+- **v0.5.0.** The next feature release: the remaining HTML-shaped Layer 1
   element-group migration ([#147](https://github.com/enscribejs/enscribe/issues/147):
-  sections, figures, the semantic-only elements), render-mode lowering to plain
-  HTML, multi-column display, the master-document / multi-file system
+  sections, figures, the semantic-only elements), code syntax highlighting (#17),
+  and other authoring / display features as their issues are scheduled.
+- **future.** Longer-horizon work — render-mode lowering to plain HTML,
+  multi-column display, the master-document / multi-file system
   (`master-document.md`), and other parser / display features as their design
   questions resolve.
 
@@ -72,9 +80,11 @@ first migrated element group; the remaining migration is tracked under
 translation) — with a full docs-site pass, shipped on top of the v0.2.x / v0.3.x
 base (rich-document rendering, bidirectional JATS, the browser library and
 `enscribe` CLI, three packages on npm: `@enscribejs/enscribe`, `@enscribejs/cli`,
-`@enscribejs/layer1-vocabulary`). **v0.4.5 is next** — code syntax highlighting,
-browser-bundle size optimization, conda-forge packaging, and new sigil shorthands;
-the longest-horizon work (render-mode lowering, the master-document / multi-file
-system) sits under `future`. Every release's items live in
+`@enscribejs/layer1-vocabulary`). **v0.4.5 — the consolidation pass — is
+closing**, draining the v0.4.0-close audit and a second coherence-debt wave
+(#148–#183) so **v0.5.0 starts from a coherent baseline**. **v0.5.0 is next** —
+the HTML-shaped Layer 1 element-group migration (#147), code syntax highlighting,
+and other features; the longest-horizon work (render-mode lowering, the
+master-document / multi-file system) sits under `future`. Every release's items live in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues), grouped by
 milestone and label.
