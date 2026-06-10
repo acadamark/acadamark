@@ -187,7 +187,7 @@ parsed table data, DSL diagram source, or inline SVG.
 | `<author>` | — | · | ✓ | Same shape as `<meta>` — kwarg form lifts to child tags at the gate. |
 | `<config>` | — | ✓ | ✓ | Slash form for pure-kwarg invocations (`<config citation-style="apa" />`). Long form when authoring structured options. |
 | `<data>` | — | — | ✓ | Container for `<library>` and similar resource-list children. |
-| `<library>` | — | ✓ | — | Always invoked as `<library src="refs.bib" />`; slash form only. Opaque content not used (the src kwarg references the file). |
+| `<library>` | ✓ | ✓ | — | Two forms. The **inline body** form `<library bibtex | …entries… >` is the canonical format-word form — the leading format word names the payload language and the BibTeX / CSL-JSON sits in the (opaque) body, which the interpreter reads as the citation payload. The **slash** form `<library src="refs.bib" />` instead loads an external file via `src`. |
 
 ### Metadata sub-elements
 
