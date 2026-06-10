@@ -27,8 +27,8 @@ and `@enscribejs/enscribe/parser`:
 ```js
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkEnscribe from '@enscribejs/remark';
-import { enscribeInterpreter } from '@enscribejs/interpreter';
+import remarkEnscribe from '@enscribejs/enscribe/parser';
+import { enscribeInterpreter } from '@enscribejs/enscribe';
 
 const result = await unified()
   .use(remarkParse)
