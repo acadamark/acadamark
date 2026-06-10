@@ -38,6 +38,7 @@ import { run as runToc } from './lib/toc.test.js';
 import { run as runTheme } from './lib/theme.test.js';
 import { run as runSidenotes } from './lib/sidenotes.test.js';
 import { run as runArticleAppendices } from './article-appendices.test.js';
+import { run as runBookPartType } from './book-part-type.test.js';
 import { run as runMarginnote } from './marginnote.test.js';
 import { run as runLibrarySrc } from './library-src.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
@@ -93,6 +94,7 @@ const suites = [
   ['lib/theme',                    runTheme],
   ['lib/sidenotes',                runSidenotes],
   ['article-appendices',           runArticleAppendices],
+  ['book-part-type',               runBookPartType],
   ['marginnote',                   runMarginnote],
   ['library-src',                  runLibrarySrc],
   ['strict-mode',                  runStrictMode],

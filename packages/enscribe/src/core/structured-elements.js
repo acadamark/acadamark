@@ -96,6 +96,9 @@ export const STRUCTURED_ELEMENTS = new Map([
         // routing (article / book / book-part) in article-structuring, not
         // descriptive document content.
         'type',
+        // `book-part-type` likewise routes structure (the single-file
+        // `<meta type=book-part>` case, #176); allowlisted, not lifted.
+        'book-part-type',
       ]),
       liftedKwargs: new Set([
         'title', 'subtitle', 'author', 'date',

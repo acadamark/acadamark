@@ -47,6 +47,14 @@ const BOOK_PART_FRONT_TYPES = new Set(['preface', 'foreword', 'dedication']);
 const BOOK_PART_BACK_TYPES  = new Set(['appendix', 'glossary', 'colophon']);
 // chapter, part, introduction, conclusion, other → book-body (default)
 
+// The full BITS book-part-type set (book-front ∪ book-body ∪ book-back), used to
+// validate an author-supplied `<meta type=book-part book-part-type=…>` (#176).
+const BOOK_PART_TYPES = new Set([
+  'chapter', 'part', 'introduction', 'conclusion', 'other', // → book-body
+  'preface', 'foreword', 'dedication',                      // → book-front
+  'appendix', 'glossary', 'colophon',                       // → book-back
+]);
+
 // Back-matter tags inside a book (besides appendix/glossary book-parts).
 // Same as articles: bibliography, note-list, config.
 const BOOK_BACK_TAGS = new Set(['config', 'bibliography', 'note-list']);
@@ -266,7 +274,7 @@ export function restructureBookPart(bookPartNode) {
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
 export function enscribeBookStructuring() {
-  return (tree, _file) => {
+  return (tree, file) => {
     const children = tree.children ?? [];
 
     // Document type detection.
@@ -280,8 +288,21 @@ export function enscribeBookStructuring() {
     // will assemble these in Phase 9). Wrap the content in <book-part>
     // and skip the full book-wrapping.
     if (docType === 'book-part') {
+      // Author-settable book-part-type (#176): appendices, prefaces, etc. need
+      // it (a single-file appendix requires book-part-type="appendix", #100), so
+      // it is not always "chapter". Default to chapter when unset; an unknown
+      // value gets a located, non-fatal diagnostic and still renders (mirroring
+      // host format-word validation).
+      const rawType = metaNode?.kwargs?.['book-part-type'];
+      if (rawType != null && !BOOK_PART_TYPES.has(rawType)) {
+        file?.message?.(
+          `<meta type=book-part>: unknown book-part-type "${rawType}" — expected one of: ${[...BOOK_PART_TYPES].join(', ')}. Rendering anyway.`,
+          metaNode,
+          'book-structuring:unknown-book-part-type',
+        );
+      }
       const bookPart = makeTag('book-part', children);
-      bookPart.kwargs = { 'book-part-type': metaNode?.kwargs?.['book-part-part-type'] ?? 'chapter' };
+      bookPart.kwargs = { 'book-part-type': rawType ?? 'chapter' };
       restructureBookPart(bookPart);
       tree.children = [bookPart];
       return;
