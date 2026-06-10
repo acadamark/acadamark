@@ -43,9 +43,7 @@ enscribe_attributes:
       (#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded
       data-language island (e.g. YAML), the same pattern <library> uses for
       BibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured
-      register is future/unbuilt. The `content.shape` entries below name
-      candidate settings such a block would carry; they are a design sketch,
-      not child-tag authoring and not a current spelling. <config> takes no
+      register is future/unbuilt. <config> takes no
       child elements today: the retired `<bibliography source=… />` form (#133)
       is replaced by the body element `<library src>` (see library.md /
       bibliography.md). See DESIGN.md "Configuration and metadata are data".
