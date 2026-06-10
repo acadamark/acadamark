@@ -170,6 +170,8 @@ slice is not done until code and documentation agree.
 >    explicitly — a silent skip and a deliberate "nothing needed" must not look
 >    the same.
 
+**Generated-artifact freshness — applies whenever a slice touches a generated-artifact source.** Several `notes/specs/` files and all `elements/*.md` frontmatter are *build inputs* to committed, guarded artifacts (`packages/enscribe/test/coverage/spec-data.generated.json`, `packages/layer1-vocabulary/src/data.js`). A `notes/specs/` edit is therefore **not** automatically inert: a slice that touches one is not done until the artifact is regenerated and **both** package suites (`packages/layer1-vocabulary` *and* `packages/enscribe`) are green — the spec→artifact mapping crosses package boundaries, so running only the package you think you touched is insufficient. The exact source→artifact map and the regenerate commands live in `CLAUDE.md` §"Generated artifacts and their sources." This rule exists because the six points above did not, on their own, prevent a stale `spec-data.generated.json` from reaching `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)).
+
 ## The release audit
 
 The coherence check gates a slice; the release audit gates a `.x.0` milestone — the milestone-level analogue, and the last step before a `.x.0` is tagged.

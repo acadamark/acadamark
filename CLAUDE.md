@@ -78,7 +78,7 @@ Read the files relevant to the current task at the start of a session.
 
 **Commit and tag messages go via a file, never a heredoc.** Use `git commit -F <file>` / `git tag -a <name> -F <file>` (write the message with the editor first). Do **not** pipe a multi-line message through a heredoc or `-m` in the WSL shell: an apostrophe or backtick in the body breaks the bridge's quoting and silently truncates the message (it mangled several commit messages during v0.2.5). The file route is immune.
 
-**Tests must pass before declaring done.** Run the test suite from a clean state at the end of any work that touches code. "Tests passed in the last incremental run" is not the same as "tests pass from scratch." For Peggy-based grammar work, this means rebuilding the generated parser before running tests.
+**Tests must pass before declaring done.** Run the test suite from a clean state at the end of any work that touches code — **or any generated-artifact source** (see "Generated artifacts and their sources" below). "Tests passed in the last incremental run" is not the same as "tests pass from scratch." For Peggy-based grammar work, this means rebuilding the generated parser before running tests. **A `notes/specs/` edit is not automatically inert:** several specs are build inputs to committed, guarded artifacts, so a "doc-only" slice is not done until **both** package suites (`packages/layer1-vocabulary` *and* `packages/enscribe`) are green.
 
 **Comments on speculative or short-lived code.** When writing code that has a known finite lifespan (e.g., a defensive measure that will be replaced when a deferred feature is implemented), comment it explicitly with that lifespan noted. This makes it findable when the deferred feature lands.
 
@@ -96,6 +96,17 @@ npm test
 Always build before testing when the grammar has been modified. "48/48 pass from a clean rebuild" is the claim that matters; "48/48 pass in the latest run" can be stale.
 
 **`xmllint` is provided by micromamba, not the system.** The JATS DTD-validation checks (in `packages/cli/test/jats-export.test.js`) shell out to `xmllint`, which lives at `~/micromamba/bin/xmllint` — it is *not* a system binary and the ambient PATH may not include it. The harness resolves that path itself (then falls back to a PATH `xmllint`), so `npm test` runs the DTD checks without any manual activation. If neither is found the harness **fails loudly** (it never skips-and-stays-green) — a DTD check that cannot run is a failure. For any ad-hoc XML validation outside the suite, invoke `~/micromamba/bin/xmllint` directly (or activate micromamba); do not assume a bare `xmllint` is on PATH.
+
+## Generated artifacts and their sources
+
+Some committed files are **generated** from source files and kept honest by a staleness/drift guard wired into a test suite. Editing a source without regenerating leaves the artifact stale and the guard red — and the source can be a `notes/specs/` file, so a "doc-only" edit can turn a suite red. Before declaring done any slice that touches one of these sources, regenerate the artifact and run the owning suite:
+
+| Source files | Generated artifact | Regenerate with | Guarded by |
+|---|---|---|---|
+| `packages/layer1-vocabulary/elements/*.md` (frontmatter) | `packages/layer1-vocabulary/src/data.js` | `npm run build` in `packages/layer1-vocabulary` | `build/check-data-fresh.js` (that package's `pretest`) |
+| `notes/specs/tag-forms-reference.md`, `notes/specs/render-quality.md`, `notes/specs/idioms.md` | `packages/enscribe/test/coverage/spec-data.generated.json` | `node test/coverage/gen-spec-data.mjs` in `packages/enscribe` | `test/coverage/spec-data.test.js` (the `enscribe` suite) |
+
+The second mapping crosses package boundaries — three `notes/specs/` files feed an artifact guarded by the **`enscribe`** suite — so a slice that edits **any** `notes/specs/` file is not done until **both** package suites are green. Running only the package you think you touched is exactly how a stale `spec-data.generated.json` reached `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)): a `tag-forms-reference.md` edit landed without regenerating, and the red `enscribe` suite was caught a slice later by chance. When in doubt, run both suites and regenerate both artifacts (a clean tree afterward proves freshness). Keep this table current if a new generator or guard is added.
 
 ## What's deferred and why
 
