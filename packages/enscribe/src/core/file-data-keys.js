@@ -10,10 +10,10 @@
 
 export const ENSCRIBE_CONFIG             = 'enscribeConfig';
 export const ENSCRIBE_REGISTRY           = 'enscribeRegistry';
-// #36 strict mode: the resolved markdown register mode ('on' | 'literal' |
-// 'strict'), set by resolveMarkdownMode before recursive-content so the sub-parse
-// inner processor (and the strict lint) can read it.
-export const ENSCRIBE_MARKDOWN_MODE      = 'enscribeMarkdownMode';
+// #36 strict mode: the resolved strictness mode ('off' | 'sigil' | 'canonical'),
+// set by resolveStrictMode before recursive-content so the sub-parse inner
+// processor (and the strict lint) can read it.
+export const ENSCRIBE_STRICT_MODE        = 'enscribeStrictMode';
 export const ENSCRIBE_CITATIONS          = 'enscribeCitations';
 export const ENSCRIBE_NOTES_PENDING      = 'enscribeNotesPending';
 export const ENSCRIBE_NUMBERING_PENDING  = 'enscribeNumberingPending';

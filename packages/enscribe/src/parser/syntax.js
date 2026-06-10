@@ -64,40 +64,54 @@ function isTagNameContinueCode(code) {
  * concatenates the chunks (inserting `\n`) to reconstruct the full source.
  * Single-line constructs produce a single chunk; no behaviour change.
  *
- * Takes no options — the historical `dslRegistry` option was removed by
- * the DSL/long-form parser bug fix. Every named tag is now long-form-
- * eligible at the parser level; the three forms (pipe / slash / long)
- * are disambiguated by local grammar, not by registry membership.
+ * Options: `{ sigils = true }`. When `sigils` is false, the SIGIL register is
+ * removed from the finder — the `<# #>` / `<$ $>` / `` <` `> `` sigil-tag
+ * tokenizers are omitted, and the item-marker tokenizer admits only the
+ * canonical `<li>` (rejecting the `<->` / `<*>` sigil markers). Canonical named
+ * tags, long-form, and the `^{}` / `_{}` shortcuts are unaffected. This is the
+ * parser side of the #36 `canonical` strict-mode rung: only the canonical
+ * named-tag register interprets; sigils pass through as literal text. The
+ * default (`sigils: true`) is the full finder — byte-identical to before.
  *
+ * (The historical `dslRegistry` option was removed by the DSL/long-form parser
+ * bug fix. Every named tag is long-form-eligible at the parser level; the three
+ * forms (pipe / slash / long) are disambiguated by local grammar, not registry.)
+ *
+ * @param {{ sigils?: boolean }} [options]
  * @returns {import('micromark-util-types').Extension}
  */
-export function enscribeSyntax() {
+export function enscribeSyntax({ sigils = true } = {}) {
+  // Open list-item markers, tried FIRST so `<li>` is claimed as a marker ahead of
+  // the long-form tokenizer and micromark's HTML-block construct. The marker
+  // tokenizer requires `>` immediately after the marker char(s), so `<list>` and
+  // every other `<tag…>` reject here and fall through. Registered only in `flow`,
+  // never `text`, so prose `<-`/`->` (inline) is never claimed. With `sigils:
+  // false` it admits only `<li>` (canonical); the `<->`/`<*>` sigil markers reject.
+  const flowConstructs = [
+    { tokenize: makeItemMarkerTokenizer({ sigils }), concrete: true },
+    { tokenize: makeLongFormTokenizer({ multiLine: true }), concrete: true },
+  ]
+  // Sigil tags `<# #>` / `<$ $>` / `` <` `> `` — admitted only when sigils is on.
+  if (sigils) flowConstructs.push({ tokenize: tokenizeSigilTagFlow, concrete: true })
+  flowConstructs.push({ tokenize: tokenizeNamedTagFlow, concrete: true })
+
+  // Same-line long-form (`<b>bold</b>`) must be tried before the named-tag
+  // tokenizer, which would otherwise claim `<b>` as an empty short-form and leave
+  // `bold</b>` as literal text. The text-position long-form tokenizer rejects
+  // (nok) when no same-line `</tag>` follows, so the empty-short-form fallback is
+  // preserved for bare `<b>`.
+  const textConstructs = [
+    { tokenize: makeLongFormTokenizer({ multiLine: false }) },
+  ]
+  if (sigils) textConstructs.push({ tokenize: tokenizeSigilTagText })
+  textConstructs.push({ tokenize: tokenizeNamedTagText })
+
   return {
-    flow: {
-      [LT]: [
-        // Open list-item markers `<li>` / `<->` / `<*>` — flow position ONLY, and
-        // tried FIRST so `<li>` is claimed as a marker ahead of the long-form
-        // tokenizer and micromark's HTML-block construct. The tokenizer requires
-        // `>` immediately after the marker char(s), so `<list>` and every other
-        // `<tag…>` reject here and fall through. Registered only in `flow`, never
-        // `text`, so prose `<-`/`->` (inline) is never claimed.
-        { tokenize: tokenizeItemMarkerFlow, concrete: true },
-        { tokenize: makeLongFormTokenizer({ multiLine: true }), concrete: true },
-        { tokenize: tokenizeSigilTagFlow, concrete: true },
-        { tokenize: tokenizeNamedTagFlow, concrete: true },
-      ],
-    },
+    flow: { [LT]: flowConstructs },
     text: {
-      [LT]: [
-        // Same-line long-form (`<b>bold</b>` on one line) must be tried before
-        // the named-tag tokenizer, which would otherwise claim `<b>` as an empty
-        // short-form and leave `bold</b>` as literal text. The text-position
-        // long-form tokenizer rejects (nok) when no same-line `</tag>` follows,
-        // so the empty-short-form fallback is preserved for bare `<b>`.
-        { tokenize: makeLongFormTokenizer({ multiLine: false }) },
-        { tokenize: tokenizeSigilTagText },
-        { tokenize: tokenizeNamedTagText },
-      ],
+      [LT]: textConstructs,
+      // `^{}` / `_{}` sup/sub shortcuts stay live in EVERY mode (incl. canonical):
+      // they are TeX shortcuts, not part of the sigil register (#36 design call).
       [CARET]: [{ tokenize: tokenizeShortcutTag }],
       [UNDERSCORE]: [{ tokenize: tokenizeShortcutTag }],
     },
@@ -429,9 +443,15 @@ function makeNamedTagTokenizer({ multiLine }) {
  * from-markdown's `exitEnscribeTag` recognizes the `<li>` / `<->` / `<*>` prefix
  * and builds the marker node directly (no grammar rule). See notes/specs/lists.md.
  *
- * @type {Tokenizer}
+ * `sigils` (default true): when false, the `<->` / `<*>` SIGIL markers reject —
+ * only the canonical `<li>` marker is admitted (the #36 `canonical` rung). Lists
+ * stay authorable in canonical mode via `<li>`.
+ *
+ * @param {{ sigils?: boolean }} opts
+ * @returns {Tokenizer}
  */
-function tokenizeItemMarkerFlow(effects, ok, nok) {
+function makeItemMarkerTokenizer({ sigils = true } = {}) {
+  return function tokenizeItemMarker(effects, ok, nok) {
   return start
 
   /** @param {Code} code */
@@ -445,7 +465,9 @@ function tokenizeItemMarkerFlow(effects, ok, nok) {
 
   /** @param {Code} code — char after `<` */
   function afterLt(code) {
-    if (code === DASH || code === STAR) {
+    // `<->` / `<*>` are sigil markers — admitted only when the sigil register is
+    // on. In `canonical` mode they reject here and fall through to literal text.
+    if (sigils && (code === DASH || code === STAR)) {
       effects.consume(code) // - or *
       return expectGt
     }
@@ -482,6 +504,7 @@ function tokenizeItemMarkerFlow(effects, ok, nok) {
     effects.consume(code)
     return content
   }
+  } // end returned tokenizeItemMarker
 }
 
 /**

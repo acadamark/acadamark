@@ -32,7 +32,7 @@ enscribe_attributes:
         - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)
         - display-style           (reserved; future)
         - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')
-        - markdown                (live; consumed by markdown-mode → strict mode #36: 'on' default / 'literal' / 'strict' — turns the markdown register off, leaving canonical + sigil; realizes the former reserved `strict-mode`)
+        - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)
         - bibliography-position   (reserved; future)
         - reference-library       (reserved; future)
       Unknown kwargs are dropped at the normalize-to-canonical gate with an

@@ -1,13 +1,13 @@
-// #36 strict mode — CSS for the markdown-lint flag.
+// #36 strict mode — CSS for the markdown/sigil-lint flag.
 //
-// Injected as a scoped <style> ONLY when a document is in `strict` mode, so
-// non-strict output (on / literal) is byte-identical (the sidenote / margin
-// CSS-injection model). A STRING CONSTANT (not an fs read) so the browser bundle
+// Injected as a scoped <style> ONLY when a document is in a non-`off` strict mode
+// (`sigil` / `canonical`), so the default (`off`) output is byte-identical (the
+// sidenote / margin CSS-injection model). A STRING CONSTANT (not an fs read) so the browser bundle
 // stays fs-free, matching MARGIN_CSS / CHAPTER_NAV_JS. Reuses the warning-callout
 // tokens from the consumer's default.css with literal fallbacks so the flag is
 // visible even without it.
 
-export const STRICT_FLAG_CSS = `/* Strict mode (#36): visible lint on would-be-markdown text. Injected only in strict. */
+export const STRICT_FLAG_CSS = `/* Strict mode (#36): visible lint on would-be-markdown / would-be-sigil text. Injected only in sigil/canonical. */
 .enscribe-md-flag {
   background: var(--enscribe-callout-warning-bg, #fff8e1);
   color: var(--enscribe-callout-warning-accent, #8a6d1f);

@@ -89,8 +89,8 @@ export const CONFIG_KWARGS = new Map([
   ['theme',                   'live'],     // index.js compiler (Phase 8 Slice 2)
   ['display-style',           'reserved'],
   ['note-position',           'live'],     // index.js compiler → sidenotes (#33, margin render mode)
-  ['markdown',                'live'],     // markdown-mode → strict mode (#36): on | literal | strict.
-                                           // (Realizes the former reserved `strict-mode` placeholder.)
+  ['strict-mode',             'live'],     // strict-mode.js → the strictness register switch (#36):
+                                           // off | sigil | canonical (each names the loosest register on).
   ['bibliography-position',   'reserved'],
   ['reference-library',       'reserved'],
 ]);

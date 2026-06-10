@@ -34,12 +34,12 @@
  */
 
 import { visit, SKIP } from 'unist-util-visit'
-import { ENSCRIBE_MARKDOWN_MODE } from '../core/file-data-keys.js'
+import { ENSCRIBE_STRICT_MODE } from '../core/file-data-keys.js'
 
 const MAX_DEPTH = 10
 
 export default function remarkRecursiveContent(options = {}) {
-  const { processor, processorOff } = options
+  const { processor, processorSigil, processorCanonical } = options
   if (!processor) {
     throw new Error(
       'remarkRecursiveContent requires a { processor } option — ' +
@@ -48,11 +48,15 @@ export default function remarkRecursiveContent(options = {}) {
   }
 
   return (tree, file) => {
-    // #36 strict mode: in literal/strict the sub-parses must run idioms-off too,
-    // so the markdown register is off inside tag pipe bodies as well. Select the
-    // idioms-off inner processor when resolveMarkdownMode flagged the mode.
-    const mode = file?.data?.[ENSCRIBE_MARKDOWN_MODE]
-    const proc = processorOff && (mode === 'literal' || mode === 'strict') ? processorOff : processor
+    // #36 strict mode: in sigil/canonical the sub-parses must run with the same
+    // register(s) off, so the markdown (and, in canonical, the sigil) register is
+    // off inside tag pipe bodies too. Select the matching inner processor for the
+    // mode resolveStrictMode flagged on file.data.
+    const mode = file?.data?.[ENSCRIBE_STRICT_MODE]
+    const proc =
+      mode === 'canonical' && processorCanonical ? processorCanonical :
+      mode === 'sigil' && processorSigil ? processorSigil :
+      processor
     processNodes(tree, proc, 0)
   }
 }

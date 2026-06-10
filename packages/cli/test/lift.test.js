@@ -88,6 +88,40 @@ export function run_tests() {
     console.log(`PASS: round-trip — ${label}`);
   }
 
+  // ── #36 strict mode: sigil/canonical documents round-trip LOSSLESSLY ─────────
+  // The markdown register was the lossy round-trip element (the ambiguous `#`:
+  // serialize a <section> and you cannot tell whether it was authored `# H` or
+  // `<section>`). With the register off, the lifted source carries the literal
+  // text — no <section> coercion — so re-lift is a fixed point AND the markdown
+  // (and, in canonical, the sigils) survive verbatim. `lift` now honors the
+  // document's <config strict-mode>.
+  {
+    const sigilDoc = '<config strict-mode=sigil />\n\n# NotHeading\n\n*lit* and <# Real Head #> here.';
+    const lifted = lift(sigilDoc);
+    assert.ok(lifted.includes('# NotHeading'), 'strict sigil: literal `# NotHeading` survives lift (not coerced to <section>)');
+    assert.ok(lifted.includes('*lit*'), 'strict sigil: literal `*lit*` survives lift');
+    assert.ok(/<section \| Real Head>/.test(lifted), 'strict sigil: the <# … #> sigil lifts to canonical <section>');
+    checkRoundTrip('strict sigil', sigilDoc);
+    console.log('PASS: round-trip — strict sigil document is lossless (markdown literal, sigils interpret)');
+
+    const canonDoc = '<config strict-mode=canonical />\n\n# NotHeading\n\n<# SigHead #> and *lit*\n\n<section | Real>\n\n<list>\n<li> item\n</list>';
+    const liftedC = lift(canonDoc);
+    assert.ok(liftedC.includes('# NotHeading'), 'strict canonical: literal `# NotHeading` survives lift');
+    assert.ok(liftedC.includes('# SigHead #'), 'strict canonical: the <# … #> sigil stays literal text');
+    assert.ok(!/<section[^>]*SigHead/.test(liftedC), 'strict canonical: <# SigHead #> is NOT interpreted as a section');
+    assert.ok(/<section \| Real>/.test(liftedC), 'strict canonical: canonical <section> round-trips');
+    checkRoundTrip('strict canonical', canonDoc);
+    console.log('PASS: round-trip — strict canonical document is lossless (markdown + sigils literal)');
+  }
+
+  // off documents are unchanged: markdown-on, lossy by design (# → <section>).
+  {
+    const lifted = lift('# Heading\n\n*emph*');
+    assert.ok(/<section \| Heading>/.test(lifted) && !lifted.includes('# Heading'),
+      'strict off: markdown is still interpreted on lift (lossy by design, byte-identical to before)');
+    console.log('PASS: round-trip — off document unchanged (markdown interpreted, lossy by design)');
+  }
+
   // ── real fixtures ───────────────────────────────────────────────────────────
   const fixtures = [
     'document-9-demo.emd',

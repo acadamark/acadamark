@@ -159,7 +159,7 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG, ENSCRIBE_MARKDOWN_MODE } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE } from '../core/file-data-keys.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -183,11 +183,13 @@ import { applyToc } from './lib/toc.js';
 // existing fixtures — stay byte-identical.
 import { applySidenotes, markMarginLayout } from './lib/sidenotes.js';
 import { MARGIN_CSS } from './assets/margin-css.js';
-// #36 strict mode: the markdown register switch — parse on; re-parse idioms-off
-// for literal/strict (the markdown idioms become plain text everywhere, while
-// canonical + sigil keep interpreting). flagMarkdownText + STRICT_FLAG_CSS add
-// the strict lint, injected only in strict (the sidenote-injection model).
-import { resolveMarkdownMode, disableMarkdownIdioms, flagMarkdownText } from './lib/markdown-mode.js';
+// #36 strict mode: the strictness register switch — parse off; re-parse with the
+// register(s) disabled for sigil/canonical. `sigil` turns the markdown register
+// off (canonical + sigils keep interpreting); `canonical` turns markdown AND
+// sigils off (via the sigil-less enscribeSyntax variant), leaving only canonical
+// named tags. flagStrictText + STRICT_FLAG_CSS add the lint, injected only when
+// non-`off` (the sidenote-injection model).
+import { resolveStrictMode, detectStrictMode, disableMarkdownIdioms, flagStrictText } from './lib/strict-mode.js';
 import { STRICT_FLAG_CSS } from './assets/strict-flag-css.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Injected only for book + ToC.
@@ -535,7 +537,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
  * @param {boolean} [options.smartTypography=true] Smart typography (#54): curly quotes, en/em dashes, and ellipses in prose display output. A display-projection on the HTML side only — never the canonical AST / `.emd` / JATS. `false` disables it.
- * @param {'on'|'literal'|'strict'} [options.markdown='on'] Markdown register switch (#36, strict mode). 'on' (default) interprets all three registers — today's behavior, byte-identical. 'literal' turns the markdown register off: `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters (no escaping) while canonical tags and sigils stay live everywhere, including inside tag pipe bodies. 'strict' is literal plus a visible lint wrapping would-be-markdown text in a flag span (scoped CSS injected only in strict). Native inferences (blank-line→paragraph, section nesting) stay on in all states. Layer 1 / JATS are unaffected. Also settable per-document via `<config markdown=…>`; the option wins.
+ * @param {'off'|'sigil'|'canonical'} [options.strictMode='off'] Strictness register switch (#36). Each value names the loosest register still interpreted. 'off' (default) interprets all three registers — today's behavior, byte-identical. 'sigil' turns the markdown register off: `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters (no escaping) while canonical tags and sigils stay live everywhere, including inside tag pipe bodies; would-be-markdown text is flagged with a visible lint. 'canonical' turns markdown AND sigils off (`<# #>`, `<$ $>`, `<->`, `<*>` also literal), leaving only canonical named tags — the canonical `<li>` and the `^{}`/`_{}` shortcuts stay live; would-be-markdown and would-be-sigil text is flagged. The flag CSS is injected only for a non-`off` rung. Native inferences (blank-line→paragraph, section nesting) stay on in all states. Layer 1 / JATS are unaffected. Also settable per-document via `<config strict-mode=…>`; the option wins.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -581,23 +583,31 @@ export function enscribeInterpreter(options = {}) {
   // are tokenized and normalized on both surfaces.
   const innerProcessor = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
 
-  // #36 strict mode: the idioms-OFF processors. Same enscribe extension (so tags
-  // + sigils interpret), but the markdown-register idioms are disabled and
-  // remark-gfm / remark-math are NOT added (so bare $ / pipe tables / strikethrough
-  // are off too). Used by resolveMarkdownMode to re-parse the source, and by
-  // recursive-content for sub-parses, when the mode is literal/strict.
-  const offProcessor = unified().use(remarkParse).use(remarkEnscribe).use(disableMarkdownIdioms);
+  // #36 strict mode: the registers-OFF processors, one per non-`off` rung.
+  //   sigilProcessor    — markdown idioms disabled; the enscribe extension intact
+  //                       (tags + sigils interpret). For `sigil` mode. (remark-gfm /
+  //                       remark-math are NOT added, so bare $ / pipe tables / ~~ are
+  //                       off too.)
+  //   canonicalProcessor — markdown idioms disabled AND the sigil register removed
+  //                       from the finder (remarkEnscribe({ sigils:false })), so only
+  //                       canonical named tags (+ <li>, + ^{}/_{}) interpret. For
+  //                       `canonical` mode.
+  // Used by resolveStrictMode to re-parse the source, and by recursive-content for
+  // the sub-parses, when the mode is sigil/canonical.
+  const sigilProcessor = unified().use(remarkParse).use(remarkEnscribe).use(disableMarkdownIdioms);
+  const canonicalProcessor = unified().use(remarkParse).use(remarkEnscribe, { sigils: false }).use(disableMarkdownIdioms);
 
-  // #36 (step 0): resolve the markdown mode (option ?? <config markdown> ?? 'on')
-  // and, when literal/strict, re-parse the source idioms-off and swap the tree —
-  // before recursive-content, so its sub-parses run idioms-off too. A strict
-  // no-op for 'on' → the default parse is used unchanged (byte-identical).
-  this.use(resolveMarkdownMode, { offProcessor, option: options.markdown });
+  // #36 (step 0): resolve the strict mode (option ?? <config strict-mode> ?? 'off')
+  // and, when sigil/canonical, re-parse the source with the matching register(s)
+  // off and swap the tree — before recursive-content, so its sub-parses run in the
+  // same mode. A strict no-op for 'off' → the default parse is used unchanged
+  // (byte-identical).
+  this.use(resolveStrictMode, { sigilProcessor, canonicalProcessor, option: options.strictMode });
 
-  // 1. Parse pipe-content strings into mdast children. In literal/strict mode the
-  //    inner processor is the idioms-off one (markdown register off in sub-parses
-  //    too); recursive-content selects it via the file.data markdown mode.
-  this.use(remarkRecursiveContent, { processor: innerProcessor, processorOff: offProcessor });
+  // 1. Parse pipe-content strings into mdast children. In sigil/canonical mode the
+  //    inner processor is the matching registers-off one (the register(s) stay off
+  //    inside pipe bodies too); recursive-content selects it via the file.data mode.
+  this.use(remarkRecursiveContent, { processor: innerProcessor, processorSigil: sigilProcessor, processorCanonical: canonicalProcessor });
 
   // 1.5. The normalize-to-canonical gate. Runs after step 1 so both outer
   //      and inner processor runs have completed. Runs before step 2 so no
@@ -767,14 +777,15 @@ export function enscribeInterpreter(options = {}) {
       hast.children.unshift(makeStyleElement(MARGIN_CSS));
     }
 
-    // #36 strict mode: flag would-be-markdown text and inject the flag CSS — only
-    // in strict. In 'on'/'literal' this is a strict no-op, so their output is
-    // byte-identical (the sidenote/margin CSS-injection model). The mode was
-    // resolved by resolveMarkdownMode (file.data); the literal/strict tree already
-    // has the markdown register off (re-parsed idioms-off), so the lint runs over
-    // text that genuinely passed through literally.
-    if ((file?.data?.[ENSCRIBE_MARKDOWN_MODE]) === 'strict') {
-      flagMarkdownText(hast);
+    // #36 strict mode: flag would-be-markdown (and, in canonical, would-be-sigil)
+    // text and inject the flag CSS — only for a non-`off` rung. In 'off' this is a
+    // strict no-op, so its output is byte-identical (the sidenote/margin CSS-
+    // injection model). The mode was resolved by resolveStrictMode (file.data); the
+    // sigil/canonical tree already has the register(s) off (re-parsed with the
+    // matching disable), so the lint runs over text that genuinely passed literally.
+    const strictMode = file?.data?.[ENSCRIBE_STRICT_MODE];
+    if (strictMode === 'sigil' || strictMode === 'canonical') {
+      flagStrictText(hast, strictMode);
       hast.children.unshift(makeStyleElement(STRICT_FLAG_CSS));
     }
 
@@ -937,14 +948,32 @@ export function buildEnscribePipeline(options = {}) {
  * `enscribeInterpreter` opens with (steps 1 and 1.5), so it cannot drift from
  * the real pipeline's lift behavior.
  *
+ * #36: lift honors the document's `<config strict-mode>`. A sigil/canonical
+ * document re-parses with the matching register(s) off, so a literal `# H` /
+ * `*x*` / `<# H #>` stays literal text and round-trips losslessly (the markdown
+ * register was the lossy element — a register-banned document has none). An
+ * `off` document keeps the markdown-on parse, byte-identical and lossy by design.
+ *
  * @param {string} source - enscribe/markdown source text.
  * @returns {import('mdast').Root} the post-normalize mdast tree.
  */
 export function liftToCanonicalMdast(source) {
-  const inner = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(source);
+  // Parse once registers-on so detectStrictMode can find <config strict-mode>.
+  const onInner = () => unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+  const tree = onInner().parse(source);
+
+  const mode = detectStrictMode(tree, undefined);
+  let outerTree = tree;
+  let inner = onInner();
+  if (mode === 'sigil' || mode === 'canonical') {
+    // Re-parse with the matching register(s) off (sigil: markdown off; canonical:
+    // markdown + sigils off), and use the same processor for the pipe-body sub-
+    // parses so the register stays off there too.
+    const sigils = mode !== 'canonical';
+    const offProc = () => unified().use(remarkParse).use(remarkEnscribe, { sigils }).use(disableMarkdownIdioms);
+    inner = offProc();
+    outerTree = offProc().parse(source);
+  }
   unified()
     .use(remarkRecursiveContent, { processor: inner })
     .use(enscribeNormalizeToCanonical)
@@ -952,6 +981,6 @@ export function liftToCanonicalMdast(source) {
     // the canonical list shape — and so lift is idempotent (re-parsing the emitted
     // `<list>` / `<li>` lowers to the same list).
     .use(enscribeListStructuring)
-    .runSync(tree);
-  return tree;
+    .runSync(outerTree);
+  return outerTree;
 }
