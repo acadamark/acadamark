@@ -4058,6 +4058,26 @@ const _meta = Object.freeze({
           "default": "article",
           "notes": "Declares the document type. Read by the structural plugin\n(enscribeArticleStructuring / enscribeBookStructuring) to\ndecide which Layer 1 wrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. If <meta> has no type\nkwarg the structural plugin treats the document as article-shaped.\n",
         },
+        "book-part-type": {
+          "maps_to": {
+            "html": "book-part-type",
+          },
+          "values": [
+            "chapter",
+            "part",
+            "introduction",
+            "conclusion",
+            "other",
+            "preface",
+            "foreword",
+            "dedication",
+            "appendix",
+            "glossary",
+            "colophon",
+          ],
+          "default": "chapter",
+          "notes": "For a single-file book-part (type=book-part) only: sets the\nbook-part-type on the generated <book-part> wrapper (#176). This is how\na standalone book-part file declares whether it is an appendix, preface,\netc. — a single-file appendix needs book-part-type=appendix (#100), so it\nis not always \"chapter\". Read by enscribeBookStructuring; allowlisted but\nnot lifted (a structural kwarg, like type — it configures the wrapper, it\nis not a descriptive <meta> field). Default \"chapter\" when unset. An\nunknown value is reported with a non-fatal diagnostic and the document\nstill renders (always-renders). Ignored on type=article / type=book\ndocuments, which route their book-parts by the <chapter> / <appendix> /\n… shorthand instead.\n",
+        },
       },
     },
     "content": {

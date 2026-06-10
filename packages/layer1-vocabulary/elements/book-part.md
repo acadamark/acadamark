@@ -234,7 +234,7 @@ In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part b
 
 ## Attributes
 
-`book-part-type` is required at Layer 1. It's set automatically by the shorthand expansion. Authors who write `<book-part>` directly must specify the type.
+`book-part-type` is required at Layer 1. It's set automatically by the shorthand expansion. Authors who write `<book-part>` directly must specify the type. For a **single-file book-part** (a standalone `<meta type=book-part>` document, rather than a `<book-part>` inside a book), the type is set with the `book-part-type` kwarg on `<meta>` — `<meta type=book-part book-part-type=appendix>` — which `enscribeBookStructuring` reads onto the generated wrapper (#176). It defaults to `chapter` when omitted, and an unknown value is diagnosed but still renders. See `meta.md`.
 
 `numbering-style` overrides the book-level numbering style for this book-part. Common uses:
 

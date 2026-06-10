@@ -31,6 +31,22 @@ enscribe_attributes:
         (no nested front/body/back wrappers).
         Default is "article" — the most common case. If <meta> has no type
         kwarg the structural plugin treats the document as article-shaped.
+    book-part-type:
+      maps_to: book-part-type
+      values: [chapter, part, introduction, conclusion, other, preface, foreword, dedication, appendix, glossary, colophon]
+      default: chapter
+      notes: |
+        For a single-file book-part (type=book-part) only: sets the
+        book-part-type on the generated <book-part> wrapper (#176). This is how
+        a standalone book-part file declares whether it is an appendix, preface,
+        etc. — a single-file appendix needs book-part-type=appendix (#100), so it
+        is not always "chapter". Read by enscribeBookStructuring; allowlisted but
+        not lifted (a structural kwarg, like type — it configures the wrapper, it
+        is not a descriptive <meta> field). Default "chapter" when unset. An
+        unknown value is reported with a non-fatal diagnostic and the document
+        still renders (always-renders). Ignored on type=article / type=book
+        documents, which route their book-parts by the <chapter> / <appendix> /
+        … shorthand instead.
 content:
   type: structured
   shape:
@@ -225,6 +241,8 @@ The `type` kwarg drives both the wrapper generation and the title-element promot
 | `book-part` | `<book-part>` (no nested regions) | `<book-part-title>` |
 
 Same mapping for `<subtitle>` → `<article-subtitle>` / `<book-subtitle>` / `<book-part-subtitle>`.
+
+When `type=book-part`, the **`book-part-type`** kwarg sets the kind of book-part on the generated `<book-part>` wrapper — `<meta type=book-part book-part-type=appendix>` authors a standalone appendix file, for instance. Values are the BITS set (`chapter` — the default — `part`, `introduction`, `conclusion`, `other`, `preface`, `foreword`, `dedication`, `appendix`, `glossary`, `colophon`); an unrecognized value is diagnosed but still renders (#176). This applies only to the single-file book-part case; inside a `<meta type=book>` document, book-parts take their type from the `<chapter>` / `<appendix>` / … shorthand instead (see `book-part.md`).
 
 If an author writes the wrapper explicitly (e.g. `<article | Title>` with content inside), the structural plugin does not override it — explicit authoring is an escape hatch.
 
