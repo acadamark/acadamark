@@ -11,7 +11,7 @@
 //      <note-list><ol><li id=ID>…</li></ol></note-list> (dropping the backref),
 //   2. inserts a <span class="enscribe-sidenote"> carrying a copy of that content
 //      right after the matching inline marker <sup data-note-id=ID>,
-//   3. marks the layout wrapper `.enscribe-layout--sidenotes` (reusing
+//   3. marks the layout wrapper `.enscribe-layout--margin` (reusing
 //      enscribe's `.enscribe-layout--*` chrome; creating the wrapper if applyToc
 //      did not already make one).
 //

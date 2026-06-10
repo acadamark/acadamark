@@ -360,6 +360,7 @@ const _article_back = Object.freeze({
         "contains": [
           "bibliography",
           "note-list",
+          "book-part",
           "data",
           "config",
         ],

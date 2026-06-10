@@ -902,6 +902,10 @@ sub-sections take the letter as a prefix (A.1, A.2), and a `<ref>` to an appendi
 renders "Appendix A":
 
 ```
+<meta type=article>
+  <title | On Notation>
+</meta>
+
 <config number-sections=true />
 
 <appendix #app:notation | Notation>
@@ -1100,8 +1104,8 @@ every looser form has a canonical equivalent — so a `sigil` or `canonical`
 document uses only the registers above the floor, and those round-trip
 Layer 1 ↔ shorthand losslessly. The historically lossy element was the ambiguous
 markdown `#` (a serialized section could have been authored `# Heading` or
-`<section>`); a register-banned document has none, so `enscribe lift` reproduces
-it exactly. The default `off` mode keeps markdown live and is lossy by design —
+`<section>`); a register-banned document has none, so `enscribe lift` (and
+`enscribe lower`, which parses through the same path) reproduces it exactly. The default `off` mode keeps markdown live and is lossy by design —
 lossless round-trip is the property you opt into, with `sigil` or `canonical`,
 when it matters.
 

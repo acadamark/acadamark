@@ -234,5 +234,5 @@ the runtime enforcement.
 
 - [`<meta>`](meta.md) — for descriptive document metadata.
 - [`<data>`](data.md) — for referenced resources.
-- [`<bibliography>`](bibliography.md) — bibliography element (when `<bibliography>` carries a source attribute, it's typically inside `<config>`).
+- [`<bibliography>`](bibliography.md) — the rendered bibliography element (places the formatted reference list); external reference sources load via [`<library src=…>`](library.md), not a `<config>` attribute.
 - [`<article>`](article.md), [`<book>`](book.md) — containers whose kwargs handle simple per-document settings.

@@ -10,7 +10,8 @@
 // CONSUMES: the post-stage-3 mdast tree produced by
 // `enscribe/interpreter`'s structural plugins (per Phase 5 Phase 0
 // findings Q1.5 — post-stage-3 is the right input because the tree is
-// already JATS-shaped after `enscribeArticleStructuring` /
+// already structured as (HTML-shaped) Layer 1 — ready for JATS
+// export — after `enscribeArticleStructuring` /
 // `enscribeBookStructuring` + section nesting). The slice 5a entry
 // point `enscribeToJats` accepts a tree (mdast root) + options and
 // returns a JATS XML string.

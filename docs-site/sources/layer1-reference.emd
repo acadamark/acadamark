@@ -598,8 +598,8 @@ CSL-JSON). The bibliographic source, inside `<data>`. **Authoring:**
 <## #el:bibliography | `<bibliography>` ##>
 **Category** citation · **renders** `<bibliography>` · **content** structured. Marks
 where the formatted reference list renders (end of an article; back matter in a
-book). Authored empty: `<bibliography></bibliography>`. **Attributes:** `source`,
-`style`, `sort`, `type`.
+book). Authored empty: `<bibliography></bibliography>`. **Attributes:** `style`,
+`sort`, `type`.
 
 ```html
 <bibliography><h2>References</h2><div class="csl-bib-body"> … </div></bibliography>

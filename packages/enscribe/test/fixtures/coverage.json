@@ -1,17 +1,17 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 360,
-    "fixtures": 52,
+    "cells": 359,
+    "fixtures": 55,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 276,
+    "gap": 275,
     "pass": 66,
     "deferred": 18
   },
   "byDisposition": {
-    "specified": 316,
+    "specified": 315,
     "generic-implicit": 20,
     "deferred-presentation": 18,
     "no-output": 4,
@@ -1076,22 +1076,6 @@
       "key": "bibliography/class",
       "element": "bibliography",
       "behavior": "class",
-      "area": "RQ-BIB",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-BIB-M1",
-        "RQ-BIB-M2",
-        "RQ-BIB-M3",
-        "RQ-BIB-M4",
-        "RQ-BIB-S1"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "bibliography/kwarg:source",
-      "element": "bibliography",
-      "behavior": "kwarg:source",
       "area": "RQ-BIB",
       "disposition": "specified",
       "predicates": [
@@ -6996,7 +6980,10 @@
     "document-56-lists.emd",
     "document-57-marginnotes.emd",
     "document-58-sidenotes.emd",
+    "document-59-strict.emd",
     "document-6-cross-references.emd",
+    "document-60-appendix.emd",
+    "document-61-library-src.emd",
     "document-7-tables.emd",
     "document-8-citations.emd",
     "sweep/swp-block.emd",

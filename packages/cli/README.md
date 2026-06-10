@@ -76,6 +76,10 @@ A construct that carries attributes a register can't express stays in the fuller
 form — e.g. an id-bearing section keeps a sigil (`<# #sec:intro | Title #>`) even
 under `--markdown`, because a markdown heading cannot carry the id.
 
+Like `lift`, `lower` parses through the same `strict-mode`-aware path, so a
+`sigil`/`canonical` document's literal markdown and sigils stay literal across the
+round-trip.
+
 ### `enscribe import-jats`
 
 Import a JATS XML article into Enscribe — rendered HTML by default, or canonical
