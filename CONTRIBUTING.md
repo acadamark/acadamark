@@ -91,7 +91,7 @@ Each subsystem's blueprint:
   processor-delegation principle) and `notes/specs/principles.md`
   (always-renders, parser-knows-nothing-about-meaning, etc.).
 - **Extension blueprints (designed, not built)** —
-  `notes/specs/multi-file-authoring.md`,
+  `notes/specs/master-document.md`,
   `notes/specs/multi-column-display.md`, and
   `notes/specs/render-mode.md`. Their design is specified at the
   rebuild standard; the unbuilt fact is tracked in GitHub Issues, and the

@@ -92,7 +92,9 @@ export const CONFIG_KWARGS = new Map([
   ['strict-mode',             'live'],     // strict-mode.js → the strictness register switch (#36):
                                            // off | sigil | canonical (each names the loosest register on).
   ['bibliography-position',   'reserved'],
-  ['reference-library',       'reserved'],
+  // `reference-library` (a config-level external-library declaration) retired:
+  // #133 settled that external library sources are the body element `<library
+  // src=…>`, NEVER a <config> kwarg — so the reserved placeholder is superseded.
 ]);
 
 /**

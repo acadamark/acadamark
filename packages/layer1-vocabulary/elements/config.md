@@ -34,7 +34,8 @@ enscribe_attributes:
         - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')
         - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)
         - bibliography-position   (reserved; future)
-        - reference-library       (reserved; future)
+        (the reserved `reference-library` was retired: #133 makes external library
+        sources the body element `<library src=…>`, never a <config> kwarg)
       Unknown kwargs are dropped at the normalize-to-canonical gate with an
       informative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on
       <config> additionally triggers a "did you mean <meta>?" hint. Kwargs are

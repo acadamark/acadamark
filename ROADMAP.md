@@ -39,25 +39,33 @@ features.
   callouts — plus the vocabulary coverage gallery, DSL source-view, ToC
   scroll-spy, default-theme feature-hook styling, and accumulated JATS interop
   and table fixes.
-- **v0.4.0.** Code syntax highlighting, margin sidenotes, strict mode,
-  browser-bundle size optimization, conda-forge packaging, and new sigil
-  shorthands.
+- **v0.3.5 — shipped.** The consolidation pass resolving the v0.3.0-close
+  release-audit findings; no new features.
+- **v0.4.0 — shipped.** Lists (`<list>` / `<li>`), strict mode
+  (`<config strict-mode>`), sidenotes + margin notes, article appendices, and
+  external citation sources (`<library src>`) — plus the coverage gallery as the
+  authoring completeness surface and the reframe of Layer 1 as HTML-shaped (JATS
+  becomes an export translation), with a full docs-site pass (feature pages,
+  governance tier).
+- **v0.4.5.** Code syntax highlighting, browser-bundle size optimization,
+  conda-forge packaging, and new sigil shorthands (carried from the v0.4.0 plan).
 - **future.** Longer-horizon work — render-mode lowering to plain HTML,
-  multi-column display, richer external-reference syntax, and other parser /
-  display features as their design questions resolve.
+  multi-column display, the master-document / multi-file system (`master-document.md`),
+  and other parser / display features as their design questions resolve.
 
 ---
 
 ## Current position
 
-**v0.3.0 is released** — the new authoring and display features (markup inside
-table cells, section numbering, frame-border styles, smart typography, callouts)
-plus the vocabulary coverage gallery, DSL source-view, and ToC scroll-spy,
-shipped on top of the v0.2.x base (rich-document rendering, bidirectional JATS,
-the browser library and `enscribe` CLI, three packages on npm:
-`@enscribejs/enscribe`, `@enscribejs/cli`, `@enscribejs/layer1-vocabulary`).
-**v0.3.5 is next** — the consolidation pass that resolves the v0.3.0-close
-release-audit findings and ships no new features; v0.4.0 follows, and the
-longest-horizon work sits under `future`. Every release's items live in
+**v0.4.0 is released** — lists, strict mode, sidenotes + margin notes, article
+appendices, and external citation sources (`<library src>`), plus the authoring
+coverage gallery and the HTML-shaped Layer 1 reframe (JATS as an export
+translation) with a full docs-site pass, shipped on top of the v0.2.x / v0.3.x
+base (rich-document rendering, bidirectional JATS, the browser library and
+`enscribe` CLI, three packages on npm: `@enscribejs/enscribe`, `@enscribejs/cli`,
+`@enscribejs/layer1-vocabulary`). **v0.4.5 is next** — code syntax highlighting,
+browser-bundle size optimization, conda-forge packaging, and new sigil shorthands;
+the longest-horizon work (render-mode lowering, the master-document / multi-file
+system) sits under `future`. Every release's items live in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues), grouped by
 milestone and label.

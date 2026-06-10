@@ -1,6 +1,6 @@
 {
   "name": "@enscribejs/enscribe",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax. The headline library: the Layer 1 core foundation, the shorthand parser (remark plugin), and the interpreter that compiles enscribeTag nodes to Layer 1 HTML.",
   "keywords": [
     "enscribe",
@@ -55,7 +55,7 @@
     "demo": "node test/demo.js"
   },
   "dependencies": {
-    "@enscribejs/layer1-vocabulary": "^0.2.0",
+    "@enscribejs/layer1-vocabulary": "^0.4.0",
     "@popperjs/core": "^2.11.8",
     "abcjs": "^6.6.3",
     "citation-js": "^0.7.22",
