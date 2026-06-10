@@ -101,7 +101,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Quickstart guide (interactive in-browser playground)
 - [x] Authoring Guide (fourteen chapters, with rendered demonstrations)
 - [x] Layer 1 Vocabulary Reference (MDN-style, element by element)
-- [x] Vocabulary coverage gallery (generated from the vocab entries; every element's authoring examples, source beside rendered output, with loud GAP markers)
+- [x] Authoring coverage gallery (the completeness surface — every construct a user can write: each vocab element generated from its entries, plus a curated non-vocabulary supplement for Layer-2 constructs with no vocab entry, e.g. `<list>`; source beside rendered output, with loud GAP markers) (#143)
 - [x] JATS-relationship article
 - [x] Imported-article demonstration page (a real published paper, via `import-jats`)
 - [x] Static site build (`npm run docs:build`)
