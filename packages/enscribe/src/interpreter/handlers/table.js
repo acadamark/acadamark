@@ -3,7 +3,7 @@
 // Dispatch order:
 //   1. node.positional[0] determines the input format (csv, tsv, json, yaml, md).
 //   2. node.content is the raw data string (never recursively-parsed because
-//      DSL_REGISTRY maps 'table' to 'table', not 'default').
+//      `LANGUAGES` maps 'table' to 'table', not 'default').
 //   3. node.kwargs.src is an optional path to an external file; when present,
 //      the file is read and its text used as the data source instead of content.
 //   4. Parsed data is rendered to a hast <table> element.

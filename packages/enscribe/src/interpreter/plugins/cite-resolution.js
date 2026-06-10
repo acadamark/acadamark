@@ -63,7 +63,7 @@ function extractCiteKeys(node) {
   if (typeof node.content === 'string') {
     return node.content.split(',').map(k => k.trim()).filter(Boolean);
   }
-  // Path 4: recursively-parsed content array (defensive; cite not in DSL_REGISTRY).
+  // Path 4: recursively-parsed content array (defensive; cite not in `LANGUAGES`).
   if (Array.isArray(node.content) && node.content.length > 0) {
     const text = extractPlainText(node.content, { trim: false });
     return text.split(',').map(k => k.trim()).filter(Boolean);

@@ -19,7 +19,7 @@
 // `liftStructuredKwargs` (in normalize-to-canonical.js) consumes the specs
 // here; this module owns the data.
 //
-// This registry is **separate** from DSL_REGISTRY by design:
+// This registry is **separate** from the DSL registry (`dsl-registry.js`) by design:
 //   - dsl-registry.js owns DSL content-handler dispatch (math, code, csv,
 //     mermaid, …) and a historically-broad "long-form-eligibility" role for
 //     several non-DSL containers.
@@ -167,7 +167,8 @@ export function getStructuredSpec(tagname) {
 // DSL_REGISTRY and STRUCTURED_ELEMENTS to drive the parser's long-form
 // admission gate. The parser fix removed that gate — every named tag is
 // now long-form-eligible — so the union has no consumer. Neither registry
-// participates in long-form admission any more. DSL_REGISTRY is now a
-// pure handler-dispatch list for DSLs; STRUCTURED_ELEMENTS is the
+// participates in long-form admission any more. The DSL registry
+// (`LANGUAGES` / `getContentHandler`) is now a pure handler-dispatch list for
+// DSLs; STRUCTURED_ELEMENTS is the
 // kwarg/child-tag interface registry for structured-data-containers
 // (`<meta>`, `<author>`). The two registries are independent.

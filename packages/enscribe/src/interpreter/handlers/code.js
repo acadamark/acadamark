@@ -3,12 +3,12 @@
 // Sibling of handlers/inline-code.js. The two handlers share the same
 // rendering shape (a single `<code>` element with the code text as a text
 // child); they exist as separate modules because they're registered under
-// different vocab entries (`code` long-form vs `inline-code` sigil) and
-// dispatched from different DSL_REGISTRY entries.
+// different vocab entries (`code` long-form vs `inline-code` sigil), each
+// marking its content opaque via `LANGUAGES` (the `getContentHandler` map).
 //
 // Phase 2 slice 2a (2026-05-27) added this handler to close the
 // long-form `<code>` content-drop bug:
-//   - DSL_REGISTRY entry `['code', 'code']` marks `<code>` content opaque
+//   - the `LANGUAGES` entry `['code', 'code']` marks `<code>` content opaque
 //     (parser sets isOpaqueContent: true; recursive-content plugin skips).
 //   - Pre-fix: code.md declared `interpreter_strategy: schema`, which
 //     routed through schemaDispatch. convertContent (interpret-plugin.js)
