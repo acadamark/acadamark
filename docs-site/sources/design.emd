@@ -262,7 +262,7 @@ The layered model has more names than the two-layer summary suggests, because th
 
 - **Markdown idioms (lossy convenience shortcuts).** The CommonMark constructs that enscribe also accepts — markdown headings (`#`, `##`, `###`), markdown emphasis (`*`, `_`), markdown lists, markdown tables (via remark-gfm), inline-code backticks, math via `$…$`. These reduce *into* Layer 1 but do not round-trip back from it: Layer 1 → enscribe renders the canonical surface, not the markdown idiom. The relationship is one-way reduction; the markdown surface is a convenience for authoring.
 
-- **Strict mode.** A setting (not yet implemented; reserved as a future configuration switch) that confines accepted input to canonical enscribe only — markdown idioms produce errors rather than silently reducing. The intended use is round-trip-critical pipelines: when an author needs the guarantee that what they wrote will come back unchanged from a Layer 1 → enscribe conversion, strict mode is how they ask for it.
+- **Strict mode (shipped, #36).** The `<config strict-mode=…>` switch (with a matching `strictMode` render option) that turns the looser registers off, from the top down, making the stricter rungs round-trip-lossless. Three values, each naming the *loosest* register still interpreted: `off` (everything — the default, today's behaviour), `sigil` (no markdown; canonical tags and sigils interpret), `canonical` (no markdown, no sigils; only canonical named tags, plus the `<li>` marker and the `^{}`/`_{}` shortcuts). A non-`off` rung *flags* would-be-shorthand text rather than erroring — it always renders, never fails. The intended use is round-trip-critical pipelines: when an author needs the guarantee that what they wrote comes back unchanged from a Layer 1 → enscribe conversion, the stricter rungs are how they ask for it.
 
 The ladder is: *markdown idiom* → reduces to → *canonical enscribe* → bidirectionally equivalent to → *Layer 1*. The middle step is what makes the round-trip work. The lossy step (markdown idiom → canonical) is acceptable because it goes in the direction of *more* information, not less — naming what was implicit.
 
@@ -301,8 +301,8 @@ The gate's job at a glance:
 | Bare markdown strong (`**foo**`) | `<b>` |
 | Bare GFM strikethrough (`~~foo~~`) | `<s>` |
 | Bare inline code (`` `foo` ``) | the canonical `<inline-code>` |
-| Bare markdown link (`[text](url)`) | the canonical `<a>` |
-| Bare markdown image | the canonical `<img>` |
+| Bare markdown link (`[text](url)`) | **literal text** — `[text](url)` is no longer an authoring idiom; the `<a>` tag (`<a URL \| text>`) is the only link form. An *autolinked* bare URL or email (remark-gfm) still lifts to `<a>`, since its text is its target. |
+| Bare markdown image (`![alt](url)`) | **literal text** — no longer an idiom; images are `<fig>` / `<figure>`. |
 | Bare `$x$` / `$$x$$` math | a canonical math enscribeTag (`inline-math` / `display-math`) |
 | GFM pipe table | a canonical `<table md>` enscribeTag |
 
@@ -436,7 +436,7 @@ Frameable is a **capability shared by several distinct elements**, not an umbrel
 
 ## Members
 
-The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; enscribe does not police it (the same posture enscribe takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`).
+The frameable elements include `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; enscribe does not police it (the same posture enscribe takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`). The class also includes the boxed-prose member `<aside>` (tangential content; callouts and admonitions via its `type`). The authoritative membership list — and what is deliberately excluded (`<blockquote>`, math, the theorem family) — is in `notes/specs/frameable.md`.
 
 ## `<fig>` is the sole graphical element
 
@@ -448,11 +448,11 @@ The canonical name is `<fig>` today — the JATS name, inherited from Layer 1's 
 
 This design **replaces** the prior `<figure>`-as-umbrella model, in which `<figure>` was a single element that wrapped an inner content element (an `<img>` generated from a `src` kwarg, or an author-placed `<table>` / `<code>` / `<equation>`) plus a `<figcaption>`. Under the new design there is no umbrella: `<fig>` is its own first-class element for graphical content; `<table>`/`<code>`/`<svg>`/`<mermaid>` are their own first-class elements for their own content; the frameable capability is shared across all of them at the same level. A consequence: removing the umbrella also removes the layer of tag nesting the umbrella enforced (`<figure type=table | <table>…</table>>` collapses to a frameable `<table>` directly).
 
-The implementation work — updating the `figure.md`, `img.md`, `table.md`, `code.md` vocabulary entries; refactoring the figure handler; updating the gate's bare-markdown-image lift to emit `<fig>` rather than `<img>`; auditing caption handling, cross-referencing, and numbering against the umbrella assumption — is scoped as a **Phase 0** (read-only investigation) followed by an implementation slice. Both are filed in the backlog as `[alpha]` items. The Phase 0 is a prerequisite to the implementation slice; this design section is its design baseline.
+This supersession shipped in the v0.1.0 frameable build — the `<fig>`/`<svg>`/`<frame>` vocabulary, the figure-handler refactor, the bare-markdown-image lift to `<fig>`, and caption-as-content. The later redesign — promoting `<aside>` into the class and folding callouts/admonitions into it — is defined in `notes/specs/frameable.md` and tracked in GitHub issue #31.
 
-## Open sub-questions within this design
+## Membership and remaining questions
 
-- **The exact membership list of the frameable class.** `<fig>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, `<frame>` are settled; the full enumeration of DSL-registry block elements that take the frameable capability is to be confirmed by the Phase 0 (the Phase 0 enumerates current DSL-registry members and rules each one frameable or not).
+The membership list — and the formerly-open questions (the generic `<frame>`, the `figure`/`fig`/`img`/`picture` decision, and the later aside-vs-blockquote and callout-folding questions) — are resolved in `notes/specs/frameable.md`. Any still-undecided points are tracked there (under that spec's "Open sub-questions") and in issue #31.
 
 The two earlier-open questions inside this design — the existence of a generic `<frame>` and the `figure`/`fig`/`img`/`picture` question — are **resolved** by this design (recorded above as decided). They are not re-filed as open.
 
