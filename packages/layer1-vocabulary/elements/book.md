@@ -17,8 +17,13 @@ enscribe_attributes:
       default: arabic
     note-position:
       maps_to: data-note-position
-      values: [foot, end, side, chapter-end]
-      default: foot
+      values: [bottom, margin]
+      default: bottom
+      notes: |
+        Document-level note render mode (#33): "bottom" (default) / "margin"
+        (Tufte sidenotes). Where notes COLLECT — including per-chapter — is the
+        per-note `placement` kwarg plus `note-scope` (a book defaults to
+        `note-scope=chapter`), not this attribute. See <note>.
 content:
   type: structured
   shape:
@@ -236,7 +241,7 @@ The Layer 1 vocabulary is uniform; the shorthand layer provides familiar names. 
 
 ## Attributes
 
-`numbering-style` and `note-position` work as for `<article>`. The `note-position` value `chapter-end` is book-specific.
+`numbering-style` and `note-position` work as for `<article>` — `note-position` is the `bottom`/`margin` render mode. Collecting notes per chapter is `note-scope=chapter` (a book's default) with per-note `placement`, not a `note-position` value.
 
 Sub-classification within the book category (monograph, edited-volume, textbook, etc.) is not currently exposed as an attribute. JATS export will need this distinction eventually; the kwarg will be added back at that point.
 

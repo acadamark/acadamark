@@ -59,7 +59,7 @@ content:
       notes: 'Future: numbering style for figures, equations, sections.'
     - element: note-position
       required: false
-      notes: 'Future: where notes render (foot, end, side, chapter-end).'
+      notes: 'Live (#33): document-level note render mode — bottom (default) / margin. (Where notes collect is the per-note placement kwarg + note-scope, not this setting.)'
     - element: stylesheet
       required: false
       multiple: true
@@ -115,7 +115,7 @@ Operational settings that affect processing or rendering:
 - **Output formats**: which targets the build produces (HTML, PDF, JATS, presentation).
 - **Citation style**: how citations are rendered (numbered, author-year, footnote).
 - **Numbering style**: how figures, equations, sections are numbered.
-- **Note position**: where notes render (foot, end, side, chapter-end).
+- **Note position**: the document-level note render mode (`bottom` / `margin`).
 - **Bibliography source**: external bibliography file reference.
 - **Stylesheets**: CSS or theme references.
 - **Theme**: high-level theme selection.
@@ -142,7 +142,7 @@ Many configuration settings can also be expressed as kwargs on `<article>` or `<
 For the common case of a paper with simple settings, kwargs on `<article>` are sufficient:
 
 ```
-<article note-position=end numbering-style=arabic | My Paper>
+<article note-position=margin numbering-style=arabic | My Paper>
 ```
 
 For documents with richer configuration, a `<config>` element gathers the settings as kwargs:

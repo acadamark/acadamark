@@ -257,7 +257,7 @@ To be specified in a separate design pass following Rule 4.
 Some attributes apply at the root container level (`<article>`, `<book>`, `<book-part>`) rather than per-element:
 
 - **`document-type`** — finer classification within a container category.
-- **`note-position`** — where notes are displayed in render mode (`foot` / `end` / `side` / `chapter-end`).
+- **`note-position`** — the document-level note render mode (`bottom` / `margin`, #33). Per-note collection (`end` / `foot` / `side`) is the `placement` kwarg with `note-scope`.
 - **`numbering-style`** — how numbers are displayed (Arabic, Roman, alpha).
 
 Field-level details (canonical value lists, defaults, inheritance behavior) live in the per-element entries (`elements/article.md`, `elements/book.md`, `elements/book-part.md`).
@@ -289,7 +289,7 @@ For future readers and contributors, the load-bearing decisions:
 
 2. **Citations and cross-refs as separate first-class elements.** `<cite>` and `<ref>` are distinct rather than unified under `<xref ref-type>`. They have distinct authoring intent and behavior. JATS export reunifies them.
 
-3. **Notes as first-class with global positioning.** `<note>` and `<note-list>` are first-class elements. The foot/end/side distinction is a presentation concern handled by a document-level `note-position` attribute. Per-note overrides are deferred.
+3. **Notes as first-class with positioning on two axes.** `<note>` and `<note-list>` are first-class elements. The document-level `note-position` attribute selects the render mode (`bottom`/`margin`); the per-note `placement` kwarg (`end`/`foot`/`side`) with `note-scope` chooses how notes collect. Per-note placement is implemented, not deferred.
 
 4. **HTML-native `<figure>` and `<figcaption>` for captioned content.** Tables, figures, listings, and equations that need a caption all wrap in HTML's standard `<figure>` element, with the caption supplied via `<figcaption>`. This applies Rule 2 (defer to HTML where HTML suffices) — no Layer 1 custom element is introduced for captioned content. Numbering is per-domain based on content type. See `elements/figure.md` for per-element details.
 

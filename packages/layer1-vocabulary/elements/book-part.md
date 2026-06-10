@@ -24,7 +24,11 @@ enscribe_attributes:
       values: [arabic, roman, alpha, none]
     note-position:
       maps_to: data-note-position
-      values: [foot, end, side, chapter-end]
+      values: [bottom, margin]
+      notes: |
+        Document-level note render mode (#33): "bottom" / "margin". Collection
+        (the per-note `placement` kwarg and `note-scope`) is a separate axis —
+        see <note>.
 content:
   type: structured
   shape:
@@ -237,7 +241,7 @@ In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part b
 - Disable numbering for prefaces and forewords: `numbering-style=none`.
 - Use roman numerals for front-matter chapters: `numbering-style=roman`.
 
-`note-position` overrides the book-level note position for this book-part.
+`note-position` overrides the book-level note **render mode** (`bottom`/`margin`) for this book-part.
 
 ## JATS mapping
 

@@ -24,11 +24,12 @@ enscribe_attributes:
         by CSS class on the note-list); "side" renders the content
         inline-adjacent to the marker. Document-wide default is "end".
     position:
-      maps_to: data-note-position
-      values: [foot, end, side, chapter-end, inline]
+      maps_to: data-note-placement
+      values: [end, foot, side]
       notes: |
-        Legacy alias for "placement". Retained for backwards compatibility.
-        "placement" is preferred for new documents.
+        Legacy alias for "placement" (same values, same data-note-placement
+        output). Retained for backwards compatibility; "placement" is preferred
+        for new documents.
     type:
       maps_to: data-note-type
       values: [substantive, technical, editorial, translator, other]
@@ -86,9 +87,9 @@ Notes are written inline at the location where they logically belong to the surr
 The claim has empirical support<note | Multiple studies confirm this — see Smith 2019, Jones 2020, and Chen 2021.>.
 ```
 
-The `<note>` appears in the source where the author wants the note to attach. The actual rendered position (foot of page, end of document, side margin) is determined by the document-level `note-position` setting, not by where the author placed the source.
+The `<note>` appears in the source where the author wants the note to attach. Where the note's content ends up — collected into a `<note-list>`, or set inline-adjacent in the margin — is determined by the note's `placement` (with the document's `note-scope`) and the document-level `note-position` render mode, not by where the author placed the source.
 
-This separation means the same source produces different rendered outputs depending on configuration. A document with `note-position=foot` renders notes as page footnotes; the same document with `note-position=end` collects them as endnotes; with `note-position=side` they become side notes.
+This separation means the same source produces different rendered outputs depending on configuration. A note with `placement=end` (the default) collects into the back-matter `<note-list>`; `placement=foot` marks it as a footnote (collected per the document's `note-scope` unit); `placement=side` renders it inline-adjacent as a sidenote. Independently, `note-position=margin` projects every numbered note into the page margin (Tufte sidenotes).
 
 ## Note numbering
 
@@ -98,16 +99,21 @@ Authors who need to override numbering can specify the `number` kwarg, but this 
 
 ## Placement
 
-The document-level `note-position` setting (on `<article>`, `<book>`, or in `<meta>`) determines where notes appear in the rendered output:
+Two independent settings govern where a note's content ends up.
+
+**Per-note `placement`** — a kwarg on the individual `<note>` (`position` is a legacy alias). It selects the note's collection target:
 
 | Value | Behavior |
 |-------|----------|
-| `foot` | Notes collect at the foot of each page (paged output). |
-| `end` | Notes collect at the end of the document into a `<note-list>`. |
-| `side` | Notes appear in the side margin near their reference point. |
-| `chapter-end` | Notes collect at the end of each containing chapter. |
+| `end` (default) | Collected into the back-matter `<note-list>`. |
+| `foot` | Marked as a footnote (note-list class `footnotes`); collected per the document's `note-scope` unit. |
+| `side` | Rendered inline-adjacent to its marker as a sidenote. |
 
-Individual notes can override the document-level setting via the `position` kwarg. The most useful override is `position=inline`, which keeps the note in place rather than collecting it elsewhere. This is occasionally useful for very short asides where collecting would interrupt the reading more than inlining.
+**Document-level `note-scope`** (`document` \| `chapter` \| `section`) chooses the collection *unit* for `end`/`foot` notes: one `<note-list>` at the document end, one per chapter, or one per section.
+
+**Document-level `note-position`** (`bottom` default \| `margin`) is a separate render mode: `margin` projects every numbered note into the page margin (#33); `bottom` keeps them at the document foot. See [`<article>`](article.md) and [`<config>`](config.md).
+
+True per-page paged footnotes (notes physically at the bottom of each printed page) need print pagination and are not yet built.
 
 ## Cross-referencing notes
 
@@ -169,22 +175,21 @@ We discuss this further in the methods section, building on the points outlined 
 The translation preserves the original metaphor<note type=translator | The original Greek phrase carries connotations not fully captured in English.>.
 ```
 
-**Note kept inline despite document-level end-positioning.**
+**Note set in the margin (sidenote) rather than collected.**
 
 ```
-The claim is uncontroversial<note position=inline | At least, it is uncontroversial in the field.>.
+The claim is uncontroversial<note placement=side | At least, it is uncontroversial in the field.>.
 ```
 
-In a document where most notes are end-positioned, this specific note stays in place.
+In a document where most notes collect into the back-matter list, this specific note renders inline-adjacent in the margin instead.
 
 ## Render-mode lowering
 
-`<note>` is a custom element. In render mode, the rendering depends on placement:
+`<note>` is a custom element. In render mode, the rendering depends on its `placement`:
 
-- `position=inline`: lower to `<span class="note">` containing the note text.
-- `position=foot`: rendered by the print/CSS pipeline as page footnotes.
-- `position=end`: collected by the placement plugin into a `<note-list>` at the document back-matter.
-- `position=side`: rendered with CSS-grid or floating positioning.
+- `placement=end` (default): collected by the placement plugin into a `<note-list>` at the document back-matter.
+- `placement=foot`: collected per the document's `note-scope` unit; the `<note-list>` carries the `footnotes` class. (True per-page paged footnotes need print pagination — not yet built.)
+- `placement=side`: rendered inline-adjacent to its marker as a sidenote (CSS float/grid).
 
 The note's reference marker (the number that appears in the prose) is generated by the `enscribeNoteNumbering` plugin and may be a `<sup>` or styled `<a>` depending on rendering mode.
 

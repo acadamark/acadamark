@@ -19,25 +19,30 @@ enscribe_attributes:
       maps_to: data-bibliography-style
       values: [author-year, numbered, footnote, custom]
       notes: |
-        How the bibliography is rendered. Typically inherits from the
-        document-level citation-style; this kwarg overrides for the bibliography
-        rendering specifically.
+        Future — not yet implemented: the interpreter does not read this kwarg
+        or emit data-bibliography-style. Planned: how the bibliography is
+        rendered; typically inherits from the document-level citation-style,
+        with this kwarg overriding for the bibliography rendering specifically.
     sort:
       maps_to: data-bibliography-sort
       values: [alpha, citation-order, year, none]
       default: alpha
       notes: |
-        How bibliography entries are sorted. "alpha" is alphabetical by author
-        surname (default for author-year styles); "citation-order" is the
-        order in which entries are first cited (default for numbered styles).
+        Future — not yet implemented: the interpreter does not read this kwarg
+        or emit data-bibliography-sort. Planned: how bibliography entries are
+        sorted. "alpha" is alphabetical by author surname (default for
+        author-year styles); "citation-order" is the order in which entries are
+        first cited (default for numbered styles).
     type:
       maps_to: data-bibliography-type
       values: [cited-only, full, hybrid]
       default: cited-only
       notes: |
-        Which entries appear: "cited-only" includes only entries cited in
-        the document; "full" includes all registered entries; "hybrid"
-        includes cited entries with a separate "Further Reading" section.
+        Future — not yet implemented: the interpreter does not read this kwarg
+        or emit data-bibliography-type. Planned: which entries appear —
+        "cited-only" includes only entries cited in the document; "full"
+        includes all registered entries; "hybrid" includes cited entries with a
+        separate "Further Reading" section.
 content:
   type: structured
   shape:
@@ -141,7 +146,7 @@ output there instead of at the document end.
 <bibliography type=full sort=alpha></bibliography>
 ```
 
-`type=full` includes all registered entries (uncited works too).
+`type=full` includes all registered entries (uncited works too). *(Planned — `type` and `sort` are not yet implemented; see the status note below.)*
 
 A document has at most one rendering `<bibliography>`. *Where reference data comes
 from* is the job of `<library>` (inline or `src`), never `<bibliography>`.
@@ -154,6 +159,12 @@ If no explicit `<bibliography>` is written for rendering, the assembly plugin pl
 - For books: at the end of `<book-back>`.
 
 Authors who want different placement write an explicit empty `<bibliography>` at the desired location.
+
+> **Status — `style`, `sort`, and `type` are not yet implemented.** The
+> interpreter does not currently read these kwargs or emit any
+> `data-bibliography-*` attribute; the bibliography renders with default style,
+> sorting, and filtering. The sections below describe the *planned* behavior.
+> Implementation is tracked separately.
 
 ## Sorting and filtering
 
@@ -186,8 +197,7 @@ The `style` kwarg on `<bibliography>` overrides for the bibliography rendering s
 |-----------|------|
 | `<bibliography>` | `<ref-list>` |
 | `<bib-entry>` (children of `<bibliography>`) | `<ref>` (children of `<ref-list>`) |
-| `source` kwarg | (handled at processing; not in JATS output) |
-| `sort`, `type`, `style` kwargs | preserved as data attributes |
+| `sort`, `type`, `style` kwargs | (future — not yet read or emitted) |
 
 The mapping is direct.
 

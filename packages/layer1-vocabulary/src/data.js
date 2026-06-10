@@ -550,11 +550,11 @@ const _article = Object.freeze({
             "html": "data-note-position",
           },
           "values": [
-            "foot",
-            "end",
-            "side",
+            "bottom",
+            "margin",
           ],
-          "default": "foot",
+          "default": "bottom",
+          "notes": "Document-level note render mode (#33): \"bottom\" (default) keeps numbered\nnotes at the foot of the document; \"margin\" projects each note into a\nmargin column beside its marker (Tufte sidenotes). Where notes COLLECT\n(per-note end/foot/side; per-section or per-chapter) is the per-note\n`placement` kwarg plus `note-scope`, not this attribute — see <note>.\n",
         },
       },
     },
@@ -1009,7 +1009,7 @@ const _bibliography = Object.freeze({
             "footnote",
             "custom",
           ],
-          "notes": "How the bibliography is rendered. Typically inherits from the\ndocument-level citation-style; this kwarg overrides for the bibliography\nrendering specifically.\n",
+          "notes": "Future — not yet implemented: the interpreter does not read this kwarg\nor emit data-bibliography-style. Planned: how the bibliography is\nrendered; typically inherits from the document-level citation-style,\nwith this kwarg overriding for the bibliography rendering specifically.\n",
         },
         "sort": {
           "maps_to": {
@@ -1022,7 +1022,7 @@ const _bibliography = Object.freeze({
             "none",
           ],
           "default": "alpha",
-          "notes": "How bibliography entries are sorted. \"alpha\" is alphabetical by author\nsurname (default for author-year styles); \"citation-order\" is the\norder in which entries are first cited (default for numbered styles).\n",
+          "notes": "Future — not yet implemented: the interpreter does not read this kwarg\nor emit data-bibliography-sort. Planned: how bibliography entries are\nsorted. \"alpha\" is alphabetical by author surname (default for\nauthor-year styles); \"citation-order\" is the order in which entries are\nfirst cited (default for numbered styles).\n",
         },
         "type": {
           "maps_to": {
@@ -1034,7 +1034,7 @@ const _bibliography = Object.freeze({
             "hybrid",
           ],
           "default": "cited-only",
-          "notes": "Which entries appear: \"cited-only\" includes only entries cited in\nthe document; \"full\" includes all registered entries; \"hybrid\"\nincludes cited entries with a separate \"Further Reading\" section.\n",
+          "notes": "Future — not yet implemented: the interpreter does not read this kwarg\nor emit data-bibliography-type. Planned: which entries appear —\n\"cited-only\" includes only entries cited in the document; \"full\"\nincludes all registered entries; \"hybrid\" includes cited entries with a\nseparate \"Further Reading\" section.\n",
         },
       },
     },
@@ -1389,11 +1389,10 @@ const _book_part = Object.freeze({
             "html": "data-note-position",
           },
           "values": [
-            "foot",
-            "end",
-            "side",
-            "chapter-end",
+            "bottom",
+            "margin",
           ],
+          "notes": "Document-level note render mode (#33): \"bottom\" / \"margin\". Collection\n(the per-note `placement` kwarg and `note-scope`) is a separate axis —\nsee <note>.\n",
         },
       },
     },
@@ -1611,12 +1610,11 @@ const _book = Object.freeze({
             "html": "data-note-position",
           },
           "values": [
-            "foot",
-            "end",
-            "side",
-            "chapter-end",
+            "bottom",
+            "margin",
           ],
-          "default": "foot",
+          "default": "bottom",
+          "notes": "Document-level note render mode (#33): \"bottom\" (default) / \"margin\"\n(Tufte sidenotes). Where notes COLLECT — including per-chapter — is the\nper-note `placement` kwarg plus `note-scope` (a book defaults to\n`note-scope=chapter`), not this attribute. See <note>.\n",
         },
       },
     },
@@ -2010,7 +2008,7 @@ const _config = Object.freeze({
         {
           "element": "note-position",
           "required": false,
-          "notes": "Future: where notes render (foot, end, side, chapter-end).",
+          "notes": "Live (#33): document-level note render mode — bottom (default) / margin. (Where notes collect is the per-note placement kwarg + note-scope, not this setting.)",
         },
         {
           "element": "stylesheet",
@@ -4253,7 +4251,7 @@ const _note_list = Object.freeze({
           "element": "note",
           "required": false,
           "multiple": true,
-          "notes": "Notes are typically not authored directly inside <note-list>.\nThey are placed there by the enscribeNotePlacement plugin\nbased on the document's note-position setting.\n",
+          "notes": "Notes are typically not authored directly inside <note-list>.\nThey are placed there by the enscribeNotePlacement plugin\nbased on each note's placement (end/foot) and the document's\nnote-scope.\n",
         },
       ],
     },
@@ -4266,7 +4264,7 @@ const _note_list = Object.freeze({
     "generated_by": [
       {
         "plugin": "enscribeNotePlacement",
-        "when": "Document-level note-position is \"end\" or \"chapter-end\".\nThe plugin collects notes from throughout the document and\nplaces them in a <note-list> at the back-matter location\n(for end notes) or at the end of each chapter (for chapter\nnotes).\n",
+        "when": "The document has notes with a collecting placement (end/foot).\nnote-scope chooses the unit: \"document\" places one <note-list> in\nthe back-matter, \"chapter\" one at the end of each chapter/book-part,\n\"section\" one per section.\n",
       },
     ],
     "_sourceFile": "note-list.md",
@@ -4307,16 +4305,14 @@ const _note = Object.freeze({
         },
         "position": {
           "maps_to": {
-            "html": "data-note-position",
+            "html": "data-note-placement",
           },
           "values": [
-            "foot",
             "end",
+            "foot",
             "side",
-            "chapter-end",
-            "inline",
           ],
-          "notes": "Legacy alias for \"placement\". Retained for backwards compatibility.\n\"placement\" is preferred for new documents.\n",
+          "notes": "Legacy alias for \"placement\" (same values, same data-note-placement\noutput). Retained for backwards compatibility; \"placement\" is preferred\nfor new documents.\n",
         },
         "type": {
           "maps_to": {

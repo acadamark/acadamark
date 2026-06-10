@@ -31,7 +31,8 @@ content:
       notes: |
         Notes are typically not authored directly inside <note-list>.
         They are placed there by the enscribeNotePlacement plugin
-        based on the document's note-position setting.
+        based on each note's placement (end/foot) and the document's
+        note-scope.
 content_handler: default
 jats_counterpart:
   element: fn-group
@@ -42,11 +43,10 @@ interpreter_strategy: schema
 generated_by:
   - plugin: enscribeNotePlacement
     when: |
-      Document-level note-position is "end" or "chapter-end".
-      The plugin collects notes from throughout the document and
-      places them in a <note-list> at the back-matter location
-      (for end notes) or at the end of each chapter (for chapter
-      notes).
+      The document has notes with a collecting placement (end/foot).
+      note-scope chooses the unit: "document" places one <note-list> in
+      the back-matter, "chapter" one at the end of each chapter/book-part,
+      "section" one per section.
 ---
 
 # `<note-list>`
@@ -55,9 +55,9 @@ A container for collected notes. Used to gather end-notes, chapter-notes, or oth
 
 ## Semantic intent
 
-`<note-list>` is the structural container that gathers `<note>` elements when the document's note-position setting calls for collection. End-notes go into a `<note-list>` at the back-matter location. Chapter-notes go into a `<note-list>` at the end of each chapter.
+`<note-list>` is the structural container that gathers `<note>` elements with a collecting `placement` (`end`/`foot`). `note-scope` chooses where they collect: one list in the back-matter (`document`), one per chapter (`chapter`), or one per section (`section`).
 
-This element is **generated output, never authored** (#129). The `enscribeNotePlacement` plugin builds `<note-list>` from the document's `<note>`s based on the `note-position` setting; an author never types it. It is documented here as a Layer 1 *output* element — for the JATS mapping and render-mode lowering below — not as an authoring surface. The authoring path is `<note>` (see [`<note>`](note.md)); the collection into `<note-list>` is automatic.
+This element is **generated output, never authored** (#129). The `enscribeNotePlacement` plugin builds `<note-list>` from the document's `<note>`s based on their `placement` and the document's `note-scope`; an author never types it. It is documented here as a Layer 1 *output* element — for the JATS mapping and render-mode lowering below — not as an authoring surface. The authoring path is `<note>` (see [`<note>`](note.md)); the collection into `<note-list>` is automatic.
 
 ## Why it exists
 
@@ -66,7 +66,7 @@ Even though no author writes `<note-list>`, the element is a real structural par
 - It needs to appear in the rendered HTML (browsers and JATS export need a container for the collected notes).
 - It needs to be the cross-reference target for note references that resolve to "see end-notes" or similar.
 
-The default and only workflow is: write `<note>` inline in your source; set `note-position` at document level; the placement plugin collects the notes into a `<note-list>` automatically.
+The default and only workflow is: write `<note>` inline in your source (notes default to `placement=end`); optionally set `note-scope`; the placement plugin collects the notes into a `<note-list>` automatically.
 
 ## Content
 
@@ -95,7 +95,7 @@ The mapping is direct. JATS's `<fn-group>` is the natural counterpart for collec
 
 ## Generation (not authoring)
 
-`<note-list>` is produced entirely by the `enscribeNotePlacement` plugin — there is no authoring form. The author writes `<note>` inline (see [`<note>`](note.md)) and sets `note-position` at the document level; the plugin collects the document's notes into a `<note-list>` at the back-matter location (end notes) or at the end of each chapter (chapter notes). The container's `type` and `id` come from that placement step, not from authored markup. Because nothing is authored, `<note-list>` carries no `shorthand_examples` and is excluded from the authoring gallery (`authoring: output-only`).
+`<note-list>` is produced entirely by the `enscribeNotePlacement` plugin — there is no authoring form. The author writes `<note>` inline (see [`<note>`](note.md)); each note's `placement` and the document's `note-scope` drive collection; the plugin gathers the notes into a `<note-list>` at the back-matter location or per chapter/section. The container's `type` and `id` come from that placement step, not from authored markup. Because nothing is authored, `<note-list>` carries no `shorthand_examples` and is excluded from the authoring gallery (`authoring: output-only`).
 
 ## Render-mode lowering
 
@@ -107,4 +107,4 @@ The `<note>` children inside lower according to their own render-mode rules, typ
 
 - [`<note>`](note.md) — the individual note element.
 - [`<bibliography>`](bibliography.md) — analogous container for collected bibliographic references (also typically auto-generated).
-- [`<article>`](article.md), [`<book>`](book.md) — the containers whose `note-position` setting determines whether `<note-list>` is generated.
+- [`<article>`](article.md), [`<book>`](book.md) — the containers whose `note-scope` setting governs how collected notes are grouped into `<note-list>`s.
