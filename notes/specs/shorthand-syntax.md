@@ -408,6 +408,8 @@ For tags with opaque content, `content` is the raw string. For tags with parsed 
   kwargs: {},
   id: null,
   classes: [],
+  atRefs: [],          // @-references (e.g. <ref @fig:x>), carried from the opener (#171)
+  selfClosing: false,  // long-form is never self-closing
 }
 ```
 

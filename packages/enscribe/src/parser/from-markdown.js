@@ -242,8 +242,10 @@ function enterEnscribeLongFormTag(token) {
       positional: [],
       booleans: {},
       kwargs: {},
+      atRefs: [],
       id: null,
       classes: [],
+      selfClosing: false,
       content: '',
       isOpaqueContent: true,
       contentHandler: 'default',
@@ -266,6 +268,9 @@ function exitEnscribeLongFormOpen(token) {
     node.positional = parsed.positional
     node.booleans = parsed.booleans
     node.kwargs = parsed.kwargs
+    // #171: carry @ref attributes from the opener — long-form `<ref @id>…</ref>`
+    // must not silently drop the reference. Defaults to [] (canonical shape).
+    node.atRefs = parsed.atRefs ?? []
     node.id = parsed.id
     node.classes = parsed.classes
     node.contentHandler = getContentHandler(parsed.tagname)
