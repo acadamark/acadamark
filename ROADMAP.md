@@ -85,6 +85,11 @@ features.
   [#142](https://github.com/enscribejs/enscribe/issues/142),
   [#118](https://github.com/enscribejs/enscribe/issues/118)) — a feature track
   reached *from* the HTML base, not the core mission.
+- **Interchange** (epic milestone). Import / export with the external authoring
+  formats authors already use — Quarto round-trip (the direct `.qmd` engine,
+  since enscribe already parses Markdown) and LaTeX / DOCX lossy via the pandoc
+  bridge. An adoption on-ramp and no-lock-in guarantee — a feature track, not the
+  mission. See [`notes/specs/interchange.md`](notes/specs/interchange.md).
 
 > **TODO (maintainer fine-tuning).** The reading-polish placement, the
 > infra / health track, and the icebox (longer-horizon parser / display work and
