@@ -29,7 +29,11 @@ enscribe render paper.emd --dsl-mode live-link
 ```
 
 Options: `-o, --output <file>`, `--embed` (default) / `--no-embed`,
-`--dsl-mode <skip|live-link|live-inline|static>`, `--quiet`.
+`--dsl-mode <skip|live-link|live-inline|static>`, `--toc` (a table-of-contents
+sidebar; `--toc=auto` shows it only past three sections), `--theme
+<default|modern|compact>` (inject a theme's token overrides), `--chapter-nav`
+(default on) / `--no-chapter-nav` (for books with `--toc`: read one chapter at a
+time, or render the whole book as one page), `--quiet`.
 
 ### `enscribe export-jats`
 
