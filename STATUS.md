@@ -124,7 +124,9 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 sidenotes + margin notes, article appendices, external `<library src>` citation
 sources, the authoring coverage gallery, plus the v0.3.x markup-in-table-cells /
 section numbering / smart typography / callouts and the v0.2.x base), converts to
-and from JATS — now framed as an export translation from an HTML-shaped Layer 1 —
+and from JATS — now framed as an export translation from an HTML-shaped Layer 1
+(the decided direction; lists are the first migrated element group, the remaining
+groups tracked under [#147](https://github.com/enscribejs/enscribe/issues/147)) —
 ships a client-side browser library and the `enscribe` CLI, and is published to
 npm as three scoped packages. (v0.3.5, the v0.3.0-close consolidation pass,
 shipped between.) The next milestone is **v0.4.5** (code highlighting, bundle

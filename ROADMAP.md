@@ -44,14 +44,21 @@ features.
 - **v0.4.0 — shipped.** Lists (`<list>` / `<li>`), strict mode
   (`<config strict-mode>`), sidenotes + margin notes, article appendices, and
   external citation sources (`<library src>`) — plus the coverage gallery as the
-  authoring completeness surface and the reframe of Layer 1 as HTML-shaped (JATS
-  becomes an export translation), with a full docs-site pass (feature pages,
-  governance tier).
+  authoring completeness surface and the *decision* to reframe Layer 1 as
+  HTML-shaped (JATS becomes an export translation), with **lists as the first
+  migrated element group** (`<list>` lowers to `<ul>` / `<ol>` / `<li>`). The
+  decision and its inaugural case shipped; the rest of the vocabulary still
+  renders as custom Layer 1 elements and migrates group-by-group under
+  [#147](https://github.com/enscribejs/enscribe/issues/147). A full docs-site
+  pass (feature pages, governance tier) shipped alongside.
 - **v0.4.5.** Code syntax highlighting, browser-bundle size optimization,
   conda-forge packaging, and new sigil shorthands (carried from the v0.4.0 plan).
-- **future.** Longer-horizon work — render-mode lowering to plain HTML,
-  multi-column display, the master-document / multi-file system (`master-document.md`),
-  and other parser / display features as their design questions resolve.
+- **future.** Longer-horizon work — the remaining HTML-shaped Layer 1
+  element-group migration ([#147](https://github.com/enscribejs/enscribe/issues/147):
+  sections, figures, the semantic-only elements), render-mode lowering to plain
+  HTML, multi-column display, the master-document / multi-file system
+  (`master-document.md`), and other parser / display features as their design
+  questions resolve.
 
 ---
 
@@ -59,8 +66,10 @@ features.
 
 **v0.4.0 is released** — lists, strict mode, sidenotes + margin notes, article
 appendices, and external citation sources (`<library src>`), plus the authoring
-coverage gallery and the HTML-shaped Layer 1 reframe (JATS as an export
-translation) with a full docs-site pass, shipped on top of the v0.2.x / v0.3.x
+coverage gallery and the HTML-shaped Layer 1 reframe — decided, with lists as the
+first migrated element group; the remaining migration is tracked under
+[#147](https://github.com/enscribejs/enscribe/issues/147) (JATS as an export
+translation) — with a full docs-site pass, shipped on top of the v0.2.x / v0.3.x
 base (rich-document rendering, bidirectional JATS, the browser library and
 `enscribe` CLI, three packages on npm: `@enscribejs/enscribe`, `@enscribejs/cli`,
 `@enscribejs/layer1-vocabulary`). **v0.4.5 is next** — code syntax highlighting,
