@@ -2986,9 +2986,9 @@ const _fig = Object.freeze({
     "category": "frameables",
     "html_output": {
       "element": "fig",
-      "is_html_native": false,
+      "is_html_native": true,
       "default_attributes": {},
-      "notes": "The vocab key (the VOCABULARY map's key) is `fig` — the canonical\nLayer 1 tagname. The rendered HTML, however, uses the HTML5-native\n`<figure>` element: the figure handler (`handlers/figure.js`)\nhardcodes its output tagName to `'figure'`, so the value of\n`html_output.element` here is only the vocab keying signal, not the\nHTML output element. (Schema-strategy entries derive output\ntagName from this field; handler-strategy entries control output\ntagName in the handler. `<fig>` is handler-strategy, so this\nfield's value selects the vocab key only.)\n",
+      "notes": "Figures are HTML-shaped at Layer 1 (#147): the rendered Layer 1\nelement is the HTML5-native `<figure>`. The figure handler\n(`handlers/figure.js`) hardcodes its output tagName to `'figure'`,\nso `is_html_native: true` describes that rendered element — the same\nway `<table>` / `<svg>` / `<aside>` are native handler-strategy\nframeables. `html_output.element` retains `fig` as the vocab key\n(the filename stem) and the interpreter's dispatch name: schema-\nstrategy entries derive the output tagName from this field, but\nhandler-strategy entries control the output tagName in the handler,\nso for `<fig>` this field is the keying signal only, not the\nrendered element. `fig` is also the JATS export target (see\n`jats_counterpart` below); `<figure>` is the canonical HTML /\nauthoring name.\n",
     },
     "enscribe_attributes": {
       "id": {

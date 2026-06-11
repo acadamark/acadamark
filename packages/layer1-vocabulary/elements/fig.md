@@ -3,18 +3,22 @@ semantic_role: figure
 category: frameables
 html_output:
   element: fig
-  is_html_native: false
+  is_html_native: true
   default_attributes: {}
   notes: |
-    The vocab key (the VOCABULARY map's key) is `fig` — the canonical
-    Layer 1 tagname. The rendered HTML, however, uses the HTML5-native
-    `<figure>` element: the figure handler (`handlers/figure.js`)
-    hardcodes its output tagName to `'figure'`, so the value of
-    `html_output.element` here is only the vocab keying signal, not the
-    HTML output element. (Schema-strategy entries derive output
-    tagName from this field; handler-strategy entries control output
-    tagName in the handler. `<fig>` is handler-strategy, so this
-    field's value selects the vocab key only.)
+    Figures are HTML-shaped at Layer 1 (#147): the rendered Layer 1
+    element is the HTML5-native `<figure>`. The figure handler
+    (`handlers/figure.js`) hardcodes its output tagName to `'figure'`,
+    so `is_html_native: true` describes that rendered element — the same
+    way `<table>` / `<svg>` / `<aside>` are native handler-strategy
+    frameables. `html_output.element` retains `fig` as the vocab key
+    (the filename stem) and the interpreter's dispatch name: schema-
+    strategy entries derive the output tagName from this field, but
+    handler-strategy entries control the output tagName in the handler,
+    so for `<fig>` this field is the keying signal only, not the
+    rendered element. `fig` is also the JATS export target (see
+    `jats_counterpart` below); `<figure>` is the canonical HTML /
+    authoring name.
 enscribe_attributes:
   id:
     maps_to: id
@@ -184,7 +188,7 @@ handler_responsibilities:
 
 A figure represents self-contained content referenced from the main flow — typically an image with a caption, but also tables, code blocks, equations, or any other content worthy of being captioned and numbered.
 
-`<fig>` is the canonical Layer 1 name (matching JATS's `<fig>` element name); `<figure>` is an accepted authoring alias that rewrites to `<fig>` at the normalize-to-canonical gate. Both forms produce the same Layer 1 AST and the same HTML output (the HTML rendering uses HTML5's native `<figure>` element regardless of authoring surface).
+Under the HTML-shaped direction (#147), the canonical Layer 1 element for figures is the HTML-native `<figure>` — figures are the second migrated group after lists. This entry is keyed `fig`: the JATS-aligned name is retained as the vocab key, the interpreter's dispatch name, and the JATS export target, while `<fig>` and `<figure>` are both accepted authoring forms. Both authoring forms normalize to the same Layer 1 AST (the gate rewrites `<figure>` to the `fig` dispatch node) and render to the same HTML-native `<figure>`.
 
 ## Semantic intent
 
@@ -197,15 +201,14 @@ The element does double duty:
 
 Both cases produce semantically rich HTML that browsers and screen readers handle natively. The rendered HTML uses HTML5's native `<figure>` element.
 
-## The `<figure>` alias
+## The `<fig>` / `<figure>` names
 
-`<figure>` is an authoring alias for `<fig>`. An earlier change added this alias because:
+`<figure>` is the canonical HTML-native Layer 1 element for figures (#147); `<fig>` is retained as the JATS-aligned name in three roles — the vocabulary key, the interpreter's dispatch name, and the JATS export target — and `<fig>` also stays an accepted authoring shorthand. The two names coexist because:
 
-- HTML5 uses `<figure>` natively, so authors coming from HTML are likely to type `<figure>`.
-- JATS uses `<fig>` for the same element, so the Layer 1 canonical name matches JATS for export simplicity.
-- The enscribe frameable design (`DESIGN.md` §"Frameable elements") explicitly settled `<fig>` as the canonical name with `<figure>` as the authoring alias.
+- HTML5 uses `<figure>` natively, so it is the natural canonical element under the HTML-shaped direction, and authors coming from HTML type it directly.
+- JATS uses `<fig>` for the same element, so keeping `fig` as the export name and the internal key keeps the export close to pass-through.
 
-The normalize-to-canonical gate rewrites authored `<figure>` to `<fig>` before any downstream plugin runs. The vocabulary entry's `shorthand_expansions` provides a secondary safety net.
+The normalize-to-canonical gate rewrites authored `<figure>` to the `fig` dispatch node before any downstream plugin runs (the figure handler then emits HTML-native `<figure>`); the vocabulary entry's `shorthand_expansions` registers `<figure>` as an alias as a secondary safety net. Making the internal dispatch name follow the `<figure>` canonical is a deferred follow-on — it touches the gate's rewrite direction and the tagname-keyed lookups, so it is sequenced separately from this metadata/spec migration.
 
 ## Frameable membership
 

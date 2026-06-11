@@ -21,12 +21,20 @@ Whether any given part is built is a STATUS / Issues question.
 ## The capability
 
 Frameable is a capability **shared by several distinct elements**, not an
-umbrella element that wraps them. A figure is a `<fig>`; a table is a
+umbrella element that wraps them. A figure is a `<figure>`; a table is a
 `<table>`; a callout is an `<aside>`. Each is a first-class element that
 *also* possesses the frameable capability — the same attribute surface
 and the same rendering behavior — because the capability is shared.
 Authoring a frameable construct does not nest an inner content element
 inside an outer wrapper; the frameable element *is* the construct.
+
+The figure member's canonical Layer 1 element is the HTML-native
+`<figure>` (figures are HTML-shaped, #147). The name `<fig>` still
+appears below in two roles: the **JATS export target** (the JATS-mapping
+table) and the interpreter's **tagname-keyed mechanisms** (the shared
+`figure` counter membership and handler routing), where the internal
+dispatch name remains `fig`; `<fig>` is also an accepted authoring alias
+for `<figure>`.
 
 Numbering ("Fig. 3", "Table 2") is **folded into the caption/title
 rendering** — it is not a separate authored field. A numbered frameable
