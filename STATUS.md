@@ -121,20 +121,14 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 ## Current position
 
-**v0.4.0 is released** — enscribe renders rich documents (lists, strict mode,
-sidenotes + margin notes, article appendices, external `<library src>` citation
+**v0.4.0 is the current release** — enscribe renders rich documents (lists, strict
+mode, sidenotes + margin notes, article appendices, external `<library src>` citation
 sources, the authoring coverage gallery, plus the v0.3.x markup-in-table-cells /
 section numbering / smart typography / callouts and the v0.2.x base), converts to
-and from JATS — now framed as an export translation from an HTML-shaped Layer 1
-(the decided direction; lists were the inaugural migrated element group and figures
-the second, with the remaining groups tracked under
-[#147](https://github.com/enscribejs/enscribe/issues/147)) —
+and from JATS — framed as an export translation from an HTML-shaped Layer 1 (the
+decided direction; lists were the inaugural migrated element group and figures the
+second, with the remaining groups still rendering as custom Layer 1 elements) —
 ships a client-side browser library and the `enscribe` CLI, and is published to
-npm as three scoped packages. (v0.3.5, the v0.3.0-close consolidation pass,
-shipped between.) **v0.4.5** — the v0.4.0-close consolidation pass — is closing,
-draining the audit findings (#148–#183); per the cadence it ships no new
-features. **v0.5.0 is next**, starting from that coherent baseline with the
-HTML-shaped element-group migration (#147) and the deferred feature work
-(code syntax highlighting #17, …). Open work is tracked in
+npm as three scoped packages. Open work is tracked in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues) by milestone and
-label; the release plan and targets live in `ROADMAP.md`.
+label; the release plan and what's next live in `ROADMAP.md`.
