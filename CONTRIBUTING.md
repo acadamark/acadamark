@@ -29,7 +29,7 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `spec_lift-lower-round-trip.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `spec_lift-lower-round-trip.md`, `master-document.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
@@ -72,33 +72,42 @@ Each subsystem's blueprint:
   syntactic ground truth), with `notes/specs/escape-rules-spec.md`,
   `notes/specs/multiline-spec.md`, and `notes/specs/recursive-content-spec.md`
   for the related parser-layer details, and `notes/specs/tag-forms-reference.md`
-  (the per-tag matrix of which syntactic forms each element supports).
+  (the per-tag matrix of which syntactic forms each element supports), plus
+  `notes/specs/strict-mode.md` (the strictness register switch — which authoring
+  registers the reader interprets).
 - **Interpreter / pipeline** — `notes/specs/interpreter.md` (interpreter
   architecture: dispatch, handlers, schema, asset injection) and
   `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow),
   with `notes/specs/core.md` (the inward-pointing, `fs`-free shared foundation
   the package is built on), `notes/specs/format-words.md` (the host/format-word
   "kind" convention), `notes/specs/render-quality.md` (the standard for
-  well-rendered output), and `notes/specs/render-parity.md` (the live/static
+  well-rendered output), `notes/specs/render-parity.md` (the live/static
   one-engine invariant — byte-identity on matched options, and what is
-  scoped out of it).
+  scoped out of it), and `notes/specs/sidenotes.md` (the margin render mode for
+  footnotes/notes — an HTML projection, not new vocabulary).
 - **Layer 1 vocabulary** — `notes/specs/layer1-naming.md` (the four naming
-  rules), `notes/specs/shape-tokens.md` (content-shape machinery), and
-  `notes/specs/frameable.md` (the out-of-flow frameable element family). The
-  per-element vocabulary entries live separately in
+  rules), `notes/specs/shape-tokens.md` (content-shape machinery),
+  `notes/specs/frameable.md` (the out-of-flow frameable element family),
+  `notes/specs/lists.md` (the `<list>` / `<li>` marker model), and
+  `notes/specs/appendices.md` (the `<appendix>` element's article + book
+  projections). The per-element vocabulary entries live separately in
   `packages/layer1-vocabulary/elements/` with `SPEC.md` alongside.
 - **Round-trip transforms** — `notes/specs/spec_lift-lower-round-trip.md`
   (the correctness model for the `lift` / `lower` register transforms).
 - **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
   processor-delegation principle) and `notes/specs/principles.md`
   (always-renders, parser-knows-nothing-about-meaning, etc.).
-- **Extension blueprints (designed, not built)** —
-  `notes/specs/master-document.md`,
+- **Extension blueprints (designed; unbuilt unless noted)** —
+  `notes/specs/master-document.md` (the multi-file assembler — article-level
+  assembly with cross-file numbering/refs is **built** (#190) and renders live
+  in the browser (#194); the remaining slices are designed), with
+  `notes/specs/multi-file-authoring.md` (the earlier authoring-side sketch it
+  superseded),
   `notes/specs/multi-column-display.md`,
   `notes/specs/render-mode.md`, and
   `notes/specs/interchange.md`. Their design is specified at the
-  rebuild standard; the unbuilt fact is tracked in GitHub Issues, and the
-  milestone in `ROADMAP.md`.
+  rebuild standard; the unbuilt fact (where it still holds) is tracked in
+  GitHub Issues, and the milestone in `ROADMAP.md`.
 
 ## Where each kind of fact lives
 

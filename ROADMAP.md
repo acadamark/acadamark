@@ -18,8 +18,10 @@ file is what needs updating.
 The spine, in order — each step unblocks the next:
 
 1. **Multi-file / master-document system** — the long pole. A real document spans
-   many files; nothing downstream works without it. *Walking skeleton landed;
-   cross-file resolution next.*
+   many files; nothing downstream works without it. *Article-level assembly landed —
+   cross-file numbering and cross-references resolve across files, and the browser
+   renders the same assembly live; cross-file citations/bibliography, placement
+   markers, and book/website types are what remain.*
 2. **Dogfood** — build Enscribe's own website and book in the multi-file system.
    The centerpiece demo, not housekeeping: the tool authoring its own docs is the
    proof.
@@ -66,9 +68,11 @@ The bodies of work feeding the releases, with where each stands:
   frame/diagram, code, cross-refs (output-neutral reconciliations); then the
   genuinely output-changing groups (theorem, math, front-matter). **Sections are
   blocked** on the #40 heading-level decision (see below).
-- **Multi-file / master-document** — *in progress, foreground.* Walking skeleton
-  assembles `<section src>` children into an article. Next slices, in the loop:
-  cross-file citation registry, cross-file numbering/cross-refs, placement markers
+- **Multi-file / master-document** — *in progress, foreground.* Assembles
+  `<section src>` children into an article, with cross-file continuous numbering and
+  cross-references resolved across files, and the same assembly rendered live in the
+  browser (`renderMasterAsync`, #194). Next slices, in the loop: cross-file citation
+  registry, master-level `<library src>` live-loading (#197), placement markers
   (toc/endnotes/bibliography), then book + website page model.
 - **Data model** — *needs Phase-0.* Settle the taxonomy (#166) and the meta-data
   block (#168) before the slices delegate.
