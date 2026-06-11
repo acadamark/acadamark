@@ -28,6 +28,10 @@ Markdown's success comes from a simple bargain: a small set of typing convention
 
 HTML+CSS+JS already does most of what academic typesetting needs. It's universally rendered (every browser, every platform). It's exportable to nearly anything via existing tools (Pandoc going *outward* from HTML is mature and reliable). It composes — every JS library, every CSS framework, every web component slots in. The only things HTML lacks are (1) a standard vocabulary for academic semantics like citations and cross-references, and (2) an authoring syntax that doesn't make humans want to quit. Enscribe adds both.
 
+## Why no compiler?
+
+Every other document system ships a compiler you run at a command line or inside special software. Enscribe doesn't. The browser is the only document substrate that's a renderer, a compute environment, an interactive runtime, and already on every machine — all at once. LaTeX, Quarto, RMarkdown, and Typst each bolt a compiler plus a viewer onto a format; Enscribe declines to build either and rides the one everyone already has.
+
 ## What enscribe is, in two layers
 
 **Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is `<ul>`/`<ol>`/`<li>`); a class plus `data-*` carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
