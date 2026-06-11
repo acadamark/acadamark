@@ -38,7 +38,7 @@ import { discover } from '../../core/walkers/discover.js';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { parseTableData, TABLE_FORMATS } from '../handlers/table.js';
 import { parseInlineCellToMdast } from '../lib/parse-inline.js';
-import { ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_LOADED_SOURCES } from '../../core/file-data-keys.js';
 
 const TABLE_FORMAT_SET = new Set(TABLE_FORMATS);
 
@@ -58,11 +58,14 @@ export function enscribeTableCellParse(options = {}) {
   const { assetsDir = null } = options;
   return function tableCellParse(tree, file) {
     const config = file?.data?.[ENSCRIBE_CONFIG] ?? null;
-    discover(tree, new Map([['table', (node) => stampTable(node, config, assetsDir)]]));
+    // #195: source-agnostic src= — pre-loaded sources (browser fetch / CLI async) ride
+    // file.data, exactly as library-load reads them.
+    const loaded = file?.data?.[ENSCRIBE_LOADED_SOURCES] ?? null;
+    discover(tree, new Map([['table', (node) => stampTable(node, config, assetsDir, loaded)]]));
   };
 }
 
-function stampTable(node, config, assetsDir) {
+function stampTable(node, config, assetsDir, loaded) {
   const format = node.positional?.[0] ?? null;
   // Only data-format tables. The no-format raw-HTML escape-hatch and any
   // out-of-accept-set token are left to the handler untouched.
@@ -83,9 +86,17 @@ function stampTable(node, config, assetsDir) {
   let rawData;
   const srcPath = node.kwargs?.src ?? null;
   if (srcPath) {
-    if (!assetsDir) return;                 // can't read → leave to the handler (literal)
-    try { rawData = readFileSync(join(assetsDir, srcPath), 'utf8'); }
-    catch { return; }                       // read error → handler emits the error table
+    // #195: pre-loaded src (browser fetch / CLI async) first, else a filesystem read.
+    if (loaded && Object.prototype.hasOwnProperty.call(loaded, srcPath)) {
+      const entry = loaded[srcPath];
+      if (entry?.error != null || typeof entry?.content !== 'string') return; // handler emits the error
+      rawData = entry.content;
+    } else if (assetsDir) {
+      try { rawData = readFileSync(join(assetsDir, srcPath), 'utf8'); }
+      catch { return; }                     // read error → handler emits the error table
+    } else {
+      return;                               // can't read → leave to the handler (literal)
+    }
   } else {
     rawData = typeof node.content === 'string' ? node.content : '';
   }

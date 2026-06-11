@@ -41,10 +41,6 @@ const BROWSER_DEFAULTS = { embedResources: false, hoverPreviewMode: 'link', dslM
 // cannot do yet, or a static-only packaging deliberately scoped out of byte-parity.
 // This list shrinks as the issues land; it is explicit so no exclusion is silent.
 const EXCLUDED = {
-  'document-7-tables': {
-    reason: '<table … csv src=> loads a data file from disk; the browser fetch loader is not built',
-    issue: '#195',
-  },
   'document-47-abc-static': {
     reason:
       "abc 'static' mode bakes inline SVG via jsdom — a build-time, static-only packaging " +
@@ -63,11 +59,11 @@ const FIXTURE_OPTIONS = {
 const HAS_SECTION_SRC = /<section\b[^>]*\bsrc\s*=/i;
 const isMaster = (src) => HAS_SECTION_SRC.test(src);
 
-// A single-file fixture with an external <library src> bibliography (#196): its LIVE
-// render is the async path (renderAsync fetches the source against document.baseURI),
-// its STATIC render reads the same file via assetsDir — the source-agnostic check
-// (fs ≡ fetch resolve to the same bibliography).
-const HAS_LIBRARY_SRC = /<library\b[^>]*\bsrc\s*=/i;
+// A single-file fixture with an external `src` — a <library src> bibliography (#196) or a
+// <table src> / <csv src> / <tsv src> data file (#195): its LIVE render is the async path
+// (renderAsync fetches the source against document.baseURI), its STATIC render reads the
+// same file via assetsDir — the source-agnostic check (fs ≡ fetch resolve to the same bytes).
+const HAS_EXTERNAL_SRC = /<(library|table|csv|tsv)\b[^>]*\bsrc\s*=/i;
 const ASSETS_DIR = join(FIXTURES_DIR, 'assets');
 
 // Recursive .emd walk, skipping the archive/ dir (mirrors render-fixtures.js).
@@ -194,9 +190,9 @@ export async function run() {
     const opts = FIXTURE_OPTIONS[name] ?? {};
     let liveHtml;
     let staticHtml;
-    if (HAS_LIBRARY_SRC.test(src)) {
-      // External <library src> (#196): static reads the .bib via assetsDir; live
-      // fetches it through renderAsync. Both must resolve the same bibliography.
+    if (HAS_EXTERNAL_SRC.test(src)) {
+      // External <library src> (#196) or <table src> (#195): static reads the file via
+      // assetsDir; live fetches it through renderAsync. Both must resolve the same bytes.
       staticHtml = String(
         buildEnscribePipeline({ ...BROWSER_DEFAULTS, ...opts, assetsDir: ASSETS_DIR }).processSync(src),
       );

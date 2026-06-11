@@ -159,7 +159,7 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -720,7 +720,11 @@ export function enscribeInterpreter(options = {}) {
     const configMap = file?.data?.[ENSCRIBE_CONFIG];
     const showSource =
       configMap?.get('show-source') === true || configMap?.get('show-source') === 'true';
-    const tagHandler = createEnscribeTagHandler({ assetsDir, showSource });
+    // #195: per-render pre-loaded external sources (browser fetch / CLI async preload)
+    // reach the table handler through the handler opts — the compiler has the VFile,
+    // the toHast handlers do not.
+    const loadedSources = file?.data?.[ENSCRIBE_LOADED_SOURCES] ?? null;
+    const tagHandler = createEnscribeTagHandler({ assetsDir, showSource, loadedSources });
     const hast = toHast(tree, {
       handlers: {
         enscribeTag: tagHandler,
@@ -1016,6 +1020,34 @@ export function collectLibrarySources(source) {
   (function walk(nodes) {
     for (const n of nodes ?? []) {
       if (n?.type === 'enscribeTag' && n.tagname === 'library' && n.kwargs?.src) {
+        srcs.push(n.kwargs.src);
+      }
+      if (n?.type === 'enscribeTag' && Array.isArray(n.content)) walk(n.content);
+      if (Array.isArray(n?.children)) walk(n.children);
+    }
+  })(tree.children ?? []);
+  return [...new Set(srcs)];
+}
+
+/**
+ * #195: discover every external `<table src>` / `<csv src>` / `<tsv src>` data-source
+ * string in a document, deduped, in document order — the table analog of
+ * collectLibrarySources. Used by the async pre-load (browser renderAsync / the CLI
+ * render command) to fetch table data before the synchronous render. After
+ * liftToCanonicalMdast the gate has normalized `<csv>` / `<tsv>` to `<table>`, so the
+ * data source rides on the `<table>` node's `src`; the {table,csv,tsv} set is kept for
+ * robustness.
+ *
+ * @param {string} source - enscribe/markdown source text.
+ * @returns {string[]} the unique table-data `src` strings.
+ */
+export function collectTableSources(source) {
+  const tree = liftToCanonicalMdast(source);
+  const srcs = [];
+  const TABLE_TAGS = new Set(['table', 'csv', 'tsv']);
+  (function walk(nodes) {
+    for (const n of nodes ?? []) {
+      if (n?.type === 'enscribeTag' && TABLE_TAGS.has(n.tagname) && n.kwargs?.src) {
         srcs.push(n.kwargs.src);
       }
       if (n?.type === 'enscribeTag' && Array.isArray(n.content)) walk(n.content);

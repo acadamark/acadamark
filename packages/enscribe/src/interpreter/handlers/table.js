@@ -582,17 +582,30 @@ export function tableHandler(state, node, _vocab, options) {
   let rawData;
   const srcPath = node.kwargs?.src ?? null;
   if (srcPath) {
-    const assetsDir = options?.assetsDir ?? null;
-    if (!assetsDir) {
-      return makeErrorTable(
-        `src="${srcPath}" requires assetsDir option to be set`,
-        id,
-      );
-    }
-    try {
-      rawData = readFileSync(join(assetsDir, srcPath), 'utf8');
-    } catch (err) {
-      return makeErrorTable(`cannot read file "${srcPath}": ${err.message}`, id);
+    // #195: source-agnostic. A pre-loaded src (browser fetch / CLI async preload, on
+    // file.data[ENSCRIBE_LOADED_SOURCES], threaded here via options.loadedSources) is
+    // used first; otherwise a filesystem path is read synchronously (CLI / processSync).
+    // Mirrors plugins/library-load.js.
+    const loaded = options?.loadedSources ?? null;
+    if (loaded && Object.prototype.hasOwnProperty.call(loaded, srcPath)) {
+      const entry = loaded[srcPath];
+      if (entry?.error != null) {
+        return makeErrorTable(`cannot load "${srcPath}": ${entry.error}`, id);
+      }
+      rawData = typeof entry?.content === 'string' ? entry.content : '';
+    } else {
+      const assetsDir = options?.assetsDir ?? null;
+      if (!assetsDir) {
+        return makeErrorTable(
+          `src="${srcPath}" was not pre-loaded and no assetsDir is set — a path-style src needs an async render (renderAsync / the CLI render command)`,
+          id,
+        );
+      }
+      try {
+        rawData = readFileSync(join(assetsDir, srcPath), 'utf8');
+      } catch (err) {
+        return makeErrorTable(`cannot read file "${srcPath}": ${err.message}`, id);
+      }
     }
   } else {
     rawData = typeof node.content === 'string' ? node.content : '';

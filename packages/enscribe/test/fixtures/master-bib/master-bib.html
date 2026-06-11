@@ -1370,8 +1370,36 @@ note-list li {
       <p>
         The master’s own section cites <cite class="cite" data-keys="Loomes2017">(Loomes et al., 2017)</cite>, resolved from the master-level
         that the browser loads live in the same preload pass as the section
-        children (#197).
+        children (#197). It also embeds a data table loaded from a file, fetched in that
+        same pass (#195):
       </p>
+      <table id="tab:master">
+        <caption><span class="table-label">Table 1.</span> Sample data loaded from a file</caption>
+        <thead>
+          <tr>
+            <th>key</th>
+            <th>value</th>
+            <th>notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>alpha</td>
+            <td>1</td>
+            <td>First entry</td>
+          </tr>
+          <tr>
+            <td>beta</td>
+            <td>2</td>
+            <td>Second entry</td>
+          </tr>
+          <tr>
+            <td>gamma</td>
+            <td>3</td>
+            <td>Quoted, third</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   </article-body>
   <article-back>

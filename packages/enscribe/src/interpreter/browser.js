@@ -18,7 +18,12 @@
 // for self-contained output), and the finer-grained per-resource options
 // (katexCss / documentFontsCss / per-DSL *Mode) still take precedence.
 
-import { buildEnscribePipeline, collectLibrarySources, assembleMasterDocument } from './index.js';
+import {
+  buildEnscribePipeline,
+  collectLibrarySources,
+  collectTableSources,
+  assembleMasterDocument,
+} from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 import { isEnscribeTag } from '../core/tag.js';
@@ -90,6 +95,9 @@ export function render(source, options = {}) {
 // external library source, so renderAsync can short-circuit to the sync render
 // for the common (inline / no-src) case without a discovery parse.
 const HAS_LIBRARY_SRC = /<library\b[^>]*\bsrc\s*=/i;
+// #195: a `<table src>` / `<csv src>` / `<tsv src>` data-source gate — the table analog
+// of HAS_LIBRARY_SRC, so renderAsync pre-fetches external table data too.
+const HAS_TABLE_SRC = /<(table|csv|tsv)\b[^>]*\bsrc\s*=/i;
 
 /**
  * Fetch a library source's text, resolving a relative src against the document
@@ -104,23 +112,24 @@ async function fetchSourceText(src, baseUrl) {
 }
 
 /**
- * Render enscribe source to HTML, loading any external `<library src="…">`
- * sources first (#133). The async counterpart of render(): it pre-fetches each
- * source (relative paths against `document.baseURI`; cross-origin URLs are
- * CORS-limited and surface a visible error), then runs the same synchronous
- * pipeline with the loaded content. Sources that fail to load render a visible
- * error block; the document still renders (always-renders).
+ * Render enscribe source to HTML, loading any external `<library src>` bibliography
+ * and `<table src>` / `<csv src>` / `<tsv src>` data sources first (#133, #195). The
+ * async counterpart of render(): it pre-fetches each source (relative paths against
+ * `document.baseURI`; cross-origin URLs are CORS-limited and surface a visible error),
+ * then runs the same synchronous pipeline with the loaded content. Sources that fail to
+ * load render a visible error block; the document still renders (always-renders).
  *
- * For a document with no `<library src>` this is just render() — no fetch, no
- * extra parse.
+ * For a document with no external `src` this is just render() — no fetch, no extra parse.
  *
  * @param {string} source - enscribe/markdown source text.
  * @param {object} [options] - pipeline options (see render()).
  * @returns {Promise<string>} Serialized HTML.
  */
 export async function renderAsync(source, options = {}) {
-  if (!HAS_LIBRARY_SRC.test(source)) return render(source, options);
-  const srcs = collectLibrarySources(source);
+  if (!HAS_LIBRARY_SRC.test(source) && !HAS_TABLE_SRC.test(source)) return render(source, options);
+  // #195: library bibliographies and table data both ride the one ENSCRIBE_LOADED_SOURCES
+  // bus (src → text); collect and fetch both in one pre-load pass.
+  const srcs = [...collectLibrarySources(source), ...collectTableSources(source)];
   if (srcs.length === 0) return render(source, options);
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
   const loaded = await preloadSources(srcs, (src) => fetchSourceText(src, baseUrl));
@@ -211,14 +220,16 @@ export async function renderMasterAsync(source, options = {}) {
   ];
   if (sectionSrcs.length === 0) return renderAsync(source, options);
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
-  // #197: pre-load the master's OWN `<library src>` bibliography in the SAME pass as
-  // its `<section src>` children — one deduped fetch. Section children are consumed by
-  // the assembler (readPreloadedChild); the library sources ride to the pipeline on the
-  // VFile via file.data[ENSCRIBE_LOADED_SOURCES] (the channel renderAsync populates and
-  // library-load reads). No second assembler, no new fetch mechanism.
+  // #197 / #195: pre-load the master's OWN `<library src>` bibliography AND `<table src>`
+  // data in the SAME pass as its `<section src>` children — one deduped fetch. Section
+  // children are consumed by the assembler (readPreloadedChild); library + table sources
+  // ride to the pipeline on the VFile via file.data[ENSCRIBE_LOADED_SOURCES] (the channel
+  // renderAsync populates, library-load and the table handler read). No second assembler,
+  // no new fetch mechanism.
   const librarySrcs = collectLibrarySources(source);
+  const tableSrcs = collectTableSources(source);
   const loaded = await preloadSources(
-    [...sectionSrcs, ...librarySrcs],
+    [...sectionSrcs, ...librarySrcs, ...tableSrcs],
     (src) => fetchSourceText(src, baseUrl),
   );
   const tree = assembleMasterDocument({
@@ -232,13 +243,13 @@ export async function renderMasterAsync(source, options = {}) {
       if (typeof console !== 'undefined' && console.warn) console.warn(m);
     },
   });
-  // Run the assembled tree with the loaded library sources on the VFile bus, so
-  // library-load resolves the master's own bibliography during runSync (alongside
-  // numbering and ref/cite resolution), then stringify — mirroring the CLI build path,
-  // plus the #197 library pre-load the CLI gets from fs and the browser gets from fetch.
-  return String(
-    proc.stringify(proc.runSync(tree, { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } })),
-  );
+  // The loaded map rides one VFile through BOTH runSync (library-load resolves the
+  // master's bibliography; numbering and ref/cite resolution) AND stringify (the table
+  // handler reads the data via the compiler, which has the VFile — handlers do not). One
+  // file so config set during runSync is consistent at stringify too. #197 library + #195
+  // table; mirrors the CLI build path, fetched instead of fs-read.
+  const loadedFile = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } };
+  return String(proc.stringify(proc.runSync(tree, loadedFile), loadedFile));
 }
 
 /**
