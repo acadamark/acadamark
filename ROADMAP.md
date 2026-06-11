@@ -1,119 +1,88 @@
-# enscribe — roadmap
+# Roadmap
 
-The roadmap is the project's high-level plan: the **releases** the work moves
-through, and what each aims at. It is deliberately small.
-Individual work items — bugs, enhancements, features — live in
-[**GitHub Issues**](https://github.com/enscribejs/enscribe/issues), grouped by
-milestone and label. This document holds the shape; the Issues hold the items.
+Where Enscribe is headed. **GitHub milestones are the source of truth** — this file
+is the readable plan behind them. If the two disagree, the milestones win and this
+file is what needs updating.
 
-Alpha closed 2026-05-29; **v0.1.0** shipped as the first public release, and
-**v0.2.0** followed with docs-site polish and the consolidated three-package
-layout published to npm.
+## How to read this
 
----
+- **Releases** are what ships, in order — the *output*. Each carries a theme and
+  draws its work from one or more epics.
+- **Epics** are the large bodies of work — the *input*. An epic is decomposed into
+  slices that land across releases; you never ship "an epic," you ship its slices.
+- **Bugs** are triaged by severity, off this roadmap: serious ones get fixed
+  immediately (patch releases); minor ones ride the next consolidation pass.
+
+## The path to launch
+
+The spine, in order — each step unblocks the next:
+
+1. **Multi-file / master-document system** — the long pole. A real document spans
+   many files; nothing downstream works without it. *Walking skeleton landed;
+   cross-file resolution next.*
+2. **Dogfood** — build Enscribe's own website and book in the multi-file system.
+   The centerpiece demo, not housekeeping: the tool authoring its own docs is the
+   proof.
+3. **Interchange import** — the on-ramp. Academics arrive with existing documents
+   (Quarto, LaTeX, DOCX); import lets them start without retyping. (Export is the
+   trust half — no lock-in — but *import* is what gates adoption.)
+4. **Paper examples** — a handful of real papers rebuilt in Enscribe, as evidence
+   it handles actual scholarship.
+5. **Remaining fixes** — the known gaps that block a credible first impression.
+6. **Soft launch** to friendlies → **public launch** (Show HN, r/LaTeX, academic
+   Bluesky/fedi, Lobsters, and the markup-tool niche — Typst / Asciidoctor / djot
+   watchers).
+
+Everything else is roadmap, not a launch gate. Slides, full LaTeX/DOCX fidelity,
+and Quarto-perfection are post-launch.
 
 ## Releases
 
-Releases are GitHub Milestones. Each draws its items from GitHub Issues,
-grouped by milestone and label.
+> Reconcile the issue lists below against `gh` milestones — these mirror the
+> tracker and drift if issues move.
 
-The numbering alternates by design: a `.x.0` ships features; the `.x.5` that
-follows is a consolidation pass that resolves the findings of the `.x.0`-close
-release audit (see `CONTRIBUTING.md`, "The release audit") and ships no new
-features.
+- **v0.5.0 — HTML output.** Layer 1 becomes HTML-shaped; the render projection is
+  the display channel. Draws from the HTML-output epic. (#147, #117)
+- **JATS.** The archival/semantic export translation, hardened — export gaps,
+  `enscribe fetch`, and import round-trip. (#136, #118, #119, #142)
+- **v0.6.0 — Advanced layout.** Multi-column, figure placement, the harder display
+  surfaces. (#34, #35, #116, #164)
+- **Data model.** Config-as-data and the document data block, settled and built.
+  (#102, #134, #166, #168)
+- **Interchange.** Quarto round-trip + LaTeX/DOCX import-export. Draws from the
+  Interchange epic. (#187, #188, #189)
+- **Later releases (v0.7.0, v0.8.0).** Post-launch polish and features, held in
+  their milestones — browser-bundle trim and arrow typography (#25, #139), then
+  presentations/slides (#50), minipage panels (#115), and the MDN-grade
+  vocabulary reference (#122).
+- **Not planned / icebox.** Out-of-scope and parked items live in the `Not Planned`
+  and `future` milestones, not here.
 
-- **v0.1.0 — shipped.** Bidirectional JATS conversion (export *and* import);
-  display features for end-readers (table-of-contents sidebar, single-chapter
-  book navigation, themes); a client-side rendering library with an in-browser
-  editor demo; the docs site; and the `enscribe` command-line tool.
-- **v0.2.0 — shipped.** Docs-site polish for public visitors, the consolidated
-  three-package layout published to npm, and the accumulated docs and
-  infrastructure fixes.
-- **v0.2.5 — shipped.** The spec-completeness re-sync (acting on the
-  rebuild-from-docs audit), accumulated parser / interop / tables fixes, and
-  refinements to the apparatus and qualifying-tag surface (the `<data>`
-  container migration, generalizing the qualifying-tag pattern, the frameable
-  redesign, bibliography-heading config).
-- **v0.3.0 — shipped.** New authoring and display features — markup inside
-  table cells, section numbering, frame-border styles, smart typography, and
-  callouts — plus the vocabulary coverage gallery, DSL source-view, ToC
-  scroll-spy, default-theme feature-hook styling, and accumulated JATS interop
-  and table fixes.
-- **v0.3.5 — shipped.** The consolidation pass resolving the v0.3.0-close
-  release-audit findings; no new features.
-- **v0.4.0 — shipped.** Lists (`<list>` / `<li>`), strict mode
-  (`<config strict-mode>`), sidenotes + margin notes, article appendices, and
-  external citation sources (`<library src>`) — plus the coverage gallery as the
-  authoring completeness surface and the *decision* to reframe Layer 1 as
-  HTML-shaped (JATS becomes an export translation), with **lists as the first
-  migrated element group** (`<list>` lowers to `<ul>` / `<ol>` / `<li>`). The
-  decision and its inaugural case shipped; the rest of the vocabulary still
-  renders as custom Layer 1 elements and migrates group-by-group under
-  [#147](https://github.com/enscribejs/enscribe/issues/147). A full docs-site
-  pass (feature pages, governance tier) shipped alongside.
-- **v0.4.5 — consolidation pass (closing).** Per the cadence, a `.x.5` ships no
-  new features — it resolves the `.x.0`-close release-audit findings. v0.4.5
-  drained the v0.4.0-close audit set (#148–#155) plus a second coherence-debt
-  wave surfaced by a v0.4.5-close health-check (#156–#183), so v0.5.0 begins from
-  a coherent baseline. The four items once slated here — code syntax
-  highlighting, browser-bundle size optimization, conda-forge packaging, and new
-  sigil shorthands — are *features*, so they moved out to v0.5.0 / future
-  (e.g. #17, #25, #27).
-- **v0.5.0 — HTML output.** Finish the HTML-shaped reframe: the remaining Layer 1
-  element-group migration ([#147](https://github.com/enscribejs/enscribe/issues/147)
-  — sections, figures, the semantic-only elements), lossy render-mode lowering to
-  plain HTML ([#40](https://github.com/enscribejs/enscribe/issues/40)), and
-  well-formatted rendered output
-  ([#117](https://github.com/enscribejs/enscribe/issues/117)). Carries the must-fix
-  parser-hang bug ([#141](https://github.com/enscribejs/enscribe/issues/141)).
-- **v0.6.0 — advanced layout.** Multi-column display
-  ([#34](https://github.com/enscribejs/enscribe/issues/34) — its multi-column
-  spec-gap folded in), print CSS / pagination
-  ([#35](https://github.com/enscribejs/enscribe/issues/35)), paged per-page
-  footnotes ([#164](https://github.com/enscribejs/enscribe/issues/164)), and
-  composite (multi-panel) figures
-  ([#116](https://github.com/enscribejs/enscribe/issues/116)).
-- **Data model** (epic milestone). The structured data block + asset store — how
-  `<data>` / `<config>` and embedded resources work
-  ([#134](https://github.com/enscribejs/enscribe/issues/134),
-  [#102](https://github.com/enscribejs/enscribe/issues/102)), gated on the open
-  design forks ([#166](https://github.com/enscribejs/enscribe/issues/166),
-  [#168](https://github.com/enscribejs/enscribe/issues/168)) that must settle first.
-- **JATS** (milestone). The scholarly-interchange feature track — import / export /
-  fetch mechanics ([#136](https://github.com/enscribejs/enscribe/issues/136),
-  [#119](https://github.com/enscribejs/enscribe/issues/119),
-  [#142](https://github.com/enscribejs/enscribe/issues/142),
-  [#118](https://github.com/enscribejs/enscribe/issues/118)) — a feature track
-  reached *from* the HTML base, not the core mission.
-- **Interchange** (epic milestone). Import / export with the external authoring
-  formats authors already use — Quarto round-trip (the direct `.qmd` engine,
-  since enscribe already parses Markdown) and LaTeX / DOCX lossy via the pandoc
-  bridge. An adoption on-ramp and no-lock-in guarantee — a feature track, not the
-  mission. See [`notes/specs/interchange.md`](notes/specs/interchange.md).
+## Epics
 
-> **TODO (maintainer fine-tuning).** The reading-polish placement, the
-> infra / health track, and the icebox (longer-horizon parser / display work and
-> the master-document / multi-file system) are being bucketed separately by the
-> maintainer; this release list is not yet their final home. The `future`
-> milestone still holds them until that pass lands.
+The bodies of work feeding the releases, with where each stands:
 
----
+- **HTML output** — *in progress, mostly delegable.* Figures migrated. Queue:
+  frame/diagram, code, cross-refs (output-neutral reconciliations); then the
+  genuinely output-changing groups (theorem, math, front-matter). **Sections are
+  blocked** on the #40 heading-level decision (see below).
+- **Multi-file / master-document** — *in progress, foreground.* Walking skeleton
+  assembles `<section src>` children into an article. Next slices, in the loop:
+  cross-file citation registry, cross-file numbering/cross-refs, placement markers
+  (toc/endnotes/bibliography), then book + website page model.
+- **Data model** — *needs Phase-0.* Settle the taxonomy (#166) and the meta-data
+  block (#168) before the slices delegate.
+- **Interchange** — *needs Phase-0.* Settle import coverage (IX-Q1) — the launch
+  on-ramp — before building. Designed in `notes/specs/interchange.md`.
 
-## Current position
+## Pending decisions
 
-**v0.4.0 is released** — lists, strict mode, sidenotes + margin notes, article
-appendices, and external citation sources (`<library src>`), plus the authoring
-coverage gallery and the HTML-shaped Layer 1 reframe — decided, with lists as the
-first migrated element group; the remaining migration is tracked under
-[#147](https://github.com/enscribejs/enscribe/issues/147) (JATS as an export
-translation) — with a full docs-site pass, shipped on top of the v0.2.x / v0.3.x
-base (rich-document rendering, bidirectional JATS, the browser library and
-`enscribe` CLI, three packages on npm: `@enscribejs/enscribe`, `@enscribejs/cli`,
-`@enscribejs/layer1-vocabulary`). **v0.4.5 — the consolidation pass — is
-closing**, draining the v0.4.0-close audit and a second coherence-debt wave
-(#148–#183) so **v0.5.0 starts from a coherent baseline**. **v0.5.0 is next** —
-the HTML-shaped Layer 1 element-group migration (#147), code syntax highlighting,
-and other features; the longest-horizon work (render-mode lowering, the
-master-document / multi-file system) sits under `future`. Every release's items live in
-[GitHub Issues](https://github.com/enscribejs/enscribe/issues), grouped by
-milestone and label.
+The forks that gate delegable work — each a call to make before its epic opens up:
+
+- **#40 — heading-level mapping.** Gates the sections migration in HTML output
+  (whether `<section-title>` → `<h2>` etc., against the Rule 3 named-depth-ladder
+  decision). Currently parked in the `Not Planned` milestone (re-homed into
+  render-mode lowering); unblocking sections means scheduling it, or carving the
+  narrower heading-level call out of it.
+- **Interchange IX-Q1 — import coverage.** Gates Quarto/LaTeX import (the on-ramp).
+- **Data model #166 / #168.** Gate the Data model epic's slices.
