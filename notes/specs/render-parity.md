@@ -1,0 +1,140 @@
+# Render parity: one engine, byte-identical on matched options
+
+Live (in-browser) and static (CLI) rendering are **one engine, not two**. This
+spec is the normative statement of that invariant: the two entry points, the
+byte-parity guarantee and exactly what is in and out of it, and the
+source-agnostic content rule. The *rationale* — why enscribe uses the browser as
+its rendering engine and treats live and static as co-equal modes — lives in
+`DESIGN.md` ("Live and static rendering are one engine, not two."); this spec is
+the implementation-precise blueprint that direction defers to.
+
+## The two entry points
+
+Both paths compile an `.emd` source to the HTML the browser renders, and both
+run the *same* engine:
+
+- **Static / compiled** — the CLI `build` command. `doBuild`
+  (`packages/cli/src/cli.js`) constructs the processor with
+  `buildEnscribePipeline`, assembles any multi-file master with
+  `assembleMasterDocument`, then `runSync` + `stringify`. Content is read from
+  disk with Node `fs`.
+- **Live / in-browser** — the browser façade
+  (`packages/enscribe/src/interpreter/browser.js`): `render` / `renderInto`
+  (synchronous), `renderAsync` (pre-fetches `<library src>` bibliographies), and
+  `renderMasterAsync` (pre-fetches `<section src>` children of a multi-file
+  master). Each obtains its processor from the same `buildEnscribePipeline`, and
+  the multi-file path runs the same `assembleMasterDocument`. Content arrives via
+  `fetch`.
+
+**One engine.** `buildEnscribePipeline`
+(`packages/enscribe/src/interpreter/index.js`) is the single processor factory;
+`assembleMasterDocument` (`packages/enscribe/src/master-document/assemble.js`) is
+the single multi-file assembler. The CLI and the browser entries call them
+*identically*. The assembler is pure over its injected `readFile` / `resolve` /
+`parse` — the CLI injects Node `fs` operations, the browser injects a
+preloaded-cache lookup over fetched text — so the same assembly logic runs in
+both environments without a second code path.
+
+## The invariant
+
+> On the same source with matched options, the live and static entry points
+> produce **byte-identical** rendered output.
+
+Stated at the level of intent it is a *perceptual / content equivalence* — the
+reader sees the same document regardless of mode — and it is **enforced as
+byte-identity on matched options**. "Matched options" is the load-bearing
+qualifier (see "Scoped out" below): it isolates the engine from the two surfaces'
+deliberately-different *defaults*.
+
+## Source-agnostic content
+
+`<table src>`, `<library src>`, and multi-file `<section src>` children resolve
+to the **same content regardless of how the bytes arrived** — a Node `fs` read
+(static) or a browser `fetch` (live). The engine consumes already-loaded content:
+preloaded sources are handed to the pipeline on the shared `VFile` via
+`file.data[ENSCRIBE_LOADED_SOURCES]` (the bus key defined in
+`src/core/file-data-keys.js`), and the assembler reads through its injected
+`readFile`. *How* a `src=` payload was loaded is upstream of, and invisible to,
+the engine — so it cannot be a source of divergence.
+
+## What is scoped out of byte-parity
+
+Two classes of difference are deliberately **outside** the byte-parity claim
+because they are content-equivalent *packaging*, not divergent *rendering*. They
+are option-driven: matching the option brings the two surfaces into byte-parity.
+
+- **Default resource packaging.** The CLI defaults to self-contained output
+  (`embedResources: true` — inline fonts, KaTeX CSS, assets); the browser
+  defaults to external CDN links (`embedResources: false`). Same option, same
+  bytes.
+- **Default DSL delivery.** The CLI bakes diagrams statically (or `live-inline`)
+  under its default `dslMode`; the browser defaults to `dslMode: 'live-link'`
+  (CDN-linked library, rendered client-side). Same `dslMode`, same bytes. (These
+  per-DSL `skip` / `live` / `static` modes are specified in
+  `notes/specs/render-quality.md`; they intentionally emit *different markup per
+  mode* — which is exactly why matching the option is what yields parity.)
+
+The divergences that remain are **environment-gated I/O, not engine
+divergences.** The Node-only `fs`/`path` code — asset inlining, `font-loader.js`,
+the `<table src>` branch, `library-load.js`, and the DSL `node-assets` loaders —
+runs only under Node. In the browser bundle those imports resolve to **throwing
+stubs** (`src/interpreter/assets/node-builtin-stub.js`) and their bodies are
+unreached dead code under the browser defaults. This is the build/run seam
+documented in `notes/specs/core.md` (the browser-safety boundary); the engine on
+either side of it is the same.
+
+**Interactivity is not content**, and is also out of scope: the `renderInto`
+`innerHTML` write, script/asset activation, live DSL execution (`mermaid.run`),
+hover-preview (Tippy/Popper), ToC scroll-spy, and single-chapter nav all act on
+already-produced content. Parity is a claim about the produced HTML string, not
+about the post-render DOM behaviours layered onto it.
+
+## Two terminology cautions
+
+- This whole-pipeline **live / static** sense is *not* the per-DSL
+  **skip / live / static** rendering modes (`notes/specs/render-quality.md`),
+  which choose *when* one external diagram renders and deliberately diverge in
+  markup. Matching `dslMode` is precisely what reconciles them.
+- **byte-identical** here is the *cross-mode render invariant*. It is distinct
+  from the **byte-identical** *vocabulary-migration* invariant (`DESIGN.md`, the
+  vocabulary-boundary principle), which holds the HTML *and* JATS output steady
+  across a Layer 1 element rename. Same word, different invariant.
+
+## Audit — it holds today
+
+The invariant holds in the current code; the engine is already one, so it is true
+by construction rather than by a guard. The **standing automated enforcement** is
+the parity test (GitHub issue #193) — a representative corpus rendered both ways
+and asserted byte-identical on matched options — which is **not yet built** (this
+spec is the codification; #193 is the test). Current-state evidence that it holds:
+
+- `packages/enscribe/test/master-document-browser.test.js` (issue #194, commit
+  `34df233`) — the browser `renderMasterAsync` output is checked against the CLI
+  master-document build on the same master + children: continuous cross-file
+  figure/section numbering and cross-file `<ref>` resolution, byte-exact. The
+  browser-multi-file ≡ CLI byte-parity test.
+- `packages/enscribe/test/browser-memo.test.js` — the browser `render` entry is
+  byte-identical (`assert.strictEqual`) to a freshly-built
+  `buildEnscribePipeline().processSync`: the browser façade adds no divergence
+  over the core engine.
+- `packages/enscribe/test/library-src.test.js` (issue #133) — a `<library src>`
+  bibliography resolves identically whether loaded via Node `fs` (static) or
+  browser `fetch` (live): the source-agnostic rule.
+- The #192 Phase-0 parity audit — a feature-rich single document rendered static
+  (`processSync`) vs the bundled browser `render` on matched options came out
+  byte-identical (sections, inline + display math, a figure with id, resolved and
+  unresolved cross-refs, a list, an aside).
+
+## Cross-references
+
+- `DESIGN.md` — "Live and static rendering are one engine, not two." (the
+  rationale; the substrate premise that the browser *is* the renderer).
+- `notes/specs/pipeline.md` §14 (Client-side rendering) — the browser entries and
+  the shared-pipeline mechanics.
+- `notes/specs/core.md` — the build/run (browser-safety) seam and the
+  node-builtin stub that gate the environment-specific I/O.
+- `notes/specs/render-quality.md` — the per-mode render predicates, including the
+  DSL `skip` / `live` / `static` markup that legitimately diverges.
+- `notes/specs/master-document.md` — the multi-file assembler design.
+- `CONTRIBUTING.md` — the render-path-parity contributor rule (do not touch one
+  render path without the other; #193 gates it).

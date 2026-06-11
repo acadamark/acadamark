@@ -2,7 +2,7 @@
 
 The release audit runs at the close of every `.x.0` milestone. **When it runs, what it
 produces, and how findings are routed** are defined in `CONTRIBUTING.md` ("The release
-audit") and are not restated here. This document specifies the audit *itself* — the four
+audit") and are not restated here. This document specifies the audit *itself* — the five
 reconciliations and how to run each.
 
 One rule from `CONTRIBUTING.md`'s Maintenance section bears directly on running these
@@ -10,8 +10,9 @@ passes: before filing any finding that originates in an earlier note, observatio
 slice, **re-verify it against the current code** — "a prior observation is a lead, not a
 fact." An earlier note establishes only that something was once true.
 
-Run the four in this order. Code is ground truth, so the code-facing audits come first and
-the doc audits then reconcile against already-accurate specs.
+Run the five in this order. Code is ground truth, so the code-facing audits come first and
+the doc audits then reconcile against already-accurate specs; the render-parity gate is a
+final behavioral confirmation that the two render paths still agree.
 
 ## 1 · Code review — fit, dead code, duplication
 
@@ -55,3 +56,17 @@ with the code deleted, the spec must still describe what the subsystem does.
 
 Every shipped feature is documented; every documented feature still exists (no pages for
 retired behavior); examples render and match current output.
+
+## 5 · Render parity
+
+Live (in-browser) and static (CLI) rendering must still produce byte-identical output on
+matched options — the invariant in `notes/specs/render-parity.md`. The standing parity test
+(#193) enforces it continuously; this pass confirms that gate is green **and** that its
+corpus still covers the render surface: any entry point, shared pipeline stage, or
+content-loader (`<table src>` / `<library src>` / multi-file `<section src>` children) added
+or changed during the milestone must be exercised by a both-ways fixture. A render-path
+change shipped without extending the parity corpus is a finding.
+
+The packaging differences deliberately scoped out of byte-parity — default resource
+link-vs-inline, DSL runtime-vs-baked — are **not** findings; they are content-equivalent by
+design. A finding is a divergence on *matched* options.

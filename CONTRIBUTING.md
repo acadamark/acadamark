@@ -29,8 +29,8 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `format-words.md`, `render-quality.md`, `spec_lift-lower-round-trip.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
-| `notes/release-audits.md` | Spec | The release-audit procedure — the four reconciliations and how each is run. A process spec; see "The release audit." |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `spec_lift-lower-round-trip.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
 | `docs-site/sources/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Layer 1 Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
@@ -78,8 +78,10 @@ Each subsystem's blueprint:
   `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow),
   with `notes/specs/core.md` (the inward-pointing, `fs`-free shared foundation
   the package is built on), `notes/specs/format-words.md` (the host/format-word
-  "kind" convention), and `notes/specs/render-quality.md` (the standard for
-  well-rendered output).
+  "kind" convention), `notes/specs/render-quality.md` (the standard for
+  well-rendered output), and `notes/specs/render-parity.md` (the live/static
+  one-engine invariant — byte-identity on matched options, and what is
+  scoped out of it).
 - **Layer 1 vocabulary** — `notes/specs/layer1-naming.md` (the four naming
   rules), `notes/specs/shape-tokens.md` (content-shape machinery), and
   `notes/specs/frameable.md` (the out-of-flow frameable element family). The
@@ -173,6 +175,8 @@ slice is not done until code and documentation agree.
 
 **Generated-artifact freshness — applies whenever a slice touches a generated-artifact source.** Several `notes/specs/` files and all `elements/*.md` frontmatter are *build inputs* to committed, guarded artifacts (`packages/enscribe/test/coverage/spec-data.generated.json`, `packages/layer1-vocabulary/src/data.js`). A `notes/specs/` edit is therefore **not** automatically inert: a slice that touches one is not done until the artifact is regenerated and **both** package suites (`packages/layer1-vocabulary` *and* `packages/enscribe`) are green — the spec→artifact mapping crosses package boundaries, so running only the package you think you touched is insufficient. The exact source→artifact map and the regenerate commands live in `CLAUDE.md` §"Generated artifacts and their sources." This rule exists because the six points above did not, on their own, prevent a stale `spec-data.generated.json` from reaching `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)).
 
+**Render-path parity — applies whenever a slice touches the render path.** Live (in-browser) and static (CLI) rendering are one engine, and must produce byte-identical output on matched options. A change to either entry point — the CLI build path or the browser `render*` façade — or to any shared pipeline stage both run must preserve this; do not touch one render path without the other. The standing parity test ([#193](https://github.com/enscribejs/enscribe/issues/193)) renders a representative corpus both ways and asserts byte-identity on matched options, gating render-path changes automatically once it lands. "Matched options" is load-bearing: the live and static *defaults* differ by design — resource link-vs-inline, DSL runtime-vs-baked — and those packaging differences are deliberately outside the byte-parity claim. The invariant, and exactly what is in and out of it, is specified in `notes/specs/render-parity.md` (rationale: `DESIGN.md`'s "Live and static rendering are one engine" direction); the per-mode render predicates that legitimately diverge live in `notes/specs/render-quality.md`, which this rule must not be read to contradict.
+
 ## The release audit
 
 The coherence check gates a slice; the release audit gates a `.x.0` milestone — the milestone-level analogue, and the last step before a `.x.0` is tagged.
@@ -183,7 +187,7 @@ The coherence check gates a slice; the release audit gates a `.x.0` milestone �
 
 **The cadence.** A `.x.0` ships features; the following `.x.5` is a consolidation pass that resolves the audit's findings and ships no new features. `.x.5` is therefore finite by construction — its scope is exactly what the `.x.0`-close audit surfaced.
 
-**The audit itself** — the four reconciliations and how to run each — is specified in `notes/release-audits.md`.
+**The audit itself** — the five reconciliations and how to run each — is specified in `notes/release-audits.md`.
 
 ## Maintenance
 
