@@ -1,0 +1,7 @@
+<meta title="Beta" />
+
+The second section, in a second child file. A backward cross-file reference
+points at the first section's figure: <ref @fig:alpha>. A cross-file section
+reference: <ref @sec:alpha>.
+
+<fig #fig:beta src=beta.png | The beta figure.>

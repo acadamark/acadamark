@@ -1,0 +1,8 @@
+<meta title="Alpha" />
+
+The first section, authored in its own child file. It carries the first
+figure of the whole document.
+
+<fig #fig:alpha src=alpha.png | The alpha figure.>
+
+A forward cross-file reference: the last section's figure is <ref @fig:gamma>.

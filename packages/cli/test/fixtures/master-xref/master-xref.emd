@@ -1,0 +1,9 @@
+<meta type=article title="Cross-File Numbering Demo" author="Test Author" />
+
+<section #sec:alpha src="alpha.emd" />
+
+<section #sec:beta src="beta.emd" />
+
+<section #sec:gamma src="gamma.emd" />
+
+<config number-sections=true />

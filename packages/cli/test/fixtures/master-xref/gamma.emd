@@ -1,0 +1,8 @@
+<meta title="Gamma" />
+
+The third section, in a third child file, referring back to the second
+section's figure: <ref @fig:beta>.
+
+<fig #fig:gamma src=gamma.png | The gamma figure.>
+
+An unresolved reference still renders, as a visible marker: <ref @fig:missing>.

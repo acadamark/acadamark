@@ -6,11 +6,17 @@
 // and stitch the children into the structure in document order, producing ONE
 // flat article tree that the existing interpreter pipeline nests and renders.
 //
+// Cross-file numbering + cross-references (slice 2, #190) need NO assembler
+// change: because the assembler emits ONE tree, the existing tree-based
+// numbering and ref-resolution plugins — run by the pipeline over the assembled
+// tree — number figures/sections continuously across files and resolve <ref> to
+// targets wherever they live (an unresolved ref renders a visible marker).
+//
 // Deferred to later slices (NOT done here): cross-file citation/bibliography
-// registry merge; cross-file numbering and cross-references; placement markers
-// (<toc> / <endnotes> / <bibliography>); document types beyond article (book,
-// website); embedded-asset coverage in <data>. Those are the spec's
-// "decide during the build" judgment slices — see #190.
+// registry merge; placement markers (<toc> / <endnotes> / <bibliography>);
+// document types beyond article (book numbering — e.g. per-chapter restart — and
+// the website page model); embedded-asset coverage in <data>. Those are the
+// spec's "decide during the build" judgment slices — see #190.
 
 import { isEnscribeTag } from '@enscribejs/enscribe/core/tag';
 
