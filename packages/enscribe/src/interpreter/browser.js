@@ -185,11 +185,11 @@ function readPreloadedChild(loaded, src) {
  * renders. A source with no `<section src>` child is not a master — it falls back to
  * renderAsync (which itself falls back to render() when there is nothing to fetch).
  *
- * Scope (#194 this slice): section children only. A master's OWN `<library src>`
- * bibliography is not pre-loaded here — it renders the existing visible "needs an
- * async render" marker (always-renders), not a crash. Loading it live is a small
- * follow-on (union the section + library src lists into one preload and hand the
- * loaded map to the pipeline via file.data) tracked separately from the child loader.
+ * Scope: the master's `<section src>` children AND its own `<library src>` bibliography
+ * are pre-loaded together in one fetch pass (#197 folded the library into this loader) —
+ * the section children are stitched in by the assembler, the library sources ride to the
+ * pipeline on `file.data[ENSCRIBE_LOADED_SOURCES]`. A `<section src>` inside a CHILD still
+ * rides through unresolved (single-level, per the design note above).
  *
  * @param {string} source - the master document's enscribe source.
  * @param {object} [options] - pipeline options (see render()).
@@ -211,7 +211,16 @@ export async function renderMasterAsync(source, options = {}) {
   ];
   if (sectionSrcs.length === 0) return renderAsync(source, options);
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
-  const loaded = await preloadSources(sectionSrcs, (src) => fetchSourceText(src, baseUrl));
+  // #197: pre-load the master's OWN `<library src>` bibliography in the SAME pass as
+  // its `<section src>` children — one deduped fetch. Section children are consumed by
+  // the assembler (readPreloadedChild); the library sources ride to the pipeline on the
+  // VFile via file.data[ENSCRIBE_LOADED_SOURCES] (the channel renderAsync populates and
+  // library-load reads). No second assembler, no new fetch mechanism.
+  const librarySrcs = collectLibrarySources(source);
+  const loaded = await preloadSources(
+    [...sectionSrcs, ...librarySrcs],
+    (src) => fetchSourceText(src, baseUrl),
+  );
   const tree = assembleMasterDocument({
     source,
     parse: (s) => proc.parse(s),
@@ -223,10 +232,13 @@ export async function renderMasterAsync(source, options = {}) {
       if (typeof console !== 'undefined' && console.warn) console.warn(m);
     },
   });
-  // Mirror the CLI build path exactly: runSync (numbering, ref/cite resolution over
-  // the one assembled tree) then stringify. Numbers/refs are baked into the tree by
-  // runSync, so no shared file is needed for this section-only path.
-  return String(proc.stringify(proc.runSync(tree)));
+  // Run the assembled tree with the loaded library sources on the VFile bus, so
+  // library-load resolves the master's own bibliography during runSync (alongside
+  // numbering and ref/cite resolution), then stringify — mirroring the CLI build path,
+  // plus the #197 library pre-load the CLI gets from fs and the browser gets from fetch.
+  return String(
+    proc.stringify(proc.runSync(tree, { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } })),
+  );
 }
 
 /**

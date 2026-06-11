@@ -122,7 +122,9 @@ function assertParity(staticHtml, liveHtml, label) {
 function staticMaster(masterPath) {
   const src = readFileSync(masterPath, 'utf8');
   const masterDir = dirname(masterPath);
-  const proc = buildEnscribePipeline(BROWSER_DEFAULTS);
+  // assetsDir lets a master's own <library src> resolve via fs (the static side);
+  // harmless for masters without one. The live side fetches it (renderMasterAsync).
+  const proc = buildEnscribePipeline({ ...BROWSER_DEFAULTS, assetsDir: ASSETS_DIR });
   const tree = assembleMasterDocument({
     source: src,
     parse: (s) => proc.parse(s),
@@ -132,16 +134,20 @@ function staticMaster(masterPath) {
   return String(proc.stringify(proc.runSync(tree)));
 }
 
-// Install a document.baseURI + fetch stub serving a master's children off disk (the
-// live fetch path); returns a restore fn. Mirrors master-document-browser.test.js.
-function installFetchStub(masterDir) {
+// Install a document.baseURI + fetch stub serving files off disk from the given dirs
+// (searched in order) — the live fetch path. Used for master `<section src>` children
+// (the master's dir) and for `<library src>` bibliographies (the assets dir). Returns a
+// restore fn. Mirrors master-document-browser.test.js.
+function installFetchStub(...dirs) {
   const orig = { document: global.document, fetch: global.fetch };
   global.document = { baseURI: 'https://example.com/parity/' };
   global.fetch = async (url) => {
     const name = String(url).split('/').pop();
-    const p = join(masterDir, name);
-    if (existsSync(p)) {
-      return { ok: true, status: 200, statusText: 'OK', text: async () => readFileSync(p, 'utf8') };
+    for (const d of dirs) {
+      const p = join(d, name);
+      if (existsSync(p)) {
+        return { ok: true, status: 200, statusText: 'OK', text: async () => readFileSync(p, 'utf8') };
+      }
     }
     return { ok: false, status: 404, statusText: 'Not Found', text: async () => '' };
   };
@@ -161,7 +167,7 @@ export async function run() {
   for (const masterPath of masters) {
     const src = readFileSync(masterPath, 'utf8');
     const staticHtml = staticMaster(masterPath);
-    const restore = installFetchStub(dirname(masterPath));
+    const restore = installFetchStub(dirname(masterPath), ASSETS_DIR);
     let liveHtml;
     try {
       liveHtml = await renderMasterAsync(src); // resolves to BROWSER_DEFAULTS internally

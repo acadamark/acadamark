@@ -1,0 +1,13 @@
+<meta type=article title="Master With Bibliography" author="Test Author" />
+
+<section #sec:intro src="intro-bib.emd" />
+
+<section | Findings>
+
+The master's own section cites <cite @Loomes2017>, resolved from the master-level
+<library src> that the browser loads live in the same preload pass as the section
+children (#197).
+
+<data>
+<library src="references.bib" />
+</data>
