@@ -105,9 +105,18 @@ about the post-render DOM behaviours layered onto it.
 The invariant holds in the current code; the engine is already one, so it is true
 by construction rather than by a guard. The **standing automated enforcement** is
 the parity test (GitHub issue #193) — a representative corpus rendered both ways
-and asserted byte-identical on matched options — which is **not yet built** (this
-spec is the codification; #193 is the test). Current-state evidence that it holds:
+and asserted byte-identical on matched options — now landed as
+`packages/enscribe/test/render-parity.test.js`. Current-state evidence that it holds:
 
+- `packages/enscribe/test/render-parity.test.js` (issue #193) — the standing
+  guard. For the two multi-file masters it asserts the live `renderMasterAsync`
+  (fetch-assemble) output is byte-identical to the static `assembleMasterDocument`
+  (fs-assemble) output on matched options; for the single-file corpus it asserts
+  the browser `render` is byte-identical to a fresh
+  `buildEnscribePipeline().processSync` on matched options. Fixtures needing fetch
+  loaders the browser lacks (`<table src>` #195, `<library src>` #196) and the
+  static-only abc-bake are excluded with explicit reasons, and a guard fails if an
+  exclusion stops naming a real fixture.
 - `packages/enscribe/test/master-document-browser.test.js` (issue #194, commit
   `34df233`) — the browser `renderMasterAsync` output is checked against the CLI
   master-document build on the same master + children: continuous cross-file
