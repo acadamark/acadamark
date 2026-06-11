@@ -18,7 +18,7 @@
 // the website page model); embedded-asset coverage in <data>. Those are the
 // spec's "decide during the build" judgment slices — see #190.
 
-import { isEnscribeTag } from '@enscribejs/enscribe/core/tag';
+import { isEnscribeTag } from '../core/tag.js';
 
 // Placement markers the spec defines but this slice does not assemble yet.
 const DEFERRED_MARKERS = new Set(['toc', 'endnotes', 'bibliography', 'endnote-list']);

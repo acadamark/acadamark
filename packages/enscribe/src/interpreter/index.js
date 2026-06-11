@@ -1002,6 +1002,14 @@ export function liftToCanonicalMdast(source) {
 export { preloadSources } from './lib/preload-library-sources.js';
 export { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 
+// #194: the multi-file master-document assembler. It lives in core (not the CLI)
+// so both the CLI `build` command and the browser child-loader (#194) can import
+// it — the browser render entry is in core and cannot depend on the CLI (wrong
+// dependency direction). It is pure over its injected readFile/resolve/parse, so
+// the relocation from the CLI package was behavior-neutral; see
+// src/master-document/assemble.js.
+export { assembleMasterDocument } from '../master-document/assemble.js';
+
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);
   const srcs = [];

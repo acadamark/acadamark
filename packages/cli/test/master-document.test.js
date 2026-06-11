@@ -8,8 +8,7 @@ import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { buildEnscribePipeline } from '@enscribejs/enscribe';
-import { assembleMasterDocument } from '../src/master-document/assemble.js';
+import { buildEnscribePipeline, assembleMasterDocument } from '@enscribejs/enscribe';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const MASTER_DIR = join(__dirname, 'fixtures', 'master');

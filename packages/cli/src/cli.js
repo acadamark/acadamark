@@ -18,12 +18,11 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, assembleMasterDocument } from '@enscribejs/enscribe';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';
 import { detectFormat, runPandoc, findBibtex, convertPandoc, PandocMissingError } from './pandoc-import.js';
-import { assembleMasterDocument } from './master-document/assemble.js';
 
 const require = createRequire(import.meta.url);
 const PKG = require('../package.json');
