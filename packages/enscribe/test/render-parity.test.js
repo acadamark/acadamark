@@ -23,7 +23,7 @@ import assert from 'node:assert';
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, relative } from 'node:path';
-import { render, renderMasterAsync } from '../src/interpreter/browser.js';
+import { render, renderAsync, renderMasterAsync } from '../src/interpreter/browser.js';
 import { buildEnscribePipeline, assembleMasterDocument } from '../src/interpreter/index.js';
 import { isEnscribeTag } from '../src/core/tag.js';
 
@@ -45,14 +45,6 @@ const EXCLUDED = {
     reason: '<table … csv src=> loads a data file from disk; the browser fetch loader is not built',
     issue: '#195',
   },
-  'document-8-citations': {
-    reason: '<library src=> bibliography loads an fs path; the browser fetch loader is not built',
-    issue: '#196',
-  },
-  'document-61-library-src': {
-    reason: '<library src=> bibliography loads an fs path; the browser fetch loader is not built',
-    issue: '#196',
-  },
   'document-47-abc-static': {
     reason:
       "abc 'static' mode bakes inline SVG via jsdom — a build-time, static-only packaging " +
@@ -70,6 +62,13 @@ const FIXTURE_OPTIONS = {
 
 const HAS_SECTION_SRC = /<section\b[^>]*\bsrc\s*=/i;
 const isMaster = (src) => HAS_SECTION_SRC.test(src);
+
+// A single-file fixture with an external <library src> bibliography (#196): its LIVE
+// render is the async path (renderAsync fetches the source against document.baseURI),
+// its STATIC render reads the same file via assetsDir — the source-agnostic check
+// (fs ≡ fetch resolve to the same bibliography).
+const HAS_LIBRARY_SRC = /<library\b[^>]*\bsrc\s*=/i;
+const ASSETS_DIR = join(FIXTURES_DIR, 'assets');
 
 // Recursive .emd walk, skipping the archive/ dir (mirrors render-fixtures.js).
 function findEmd(dir) {
@@ -187,8 +186,24 @@ export async function run() {
     }
     const src = readFileSync(p, 'utf8');
     const opts = FIXTURE_OPTIONS[name] ?? {};
-    const liveHtml = render(src, opts);
-    const staticHtml = String(buildEnscribePipeline({ ...BROWSER_DEFAULTS, ...opts }).processSync(src));
+    let liveHtml;
+    let staticHtml;
+    if (HAS_LIBRARY_SRC.test(src)) {
+      // External <library src> (#196): static reads the .bib via assetsDir; live
+      // fetches it through renderAsync. Both must resolve the same bibliography.
+      staticHtml = String(
+        buildEnscribePipeline({ ...BROWSER_DEFAULTS, ...opts, assetsDir: ASSETS_DIR }).processSync(src),
+      );
+      const restore = installFetchStub(ASSETS_DIR);
+      try {
+        liveHtml = await renderAsync(src, opts);
+      } finally {
+        restore();
+      }
+    } else {
+      liveHtml = render(src, opts);
+      staticHtml = String(buildEnscribePipeline({ ...BROWSER_DEFAULTS, ...opts }).processSync(src));
+    }
     assertParity(staticHtml, liveHtml, `single-file ${name}`);
     checked++;
   }
