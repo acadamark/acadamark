@@ -52,6 +52,7 @@ import { run as runShorthandExpansions } from './lib/shorthand-expansions.test.j
 import { run as runHtmlTableCells } from './plugins/html-table-cells.test.js';
 import { run as runSmartTypography } from './smart-typography.test.js';
 import { run as runBrowserMemo } from './browser-memo.test.js';
+import { run as runMasterDocumentBrowser } from './master-document-browser.test.js';
 import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
@@ -107,6 +108,7 @@ const suites = [
   ['plugins/html-table-cells',     runHtmlTableCells],
   ['smart-typography',             runSmartTypography],
   ['browser-memo',                 runBrowserMemo],
+  ['master-document-browser',      runMasterDocumentBrowser],
   ['coverage/spec-data-drift',     runSpecDataDrift],
   ['coverage/predicate-harness',   runPredicateHarness],
 ];

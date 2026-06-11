@@ -18,9 +18,10 @@
 // for self-contained output), and the finer-grained per-resource options
 // (katexCss / documentFontsCss / per-DSL *Mode) still take precedence.
 
-import { buildEnscribePipeline, collectLibrarySources } from './index.js';
+import { buildEnscribePipeline, collectLibrarySources, assembleMasterDocument } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
+import { isEnscribeTag } from '../core/tag.js';
 
 const BROWSER_DEFAULTS = {
   embedResources: false,
@@ -144,6 +145,106 @@ export async function renderIntoAsync(target, source, options = {}) {
     throw new Error(`renderIntoAsync: target not found: ${String(target)}`);
   }
   el.innerHTML = await renderAsync(source, options);
+  return el;
+}
+
+// #194: a `<section src>` fast-path gate — true only if the source might be a
+// multi-file master document, so renderMasterAsync can short-circuit a non-master
+// source to the ordinary (library-aware) async render without a discovery parse.
+const HAS_SECTION_SRC = /<section\b[^>]*\bsrc\s*=/i;
+
+/**
+ * Throw on a child source the async pre-load could not supply, so the assembler's
+ * own try/catch turns it into a visible inline "(could not load section source …)"
+ * note (always-renders). A successful entry returns the fetched child text.
+ */
+function readPreloadedChild(loaded, src) {
+  const entry = loaded[src];
+  if (!entry) throw new Error(`section source not preloaded: ${src}`);
+  if (entry.error != null) throw new Error(entry.error);
+  if (typeof entry.content !== 'string') throw new Error(`section source "${src}" loaded empty`);
+  return entry.content;
+}
+
+/**
+ * Render a multi-file MASTER document live (#194). The browser counterpart of the
+ * CLI `enscribe build`: discover the master's top-level `<section src="…">` child
+ * references, pre-fetch each child (async; relative paths resolve against
+ * `document.baseURI`, exactly as <library src> does — the source-agnostic principle:
+ * fetch vs fs is just the injected reader), then run the SAME pure
+ * `assembleMasterDocument` the CLI uses to stitch the children into one flat article
+ * tree, and render it through the standard synchronous pipeline. The async-fetch-
+ * then-sync-assemble handoff mirrors renderAsync's <library src> pre-load.
+ *
+ * SINGLE-LEVEL, by design: like the assembler (and the CLI path), only the master's
+ * own `<section src>` children are loaded — a `<section src>` inside a child rides
+ * through unresolved. This keeps browser output byte-identical to the CLI build.
+ *
+ * always-renders: a child that fails to fetch (404 / network / CORS) renders a
+ * visible "(could not load section source …)" note in place; the document still
+ * renders. A source with no `<section src>` child is not a master — it falls back to
+ * renderAsync (which itself falls back to render() when there is nothing to fetch).
+ *
+ * Scope (#194 this slice): section children only. A master's OWN `<library src>`
+ * bibliography is not pre-loaded here — it renders the existing visible "needs an
+ * async render" marker (always-renders), not a crash. Loading it live is a small
+ * follow-on (union the section + library src lists into one preload and hand the
+ * loaded map to the pipeline via file.data) tracked separately from the child loader.
+ *
+ * @param {string} source - the master document's enscribe source.
+ * @param {object} [options] - pipeline options (see render()).
+ * @returns {Promise<string>} Serialized HTML of the assembled document.
+ */
+export async function renderMasterAsync(source, options = {}) {
+  if (!HAS_SECTION_SRC.test(source)) return renderAsync(source, options);
+  const proc = getPipeline(options);
+  // Discover top-level <section src> children using the SAME parser the assembler
+  // uses, so the discovered set is exactly the set assembleMasterDocument resolves
+  // (isEnscribeTag is the assembler's own predicate — no drift).
+  const masterTree = proc.parse(source);
+  const sectionSrcs = [
+    ...new Set(
+      (masterTree.children ?? [])
+        .filter((n) => isEnscribeTag(n, 'section') && n.kwargs?.src)
+        .map((n) => n.kwargs.src),
+    ),
+  ];
+  if (sectionSrcs.length === 0) return renderAsync(source, options);
+  const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
+  const loaded = await preloadSources(sectionSrcs, (src) => fetchSourceText(src, baseUrl));
+  const tree = assembleMasterDocument({
+    source,
+    parse: (s) => proc.parse(s),
+    // The pre-load map is keyed by the raw child src (the URL was resolved against
+    // the base at fetch time), so resolve is identity and readFile is a cache hit.
+    resolve: (rel) => rel,
+    readFile: (src) => readPreloadedChild(loaded, src),
+    warn: (m) => {
+      if (typeof console !== 'undefined' && console.warn) console.warn(m);
+    },
+  });
+  // Mirror the CLI build path exactly: runSync (numbering, ref/cite resolution over
+  // the one assembled tree) then stringify. Numbers/refs are baked into the tree by
+  // runSync, so no shared file is needed for this section-only path.
+  return String(proc.stringify(proc.runSync(tree)));
+}
+
+/**
+ * renderMasterAsync + write into a DOM element (the master-document counterpart of
+ * renderIntoAsync). As with renderInto, the HTML is assigned via innerHTML, so call
+ * executeAssets afterward to activate any injected interactive scripts.
+ *
+ * @param {string|Element} target - a CSS selector or an Element to fill.
+ * @param {string} source - the master document's enscribe source.
+ * @param {object} [options] - pipeline options (see render()).
+ * @returns {Promise<Element>} The element that was written into.
+ */
+export async function renderMasterIntoAsync(target, source, options = {}) {
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) {
+    throw new Error(`renderMasterIntoAsync: target not found: ${String(target)}`);
+  }
+  el.innerHTML = await renderMasterAsync(source, options);
   return el;
 }
 

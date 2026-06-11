@@ -1118,8 +1118,22 @@ entry `src/browser.js`. It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
 which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
 browser-safe defaults (external fonts / KaTeX CSS, linked third-party
-hover-preview libraries, live-link DSL); a caller can override any of them. For
-the live-editor case (#48), the built pipeline is **memoized on the resolved
+hover-preview libraries, live-link DSL); a caller can override any of them.
+
+A pair of async variants handle documents that must fetch external sources
+before the synchronous render. `renderAsync(source, options)` pre-fetches each
+external `<library src>` bibliography (#133); `renderMasterAsync(source,
+options)` pre-fetches each `<section src>` child of a multi-file master document
+and stitches them — via the shared `assembleMasterDocument`, the same assembler
+the CLI `build` command uses — into one article (#194). Both resolve relative
+`src` paths against `document.baseURI`, then run the same synchronous pipeline
+over the loaded content; a source that fails to fetch renders a visible inline
+error (always-renders), and each has a `…IntoAsync` element-writing counterpart.
+`renderMasterAsync` is single-level — only the master's own `<section src>`
+children are loaded, matching the assembler — and falls back to
+`renderAsync`/`render` for a source with no `<section src>` children.
+
+For the live-editor case (#48), the built pipeline is **memoized on the resolved
 options**: the build depends only on those options, not on the per-call source
 (which arrives via `processSync`), so a live editor re-rendering on each
 keystroke reuses one pipeline instead of rebuilding it per render. A changed
