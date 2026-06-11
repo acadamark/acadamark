@@ -11,8 +11,12 @@ import { readFileSync } from 'node:fs';
 import { buildEnscribePipeline, assembleMasterDocument } from '@enscribejs/enscribe';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const MASTER_DIR = join(__dirname, 'fixtures', 'master');
-const XREF_DIR = join(__dirname, 'fixtures', 'master-xref');
+// The multi-file fixtures live in the canonical enscribe rendered-fixture home
+// (packages/enscribe/test/fixtures), shared with render-fixtures.js and the
+// browser master-document test; reach across the monorepo to them.
+const ENSCRIBE_FIXTURES = join(__dirname, '..', '..', 'enscribe', 'test', 'fixtures');
+const MASTER_DIR = join(ENSCRIBE_FIXTURES, 'master');
+const XREF_DIR = join(ENSCRIBE_FIXTURES, 'master-xref');
 
 function renderMaster() {
   const proc = buildEnscribePipeline({});

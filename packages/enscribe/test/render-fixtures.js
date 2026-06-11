@@ -22,7 +22,8 @@
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, resolve } from 'node:path';
-import { buildEnscribePipeline } from '../src/interpreter/index.js';
+import { buildEnscribePipeline, assembleMasterDocument } from '../src/interpreter/index.js';
+import { isEnscribeTag } from '../src/core/tag.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 
@@ -80,6 +81,40 @@ const TOC_FIXTURES = new Set([
 ]);
 
 /**
+ * Multi-file master documents (#190 / #194). A fixture that names `<section src>`
+ * children is a master entry point: it is assembled — its children resolved and
+ * stitched against the master's own directory, the same handoff `enscribe build`
+ * and the browser `renderMasterAsync` perform — into one document, then rendered
+ * to a single golden. The child `.emd` files are fragments consumed by the
+ * assembly, so they get no standalone golden. Detection mirrors the browser
+ * entry's `HAS_SECTION_SRC` gate, and the children are read off the parsed
+ * master, so this is general — not hardcoded to the master/ and master-xref/ dirs.
+ */
+const HAS_SECTION_SRC = /<section\b[^>]*\bsrc\s*=/i;
+
+function isMaster(src) {
+  return HAS_SECTION_SRC.test(src);
+}
+
+// The set of child source paths consumed by every master fixture — skipped in
+// the render loop so they get no standalone golden. Each child `src` is resolved
+// against its own master's directory, exactly as the assembler resolves it.
+function collectConsumedChildren(emdPaths) {
+  const consumed = new Set();
+  const proc = buildEnscribePipeline({});
+  for (const p of emdPaths) {
+    const src = readFileSync(p, 'utf8');
+    if (!isMaster(src)) continue;
+    for (const node of proc.parse(src).children ?? []) {
+      if (isEnscribeTag(node, 'section') && node.kwargs?.src) {
+        consumed.add(join(dirname(p), node.kwargs.src));
+      }
+    }
+  }
+  return consumed;
+}
+
+/**
  * Wrap an interpreter fragment in a full HTML document shell.
  *
  * @param {string} fragment - Raw HTML fragment from the interpreter.
@@ -132,7 +167,24 @@ function renderFixture(emdPath) {
 
   const processor = buildEnscribePipeline(interpreterOptions);
 
-  const fragment = String(processor.processSync(src));
+  // A master document is assembled before rendering: its `<section src>` children
+  // are resolved against the master's own directory and stitched into one tree,
+  // then run through the same pipeline (the handoff `enscribe build` and the
+  // browser `renderMasterAsync` also perform). A plain document renders straight
+  // through.
+  let fragment;
+  if (isMaster(src)) {
+    const masterDir = dirname(emdPath);
+    const tree = assembleMasterDocument({
+      source: src,
+      readFile: (p) => readFileSync(p, 'utf8'),
+      resolve: (rel) => join(masterDir, rel),
+      parse: (s) => processor.parse(s),
+    });
+    fragment = String(processor.stringify(processor.runSync(tree)));
+  } else {
+    fragment = String(processor.processSync(src));
+  }
   const html = wrapInHtmlShell(fragment, name);
 
   // The .html is written beside its .emd (same directory), so fixtures organised
@@ -158,8 +210,13 @@ function findEmd(dir) {
 }
 const emdFiles = findEmd(FIXTURES_DIR).sort();
 
-console.log(`Rendering ${emdFiles.length} fixture(s)...`);
-for (const emdPath of emdFiles) {
+// A master's `<section src>` children are consumed by assembly and get no
+// standalone golden; compute that skip set from the masters themselves.
+const consumedChildren = collectConsumedChildren(emdFiles);
+const toRender = emdFiles.filter((p) => !consumedChildren.has(p));
+
+console.log(`Rendering ${toRender.length} fixture(s) (${consumedChildren.size} master child file(s) assembled in)...`);
+for (const emdPath of toRender) {
   renderFixture(emdPath);
 }
 console.log('Done.');

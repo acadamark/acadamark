@@ -5,49 +5,26 @@
 // assertions (continuous figure/section numbering, cross-file <ref> resolution),
 // proving the browser path produces the same assembled output as the CLI build.
 //
-// The child sources are the same as packages/cli/test/fixtures/master-xref/* —
-// inlined here and served by the mock fetch — so a divergence between the browser
-// and CLI assembled output would surface as a failed assertion.
+// The child sources are the shared canonical fixtures at
+// packages/enscribe/test/fixtures/master-xref/* — read from disk here and served
+// by the mock fetch — so a divergence between the browser and CLI assembled
+// output would surface as a failed assertion.
 
 import assert from 'node:assert';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { renderMasterAsync, renderMasterIntoAsync } from '../src/interpreter/browser.js';
 
-// ── the master + its three <section src> children (mirrors fixtures/master-xref) ──
-const MASTER = `<meta type=article title="Cross-File Numbering Demo" author="Test Author" />
+// ── the master + its three <section src> children: the shared canonical fixtures
+//    at test/fixtures/master-xref/, read from disk (no inline copies to drift) ──
+const FIXTURE_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-xref');
+const readFixture = (name) => readFileSync(join(FIXTURE_DIR, name), 'utf8');
 
-<section #sec:alpha src="alpha.emd" />
-
-<section #sec:beta src="beta.emd" />
-
-<section #sec:gamma src="gamma.emd" />
-
-<config number-sections=true />`;
-
-const ALPHA = `<meta title="Alpha" />
-
-The first section, authored in its own child file. It carries the first
-figure of the whole document.
-
-<fig #fig:alpha src=alpha.png | The alpha figure.>
-
-A forward cross-file reference: the last section's figure is <ref @fig:gamma>.`;
-
-const BETA = `<meta title="Beta" />
-
-The second section, in a second child file. A backward cross-file reference
-points at the first section's figure: <ref @fig:alpha>. A cross-file section
-reference: <ref @sec:alpha>.
-
-<fig #fig:beta src=beta.png | The beta figure.>`;
-
-const GAMMA = `<meta title="Gamma" />
-
-The third section, in a third child file, referring back to the second
-section's figure: <ref @fig:beta>.
-
-<fig #fig:gamma src=gamma.png | The gamma figure.>
-
-An unresolved reference still renders, as a visible marker: <ref @fig:missing>.`;
+const MASTER = readFixture('master-xref.emd');
+const ALPHA = readFixture('alpha.emd');
+const BETA = readFixture('beta.emd');
+const GAMMA = readFixture('gamma.emd');
 
 const CHILDREN = { 'alpha.emd': ALPHA, 'beta.emd': BETA, 'gamma.emd': GAMMA };
 
