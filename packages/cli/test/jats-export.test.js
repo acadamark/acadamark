@@ -25,6 +25,7 @@ import remarkRecursiveContent from '@enscribejs/enscribe/parser/recursive-conten
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import {
+  enscribeDocTypeResolve,
   enscribeNormalizeToCanonical,
   enscribeConfigDiscovery,
   enscribeBookStructuring,
@@ -208,6 +209,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -277,6 +279,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -393,6 +396,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -475,6 +479,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -576,6 +581,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -706,6 +712,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -819,6 +826,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -877,6 +885,7 @@ function validateWithXmllint(fixtureName, jatsXml) {
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)
@@ -1057,6 +1066,7 @@ ${dateXml}
   const file = { data: {}, message: () => {} };
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     .use(enscribeConfigDiscovery)
     .use(enscribeBookStructuring)

@@ -10,6 +10,12 @@
 
 export const ENSCRIBE_CONFIG             = 'enscribeConfig';
 export const ENSCRIBE_REGISTRY           = 'enscribeRegistry';
+// Slice A: the resolved document class ('article' | 'book' | 'book-part'), computed
+// ONCE by enscribeDocTypeResolve from <meta type> (validated against meta.md's declared
+// set) before the structuring plugins. The structuring plugins and the gate's
+// book-context detection read this instead of re-reading <meta type> ad-hoc; the
+// <book>/<article> wrapper they build is the derived artifact downstream keys off.
+export const ENSCRIBE_DOC_TYPE           = 'enscribeDocType';
 // #36 strict mode: the resolved strictness mode ('off' | 'sigil' | 'canonical'),
 // set by resolveStrictMode before recursive-content so the sub-parse inner
 // processor (and the strict lint) can read it.

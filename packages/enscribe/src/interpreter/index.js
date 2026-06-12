@@ -121,6 +121,7 @@ import rehypeFormat from 'rehype-format';
 import { smartTypography } from './smart-typography.js';
 
 import { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown } from './plugins/normalize-to-canonical.js';
+import { enscribeDocTypeResolve } from './plugins/doc-type.js';
 import { enscribeConfigDiscovery } from './plugins/config-discovery.js';
 import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
@@ -199,6 +200,7 @@ import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
 // sidebar is rendered; a pure progressive enhancement over the existing ToC.
 import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 
+export { enscribeDocTypeResolve } from './plugins/doc-type.js';
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
@@ -618,6 +620,12 @@ export function enscribeInterpreter(options = {}) {
   //      <hN> (depths 4-6); inline mdast forms lifted to canonical Layer 1
   //      inline elements. See plugins/normalize-to-canonical.js and
   //      DESIGN.md §"The single gate".
+  //
+  // Before the gate: resolve the document class once (<meta type> → file.data.docType,
+  // validated against meta.md's declared set; unknown explicit type warns + falls back
+  // to article). The gate's book-context detection and the structuring plugins read the
+  // resolved value rather than re-reading <meta type> ad-hoc (Slice A).
+  this.use(enscribeDocTypeResolve);
   this.use(enscribeNormalizeToCanonical);
 
   // 2–4. Structural transformation.
@@ -980,6 +988,10 @@ export function liftToCanonicalMdast(source) {
   }
   unified()
     .use(remarkRecursiveContent, { processor: inner })
+    // Resolve the document class before the gate here too (lift / collect* path), so
+    // book-context-gated book-part shorthand expansion fires for book documents — the
+    // gate reads file.data.docType, which only enscribeDocTypeResolve populates.
+    .use(enscribeDocTypeResolve)
     .use(enscribeNormalizeToCanonical)
     // Lower `<list>` (and its open markers) to a mdast list so the serializer sees
     // the canonical list shape — and so lift is idempotent (re-parsing the emitted

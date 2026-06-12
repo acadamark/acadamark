@@ -4,6 +4,7 @@
 // self-executing files invoked directly by the package `test` script.)
 
 import { run as runConfigDiscovery } from './plugins/config-discovery.test.js';
+import { run as runDocType } from './plugins/doc-type.test.js';
 import { run as runArticleStructuring } from './plugins/article-structuring.test.js';
 import { run as runSectionNesting } from './plugins/section-nesting.test.js';
 import { run as runListStructuring } from './plugins/list-structuring.test.js';
@@ -59,6 +60,7 @@ import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
 
 const suites = [
+  ['plugins/doc-type',             runDocType],
   ['plugins/config-discovery',     runConfigDiscovery],
   ['plugins/article-structuring',  runArticleStructuring],
   ['plugins/section-nesting',      runSectionNesting],

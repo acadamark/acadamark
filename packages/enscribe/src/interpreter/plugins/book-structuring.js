@@ -41,6 +41,7 @@
 
 import { makeTag } from '../../core/tag.js';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
+import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 
 // Book-part-type → region routing.
 const BOOK_PART_FRONT_TYPES = new Set(['preface', 'foreword', 'dedication']);
@@ -277,9 +278,10 @@ export function enscribeBookStructuring() {
   return (tree, file) => {
     const children = tree.children ?? [];
 
-    // Document type detection.
+    // Document class resolved once upstream (enscribeDocTypeResolve → file.data).
+    // metaNode is still needed below for the #176 single-file book-part case + titles.
     const metaNode = findTag(children, 'meta');
-    const docType = metaNode?.kwargs?.type ?? 'article';
+    const docType = file?.data?.[ENSCRIBE_DOC_TYPE] ?? 'article';
     if (docType !== 'book' && docType !== 'book-part') {
       return; // article — let enscribeArticleStructuring handle it
     }

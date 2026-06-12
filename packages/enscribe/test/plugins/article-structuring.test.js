@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { enscribeArticleStructuring } from '../../src/interpreter/plugins/article-structuring.js';
 import { makeTag } from '../../src/core/tag.js';
+import { ENSCRIBE_DOC_TYPE } from '../../src/core/file-data-keys.js';
+
+// The document class is resolved upstream (enscribeDocTypeResolve → file.data) and
+// article-structuring reads it from file.data, not from <meta type>. A file-like stand-in.
+const docTypeFile = (docType) => ({ data: { [ENSCRIBE_DOC_TYPE]: docType } });
 
 function para(value) {
   return { type: 'paragraph', children: [{ type: 'text', value }] };
@@ -108,7 +113,7 @@ export function run() {
   {
     const meta = metaTag('book');
     const tree = { type: 'root', children: [meta, para('body')] };
-    enscribeArticleStructuring()(tree);
+    enscribeArticleStructuring()(tree, docTypeFile('book'));
 
     // Tree should be unchanged (book structuring not implemented here).
     assert.equal(tree.children[0], meta, 'book type: tree unchanged');

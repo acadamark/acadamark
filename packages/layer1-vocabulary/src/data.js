@@ -4067,7 +4067,7 @@ const _meta = Object.freeze({
             "book-part",
           ],
           "default": "article",
-          "notes": "Declares the document type. Read by the structural plugin\n(enscribeArticleStructuring / enscribeBookStructuring) to\ndecide which Layer 1 wrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. If <meta> has no type\nkwarg the structural plugin treats the document as article-shaped.\n",
+          "notes": "Declares the document class. Resolved ONCE before structuring by\nenscribeDocTypeResolve: the value is validated against this set, stored on\nfile.data, and an explicitly-set unknown type (a typo, an unbuilt class) is\nreported with a non-fatal diagnostic and falls back to \"article\"\n(always-renders). The structural plugins (enscribeArticleStructuring /\nenscribeBookStructuring) read the resolved class to decide which Layer 1\nwrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. An absent type kwarg is the\nnormal article case: silent default, no diagnostic.\n",
         },
         "book-part-type": {
           "maps_to": {

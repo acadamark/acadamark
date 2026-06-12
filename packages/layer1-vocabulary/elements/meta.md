@@ -22,15 +22,19 @@ enscribe_attributes:
       values: [article, book, book-part]
       default: article
       notes: |
-        Declares the document type. Read by the structural plugin
-        (enscribeArticleStructuring / enscribeBookStructuring) to
-        decide which Layer 1 wrapper to generate around the document:
+        Declares the document class. Resolved ONCE before structuring by
+        enscribeDocTypeResolve: the value is validated against this set, stored on
+        file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is
+        reported with a non-fatal diagnostic and falls back to "article"
+        (always-renders). The structural plugins (enscribeArticleStructuring /
+        enscribeBookStructuring) read the resolved class to decide which Layer 1
+        wrapper to generate around the document:
         type=article → <article> with <article-front>/<article-body>/<article-back>;
         type=book → <book> with <book-front>/<book-body>/<book-back>;
         type=book-part → <book-part> containing <meta> and body content directly
         (no nested front/body/back wrappers).
-        Default is "article" — the most common case. If <meta> has no type
-        kwarg the structural plugin treats the document as article-shaped.
+        Default is "article" — the most common case. An absent type kwarg is the
+        normal article case: silent default, no diagnostic.
     book-part-type:
       maps_to: book-part-type
       values: [chapter, part, introduction, conclusion, other, preface, foreword, dedication, appendix, glossary, colophon]

@@ -30,6 +30,7 @@
 import { makeTag } from '../../core/tag.js';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
 import { warnSkippedDocType, warnTitlePrecedence } from '../lib/errors.js';
+import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 // #100: an article `<appendix>` lowers (at the gate) to the same
 // `<book-part book-part-type="appendix">` the book uses. We reuse the book-side
 // body absorption + title promotion, then route the appendix to <article-back>.
@@ -193,7 +194,8 @@ export function enscribeArticleStructuring() {
 
     // Detect document type from <meta> tag.
     const metaNode = findTag(children, 'meta');
-    const docType = metaNode?.kwargs?.type ?? 'article';
+    // Document class resolved once upstream (enscribeDocTypeResolve → file.data).
+    const docType = file?.data?.[ENSCRIBE_DOC_TYPE] ?? 'article';
 
     if (docType === 'book' || docType === 'book-part') {
       // Defensive: should be unreachable post-book-structuring. Keep the

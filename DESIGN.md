@@ -381,13 +381,18 @@ The pipeline expression of the distinction: two structural plugins —
 side-by-side as Stage 3 (post-gate). For each document, exactly one
 of them transforms the tree:
 
-- **`enscribeBookStructuring` runs first.** If `<meta type=book>` or
-  `<meta type=book-part>` is at root, it wraps the children into
-  `<book>` with `<book-front>` / `<book-body>` / `<book-back>`
-  regions, routing each `<book-part>` to its appropriate region by
-  `book-part-type` (chapter / part / introduction → body; preface /
-  foreword / dedication → front; appendix / glossary / colophon →
-  back). Otherwise it's a no-op.
+- **The document class is resolved once first.** `enscribeDocTypeResolve`
+  reads `<meta type>` before structuring, validates it against the
+  declared set (`article` / `book` / `book-part`), stores it on
+  `file.data`, and reports an explicitly-set unknown type with a
+  non-fatal diagnostic (falling back to `article`). The structuring
+  plugins read that resolved class rather than re-reading `<meta type>`.
+- **`enscribeBookStructuring` runs first.** For a `book` or `book-part`
+  class it wraps the children into `<book>` with `<book-front>` /
+  `<book-body>` / `<book-back>` regions, routing each `<book-part>` to
+  its appropriate region by its `type` (chapter / part / introduction →
+  body; preface / foreword / dedication → front; appendix / glossary /
+  colophon → back). Otherwise it's a no-op.
 - **`enscribeArticleStructuring` runs next.** If the tree is already
   book-wrapped, it skips silently. Otherwise it does its article
   shape (`<article>` containing `<article-front>` / `<article-body>`

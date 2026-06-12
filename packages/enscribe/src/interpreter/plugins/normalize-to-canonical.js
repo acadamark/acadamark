@@ -49,6 +49,7 @@
 
 import { getContentHandler } from '../../core/dsl-registry.js';
 import { makeTag, makeOpaqueTag, isEnscribeTag } from '../../core/tag.js';
+import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 import { walkNormalize } from '../../core/walkers/walk-normalize.js';
 import { discover } from '../../core/walkers/discover.js';
 import { SIGIL_TO_TAGNAME, isSigilTagname } from '../../core/tagname-sigil-map.js';
@@ -87,14 +88,11 @@ const BOOK_PART_SHORTHANDS = new Set([
 // standalone meaning in articles.
 const _bookContextFlag = { isBook: false };
 
-function detectBookContext(treeChildren) {
-  for (const child of treeChildren ?? []) {
-    if (isEnscribeTag(child) && child.tagname === 'meta') {
-      const type = child.kwargs?.type;
-      if (type === 'book' || type === 'book-part') return true;
-    }
-  }
-  return false;
+// Book context covers both book and book-part documents. The document class is
+// resolved once upstream (enscribeDocTypeResolve → file.data[ENSCRIBE_DOC_TYPE]), so
+// this no longer re-reads <meta type> from the tree.
+function isBookDocType(docType) {
+  return docType === 'book' || docType === 'book-part';
 }
 
 // ─── Shared shorthand-expansion registry (#22 slices 2–3) ───────────────────
@@ -1033,7 +1031,7 @@ export function enscribeNormalizeToCanonical() {
     // before the walk so the book-part shorthand expansion predicate
     // (Group A1.7) fires only in book documents. Cleared in a finally
     // so a thrown error doesn't leak the flag across documents.
-    _bookContextFlag.isBook = detectBookContext(tree.children);
+    _bookContextFlag.isBook = isBookDocType(file?.data?.[ENSCRIBE_DOC_TYPE] ?? 'article');
     try {
       walkNormalize(tree.children ?? [], isNormalizable, (node) => normalizeNode(node, file));
       // #85: validate host format words against their accept-sets. Runs AFTER
