@@ -1048,8 +1048,12 @@ export { assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC, MASTER_SRC_TA
 // byte-identical to its in-context full-render fragment (the per-chapter render the
 // live lazy path, L2, drives).
 export { harvestCrossRefRegistry } from './lib/cross-ref-registry.js';
-export { renderChapter } from '../master-document/render-chapter.js';
+export { renderChapter, extractBookPart } from '../master-document/render-chapter.js';
 export { ENSCRIBE_CROSSREF_REGISTRY } from '../core/file-data-keys.js';
+// Publishing, P1 (#205): the static separate-pages book build — one standalone HTML
+// page per chapter at per-chapter URLs, cross-chapter refs resolving to cross-page
+// links. The first consumer of L1 (renderChapter + registry) and C (the chrome).
+export { publishBookPages } from '../master-document/publish-pages.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);

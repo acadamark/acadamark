@@ -66,9 +66,11 @@ export async function run() {
     assert.strictEqual(file.data.enscribeCrossRefRegistry, registry, 'harvest stored on file.data');
     const transect = registry.get('fig:transect');
     const browse = registry.get('fig:browse');
-    assert.deepStrictEqual(transect, { number: '1.1', title: 'A standard aerial-transect grid.', type: 'figure' },
-      'fig:transect harvested with per-chapter number, caption title, and type');
-    assert.deepStrictEqual(browse, { number: '2.1', title: 'A browse-damage scoring rubric.', type: 'figure' },
+    // chapter is null here: the book-parts are anchorless in this raw runSync tree
+    // (no toc/publisher id assignment), so the owning-chapter field has no id to read.
+    assert.deepStrictEqual(transect, { number: '1.1', title: 'A standard aerial-transect grid.', type: 'figure', chapter: null },
+      'fig:transect harvested with per-chapter number, caption title, type, and (null) owning chapter');
+    assert.deepStrictEqual(browse, { number: '2.1', title: 'A browse-damage scoring rubric.', type: 'figure', chapter: null },
       'fig:browse harvested as chapter 2 figure 2.1');
     console.log('PASS: L1 — cross-ref registry harvested (anchor -> {number, title, type}) from the numbered tree');
   }

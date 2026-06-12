@@ -28,7 +28,7 @@ import { makeTag } from '../core/tag.js';
  * Extract the OUTERMOST `<book-part>…</book-part>` fragment from rendered HTML,
  * matching nested book-parts (a <part> containing <chapter>s) correctly.
  */
-function extractBookPart(html) {
+export function extractBookPart(html) {
   // `<book-part>` / `<book-part …>` — the trailing [\s>] excludes `<book-part-title>`
   // and `<book-part-…>` children from counting as nested opens.
   const openRe = /<book-part[\s>]/g;

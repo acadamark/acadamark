@@ -19,10 +19,11 @@
  * Writes: test/fixtures/*.html  (one per .emd)
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, resolve } from 'node:path';
-import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC } from '../src/interpreter/index.js';
+import { VFile } from 'vfile';
+import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC, publishBookPages } from '../src/interpreter/index.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 
@@ -219,4 +220,28 @@ console.log(`Rendering ${toRender.length} fixture(s) (${consumedChildren.size} m
 for (const emdPath of toRender) {
   renderFixture(emdPath);
 }
+
+// P1 (#205): the static separate-pages book build. Emit master-book as one standalone
+// HTML page per chapter into master-book/pages/ — the same publishBookPages the CLI
+// `build` (book default) uses. These page goldens prove the standalone-page shape +
+// the cross-page ref rewrite; the separate-pages-parity test proves each page's
+// content equals L1's renderChapter.
+{
+  const bookDir = join(FIXTURES_DIR, 'master-book');
+  const proc = buildEnscribePipeline({ assetsDir: join(FIXTURES_DIR, 'assets') });
+  const file = new VFile({ path: 'master-book.emd' });
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(bookDir, 'master-book.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(bookDir, rel),
+    parse: (s) => proc.parse(s),
+  });
+  const numbered = proc.runSync(tree, file);
+  const pages = publishBookPages({ numbered, file, proc, defaultCss: SHELL_CSS });
+  const pagesDir = join(bookDir, 'pages');
+  mkdirSync(pagesDir, { recursive: true });
+  for (const [name, html] of pages) writeFileSync(join(pagesDir, name), html, 'utf8');
+  console.log(`  wrote ${pages.size} separate-pages goldens → master-book/pages/`);
+}
+
 console.log('Done.');

@@ -15,10 +15,11 @@
 // JATS code into `enscribe` would bloat the library and couple it to the
 // filesystem-bound CLI surface.
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
+import { VFile } from 'vfile';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, assembleMasterDocument } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, assembleMasterDocument, publishBookPages } from '@enscribejs/enscribe';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';
@@ -163,16 +164,23 @@ Options:
 
 const BUILD_HELP = `enscribe build — assemble a multi-file master document, then render it
 
-A master document names its child files with <section src="child.emd"> entries;
-build loads each child (paths relative to the master), stitches them into one
-article in document order, and renders that combined article to HTML — the same
-output 'render' would produce for an equivalent single file.
+A master document names its child files with <section src> / <chapter src> entries;
+build loads each child (paths relative to the master), stitches them into one tree
+in document order, and renders it as an article or book per <meta type>.
+
+A BOOK builds to SEPARATE per-chapter pages by default — one standalone HTML page per
+chapter at a per-chapter URL (e.g. 1-introduction.html), plus index.html, each with
+the reading-interface chrome and cross-chapter references linking across pages. Pass
+-o <dir> to choose the output directory. --single-page builds the whole book as one
+HTML file instead. Articles are always single-page.
 
 Usage:
   enscribe build <master.emd> [options]
 
 Options:
-  -o, --output <file>  Write HTML to <file> (default: stdout)
+  -o, --output <path>  Output file (single-page) or DIRECTORY (separate-pages book)
+  --separate-pages     Build a book as separate per-chapter pages (book default)
+  --single-page        Build the whole book/article as one HTML file
   --embed              Self-contained HTML, assets inlined (default)
   --no-embed           Link assets externally (fonts / KaTeX CSS from CDNs)
   --dsl-mode <mode>    DSL rendering mode: skip, live-link, live-inline, static
@@ -180,9 +188,11 @@ Options:
   -h, --help           Show this help
 
 Note:
-  First slice (#190) — assembles <section src> children and inline sections into
-  one article. Cross-file citations/numbering/cross-references, placement markers
-  (toc / endnotes / bibliography), and non-article types are deferred.
+  Article and book master assembly both work, with cross-file numbering and
+  cross-references resolved across the children. A book builds to separate per-
+  chapter pages by default (--single-page for the whole book in one file).
+  Cross-file citation/bibliography registry merge and placement markers
+  (toc / endnotes / bibliography) are still deferred.
 `;
 
 const EXPORT_JATS_HELP = `enscribe export-jats — export an Enscribe document to JATS 1.3 XML
@@ -206,6 +216,7 @@ function parseCommandArgs(args) {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
     toc: undefined, theme: undefined, chapterNav: undefined, from: undefined,
+    pages: undefined,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -238,6 +249,8 @@ function parseCommandArgs(args) {
       opts.theme = a.slice('--theme='.length);
     } else if (a === '--chapter-nav') opts.chapterNav = true;
     else if (a === '--no-chapter-nav') opts.chapterNav = false;
+    else if (a === '--separate-pages') opts.pages = 'separate';
+    else if (a === '--single-page') opts.pages = 'single';
     else if (a === '--from' || a === '-f') {
       opts.from = args[++i];
       if (opts.from == null) throw new CliError('--from needs a format (e.g. latex, markdown, docx)');
@@ -372,11 +385,24 @@ function doImport(opts) {
   });
 }
 
+let _defaultCss = null;
+/** default.css (the structural stylesheet) inlined into each separate-pages shell. */
+function readDefaultCss() {
+  if (_defaultCss == null) _defaultCss = readFileSync(require.resolve('@enscribejs/enscribe/default.css'), 'utf8');
+  return _defaultCss;
+}
+
 function doBuild(opts) {
   // #190 — multi-file master document. Parse the master, load and parse each `src`
   // structure child (`<section src>` / `<chapter src>` / …; paths relative to the
   // master file), assemble into one flat tree, then run the existing render path
   // (which structures it as an article or book per the master's `<meta type>`).
+  //
+  // P1 (#205): a BOOK builds to SEPARATE per-chapter pages by default — one
+  // standalone HTML page per chapter at per-chapter URLs (publishBookPages, reusing
+  // L1's renderChapter + the harvested registry, and C's chrome). `--single-page`
+  // forces the retained whole-book-in-one-file mode (also L1's reference render);
+  // `--separate-pages` forces separate (book-only). Articles are always single-page.
   const source = readInput(opts.input);
   const masterDir = dirname(resolve(opts.input));
   const embedResources = opts.embed ?? true;
@@ -386,6 +412,9 @@ function doBuild(opts) {
     dslMode: standaloneDslMode(opts, embedResources),
   });
   return withQuiet(opts.quiet, () => {
+    // An explicit VFile so file.data.enscribeRegistry is reachable for the registry
+    // harvest the separate-pages publisher needs (the no-VFile path drops it).
+    const file = new VFile({ path: opts.input ?? 'input.emd' });
     const tree = assembleMasterDocument({
       source,
       readFile: (p) => readFileSync(p, 'utf8'),
@@ -393,11 +422,19 @@ function doBuild(opts) {
       parse: (s) => proc.parse(s),
       warn: (m) => console.warn(m),
     });
-    // HTML only this slice. An assembled-source (--emd) emit is deferred: the
-    // assembled tree carries section titles in `.content` (what the render path
-    // reads), which serializeCanonical does not round-trip — it would emit empty
-    // `<section | >` markers. Not worth a serializer change for the skeleton (#190).
-    return proc.stringify(proc.runSync(tree));
+    const numbered = proc.runSync(tree, file);
+    const isBook = file.data?.enscribeDocType === 'book';
+    const separate = opts.pages === 'separate' || (opts.pages !== 'single' && isBook);
+    if (separate) {
+      if (!isBook) {
+        throw new CliError('--separate-pages is a book-only build; this document is not a <meta type=book>');
+      }
+      return { mode: 'separate', pages: publishBookPages({ numbered, file, proc, defaultCss: readDefaultCss() }) };
+    }
+    // Single-page (the retained whole-book / article mode) — the unchanged render path.
+    // An assembled-source (--emd) emit is deferred (#190): section titles live in
+    // `.content`, which serializeCanonical does not round-trip.
+    return { mode: 'single', html: String(proc.stringify(numbered, file)) };
   });
 }
 
@@ -464,7 +501,21 @@ export function run(argv, io = {}) {
       case 'build': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(BUILD_HELP); return 0; }
-        emit(doBuild(opts), opts, out);
+        const result = doBuild(opts);
+        if (result.mode === 'single') {
+          emit(result.html, opts, out);
+          return 0;
+        }
+        // Separate-pages: write one standalone HTML file per chapter + index.html to
+        // the output DIRECTORY (-o is a dir in this mode; N pages can't go to stdout).
+        if (!opts.output) {
+          throw new CliError('a separate-pages book build writes multiple files — give an output directory with -o <dir>');
+        }
+        mkdirSync(opts.output, { recursive: true });
+        for (const [name, html] of result.pages) {
+          writeFileSync(join(opts.output, name), html, 'utf8');
+        }
+        if (!opts.quiet) out.write(`Wrote ${result.pages.size} pages to ${opts.output}/ (chapter pages + index.html)\n`);
         return 0;
       }
       case 'export-jats': {

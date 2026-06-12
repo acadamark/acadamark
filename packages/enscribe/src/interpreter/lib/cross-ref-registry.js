@@ -59,9 +59,16 @@ function titleOf(node) {
  * off the node. The anchor set is exactly the registry's label index (every
  * referenceable target), since the registry was built from these same nodes.
  *
+ * `chapter` records the id of the enclosing `<book-part>` (the chapter that OWNS the
+ * anchor), or null for an anchor outside any book-part (an article, or book front/
+ * back-matter without one). This is the field the separate-pages publisher (P1) and
+ * the lazy live path (L2/L3) need to resolve a cross-CHAPTER reference to the page /
+ * chapter that owns it. It reads `book-part.id` — anchorless book-parts give null, so
+ * a publisher that needs cross-page ownership assigns book-part ids before harvesting.
+ *
  * @param {object} tree - the numbered mdast tree
  * @param {object} file - the VFile carrying file.data[ENSCRIBE_REGISTRY]
- * @returns {Map<string, {number: string|null, title: string, type: string}>}
+ * @returns {Map<string, {number: string|null, title: string, type: string, chapter: string|null}>}
  *   also stored on file.data[ENSCRIBE_CROSSREF_REGISTRY]
  */
 export function harvestCrossRefRegistry(tree, file) {
@@ -69,8 +76,10 @@ export function harvestCrossRefRegistry(tree, file) {
   const out = new Map();
 
   if (registry) {
-    const visit = (node) => {
+    const visit = (node, chapter) => {
       if (node == null) return;
+      // Entering a book-part sets the owning chapter for everything inside it.
+      const owner = (isEnscribeTag(node, 'book-part')) ? (node.id ?? null) : chapter;
       if (isEnscribeTag(node) && typeof node.id === 'string' && node.id.includes(':') && !out.has(node.id)) {
         const entry = registry.findByLabel(node.id);
         if (entry) {
@@ -80,14 +89,15 @@ export function harvestCrossRefRegistry(tree, file) {
             number: formatScopedNumber(entry.number, entry.data?.scope),
             title: titleOf(node),
             type: entry.type,
+            chapter: owner,
           });
         }
       }
       const content = Array.isArray(node.content) ? node.content : null;
-      if (content && !node.isOpaqueContent) for (const c of content) visit(c);
-      if (Array.isArray(node.children)) for (const c of node.children) visit(c);
+      if (content && !node.isOpaqueContent) for (const c of content) visit(c, owner);
+      if (Array.isArray(node.children)) for (const c of node.children) visit(c, owner);
     };
-    visit(tree);
+    visit(tree, null);
   }
 
   if (file?.data) file.data[ENSCRIBE_CROSSREF_REGISTRY] = out;

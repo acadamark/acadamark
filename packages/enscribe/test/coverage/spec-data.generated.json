@@ -548,6 +548,12 @@
       "asserts": "a book rendered with a ToC (`toc` on) is a **one scrolling document with three-column chapter-navigation chrome**, NOT a paged one-chapter-at-a-time view. The chrome, all of it STATIC markup (so it is byte-identical static≡live; the highlighting/visibility is post-render enhancement): a LEFT chapter rail (`<nav class=\"enscribe-toc enscribe-chapter-rail\">`) listing chapters only — in reading order, region-grouped (front / body / back), with the chapter number and title in SEPARATE spans (`enscribe-toc-num` / `enscribe-toc-title`, so \"1 Introduction\" is never glued \"1Introduction\"); static prev/next chapter links (`<nav class=\"enscribe-chapter-nav\">`) at each chapter's foot, in reading order; and a RIGHT \"on this page\" rail (`<nav class=\"enscribe-onthispage\">`) with one section group per chapter, each keyed `data-chapter` to its chapter id. Two post-render scripts drive it: the scroll-spy script (the SOLE left-rail highlighter — see §15.5) marks the active chapter, and the on-this-page script reveals the current chapter's section group and marks the active section. *Section placement (the slice's design decision): sections live in the RIGHT rail only, not nested under the left chapter rail — the clean split that keeps the chapter rail a flat chapter list.* The single-chapter PAGING view (`RQ-BOOK-M1`/`M2` supply its per-chapter boundaries) remains available as an explicit opt-in (`chapterNav: true`), not the default."
     },
     {
+      "id": "RQ-BOOK-M8",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "a book built with `enscribe build` publishes by default as one standalone HTML page per chapter at a deterministic per-chapter URL (number/letter + title slug; an `index.html` lands the set). Each page carries the same `RQ-BOOK-M7` chrome, but the chapter rail links to each chapter's PAGE (the current chapter statically marked active) and the per-chapter prev/next links to the adjacent chapters' pages; the on-this-page rail stays in-page. A cross-CHAPTER reference resolves to the owning chapter's page + anchor (`1-counting-elephants.html#fig:transect`); an in-chapter reference stays an in-page anchor. The page's chapter content is the per-chapter render of `RQ-BOOK-M7` / the lazy engine (byte-identical to the single-page slice apart from this cross- page href rewrite), so single-page (`--single-page`) stays the reference render."
+    },
+    {
       "id": "RQ-BOOK-S1",
       "area": "RQ-BOOK",
       "kind": "S",

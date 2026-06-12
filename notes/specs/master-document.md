@@ -86,8 +86,8 @@ Bibliography *display* can be per-chapter: a `<bibliography>` at a chapter's end
 
 Two deliberately distinct mechanisms:
 
-- **Cross-references are page-implicit.** `<ref #fig:elephant>` resolves to wherever the target lives across the project, with project numbering ("Figure 3.2") — matching enscribe's existing colon-id resolution and Quarto's `@`-reference behavior. The author never names the page, so references survive a page being renamed or moved. This requires ids to be unique project-wide.
-- **Raw links are page-explicit.** The `#/page-title/anchor` form is the escape hatch for arbitrary links, parallel to Quarto's `[text](page#anchor)`.
+- **Cross-references are page-implicit.** `<ref #fig:elephant>` resolves to wherever the target lives across the project, with project numbering ("Figure 3.2") — matching enscribe's existing colon-id resolution and Quarto's `@`-reference behavior. The author never names the page, so references survive a page being renamed or moved. This requires ids to be unique project-wide. *(Realized by the static separate-pages book build (publishing, P1): the cross-reference registry records which chapter owns each anchor, and a cross-chapter ref is emitted as `owner-chapter-page#anchor` at publish time — the author still names only the target, never the page.)*
+- **Raw links are page-explicit.** The `#/page-title/anchor` form is the escape hatch for arbitrary links, parallel to Quarto's `[text](page#anchor)`. *(Not yet implemented.)*
 
 ## `<config>`
 

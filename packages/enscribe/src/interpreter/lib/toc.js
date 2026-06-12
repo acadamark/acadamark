@@ -68,7 +68,7 @@ function findTitleEl(node) {
  *   - `number` / `clean` — the leading `<span class="section-number">` separated from
  *     the rest ("1" + "Introduction"); used by the BOOK path to render "1 Introduction".
  *  `number` is '' when the title carries no number span (front-matter, unnumbered docs). */
-function titleParts(node) {
+export function titleParts(node) {
   const titleEl = findTitleEl(node);
   if (!titleEl) return { glued: '', number: '', clean: '' };
   let number = '';
@@ -111,7 +111,7 @@ function collectIds(node, set) {
 }
 
 /** Slugify a title to a `sec:`-prefixed id fragment (matching the cross-ref convention). */
-function slugify(title) {
+export function slugify(title) {
   const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'section';
   return `sec:${base}`;
 }
@@ -143,7 +143,7 @@ function assignIds(entries, used, slugOf) {
 // form un-glues the number into its own span (and reserves a fallback label so a
 // title-less entry never renders an empty, unnavigable anchor).
 const articleLink = (e) => [text(e.glued)];
-const bookLink = (e) => {
+export const bookLink = (e) => {
   const title = e.clean || 'Untitled';
   if (e.number) {
     return [
@@ -155,7 +155,7 @@ const bookLink = (e) => {
 };
 
 /** Build a nested `<ul>` of links from an entry tree, using `content` for each link. */
-function buildList(entries, content) {
+export function buildList(entries, content) {
   return el('ul', {}, entries.map((e) => el('li', {}, [
     el('a', { href: `#${e.id}` }, content(e)),
     ...(e.children.length ? [buildList(e.children, content)] : []),
@@ -224,13 +224,26 @@ function assignBookIds(parts, used) {
 /** The LEFT chapter rail: chapters only (no section nesting — that lives in the
  *  right rail), region-grouped, roster-numbered. It is `nav.enscribe-toc` so the
  *  unchanged scroll-spy script highlights the active chapter, and the existing ToC
- *  CSS applies. */
-function buildChapterRail(parts) {
-  const items = parts.map((p) => el('li', {
-    className: ['enscribe-rail-item', `enscribe-rail-item--${p.region}`],
-  }, [
-    el('a', { href: `#${p.id}` }, bookLink(p)),
-  ]));
+ *  CSS applies.
+ *
+ *  `chapterHref(part)` builds each chapter link's href; the default `#${id}` is the
+ *  single-page in-page anchor (the byte-stability contract — single-page output must
+ *  not move). The separate-pages publisher (P1) passes a page-URL builder so the rail
+ *  links to chapter PAGES instead. `activeId` (separate-pages) statically marks the
+ *  current chapter's link (scroll-spy can't, since page-URL links aren't #anchors). */
+export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeId = null) {
+  const items = parts.map((p) => {
+    const linkProps = { href: chapterHref(p) };
+    if (activeId != null && p.id === activeId) {
+      linkProps.className = ['enscribe-toc-active'];
+      linkProps['aria-current'] = 'location';
+    }
+    return el('li', {
+      className: ['enscribe-rail-item', `enscribe-rail-item--${p.region}`],
+    }, [
+      el('a', linkProps, bookLink(p)),
+    ]);
+  });
   return el('nav', { className: ['enscribe-toc', 'enscribe-chapter-rail'], ariaLabel: 'Chapters' }, [
     el('details', { className: ['enscribe-toc-details'], open: true }, [
       el('summary', { className: ['enscribe-toc-summary'] }, [text('Chapters')]),
@@ -244,7 +257,7 @@ function buildChapterRail(parts) {
  *  script reveals the active chapter's group and highlights the in-view section;
  *  with JS off the first group shows (progressive enhancement). Omitted entirely
  *  when no chapter has sections. */
-function buildOnThisPage(parts) {
+export function buildOnThisPage(parts) {
   const groups = parts
     .filter((p) => p.sections.length > 0)
     .map((p) => el('div', {
@@ -263,7 +276,7 @@ function buildOnThisPage(parts) {
 /** A prev/next chapter link (e.g. "← 1 Introduction" / "3 Results →"). The arrow is
  *  a separate decorative span; number and title reuse the rail spans so the theme
  *  styles them consistently. */
-function chapterLink(dir, part) {
+function chapterLink(dir, part, chapterHref = (p) => `#${p.id}`) {
   const arrow = dir === 'prev' ? '←' : '→';
   const title = part.clean || 'Untitled';
   const label = [];
@@ -272,9 +285,20 @@ function chapterLink(dir, part) {
   const arrowSpan = el('span', { className: ['enscribe-chapter-arrow'] }, [text(arrow)]);
   return el('a', {
     className: [`enscribe-chapter-${dir}`],
-    href: `#${part.id}`,
+    href: chapterHref(part),
     rel: dir === 'prev' ? 'prev' : 'next',
   }, dir === 'prev' ? [arrowSpan, ...label] : [...label, arrowSpan]);
+}
+
+/** A standalone prev/next chapter bar for the parts at index `i` (prev = i-1, next =
+ *  i+1), or null if neither exists. Used by the separate-pages publisher to emit the
+ *  bar with page-URL hrefs; appendChapterNav uses it for the in-page single-page form. */
+export function chapterNavBar(parts, i, chapterHref = (p) => `#${p.id}`) {
+  const links = [];
+  if (i > 0) links.push(chapterLink('prev', parts[i - 1], chapterHref));
+  if (i < parts.length - 1) links.push(chapterLink('next', parts[i + 1], chapterHref));
+  if (links.length === 0) return null;
+  return el('nav', { className: ['enscribe-chapter-nav'], ariaLabel: 'Chapter navigation' }, links);
 }
 
 /** Append a static prev/next chapter bar to the foot of each book-part, computed
@@ -282,11 +306,8 @@ function chapterLink(dir, part) {
  *  nav's runtime bar). Static markup → byte-identical static≡live. */
 function appendChapterNav(parts) {
   parts.forEach((p, i) => {
-    const links = [];
-    if (i > 0) links.push(chapterLink('prev', parts[i - 1]));
-    if (i < parts.length - 1) links.push(chapterLink('next', parts[i + 1]));
-    if (links.length === 0) return;
-    const bar = el('nav', { className: ['enscribe-chapter-nav'], ariaLabel: 'Chapter navigation' }, links);
+    const bar = chapterNavBar(parts, i);
+    if (!bar) return;
     p.el.children = [...(p.el.children ?? []), bar];
   });
 }

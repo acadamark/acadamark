@@ -974,6 +974,17 @@ cross-references, and edited-volume (per-chapter) authorship.
   the clean split that keeps the chapter rail a flat chapter list.* The
   single-chapter PAGING view (`RQ-BOOK-M1`/`M2` supply its per-chapter boundaries)
   remains available as an explicit opt-in (`chapterNav: true`), not the default.
+- **`RQ-BOOK-M8`** (separate-pages publish) — a book built with `enscribe build`
+  publishes by default as one standalone HTML page per chapter at a deterministic
+  per-chapter URL (number/letter + title slug; an `index.html` lands the set). Each
+  page carries the same `RQ-BOOK-M7` chrome, but the chapter rail links to each
+  chapter's PAGE (the current chapter statically marked active) and the per-chapter
+  prev/next links to the adjacent chapters' pages; the on-this-page rail stays
+  in-page. A cross-CHAPTER reference resolves to the owning chapter's page + anchor
+  (`1-counting-elephants.html#fig:transect`); an in-chapter reference stays an
+  in-page anchor. The page's chapter content is the per-chapter render of `RQ-BOOK-M7`
+  / the lazy engine (byte-identical to the single-page slice apart from this cross-
+  page href rewrite), so single-page (`--single-page`) stays the reference render.
 
 **Stylesheet predicates:**
 
@@ -995,9 +1006,10 @@ cross-references, and edited-volume (per-chapter) authorship.
 
 **Out of spec.** Render-mode lowering of `book-title`→`<h1>`,
 `book-part`→`<section class="chapter">` (§0.2); running heads, page numbers,
-and other print-book apparatus (no print stylesheet); per-chapter-URL / separate-page
-pagination and cross-page references (the inverse of the one-scroll model); in-rail
-search.
+and other print-book apparatus (no print stylesheet); in-rail search. *(Per-chapter
+URLs + cross-page references — once the inverse of the one-scroll model — are now in
+spec for the static separate-pages publish, `RQ-BOOK-M8`; the one-scroll reading
+interface, `RQ-BOOK-M7`, is the single-page projection of the same book.)*
 
 ---
 

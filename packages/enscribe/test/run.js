@@ -56,6 +56,7 @@ import { run as runBrowserMemo } from './browser-memo.test.js';
 import { run as runMasterDocumentBrowser } from './master-document-browser.test.js';
 import { run as runRenderParity } from './render-parity.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
+import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
 import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
@@ -115,6 +116,7 @@ const suites = [
   ['master-document-browser',      runMasterDocumentBrowser],
   ['render-parity',                runRenderParity],
   ['render-chapter-parity',        runRenderChapterParity],
+  ['separate-pages-parity',        runSeparatePagesParity],
   ['coverage/spec-data-drift',     runSpecDataDrift],
   ['coverage/predicate-harness',   runPredicateHarness],
 ];

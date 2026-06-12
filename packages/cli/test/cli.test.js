@@ -6,7 +6,7 @@
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { existsSync, readFileSync, rmSync, mkdtempSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, rmSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -306,6 +306,41 @@ export function run_tests() {
     assert.equal(bad.status, 1, 'spawned error → exit 1');
     assert.ok(bad.stderr.includes('not found'), 'spawned error message on stderr');
     console.log('PASS: real bin invocation (spawn) — stdout/stderr/exit code');
+  }
+
+  // ── build → static separate-pages book (default) + --single-page (P1) ────────
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-build-pages-'));
+    try {
+      const r = invoke(['build', BOOK_FIXTURE, '-o', dir]);
+      assert.equal(r.code, 0, 'book build (separate-pages, the book default) exits 0');
+      const files = readdirSync(dir).sort();
+      assert.ok(files.includes('index.html'), 'separate-pages build writes index.html');
+      // book.emd has 4 chapters → 4 chapter pages + index
+      assert.equal(files.length, 5, 'one standalone page per chapter (4) plus index.html');
+      for (const f of files) {
+        const html = readFileSync(join(dir, f), 'utf8');
+        assert.ok(html.startsWith('<!DOCTYPE html>') && html.includes('<html') && html.includes('</html>'),
+          `${f} is a complete standalone HTML document`);
+        assert.ok(html.includes('.enscribe-layout'), `${f} inlines default.css (via @enscribejs/enscribe/default.css)`);
+        assert.ok(/<nav class="enscribe-toc enscribe-chapter-rail"/.test(html), `${f} carries the chapter-rail chrome`);
+      }
+      console.log('PASS: build — separate-pages book (default) writes standalone per-chapter pages + index');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+
+    // --single-page builds the whole book in one fragment (to stdout).
+    const single = invoke(['build', BOOK_FIXTURE, '--single-page']);
+    assert.equal(single.code, 0, '--single-page book build exits 0');
+    assert.ok((single.out.match(/<book-part/g) || []).length >= 4, '--single-page emits the whole book (every chapter)');
+    assert.ok(!single.out.startsWith('<!DOCTYPE html>'), '--single-page emits the render fragment (the established CLI shape), not a page shell');
+
+    // separate-pages needs an output directory — without -o it errors clearly.
+    const noOut = invoke(['build', BOOK_FIXTURE]);
+    assert.equal(noOut.code, 1, 'separate-pages book build without -o exits 1');
+    assert.ok(/output directory/.test(noOut.err), 'the error names the missing output directory');
+    console.log('PASS: build — --single-page retained; separate-pages requires -o <dir>');
   }
 
   console.log('All CLI tests passed.');
