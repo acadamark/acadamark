@@ -268,7 +268,7 @@ function emitBack(backNode) {
 
 /** True for an article-appendix book-part (book-part-type="appendix"). */
 function isArticleAppendixPart(node) {
-  return isEnscribeTag(node, 'book-part') && (node.kwargs?.['book-part-type'] ?? '') === 'appendix';
+  return isEnscribeTag(node, 'book-part') && (node.kwargs?.type ?? '') === 'appendix';
 }
 
 /**
@@ -362,7 +362,7 @@ function emitBookFrontRegion(bookFront) {
   const meta = content.find(c => isEnscribeTag(c, 'meta'));
   const frontParts = content.filter(c =>
     isEnscribeTag(c, 'book-part') &&
-    BOOK_FRONT_PART_TYPES.has(c.kwargs?.['book-part-type'] ?? 'other'),
+    BOOK_FRONT_PART_TYPES.has(c.kwargs?.type ?? 'other'),
   );
 
   let out = '';
@@ -436,7 +436,7 @@ const BOOK_FRONT_PART_TYPES = new Set(['preface', 'foreword', 'dedication']);
  */
 function emitBookPart(bookPart, indent) {
   const pad = ' '.repeat(indent);
-  const partType = bookPart.kwargs?.['book-part-type'] ?? 'other';
+  const partType = bookPart.kwargs?.type ?? 'other';
   const id = bookPart.id ? ` id="${escapeXmlAttr(bookPart.id)}"` : '';
   const content = Array.isArray(bookPart.content) ? bookPart.content : [];
 
@@ -506,7 +506,7 @@ const BOOK_FRONT_PART_ELEMENTS = {
  * BOOK_FRONT_PART_TYPES members, so the fallback is unreachable today).
  */
 function emitNamedFrontPart(part, indent) {
-  const elName = BOOK_FRONT_PART_ELEMENTS[part.kwargs?.['book-part-type']];
+  const elName = BOOK_FRONT_PART_ELEMENTS[part.kwargs?.type];
   if (!elName) return emitBookPart(part, indent); // defensive fallback
 
   const pad = ' '.repeat(indent);

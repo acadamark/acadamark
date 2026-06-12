@@ -12,7 +12,7 @@ The vocabulary targets four document types:
 
 - **Article** — research papers, essays, blog posts, magazine articles, letters.
 - **Book** — long-form documents with chapters and parts.
-- **Book-part** — major divisions within a book (Part I, Part II, chapters, appendices). Chapters are book-parts with `book-part-type="chapter"`; the authoring shorthand `<chapter>` expands to that form.
+- **Book-part** — major divisions within a book (Part I, Part II, chapters, appendices). Chapters are book-parts with `type="chapter"`; the authoring shorthand `<chapter>` expands to that form.
 
 Poems, plays, scripts, and scores are out of scope. They have specialized vocabulary that doesn't share enough with prose documents to be worth forcing into the same model.
 
@@ -89,7 +89,7 @@ Three distinct top-level containers, each with front/body/back regions (for arti
 | `<book>` | BITS `<book>` | A book-length work composed of parts and chapters. |
 | `<book-part>` | BITS `<book-part>` (with `book-part-type` kwarg) | Major division within a book (Part I, Part II, chapter, appendix, preface, etc.). |
 
-The authoring shorthand `<chapter>` expands at the parser layer to `<book-part book-part-type="chapter">`; it is not a separate Layer 1 element. Other shorthand expansions follow the same pattern (`<part>`, `<appendix>`, `<preface>`, etc.).
+The authoring shorthand `<chapter>` expands at the parser layer to `<book-part type="chapter">`; it is not a separate Layer 1 element. Other shorthand expansions follow the same pattern (`<part>`, `<appendix>`, `<preface>`, etc.).
 
 **`<appendix>` has two projections by document type (#100).** It is the one book-part shorthand valid in **both** book and article context (it has no standalone vocabulary meaning, so it is never ambiguous). In a **book** it lands in `<book-back>` and exports to BITS `<book-part book-part-type="appendix">`; in an **article** it lands in `<article-back>` and exports to JATS `<app>` collected in one `<app-group>` (multiple appendices → multiple `<app>` in the group). The authoring surface, title/id, render, and the #57 appendix-letter numbering (`A`, `A.1`, "Appendix A" cross-references) are identical across both — only the placement and the JATS element differ.
 
@@ -285,7 +285,7 @@ These don't need new Layer 1 elements. Display math can be wrapped in `<figure>`
 
 For future readers and contributors, the load-bearing decisions:
 
-1. **Distinct container elements (Option Y).** `<article>`, `<book>`, and `<book-part>` are separate elements rather than a single recursive `<article>` with `document-type` distinctions. This matches BITS, makes JATS export simpler, and gives authors a more discoverable vocabulary. The cost is a slightly larger element list; the cost is bounded. Chapters, parts, appendices, etc. are `<book-part>` instances disambiguated by the `book-part-type` kwarg, not separate Layer 1 elements; the parser exposes them as authoring shorthands (`<chapter>`, `<part>`, `<appendix>`).
+1. **Distinct container elements (Option Y).** `<article>`, `<book>`, and `<book-part>` are separate elements rather than a single recursive `<article>` with `document-type` distinctions. This matches BITS, makes JATS export simpler, and gives authors a more discoverable vocabulary. The cost is a slightly larger element list; the cost is bounded. Chapters, parts, appendices, etc. are `<book-part>` instances disambiguated by the `type` kwarg, not separate Layer 1 elements; the parser exposes them as authoring shorthands (`<chapter>`, `<part>`, `<appendix>`).
 
 2. **Citations and cross-refs as separate first-class elements.** `<cite>` and `<ref>` are distinct rather than unified under `<xref ref-type>`. They have distinct authoring intent and behavior. JATS export reunifies them.
 

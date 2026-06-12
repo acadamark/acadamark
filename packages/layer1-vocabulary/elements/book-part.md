@@ -12,13 +12,16 @@ enscribe_attributes:
   classes:
     maps_to: class
   kwargs:
-    book-part-type:
+    type:
       maps_to: book-part-type
       values: [chapter, part, appendix, preface, foreword, introduction, conclusion, glossary, dedication, other]
       required: true
       notes: |
-        Always present in Layer 1. The shorthand layer typically supplies
-        this via a shorthand element name (e.g., <chapter> sets it to "chapter").
+        The kind of book-part. Authored as `type` (the prefix is redundant inside a
+        <book-part>); renders to the HTML/BITS attribute `book-part-type` (maps_to).
+        Distinct from <meta type>, which is the document class. Always present in
+        Layer 1; the shorthand layer typically supplies it via a shorthand element
+        name (e.g., <chapter> sets it to "chapter").
     numbering-style:
       maps_to: data-numbering-style
       values: [arabic, roman, alpha, none]
@@ -49,30 +52,30 @@ title_extraction: true
 jats_counterpart:
   element: book-part
   attributes:
-    book-part-type: from book-part-type
-  notes: 'Direct mapping to JATS <book-part>. Recursive structure preserved exactly.'
+    book-part-type: from type
+  notes: 'Direct mapping to JATS <book-part>. The canonical `type` kwarg emits the BITS `book-part-type` attribute. Recursive structure preserved exactly.'
 shorthand_expansions:
   - shorthand: chapter
-    expands_to: 'book-part book-part-type="chapter"'
+    expands_to: 'book-part type="chapter"'
     notes: 'The most common book-part type.'
   - shorthand: part
-    expands_to: 'book-part book-part-type="part"'
+    expands_to: 'book-part type="part"'
     notes: 'Named major divisions ("Part I: Foundations").'
   - shorthand: appendix
-    expands_to: 'book-part book-part-type="appendix"'
+    expands_to: 'book-part type="appendix"'
     notes: 'Typically appears in book-back.'
   - shorthand: preface
-    expands_to: 'book-part book-part-type="preface"'
+    expands_to: 'book-part type="preface"'
     notes: 'Front-matter prose by the author. Typically in book-front.'
   - shorthand: foreword
-    expands_to: 'book-part book-part-type="foreword"'
+    expands_to: 'book-part type="foreword"'
     notes: 'Front-matter prose by someone other than the author.'
   - shorthand: introduction
-    expands_to: 'book-part book-part-type="introduction"'
+    expands_to: 'book-part type="introduction"'
   - shorthand: conclusion
-    expands_to: 'book-part book-part-type="conclusion"'
+    expands_to: 'book-part type="conclusion"'
   - shorthand: glossary
-    expands_to: 'book-part book-part-type="glossary"'
+    expands_to: 'book-part type="glossary"'
 shorthand_examples:
   - source: |
       <chapter | Origins>
@@ -191,7 +194,7 @@ Book-parts appear inside `<book-body>` (most book-parts) or in `<book-front>` an
 
 The `enscribeBookStructuring` plugin places book-parts automatically based on their type:
 
-| book-part-type | Placement |
+| type | Placement |
 |----------------|-----------|
 | chapter | book-body |
 | part | book-body |
@@ -234,7 +237,7 @@ In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part b
 
 ## Attributes
 
-`book-part-type` is required at Layer 1. It's set automatically by the shorthand expansion. Authors who write `<book-part>` directly must specify the type. For a **single-file book-part** (a standalone `<meta type=book-part>` document, rather than a `<book-part>` inside a book), the type is set with the `book-part-type` kwarg on `<meta>` — `<meta type=book-part book-part-type=appendix>` — which `enscribeBookStructuring` reads onto the generated wrapper (#176). It defaults to `chapter` when omitted, and an unknown value is diagnosed but still renders. See `meta.md`.
+`type` is required on a `<book-part>`. It is set automatically by the shorthand expansion; authors who write `<book-part>` directly specify it — `<book-part type="other">`. It renders to the HTML/BITS attribute `book-part-type` (the prefix, redundant inside a `<book-part>`, is dropped in authoring). For a **single-file book-part** (a standalone `<meta type=book-part>` document, rather than a `<book-part>` inside a book), the type is set with the **`book-part-type`** kwarg on `<meta>` — `<meta type=book-part book-part-type=appendix>` — because on `<meta>` plain `type` is the document class; `enscribeBookStructuring` reads it onto the generated wrapper's `type` (#176). It defaults to `chapter` when omitted, and an unknown value is diagnosed but still renders. See `meta.md`.
 
 `numbering-style` overrides the book-level numbering style for this book-part. Common uses:
 
@@ -245,12 +248,12 @@ In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part b
 
 ## JATS mapping
 
-Direct mapping to JATS `<book-part>`. The element name, the recursive structure, and the `book-part-type` attribute are all preserved exactly.
+Direct mapping to JATS `<book-part>`. The element name and the recursive structure are preserved exactly; the canonical `type` kwarg emits the BITS/JATS `book-part-type` attribute.
 
 | enscribe Layer 1 | JATS |
 |-------------------|------|
 | `<book-part>` | `<book-part>` |
-| `book-part-type` attribute | `book-part-type` attribute |
+| `type` kwarg | `book-part-type` attribute |
 | `<meta>` | `<meta>` |
 | `<book-part-title>` | `<title>` inside `<meta>`, or `<book-part-title>` directly |
 
@@ -300,12 +303,12 @@ Content.
 Content.
 ```
 
-The structural plugin places this in `<book-back>` because `book-part-type="appendix"` is a back-matter type.
+The structural plugin places this in `<book-back>` because `type="appendix"` is a back-matter type.
 
 **Direct use of `<book-part>` for unusual types.**
 
 ```
-<book-part book-part-type="other" id="rare-thing" | An Unusual Section>
+<book-part type="other" id="rare-thing" | An Unusual Section>
 Content for something not covered by the standard shorthands.
 ```
 
@@ -335,7 +338,7 @@ The single `<book-part>` element with type discriminator was chosen because:
 - The recursive nesting (parts containing chapters) works naturally with a single element type.
 - Adding new book-part types is a vocabulary update, not a new Layer 1 element.
 
-The shorthand layer preserves authoring ergonomics. Authors don't write `<book-part book-part-type="chapter">`; they write `<chapter | Title>`.
+The shorthand layer preserves authoring ergonomics. Authors don't write `<book-part type="chapter">`; they write `<chapter | Title>`.
 
 ## See also
 

@@ -351,7 +351,7 @@ function walkWithScope(nodes, visitors, scope) {
     let enteredBookPart = false;
     let enteredSection = false;
     if (isEnscribeTag(node) && node.tagname === 'book-part' && !insideBookPart) {
-      const partType = node.kwargs?.['book-part-type'] ?? 'other';
+      const partType = node.kwargs?.type ?? 'other';
       if (BODY_BOOK_PART_TYPES.has(partType)) {
         chapterIndex += 1;
         sectionIndex = 0;
@@ -585,7 +585,7 @@ export function numberSections(tree, file) {
       let appendixIdx = 0;
       for (const part of structuralChildren(articleBack)) {
         if (!isEnscribeTag(part, 'book-part')) continue;
-        if ((part.kwargs?.['book-part-type'] ?? 'other') !== 'appendix') continue;
+        if ((part.kwargs?.type ?? 'other') !== 'appendix') continue;
         const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
         appendixIdx += 1;
         stampSection(part, letter, registry);                        // appendix heading letter
@@ -606,7 +606,7 @@ export function numberSections(tree, file) {
     let chapterIdx = 0;
     for (const part of structuralChildren(body)) {
       if (!isEnscribeTag(part, 'book-part')) continue;
-      const partType = part.kwargs?.['book-part-type'] ?? 'other';
+      const partType = part.kwargs?.type ?? 'other';
       if (!BODY_BOOK_PART_TYPES.has(partType)) continue;
       chapterIdx += 1;
       stampSection(part, String(chapterIdx), registry);            // chapter heading number
@@ -619,7 +619,7 @@ export function numberSections(tree, file) {
     let appendixIdx = 0;
     for (const part of structuralChildren(back)) {
       if (!isEnscribeTag(part, 'book-part')) continue;
-      if ((part.kwargs?.['book-part-type'] ?? 'other') !== 'appendix') continue;
+      if ((part.kwargs?.type ?? 'other') !== 'appendix') continue;
       const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
       appendixIdx += 1;
       stampSection(part, letter, registry);                        // appendix heading letter

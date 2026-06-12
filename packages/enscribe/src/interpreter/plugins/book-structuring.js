@@ -116,7 +116,7 @@ export function assembleBookPartContents(children, metaNode) {
 }
 
 export function bookPartType(node) {
-  return node?.kwargs?.['book-part-type'] ?? 'other';
+  return node?.kwargs?.type ?? 'other';
 }
 
 function isBackMatter(node) {
@@ -302,7 +302,9 @@ export function enscribeBookStructuring() {
         );
       }
       const bookPart = makeTag('book-part', children);
-      bookPart.kwargs = { 'book-part-type': rawType ?? 'chapter' };
+      // The #176 meta kwarg is read above as `book-part-type` (on <meta>, `type` is the
+      // document class); the generated <book-part> wrapper carries the canonical `type`.
+      bookPart.kwargs = { type: rawType ?? 'chapter' };
       restructureBookPart(bookPart);
       tree.children = [bookPart];
       return;

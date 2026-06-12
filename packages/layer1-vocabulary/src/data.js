@@ -1354,7 +1354,7 @@ const _book_part = Object.freeze({
         },
       },
       "kwargs": {
-        "book-part-type": {
+        "type": {
           "maps_to": {
             "html": "book-part-type",
           },
@@ -1371,7 +1371,7 @@ const _book_part = Object.freeze({
             "other",
           ],
           "required": true,
-          "notes": "Always present in Layer 1. The shorthand layer typically supplies\nthis via a shorthand element name (e.g., <chapter> sets it to \"chapter\").\n",
+          "notes": "The kind of book-part. Authored as `type` (the prefix is redundant inside a\n<book-part>); renders to the HTML/BITS attribute `book-part-type` (maps_to).\nDistinct from <meta type>, which is the document class. Always present in\nLayer 1; the shorthand layer typically supplies it via a shorthand element\nname (e.g., <chapter> sets it to \"chapter\").\n",
         },
         "numbering-style": {
           "maps_to": {
@@ -1431,47 +1431,47 @@ const _book_part = Object.freeze({
     "jats_counterpart": {
       "element": "book-part",
       "attributes": {
-        "book-part-type": "from book-part-type",
+        "book-part-type": "from type",
       },
-      "notes": "Direct mapping to JATS <book-part>. Recursive structure preserved exactly.",
+      "notes": "Direct mapping to JATS <book-part>. The canonical `type` kwarg emits the BITS `book-part-type` attribute. Recursive structure preserved exactly.",
     },
     "shorthand_expansions": [
       {
         "shorthand": "chapter",
-        "expands_to": "book-part book-part-type=\"chapter\"",
+        "expands_to": "book-part type=\"chapter\"",
         "notes": "The most common book-part type.",
       },
       {
         "shorthand": "part",
-        "expands_to": "book-part book-part-type=\"part\"",
+        "expands_to": "book-part type=\"part\"",
         "notes": "Named major divisions (\"Part I: Foundations\").",
       },
       {
         "shorthand": "appendix",
-        "expands_to": "book-part book-part-type=\"appendix\"",
+        "expands_to": "book-part type=\"appendix\"",
         "notes": "Typically appears in book-back.",
       },
       {
         "shorthand": "preface",
-        "expands_to": "book-part book-part-type=\"preface\"",
+        "expands_to": "book-part type=\"preface\"",
         "notes": "Front-matter prose by the author. Typically in book-front.",
       },
       {
         "shorthand": "foreword",
-        "expands_to": "book-part book-part-type=\"foreword\"",
+        "expands_to": "book-part type=\"foreword\"",
         "notes": "Front-matter prose by someone other than the author.",
       },
       {
         "shorthand": "introduction",
-        "expands_to": "book-part book-part-type=\"introduction\"",
+        "expands_to": "book-part type=\"introduction\"",
       },
       {
         "shorthand": "conclusion",
-        "expands_to": "book-part book-part-type=\"conclusion\"",
+        "expands_to": "book-part type=\"conclusion\"",
       },
       {
         "shorthand": "glossary",
-        "expands_to": "book-part book-part-type=\"glossary\"",
+        "expands_to": "book-part type=\"glossary\"",
       },
     ],
     "shorthand_examples": [

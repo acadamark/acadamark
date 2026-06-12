@@ -113,7 +113,7 @@ const RESERVED_NAMES = new Set([...Object.keys(VOCABULARY), ...HOST_NAMES]);
 const shorthandRegistry = createShorthandRegistry({ reservedNames: RESERVED_NAMES });
 
 // Book-part family (slice 2): each book-part shorthand rewrites to
-// `<book-part book-part-type="<name>">`, gated on book context so `<glossary>`
+// `<book-part type="<name>">`, gated on book context so `<glossary>`
 // keeps its standalone vocab meaning in articles (conditional → exempt from the
 // reservation policy).
 //
@@ -125,13 +125,13 @@ const shorthandRegistry = createShorthandRegistry({ reservedNames: RESERVED_NAME
 // `appendix` is not a reserved name, so unconditional registration is permitted.
 shorthandRegistry.register('appendix', {
   tagname: 'book-part',
-  kwargs: { 'book-part-type': 'appendix' },
+  kwargs: { type: 'appendix' },
 });
 for (const shorthand of BOOK_PART_SHORTHANDS) {
   if (shorthand === 'appendix') continue; // registered above (article-valid, #100)
   shorthandRegistry.register(shorthand, {
     tagname: 'book-part',
-    kwargs: { 'book-part-type': shorthand },
+    kwargs: { type: shorthand },
     condition: (ctx) => ctx.isBook === true,
   });
 }
