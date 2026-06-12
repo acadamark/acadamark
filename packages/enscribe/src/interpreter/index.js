@@ -1024,7 +1024,7 @@ export { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 // dependency direction). It is pure over its injected readFile/resolve/parse, so
 // the relocation from the CLI package was behavior-neutral; see
 // src/master-document/assemble.js.
-export { assembleMasterDocument } from '../master-document/assemble.js';
+export { assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC, MASTER_SRC_TAGS } from '../master-document/assemble.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);

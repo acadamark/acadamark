@@ -24,8 +24,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, relative } from 'node:path';
 import { render, renderAsync, renderMasterAsync } from '../src/interpreter/browser.js';
-import { buildEnscribePipeline, assembleMasterDocument } from '../src/interpreter/index.js';
-import { isEnscribeTag } from '../src/core/tag.js';
+import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC } from '../src/interpreter/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -56,8 +55,7 @@ const FIXTURE_OPTIONS = {
   'document-54-toc-scrollspy': { toc: true },
 };
 
-const HAS_SECTION_SRC = /<section\b[^>]*\bsrc\s*=/i;
-const isMaster = (src) => HAS_SECTION_SRC.test(src);
+const isMaster = (src) => HAS_MASTER_SRC.test(src);
 
 // A single-file fixture with an external `src` — a <library src> bibliography (#196) or a
 // <table src> / <csv src> / <tsv src> data file (#195): its LIVE render is the async path
@@ -86,7 +84,7 @@ function collectConsumedChildren(emdPaths) {
     const src = readFileSync(p, 'utf8');
     if (!isMaster(src)) continue;
     for (const node of proc.parse(src).children ?? []) {
-      if (isEnscribeTag(node, 'section') && node.kwargs?.src) {
+      if (isMasterSrcEntry(node)) {
         consumed.add(join(dirname(p), node.kwargs.src));
       }
     }
@@ -131,7 +129,7 @@ function staticMaster(masterPath) {
 }
 
 // Install a document.baseURI + fetch stub serving files off disk from the given dirs
-// (searched in order) — the live fetch path. Used for master `<section src>` children
+// (searched in order) — the live fetch path. Used for master `src` structure children
 // (the master's dir) and for `<library src>` bibliographies (the assets dir). Returns a
 // restore fn. Mirrors master-document-browser.test.js.
 function installFetchStub(...dirs) {

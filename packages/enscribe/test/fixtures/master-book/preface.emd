@@ -1,0 +1,4 @@
+<meta title="About this Book (child fallback)" />
+
+This preface sits in the book's front matter and introduces the multi-file book.
+It is authored in its own child file and assembled into the book by reference.

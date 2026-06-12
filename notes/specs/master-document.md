@@ -49,6 +49,8 @@ A structural element either references a child file or is authored inline:
 - `<section src="section_1.emd" | Title Override>` — the pipe overrides the child file's title.
 - `<section | Inline Title>` + following body — authored inline; an open marker, peer-closed by the next structural element (same model as lists and sections).
 
+The same `src` / pipe-title forms apply to every structural element the document's `type` allows — in a book, `<chapter src="chapter_1.emd">`, `<preface src="preface.emd">`, `<appendix src="appendix.emd" | Notation>`, … assemble exactly as `<section src>` does in an article. The assembler is document-class-agnostic: it stitches the resolved children into one flat tree and the pipeline structures that tree as an `<article>` or a `<book>` (front/body/back) according to `<meta type>`. (A child file's own `<meta>` supplies only its fallback title; per-child author/date in that `<meta>` is not assembled — author a book-part's author as a loose `<author>` in the child body.)
+
 Title precedence: an inline pipe title wins over the child file's title. If neither is present, the title renders as "Title Missing" (always-render).
 
 `src` paths are relative to the master file. `src="chapter_1/chapter_1.emd"` means the directory `chapter_1/` sits beside the master document.

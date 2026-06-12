@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//NLM//DTD BITS Book Interchange DTD v2.0 20151225//EN" "https://jats.nlm.nih.gov/extensions/bits/2.0/BITS-book2.dtd">
+<book book-type="book" xml:lang="en" dtd-version="2.0">
+  <book-meta>
+    <book-title-group>
+      <book-title>Field Methods in Savanna Ecology</book-title>
+      <subtitle>A Multi-File Book Assembled From Per-Chapter Sources</subtitle>
+    </book-title-group>
+    <contrib-group>
+      <contrib contrib-type="author">
+        <string-name>The Enscribe Team</string-name>
+      </contrib>
+    </contrib-group>
+  </book-meta>
+  <front-matter>
+    <preface>
+      <book-part-meta>
+        <title-group>
+          <title>About this Book</title>
+        </title-group>
+      </book-part-meta>
+      <named-book-part-body>
+        <p>This preface sits in the book's front matter and introduces the multi-file book.
+It is authored in its own child file and assembled into the book by reference.</p>
+      </named-book-part-body>
+    </preface>
+  </front-matter>
+  <book-body>
+    <book-part book-part-type="chapter">
+      <book-part-meta>
+        <title-group>
+          <label>1</label>
+          <title>Counting Elephants</title>
+        </title-group>
+      </book-part-meta>
+      <body>
+        <p>Aerial transects remain the standard method. See <xref ref-type="fig" rid="fig:transect">figure 1.1</xref> for the grid
+layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).</p>
+        <fig id="fig:transect">
+          <label>1.1</label>
+          <caption>
+            <p>A standard aerial-transect grid.</p>
+          </caption>
+          <graphic xlink:href="transect.png"/>
+        </fig>
+      </body>
+    </book-part>
+    <book-part book-part-type="chapter">
+      <book-part-meta>
+        <title-group>
+          <label>2</label>
+          <title>Estimating Browse Pressure</title>
+        </title-group>
+        <contrib-group>
+          <contrib contrib-type="author">
+            <string-name>Guest Contributor</string-name>
+          </contrib>
+        </contrib-group>
+      </book-part-meta>
+      <body>
+        <p>This chapter carries its own author, distinct from the book-level author, and
+renumbers its figures from one. Its own figure is <xref ref-type="fig" rid="fig:browse">figure 2.1</xref>; a cross-chapter
+reference to <xref ref-type="fig" rid="fig:transect">figure 1.1</xref> still resolves to chapter 1 (figure 1.1).</p>
+        <fig id="fig:browse">
+          <label>2.1</label>
+          <caption>
+            <p>A browse-damage scoring rubric.</p>
+          </caption>
+          <graphic xlink:href="browse.png"/>
+        </fig>
+      </body>
+    </book-part>
+  </book-body>
+  <book-back>
+    <book-part book-part-type="appendix">
+      <book-part-meta>
+        <title-group>
+          <label>A</label>
+          <title>Field Data Sheets</title>
+        </title-group>
+      </book-part-meta>
+      <body>
+        <p>Reproducible blank data sheets for transect counts, placed in the book's back matter.</p>
+      </body>
+    </book-part>
+  </book-back>
+</book>

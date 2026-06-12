@@ -28,15 +28,29 @@ const GAMMA = readFixture('gamma.emd');
 
 const CHILDREN = { 'alpha.emd': ALPHA, 'beta.emd': BETA, 'gamma.emd': GAMMA };
 
-// A mock fetch that serves the children by filename and 404s anything else, so the
-// resolve-against-baseURI path and the missing-child path are both exercised.
-function installStubs() {
+// Slice B (#190): the multi-file BOOK master + its book-part `src` children, from
+// the shared fixture at test/fixtures/master-book/ — proves the browser live path
+// discovers + assembles `<chapter src>` / `<preface src>` / `<appendix src>` (not
+// just `<section src>`) and structures the result as a `<book>`.
+const BOOK_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-book');
+const readBook = (name) => readFileSync(join(BOOK_DIR, name), 'utf8');
+const BOOK_MASTER = readBook('master-book.emd');
+const BOOK_CHILDREN = {
+  'preface.emd': readBook('preface.emd'),
+  'chapter-1.emd': readBook('chapter-1.emd'),
+  'chapter-2.emd': readBook('chapter-2.emd'),
+  'appendix.emd': readBook('appendix.emd'),
+};
+
+// A mock fetch that serves the given children by filename and 404s anything else, so
+// the resolve-against-baseURI path and the missing-child path are both exercised.
+function installStubs(children = CHILDREN) {
   const orig = { fetch: global.fetch, document: global.document };
   global.document = { baseURI: 'https://example.com/paper/' };
   global.fetch = async (url) => {
     const name = String(url).split('/').pop();
-    if (Object.prototype.hasOwnProperty.call(CHILDREN, name)) {
-      return { ok: true, status: 200, statusText: 'OK', text: async () => CHILDREN[name] };
+    if (Object.prototype.hasOwnProperty.call(children, name)) {
+      return { ok: true, status: 200, statusText: 'OK', text: async () => children[name] };
     }
     return { ok: false, status: 404, statusText: 'Not Found', text: async () => '' };
   };
@@ -131,5 +145,35 @@ export async function run() {
     }
   } finally {
     restoreStubs(orig);
+  }
+
+  // ── Slice B: a BOOK master rendered live assembles into one <book> ───────────
+  // The browser discovery now recognizes book-part `src` entries (not just
+  // `<section src>`); the assembled tree carries `<meta type=book>` into the same
+  // pipeline the CLI uses, so the live render is a `<book>` with front/body/back and
+  // per-chapter numbering — proving the browser path matches the CLI build for books.
+  const bookOrig = installStubs(BOOK_CHILDREN);
+  try {
+    const book = await renderMasterAsync(BOOK_MASTER);
+
+    assert.equal((book.match(/<book>/g) || []).length, 1,
+      'browser book master assembles into a single <book>');
+    assert.ok(book.includes('<book-front>') && book.includes('<book-body>') && book.includes('<book-back>'),
+      'browser book has front / body / back regions');
+    assert.ok(book.includes('book-part-type="preface"') && book.includes('book-part-type="appendix"') &&
+      (book.match(/book-part-type="chapter"/g) || []).length === 2,
+      'browser book routes preface→front, two chapters→body, appendix→back');
+    console.log('PASS: Slice B — browser renderMasterAsync assembles a book master into one <book>');
+
+    // Per-chapter numbering + a cross-chapter <ref> resolve over the assembled tree.
+    assert.ok(/Figure 1\.1\./.test(book) && /Figure 2\.1\./.test(book),
+      'browser book: per-chapter figure numbering (chapter 1 → 1.1, chapter 2 → 2.1)');
+    assert.ok(book.includes('<a href="#fig:transect" class="ref">figure 1.1</a>'),
+      'browser book: a cross-chapter <ref> in chapter 2 resolves to chapter 1\'s figure 1.1');
+    assert.ok(!book.includes('child fallback'),
+      'browser book: the master pipe titles override each child file title (no fallback leak)');
+    console.log('PASS: Slice B — browser book: per-chapter numbering + cross-chapter <ref> resolve');
+  } finally {
+    restoreStubs(bookOrig);
   }
 }

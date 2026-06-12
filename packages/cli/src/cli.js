@@ -372,9 +372,10 @@ function doImport(opts) {
 }
 
 function doBuild(opts) {
-  // #190 — multi-file master document, walking skeleton. Parse the master, load
-  // and parse each <section src> child (paths relative to the master file),
-  // assemble into one flat article tree, then run the existing render path.
+  // #190 — multi-file master document. Parse the master, load and parse each `src`
+  // structure child (`<section src>` / `<chapter src>` / …; paths relative to the
+  // master file), assemble into one flat tree, then run the existing render path
+  // (which structures it as an article or book per the master's `<meta type>`).
   const source = readInput(opts.input);
   const masterDir = dirname(resolve(opts.input));
   const embedResources = opts.embed ?? true;

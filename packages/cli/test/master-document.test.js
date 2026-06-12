@@ -1,9 +1,14 @@
-// Master-document walking skeleton (#190 — multi-file build, first slice).
+// Master-document multi-file build (#190).
 //
-// Proves the thin end-to-end path: parse a master document, load + parse its
-// `<section src>` children, assemble them into one article tree in document
-// order, and render via the existing pipeline. Cross-file resolution
-// (citations, numbering, marker placement, non-article types) is deferred.
+// Proves the end-to-end path: parse a master document, load + parse its `src`
+// structure children, assemble them into ONE tree in document order, and render
+// via the existing pipeline. The pipeline structures the assembled tree per the
+// master's `<meta type>` — an `<article>` (the `<section src>` masters below) or a
+// `<book>` with front/body/back regions (the `<chapter src>` / `<preface src>` /
+// `<appendix src>` book master, Slice B). Cross-file numbering and cross-references
+// resolve over the one assembled tree; per-chapter numbering falls out for books.
+// Deferred: cross-file citation/bibliography registry merge, marker placement
+// (toc/endnotes), the website type.
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -17,6 +22,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ENSCRIBE_FIXTURES = join(__dirname, '..', '..', 'enscribe', 'test', 'fixtures');
 const MASTER_DIR = join(ENSCRIBE_FIXTURES, 'master');
 const XREF_DIR = join(ENSCRIBE_FIXTURES, 'master-xref');
+const BOOK_DIR = join(ENSCRIBE_FIXTURES, 'master-book');
 
 function renderMaster() {
   const proc = buildEnscribePipeline({});
@@ -40,6 +46,25 @@ function renderXref() {
     source: readFileSync(join(XREF_DIR, 'master-xref.emd'), 'utf8'),
     readFile: (p) => readFileSync(p, 'utf8'),
     resolve: (rel) => join(XREF_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
+// Slice B (#190): the multi-file BOOK master — a `<meta type=book>` master whose
+// children are book-part `src` entries (`<preface src>`, two `<chapter src>`, an
+// `<appendix src>`). The assembler resolves them exactly as it does `<section src>`;
+// the pipeline then structures the assembled tree as a `<book>` with front/body/back.
+// Proves: book detection survives assembly, parts route by type, and per-chapter
+// numbering + cross-chapter refs resolve over the one assembled tree.
+function renderBookMaster() {
+  const proc = buildEnscribePipeline({});
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(BOOK_DIR, 'master-book.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(BOOK_DIR, rel),
     parse: (s) => proc.parse(s),
     warn: (m) => warnings.push(m),
   });
@@ -138,5 +163,55 @@ export function run_tests() {
     assert.equal(warnings.length, 0,
       `cross-file: no assembler warnings for the well-formed master (got: ${warnings.join('; ')})`);
     console.log('PASS: #190 slice 2 — unresolved cross-ref renders visibly; clean assembly');
+  }
+
+  // ── Slice B: a multi-file BOOK master assembles into one <book> ─────────────
+  // The assembled tree carries `<meta type=book>` into the pipeline, so the SAME
+  // book-structuring that handles a single-file book takes over — no parallel
+  // book-assembly path. (Phase-0 verified the assembled tree is byte-identical to
+  // the single-file book's; these assertions pin the observable book behavior.)
+  {
+    const { html: book, warnings } = renderBookMaster();
+
+    // ── one <book> with all three region wrappers ───────────────────────────
+    assert.equal((book.match(/<book>/g) || []).length, 1, 'book master assembles into a single <book>');
+    assert.ok(book.includes('<book-front>') && book.includes('<book-body>') && book.includes('<book-back>'),
+      'book has front / body / back region wrappers');
+    assert.ok(book.includes('<book-title>Field Methods in Savanna Ecology</book-title>'),
+      'master <meta> title becomes the <book-title>');
+    console.log('PASS: Slice B — book master assembles into one <book> with front/body/back');
+
+    // ── parts route to the right region by book-part-type ───────────────────
+    const front = book.slice(book.indexOf('<book-front>'), book.indexOf('</book-front>'));
+    const body  = book.slice(book.indexOf('<book-body>'),  book.indexOf('</book-body>'));
+    const back  = book.slice(book.indexOf('<book-back>'),  book.indexOf('</book-back>'));
+    assert.ok(front.includes('book-part-type="preface"') && front.includes('About this Book'),
+      'the <preface src> child routes into book-front');
+    assert.ok((body.match(/book-part-type="chapter"/g) || []).length === 2,
+      'both <chapter src> children route into book-body');
+    assert.ok(back.includes('book-part-type="appendix"') && back.includes('Field Data Sheets'),
+      'the <appendix src> child routes into book-back');
+    console.log('PASS: Slice B — preface→front, chapters→body, appendix→back');
+
+    // ── child bodies loaded; the master's pipe title overrides the child's own ──
+    assert.ok(book.includes('introduces the multi-file book'), 'preface child body loaded');
+    assert.ok(book.includes('Aerial transects remain the standard method'), 'chapter-1 child body loaded');
+    assert.ok(!book.includes('child fallback'),
+      "the master's pipe title overrides each child file's own <meta title> (no fallback leak)");
+    // A book-part's own loose <author> (chapter-2) survives assembly as per-chapter authorship.
+    assert.ok(book.includes('Guest Contributor'), 'a chapter child\'s loose <author> assembles as per-chapter authorship');
+    console.log('PASS: Slice B — child bodies load; pipe title overrides child title; per-chapter author');
+
+    // ── per-chapter numbering + cross-chapter ref over the one assembled tree ──
+    // Chapter 2's first figure is 2.1 (renumbered from one per chapter), NOT 2.
+    assert.ok(/Figure 1\.1\./.test(book) && /Figure 2\.1\./.test(book),
+      'figures number per-chapter: chapter 1 → 1.1, chapter 2 → 2.1');
+    assert.ok(book.includes('<a href="#fig:browse" class="ref">figure 2.1</a>'),
+      'a same-chapter <ref> in chapter 2 resolves to figure 2.1');
+    assert.ok(book.includes('<a href="#fig:transect" class="ref">figure 1.1</a>'),
+      'a cross-CHAPTER <ref> in chapter 2 resolves to chapter 1\'s figure 1.1');
+    assert.equal(warnings.length, 0,
+      `book master assembles with no assembler warnings (got: ${warnings.join('; ')})`);
+    console.log('PASS: Slice B — per-chapter numbering + cross-chapter <ref> resolve; clean assembly');
   }
 }

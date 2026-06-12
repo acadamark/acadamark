@@ -22,7 +22,7 @@ import { strict as assert } from 'node:assert';
 // buildEnscribePipeline (not a hand-mirrored plugin chain), so they can't drift
 // from the shipped pipeline. The structural-plugin / unified / remark imports the
 // old hand-assembly needed are gone with it.
-import { buildEnscribePipeline } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, assembleMasterDocument } from '@enscribejs/enscribe';
 import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
 import { jatsEmit, aggregateJatsAttrs } from '../src/jats-export/lib/jats-emit.js';
 import { enscribeToJats } from '../src/jats-export/index.js';
@@ -426,6 +426,55 @@ function validateWithXmllint(fixtureName, jatsXml) {
 
   // Phase 5 slice 5d: DTD validation (BITS 2.0 path).
   validateWithXmllint('doc42', jats);
+}
+
+// ─── Integration: multi-file BOOK master → DTD-valid BITS (Slice B / #190) ──
+//
+// doc42 proves a SINGLE-FILE book exports valid BITS. This proves an ASSEMBLED
+// multi-file book master does too: the children (a `<preface src>`, two
+// `<chapter src>`, an `<appendix src>`) are stitched into one tree by the
+// assembler, and the SAME enscribeToJats book path emits BITS — no separate
+// multi-file export route. The master-book fixture is shared with render-fixtures
+// and the browser/CLI master tests (packages/enscribe/test/fixtures/master-book).
+
+{
+  const BOOK_DIR = join(__dirname, '..', '..', 'enscribe', 'test', 'fixtures', 'master-book');
+  const proc = buildEnscribePipeline({ assetsDir: BOOK_DIR });
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(BOOK_DIR, 'master-book.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(BOOK_DIR, rel),
+    parse: (s) => proc.parse(s),
+  });
+  const jats = enscribeToJats(proc.runSync(tree));
+
+  const snapshotPath = join(FIXTURES_DIR, 'master-book-bits.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: master-book-bits.xml)');
+  } else {
+    const expected = readFileSync(snapshotPath, 'utf8');
+    check('integration master-book: BITS snapshot matches', jats === expected);
+  }
+
+  // The assembled multi-file book emits the same BITS shape as a single-file book.
+  check('master-book: BITS doctype declaration', jats.includes('BITS-book2.dtd'));
+  check('master-book: <book book-type="book" …>',
+    /<book book-type="book" xml:lang="en" dtd-version="2\.0">/.test(jats));
+  check('master-book: <book-title> from the master <meta>',
+    jats.includes('<book-title>Field Methods in Savanna Ecology</book-title>'));
+  check('master-book: <front-matter> with <preface> (the <preface src> child)',
+    jats.includes('<front-matter>') && /<preface[ >]/.test(jats));
+  check('master-book: two chapter book-parts in <book-body>',
+    jats.includes('<book-body>') &&
+    (jats.match(/<book-part book-part-type="chapter"/g) || []).length === 2);
+  check('master-book: <book-back> with appendix book-part',
+    jats.includes('<book-back>') && /<book-part book-part-type="appendix"/.test(jats));
+  check('master-book: per-chapter cross-ref text (figure N.M)',
+    /<xref[^>]*rid="fig:transect">figure \d+\.\d+<\/xref>/.test(jats));
+
+  // DTD validation: the assembled book is valid BITS 2.0.
+  validateWithXmllint('master-book', jats);
 }
 
 // ─── Integration: doc-43 bibliography + external DSLs (slice 5d) ─────────

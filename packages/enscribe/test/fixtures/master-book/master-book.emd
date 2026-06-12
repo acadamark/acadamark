@@ -1,0 +1,10 @@
+<meta type=book>
+<title | Field Methods in Savanna Ecology>
+<subtitle | A Multi-File Book Assembled From Per-Chapter Sources>
+<author | The Enscribe Team>
+</meta>
+
+<preface src="preface.emd" | About this Book>
+<chapter src="chapter-1.emd" | Counting Elephants>
+<chapter src="chapter-2.emd" | Estimating Browse Pressure>
+<appendix src="appendix.emd" | Field Data Sheets>

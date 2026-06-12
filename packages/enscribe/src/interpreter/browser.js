@@ -23,10 +23,11 @@ import {
   collectLibrarySources,
   collectTableSources,
   assembleMasterDocument,
+  isMasterSrcEntry,
+  HAS_MASTER_SRC,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
-import { isEnscribeTag } from '../core/tag.js';
 
 const BROWSER_DEFAULTS = {
   embedResources: false,
@@ -157,79 +158,80 @@ export async function renderIntoAsync(target, source, options = {}) {
   return el;
 }
 
-// #194: a `<section src>` fast-path gate — true only if the source might be a
-// multi-file master document, so renderMasterAsync can short-circuit a non-master
+// #194: a master-src fast-path gate (HAS_MASTER_SRC, shared with the assembler) —
+// true only if the source might be a multi-file master document (a `<section src>` /
+// `<chapter src>` / … entry), so renderMasterAsync can short-circuit a non-master
 // source to the ordinary (library-aware) async render without a discovery parse.
-const HAS_SECTION_SRC = /<section\b[^>]*\bsrc\s*=/i;
 
 /**
  * Throw on a child source the async pre-load could not supply, so the assembler's
- * own try/catch turns it into a visible inline "(could not load section source …)"
- * note (always-renders). A successful entry returns the fetched child text.
+ * own try/catch turns it into a visible inline "(could not load … source …)" note
+ * (always-renders). A successful entry returns the fetched child text.
  */
 function readPreloadedChild(loaded, src) {
   const entry = loaded[src];
-  if (!entry) throw new Error(`section source not preloaded: ${src}`);
+  if (!entry) throw new Error(`child source not preloaded: ${src}`);
   if (entry.error != null) throw new Error(entry.error);
-  if (typeof entry.content !== 'string') throw new Error(`section source "${src}" loaded empty`);
+  if (typeof entry.content !== 'string') throw new Error(`child source "${src}" loaded empty`);
   return entry.content;
 }
 
 /**
  * Render a multi-file MASTER document live (#194). The browser counterpart of the
- * CLI `enscribe build`: discover the master's top-level `<section src="…">` child
- * references, pre-fetch each child (async; relative paths resolve against
- * `document.baseURI`, exactly as <library src> does — the source-agnostic principle:
- * fetch vs fs is just the injected reader), then run the SAME pure
- * `assembleMasterDocument` the CLI uses to stitch the children into one flat article
- * tree, and render it through the standard synchronous pipeline. The async-fetch-
- * then-sync-assemble handoff mirrors renderAsync's <library src> pre-load.
+ * CLI `enscribe build`: discover the master's top-level `src` structure entries
+ * (`<section src>` for an article, `<chapter src>` / `<preface src>` / … for a book),
+ * pre-fetch each child (async; relative paths resolve against `document.baseURI`,
+ * exactly as <library src> does — the source-agnostic principle: fetch vs fs is just
+ * the injected reader), then run the SAME pure `assembleMasterDocument` the CLI uses
+ * to stitch the children into one flat tree, and render it through the standard
+ * synchronous pipeline (which structures it as an article or book per `<meta type>`).
+ * The async-fetch-then-sync-assemble handoff mirrors renderAsync's <library src> pre-load.
  *
  * SINGLE-LEVEL, by design: like the assembler (and the CLI path), only the master's
- * own `<section src>` children are loaded — a `<section src>` inside a child rides
- * through unresolved. This keeps browser output byte-identical to the CLI build.
+ * own `src` children are loaded — a `src` entry inside a child rides through
+ * unresolved. This keeps browser output byte-identical to the CLI build.
  *
  * always-renders: a child that fails to fetch (404 / network / CORS) renders a
- * visible "(could not load section source …)" note in place; the document still
- * renders. A source with no `<section src>` child is not a master — it falls back to
+ * visible "(could not load … source …)" note in place; the document still renders.
+ * A source with no `src` structure entry is not a master — it falls back to
  * renderAsync (which itself falls back to render() when there is nothing to fetch).
  *
- * Scope: the master's `<section src>` children AND its own `<library src>` bibliography
- * are pre-loaded together in one fetch pass (#197 folded the library into this loader) —
- * the section children are stitched in by the assembler, the library sources ride to the
- * pipeline on `file.data[ENSCRIBE_LOADED_SOURCES]`. A `<section src>` inside a CHILD still
- * rides through unresolved (single-level, per the design note above).
+ * Scope: the master's `src` children AND its own `<library src>` bibliography are
+ * pre-loaded together in one fetch pass (#197 folded the library into this loader) —
+ * the structure children are stitched in by the assembler, the library sources ride to
+ * the pipeline on `file.data[ENSCRIBE_LOADED_SOURCES]`. A `src` entry inside a CHILD
+ * still rides through unresolved (single-level, per the design note above).
  *
  * @param {string} source - the master document's enscribe source.
  * @param {object} [options] - pipeline options (see render()).
  * @returns {Promise<string>} Serialized HTML of the assembled document.
  */
 export async function renderMasterAsync(source, options = {}) {
-  if (!HAS_SECTION_SRC.test(source)) return renderAsync(source, options);
+  if (!HAS_MASTER_SRC.test(source)) return renderAsync(source, options);
   const proc = getPipeline(options);
-  // Discover top-level <section src> children using the SAME parser the assembler
-  // uses, so the discovered set is exactly the set assembleMasterDocument resolves
-  // (isEnscribeTag is the assembler's own predicate — no drift).
+  // Discover top-level `src` structure children using the SAME parser AND the SAME
+  // predicate (isMasterSrcEntry) the assembler uses, so the discovered set is exactly
+  // the set assembleMasterDocument resolves — one authority, no drift.
   const masterTree = proc.parse(source);
-  const sectionSrcs = [
+  const childSrcs = [
     ...new Set(
       (masterTree.children ?? [])
-        .filter((n) => isEnscribeTag(n, 'section') && n.kwargs?.src)
+        .filter(isMasterSrcEntry)
         .map((n) => n.kwargs.src),
     ),
   ];
-  if (sectionSrcs.length === 0) return renderAsync(source, options);
+  if (childSrcs.length === 0) return renderAsync(source, options);
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
   // #197 / #195: pre-load the master's OWN `<library src>` bibliography AND `<table src>`
-  // data in the SAME pass as its `<section src>` children — one deduped fetch. Section
-  // children are consumed by the assembler (readPreloadedChild); library + table sources
-  // ride to the pipeline on the VFile via file.data[ENSCRIBE_LOADED_SOURCES] (the channel
-  // renderAsync populates, library-load and the table handler read). No second assembler,
-  // no new fetch mechanism.
+  // data in the SAME pass as its `src` structure children — one deduped fetch. The
+  // structure children are consumed by the assembler (readPreloadedChild); library +
+  // table sources ride to the pipeline on the VFile via file.data[ENSCRIBE_LOADED_SOURCES]
+  // (the channel renderAsync populates, library-load and the table handler read). No
+  // second assembler, no new fetch mechanism.
   const librarySrcs = collectLibrarySources(source);
   const tableSrcs = collectTableSources(source);
   const loaded = await preloadSources(
-    [...sectionSrcs, ...librarySrcs, ...tableSrcs],
+    [...childSrcs, ...librarySrcs, ...tableSrcs],
     (src) => fetchSourceText(src, baseUrl),
   );
   const tree = assembleMasterDocument({

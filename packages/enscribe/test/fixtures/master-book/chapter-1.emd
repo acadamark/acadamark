@@ -1,0 +1,6 @@
+<meta title="Counting Elephants (child fallback)" />
+
+Aerial transects remain the standard method. See <ref @fig:transect> for the grid
+layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).
+
+<fig #fig:transect src=transect.png | A standard aerial-transect grid.>

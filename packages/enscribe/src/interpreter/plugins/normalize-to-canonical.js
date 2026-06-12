@@ -74,7 +74,11 @@ import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 // matches `book-part.md`'s `shorthand_expansions` block; the
 // build-time vocab generator skips these (they have spaces in their
 // expands_to values) so the expansion has to happen at the gate.
-const BOOK_PART_SHORTHANDS = new Set([
+//
+// Exported (Slice B / #190): the multi-file assembler resolves a `src` on any
+// of these tags (a book master's `<chapter src>`, `<preface src>`, …) exactly as
+// it resolves `<section src>`, so it keys off THIS list — one authority, no drift.
+export const BOOK_PART_SHORTHANDS = new Set([
   'chapter', 'part', 'appendix', 'preface', 'foreword',
   'introduction', 'conclusion', 'glossary', 'dedication', 'afterword',
 ]);
