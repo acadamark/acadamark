@@ -30,3 +30,10 @@ export const ENSCRIBE_CITATIONS          = 'enscribeCitations';
 export const ENSCRIBE_LOADED_SOURCES     = 'enscribeLoadedSources';
 export const ENSCRIBE_NOTES_PENDING      = 'enscribeNotesPending';
 export const ENSCRIBE_NUMBERING_PENDING  = 'enscribeNumberingPending';
+// Lazy live book rendering, L1 (#204): the harvested cross-reference registry —
+// a Map(anchor -> { number, title, type }) read off the numbered tree + the
+// numbering registry (ENSCRIBE_REGISTRY) by harvestCrossRefRegistry(). It is a
+// READ-ONLY product of the global pass for the per-chapter render / L3 preview
+// layer (a cross-chapter ref whose target chapter was never rendered still has its
+// number+title here). Built from numbering's output — never re-numbered.
+export const ENSCRIBE_CROSSREF_REGISTRY  = 'enscribeCrossRefRegistry';

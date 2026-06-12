@@ -46,6 +46,32 @@ byte-identity on matched options**. "Matched options" is the load-bearing
 qualifier (see "Scoped out" below): it isolates the engine from the two surfaces'
 deliberately-different *defaults*.
 
+### Granularity: per-chapter ≡ full-render slice (lazy book rendering, L1)
+
+A second byte-identity axis, along granularity rather than live-vs-static. A
+render is a cheap **global pass** (`proc.runSync`: structure / number / resolve
+cross-references — no HTML rendering) producing a numbered tree, then a **compile**
+(`proc.stringify`) that is the expensive part. A book can compile either way from
+the *same* numbered tree: **full** (every chapter — the static build, and today's
+live render) or **per-chapter** (`renderChapter` compiles one `<book-part>` — the
+unit the live lazy path renders on demand). The invariant:
+
+> A chapter compiled in isolation via `renderChapter` is **byte-identical** to that
+> chapter's content within the full-book compile.
+
+It holds **by construction**: the global pass bakes every cross-chapter concern
+into the tree before any compile (a cross-reference's number is resolved against
+the whole-book numbering registry; per-chapter figure numbering and per-chapter
+notes are stamped in place), so a `<book-part>` subtree is self-contained and its
+compile is a pure projection. The only depth-sensitive detail is `rehype-format`'s
+indentation, reproduced by compiling the chapter at its in-context nesting depth
+(`book > book-body > book-part`). The harvested cross-reference registry
+(`harvestCrossRefRegistry` → `anchor → {number, title, type}`) is the bridge for
+the cross-chapter case — a reference whose target chapter was never compiled still
+carries its number+title. Enforced by `test/render-chapter-parity.test.js` (see
+Audit). This compile-time per-chapter **render** is distinct from the runtime
+single-chapter **paging** display mode (`chapterNav`, scoped out below).
+
 ## Source-agnostic content
 
 `<table src>`, `<library src>`, and multi-file `<section src>` children resolve
@@ -137,6 +163,13 @@ and asserted byte-identical on matched options — now landed as
   (`processSync`) vs the bundled browser `render` on matched options came out
   byte-identical (sections, inline + display math, a figure with id, resolved and
   unresolved cross-refs, a list, an aside).
+- `packages/enscribe/test/render-chapter-parity.test.js` (lazy live book rendering,
+  L1) — the **granularity** invariant: each `master-book` chapter compiled in
+  isolation via `renderChapter` is byte-identical (`assert.strictEqual`) to that
+  chapter's `<book-part>` fragment within the full-book compile, and the harvested
+  cross-reference registry's number equals the baked cross-ref text. Expected green
+  on landing (holds by construction; a standing regression guard for the per-chapter
+  render the live lazy path is built on).
 
 ## Cross-references
 

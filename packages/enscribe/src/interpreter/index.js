@@ -1042,6 +1042,14 @@ export { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 // the relocation from the CLI package was behavior-neutral; see
 // src/master-document/assemble.js.
 export { assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC, MASTER_SRC_TAGS } from '../master-document/assemble.js';
+// Lazy live book rendering, L1 (#204): the engine foundation. harvestCrossRefRegistry
+// reads anchor -> {number, title, type} off the numbered runSync tree (for L3 cross-
+// chapter preview); renderChapter projects one <book-part> to its HTML fragment,
+// byte-identical to its in-context full-render fragment (the per-chapter render the
+// live lazy path, L2, drives).
+export { harvestCrossRefRegistry } from './lib/cross-ref-registry.js';
+export { renderChapter } from '../master-document/render-chapter.js';
+export { ENSCRIBE_CROSSREF_REGISTRY } from '../core/file-data-keys.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);
