@@ -44,15 +44,15 @@ import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
 
 // Book-part-type → region routing.
 const BOOK_PART_FRONT_TYPES = new Set(['preface', 'foreword', 'dedication']);
-const BOOK_PART_BACK_TYPES  = new Set(['appendix', 'glossary', 'colophon']);
+const BOOK_PART_BACK_TYPES  = new Set(['appendix', 'glossary', 'colophon', 'afterword']);
 // chapter, part, introduction, conclusion, other → book-body (default)
 
 // The full BITS book-part-type set (book-front ∪ book-body ∪ book-back), used to
 // validate an author-supplied `<meta type=book-part book-part-type=…>` (#176).
 const BOOK_PART_TYPES = new Set([
-  'chapter', 'part', 'introduction', 'conclusion', 'other', // → book-body
-  'preface', 'foreword', 'dedication',                      // → book-front
-  'appendix', 'glossary', 'colophon',                       // → book-back
+  'chapter', 'part', 'introduction', 'conclusion', 'other',     // → book-body
+  'preface', 'foreword', 'dedication',                          // → book-front
+  'appendix', 'glossary', 'colophon', 'afterword',             // → book-back
 ]);
 
 // Back-matter tags inside a book (besides appendix/glossary book-parts).

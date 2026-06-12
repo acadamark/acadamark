@@ -14,7 +14,7 @@ enscribe_attributes:
   kwargs:
     type:
       maps_to: book-part-type
-      values: [chapter, part, appendix, preface, foreword, introduction, conclusion, glossary, dedication, other]
+      values: [chapter, part, appendix, preface, foreword, introduction, conclusion, glossary, dedication, afterword, other]
       required: true
       notes: |
         The kind of book-part. Authored as `type` (the prefix is redundant inside a
@@ -76,6 +76,12 @@ shorthand_expansions:
     expands_to: 'book-part type="conclusion"'
   - shorthand: glossary
     expands_to: 'book-part type="glossary"'
+  - shorthand: dedication
+    expands_to: 'book-part type="dedication"'
+    notes: 'Front-matter dedication. Typically in book-front.'
+  - shorthand: afterword
+    expands_to: 'book-part type="afterword"'
+    notes: 'Back-matter closing prose. Typically in book-back.'
 shorthand_examples:
   - source: |
       <chapter | Origins>
@@ -205,6 +211,7 @@ The `enscribeBookStructuring` plugin places book-parts automatically based on th
 | dedication | book-front |
 | appendix | book-back |
 | glossary | book-back |
+| afterword | book-back |
 | colophon | book-back |
 | other | book-body (default) |
 

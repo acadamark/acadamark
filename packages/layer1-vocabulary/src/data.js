@@ -1368,6 +1368,7 @@ const _book_part = Object.freeze({
             "conclusion",
             "glossary",
             "dedication",
+            "afterword",
             "other",
           ],
           "required": true,
@@ -1472,6 +1473,16 @@ const _book_part = Object.freeze({
       {
         "shorthand": "glossary",
         "expands_to": "book-part type=\"glossary\"",
+      },
+      {
+        "shorthand": "dedication",
+        "expands_to": "book-part type=\"dedication\"",
+        "notes": "Front-matter dedication. Typically in book-front.",
+      },
+      {
+        "shorthand": "afterword",
+        "expands_to": "book-part type=\"afterword\"",
+        "notes": "Back-matter closing prose. Typically in book-back.",
       },
     ],
     "shorthand_examples": [

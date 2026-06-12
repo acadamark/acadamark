@@ -82,7 +82,7 @@ export function run() {
 
     const ok = reg.register('glossary', {
       tagname: 'book-part',
-      kwargs: { 'book-part-type': 'glossary' },
+      kwargs: { type: 'glossary' },
       condition: (ctx) => ctx.isBook === true,
     });
     assert.equal(ok, true, 'conditional shorthand shadowing a reserved name is allowed');

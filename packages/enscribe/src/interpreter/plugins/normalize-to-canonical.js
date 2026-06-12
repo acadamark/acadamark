@@ -75,7 +75,7 @@ import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 // expands_to values) so the expansion has to happen at the gate.
 const BOOK_PART_SHORTHANDS = new Set([
   'chapter', 'part', 'appendix', 'preface', 'foreword',
-  'introduction', 'conclusion', 'glossary', 'dedication',
+  'introduction', 'conclusion', 'glossary', 'dedication', 'afterword',
 ]);
 
 // Per-document book-context flag. Set by the gate's transformer at the
