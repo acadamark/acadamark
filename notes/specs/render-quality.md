@@ -955,14 +955,25 @@ cross-references, and edited-volume (per-chapter) authorship.
   footnotes are collected per chapter rather than once for the whole document.
 - **`RQ-BOOK-M6`** (bibliography) — a book gets a single document-wide
   bibliography at the end of `<book-back>`.
-
-**Chapter-navigation readiness.** A single-chapter-at-a-time navigation view (a
-release display goal, `ROADMAP.md` display phase) needs a stable, machine-findable
-per-chapter boundary to page through. `RQ-BOOK-M1` and `RQ-BOOK-M2` provide
-exactly that: each chapter is a `<book-part book-part-type="chapter">` with its
-title in a predictable `<meta><book-part-title>`. This spec asserts the
-*structural hooks* exist; the navigation UI that consumes them is display-phase
-work and is out of scope here.
+- **`RQ-BOOK-M7`** (reading interface) — a book rendered with a ToC (`toc` on) is
+  a **one scrolling document with three-column chapter-navigation chrome**, NOT a
+  paged one-chapter-at-a-time view. The chrome, all of it STATIC markup (so it is
+  byte-identical static≡live; the highlighting/visibility is post-render
+  enhancement): a LEFT chapter rail (`<nav class="enscribe-toc enscribe-chapter-rail">`)
+  listing chapters only — in reading order, region-grouped (front / body / back),
+  with the chapter number and title in SEPARATE spans (`enscribe-toc-num` /
+  `enscribe-toc-title`, so "1 Introduction" is never glued "1Introduction"); static
+  prev/next chapter links (`<nav class="enscribe-chapter-nav">`) at each chapter's
+  foot, in reading order; and a RIGHT "on this page" rail
+  (`<nav class="enscribe-onthispage">`) with one section group per chapter, each
+  keyed `data-chapter` to its chapter id. Two post-render scripts drive it: the
+  scroll-spy script (the SOLE left-rail highlighter — see §15.5) marks the active
+  chapter, and the on-this-page script reveals the current chapter's section group
+  and marks the active section. *Section placement (the slice's design decision):
+  sections live in the RIGHT rail only, not nested under the left chapter rail —
+  the clean split that keeps the chapter rail a flat chapter list.* The
+  single-chapter PAGING view (`RQ-BOOK-M1`/`M2` supply its per-chapter boundaries)
+  remains available as an explicit opt-in (`chapterNav: true`), not the default.
 
 **Stylesheet predicates:**
 
@@ -973,10 +984,20 @@ work and is out of scope here.
   `book-front`/`book-body`/`book-back` as block regions. *(The default theme's
   article rules do not currently extend to the book elements; book-appropriate
   styling is the intended standard.)*
+- **`RQ-BOOK-S2`** (reading-interface chrome) — the default theme styles the book
+  reading interface (`RQ-BOOK-M7`), book-gated on `.enscribe-layout--book` so an
+  article ToC is untouched: a desktop three-column grid (chapter rail | reading
+  column | on-this-page rail) when the right rail is present, the active chapter in
+  the left rail a tinted block with a left accent (driven by the scroll-spy
+  `.enscribe-toc-active` hook, from the `--enscribe-toc-active-bg` /
+  `--enscribe-toc-active-accent` tokens), and the on-this-page rail showing only the
+  current chapter's group once its script runs (all groups with JS off).
 
 **Out of spec.** Render-mode lowering of `book-title`→`<h1>`,
 `book-part`→`<section class="chapter">` (§0.2); running heads, page numbers,
-and other print-book apparatus (no print stylesheet); the navigation UI itself.
+and other print-book apparatus (no print stylesheet); per-chapter-URL / separate-page
+pagination and cross-page references (the inverse of the one-scroll model); in-rail
+search.
 
 ---
 
@@ -1016,14 +1037,18 @@ section active at the top, last stays active at the bottom).
 
 **The hand-authored-render-JS convention (#20 sets it).** Scroll-spy is enscribe's
 first *first-party, hand-authored* render script — distinct from the bundled
-third-party DSL-rendering libraries (mermaid / abc) the live modes already ship,
-and a reading-time enhancement rather than the book-only chapter-nav script. The
-convention it sets, which the next such feature (#52, hover previews) should
-follow: inline, self-contained, dependency-free vanilla JS, injected as an inline
-`<script>` (via the same `makeScriptElement` path) so the document stays
-self-contained, and a PURE progressive enhancement — the page is fully functional
-without it. JATS is unaffected: no ToC sidebar and no script enter the archival
-channel.
+third-party DSL-rendering libraries (mermaid / abc) the live modes already ship. It
+is a reading-time enhancement that applies to BOTH the article sidebar and the book
+left chapter rail; for a book it is the SOLE highlighter (the opt-in paging script
+no longer competes — it no longer writes its own active class onto ToC links). The
+book reading interface (`RQ-BOOK-M7`) follows the same convention for its right rail:
+the on-this-page script is inline, dependency-free, and a pure progressive
+enhancement over static rail markup. The convention, which the next such feature
+(#52, hover previews) should follow: inline, self-contained, dependency-free vanilla
+JS, injected as an inline `<script>` (via the same `makeScriptElement` path) so the
+document stays self-contained, and a PURE progressive enhancement — the page is
+fully functional without it. JATS is unaffected: no ToC sidebar and no script enter
+the archival channel.
 
 **Out of spec.** URL-hash sync while scrolling and smooth-scroll on ToC click
 (deferred, #20). The scroll behaviour itself is runtime and is not exercised by

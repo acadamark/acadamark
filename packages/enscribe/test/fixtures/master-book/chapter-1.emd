@@ -1,6 +1,16 @@
 <meta title="Counting Elephants (child fallback)" />
 
+Aerial transects and ground counts are the two standard survey methods for
+savanna elephants.
+
+## Aerial Transects
+
 Aerial transects remain the standard method. See <ref @fig:transect> for the grid
 layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).
 
 <fig #fig:transect src=transect.png | A standard aerial-transect grid.>
+
+## Ground Counts
+
+Ground counts complement the aerial survey at known aggregation points such as
+waterholes during the dry season.

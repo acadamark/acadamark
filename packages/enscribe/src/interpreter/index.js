@@ -193,8 +193,14 @@ import { MARGIN_CSS } from './assets/margin-css.js';
 import { resolveStrictMode, detectStrictMode, disableMarkdownIdioms, flagStrictText } from './lib/strict-mode.js';
 import { STRICT_FLAG_CSS } from './assets/strict-flag-css.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
-// read — so the browser bundle stays fs-free). Injected only for book + ToC.
+// read — so the browser bundle stays fs-free). Now an OPT-IN paging escape hatch
+// (chapterNav:true), NOT the book default — see the one-scroll reading interface
+// (Slice C) below; injected only when explicitly opted in for a book + ToC.
 import { CHAPTER_NAV_JS } from './assets/chapter-nav-asset.js';
+// Slice C: the "on this page" rail client script (string constant, fs-free).
+// Injected only for a book + ToC; drives the right rail of the one-scroll book
+// reading interface. A pure progressive enhancement over static rail markup.
+import { ON_THIS_PAGE_JS } from './assets/on-this-page-asset.js';
 // #20: scroll-spy client script — the first first-party hand-authored render JS
 // (distinct from the bundled DSL-rendering libraries). Injected whenever a ToC
 // sidebar is rendered; a pure progressive enhancement over the existing ToC.
@@ -536,7 +542,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
  * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
  * @param {'bottom'|'margin'} [options.notePosition='bottom'] Note render position (#33). 'bottom' (default) keeps numbered notes at the foot of the document; 'margin' projects each note's content into a wide margin column beside its marker (Tufte-style sidenotes) and injects the scoped sidenote CSS, falling back to the bottom rendering below a breakpoint. Display-only — markers, numbering, the note tree, and JATS are unchanged, and bottom-mode output (default) is byte-identical. Also settable per-document via `<config note-position=…>`; the option wins.
- * @param {boolean} [options.chapterNav] Single-chapter book navigation. For a book rendered with a ToC, injects a progressive-enhancement script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults on; `false` opts out. Ignored for articles and for books without a ToC.
+ * @param {boolean} [options.chapterNav] Opt-in single-chapter PAGING view (Slice C made the one-scroll reading interface the book default). When `true`, a book rendered with a ToC also gets the progressive-enhancement paging script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults OFF — the default book + ToC renders as one scrolling document with chapter-navigation chrome (left chapter rail, per-chapter prev/next, right "on this page" rail). Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
  * @param {boolean} [options.smartTypography=true] Smart typography (#54): curly quotes, en/em dashes, and ellipses in prose display output. A display-projection on the HTML side only — never the canonical AST / `.emd` / JATS. `false` disables it.
  * @param {'off'|'sigil'|'canonical'} [options.strictMode='off'] Strictness register switch (#36). Each value names the loosest register still interpreted. 'off' (default) interprets all three registers — today's behavior, byte-identical. 'sigil' turns the markdown register off: `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters (no escaping) while canonical tags and sigils stay live everywhere, including inside tag pipe bodies; would-be-markdown text is flagged with a visible lint. 'canonical' turns markdown AND sigils off (`<# #>`, `<$ $>`, `<->`, `<*>` also literal), leaving only canonical named tags — the canonical `<li>` and the `^{}`/`_{}` shortcuts stay live; would-be-markdown and would-be-sigil text is flagged. The flag CSS is injected only for a non-`off` rung. Native inferences (blank-line→paragraph, section nesting) stay on in all states. Layer 1 / JATS are unaffected. Also settable per-document via `<config strict-mode=…>`; the option wins.
@@ -556,8 +562,10 @@ export function enscribeInterpreter(options = {}) {
   // Phase 8 Slice 1: table-of-contents. false (default) / true / 'auto'
   // (show only past a few top-level sections). Off → applyToc is a no-op.
   const tocOption = options.toc ?? false;
-  // Phase 8 Slice 3: single-chapter book navigation. Defaults on for a book
-  // that has a ToC (the ToC is the chapter selector); `false` forces it off.
+  // Opt-in single-chapter PAGING (Slice C). Default OFF — a book + ToC renders as
+  // one scrolling document with chapter-navigation chrome (the reading interface);
+  // `chapterNav: true` swaps in the paging script. The `=== true` gate below depends
+  // on this staying a raw read (undefined unless the caller opts in).
   const chapterNavOption = options.chapterNav;
   // #54: smart typography — display-projection punctuation (curly quotes, dashes,
   // ellipses) on the HTML side only. On by default; `smartTypography: false` opts
@@ -801,20 +809,29 @@ export function enscribeInterpreter(options = {}) {
       hast.children.unshift(makeStyleElement(STRICT_FLAG_CSS));
     }
 
-    // Phase 8 Slice 3: inject the chapter-navigation script for a book that has a
-    // ToC (which assigns the book-part ids the script navigates by). Default on;
-    // `chapterNav: false` opts out. A pure enhancement — without it the book is
-    // one long page — so it adds no markup beyond this one <script>.
-    if (tocType === 'book' && chapterNavOption !== false) {
+    // Slice C: the one-scroll book reading interface is the DEFAULT for a book +
+    // ToC (the three-column chrome — chapter rail, prev/next, on-this-page rail — is
+    // built statically in applyToc). The single-chapter PAGING script is now an
+    // explicit OPT-IN escape hatch: inject it only when `chapterNav: true` is passed.
+    // (Default-off: `undefined === true` is false, so the book renders as one
+    // scrolling document, not one chapter at a time.) Articles never reach this.
+    if (tocType === 'book' && chapterNavOption === true) {
       hast.children.unshift(makeScriptElement(CHAPTER_NAV_JS));
     }
 
-    // #20: scroll-spy — highlight the current section in the ToC sidebar as the
-    // reader scrolls. Ships wherever a ToC sidebar is rendered (article or book);
-    // no separate switch. A pure progressive enhancement: JS off → the ToC still
-    // navigates, just no live highlight. Joins the existing render-JS injection
-    // story (chapter-nav above, DSL libraries below) via the same
-    // makeScriptElement path.
+    // Slice C: the "on this page" rail script — book + ToC only. Drives the right
+    // rail (current chapter's sections) of the reading interface; the left chapter
+    // rail is scroll-spy's job (below). A pure progressive enhancement over static
+    // rail markup; no-op (not injected) for articles, which have no right rail.
+    if (tocType === 'book') {
+      hast.children.unshift(makeScriptElement(ON_THIS_PAGE_JS));
+    }
+
+    // #20: scroll-spy — highlight the current entry in the ToC sidebar as the reader
+    // scrolls. Ships wherever a ToC sidebar is rendered (article OR book); no
+    // separate switch. For a book it is now the SOLE highlighter of the left chapter
+    // rail (the retired paging nav no longer competes). A pure progressive
+    // enhancement: JS off → the ToC still navigates, just no live highlight.
     if (tocType) {
       hast.children.unshift(makeScriptElement(SCROLL_SPY_JS));
     }

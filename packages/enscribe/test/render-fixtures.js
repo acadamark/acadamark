@@ -77,6 +77,7 @@ const ABC_STATIC_FIXTURES = new Set([
  */
 const TOC_FIXTURES = new Set([
   'document-54-toc-scrollspy',
+  'master-book',
 ]);
 
 /**

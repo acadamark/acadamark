@@ -64,9 +64,9 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Client-side rendering — browser library (`render` / `renderInto` / `executeAssets`), `enscribe.browser` bundle
 - [ ] Code syntax highlighting (not yet wired in)
 - [ ] Render-mode lowering — lossy lowering of custom elements to plain `<h1>`/`<h2>` (gated on a design decision)
-- [x] Table-of-contents sidebar (opt-in, build-time, responsive)
-- [x] ToC scroll-spy — highlights the current section (and its ancestor trail) in the sidebar as the reader scrolls, via an injected inline `IntersectionObserver` script with `aria-current`; ships with the ToC sidebar, a pure progressive enhancement (the first first-party hand-authored render JS)
-- [x] Single-chapter-at-a-time book navigation (JS, progressive enhancement)
+- [x] Table-of-contents sidebar (opt-in, build-time, responsive) — for an article a single nested sidebar; for a book the left chapter rail of the three-column reading interface (below)
+- [x] ToC scroll-spy — highlights the current entry (and its ancestor trail) in the sidebar as the reader scrolls, via an injected inline `IntersectionObserver` script with `aria-current`; ships with the ToC sidebar, a pure progressive enhancement (the first first-party hand-authored render JS). For a book it is the sole left-rail highlighter (no competing paging nav), paired with a second script that drives the right "on this page" rail
+- [x] Book reading interface — a book document with a ToC renders as **one continuous scrolling document** with three-column chapter-navigation chrome: a left chapter rail (front-matter unnumbered, body chapters arabic "1 · Introduction", back-matter lettered "A · Notation"; active chapter a tinted block with a left accent), static prev/next chapter links at each chapter foot, and a right "on this page" rail of the current chapter's sections (scroll-spied). Book-gated — article ToC behavior is unchanged; all chrome markup is static (byte-identical static≡live), the highlighting/visibility a post-render enhancement. A single-chapter-at-a-time **paging** view remains available opt-in (`chapterNav: true`)
 - [x] Display themes (default, modern, compact — custom-property overrides)
 - [ ] Multi-column display
 - [ ] Pagination and print-targeted output

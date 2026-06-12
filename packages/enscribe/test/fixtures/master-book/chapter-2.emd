@@ -2,7 +2,16 @@
 <author | Guest Contributor>
 
 This chapter carries its own author, distinct from the book-level author, and
-renumbers its figures from one. Its own figure is <ref @fig:browse>; a cross-chapter
-reference to <ref @fig:transect> still resolves to chapter 1 (figure 1.1).
+renumbers its figures from one.
+
+## Browse Scoring
+
+Its own figure is <ref @fig:browse>; a cross-chapter reference to <ref @fig:transect>
+still resolves to chapter 1 (figure 1.1).
 
 <fig #fig:browse src=browse.png | A browse-damage scoring rubric.>
+
+## Limitations
+
+Browse scoring is observer-dependent and should be calibrated across surveyors
+before the season's counts begin.

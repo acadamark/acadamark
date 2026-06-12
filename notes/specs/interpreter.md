@@ -1754,7 +1754,7 @@ and no gap remains open.
 | `mermaidMode` / `abcMode` | same value space (`mermaidMode` excludes `'static'`) | falls back to `dslMode` | Per-DSL override of `dslMode` |
 | `toc` | `boolean \| 'auto'` | `false` | Table-of-contents sidebar: `true` always, `'auto'` past three top-level sections, `false` none. Layout CSS in `default.css` (`.enscribe-layout--toc`) |
 | `theme` | `'default' \| 'modern' \| 'compact'` | `'default'` | Inject a theme's `:root` token overrides inline; also settable via `<config theme=…>` (the option wins) |
-| `chapterNav` | `boolean` | on for a book with a ToC | Single-chapter book navigation (progressive-enhancement script); ignored for articles and books without a ToC |
+| `chapterNav` | `boolean` | off (opt-in) | Opt-in single-chapter PAGING view for a book with a ToC. The default book + ToC renders as one scrolling document with chapter-navigation chrome (the reading interface, `RQ-BOOK-M7`); `chapterNav: true` swaps in the paging script (one chapter at a time). Ignored for articles and books without a ToC |
 
 `'inline'` modes produce self-contained HTML; `'link'` modes are leaner but
 require network access to the relevant CDN; `'skip'` modes expect the consumer

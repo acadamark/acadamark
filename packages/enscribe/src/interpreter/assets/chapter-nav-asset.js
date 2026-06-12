@@ -1,17 +1,25 @@
 // Chapter-navigation client script (Phase 8 Slice 3).
 //
+// OPT-IN paging view. As of Slice C, the book + ToC DEFAULT is the one-scroll
+// reading interface (left chapter rail, per-chapter prev/next, right "on this
+// page" rail — built statically in lib/toc.js); this paging script is injected
+// ONLY when `chapterNav: true` is passed explicitly (index.js). It is the
+// "single-chapter-at-a-time" alternative, not the book default.
+//
 // Exported as a STRING constant (not read from disk) so the interpreter's
 // browser bundle stays fs-free — the same reason the hover-preview assets are
-// swappable. The interpreter injects this as an inline <script> only for a
-// book document that has a ToC (the ToC supplies the chapter selector and the
-// book-part ids this script navigates by).
+// swappable.
 //
 // It is a progressive enhancement: if it never runs, the book renders as one
-// long page (today's behavior). When it runs it shows one <book-part> at a
-// time, with the ToC as the chapter selector, a prev/next bar, ←/→ keys, URL-
-// hash deep links (with working back/forward), and a "show whole book" toggle.
-// Cross-chapter links (a <ref> in one chapter pointing at a figure in another)
-// work: any in-page link reveals its target's chapter before scrolling.
+// long page. When it runs it shows one <book-part> at a time, with the ToC as
+// the chapter selector, a prev/next bar, ←/→ keys, URL-hash deep links (with
+// working back/forward), and a "show whole book" toggle. Cross-chapter links (a
+// <ref> in one chapter pointing at a figure in another) work: any in-page link
+// reveals its target's chapter before scrolling.
+//
+// Highlighting the active chapter in the ToC is left to the scroll-spy script
+// (the SOLE highlighter, #20 / Slice C) — this script no longer writes its own
+// `.active`/aria-current onto ToC links, so the two never compete.
 
 export const CHAPTER_NAV_JS = `(function () {
   function init() {
@@ -52,22 +60,15 @@ export const CHAPTER_NAV_JS = `(function () {
     if (idx > 0) bar.appendChild(makeLink('enscribe-chapter-prev', ids[idx - 1], '\\u2190 ' + chapterTitle(idx - 1)));
     if (idx < parts.length - 1) bar.appendChild(makeLink('enscribe-chapter-next', ids[idx + 1], chapterTitle(idx + 1) + ' \\u2192'));
   }
-  function highlight(activeId) {
-    var links = document.querySelectorAll('.enscribe-toc a');
-    Array.prototype.forEach.call(links, function (a) {
-      var on = a.getAttribute('href') === '#' + activeId;
-      a.classList.toggle('active', on);
-      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-    });
-  }
-  // Show one chapter; optionally scroll to a specific element within it.
+  // Show one chapter; optionally scroll to a specific element within it. The ToC
+  // highlight is the scroll-spy script's job (the sole highlighter), so this no
+  // longer writes its own active class onto ToC links.
   function apply(activeId, scrollTarget) {
     var idx = indexOfId(activeId);
     if (idx < 0) { idx = 0; activeId = ids[0]; }
     parts.forEach(function (p, i) { p.classList.toggle('chapter-hidden', i !== idx); });
     buildBar(idx);
     parts[idx].appendChild(bar);
-    highlight(activeId);
     var el = scrollTarget ? document.getElementById(scrollTarget) : parts[idx];
     if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start' });
   }

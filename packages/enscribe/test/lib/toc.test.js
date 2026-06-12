@@ -76,16 +76,80 @@ export async function run() {
     console.log("PASS: toc:'auto' threshold");
   }
 
-  // ── book: chapters become ToC entries (titles read through the <meta> wrapper) ─
+  // ── book reading interface (Slice C): chapters become left-rail entries (titles
+  //    read through the <meta> wrapper), and the book renders as one scrolling
+  //    document with the three-column chrome (not the old paging view) ───────────
   {
     const src = readFileSync(join(FIXTURES, 'document-44-cross-feature-monograph.emd'), 'utf8');
     assert.equal(render(src, { toc: false }), render(src), 'book toc:false byte-identical');
     const html = render(src, { toc: true });
-    const nav = (html.match(/<nav class="enscribe-toc"[\s\S]*?<\/nav>/) || [''])[0];
-    assert.ok(/Foundations/.test(nav) && /Notation and Sources/.test(nav), 'chapter titles appear in the ToC');
-    assert.ok(!/<a href="#[^"]*"><\/a>/.test(nav), 'no empty-title ToC links');
+    // The book left rail is the chapter rail (nav.enscribe-toc.enscribe-chapter-rail).
+    const nav = (html.match(/<nav class="enscribe-toc enscribe-chapter-rail"[\s\S]*?<\/nav>/) || [''])[0];
+    assert.ok(nav, 'book renders a chapter rail (nav.enscribe-toc.enscribe-chapter-rail)');
+    assert.ok(/Foundations/.test(nav) && /Notation and Sources/.test(nav), 'chapter titles appear in the chapter rail');
+    assert.ok(!/<a href="#[^"]*"><\/a>/.test(nav), 'no empty-title rail links');
+    // Slice C: the three-column book reading-interface layout (one scrolling doc).
+    assert.ok(/enscribe-layout--book/.test(html), 'book gets the reading-interface layout');
+    assert.ok(!/class="chapter-hidden"/.test(html), 'no paging by default (book is one scrolling document)');
     assert.ok(!/enscribeParseError|enscribeTagError/.test(html), 'no error nodes');
-    console.log('PASS: book → chapter ToC entries, titles resolved');
+    console.log('PASS: book → chapter rail entries, reading-interface layout, no paging');
+  }
+
+  // ── book reading interface (Slice C): the three-column chrome ────────────────
+  // An inline book with two chapters, each with sub-sections, so the right "on this
+  // page" rail and per-chapter prev/next are exercised deterministically.
+  {
+    const BOOK = `<meta type=book>
+<title | Test Book>
+</meta>
+
+<chapter | One>
+Intro.
+
+## Alpha
+
+a
+
+## Beta
+
+b
+
+<chapter | Two>
+Intro two.
+
+## Gamma
+
+c`;
+    const html = render(BOOK, { toc: true });
+
+    // Left chapter rail: chapters only (no section nesting), un-glued numbers.
+    const rail = (html.match(/<nav class="enscribe-toc enscribe-chapter-rail"[\s\S]*?<\/nav>/) || [''])[0];
+    assert.ok(/enscribe-toc-num">1<\/span>/.test(rail) && /enscribe-toc-title">One<\/span>/.test(rail),
+      'chapter rail: number and title are SEPARATE spans (un-glued)');
+    assert.ok(!/Alpha|Beta|Gamma/.test(rail), 'chapter rail lists chapters only (sections live in the right rail)');
+
+    // Right "on this page" rail: per-chapter section groups keyed by chapter id.
+    const right = (html.match(/<nav class="enscribe-onthispage"[\s\S]*?<\/nav>/) || [''])[0];
+    assert.ok(right, 'right "on this page" rail is emitted');
+    assert.ok(/data-chapter="/.test(right) && /Alpha/.test(right) && /Gamma/.test(right),
+      'right rail groups the chapters\' sections (data-chapter keyed)');
+
+    // Per-chapter prev/next links (static markup, reading order).
+    assert.ok(/<nav class="enscribe-chapter-nav"[\s\S]*?enscribe-chapter-next[\s\S]*?Two[\s\S]*?<\/nav>/.test(html),
+      'chapter One has a next → Two link at its foot');
+
+    // Both highlighters are injected; scroll-spy drives the left, on-this-page the right.
+    assert.ok(html.includes("nav.enscribe-toc'") && html.includes('nav.enscribe-onthispage'),
+      'both the scroll-spy (left) and on-this-page (right) scripts are injected');
+
+    // PARITY GUARD (mirrors the article scroll-spy guard): the runtime highlight
+    // hooks are NEVER in the static markup — they are set by the scripts at runtime.
+    const body = html.slice(html.indexOf('enscribe-layout--book'));
+    const navMarkup = body.slice(0, body.indexOf('</main>') >= 0 ? body.indexOf('</main>') : body.length);
+    assert.ok(!/aria-current|enscribe-toc-active|onthispage-chapter--current|onthispage--spied/.test(navMarkup),
+      'no runtime highlight/visibility hooks in the static rail markup (interactivity stays post-render)');
+
+    console.log('PASS: book reading interface — chapter rail, right rail, prev/next, dual scripts, static-clean');
   }
 
   console.log('All ToC tests passed.');

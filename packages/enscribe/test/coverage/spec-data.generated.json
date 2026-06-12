@@ -542,10 +542,22 @@
       "asserts": "a book gets a single document-wide bibliography at the end of `<book-back>`."
     },
     {
+      "id": "RQ-BOOK-M7",
+      "area": "RQ-BOOK",
+      "kind": "M",
+      "asserts": "a book rendered with a ToC (`toc` on) is a **one scrolling document with three-column chapter-navigation chrome**, NOT a paged one-chapter-at-a-time view. The chrome, all of it STATIC markup (so it is byte-identical static≡live; the highlighting/visibility is post-render enhancement): a LEFT chapter rail (`<nav class=\"enscribe-toc enscribe-chapter-rail\">`) listing chapters only — in reading order, region-grouped (front / body / back), with the chapter number and title in SEPARATE spans (`enscribe-toc-num` / `enscribe-toc-title`, so \"1 Introduction\" is never glued \"1Introduction\"); static prev/next chapter links (`<nav class=\"enscribe-chapter-nav\">`) at each chapter's foot, in reading order; and a RIGHT \"on this page\" rail (`<nav class=\"enscribe-onthispage\">`) with one section group per chapter, each keyed `data-chapter` to its chapter id. Two post-render scripts drive it: the scroll-spy script (the SOLE left-rail highlighter — see §15.5) marks the active chapter, and the on-this-page script reveals the current chapter's section group and marks the active section. *Section placement (the slice's design decision): sections live in the RIGHT rail only, not nested under the left chapter rail — the clean split that keeps the chapter rail a flat chapter list.* The single-chapter PAGING view (`RQ-BOOK-M1`/`M2` supply its per-chapter boundaries) remains available as an explicit opt-in (`chapterNav: true`), not the default."
+    },
+    {
       "id": "RQ-BOOK-S1",
       "area": "RQ-BOOK",
       "kind": "S",
       "asserts": "the book structural containers and titles render with book-appropriate prominence: `book-title` as the most prominent heading on the page (block, at least `--enscribe-h1-size`), `book-part-title` as a chapter-level heading (block, prominent, clearly above section-title scale), and `book-front`/`book-body`/`book-back` as block regions. *(The default theme's article rules do not currently extend to the book elements; book-appropriate styling is the intended standard.)*"
+    },
+    {
+      "id": "RQ-BOOK-S2",
+      "area": "RQ-BOOK",
+      "kind": "S",
+      "asserts": "the default theme styles the book reading interface (`RQ-BOOK-M7`), book-gated on `.enscribe-layout--book` so an article ToC is untouched: a desktop three-column grid (chapter rail | reading column | on-this-page rail) when the right rail is present, the active chapter in the left rail a tinted block with a left accent (driven by the scroll-spy `.enscribe-toc-active` hook, from the `--enscribe-toc-active-bg` / `--enscribe-toc-active-accent` tokens), and the on-this-page rail showing only the current chapter's group once its script runs (all groups with JS off)."
     },
     {
       "id": "RQ-TOC-M1",

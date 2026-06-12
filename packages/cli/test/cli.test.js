@@ -82,18 +82,20 @@ export function run_tests() {
     console.log('PASS: render --theme → injected theme CSS');
   }
 
-  // ── render --toc → book chapter navigation ──────────────────────────────────
+  // ── render --toc → book reading interface; --chapter-nav opts into paging ────
   {
-    const nav = (out) => out.includes("'Show whole book'");
+    const paging = (out) => out.includes("'Show whole book'"); // marker of the opt-in paging script
     const withToc = invoke(['render', BOOK_FIXTURE, '--toc']);
     assert.equal(withToc.code, 0, 'render book --toc exits 0');
     assert.ok(withToc.out.includes('<book-part'), 'book renders book-part chapters');
-    assert.ok(nav(withToc.out), 'book + --toc injects the chapter-nav script (default on)');
-    const noNav = invoke(['render', BOOK_FIXTURE, '--toc', '--no-chapter-nav']);
-    assert.ok(!nav(noNav.out), '--no-chapter-nav opts out');
+    // Slice C: the default book + --toc is the one-scroll reading interface, NOT paging.
+    assert.ok(withToc.out.includes('enscribe-layout--book'), 'book + --toc → reading-interface layout');
+    assert.ok(!paging(withToc.out), 'book + --toc does NOT page by default (one scrolling document)');
+    const withPaging = invoke(['render', BOOK_FIXTURE, '--toc', '--chapter-nav']);
+    assert.ok(paging(withPaging.out), '--chapter-nav opts INTO the single-chapter paging view');
     const noToc = invoke(['render', BOOK_FIXTURE]);
-    assert.ok(!nav(noToc.out), 'no --toc → no chapter-nav');
-    console.log('PASS: render book --toc → chapter navigation');
+    assert.ok(!paging(noToc.out) && !noToc.out.includes('enscribe-layout--book'), 'no --toc → no chrome, no paging');
+    console.log('PASS: render book --toc → reading interface; --chapter-nav → opt-in paging');
   }
 
   // ── import (pandoc bridge) ──────────────────────────────────────────────────

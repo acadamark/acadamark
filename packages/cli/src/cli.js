@@ -154,8 +154,9 @@ Options:
                        only past three sections). Needs default.css to display.
   --theme <name>       Apply a theme: default, modern, or compact. Injects the
                        theme's token overrides inline (needs default.css too).
-  --chapter-nav        For books with --toc, read one chapter at a time (default
-                       on); --no-chapter-nav renders the whole book as one page.
+  --chapter-nav        For a book with --toc, opt into the single-chapter PAGING
+                       view (default off — the book renders as one scrolling
+                       document with chapter-navigation chrome).
   --quiet              Suppress warnings
   -h, --help           Show this help
 `;

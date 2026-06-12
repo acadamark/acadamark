@@ -89,6 +89,8 @@ const S_CHECKS = {
   'RQ-NOTE-S2': () => cssHasSelector(/data-note-id|note-backref/),
   'RQ-BIB-S1': () => cssHasSelector(/bibliography|csl-bib-body|csl-entry/),
   'RQ-BOOK-S1': () => cssHasSelector(/book-title|book-part-title/),
+  'RQ-BOOK-S2': () => cssHasSelector(/enscribe-layout--book-3col/) &&
+    cssHasSelector(/--enscribe-toc-active-accent/) && cssHasSelector(/enscribe-onthispage/),
   'RQ-TOC-S1': () => cssHasSelector(/enscribe-toc-active|aria-current/),
 };
 

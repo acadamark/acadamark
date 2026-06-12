@@ -30,10 +30,12 @@ enscribe render paper.emd --dsl-mode live-link
 
 Options: `-o, --output <file>`, `--embed` (default) / `--no-embed`,
 `--dsl-mode <skip|live-link|live-inline|static>`, `--toc` (a table-of-contents
-sidebar; `--toc=auto` shows it only past three sections), `--theme
+sidebar — for a book it is the left chapter rail of the reading interface;
+`--toc=auto` shows it only past three sections), `--theme
 <default|modern|compact>` (inject a theme's token overrides), `--chapter-nav`
-(default on) / `--no-chapter-nav` (for books with `--toc`: read one chapter at a
-time, or render the whole book as one page), `--quiet`.
+(opt into the single-chapter PAGING view for a book with `--toc`; default off —
+the book renders as one scrolling document with chapter-navigation chrome),
+`--quiet`.
 
 ### `enscribe export-jats`
 

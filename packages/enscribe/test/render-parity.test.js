@@ -53,6 +53,7 @@ const EXCLUDED = {
 // the wrong options. Most fixtures need nothing here.
 const FIXTURE_OPTIONS = {
   'document-54-toc-scrollspy': { toc: true },
+  'master-book': { toc: true },
 };
 
 const isMaster = (src) => HAS_MASTER_SRC.test(src);
@@ -113,12 +114,14 @@ function assertParity(staticHtml, liveHtml, label) {
 }
 
 // STATIC master render: fs-assemble through the same pipeline the browser uses.
-function staticMaster(masterPath) {
+// `opts` are the per-fixture options (e.g. { toc: true } for a book master) applied
+// to BOTH sides, so a chrome-bearing master is a real matched-option parity check.
+function staticMaster(masterPath, opts = {}) {
   const src = readFileSync(masterPath, 'utf8');
   const masterDir = dirname(masterPath);
   // assetsDir lets a master's own <library src> resolve via fs (the static side);
   // harmless for masters without one. The live side fetches it (renderMasterAsync).
-  const proc = buildEnscribePipeline({ ...BROWSER_DEFAULTS, assetsDir: ASSETS_DIR });
+  const proc = buildEnscribePipeline({ ...BROWSER_DEFAULTS, ...opts, assetsDir: ASSETS_DIR });
   const tree = assembleMasterDocument({
     source: src,
     parse: (s) => proc.parse(s),
@@ -158,13 +161,17 @@ export async function run() {
   const singles = all.filter((p) => !consumed.has(p) && !masters.includes(p));
 
   // ── Masters: live (fetch-assemble) ≡ static (fs-assemble), matched options ──
+  // Per-fixture options (FIXTURE_OPTIONS, keyed by basename) are applied to BOTH
+  // sides — e.g. the book master renders with { toc: true } so its three-column
+  // reading-interface chrome (Slice C) is parity-checked static≡live, not skipped.
   for (const masterPath of masters) {
     const src = readFileSync(masterPath, 'utf8');
-    const staticHtml = staticMaster(masterPath);
+    const opts = FIXTURE_OPTIONS[basename(masterPath, '.emd')] ?? {};
+    const staticHtml = staticMaster(masterPath, opts);
     const restore = installFetchStub(dirname(masterPath), ASSETS_DIR);
     let liveHtml;
     try {
-      liveHtml = await renderMasterAsync(src); // resolves to BROWSER_DEFAULTS internally
+      liveHtml = await renderMasterAsync(src, opts); // merges over BROWSER_DEFAULTS internally
     } finally {
       restore();
     }

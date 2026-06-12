@@ -85,9 +85,13 @@ either side of it is the same.
 
 **Interactivity is not content**, and is also out of scope: the `renderInto`
 `innerHTML` write, script/asset activation, live DSL execution (`mermaid.run`),
-hover-preview (Tippy/Popper), ToC scroll-spy, and single-chapter nav all act on
+hover-preview (Tippy/Popper), ToC scroll-spy, the book reading interface's
+"on this page" highlighting, and the opt-in single-chapter paging all act on
 already-produced content. Parity is a claim about the produced HTML string, not
-about the post-render DOM behaviours layered onto it.
+about the post-render DOM behaviours layered onto it. The book reading interface's
+chrome MARKUP (chapter rail, prev/next, on-this-page rail) is by contrast static
+content — built at compile time — so it IS inside byte-parity; only its runtime
+highlighting/visibility is the interactivity scoped out here.
 
 ## Two terminology cautions
 
