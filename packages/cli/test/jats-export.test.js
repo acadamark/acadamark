@@ -18,32 +18,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
 import { strict as assert } from 'node:assert';
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkEnscribe from '@enscribejs/enscribe/parser';
-import remarkRecursiveContent from '@enscribejs/enscribe/parser/recursive-content';
-import remarkMath from 'remark-math';
-import remarkGfm from 'remark-gfm';
-import {
-  enscribeDocTypeResolve,
-  enscribeNormalizeToCanonical,
-  enscribeConfigDiscovery,
-  enscribeBookStructuring,
-  enscribeArticleStructuring,
-  enscribeSectionNesting,
-  enscribeListStructuring,
-  enscribeNotes,
-  enscribeNotePlacement,
-  enscribeNumbering,
-  fillNumbering,
-  numberSections,
-  enscribeRefResolution,
-  enscribeCiteResolution,
-  enscribeBibliography,
-  buildCitationIndex,
-  buildEnscribePipeline,
-} from '@enscribejs/enscribe';
-import { ensureRegistry } from '@enscribejs/enscribe/core/registry';
+// #144: the JATS integration tests build their tree via the real
+// buildEnscribePipeline (not a hand-mirrored plugin chain), so they can't drift
+// from the shipped pipeline. The structural-plugin / unified / remark imports the
+// old hand-assembly needed are gone with it.
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
 import { jatsEmit, aggregateJatsAttrs } from '../src/jats-export/lib/jats-emit.js';
 import { enscribeToJats } from '../src/jats-export/index.js';
@@ -190,35 +169,10 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-39-jats-minimal-article.emd'), 'utf8');
 
-  // Build the post-stage-3 mdast via the interpreter's structural plugins.
-  // Mirror the slice 5a-spec'd pipeline: parse + recursive content +
-  // normalize + config-discovery + book-structuring + article-structuring +
-  // section-nesting. Stages 4+ (cite/note/numbering/etc.) aren't needed
-  // for slice 5a's minimal scope.
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  // Run the transforms in pipeline order. remarkRecursiveContent
-  // (stage 2) must run before the structural plugins (stage 3) so
-  // pipe-content arrays are populated. The order matches what
-  // `enscribe/interpreter`'s `enscribeInterpreter` plugin registers.
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .runSync(tree, file);
-
-  // Export to JATS.
-  const jats = enscribeToJats(tree);
+  // The real pipeline assembly (#144) — this test can't drift from the shipped
+  // pipeline the way a hand-mirrored stack can.
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   // Snapshot.
   const snapshotPath = join(FIXTURES_DIR, 'document-39-jats-minimal-article.xml');
@@ -262,38 +216,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-40-jats-body-content.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  // Run the same transform pipeline as doc-39 but also include
-  // numbering + apply-numbers + ref-resolution so display-math and
-  // frameables get computedNumber populated (required for <label>
-  // emission per slice 5b). enscribeListStructuring (after section-nesting,
-  // before numbering — the real-pipeline order) lowers the <list> construct
-  // this fixture authors; without it the <list> tag never becomes a JATS
-  // <list> (the doc137 test below sidesteps this by using buildEnscribePipeline).
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(enscribeListStructuring)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-40-jats-body-content.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -386,34 +310,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-41-jats-refs-notes-tables.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(enscribeNotes)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .use(enscribeCiteResolution)
-    .use(enscribeNotePlacement)
-    .use(enscribeBibliography)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-41-jats-refs-notes-tables.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -469,34 +367,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-42-jats-bits-book.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(enscribeNotes)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .use(enscribeCiteResolution)
-    .use(enscribeNotePlacement)
-    .use(enscribeBibliography)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-42-jats-bits-book.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -571,37 +443,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-43-jats-bibliography-dsls.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(function loadLibrary() {
-      return (t, f) => buildCitationIndex(t, f, { assetsDir: FIXTURES_DIR });
-    })
-    .use(enscribeNotes)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .use(enscribeCiteResolution)
-    .use(enscribeNotePlacement)
-    .use(enscribeBibliography)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-43-jats-bibliography-dsls.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -702,37 +545,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-44-cross-feature-monograph.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(function loadLibrary() {
-      return (t, f) => buildCitationIndex(t, f, { assetsDir: FIXTURES_DIR });
-    })
-    .use(enscribeNotes)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .use(enscribeCiteResolution)
-    .use(enscribeNotePlacement)
-    .use(enscribeBibliography)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-44-cross-feature-monograph.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -815,31 +629,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-45-jats-svg-figure.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  // Full pipeline incl. numbering so the numbered <svg> gets its <label>.
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-45-jats-svg-figure.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -875,30 +666,8 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-46-jats-section-numbering.emd'), 'utf8');
 
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .use(enscribeNumbering)
-    .use(function applyNumbers() {
-      return (t, f) => { ensureRegistry(f).numberRegistry(); fillNumbering(f); numberSections(t, f); };
-    })
-    .use(enscribeRefResolution)
-    .runSync(tree, file);
-
-  const jats = enscribeToJats(tree);
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   const snapshotPath = join(FIXTURES_DIR, 'document-46-jats-section-numbering.xml');
   if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
@@ -927,9 +696,9 @@ function validateWithXmllint(fixtureName, jatsXml) {
 {
   const src = readFileSync(join(FIXTURES_DIR, 'document-55-table-cell-parse.emd'), 'utf8');
 
-  // Use the real pipeline assembly so the table-cell-parse plugin + cite/ref
-  // resolution all run in their proper order (this test can't drift from the
-  // shipped pipeline the way a hand-mirrored stack can).
+  // The real pipeline assembly, so the table-cell-parse plugin + cite/ref
+  // resolution run in their proper order — the test can't drift from the shipped
+  // pipeline (#144).
   const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
   const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
@@ -1057,23 +826,9 @@ ${dateXml}
   check('no-title: the heading became a <section-title>, not the title',
     html.includes('<section-title>A Section</section-title>'));
 
-  // JATS export: build the post-stage-3 tree, then export.
-  const inner = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
-  const tree = unified()
-    .use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm)
-    .parse(src);
-  const file = { data: {}, message: () => {} };
-  unified()
-    .use(remarkRecursiveContent, { processor: inner })
-    .use(enscribeDocTypeResolve)
-    .use(enscribeNormalizeToCanonical)
-    .use(enscribeConfigDiscovery)
-    .use(enscribeBookStructuring)
-    .use(enscribeArticleStructuring)
-    .use(enscribeSectionNesting)
-    .runSync(tree, file);
-  const jats = enscribeToJats(tree);
+  // JATS export via the real pipeline (#144).
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
   check('no-title: JATS fills <article-title>Untitled</article-title>',
     jats.includes('<article-title>Untitled</article-title>'));
@@ -1084,11 +839,9 @@ ${dateXml}
 
 // ─── #137: <list> construct → JATS <list> ─────────────────────────────────
 //
-// Uses buildEnscribePipeline (the canonical assembly the real CLI export path
-// runs) rather than a hand-assembled chain, so enscribeListStructuring is
-// included — the hand-chains above predate it and are intentionally not edited
-// here (they cover list-free fixtures). `<list>` lowers to a markdown list
-// node, which the exporter emits as <list list-type="bullet|order">.
+// Built through buildEnscribePipeline (the canonical assembly the real CLI export
+// path runs), so enscribeListStructuring runs and `<list>` lowers to a markdown
+// list node, which the exporter emits as <list list-type="bullet|order">.
 {
   const src = [
     '<meta type=article>',
@@ -1123,7 +876,7 @@ ${dateXml}
 // ─── #100: article appendices → <app-group> / <app> in <back> ───────────────
 //
 // Built through the full pipeline (buildEnscribePipeline → enscribeToJats), so
-// numbering letters the appendices (#57) — not a hand-assembled chain (cf. #144).
+// numbering letters the appendices (#57).
 {
   const src = [
     '<meta type=article>', '<title | Appendix Test>', '</meta>', '',
