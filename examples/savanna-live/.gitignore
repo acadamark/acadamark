@@ -1,0 +1,8 @@
+# Copied package assets — build output of `enscribe build --live` (the build helper resolves
+# them from @enscribejs/enscribe and copies them flat). They are NOT source; regenerate them:
+#   enscribe build --live book.emd -o .        (or run packages/cli/src/build-live.js)
+# The committed source is the .emd book + the emitter-generated index.html + this README.
+/enscribe.browser.global.js
+/default.css
+/enscribe-shell.css
+/editor-codemirror.js

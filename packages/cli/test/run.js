@@ -9,6 +9,7 @@ import { run_tests as runJatsImportTests } from './import.test.js';
 import { run_tests as runRoundtripComplexTests } from './roundtrip-complex.test.js';
 import { run_tests as runLibrarySrcTests } from './library-src.test.js';
 import { run_tests as runMasterDocumentTests } from './master-document.test.js';
+import { run_tests as runBuildLiveTests } from './build-live.test.js';
 
 try {
   runCliTests();
@@ -17,6 +18,7 @@ try {
   runJatsImportTests();
   runRoundtripComplexTests();
   runMasterDocumentTests(); // #190: multi-file master-document walking skeleton
+  runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);
 } catch (err) {

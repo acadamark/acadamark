@@ -20,6 +20,7 @@ import { dirname, resolve, join } from 'node:path';
 import { VFile } from 'vfile';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, assembleMasterDocument, publishBookPages } from '@enscribejs/enscribe';
+import { buildLiveFolder } from './build-live.js';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';
@@ -251,6 +252,10 @@ function parseCommandArgs(args) {
     else if (a === '--no-chapter-nav') opts.chapterNav = false;
     else if (a === '--separate-pages') opts.pages = 'separate';
     else if (a === '--single-page') opts.pages = 'single';
+    else if (a === '--live') opts.live = true;
+    else if (a === '--edit') opts.edit = true;
+    else if (a === '--title') { opts.title = args[++i]; if (opts.title == null) throw new CliError('--title needs a value'); }
+    else if (a.startsWith('--title=')) opts.title = a.slice('--title='.length);
     else if (a === '--from' || a === '-f') {
       opts.from = args[++i];
       if (opts.from == null) throw new CliError('--from needs a format (e.g. latex, markdown, docx)');
@@ -501,6 +506,19 @@ export function run(argv, io = {}) {
       case 'build': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(BUILD_HELP); return 0; }
+        // --live (#215): generate a self-standing LIVE FOLDER (the engine renders the book client-
+        // side; ?edit mounts the #211 edit loop). Copies the master + children + shell assets +
+        // engine bundle into -o <dir> and writes the emitted shell. Book-only (the live render is).
+        if (opts.live) {
+          if (!opts.output) {
+            throw new CliError('--live writes a live folder — give an output directory with -o <dir>');
+          }
+          const res = buildLiveFolder({ master: opts.input, outDir: opts.output, title: opts.title, edit: opts.edit });
+          if (!opts.quiet) {
+            out.write(`Wrote a live folder to ${opts.output}/ (${res.master} + ${res.children.length} children + index.html + ${res.assets.length} assets)\n`);
+          }
+          return 0;
+        }
         const result = doBuild(opts);
         if (result.mode === 'single') {
           emit(result.html, opts, out);

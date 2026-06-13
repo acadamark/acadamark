@@ -36,7 +36,9 @@
     "./parser": "./src/parser/index.js",
     "./parser/*": "./src/parser/*.js",
     "./browser": "./dist/enscribe.browser.js",
+    "./browser-global": "./dist/enscribe.browser.global.js",
     "./default.css": "./src/interpreter/assets/default.css",
+    "./shell/*": "./src/shell/*",
     "./package.json": "./package.json"
   },
   "files": [
