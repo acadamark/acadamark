@@ -80,7 +80,10 @@ function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl) {
 // left border). A bare `.enscribe-book-home` (0,1,0) loses to both, leaving the masthead
 // muted and indented like a rail link; the explicit padding/border-left resets neutralise
 // the inherited indent so it reads as a full-width home title.
-const BOOK_HOME_CSS = `.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+// Exported (#214) so the shell-layer asset (src/shell/enscribe-shell.css, which the LIVE shell
+// links) can be guarded character-identical to this masthead CSS — the STATIC pages inline it
+// here, the live shell links it there, and test/shell-assets.test.js asserts they never drift.
+export const BOOK_HOME_CSS = `.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
 .enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }`;
 
 /** Wrap a body in a standalone HTML document with default.css (+ the separate-pages
