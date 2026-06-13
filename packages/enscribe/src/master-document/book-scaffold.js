@@ -1,0 +1,168 @@
+// Book reading-model scaffolding (shared book-structure layer).
+//
+// The neutral, target-agnostic half of building a book's reading model off a
+// numbered mdast tree (proc.runSync output): which nodes are the book / the
+// chapters, each chapter's roster number, title, sub-sections, a deterministic
+// slug STEM, and the mdast id assignment that makes a chapter self-contained.
+//
+// It is book STRUCTURE, not a publishing concern, so both consumers depend on it
+// rather than one owning it: the static separate-pages publisher (P1, #205,
+// publish-pages.js) and the live app-shell book render (L2, #208, live-book.js).
+// The dependency points INTO here from each consumer — the publisher does not own
+// the scaffolding the live path borrows. (L3 cross-chapter preview will reach for
+// the same model.)
+//
+// TARGET PROJECTION stays in the consumer. The shared output is the neutral STEM
+// (`1-counting-elephants`) plus the ids both paths MUST share for content parity
+// (renderChapter emits a chapter's book-part + sub-section ids into its fragment,
+// so divergent ids = divergent content). P1 projects the stem to a page URL
+// (`1-counting-elephants.html`); the live path projects it to a hash route
+// (`#1-counting-elephants`). The `.html`-vs-`#` difference is legitimate
+// per-target formatting, not drift — so it lives in each consumer, never here.
+
+import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
+import { slugify } from '../interpreter/lib/toc.js';
+
+// The three book regions, in reading order, mapped to a short region key the rail
+// markup carries (so the theme can style front/body/back differently).
+const BOOK_REGIONS = { 'book-front': 'front', 'book-body': 'body', 'book-back': 'back' };
+
+const cleanText = (s) => s.replace(/\s+/g, ' ').trim();
+
+/** Concatenated text of an enscribe/mdast node's content. */
+function nodeText(node) {
+  if (node == null) return '';
+  if (node.type === 'text') return node.value ?? '';
+  if (typeof node.content === 'string') return node.content;
+  const kids = Array.isArray(node.content) ? node.content : (node.children ?? []);
+  return kids.map(nodeText).join('');
+}
+
+/** The `*-title` text of a book-part / section node (mdast: title is a direct child,
+ *  or inside a synthesized `<meta>`). Number-free (the number is a hast-render span). */
+export function titleTextOf(node) {
+  const kids = Array.isArray(node.content) ? node.content : [];
+  for (const c of kids) {
+    if (isEnscribeTag(c) && /-title$/.test(c.tagname)) return cleanText(nodeText(c));
+  }
+  for (const c of kids) {
+    if (isEnscribeTag(c, 'meta')) {
+      for (const g of (Array.isArray(c.content) ? c.content : [])) {
+        if (isEnscribeTag(g) && /-title$/.test(g.tagname)) return cleanText(nodeText(g));
+      }
+    }
+  }
+  return cleanText(nodeText(node));
+}
+
+/** Sub-sections (and deeper) directly under a book-part, for the on-this-page rail. */
+function collectSections(node) {
+  const out = [];
+  for (const c of (Array.isArray(node.content) ? node.content : [])) {
+    if (isEnscribeTag(c) && /^(sub-section|sub-sub-section|section)$/.test(c.tagname)) {
+      out.push({ node: c, number: c.computedSectionNumber ?? '', clean: titleTextOf(c), id: null, children: collectSections(c) });
+    }
+  }
+  return out;
+}
+
+/** Find the `<book>` element in a numbered tree. */
+export function findBook(tree) {
+  for (const c of (tree?.children ?? [])) if (isEnscribeTag(c, 'book')) return c;
+  return null;
+}
+
+/** The book's title (from `<meta><book-title>`), for page <title>s and the index. */
+export function bookTitleOf(bookEl) {
+  for (const region of (bookEl.content ?? [])) {
+    for (const c of (Array.isArray(region.content) ? region.content : [])) {
+      if (isEnscribeTag(c, 'meta')) {
+        for (const g of (Array.isArray(c.content) ? c.content : [])) {
+          if (isEnscribeTag(g, 'book-title')) return cleanText(nodeText(g));
+        }
+      }
+    }
+  }
+  return 'Book';
+}
+
+/** Collect book-parts in reading order (front → body → back) with their region,
+ *  roster number, title, and sub-sections. Read off the numbered mdast — no recompile.
+ *  `stem` / `id` start null: assignSlugStems and assignIds fill them. */
+export function collectBookParts(bookEl) {
+  const parts = [];
+  for (const region of (bookEl.content ?? [])) {
+    if (!isEnscribeTag(region) || !(region.tagname in BOOK_REGIONS)) continue;
+    const regionKey = BOOK_REGIONS[region.tagname];
+    for (const child of (Array.isArray(region.content) ? region.content : [])) {
+      if (!isEnscribeTag(child, 'book-part')) continue;
+      parts.push({
+        node: child,
+        region: regionKey,
+        number: child.computedSectionNumber ?? '',
+        clean: titleTextOf(child),
+        id: null,
+        stem: null,
+        sections: collectSections(child),
+      });
+    }
+  }
+  return parts;
+}
+
+/** A slug not already in `used`, suffixed `-2`, `-3`, … on collision. */
+function uniqueSlug(candidate, used) {
+  let s = candidate;
+  let n = 2;
+  while (used.has(s)) s = `${candidate}-${n++}`;
+  used.add(s);
+  return s;
+}
+
+/** Assign each chapter a deterministic, collision-deduped slug STEM — number/letter
+ *  + title-slug (`1-counting-elephants`, `a-field-data-sheets`); front-matter without a
+ *  roster number gets no prefix (`about-this-book`). The NEUTRAL stem: P1 appends
+ *  `.html` for a page URL, the live path prepends `#` for a hash route. */
+export function assignSlugStems(parts) {
+  const used = new Set();
+  for (const p of parts) {
+    const titleSlug = slugify(p.clean).replace(/^sec:/, '');
+    const prefix = p.number ? `${p.number.toLowerCase()}-` : '';
+    p.stem = uniqueSlug(prefix + titleSlug, used);
+  }
+}
+
+/** Collect every colon-id already present in a tree, so generated slugs never
+ *  collide with an authored anchor (mirrors C's collectIds seeding). */
+function collectExistingIds(node, set) {
+  if (isEnscribeTag(node) && typeof node.id === 'string' && node.id.includes(':')) set.add(node.id);
+  for (const c of (Array.isArray(node?.content) ? node.content : [])) collectExistingIds(c, set);
+  for (const c of (node?.children ?? [])) collectExistingIds(c, set);
+  return set;
+}
+
+/** Assign mdast ids (mutating): each book-part its `sec:`-slug id (so the harvest
+ *  records it as the owning chapter), and each (anchorless) sub-section a `sec:`-slug
+ *  id (so renderChapter emits it and the on-this-page rail links to it in-page). The
+ *  ids mirror C's single-page toc assignment, so a chapter's CONTENT matches the
+ *  single-page slice apart from the cross-page href rewrite. The `used` set is seeded
+ *  with every existing colon-id so a generated slug never collides with an authored
+ *  anchor (e.g. `<## #sec:intro>`) — the same safety the single-page path has.
+ *
+ *  Both consumers MUST run this before harvesting / rendering, in this order, so the
+ *  ids in the harvested registry, the rendered fragment, and the rail all agree. */
+export function assignIds(parts, bookEl) {
+  const used = collectExistingIds(bookEl, new Set());
+  const assignSections = (sections) => {
+    for (const s of sections) {
+      if (!s.node.id) s.node.id = uniqueSlug(slugify(s.clean), used);
+      s.id = s.node.id;
+      assignSections(s.children);
+    }
+  };
+  for (const p of parts) {
+    if (!p.node.id) p.node.id = uniqueSlug(slugify(p.clean), used);
+    p.id = p.node.id;
+  }
+  for (const p of parts) assignSections(p.sections);
+}

@@ -57,6 +57,8 @@ import { run as runMasterDocumentBrowser } from './master-document-browser.test.
 import { run as runRenderParity } from './render-parity.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
 import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
+import { run as runLiveBookParity } from './live-book-parity.test.js';
+import { run as runMasterBookLive } from './master-book-live.test.js';
 import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
@@ -117,6 +119,8 @@ const suites = [
   ['render-parity',                runRenderParity],
   ['render-chapter-parity',        runRenderChapterParity],
   ['separate-pages-parity',        runSeparatePagesParity],
+  ['live-book-parity',             runLiveBookParity],
+  ['master-book-live',             runMasterBookLive],
   ['coverage/spec-data-drift',     runSpecDataDrift],
   ['coverage/predicate-harness',   runPredicateHarness],
 ];

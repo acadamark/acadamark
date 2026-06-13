@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field Methods in Savanna Ecology — live preview</title>
+
+<!--
+  The LIVE app shell (live track, L2 — #208). Distinct from the STATIC cover this book
+  publishes to `pages/index.html` (P1, #205): that is a pre-baked artifact; THIS renders
+  the current chapter live in the browser from `master-book.emd` + its chapter `.emd`
+  children, routed by URL hash, lazy on navigate. Read-only this slice (no editing yet).
+
+  Serve it over HTTP (the shell `fetch`es; `file://` won't fetch). One-liner, from the
+  PACKAGE root (so the repo-relative engine/CSS paths below resolve):
+
+      cd packages/enscribe && python3 -m http.server 8000
+      # open http://localhost:8000/test/fixtures/master-book/index.html
+
+  The paths below are repo-relative dev-preview plumbing — a packaged shell (or a future
+  `enscribe serve`, out of scope here) would reference the shipped engine bundle + the
+  packaged default.css instead, and derive the KaTeX / fonts URLs from the engine's
+  KATEX_CDN_URL / DOCUMENT_FONTS_CDN_URL constants.
+-->
+<link rel="stylesheet" href="../../../src/interpreter/assets/default.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap">
+</head>
+<body>
+<div id="enscribe-book-root"></div>
+
+<!-- The engine bundle (IIFE → window.enscribe). Rebuild with `npm run build:lib`. -->
+<script src="../../../dist/enscribe.browser.global.js"></script>
+<script>
+  // Bootstrap: fetch the master, run the global pass once, mount the current chapter,
+  // and route by hash. A hash of `#1-counting-elephants` (a chapter stem) opens that
+  // chapter; `#fig:transect` (any anchor) opens the owning chapter and scrolls to it.
+  enscribe.mountLiveBookFromUrl('#enscribe-book-root', 'master-book.emd').catch((err) => {
+    document.getElementById('enscribe-book-root').textContent =
+      'Failed to mount the live book: ' + err.message;
+    // eslint-disable-next-line no-console
+    console.error(err);
+  });
+</script>
+</body>
+</html>

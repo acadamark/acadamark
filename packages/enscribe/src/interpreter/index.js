@@ -1054,6 +1054,13 @@ export { ENSCRIBE_CROSSREF_REGISTRY } from '../core/file-data-keys.js';
 // page per chapter at per-chapter URLs, cross-chapter refs resolving to cross-page
 // links. The first consumer of L1 (renderChapter + registry) and C (the chrome).
 export { publishBookPages } from '../master-document/publish-pages.js';
+// Live app-shell book render, L2 (#208): the live counterpart of P1 — render the CURRENT
+// chapter live from .emd source, hash-routed and lazy. buildLiveBook is the pure model
+// (scaffold + router maps + harvested registry); renderLiveChapterView the per-chapter
+// mounted view (renderChapter + C's chrome, hash hrefs); resolveHash the pure router
+// core. The browser entry (browser.js mountLiveBook) wraps these with the fetch loader,
+// the DOM mount, and the hashchange router. Shares P1's book-scaffold for content parity.
+export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, resolveHash, chapterHash } from '../master-document/live-book.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);
