@@ -1,6 +1,6 @@
 ---
 semantic_role: library
-category: structured-data-containers
+category: storage-hosts
 html_output:
   element: library
   is_html_native: false

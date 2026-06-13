@@ -1,6 +1,6 @@
 ---
 semantic_role: data
-category: structured-data-containers
+category: storage-hosts
 html_output:
   element: data
   is_html_native: false

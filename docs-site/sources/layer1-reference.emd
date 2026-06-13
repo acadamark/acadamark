@@ -172,7 +172,7 @@ The document's apparatus — identity and settings. These are canonical-only (no
 sigil or markdown shorthand) and sit at the document's edges.
 
 <## #el:meta | `<meta>` ##>
-**Category** metadata · **renders** `<meta>` · **content** structured. The
+**Category** structured-data container · **renders** `<meta>` · **content** structured. The
 document's front-matter block, pinned to the top. `type` picks the document shape.
 Its children (`<title>`, `<author>`, `<date>`, `<subtitle>`) become the front
 matter. **Attributes:** `type` (`article` | `book`, → `data-document-type`).
@@ -207,10 +207,11 @@ prose. The document title, written `<title | …>` inside `<meta>`. Renders as
 ```
 
 <## #el:author | `<author>` ##>
-**Category** metadata · **renders** `<author>` · **content** structured. A document
+**Category** structured-data container · **renders** `<author>` · **content** structured. A document
 or chapter author. **Attributes:** `name`, `affiliation`, `orcid`, `email`,
-`corresponding` — for a structured author record; the simple form puts the name in
-the pipe.
+`corresponding` (a boolean marker — stays a kwarg, never lifted to a child tag) — for a structured author record; the simple form puts the name in
+the pipe. A kwarg-only author record must self-close (`<author name="…" />`) or use an
+explicit empty body, since the parser otherwise reads `<author …>` as a long-form opener.
 
 ```html
 <author>Jane Goodall</author>
@@ -225,8 +226,10 @@ the pipe.
 ```
 
 <## #el:config | `<config>` ##>
-**Category** metadata · **renders** `<config>` · **content** structured. Document-
-level settings, written as keyword attributes and placed at the document's end.
+**Category** configuration · **renders** `<config>` · **content** kwargs-only. Document-
+level settings, written as keyword attributes and placed at the document's end. `<config>`
+is *not* a structured-data container: it has no child-tag form (its structured form, when
+built, is a fenced data block, not child tags).
 **Attributes (live):** `citation-style`, `number-sections`, `number-equations` /
 `number-figures` / `number-tables` / `number-theorems` / `number-definitions` /
 `number-examples`, `counter-reset-scope`, `note-scope`, `note-position`
@@ -242,9 +245,9 @@ The settings are consumed by the pipeline; render-time options like
 ```
 
 <## #el:data | `<data>` ##>
-**Category** metadata · **renders** `<data>` · **content** structured. The
-apparatus container at the document's foot. Holds a `<library>` of bibliographic
-sources (and, by convention, other edge apparatus).
+**Category** storage host · **renders** `<data>` · **content** structured. The
+apparatus container at the document's foot. Holds the `<library>` of bibliographic
+sources.
 
 ```html
 <data>
@@ -440,7 +443,8 @@ border. At render time they gain a numbered label (`Figure 1.`, `Table 1.`). See
 
 <## #el:fig | `<fig>` ##>
 **Category** frameable · **renders** `<figure>` · **content** prose (the caption).
-A numbered, captioned figure. `<figure>` is an authoring alias for `<fig>`. The
+A numbered, captioned figure. The canonical Layer 1 element is HTML-native `<figure>`;
+`<fig>` is its JATS export name, also accepted as an authoring alias. The
 caption is the pipe content (also the `<img>` `alt`). **Authoring:**
 `<fig src="…" | caption>` · `<fig src="…" />` (captionless). **Attributes:** `src`,
 `alt`, `align`, `width` (→ `data-width`; no separate height), `type`, `caption`;
@@ -586,8 +590,10 @@ in-text citation, by key. **Authoring:** `<cite @key>` · `<cite @key1, @key2>`
 ```
 
 <## #el:library | `<library>` ##>
-**Category** citation · **renders** `<library>` · **content** opaque (BibTeX /
-CSL-JSON). The bibliographic source, inside `<data>`. **Authoring:**
+**Category** storage host · **renders** `<library>` · **content** opaque (BibTeX /
+CSL-JSON). The bibliographic source, inside `<data>` — a storage host on the
+host/language axis: its body is a foreign-format payload read by an external parser,
+not enscribe-native fields. **Authoring:**
 `<library | @article{…}>` (inline) or `<library src="refs.bib">` (external).
 **Attributes:** `format`, `src`.
 
@@ -660,7 +666,7 @@ external library. Content is opaque; use the long form. See
 <a href="authoring-guide.html#sec:dsl" | Authoring Guide ch. 11>.
 
 <## #el:diagram | `<diagram>` ##>
-**Category** DSL host · **renders** `<pre class="ENGINE" data-enscribe-dsl="ENGINE">` ·
+**Category** frameable · **renders** `<pre class="ENGINE" data-enscribe-dsl="ENGINE">` ·
 **content** opaque (engine source). The host for embedded diagram engines: a `mermaid` or
 `abc` positional names the engine — `<diagram mermaid | …>`, `<diagram abc | …>`. Adding an
 engine is a one-line registry entry, not a new element. **Attributes:** `caption`. Frameable;
@@ -672,8 +678,8 @@ numbers as a figure.
 ```
 
 <## #el:mermaid | `<mermaid>` ##>
-**Category** DSL · **renders** `<pre class="mermaid">` · **content** opaque (Mermaid
-source). A diagram; `<mermaid>` is the standalone shorthand for `<diagram mermaid>`. The
+**Category** frameable (shorthand) · **renders** `<pre class="mermaid">` · **content** opaque (Mermaid
+source). A diagram; `<mermaid>` is the standalone shorthand for `<diagram mermaid>` (not a distinct Layer 1 element). The
 source renders client-side (`live-link` / `live-inline`) or is shown verbatim (`skip`);
 Mermaid has no static mode. **Attributes:** `caption`. A DSL block is frameable and numbers
 as a figure.
@@ -684,8 +690,8 @@ as a figure.
 ```
 
 <## #el:abc | `<abc>` ##>
-**Category** DSL · **renders** `<pre class="abc">` · **content** opaque (ABC source).
-Music notation; `<abc>` is the standalone shorthand for `<diagram abc>`. Renders
+**Category** frameable (shorthand) · **renders** `<pre class="abc">` · **content** opaque (ABC source).
+Music notation; `<abc>` is the standalone shorthand for `<diagram abc>` (not a distinct Layer 1 element). Renders
 client-side in the live modes, or to SVG at build time in `static` mode. **Attributes:**
 `caption`.
 

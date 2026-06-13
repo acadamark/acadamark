@@ -27,7 +27,7 @@ Enscribe document compiles to — is deliberately shaped to be JATS-aligned (see
 the <a href="design.html" | Design article> for why). Because the vocabulary was
 designed against the JATS tag set, the export is mostly a set of one-to-one
 element renames rather than a lossy transformation. The exporter emits **JATS 1.3
-Journal Archiving and Interchange** XML, with the correct DOCTYPE and
+Archiving** XML, with the correct DOCTYPE and
 `dtd-version="1.3"`. That correctness is checked, not assumed: the export's test
 fixtures are validated against the JATS (and BITS) DTD with `xmllint`, so the
 exporter is held to *valid* JATS — measured against the schema, not merely
@@ -47,6 +47,10 @@ footnotes,<fn> in a <fn-group>
 cross-references,<xref> with the right ref-type
 citations,<xref ref-type="bibr"> plus a <ref-list> of <element-citation>
 >
+
+The table is a sample, not the full scope: the export also carries links
+(`<a>` → `<ext-link>`), inline `<svg>` (→ a self-contained `<graphic>`), and the
+theorem family, the external-DSL blocks, and code listings.
 
 The one place that maps **with a caveat** is embedded DSL blocks — Mermaid
 diagrams, ABC music. JATS has no element for "a Mermaid diagram," so Enscribe

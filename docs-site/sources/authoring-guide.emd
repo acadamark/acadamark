@@ -16,7 +16,7 @@ Each section is self-contained: you can read "Inline elements" without reading
 anything before it. Jump to what you need. This guide is itself an Enscribe
 document, so wherever it is useful it does not just describe an element — it
 *uses* it, and the rendered result sits right below the source. Its fifteen
-chapters cover every Enscribe element and authoring pattern, from the `<meta>`
+chapters cover the Enscribe elements and authoring patterns, from the `<meta>`
 block to strict mode.
 
 <# #sec:structure | Chapter 1. Document structure #>
@@ -66,7 +66,7 @@ then back matter. `type=book` expects chapters and parts and produces a chaptere
 document. The choice is structural, not cosmetic — it changes how counters reset
 (figures and equations number within each chapter in a book), where footnotes
 collect, and where the bibliography lands. Book structure has its own chapter
-(forthcoming); for a journal-style article, `type=article` is what you want.
+(<a href="#sec:book" | Chapter 12>); for a journal-style article, `type=article` is what you want.
 
 **The `<config>` block.** `<config>` sets document-level options as keyword
 attributes. It is apparatus, so it goes at the end of the document:
@@ -102,7 +102,7 @@ footnotes are grouped — the settings a book leans on most:
 <aside type=caution>
 **Gotcha — `<config>` is not the rendering API.** Options like
 `embedResources` and `dslMode` are passed to the renderer when you process a
-document (covered in the Rendering chapter, forthcoming); they are *not*
+document (covered in the Rendering chapter, <a href="#sec:render" | Chapter 14>); they are *not*
 `<config>` keys. A kwarg `<config>` does not recognize is dropped with a console
 warning rather than rendered, so a misplaced `embedResources=false` inside
 `<config>` silently does nothing.
@@ -257,7 +257,7 @@ is literal text — and they compose, so `x^{y_{1}}` nests a subscript inside a
 superscript.
 
 **Links.** Enscribe uses the `<a>` tag, not the markdown `[text](url)` form (which
-Enscribe does not support). The URL is the first positional argument, or the
+Enscribe renders as the literal text `[text](url)`, not a link). The URL is the first positional argument, or the
 `href` keyword; the text is the body:
 
 ```
@@ -446,20 +446,21 @@ and inline code; <a href="#sec:fig" | Figures> (Chapter 5).
 <# #sec:fig | Chapter 5. Figures and images #>
 
 A figure is a numbered, captioned block for an image or other graphic. The element
-is `<fig>`; `<figure>` is an authoring alias that rewrites to it, so both names
+is `<figure>` — HTML's native figure element — and `<fig>` is its JATS export name,
+also accepted as an authoring alias, so both names
 work and produce the same output. Figures are *frameable* — like tables and the
 math environments, they get an automatic number, an optional caption, and an
 optional border from one shared mechanism.
 
 **Forms.** Figures are canonical-only — there is no sigil or markdown shorthand.
-Markdown's `![alt](url)` inline-image form is deliberately *not* supported: a
+Markdown's `![alt](url)` inline-image form is deliberately not given figure semantics (it renders as literal text): a
 figure in scholarly writing is a numbered, cross-referenceable block, not an inline
 image, so Enscribe models it as a structured element. The `src` kwarg names the
 image; the pipe content is the caption:
 
 ```
 <fig src="diagram.png" | The pipeline in one breath.>
-<figure src="diagram.png" | The pipeline in one breath.>   (alias — identical)
+<figure src="diagram.png" | The pipeline in one breath.>   (both spellings — identical output)
 <fig #fig:flow src="diagram.png" | The pipeline in one breath.>   (with an id)
 <fig src="diagram.png" />   (self-closing — an image with no caption)
 ```
@@ -511,9 +512,9 @@ Enscribe lets you write the rows as CSV or TSV and supplies the table scaffoldin
 the element, the header row, the cells — for you. Tables are frameable, so they
 take a caption and an automatic number like figures.
 
-**Forms.** The data formats — CSV and TSV — are canonical Enscribe; the markdown
-**pipe table** is the markdown form. All three produce the same Layer 1 `<table>`.
-`csv` and `tsv` are *positional qualifiers* on `<table>` (a bare token, no
+**Forms.** The data formats — CSV, TSV, JSON, and YAML — are canonical Enscribe; the
+markdown **pipe table** is the markdown form. They all produce the same Layer 1 `<table>`.
+`csv`, `tsv`, `json`, and `yaml` are *positional qualifiers* on `<table>` (a bare token, no
 `key=`), naming how to read the pipe content:
 
 ```
@@ -550,8 +551,16 @@ The "Table 1." label and number are supplied for you, exactly as with figures.
 comma in a cell needs quoting (standard CSV rules); if your data is full of
 commas, `tsv` (tab-separated) is often cleaner. The markdown pipe form is handy
 for a small hand-written table but has no place to put an id or a caption kwarg,
-so reach for `csv`/`tsv` when the table needs to be referenced or captioned.
+so reach for a data format word (`csv`, `tsv`, `json`, `yaml`) when the table needs to be referenced or captioned.
 </aside>
+
+**Markup in cells.** Data-format cells are *literal* by default — text only, no tags
+or idioms — so a comma or asterisk in your data stays as typed. Opt a table into
+Enscribe inline markup (links, emphasis, cross-references, cites, inline code/math)
+with `+parse-text` (all cells) or `parse-columns="Name,Notes"` (named columns only);
+`-parse-text` opts a single table back out. A document-wide default is set with
+`<config parse-data-tables>`. The parse applies in both HTML and JATS; the stored
+data payload itself is left literal.
 
 *Related:* <a href="#sec:fig" | Figures> (Chapter 5) — the sibling frameable;
 <a href="#sec:xref" | Cross-references> (Chapter 9).
@@ -577,7 +586,7 @@ citation engine and the CSL styles the rest of scholarly publishing uses.
 </bibliography>
 ```
 
-The `<library>` block holds BibTeX entries and lives inside the `<data>` apparatus
+The `<library>` block holds bibliographic entries — BibTeX (`<library bibtex | …>`) or CSL-JSON — and lives inside the `<data>` apparatus
 block at the foot of the document. `<cite @key>` places an in-text citation.
 `<bibliography></bibliography>` marks where the formatted reference list renders
 (end of an article; per the book back matter in a book) — it has no `source`
@@ -729,7 +738,7 @@ section>`.
 
 In a **book**, numbering is *scoped*: a figure in Chapter 3 numbers as "Figure 3.1"
 and a cross-reference to it renders the chapter-prefixed number. Scoped numbering
-and the book counters are covered in the book-structure chapter (forthcoming).
+and the book counters are covered in the book-structure chapter (<a href="#sec:book" | Chapter 12>).
 
 *Related:* <a href="#sec:fig" | Figures> (Chapter 5),
 <a href="#sec:tab" | Tables> (Chapter 6), and
@@ -979,6 +988,7 @@ command:
 
 ```
 enscribe render paper.emd -o paper.html      # render to self-contained HTML
+enscribe build book.emd -o site/             # build a multi-file book to per-chapter pages
 enscribe export-jats paper.emd -o paper.xml  # export to JATS 1.3 XML
 enscribe import-jats paper.xml -o paper.html # import a JATS article (--emd for source)
 enscribe import paper.tex -o paper.html      # import LaTeX/Quarto/DOCX/… via pandoc
@@ -986,7 +996,9 @@ enscribe lift paper.emd -o canonical.emd     # rewrite mixed source to canonical
 enscribe lower paper.emd --markdown          # rewrite to a shorter / markdown form
 ```
 
-With no `-o`, output goes to stdout. `enscribe lift` rewrites a document that
+With no `-o`, output goes to stdout. `enscribe build` assembles a multi-file master
+document and renders it — for a book, to a set of per-chapter pages (see
+<a href="book-build.html" | Building a book>). `enscribe lift` rewrites a document that
 mixes markdown, sigils, and named tags into pure canonical named-tag form;
 `enscribe lower` goes the other way, toward sigils (or markdown idioms with
 `--markdown`). `enscribe import-jats` brings a JATS XML article into Enscribe, and
@@ -1128,8 +1140,7 @@ margin notes, cross-references, the theorem family, external DSLs, book structur
 For the architecture behind the canonical-form model, read the
 <a href="design.html" | Design article>; for a guided tour of the whole feature set
 in one page, see the <a href="quickstart.html" | Quickstart>; and for the output
-vocabulary element by element, the Layer 1 Reference is the next document to land
-on this site.
+vocabulary element by element, see the <a href="layer1-reference.html" | Layer 1 Reference>.
 
 <config show-source=true />
 

@@ -1,0 +1,110 @@
+<meta type=article>
+  <title | Building a Book>
+  <author | The Enscribe Project>
+</meta>
+
+A book is more than a long article: it is chapters, parts, and front and back
+matter, written across several files and read as a set. `enscribe build` turns
+that source into a **website** — one standalone HTML page per chapter, at stable
+per-chapter URLs, with a cover page and reading-interface chrome — so a finished
+book can be served, shared, and read a chapter at a time. This page covers the
+**static build**: the files `enscribe build` writes to disk, ready to deploy
+anywhere that serves HTML.
+
+<# The command #>
+
+Point `enscribe build` at a book's master document and give it an **output
+directory**:
+
+```
+enscribe build book.emd -o site/
+```
+
+For a book, the default output is **separate pages** — one HTML file per chapter,
+written into `site/`. (For an article, `enscribe build` writes a single file, the
+same as `enscribe render`; separate pages are a book idea.) Because separate-pages
+mode writes several files, `-o` must be a **directory**, not a filename; building a
+book without `-o` is an error.
+
+The master document is the book's entry point — a `<meta type=book>` with its
+chapters pulled in from their own files (`<chapter src="…">`, `<preface src="…">`,
+`<appendix src="…">`). `enscribe build` assembles those files into one book, numbers
+it, resolves its cross-references, and then projects each chapter to its own page.
+
+<# What it writes #>
+
+Into the output directory, `enscribe build` writes:
+
+- **One page per chapter**, at a deterministic URL built from the chapter's roster
+  number (or appendix letter) and a slug of its title: a body chapter becomes
+  `1-counting-elephants.html`, an appendix `a-field-data-sheets.html`. A
+  front-matter part with no number is unprefixed — `about-this-book.html`. The URLs
+  are stable: the same book always produces the same filenames, so links into the
+  book don't rot between builds.
+- **A cover**, `index.html` — the book's title and a list of its chapters, the
+  landing page for the set. It is the page you link someone to; from it they choose
+  a chapter and start reading.
+
+Every page is a **complete, standalone HTML document**: it inlines the theme
+stylesheet and needs no build step or server-side piece to render. Serve the
+directory and the book works.
+
+<# Reading chrome on every page #>
+
+Each chapter page carries the same three-column **reading interface** the
+one-scroll book uses, adapted so its links cross pages:
+
+- a **chapter rail** down the left, listing every chapter and linking to its page,
+  with the chapter you are reading marked as current;
+- **previous / next** chapter links at the foot, pointing to the adjacent chapters'
+  pages;
+- an **on-this-page** rail down the right, listing the current chapter's sections as
+  in-page anchors;
+- a **return-to-cover masthead** at the top of the rail — the book's title, linking
+  back to `index.html` — so the cover is reachable from every page.
+
+`about-this-book.html` and the other front-matter parts are ordinary entries in the
+chapter rail, reachable like any chapter; the cover is the home.
+
+<# Cross-chapter references link across pages #>
+
+A book numbers and cross-references across its whole span — a reference in Chapter 2
+to a figure in Chapter 1 resolves to "Figure 1.1". When the book is split into
+pages, those cross-chapter references become **cross-page links**: the reference
+points at the owning chapter's page *and* the anchor, so it carries you to the right
+place in the right file —
+
+```
+… see <ref @fig:transect> …      →   <a href="1-counting-elephants.html#fig:transect">figure 1.1</a>
+```
+
+A reference to a target in the *same* chapter stays an ordinary in-page anchor.
+Either way the link lands on the element it names.
+
+<# Keeping the book in one file #>
+
+Sometimes you want the whole book as a single document — to read it in one scroll,
+to hand someone one file, or to print it. Pass `--single-page`:
+
+```
+enscribe build book.emd --single-page -o book.html
+```
+
+This is the one-scroll **reading interface**: the entire book in one HTML file, with
+the same chapter rail and on-this-page chrome navigating by in-page anchors instead
+of page URLs. The separate-pages set and the single file are two projections of the
+same assembled, numbered book, so their chapter content matches; choose by how the
+book will be read.
+
+<# In short #>
+
+- `enscribe build book.emd -o site/` — a book as a website: a page per chapter at
+  stable URLs, plus an `index.html` cover. The default for books.
+- Every page is standalone, carries the reading chrome, and links back to the cover.
+- Cross-chapter references become cross-page links.
+- `enscribe build book.emd --single-page -o book.html` — the whole book in one file.
+
+For how a book is *authored* — `<meta type=book>`, chapters and parts, scoped
+numbering — see <a href="authoring-guide.html#sec:book" | the Authoring Guide>. For
+the render options the build shares with single-document rendering, see
+<a href="authoring-guide.html#sec:render" | Rendering and output>.

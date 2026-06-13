@@ -5,24 +5,35 @@ The enscribe documentation + articles website. Each canonical `.emd` source in
 producing a multi-page static site in `dist/` — ready to serve locally or deploy
 to GitHub Pages.
 
-This is the docs-site **build framework**: the build machinery plus three
-placeholder pages that exercise it. Real content (the homepage, a written
-Quickstart, and articles translated from the README and DESIGN) lands in later
-slices.
+This is the docs-site **build framework** plus the site's content: a homepage, a
+written Quickstart playground, full articles translated from the README and DESIGN,
+the Authoring Guide, the Layer 1 vocabulary reference, a generated coverage gallery,
+and the JATS demo papers. The page set is hardcoded in `build.js`'s `PAGES` array (it
+is the source of truth for the nav).
 
 ## Pages
 
-| Source                      | Page                  | Kind       |
-| --------------------------- | --------------------- | ---------- |
-| `sources/index.emd`         | `index.html`          | read-only  |
-| `sources/quickstart.emd`    | `quickstart.html`     | playground |
-| `sources/example-article.emd` | `example-article.html` | read-only |
+| Source                         | Page                    | Kind        |
+| ------------------------------ | ----------------------- | ----------- |
+| `sources/index.emd`            | `index.html`            | read-only   |
+| `sources/design.emd`           | `design.html`           | read-only   |
+| `sources/quickstart.emd`       | `quickstart.html`       | playground  |
+| `sources/authoring-guide.emd`  | `authoring-guide.html`  | read-only   |
+| `sources/layer1-reference.emd` | `layer1-reference.html` | read-only   |
+| _(generated)_                  | `gallery.html`          | gallery     |
+| `sources/jats.emd`             | `jats.html`             | read-only   |
+| _(generated)_                  | `demos.html` + `demo/*.html` | demo index |
 
 - **Read-only pages** render the enscribe source to a static HTML article and
   carry a "view source on GitHub" link in the footer. They ship no JavaScript.
 - **The Quickstart playground** loads CodeMirror and the enscribe browser
   bundle and seeds the editor with its own source, so you can edit enscribe and
   watch it render live. It is the only page that loads the editor or the library.
+- **The Gallery** is generated (no `.emd` source): it walks the Layer 1 vocabulary
+  and renders a live example per element, grouped by category, as a coverage surface.
+- **The Demos** are real published articles imported from JATS by `enscribe
+  import-jats` and rendered to standalone pages under `dist/demo/`, with `demos.html`
+  indexing them.
 
 ## Build and preview
 
@@ -35,7 +46,8 @@ npm run build:lib
 # 2. Build the site (from the repo root).
 cd ../..
 npm run docs:build
-#   → writes docs-site/dist/{index,quickstart,example-article}.html + assets/
+#   → writes docs-site/dist/*.html (index, design, quickstart, authoring-guide,
+#     layer1-reference, gallery, jats, demos) + dist/demo/*.html + assets/
 
 # 3. Serve dist/ over HTTP and open it. (The Quickstart's ES-module imports need
 #    an HTTP origin; file:// will not work.)
@@ -66,7 +78,7 @@ Navigation is hardcoded in `build.js`'s page list; it grows as real pages land.
 
 ## Deploying to GitHub Pages
 
-For v0.1.0 the deploy is **manual**: `dist/` is the deployable artifact. Build
+The deploy is currently **manual**: `dist/` is the deployable artifact. Build
 it, then publish its contents wherever GitHub Pages serves from for this repo
 (e.g. a `gh-pages` branch, or a `docs/` directory the repo's Pages settings point
 at). Automated deployment (GitHub Actions → Pages) is a later addition; the build

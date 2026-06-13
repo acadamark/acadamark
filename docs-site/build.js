@@ -86,6 +86,7 @@ const PAGES = [
   { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',          nav: 'Quickstart',      kind: 'playground' },
   { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page', renderOptions: { toc: true } },
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page', renderOptions: { toc: 'auto' } },
+  { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page', renderOptions: { toc: 'auto' } },
   { slug: 'gallery',         source: null,                  title: 'Gallery — enscribe',             nav: 'Gallery',         kind: 'gallery' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page', renderOptions: { toc: 'auto' } },
   { slug: 'demos',           source: null,                  title: 'Demos — enscribe',               nav: 'Demos',           kind: 'demo-index' },

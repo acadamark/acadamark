@@ -166,7 +166,7 @@ and the rest share this one *frameable* capability, so they all behave the same
 way: caption below, number folded in, an optional border. The image source can be
 a local path or a URL:
 
-<figure #fig:pipeline src="https://picsum.photos/seed/enscribe/720/360" | The Enscribe pipeline in one breath — shorthand is parsed, *lifted* to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram, which lands with the Authoring Guide.)>
+<figure #fig:pipeline src="https://picsum.photos/seed/enscribe/720/360" | The Enscribe pipeline in one breath — shorthand is parsed, *lifted* to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)>
 
 Because the figure carries an id, prose elsewhere can point at it by name rather
 than by a number you would otherwise have to keep correct by hand: see
