@@ -1975,7 +1975,7 @@ const _code = Object.freeze({
 
 const _config = Object.freeze({
     "semantic_role": "config",
-    "category": "structured-data-containers",
+    "category": "configuration",
     "html_output": {
       "element": "config",
       "is_html_native": false,
@@ -2093,7 +2093,7 @@ const _corollary = Object.freeze({
 
 const _data = Object.freeze({
     "semantic_role": "data",
-    "category": "structured-data-containers",
+    "category": "storage-hosts",
     "html_output": {
       "element": "data",
       "is_html_native": false,
@@ -3740,7 +3740,7 @@ const _lemma = Object.freeze({
 
 const _library = Object.freeze({
     "semantic_role": "library",
-    "category": "structured-data-containers",
+    "category": "storage-hosts",
     "html_output": {
       "element": "library",
       "is_html_native": false,

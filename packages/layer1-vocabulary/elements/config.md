@@ -1,6 +1,6 @@
 ---
 semantic_role: config
-category: structured-data-containers
+category: configuration
 html_output:
   element: config
   is_html_native: false

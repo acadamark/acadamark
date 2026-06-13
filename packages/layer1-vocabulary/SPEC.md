@@ -36,7 +36,8 @@ category values are:
 `document-containers` · `structural-regions` · `sections` ·
 `block-prose` · `frameables` · `math` · `code` ·
 `inline-formatting` · `citations-and-references` ·
-`structured-data-containers` · `metadata` · `theorem-family`
+`structured-data-containers` · `storage-hosts` · `configuration` ·
+`metadata` · `theorem-family`
 
 Every element entry carries exactly one of these. A consumer that
 encounters a `category` outside this set should surface it loudly rather

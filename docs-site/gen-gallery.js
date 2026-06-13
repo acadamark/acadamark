@@ -52,6 +52,8 @@ const CATEGORY_ORDER = [
   ['inline-formatting', 'Inline formatting'],
   ['citations-and-references', 'Citations & references'],
   ['structured-data-containers', 'Structured-data containers'],
+  ['storage-hosts', 'Storage hosts'],
+  ['configuration', 'Configuration'],
   ['metadata', 'Document metadata'],
   ['theorem-family', 'Theorem family'],
 ];
