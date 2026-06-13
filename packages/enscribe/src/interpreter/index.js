@@ -117,7 +117,10 @@ import remarkGfm from 'remark-gfm';
 import remarkRecursiveContent from '../parser/recursive-content.js';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
-import rehypeFormat from 'rehype-format';
+// #117: rehype-format, wrapped to be enscribe-inline-aware (it would otherwise treat custom
+// INLINE elements — inline-math, term — as block and insert render-changing whitespace around
+// them). See lib/format-html.js for the why; block custom elements are unaffected.
+import { formatHtml } from './lib/format-html.js';
 import { smartTypography } from './smart-typography.js';
 
 import { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown } from './plugins/normalize-to-canonical.js';
@@ -928,8 +931,11 @@ export function enscribeInterpreter(options = {}) {
 
     // Format the hast tree for readable HTML output: block elements get
     // indentation and line breaks; inline content is preserved as-is.
-    // rehype-format leaves <style> and <script> contents untouched.
-    rehypeFormat()(hast);
+    // rehype-format leaves <style>/<script> and <pre>/<code> contents untouched;
+    // formatHtml additionally keeps enscribe's inline custom elements (inline-math,
+    // term) in the inline flow so no render-changing whitespace is inserted around
+    // them (#117 — see lib/format-html.js).
+    formatHtml(hast);
 
     // Static-mode DSL emit, AFTER formatting: replace each collected DSL's
     // contract elements with their build-time SVG (see replaceDslContractsWithSvg

@@ -62,6 +62,7 @@ import { run as runMasterBookLive } from './master-book-live.test.js';
 import { run as runLiveEditLoop } from './live-edit-loop.test.js';
 import { run as runLiveEditSmoke } from './live-edit-smoke.test.js';
 import { run as runLiveBookShell } from './live-book-shell.test.js';
+import { run as runFormatNeutrality } from './format-neutrality.test.js';
 import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
@@ -127,6 +128,7 @@ const suites = [
   ['live-edit-loop',               runLiveEditLoop],
   ['live-edit-smoke',              runLiveEditSmoke],
   ['live-book-shell',              runLiveBookShell],
+  ['format-neutrality',            runFormatNeutrality],
   ['coverage/spec-data-drift',     runSpecDataDrift],
   ['coverage/predicate-harness',   runPredicateHarness],
 ];

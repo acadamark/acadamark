@@ -78,6 +78,24 @@ to the predicate id below. Bug-fix slices reconcile current output to the
 intended standard; this document is the standard, not a status report, so it
 does not enumerate which predicates currently fail.
 
+### 0.4 Source formatting is visual-neutral (#117)
+
+The serialized HTML is **pretty-printed for readable view-source** — block
+elements are indented onto their own lines — but formatting changes **only the
+source text, never the rendering**. The formatter therefore touches whitespace
+**only where it is insignificant** (between block elements) and leaves
+whitespace-sensitive contexts alone: `<pre>` / `<code>` / `<textarea>` interiors
+and KaTeX math output are untouched, and **inline custom elements**
+(`<inline-math>`, `<term>`) are kept in the inline flow rather than broken onto
+their own lines — so no whitespace that would render as a space is inserted
+around tight inline math or terms (`($x$)` stays `($x$)`, not `( x)`). The
+predicates below assert rendered structure and classes; this paragraph records
+that the *serialization* underneath them carries no rendering significance, so a
+predicate holds identically whether checked against the pretty-printed output or
+a minified one. (Inlined third-party machinery — the hover-preview / KaTeX / DSL
+`<script>`/`<style>` blobs — is left verbatim by design; it is not Layer 1
+output and is not reformatted.)
+
 ---
 
 ## 1. The predicate model

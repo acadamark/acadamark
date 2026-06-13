@@ -55,7 +55,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 
 ## Rendering & output
 
-- [x] HTML output — external CSS/fonts by default, self-contained on request (`embedResources`)
+- [x] HTML output — external CSS/fonts by default, self-contained on request (`embedResources`); **pretty-printed for readable view-source** (#117) — block elements indented onto their own lines, visual-neutral (only insignificant inter-block whitespace changes; `<pre>`/`<code>`/math interiors and inline custom elements `<inline-math>`/`<term>` are kept in the inline flow, so formatting never inserts a rendered space)
 - [x] Rendered citations inlined; conditionally-injected hover previews (notes / refs / citations)
 - [x] Bundled subsetted fonts (Inter, Source Code Pro) and patched KaTeX fonts
 - [x] Default stylesheet with theme variables (`default.css`) — styles every shipped feature hook from one custom-property palette (border looks, section numbers, callout types, captions/labels, the show-source disclosure, cross-refs, errors)
