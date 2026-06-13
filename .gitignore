@@ -53,3 +53,4 @@ ghc-prompt-*.md
 # add an explicit unignore here so the deliberate files stay tracked, e.g.:
 #   !packages/layer1-vocabulary/src/data.js
 #   !packages/enscribe/src/parser/generated/parser.js
+.claude/worktrees/
