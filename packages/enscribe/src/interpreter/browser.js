@@ -580,6 +580,59 @@ export async function mountLiveBookFromUrl(target, url, options = {}) {
   return mountLiveBook(target, source, options);
 }
 
+/** Read the `data-enscribe-edit` host switch off a mount element: present = on, UNLESS the
+ *  value is an explicit off (`false` / `off` / `0`). Absent (or no element) = off. */
+function editAttrOn(el) {
+  const v = el && el.dataset ? el.dataset.enscribeEdit : undefined;
+  if (v == null) return false;
+  const s = String(v).toLowerCase();
+  return s !== 'false' && s !== 'off' && s !== '0';
+}
+
+/**
+ * The ONE configurable live-shell entry (#213): read↔edit from a HOST-side switch. Editability
+ * is a property of the DEPLOYMENT, not the document — the same `.emd` is read-only when published
+ * and editable while authored, the difference being WHERE it is served. And mechanically only the
+ * host can turn editing on: CodeMirror loads host-side by design (#211, kept out of the engine
+ * bundle), so a document `<config>` flag could not load it. So the switch lives here, where the
+ * editor is loaded — never in the document.
+ *
+ * The switch (one knob, two equivalent forms):
+ *   - `options.edit` (explicit boolean) wins when provided — the testable core; else
+ *   - the `data-enscribe-edit` attribute on the mount element (presence = on; `="false"`/`"off"`/
+ *     `"0"` = off) — a declarative, per-mount, build.js-friendly knob with no global mutable state.
+ *
+ * ON → `editorFactory()` is awaited to build the editor adapter (the host loads CodeMirror THERE —
+ * lazily, so READ mode never loads it) and the book mounts in edit mode (#211's `{ editor }`).
+ * OFF → the book mounts in read mode — byte-identical to the read shell (#209). The engine is
+ * unchanged: this is host ergonomics over the existing `{ editor }`-present-→-edit branch.
+ *
+ * @param {string|Element} target - a CSS selector or the Element to mount into.
+ * @param {string} url - the BOOK master's URL (relative to the page).
+ * @param {object} [options] - mountLiveBook options (see render()), plus the switch:
+ * @param {boolean} [options.edit] - explicit edit flag; overrides the `data-enscribe-edit` attribute.
+ * @param {() => (object|Promise<object>)} [options.editorFactory] - builds the editor adapter
+ *   (#211 `editor`: `mount(el,{value,onChange}) → {destroy?()}`) when editing is on. Called ONLY
+ *   then, so the host can lazy-load CodeMirror and read mode never pulls it in.
+ * @returns {Promise<Element>} the mounted element.
+ */
+export async function mountLiveBookShell(target, url, options = {}) {
+  const { edit, editorFactory, ...rest } = options;
+  const el = typeof target === 'string'
+    ? (typeof document !== 'undefined' ? document.querySelector(target) : null)
+    : target;
+  const editEnabled = edit !== undefined ? !!edit : editAttrOn(el);
+  let editor = null;
+  if (editEnabled) {
+    if (typeof editorFactory !== 'function') {
+      throw new Error('mountLiveBookShell: editing is on but no `editorFactory` was provided to build/load the editor');
+    }
+    editor = await editorFactory();
+  }
+  // editor === null → read mode (byte-identical to #209); an adapter → #211's edit mode.
+  return mountLiveBookFromUrl(target, url, { ...rest, editor });
+}
+
 /**
  * Render enscribe source and write it into a DOM element.
  *

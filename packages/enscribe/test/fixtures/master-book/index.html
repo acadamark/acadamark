@@ -3,61 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Field Methods in Savanna Ecology — live preview</title>
+<title>Field Methods in Savanna Ecology — live shell</title>
 
 <!--
-  The LIVE app shell (live track, L2 — #208; cover + masthead restored in #209). Distinct
-  from the STATIC cover this book publishes to `pages/index.html` (P1, #205): that is a
-  pre-baked artifact; THIS renders the book live in the browser from `master-book.emd` + its
-  chapter `.emd` children, routed by URL hash, lazy on navigate. Opening it (no hash) lands
-  on the COVER (book-title hero + lede); the return-to-cover masthead (top-left book title)
-  is on every view. Read-only this slice (no editing yet).
+  The ONE configurable live shell (#213). It renders this book live in the browser from
+  `master-book.emd` + its chapter `.emd` children — read by default, editable when a HOST-side
+  switch is on. Editability is a property of the DEPLOYMENT, not the document: the same `.emd` is
+  read-only when published and editable while authored. Two equivalent ways to flip the switch:
 
-  Serve it over HTTP (the shell `fetch`es; `file://` won't fetch). One-liner, from the
-  PACKAGE root (so the repo-relative engine/CSS paths below resolve):
+    • append `?edit` to the URL (a no-file-edit convenience for the dev preview), or
+    • add `data-enscribe-edit` to the mount <div> below (the declarative, build-script-friendly form).
 
+  ON  → CodeMirror loads (CDN, host-side, only when editing) + the editor mounts — #211's edit loop,
+        PREVIEW-ONLY: edits live in memory and are LOST ON RELOAD (the "preview — unsaved" marker
+        says so; write-back is the named follow-on).
+  OFF → read mode, byte-identical to the published read view (#209). No editor, no CodeMirror load.
+
+  Distinct from the STATIC cover this book publishes to `pages/index.html` (P1, #205): that is a
+  pre-baked artifact; this is the live engine. The engine (window.enscribe) owns the loop and stays
+  editor-agnostic; CodeMirror is loaded HOST-side via the `editorFactory` below.
+
+  Serve over HTTP (the shell fetches; the CodeMirror CDN needs network only when editing). From the
+  PACKAGE root (so the repo-relative engine/CSS paths resolve):
       cd packages/enscribe && python3 -m http.server 8000
-      # open http://localhost:8000/test/fixtures/master-book/index.html
-
-  The paths below are repo-relative dev-preview plumbing — a packaged shell (or a future
-  `enscribe serve`, out of scope here) would reference the shipped engine bundle + the
-  packaged default.css instead, and derive the KaTeX / fonts URLs from the engine's
-  KATEX_CDN_URL / DOCUMENT_FONTS_CDN_URL constants.
+      # read:  http://localhost:8000/test/fixtures/master-book/index.html
+      # edit:  http://localhost:8000/test/fixtures/master-book/index.html?edit
+  Repo-relative paths are dev-preview plumbing; a packaged shell / `enscribe serve` would ship the
+  engine + editor + CSS and derive the KaTeX/fonts URLs from the engine's CDN constants.
 -->
 <link rel="stylesheet" href="../../../src/interpreter/assets/default.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap">
 
-<!--
-  The return-to-cover masthead CSS (#209), mirroring publish-pages.js's BOOK_HOME_CSS. It is
-  deliberately NOT in default.css (#206 kept it out to hold single-page byte-stability), so
-  the live shell must include it. The selector is scoped
-  `.enscribe-layout--book .enscribe-toc a.enscribe-book-home` (specificity 0,3,1) so it WINS
-  over the general rail-anchor rules — without it the masthead reads as a muted, indented
-  rail link instead of a prominent home title. A packaged shell / `enscribe serve` would
-  source this from the engine; inlined here for the dev preview.
--->
+<!-- Return-to-cover masthead CSS (mirrors publish-pages.js BOOK_HOME_CSS / #206/#209): kept out of
+     default.css (#206, single-page byte-stability), so the live shell must include it; the scoped
+     selector wins the cascade so the masthead reads as a prominent title, not a muted rail link. -->
 <style>
 .enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
 .enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
 </style>
+
+<!-- Edit-mode chrome CSS (#203): the Write/Preview tabs + panes. The rules only bite when an edit
+     view is mounted, so they are inert in read mode; like BOOK_HOME_CSS this is edit-only chrome
+     that lives in the shell, not default.css. -->
+<style>
+.enscribe-edit-main { display: flex; flex-direction: column; min-width: 0; }
+.enscribe-edit-tabs { display: flex; align-items: center; gap: var(--enscribe-space-2, 0.5rem); border-bottom: 1px solid var(--enscribe-border, #e1e1e1); margin-bottom: var(--enscribe-space-4, 1rem); }
+.enscribe-edit-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--enscribe-space-2, 0.5rem) var(--enscribe-space-3, 0.75rem); margin-bottom: -1px; font: inherit; font-family: var(--enscribe-font-sans); font-weight: 600; font-size: var(--enscribe-text-sm, 0.875rem); color: var(--enscribe-text-secondary, #555); cursor: pointer; }
+.enscribe-edit-tab--active { color: var(--enscribe-text-primary, #1a1a1a); border-bottom-color: var(--enscribe-link, #0052cc); }
+.enscribe-edit-status { margin-left: auto; font-size: var(--enscribe-text-xs, 0.75rem); font-style: italic; color: var(--enscribe-text-secondary, #555); }
+.enscribe-edit-pane--source .cm-editor { border: 1px solid var(--enscribe-border, #e1e1e1); border-radius: var(--enscribe-radius-sm, 2px); min-height: 65vh; font-size: 0.9rem; }
+.enscribe-edit-pane--source .cm-scroller { font-family: var(--enscribe-font-mono, 'Source Code Pro', ui-monospace, monospace); }
+.enscribe-edit-error { color: #b00020; font-style: italic; }
+</style>
 </head>
 <body>
+<!-- Add `data-enscribe-edit` here to default this shell to the editor; or use `?edit`. -->
 <div id="enscribe-book-root"></div>
 
 <!-- The engine bundle (IIFE → window.enscribe). Rebuild with `npm run build:lib`. -->
 <script src="../../../dist/enscribe.browser.global.js"></script>
-<script>
-  // Bootstrap: fetch the master, run the global pass once, mount the current view, and
-  // route by hash. No hash → the cover; `#1-counting-elephants` (a chapter stem) opens that
-  // chapter; `#fig:transect` (any anchor) opens the owning chapter and scrolls to it. The
-  // masthead (book title) returns to the cover from any chapter.
-  enscribe.mountLiveBookFromUrl('#enscribe-book-root', 'master-book.emd').catch((err) => {
-    document.getElementById('enscribe-book-root').textContent =
-      'Failed to mount the live book: ' + err.message;
-    // eslint-disable-next-line no-console
-    console.error(err);
-  });
+
+<script type="module">
+  // The editor factory: lazily import CodeMirror 6 from a CDN and turn a mount element into an
+  // editor. mountLiveBookShell calls this ONLY when editing is on, so read mode never loads
+  // CodeMirror. The engine owns the loop; this is the host-side editor the #211 adapter seam wants.
+  const editorFactory = async () => {
+    const { EditorView, basicSetup } = await import("https://esm.sh/codemirror@6.0.1");
+    return {
+      mount(el, { value, onChange }) {
+        const view = new EditorView({
+          doc: value,
+          parent: el,
+          extensions: [
+            basicSetup,
+            EditorView.lineWrapping,
+            EditorView.updateListener.of((u) => { if (u.docChanged) onChange(u.state.doc.toString()); }),
+          ],
+        });
+        return { destroy() { view.destroy(); } };
+      },
+    };
+  };
+
+  // The host switch: `?edit` flips it without editing this file; otherwise the `data-enscribe-edit`
+  // attribute on the mount <div> decides (default: read). Either way the engine is unchanged.
+  const opts = { editorFactory };
+  if (new URLSearchParams(location.search).has('edit')) opts.edit = true;
+
+  window.enscribe
+    .mountLiveBookShell('#enscribe-book-root', 'master-book.emd', opts)
+    .catch((err) => {
+      document.getElementById('enscribe-book-root').textContent = 'Failed to mount the live shell: ' + err.message;
+      // eslint-disable-next-line no-console
+      console.error(err);
+    });
 </script>
 </body>
 </html>
