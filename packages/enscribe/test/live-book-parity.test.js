@@ -28,9 +28,11 @@ import {
   buildLiveBook,
   renderLiveChapterContent,
   renderLiveChapterView,
+  renderLiveCoverView,
   resolveHash,
   extractBookPart,
 } from '../src/interpreter/index.js';
+import { coverBodyHtml } from '../src/master-document/book-scaffold.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -104,15 +106,15 @@ export async function run() {
     console.log('PASS: L2 — live view = renderChapter + C\'s chrome with #-routes; cross-chapter refs stay bare #anchor');
   }
 
-  // ── the hash ROUTER: stem→chapter, anchor→owning chapter+scroll, empty→first, unknown→null
+  // ── the hash ROUTER: empty→COVER, stem→chapter, anchor→owning chapter+scroll, unknown→null
   {
-    assert.deepStrictEqual(resolveHash('', model), { index: 0, anchor: null },
-      'an empty hash routes to the first chapter, no scroll');
+    assert.deepStrictEqual(resolveHash('', model), { cover: true },
+      'an empty hash routes to the COVER (#209), not a chapter');
     assert.deepStrictEqual(resolveHash('#about-this-book', model),
-      { index: model.stemToIndex.get('about-this-book'), anchor: null },
+      { cover: false, index: model.stemToIndex.get('about-this-book'), anchor: null },
       'a chapter stem hash routes to that chapter, no scroll');
     assert.deepStrictEqual(resolveHash('#1-counting-elephants', model),
-      { index: model.stemToIndex.get('1-counting-elephants'), anchor: null },
+      { cover: false, index: model.stemToIndex.get('1-counting-elephants'), anchor: null },
       'the body chapter stem routes to chapter 1');
 
     // fig:transect is OWNED by chapter 1; a #fig:transect hash (from anywhere — e.g. the
@@ -120,12 +122,36 @@ export async function run() {
     assert.strictEqual(model.idToStem.get('fig:transect'), '1-counting-elephants',
       'fig:transect is owned by the Counting Elephants chapter');
     assert.deepStrictEqual(resolveHash('#fig:transect', model),
-      { index: model.stemToIndex.get('1-counting-elephants'), anchor: 'fig:transect' },
+      { cover: false, index: model.stemToIndex.get('1-counting-elephants'), anchor: 'fig:transect' },
       'a cross-chapter anchor routes to its OWNING chapter and carries the scroll anchor');
 
     assert.strictEqual(resolveHash('#no-such-anchor', model), null,
       'an unknown anchor owned by no chapter resolves to null (the router no-ops)');
-    console.log('PASS: L2 — hash router: #stem→chapter, #anchor→owning chapter+scroll, empty→first, unknown→null');
+    console.log('PASS: L2 — hash router: empty→cover, #stem→chapter, #anchor→owning chapter+scroll, unknown→null');
+  }
+
+  // ── the COVER (#209): live cover body == P1 index.html cover body; masthead round-trips ──
+  {
+    const cover = renderLiveCoverView(model);
+    const sharedBody = coverBodyHtml(model.bookTitle);   // book-title hero + lede
+
+    // Preview fidelity: the live cover and P1's published cover render the SAME body.
+    assert.ok(cover.includes(sharedBody),
+      'the live cover renders the shared cover body (book-title hero + lede)');
+    assert.ok(pages.get('index.html').includes(sharedBody),
+      'P1 index.html renders the SAME cover body — the previewed cover IS the published cover');
+
+    // The masthead self-links to the cover route on the cover view (marked current),
+    // and points AT the cover route (not current) on a chapter view — every view round-trips.
+    assert.ok(/<a class="enscribe-book-home" href="#"/.test(cover) &&
+      /enscribe-book-home"[^>]*aria-current="page"/.test(cover),
+      'the cover masthead self-links to the cover route, marked aria-current="page"');
+    const chView = renderLiveChapterView(model, model.stemToIndex.get('1-counting-elephants'), ctx);
+    assert.ok(/<a class="enscribe-book-home" href="#"/.test(chView),
+      'a chapter view carries the return-to-cover masthead → the cover route (#)');
+    assert.ok(!/enscribe-book-home"[^>]*aria-current/.test(chView),
+      'the chapter masthead is NOT marked current (the cover is a different route)');
+    console.log('PASS: L2/#209 — live cover body == P1 index.html cover body; masthead round-trips to the cover');
   }
 
   console.log('All live app-shell book render (L2) parity + routing checks passed.');

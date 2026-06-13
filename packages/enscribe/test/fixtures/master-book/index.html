@@ -6,10 +6,12 @@
 <title>Field Methods in Savanna Ecology — live preview</title>
 
 <!--
-  The LIVE app shell (live track, L2 — #208). Distinct from the STATIC cover this book
-  publishes to `pages/index.html` (P1, #205): that is a pre-baked artifact; THIS renders
-  the current chapter live in the browser from `master-book.emd` + its chapter `.emd`
-  children, routed by URL hash, lazy on navigate. Read-only this slice (no editing yet).
+  The LIVE app shell (live track, L2 — #208; cover + masthead restored in #209). Distinct
+  from the STATIC cover this book publishes to `pages/index.html` (P1, #205): that is a
+  pre-baked artifact; THIS renders the book live in the browser from `master-book.emd` + its
+  chapter `.emd` children, routed by URL hash, lazy on navigate. Opening it (no hash) lands
+  on the COVER (book-title hero + lede); the return-to-cover masthead (top-left book title)
+  is on every view. Read-only this slice (no editing yet).
 
   Serve it over HTTP (the shell `fetch`es; `file://` won't fetch). One-liner, from the
   PACKAGE root (so the repo-relative engine/CSS paths below resolve):
@@ -25,6 +27,20 @@
 <link rel="stylesheet" href="../../../src/interpreter/assets/default.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap">
+
+<!--
+  The return-to-cover masthead CSS (#209), mirroring publish-pages.js's BOOK_HOME_CSS. It is
+  deliberately NOT in default.css (#206 kept it out to hold single-page byte-stability), so
+  the live shell must include it. The selector is scoped
+  `.enscribe-layout--book .enscribe-toc a.enscribe-book-home` (specificity 0,3,1) so it WINS
+  over the general rail-anchor rules — without it the masthead reads as a muted, indented
+  rail link instead of a prominent home title. A packaged shell / `enscribe serve` would
+  source this from the engine; inlined here for the dev preview.
+-->
+<style>
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
+</style>
 </head>
 <body>
 <div id="enscribe-book-root"></div>
@@ -32,9 +48,10 @@
 <!-- The engine bundle (IIFE → window.enscribe). Rebuild with `npm run build:lib`. -->
 <script src="../../../dist/enscribe.browser.global.js"></script>
 <script>
-  // Bootstrap: fetch the master, run the global pass once, mount the current chapter,
-  // and route by hash. A hash of `#1-counting-elephants` (a chapter stem) opens that
-  // chapter; `#fig:transect` (any anchor) opens the owning chapter and scrolls to it.
+  // Bootstrap: fetch the master, run the global pass once, mount the current view, and
+  // route by hash. No hash → the cover; `#1-counting-elephants` (a chapter stem) opens that
+  // chapter; `#fig:transect` (any anchor) opens the owning chapter and scrolls to it. The
+  // masthead (book title) returns to the cover from any chapter.
   enscribe.mountLiveBookFromUrl('#enscribe-book-root', 'master-book.emd').catch((err) => {
     document.getElementById('enscribe-book-root').textContent =
       'Failed to mount the live book: ' + err.message;

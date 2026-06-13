@@ -1060,7 +1060,7 @@ export { publishBookPages } from '../master-document/publish-pages.js';
 // mounted view (renderChapter + C's chrome, hash hrefs); resolveHash the pure router
 // core. The browser entry (browser.js mountLiveBook) wraps these with the fetch loader,
 // the DOM mount, and the hashchange router. Shares P1's book-scaffold for content parity.
-export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, resolveHash, chapterHash } from '../master-document/live-book.js';
+export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderLiveCoverView, resolveHash, chapterHash } from '../master-document/live-book.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);

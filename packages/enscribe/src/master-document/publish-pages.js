@@ -38,6 +38,8 @@ import {
   assignIds,
   findBook,
   bookTitleOf,
+  escapeHtml,
+  coverBodyHtml,
 } from './book-scaffold.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
@@ -64,8 +66,6 @@ function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl) {
     return url ? `<a href="${url}#${anchor}" class="ref"` : whole;
   });
 }
-
-const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // The return-to-cover masthead's CSS (#206). It lives HERE, not in default.css,
 // because the masthead is separate-pages-only chrome: default.css is inlined verbatim
@@ -150,7 +150,7 @@ function renderIndex(parts, idToUrl, opts) {
   // already on. Chapter pages omit it (their masthead points elsewhere).
   const home = { href: INDEX_PAGE, title: bookTitle, current: true };
   const rail = toHtml(buildChapterRail(parts, (p) => p.slug, null, home));
-  const body = `<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book">${rail}<main class="enscribe-body"><book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>`;
+  const body = `<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book">${rail}<main class="enscribe-body">${coverBodyHtml(bookTitle)}</main></div>`;
   return pageShell(body, bookTitle, defaultCss);
 }
 

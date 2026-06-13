@@ -27,6 +27,7 @@ import {
   HAS_MASTER_SRC,
   buildLiveBook,
   renderLiveChapterView,
+  renderLiveCoverView,
   resolveHash,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
@@ -306,15 +307,19 @@ export async function renderMasterIntoAsync(target, source, options = {}) {
  * #208). The live counterpart of `enscribe build`'s separate-pages output (P1, #205):
  * where P1 pre-bakes one standalone `.html` per chapter, this fetches the master + its
  * chapter `.emd` children, runs the cheap GLOBAL pass ONCE (numbering + cross-ref
- * resolution — L1, #204; no DOM), then renders + mounts the CURRENT chapter via the SAME
+ * resolution — L1, #204; no DOM), then renders + mounts the current VIEW via the SAME
  * renderChapter projection P1 publishes, wrapped in C's reading chrome (#202). The URL
- * hash routes between chapters; each is rendered LAZILY on first view and cached.
+ * hash routes between the cover and the chapters; each view is rendered LAZILY on first
+ * view and cached.
  *
  * The chapter render IS renderChapter — so its content matches what P1 publishes for the
- * same chapter (the parity gate). Cross-chapter `<ref>`s keep a bare `#anchor` and the
- * router resolves each to its owning chapter (no cross-page rewrite needed under one
- * mount): a `#stem` hash is a chapter route, a `#anchor` hash routes to the chapter that
- * owns the anchor and scrolls to it.
+ * same chapter (the parity gate). Routing (#209): an empty/root hash lands on the COVER
+ * (book-title hero + lede, the live counterpart of P1's `index.html`); a `#stem` hash is a
+ * chapter route; a `#anchor` hash routes to the chapter that owns the anchor and scrolls to
+ * it. Cross-chapter `<ref>`s keep a bare `#anchor` and the router resolves each to its
+ * owning chapter (no cross-page rewrite needed under one mount). Every view carries a
+ * return-to-cover masthead (the book title) → the cover route, so a chapter round-trips to
+ * the cover exactly as a P1 chapter page round-trips to `index.html`.
  *
  * Read-only this slice — no editing surface yet; the edit loop (re-render only the edited
  * chapter on change) is the immediate next slice. Served over HTTP (the shell fetches;
@@ -324,7 +329,7 @@ export async function renderMasterIntoAsync(target, source, options = {}) {
  * @param {string} source - the BOOK master's enscribe source (a `<meta type=book>` with
  *   `<chapter src>` / `<preface src>` / `<appendix src>` children).
  * @param {object} [options] - pipeline options (see render()).
- * @returns {Promise<Element>} the mounted element (after the initial chapter renders).
+ * @returns {Promise<Element>} the mounted element (after the initial view renders).
  */
 export async function mountLiveBook(target, source, options = {}) {
   const root = typeof target === 'string' ? document.querySelector(target) : target;
@@ -347,24 +352,28 @@ export async function mountLiveBook(target, source, options = {}) {
   const ctx = { proc, file: loadedFile };
   const model = buildLiveBook({ numbered, file: loadedFile });
 
-  // Lazy per-chapter render cache: a chapter's view (content + chrome) is built on first
-  // view and reused after — the authoring payoff (render only what you navigate to).
+  // Lazy per-view render cache: the cover (#209) and each chapter's view (content + chrome)
+  // are built on first view and reused after — the authoring payoff (render only what you
+  // navigate to). The cover is keyed 'cover'; chapters by their index.
   const viewCache = new Map();
-  const viewFor = (index) => {
-    if (!viewCache.has(index)) viewCache.set(index, renderLiveChapterView(model, index, ctx));
-    return viewCache.get(index);
+  const viewFor = (key) => {
+    if (!viewCache.has(key)) {
+      viewCache.set(key, key === 'cover' ? renderLiveCoverView(model) : renderLiveChapterView(model, key, ctx));
+    }
+    return viewCache.get(key);
   };
 
-  let currentIndex = -1;
+  let currentKey = null;                          // 'cover' | a chapter index | null (unmounted)
   const route = () => {
     const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', model);
-    if (dest == null) return;                    // unknown anchor owned by no chapter — no-op
-    if (dest.index !== currentIndex) {
-      root.innerHTML = viewFor(dest.index);
-      currentIndex = dest.index;
+    if (dest == null) return;                     // unknown anchor owned by no chapter — no-op
+    const key = dest.cover ? 'cover' : dest.index;
+    if (key !== currentKey) {
+      root.innerHTML = viewFor(key);
+      currentKey = key;
     }
     // An in-chapter / cross-chapter anchor: scroll to it once its owning chapter is mounted.
-    if (dest.anchor && typeof document !== 'undefined') {
+    if (!dest.cover && dest.anchor && typeof document !== 'undefined') {
       const anchorEl = document.getElementById(dest.anchor);
       if (anchorEl && typeof anchorEl.scrollIntoView === 'function') anchorEl.scrollIntoView();
     }

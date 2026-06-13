@@ -19,6 +19,12 @@
 // (`1-counting-elephants.html`); the live path projects it to a hash route
 // (`#1-counting-elephants`). The `.html`-vs-`#` difference is legitimate
 // per-target formatting, not drift — so it lives in each consumer, never here.
+//
+// It also holds the one shared piece of COVER content (#209): the book-title hero + lede.
+// The static cover (P1 `pages/index.html`) and the live cover view render the SAME body —
+// so the previewed cover IS the published cover — each wrapping it in its own rail + layout
+// (page-URL hrefs vs hash routes). The `.html`-vs-`#` discipline again: shared body here,
+// the wrapper in each consumer.
 
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { slugify } from '../interpreter/lib/toc.js';
@@ -165,4 +171,19 @@ export function assignIds(parts, bookEl) {
     p.id = p.node.id;
   }
   for (const p of parts) assignSections(p.sections);
+}
+
+// ─── Shared cover content (#209) ──────────────────────────────────────────────
+// The one presentation fragment both render targets share. Kept as a raw string (not a
+// hast builder) so P1's committed cover golden stays byte-identical to the existing form.
+
+/** Minimal HTML escape for interpolated text (e.g. the book title). */
+export const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** The book cover's `<main>` body: the book-title hero + the "select a chapter" lede.
+ *  Rendered verbatim by P1's static cover (`pages/index.html`) and the live cover view, so
+ *  the published cover and the previewed cover are the same artifact. Each consumer wraps
+ *  this in its own `<main class="enscribe-body">` + rail + layout. */
+export function coverBodyHtml(bookTitle) {
+  return `<book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p>`;
 }

@@ -36,11 +36,17 @@ import {
   assignIds,
   findBook,
   bookTitleOf,
+  coverBodyHtml,
 } from './book-scaffold.js';
 
 // The book layout class list; the third column (`--book-3col`) is added only when a
 // right "on this page" rail is present — mirroring P1 / C's single-page applyBookToc.
 const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout--book';
+
+// The cover route (#209): the empty / root hash. Opening the shell (no hash) lands on the
+// cover, and the return-to-cover masthead points here, so every chapter round-trips to it —
+// the live counterpart of P1's `index.html` cover, projected to a hash route, not a file.
+const COVER_HASH = '#';
 
 /** Live projection: a chapter's hash route is the shared neutral stem with a leading
  *  `#` (`#1-counting-elephants`) — the per-chapter URL scheme matching P1's slugs, sans
@@ -124,13 +130,15 @@ export function renderLiveChapterContent(part, model, ctx) {
 /**
  * Render one chapter's full mounted VIEW (chrome + content) as a DOM-ready HTML string,
  * with HASH chapter hrefs. Mirrors P1's renderPage minus the standalone-page shell and
- * the cross-page rewrite: the left chapter rail (current chapter marked active, links =
- * `#stem`), the reading column (content + a per-chapter prev/next bar), and the right
- * "on this page" rail of this chapter's sub-sections.
+ * the cross-page rewrite: the return-to-cover masthead (the book title, → the cover route),
+ * the left chapter rail (current chapter marked active, links = `#stem`), the reading column
+ * (content + a per-chapter prev/next bar), and the right "on this page" rail of this
+ * chapter's sub-sections.
  *
- * No return-to-cover masthead (home=null): that is P1's separate-pages affordance for
- * getting back when each chapter is its own FILE. Here the chapter rail is one
- * persistent mount, so it is always present — a separate "home" link would be redundant.
+ * The masthead (#209) points at the cover route (the empty hash), so a chapter round-trips
+ * to the cover exactly as a P1 chapter page round-trips to `index.html` — same navigation
+ * model, hash route instead of file. It is NOT marked current on a chapter view (the cover
+ * is a different route). #206 already made this a `buildChapterRail({home})` option.
  *
  * @param {object} model - the buildLiveBook result
  * @param {number} idx - the chapter's index in model.parts
@@ -138,11 +146,12 @@ export function renderLiveChapterContent(part, model, ctx) {
  * @returns {string} the mounted chapter view HTML (a `<div class="enscribe-layout…">`)
  */
 export function renderLiveChapterView(model, idx, ctx) {
-  const { parts } = model;
+  const { parts, bookTitle } = model;
   const part = parts[idx];
 
   const content = renderLiveChapterContent(part, model, ctx);
-  const rail = toHtml(buildChapterRail(parts, chapterHash, part.id, null));
+  const home = { href: COVER_HASH, title: bookTitle };
+  const rail = toHtml(buildChapterRail(parts, chapterHash, part.id, home));
   const onThisPageNav = buildOnThisPage([part]);
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHash);
@@ -153,22 +162,40 @@ export function renderLiveChapterView(model, idx, ctx) {
 }
 
 /**
- * Resolve a URL hash to a chapter index + an optional in-chapter scroll anchor.
- * The router's pure core (no DOM), shared by the browser entry and the Node smoke test.
+ * Render the book COVER view (#209) — the empty/root hash route, the live counterpart of
+ * P1's `index.html` cover. The SHARED cover body (book-scaffold's coverBodyHtml: book-title
+ * hero + lede — so the previewed cover IS the published cover) inside the live chrome rail,
+ * with the masthead marked current (`aria-current="page"`; it self-links to the cover you
+ * are on, exactly as P1's renderIndex). No chapter content, no on-this-page rail (matches
+ * P1's renderIndex layout).
  *
- *   - ''                    → the first chapter (bare entry point), no scroll.
+ * @param {object} model - the buildLiveBook result
+ * @returns {string} the mounted cover view HTML (a `<div class="enscribe-layout…">`)
+ */
+export function renderLiveCoverView(model) {
+  const { parts, bookTitle } = model;
+  const home = { href: COVER_HASH, title: bookTitle, current: true };
+  const rail = toHtml(buildChapterRail(parts, chapterHash, null, home));
+  return `<div class="${BOOK_LAYOUT}">${rail}<main class="enscribe-body">${coverBodyHtml(bookTitle)}</main></div>`;
+}
+
+/**
+ * Resolve a URL hash to a routing destination. The router's pure core (no DOM), shared by
+ * the browser entry and the Node smoke test.
+ *
+ *   - ''                    → the COVER (#209; the empty/root route, the entry point).
  *   - a known chapter stem  → that chapter, no scroll (top of chapter).
  *   - a known element id    → the chapter that OWNS it, scroll to the id.
  *   - anything else         → null (unknown anchor owned by no chapter; caller no-ops).
  *
  * @param {string} hash - location.hash (with or without the leading '#')
  * @param {object} model - the buildLiveBook result (stemToIndex + idToStem)
- * @returns {{ index: number, anchor: string|null } | null}
+ * @returns {{ cover: true } | { cover: false, index: number, anchor: string|null } | null}
  */
 export function resolveHash(hash, model) {
   const h = String(hash || '').replace(/^#/, '');
-  if (h === '') return { index: 0, anchor: null };
-  if (model.stemToIndex.has(h)) return { index: model.stemToIndex.get(h), anchor: null };
-  if (model.idToStem.has(h)) return { index: model.stemToIndex.get(model.idToStem.get(h)), anchor: h };
+  if (h === '') return { cover: true };
+  if (model.stemToIndex.has(h)) return { cover: false, index: model.stemToIndex.get(h), anchor: null };
+  if (model.idToStem.has(h)) return { cover: false, index: model.stemToIndex.get(model.idToStem.get(h)), anchor: h };
   return null;
 }
