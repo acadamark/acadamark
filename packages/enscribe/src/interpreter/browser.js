@@ -28,6 +28,9 @@ import {
   buildLiveBook,
   renderLiveChapterView,
   renderLiveCoverView,
+  renderLiveChapterEditView,
+  renderLiveChapterPreviewBody,
+  createIncrementalRebuilder,
   resolveHash,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
@@ -321,17 +324,27 @@ export async function renderMasterIntoAsync(target, source, options = {}) {
  * return-to-cover masthead (the book title) → the cover route, so a chapter round-trips to
  * the cover exactly as a P1 chapter page round-trips to `index.html`.
  *
- * Read-only this slice — no editing surface yet; the edit loop (re-render only the edited
- * chapter on change) is the immediate next slice. Served over HTTP (the shell fetches;
- * `file://` won't): children resolve against `document.baseURI`, exactly as `<library src>`.
+ * EDIT LOOP (#203, the epic payoff): pass an `editor` ADAPTER and chapter views become a
+ * GitHub-style Write/Preview pane. Editing a chapter's source (debounced) re-parses ONLY
+ * that chapter, re-runs the cheap global pass (so cross-chapter refs stay consistent), and
+ * re-renders ONLY that chapter's preview — never the whole book. Preview-only: edits live in
+ * memory and are lost on reload (no save this slice; an "unsaved" marker says so). Without an
+ * `editor`, the view is read-only and byte-identical to #209. Served over HTTP (the shell
+ * fetches; `file://` won't): children resolve against `document.baseURI`, like `<library src>`.
  *
  * @param {string|Element} target - a CSS selector or the Element to mount into.
  * @param {string} source - the BOOK master's enscribe source (a `<meta type=book>` with
  *   `<chapter src>` / `<preface src>` / `<appendix src>` children).
- * @param {object} [options] - pipeline options (see render()).
+ * @param {object} [options] - pipeline options (see render()), plus the live-book options:
+ * @param {object} [options.editor] - an editor ADAPTER enabling edit mode:
+ *   `editor.mount(paneEl, { value, onChange }) → { destroy?() }`. The engine owns the loop
+ *   (source map, debounce, rebuild, preview re-render, tabs); the adapter only creates the
+ *   editing surface (e.g. a CodeMirror 6 instance) and calls `onChange(newSource)` on edits.
+ * @param {number} [options.editDebounceMs=250] - debounce (ms) before a rebuild on edit.
  * @returns {Promise<Element>} the mounted element (after the initial view renders).
  */
 export async function mountLiveBook(target, source, options = {}) {
+  const { editor = null, editDebounceMs, ...pipelineOptions } = options;
   const root = typeof target === 'string' ? document.querySelector(target) : target;
   if (!root) {
     throw new Error(`mountLiveBook: target not found: ${String(target)}`);
@@ -339,12 +352,22 @@ export async function mountLiveBook(target, source, options = {}) {
   if (!HAS_MASTER_SRC.test(source)) {
     throw new Error('mountLiveBook: source is not a multi-file master (no `<… src>` chapter children)');
   }
-  const proc = getPipeline(options);
+  const proc = getPipeline(pipelineOptions);
   const childSrcs = discoverChildSrcs(proc, source);
   if (childSrcs.length === 0) {
     throw new Error('mountLiveBook: the master has no `<… src>` chapter children to assemble');
   }
   const { tree, loadedFile } = await loadAndAssembleMaster(proc, source, childSrcs);
+
+  // EDIT MODE (#203): an editor adapter turns chapter views into a Write/Preview editor with
+  // the incremental edit loop. Read mode below is untouched (byte-identical to #209).
+  if (editor) {
+    return mountEditLoop({
+      root, proc, masterSource: source, childSrcs, loadedFile, editor,
+      debounceMs: editDebounceMs ?? 250,
+    });
+  }
+
   // The cheap global pass, ONCE: numbers every target and resolves every cross-reference
   // over the whole book without rendering. One VFile carries the registry from this pass
   // into the harvest AND the loaded sources into each per-chapter stringify.
@@ -383,6 +406,157 @@ export async function mountLiveBook(target, source, options = {}) {
     window.addEventListener('hashchange', route);
   }
   route();                                        // initial render from the current hash
+  return root;
+}
+
+/** A trailing-edge debounce: coalesce a burst of calls (keystrokes) into one, `ms` after
+ *  the last. `.cancel()` drops a pending call (used when navigating away mid-edit). */
+function debounce(fn, ms) {
+  let timer = null;
+  const wrapped = (...args) => {
+    if (timer != null) clearTimeout(timer);
+    timer = setTimeout(() => { timer = null; fn(...args); }, ms);
+  };
+  wrapped.cancel = () => { if (timer != null) { clearTimeout(timer); timer = null; } };
+  return wrapped;
+}
+
+/**
+ * The edit loop (#203). Given the fetched master + children, stand up the incremental
+ * rebuilder over an in-memory source map and drive a hash-routed Write/Preview editor:
+ * chapter views mount the editor adapter; a debounced edit re-parses only that chapter
+ * (rebuilder), re-runs the cheap global pass, and re-renders ONLY the current chapter's
+ * preview pane. Other chapters re-render with fresh numbers when navigated to (each
+ * navigation renders from the current model — no stale cache). Preview-only: the source map
+ * lives in memory; nothing is written back this slice.
+ *
+ * The engine owns everything except the editing surface itself: the `editor` adapter only
+ * turns a mount element into an editor (`mount(el, {value, onChange}) → {destroy?()}`),
+ * keeping CodeMirror (a browser-only dependency) out of the engine and out of jsdom — the
+ * gate drives this loop through a fake adapter.
+ */
+function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs }) {
+  const loaded = loadedFile.data[ENSCRIBE_LOADED_SOURCES] || {};
+  // The editable in-memory source map (structure children), seeded from the fetched sources.
+  const sources = new Map();
+  for (const src of childSrcs) sources.set(src, readPreloadedChild(loaded, src));
+
+  const rebuilder = createIncrementalRebuilder({ masterSource, sources, proc, loadedSources: loaded });
+  let { model, file } = rebuilder.rebuild();   // the initial (full) build
+  let ctx = { proc, file };
+
+  // Chapter index → its source filename. Document-order correlation: the master's `src`
+  // children, in order, line up 1:1 with the reading-order chapters (one chapter file per
+  // book-part). If they don't (an unusual master), the editor degrades to a read-only notice.
+  const mappable = childSrcs.length === model.parts.length;
+  const srcForIndex = (idx) => (mappable ? childSrcs[idx] : null);
+
+  let editorHandle = null;     // the live adapter handle for the mounted chapter
+  let currentKey = null;       // 'cover' | chapter index
+  let currentIndex = -1;       // chapter index when on a chapter view, else -1
+
+  const destroyEditor = () => {
+    if (editorHandle && typeof editorHandle.destroy === 'function') {
+      try { editorHandle.destroy(); } catch { /* adapter teardown is best-effort */ }
+    }
+    editorHandle = null;
+  };
+
+  // Re-render ONLY the current chapter's preview pane (leave the editor + tabs intact).
+  const updatePreview = () => {
+    if (currentKey === 'cover' || currentIndex < 0) return;
+    const pane = root.querySelector('[data-edit-pane="preview"]');
+    if (pane) pane.innerHTML = renderLiveChapterPreviewBody(model, currentIndex, ctx);
+  };
+
+  const rebuildAndPreview = () => {
+    try {
+      const next = rebuilder.rebuild();
+      model = next.model;
+      ctx = { proc, file: next.file };
+    } catch (err) {
+      // always-renders: keep the loop alive; surface the error in the preview pane.
+      const pane = root.querySelector('[data-edit-pane="preview"]');
+      const msg = (err && err.message) || String(err);
+      if (pane) pane.innerHTML = `<p class="enscribe-edit-error">live edit error: ${msg.replace(/</g, '&lt;')}</p>`;
+      return;
+    }
+    updatePreview();
+  };
+  const debouncedRebuild = debounce(rebuildAndPreview, debounceMs);
+
+  // The adapter calls this on every edit; swap the source in synchronously (so a fast
+  // navigation still sees the edit) and debounce the (re-parse + global pass + re-render).
+  const onEditorChange = (newSource) => {
+    const src = srcForIndex(currentIndex);
+    if (src == null) return;
+    sources.set(src, newSource);
+    debouncedRebuild();
+  };
+
+  // Wire the Write/Preview tab buttons (engine-managed; no inline script in the fragment).
+  const wireTabs = () => {
+    const tabs = [...root.querySelectorAll('[data-edit-tab]')];
+    const panes = {
+      source: root.querySelector('[data-edit-pane="source"]'),
+      preview: root.querySelector('[data-edit-pane="preview"]'),
+    };
+    const activate = (name) => {
+      for (const t of tabs) {
+        const on = t.getAttribute('data-edit-tab') === name;
+        t.classList.toggle('enscribe-edit-tab--active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      }
+      if (panes.source) panes.source.hidden = name !== 'source';
+      if (panes.preview) panes.preview.hidden = name !== 'preview';
+    };
+    for (const t of tabs) {
+      t.addEventListener('click', () => activate(t.getAttribute('data-edit-tab')));
+    }
+  };
+
+  const renderChapterAt = (idx) => {
+    debouncedRebuild.cancel();
+    destroyEditor();
+    currentIndex = idx;
+    currentKey = idx;
+    root.innerHTML = renderLiveChapterEditView(model, idx, ctx);
+    wireTabs();
+    const mountEl = root.querySelector('[data-edit-pane="source"]');
+    const src = srcForIndex(idx);
+    if (mountEl && src != null) {
+      editorHandle = editor.mount(mountEl, { value: sources.get(src) ?? '', onChange: onEditorChange });
+    } else if (mountEl) {
+      mountEl.textContent = 'No editable source is mapped to this chapter (the master’s src children and the chapters are not 1:1).';
+    }
+  };
+
+  const renderCover = () => {
+    debouncedRebuild.cancel();
+    destroyEditor();
+    currentIndex = -1;
+    currentKey = 'cover';
+    root.innerHTML = renderLiveCoverView(model);
+  };
+
+  const route = () => {
+    const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', model);
+    if (dest == null) return;
+    if (dest.cover) {
+      if (currentKey !== 'cover') renderCover();
+      return;
+    }
+    if (currentKey !== dest.index) renderChapterAt(dest.index);
+    if (dest.anchor && typeof document !== 'undefined') {
+      const anchorEl = document.getElementById(dest.anchor);
+      if (anchorEl && typeof anchorEl.scrollIntoView === 'function') anchorEl.scrollIntoView();
+    }
+  };
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('hashchange', route);
+  }
+  route();
   return root;
 }
 

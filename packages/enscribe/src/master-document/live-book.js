@@ -30,6 +30,8 @@ import { toHtml } from 'hast-util-to-html';
 import { buildChapterRail, buildOnThisPage, chapterNavBar } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
+import { assembleMasterDocument } from './assemble.js';
+import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 import {
   collectBookParts,
   assignSlugStems,
@@ -198,4 +200,128 @@ export function resolveHash(hash, model) {
   if (model.stemToIndex.has(h)) return { cover: false, index: model.stemToIndex.get(h), anchor: null };
   if (model.idToStem.has(h)) return { cover: false, index: model.stemToIndex.get(model.idToStem.get(h)), anchor: h };
   return null;
+}
+
+// ─── The edit loop: incremental rebuild (#203) ────────────────────────────────
+//
+// The authoring payoff the epic was built for. Editing a chapter's source rebuilds the
+// model and re-renders ONLY that chapter — never the whole book. Two costs are bounded:
+//   - PARSE is incremental: a memoized parse re-parses only the edited chapter (its source
+//     string is new → cache miss); every unchanged child + the master is served from cache.
+//   - RENDER is single-chapter: the browser loop re-renders only the current chapter.
+// The ASSEMBLE + the cheap GLOBAL pass (runSync: numbering + cross-ref resolution, no
+// render) DO run over the whole assembled tree each edit — that is what keeps a cross-
+// reference in another chapter correct after a structural edit (e.g. a new figure shifts
+// the numbers), even though that chapter isn't re-rendered until you navigate to it.
+//
+// WHY CLONE: runSync is destructive — ref-resolution REPLACES `<ref>` nodes with markers,
+// numbering stamps nodes. So a cached parse tree cannot be fed to a second runSync as-is
+// (its `<ref>`s would already be gone). parseMemo returns a structuredClone of the cached
+// tree, so each rebuild assembles from fresh clones and runSync mutates the clones, never
+// the cache. Clone is far cheaper than parse — so "re-parse only the edited chapter" holds.
+
+/**
+ * Build an incremental rebuilder over an in-memory source map. Each `rebuild()` assembles
+ * the master from the CURRENT `sources` (re-parsing only sources not seen before), runs the
+ * cheap global pass, and returns a fresh live book model + the numbered tree + the VFile.
+ *
+ * @param {object} opts
+ * @param {string} opts.masterSource - the master document's .emd source (unchanged across edits)
+ * @param {Map<string,string>} opts.sources - childSrc → current source text; the caller MUTATES
+ *   this map in place on edit (set the edited child's new text) before calling rebuild()
+ * @param {object} opts.proc - the configured pipeline (its parse + runSync + buildLiveBook)
+ * @param {object} [opts.loadedSources] - the preloaded `<library src>` / `<table src>` map
+ *   (rides each rebuild's VFile for the table/library handlers; the structure children are
+ *   read from `sources`, not from here)
+ * @returns {{ rebuild: () => { numbered: object, file: object, model: object } }}
+ */
+export function createIncrementalRebuilder({ masterSource, sources, proc, loadedSources = {} }) {
+  // Memoize parse by source string; return a CLONE so the cached tree stays pristine while
+  // runSync mutates the assembled clones. Cache-miss == a source seen for the first time
+  // (the edited chapter on each edit), so exactly one re-parse per edit.
+  const parseCache = new Map();
+  const parseMemo = (src) => {
+    if (!parseCache.has(src)) parseCache.set(src, proc.parse(src));
+    return structuredClone(parseCache.get(src));
+  };
+
+  function rebuild() {
+    // A FRESH VFile each rebuild: the numbering registry lives on file.data and must not
+    // carry over from the previous pass (ensureRegistry reuses an existing one). The loaded
+    // library/table sources ride along for the handlers; structure children come from `sources`.
+    const file = { data: { [ENSCRIBE_LOADED_SOURCES]: loadedSources } };
+    const tree = assembleMasterDocument({
+      source: masterSource,
+      parse: parseMemo,
+      resolve: (rel) => rel,
+      readFile: (src) => {
+        const text = sources.get(src);
+        if (text == null) throw new Error(`createIncrementalRebuilder: no in-memory source for "${src}"`);
+        return text;
+      },
+      warn: () => {},
+    });
+    const numbered = proc.runSync(tree, file);
+    const model = buildLiveBook({ numbered, file });
+    return { numbered, file, model };
+  }
+
+  return { rebuild };
+}
+
+/**
+ * Render a chapter's EDIT VIEW (#203) — a GitHub-style Write/Preview tabbed pane, the live
+ * counterpart of a read chapter view. The chapter rail (+ masthead) stays left; the main
+ * column holds a tab bar (Source | Preview) + an "preview — unsaved" marker, a SOURCE pane
+ * (an empty mount the browser entry fills with the editor adapter), and a PREVIEW pane (the
+ * live-rendered chapter — `renderLiveChapterContent` + prev/next, the SAME render path as
+ * read mode, so the preview content matches what the book publishes). Source tab is active
+ * by default (you arrive to type); the browser entry toggles the panes and updates the
+ * preview on each debounced edit. No on-this-page rail in edit mode (the panes own the width).
+ *
+ * @param {object} model - the (current) buildLiveBook result
+ * @param {number} idx - the chapter's index in model.parts
+ * @param {object} ctx - { proc, file }
+ * @returns {string} the mounted edit-view HTML
+ */
+/**
+ * The PREVIEW pane body for a chapter in edit mode: the live-rendered chapter content +
+ * its prev/next bar — the SAME render path read mode uses, so the preview matches what the
+ * book publishes. Factored out so the browser edit loop can re-render JUST this pane on each
+ * debounced edit (leaving the editor + tabs untouched), and so the edit view builds it once.
+ *
+ * @param {object} model - the (current) buildLiveBook result
+ * @param {number} idx - the chapter's index in model.parts
+ * @param {object} ctx - { proc, file }
+ * @returns {string} the preview pane's inner HTML
+ */
+export function renderLiveChapterPreviewBody(model, idx, ctx) {
+  const navBar = chapterNavBar(model.parts, idx, chapterHash);
+  const prevNext = navBar ? toHtml(navBar) : '';
+  return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext;
+}
+
+export function renderLiveChapterEditView(model, idx, ctx) {
+  const { parts, bookTitle } = model;
+  const part = parts[idx];
+
+  const previewBody = renderLiveChapterPreviewBody(model, idx, ctx);
+
+  const home = { href: COVER_HASH, title: bookTitle };
+  const rail = toHtml(buildChapterRail(parts, chapterHash, part.id, home));
+
+  const tabs =
+    '<div class="enscribe-edit-tabs" role="tablist">' +
+      '<button type="button" class="enscribe-edit-tab enscribe-edit-tab--active" data-edit-tab="source" role="tab" aria-selected="true">Source</button>' +
+      '<button type="button" class="enscribe-edit-tab" data-edit-tab="preview" role="tab" aria-selected="false">Preview</button>' +
+      '<span class="enscribe-edit-status" title="Edits are preview-only — they live in memory and are lost on reload (no save this slice).">preview — unsaved</span>' +
+    '</div>';
+  // The source pane is the editor mount point (the adapter fills it); the preview pane holds
+  // the live render. Source visible by default, preview hidden — toggled by the browser entry.
+  const panes =
+    '<div class="enscribe-edit-pane enscribe-edit-pane--source" data-edit-pane="source"></div>' +
+    `<div class="enscribe-edit-pane enscribe-edit-pane--preview enscribe-body" data-edit-pane="preview" hidden>${previewBody}</div>`;
+
+  const main = `<main class="enscribe-edit-main">${tabs}${panes}</main>`;
+  return `<div class="${BOOK_LAYOUT} enscribe-layout--edit">${rail}${main}</div>`;
 }

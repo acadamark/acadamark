@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field Methods in Savanna Ecology — live editor</title>
+
+<!--
+  The LIVE EDITOR shell (edit loop, #203 — the epic payoff). The authoring counterpart of the
+  read shell (index.html): each chapter view is a GitHub-style Write/Preview pane. Type into
+  the Source tab and the Preview re-renders that chapter live (debounced) — only the edited
+  chapter is re-parsed and re-rendered; a structural edit (a new labeled figure) renumbers
+  cross-references everywhere, so a reference in another chapter shows the new number when you
+  navigate to it. PREVIEW-ONLY: edits live in memory and are LOST ON RELOAD (no save this
+  slice — the "preview — unsaved" marker says so). Write-back is the named follow-on.
+
+  Serve over HTTP (the shell fetches; needs network for the CodeMirror CDN). From the PACKAGE
+  root:
+      cd packages/enscribe && python3 -m http.server 8000
+      # open http://localhost:8000/test/fixtures/master-book/edit.html
+
+  Repo-relative paths are dev-preview plumbing (a packaged editor / `enscribe serve` would ship
+  the engine + editor + CSS). The engine (window.enscribe) owns the loop; CodeMirror is loaded
+  from a CDN and wired in via the small `editor` ADAPTER below — the one new browser dependency.
+-->
+<link rel="stylesheet" href="../../../src/interpreter/assets/default.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap">
+
+<!-- The return-to-cover masthead CSS (mirrors publish-pages.js BOOK_HOME_CSS / #206/#209). -->
+<style>
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
+</style>
+
+<!--
+  Edit-mode chrome CSS (#203): the Write/Preview tab bar + the two panes. Edit-only chrome, so
+  (like BOOK_HOME_CSS) it lives in the shell, not default.css. The book layout is already
+  rail+main (2 columns) without the 3rd "on this page" column, so no grid override is needed.
+-->
+<style>
+.enscribe-edit-main { display: flex; flex-direction: column; min-width: 0; }
+.enscribe-edit-tabs { display: flex; align-items: center; gap: var(--enscribe-space-2, 0.5rem); border-bottom: 1px solid var(--enscribe-border, #e1e1e1); margin-bottom: var(--enscribe-space-4, 1rem); }
+.enscribe-edit-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--enscribe-space-2, 0.5rem) var(--enscribe-space-3, 0.75rem); margin-bottom: -1px; font: inherit; font-family: var(--enscribe-font-sans); font-weight: 600; font-size: var(--enscribe-text-sm, 0.875rem); color: var(--enscribe-text-secondary, #555); cursor: pointer; }
+.enscribe-edit-tab--active { color: var(--enscribe-text-primary, #1a1a1a); border-bottom-color: var(--enscribe-link, #0052cc); }
+.enscribe-edit-status { margin-left: auto; font-size: var(--enscribe-text-xs, 0.75rem); font-style: italic; color: var(--enscribe-text-secondary, #555); }
+.enscribe-edit-pane--source .cm-editor { border: 1px solid var(--enscribe-border, #e1e1e1); border-radius: var(--enscribe-radius-sm, 2px); min-height: 65vh; font-size: 0.9rem; }
+.enscribe-edit-pane--source .cm-scroller { font-family: var(--enscribe-font-mono, 'Source Code Pro', ui-monospace, monospace); }
+.enscribe-edit-error { color: #b00020; font-style: italic; }
+</style>
+</head>
+<body>
+<div id="enscribe-book-root"></div>
+
+<!-- The engine bundle (IIFE → window.enscribe). Rebuild with `npm run build:lib`. -->
+<script src="../../../dist/enscribe.browser.global.js"></script>
+
+<!-- The editor adapter: load CodeMirror 6 from a CDN and turn a mount element into an editor.
+     The engine owns the loop; this only creates the editing surface and reports changes. -->
+<script type="module">
+  import { EditorView, basicSetup } from "https://esm.sh/codemirror@6.0.1";
+
+  const editor = {
+    // mount(el, { value, onChange }) → { destroy() } — the seam mountLiveBook's edit mode calls.
+    mount(el, { value, onChange }) {
+      const view = new EditorView({
+        doc: value,
+        parent: el,
+        extensions: [
+          basicSetup,
+          EditorView.lineWrapping,
+          EditorView.updateListener.of((u) => { if (u.docChanged) onChange(u.state.doc.toString()); }),
+        ],
+      });
+      return { destroy() { view.destroy(); } };
+    },
+  };
+
+  window.enscribe
+    .mountLiveBookFromUrl('#enscribe-book-root', 'master-book.emd', { editor })
+    .catch((err) => {
+      document.getElementById('enscribe-book-root').textContent =
+        'Failed to mount the live editor: ' + err.message;
+      // eslint-disable-next-line no-console
+      console.error(err);
+    });
+</script>
+</body>
+</html>

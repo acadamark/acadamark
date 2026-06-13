@@ -1061,6 +1061,11 @@ export { publishBookPages } from '../master-document/publish-pages.js';
 // core. The browser entry (browser.js mountLiveBook) wraps these with the fetch loader,
 // the DOM mount, and the hashchange router. Shares P1's book-scaffold for content parity.
 export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderLiveCoverView, resolveHash, chapterHash } from '../master-document/live-book.js';
+// Edit loop, L2 follow-up (#203 payoff): the incremental rebuilder (re-parse only the edited
+// chapter via a memoized parse + clone; re-run the cheap global pass) and the GitHub-style
+// Write/Preview edit view. The pure core of the authoring loop; browser.js mountLiveBook wires
+// the in-memory source map, the debounced re-render, and the CodeMirror editor adapter onto it.
+export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapterPreviewBody } from '../master-document/live-book.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);
