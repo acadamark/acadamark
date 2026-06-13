@@ -985,6 +985,13 @@ cross-references, and edited-volume (per-chapter) authorship.
   in-page anchor. The page's chapter content is the per-chapter render of `RQ-BOOK-M7`
   / the lazy engine (byte-identical to the single-page slice apart from this cross-
   page href rewrite), so single-page (`--single-page`) stays the reference render.
+  Each page also carries a return-to-cover masthead — the book title, linking to
+  `index.html` — so the cover is reachable from every page (a round-trip destination,
+  not a dead-end entry point), while the front-matter parts stay ordinary rail items
+  (a front-matter chapter is not the home). On the cover page itself the masthead is a
+  self-link, marked the current page. The masthead is separate-pages-only chrome (a
+  single-scroll book has no separate cover to return to), so the single-page render
+  carries no masthead.
 
 **Stylesheet predicates:**
 

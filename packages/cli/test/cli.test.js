@@ -324,6 +324,8 @@ export function run_tests() {
           `${f} is a complete standalone HTML document`);
         assert.ok(html.includes('.enscribe-layout'), `${f} inlines default.css (via @enscribejs/enscribe/default.css)`);
         assert.ok(/<nav class="enscribe-toc enscribe-chapter-rail"/.test(html), `${f} carries the chapter-rail chrome`);
+        assert.ok(html.includes('<a class="enscribe-book-home" href="index.html"'),
+          `${f} carries the return-to-cover masthead (#206) — every page links home to index.html`);
       }
       console.log('PASS: build — separate-pages book (default) writes standalone per-chapter pages + index');
     } finally {

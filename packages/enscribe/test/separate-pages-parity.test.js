@@ -122,6 +122,31 @@ export async function run() {
     console.log('PASS: P1 — cross-chapter refs link cross-page (owner-url#anchor); same-page refs stay #anchor');
   }
 
+  // ── return-to-cover masthead (#206): every page round-trips to the cover ─────
+  // The chrome carries a book-title masthead linking to index.html on every page, so
+  // a reader can always get back to the cover. About this Book stays an ordinary
+  // front-matter rail item — it is NOT the home — and the cover links into the book.
+  {
+    for (const [name, html] of pages) {
+      assert.ok(html.includes('<a class="enscribe-book-home" href="index.html"'),
+        `${name} carries the return-to-cover masthead linking to index.html`);
+    }
+    const index = pages.get('index.html');
+    assert.ok(index.includes('<span class="enscribe-book-home-title">Field Methods in Savanna Ecology</span>'),
+      'the masthead is the book title (the home affordance, not a bare "Home")');
+    // the cover's masthead is a self-link → marked current; a chapter's is a plain link out
+    assert.ok(index.includes('<a class="enscribe-book-home" href="index.html" aria-current="page">'),
+      'on the cover the masthead self-link is aria-current="page" (you are here)');
+    const ch1 = pages.get('1-counting-elephants.html');
+    assert.ok(ch1.includes('<a class="enscribe-book-home" href="index.html">'),
+      'on a chapter page the masthead is a plain link to the cover (no aria-current)');
+    assert.ok(/<li class="enscribe-rail-item enscribe-rail-item--front"><a href="about-this-book\.html">/.test(ch1),
+      'about-this-book.html stays a normal front-matter rail item — reachable via the sidebar, not masquerading as home');
+    assert.ok(index.includes('<a href="1-counting-elephants.html"'),
+      'the cover (index.html) links into the book — a genuine round-trip destination, not a dead-end entry point');
+    console.log('PASS: P1/#206 — every page round-trips to the cover (masthead → index.html); About this Book stays a rail item');
+  }
+
   // ── the VFile the CLI threads (for the registry harvest) is output-inert ─────
   // doBuild now runs the single-page path with a VFile (runSync(tree,file) +
   // stringify(numbered,file)); single-page output must be byte-identical to the old

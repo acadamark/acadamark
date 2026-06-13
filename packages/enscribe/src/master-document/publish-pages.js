@@ -182,9 +182,26 @@ function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl) {
 
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/** Wrap a body in a standalone HTML document with default.css inlined and the two
- *  C reading-interface scripts (scroll-spy drives the left rail — a no-op when its
- *  links are page URLs; on-this-page drives the right rail's in-page highlight). */
+// The return-to-cover masthead's CSS (#206). It lives HERE, not in default.css,
+// because the masthead is separate-pages-only chrome: default.css is inlined verbatim
+// into every single-page golden's <style>, so adding this rule there would change all
+// of them with a rule they never use (breaking the single-page byte-stability
+// contract). Confined to the separate-pages shell, it touches only these pages. Styled
+// off default.css's own design tokens so it matches the rail visually. The selector is
+// scoped `.enscribe-layout--book .enscribe-toc a.enscribe-book-home` (specificity 0,3,1)
+// SO IT WINS the cascade against the general rail-anchor rules it would otherwise inherit:
+// `.enscribe-toc a` (0,1,1 — muted color + vertical padding) and
+// `.enscribe-layout--book .enscribe-toc a` (0,2,1 — chapter-link left indent + transparent
+// left border). A bare `.enscribe-book-home` (0,1,0) loses to both, leaving the masthead
+// muted and indented like a rail link; the explicit padding/border-left resets neutralise
+// the inherited indent so it reads as a full-width home title.
+const BOOK_HOME_CSS = `.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }`;
+
+/** Wrap a body in a standalone HTML document with default.css (+ the separate-pages
+ *  masthead CSS) inlined and the two C reading-interface scripts (scroll-spy drives the
+ *  left rail — a no-op when its links are page URLs; on-this-page drives the right
+ *  rail's in-page highlight). */
 function pageShell(body, title, defaultCss) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -194,6 +211,7 @@ function pageShell(body, title, defaultCss) {
 <title>${escapeHtml(title)}</title>
 <style>
 ${defaultCss}
+${BOOK_HOME_CSS}
 </style>
 </head>
 <body>
@@ -209,6 +227,10 @@ ${body}
 // right rail is present, mirroring C's single-page applyBookToc.
 const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout--book';
 
+// The cover/landing page's filename — the single source for both the index map key and
+// the return-to-cover masthead href (#206), so they can never drift apart.
+const INDEX_PAGE = 'index.html';
+
 /** Render one chapter page: renderChapter content (cross-page refs rewritten) inside
  *  the three-column chrome (chapter rail → page URLs with the current chapter marked
  *  active; on-this-page → this chapter's sub-sections in-page; prev/next → page URLs). */
@@ -219,7 +241,8 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
   let content = renderChapter(part.node, registry, { proc, file });
   content = rewriteCrossPageRefs(content, part.id, registry, idToUrl);
 
-  const rail = toHtml(buildChapterRail(parts, chapterHref, part.id));
+  const home = { href: INDEX_PAGE, title: bookTitle };
+  const rail = toHtml(buildChapterRail(parts, chapterHref, part.id, home));
   const onThisPageNav = buildOnThisPage([part]);
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHref);
@@ -232,10 +255,16 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
 }
 
 /** The landing/index page: the book title + the chapter rail linking to every chapter
- *  PAGE (a stable index.html entry point that does not privilege one chapter). */
+ *  PAGE (a stable index.html entry point that does not privilege one chapter). The rail
+ *  carries the same return-to-cover masthead as the chapter pages (here a self-link to
+ *  the cover) so the chrome is uniform across every page. */
 function renderIndex(parts, idToUrl, opts) {
   const { defaultCss, bookTitle } = opts;
-  const rail = toHtml(buildChapterRail(parts, (p) => p.slug));
+  // `current: true` — on the cover the masthead is a self-link (index.html → itself), so
+  // mark it aria-current="page" rather than presenting a 'home' link to the page you are
+  // already on. Chapter pages omit it (their masthead points elsewhere).
+  const home = { href: INDEX_PAGE, title: bookTitle, current: true };
+  const rail = toHtml(buildChapterRail(parts, (p) => p.slug, null, home));
   const body = `<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book">${rail}<main class="enscribe-body"><book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>`;
   return pageShell(body, bookTitle, defaultCss);
 }
@@ -268,6 +297,6 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
   });
-  pages.set('index.html', renderIndex(parts, idToUrl, opts));
+  pages.set(INDEX_PAGE, renderIndex(parts, idToUrl, opts));
   return pages;
 }

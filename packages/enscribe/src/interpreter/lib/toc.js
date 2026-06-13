@@ -230,8 +230,19 @@ function assignBookIds(parts, used) {
  *  single-page in-page anchor (the byte-stability contract — single-page output must
  *  not move). The separate-pages publisher (P1) passes a page-URL builder so the rail
  *  links to chapter PAGES instead. `activeId` (separate-pages) statically marks the
- *  current chapter's link (scroll-spy can't, since page-URL links aren't #anchors). */
-export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeId = null) {
+ *  current chapter's link (scroll-spy can't, since page-URL links aren't #anchors).
+ *
+ *  `home` (separate-pages, #206) is the return-to-cover masthead: `{ href, title,
+ *  current? }` renders a clickable book-title link at the top of the rail, pointing at
+ *  the cover (index.html), so every page can get back to it; `current: true` (the cover
+ *  page itself) marks the self-link `aria-current="page"`. When a masthead is present
+ *  the nav is labelled "Book" — it holds the home link AND the chapter list, so a bare
+ *  "Chapters" landmark name would mis-describe the home link as a chapter. Default null
+ *  → no masthead and the "Chapters" label, so the single-page C rail is byte-identical
+ *  (the masthead is a separate-pages-only affordance; a single-scroll book has no
+ *  separate cover to return to). The `home` shape is checked (href + title), not just
+ *  truthiness, so a partial object never emits a broken masthead. */
+export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeId = null, home = null) {
   const items = parts.map((p) => {
     const linkProps = { href: chapterHref(p) };
     if (activeId != null && p.id === activeId) {
@@ -244,12 +255,28 @@ export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeI
       el('a', linkProps, bookLink(p)),
     ]);
   });
-  return el('nav', { className: ['enscribe-toc', 'enscribe-chapter-rail'], ariaLabel: 'Chapters' }, [
-    el('details', { className: ['enscribe-toc-details'], open: true }, [
-      el('summary', { className: ['enscribe-toc-summary'] }, [text('Chapters')]),
-      el('ul', {}, items),
-    ]),
+  const details = el('details', { className: ['enscribe-toc-details'], open: true }, [
+    el('summary', { className: ['enscribe-toc-summary'] }, [text('Chapters')]),
+    el('ul', {}, items),
   ]);
+  const hasMasthead = !!(home && home.href && home.title);
+  let navChildren;
+  if (hasMasthead) {
+    const mastheadProps = { className: ['enscribe-book-home'], href: home.href };
+    if (home.current) mastheadProps['aria-current'] = 'page';
+    navChildren = [
+      el('a', mastheadProps, [
+        el('span', { className: ['enscribe-book-home-title'] }, [text(home.title)]),
+      ]),
+      details,
+    ];
+  } else {
+    navChildren = [details];
+  }
+  return el('nav', {
+    className: ['enscribe-toc', 'enscribe-chapter-rail'],
+    ariaLabel: hasMasthead ? 'Book' : 'Chapters',
+  }, navChildren);
 }
 
 /** The RIGHT "on this page" rail: one section group per chapter (those with
