@@ -467,6 +467,7 @@ eqnarray > .katex-display {
   flex: 1;
   margin: 0;            /* override KaTeX's default 1em top/bottom margin */
   overflow-x: auto;
+  overflow-y: hidden;   /* mirror the wrapper (#217): an `auto` x-axis computes a `visible` y to `auto` */
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
