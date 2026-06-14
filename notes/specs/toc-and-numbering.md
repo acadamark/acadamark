@@ -6,17 +6,21 @@ cover) is a sibling concern with its own spec.
 
 All settings are `<config>` kwargs.
 
-## Default: no contents, no numbering
+## Defaults: contents opt-in; numbering off for articles, on for books
 
-Following Quarto and LaTeX, a document gets **no** table of contents unless it asks for one — `toc`
-defaults off, for articles and books alike. Nothing is auto-inserted, so authoring stays clean and a
-document carries only the structure its author opted into. Books are not special-cased: a book that
-wants a contents listing and numbered chapters sets the kwargs in its master, which the example
-documents and the docs site do.
+A document gets **no** table of contents unless it asks for one — `toc` defaults off, for articles and
+books alike. Nothing is auto-inserted, so authoring stays clean and a document carries only the
+structure its author opted into. Books are **not** special-cased for the contents listing: a book that
+wants one sets `<config toc>` in its master (as the example documents and the docs site do).
 
-`number-sections` also defaults off, for consistency with the same opt-in philosophy. (Note: Quarto
-and LaTeX agree on no-ToC-by-default but *disagree* on numbering — Quarto defaults it off, LaTeX
-numbers by default. Enscribe follows the opt-in default here too.)
+`number-sections`, by contrast, splits by document class — **off for articles, on for books**.
+Declaring `<meta type=book>` opts into book conventions, where numbered chapters and sections
+("2.1 Methods") are standard; a book that does *not* want them sets `number-sections=false`, and an
+article that does want them sets `number-sections`. This mirrors the book-navigation default
+(declaring a book opts into book chrome) and the LaTeX model (auto-numbered sections + an opt-in
+`\tableofcontents`). (Quarto and LaTeX disagree on numbering — Quarto off, LaTeX on — so Enscribe
+splits by class rather than picking one.) A `<config>` setting in the master overrides the default
+either way.
 
 ## Table of contents
 
@@ -36,7 +40,7 @@ simply `toc-location: right` (or `left`): a sidebar location is sticky and scrol
 
 | kwarg | type | default | meaning |
 |---|---|---|---|
-| `number-sections` | boolean | off | Number the headings. |
+| `number-sections` | boolean | off (article) · on (book) | Number the headings. |
 | `number-depth` | integer | all levels | Deepest heading level that receives a number. |
 
 ## Listing depth and numbering depth are independent
@@ -68,10 +72,11 @@ These let prefatory or appendix material (a preface, an unnumbered index chapter
 moving the document-wide depths. `unlisted` drops the heading **and its subtree** from the listing —
 a prefatory part opts out wholesale, not leaving orphaned subsections behind.
 
-The overrides are boolean attributes on the heading, authored with the `+flag` boolean shorthand:
-`<section +unlisted | …>`, `<book-part type="appendix" +unlisted | …>`. (The bare form the tables
-above show — `<section unlisted>` — is the eventual ergonomic; Layer-2 shorthand does not parse a bare
-boolean yet, tracked in [#219](https://github.com/enscribejs/enscribe/issues/219).)
+The overrides are boolean attributes on the heading, authored either as the bare canonical form the
+tables above show — `<section unlisted | …>`, `<book-part type="appendix" unnumbered | …>` — or with
+the `+flag` boolean shorthand (`<section +unlisted | …>`); the two are equivalent. A bare *known*
+boolean parses as `true` ([#219](https://github.com/enscribejs/enscribe/issues/219)); a bare unknown
+name stays unrecognized, so a typo never becomes a phantom boolean.
 
 ## Layer 1 form
 
@@ -120,10 +125,10 @@ Two consequences for the Layer 1 reference:
 
 *Implementation status:* the **table-of-contents** half is wired (#218) — the config-driven contents
 listing, read in the shared compiler so the static build and the live render honor it identically.
-Authoring forms today: `<config toc=true toc-depth=2 toc-location=right toc-expand=1 toc-title="…">`
-(config kwargs are the `key=value` form) and `<section +unlisted>` (the heading boolean). The bare
-boolean forms the tables show are the target ergonomic, deferred to
-[#219](https://github.com/enscribejs/enscribe/issues/219). The gate-tested behaviors — off-by-default,
+Authoring: valued kwargs take a value (`toc-depth=2 toc-location=right`); boolean kwargs and the
+heading overrides take the **bare** canonical form (`<config toc>`, `<section unlisted>`) or,
+equivalently, `=true` / `+flag` — the bare known-boolean form now parses
+([#219](https://github.com/enscribejs/enscribe/issues/219)). The gate-tested behaviors — off-by-default,
 `toc-depth`, `toc-location` body/left/right, `toc-expand` initial expansion, `+unlisted`, and the
 static≡live parity — are checked in `packages/enscribe/test/config-toc.test.js` (and the new
 `document-62`/`document-63`/`document-64` fixtures ride the standing render-parity guard).
@@ -134,8 +139,8 @@ articles / on books) stamps hierarchical 1 / 1.1 / 1.1.1; `number-depth` bounds 
 **independent of `toc-depth`**; `<section +unnumbered>` puts a heading outside the sequence (no number,
 the counter does not advance, the subtree is unnumbered). Numbered headings show their numbers in the
 contents listing (the un-glue path). Gate-tested in `packages/enscribe/test/config-numbering.test.js`
-(+ `document-65`). Authoring: `<config number-sections=true number-depth=2>` (kwargs) and
-`<section +unnumbered>` (boolean); the bare forms are #219.
+(+ `document-65`). Authoring: `<config number-sections number-depth=2>` (the boolean kwarg bare, the
+valued one `=`) and `<section unnumbered>` / `+unnumbered` — bare known booleans parse since #219.
 
 *Spec note for whoever wires this:* the user-facing docs (the authoring guide and the Layer 1
 reference) should describe these settings by role and link back here for the authoritative list,

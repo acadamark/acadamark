@@ -65,6 +65,7 @@ import { run as runLiveBookShell } from './live-book-shell.test.js';
 import { run as runLiveArticleShell } from './live-article-shell.test.js';
 import { run as runConfigToc } from './config-toc.test.js';
 import { run as runConfigNumbering } from './config-numbering.test.js';
+import { run as runBareBooleans } from './bare-booleans.test.js';
 import { run as runFormatNeutrality } from './format-neutrality.test.js';
 import { run as runShellAssets } from './shell-assets.test.js';
 import { run as runEmitShell } from './emit-shell.test.js';
@@ -136,6 +137,7 @@ const suites = [
   ['live-article-shell',           runLiveArticleShell],
   ['config-toc',                   runConfigToc],
   ['config-numbering',             runConfigNumbering],
+  ['bare-booleans',                runBareBooleans],
   ['format-neutrality',            runFormatNeutrality],
   ['shell-assets',                 runShellAssets],
   ['emit-shell',                   runEmitShell],

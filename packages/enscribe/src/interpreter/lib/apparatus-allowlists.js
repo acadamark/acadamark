@@ -123,3 +123,29 @@ export function isConfigKwarg(key) {
   if (CONFIG_KWARGS.has(key)) return true;
   return CONFIG_KWARG_PREFIXES.some(prefix => key.startsWith(prefix));
 }
+
+/**
+ * The BOOLEAN <config> kwargs — those whose value is a flag (true/false), as opposed to the VALUED
+ * kwargs (`toc-depth`, `toc-location`, `number-depth`, `citation-style`, `theme`, …) that require a
+ * value. The split lets a BARE `<config toc>` resolve to `toc=true` (#219) only for the flag kwargs;
+ * a bare valued kwarg (`<config toc-depth>`) is meaningless and stays unrecognized, never a spurious
+ * boolean. Each is consumed as a boolean today (number-* family, toc, show-source, parse-data-tables).
+ */
+export const CONFIG_BOOLEAN_KWARGS = new Set([
+  'toc',
+  'number-sections',
+  'number-equations',
+  'number-figures',
+  'number-tables',
+  'number-theorems',
+  'number-definitions',
+  'number-examples',
+  'number-boxes',
+  'show-source',
+  'parse-data-tables',
+]);
+
+/** Predicate: is `key` a BOOLEAN <config> kwarg (so a bare `<config key>` means `key=true`)? */
+export function isBooleanConfigKwarg(key) {
+  return CONFIG_BOOLEAN_KWARGS.has(key);
+}

@@ -63,7 +63,7 @@ import {
   getFrameableLiftSpec,
 } from '../../core/frameable-elements.js';
 import {
-  CONFIG_KWARGS, isConfigKwarg,
+  CONFIG_KWARGS, isConfigKwarg, isBooleanConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
 import { hostAcceptsLanguage, HOST_ACCEPT_SETS } from '../lib/host-accept-sets.js';
@@ -1029,8 +1029,66 @@ function validateHostAcceptSet(node, file) {
  *
  * @returns {(tree: object, file: object) => void}
  */
+// ─── Bare boolean authoring forms (#219) ──────────────────────────────────────
+//
+// The parser parses a bare attribute name (no `=value`, no `+`/`-` sigil) as a POSITIONAL
+// — `<config toc>` → positional ['toc']; `<section unlisted>` → positional ['unlisted'].
+// Bare is the canonical HTML / Layer 1 spelling of a boolean attribute (`<config toc>`),
+// so this promotes a bare positional that is a KNOWN boolean to the same `true` the +/=true
+// forms produce, byte-identically:
+//   - on `<config>`: a BOOLEAN config kwarg (CONFIG_BOOLEAN_KWARGS — `toc`, `number-sections`,
+//     …) → `node.kwargs[name] = 'true'` (identical to `name=true`, which config-discovery reads).
+//   - on any other element: a name declared in its vocab `booleans:` (`unlisted`, `unnumbered`,
+//     …) → `node.booleans[name] = true` (identical to `+name`, which mapAttributes / handlers read).
+// A bare name that is NOT a known boolean stays positional — unrecognized exactly as today (so a
+// typo never becomes a phantom boolean, and a bare VALUED kwarg like `<config toc-depth>` is inert).
+// Runs as a pre-pass before the rule walk (and before config-discovery / structuring / numbering),
+// so every downstream reader sees the promoted boolean. A parse-level fact → static and live agree.
+
+/** Is `name` a known boolean ON `tagname`? Config: a boolean config kwarg; else: a vocab boolean. */
+function isKnownBoolean(tagname, name) {
+  if (tagname === 'config') return isBooleanConfigKwarg(name);
+  return !!VOCABULARY?.[tagname]?.enscribe_attributes?.booleans?.[name];
+}
+
+/** Promote a single node's bare known-boolean positionals (see header). */
+function promoteNodeBareBooleans(node) {
+  const positional = node.positional;
+  if (!Array.isArray(positional) || positional.length === 0) return;
+  const isConfig = node.tagname === 'config';
+  const remaining = [];
+  for (const p of positional) {
+    if (typeof p === 'string' && isKnownBoolean(node.tagname, p)) {
+      if (isConfig) {
+        node.kwargs = node.kwargs ?? {};
+        if (!(p in node.kwargs)) node.kwargs[p] = 'true'; // == <config name=true>
+      } else {
+        node.booleans = node.booleans ?? {};
+        if (!(p in node.booleans)) node.booleans[p] = true; // == <element +name>
+      }
+    } else {
+      remaining.push(p);
+    }
+  }
+  node.positional = remaining;
+}
+
+/** Walk the tree (children + non-opaque enscribeTag content) promoting bare known booleans. */
+function promoteBareBooleans(nodes) {
+  for (const node of nodes ?? []) {
+    if (isEnscribeTag(node)) {
+      promoteNodeBareBooleans(node);
+      if (Array.isArray(node.content) && !node.isOpaqueContent) promoteBareBooleans(node.content);
+    }
+    if (Array.isArray(node.children)) promoteBareBooleans(node.children);
+  }
+}
+
 export function enscribeNormalizeToCanonical() {
   return function normalizeToCanonical(tree, file) {
+    // #219: promote bare known-boolean positionals (`<config toc>`, `<section unlisted>`) to the
+    // same `true` the +/=true forms produce, BEFORE the rule walk + every downstream reader.
+    promoteBareBooleans(tree.children ?? []);
     // Phase 4 slice 4a (2026-05-29): set per-document book-context flag
     // before the walk so the book-part shorthand expansion predicate
     // (Group A1.7) fires only in book documents. Cleared in a finally
