@@ -35,6 +35,37 @@ is the source of truth for the nav).
   import-jats` and rendered to standalone pages under `dist/demo/`, with `demos.html`
   indexing them.
 
+## The live companion (`/live`)
+
+Alongside the pre-built static site, the build emits a **live** companion under
+`dist/live/` — the same docs, rendered **client-side** from their `.emd` source instead
+of baked to HTML (#207). The static site stays the default; `/live` is purely additive.
+Each source-bearing page gets a deep-linked "open this page live →" affordance in its
+static footer (with a one-click `?edit` into the in-browser editor).
+
+- One **uniform shell per page** (`emitLiveShell` → `mountLiveShell`, #215/#216): it fetches
+  the page's `.emd` and renders it in the browser, auto-detecting article vs. book at runtime
+  — so today's article pages and a future book page (the guide-as-book) use the very same shell.
+- The shell assets — the ~3 MB engine bundle plus the small shell CSS and editor-adapter files
+  (the set is defined once by `SHELL_ASSET_SPECS` in `@enscribejs/cli/build-live`) — are copied
+  **once** to `dist/live/assets/`, never duplicated per page, and every shell's `assetBase` points
+  there. Each page's `.emd` source (and any `<… src>` children) is copied beside the shells, which
+  fetch it at runtime.
+- Shells are emitted **read by default**; `?edit` flips to the CodeMirror editor at runtime
+  (loaded host-side only then). `/live` is emitted only when the browser bundle is present
+  (same gate as the Quickstart playground); without it, `/live` is skipped and no links appear,
+  so the static site is unchanged.
+
+Only pages with a single `.emd` source go live — the generated Gallery and Demos pages have no
+single source, so they have no live counterpart.
+
+**Known limitation (this slice).** A live page renders the article through the engine's browser
+defaults, so it does **not** show the per-page on-this-page **table-of-contents sidebar** that the
+static page adds (the static build passes a `toc` render option the uniform shell does not inject).
+The content is otherwise identical — the same pipeline, the same external-resource / hover / DSL
+options. Carrying the static site's per-page render options into the live shell is a later
+enhancement (it would touch the shell emitter, kept out of this build-orchestration slice).
+
 ## Build and preview
 
 ```sh
@@ -48,11 +79,12 @@ cd ../..
 npm run docs:build
 #   → writes docs-site/dist/*.html (index, design, quickstart, authoring-guide,
 #     layer1-reference, gallery, jats, demos) + dist/demo/*.html + assets/
+#     + dist/live/ (the live companion: one shell per source page + shared assets)
 
-# 3. Serve dist/ over HTTP and open it. (The Quickstart's ES-module imports need
-#    an HTTP origin; file:// will not work.)
+# 3. Serve dist/ over HTTP and open it. (The Quickstart's ES-module imports — and
+#    every /live shell's — need an HTTP origin; file:// will not work.)
 python3 -m http.server 8000 --directory docs-site/dist
-#   → http://localhost:8000/index.html
+#   → http://localhost:8000/index.html   (static)  ·  /live/index.html  (live)
 ```
 
 If the Quickstart shows a yellow "bundle is not loaded" notice, step 1 hasn't
@@ -73,6 +105,10 @@ copies it into the site's `dist/assets/` when present.
 4. Copies the static assets (`default.css` — enscribe's theme; `site.css` — the
    site chrome; `quickstart.js`; and the browser bundle if built) into
    `dist/assets/`.
+5. Emits the live companion (`dist/live/`, #207) when the browser bundle is present:
+   a `mountLiveShell` shell per source page (`emitLiveShell`, `assetBase` → the shared
+   `dist/live/assets/`), the four shell assets copied once, and each page's `.emd`
+   source copied beside its shell. Adds the static→live footer link to each source page.
 
 Navigation is hardcoded in `build.js`'s page list; it grows as real pages land.
 

@@ -30,6 +30,7 @@
     ".": "./src/cli.js",
     "./jats-import": "./src/jats-import/index.js",
     "./jats-export": "./src/jats-export/index.js",
+    "./build-live": "./src/build-live.js",
     "./package.json": "./package.json"
   },
   "files": [

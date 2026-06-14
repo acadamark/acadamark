@@ -14,15 +14,51 @@ import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell } from '@enscrib
 
 const require = createRequire(import.meta.url);
 
-// The shipped assets a live folder needs, resolved via @enscribejs/enscribe's package exports
-// (filename in the folder -> export specifier). Adding ./shell/* + ./browser-global made these
-// resolvable from outside the package.
-const ASSET_SPECS = {
+// The shipped assets a live shell references, resolved via @enscribejs/enscribe's package exports
+// (filename in the deployment -> export specifier). Adding ./shell/* + ./browser-global made these
+// resolvable from outside the package. SINGLE AUTHORITY: this is the one list of "what a live shell
+// needs" — buildLiveFolder copies them flat into its folder; a multi-page site (docs-live, #207)
+// copies them ONCE into a shared dir via copyShellAssets and points many shells' assetBase at it. A
+// fifth asset added here flows to both consumers, no drift.
+export const SHELL_ASSET_SPECS = {
   'enscribe.browser.global.js': '@enscribejs/enscribe/browser-global',
   'default.css': '@enscribejs/enscribe/default.css',
   'enscribe-shell.css': '@enscribejs/enscribe/shell/enscribe-shell.css',
   'editor-codemirror.js': '@enscribejs/enscribe/shell/editor-codemirror.js',
 };
+
+/**
+ * Copy the live-shell assets (SHELL_ASSET_SPECS) into `destDir`, once. The reusable copy step for ANY
+ * live deployment: a self-standing folder (buildLiveFolder, assets beside the shell) OR a shared
+ * asset dir many per-page shells point their `assetBase` at (docs-live, #207 — the ~3 MB engine bundle
+ * must not be copied per page). Resolves each asset via the package exports, so the caller needs no
+ * knowledge of the package's internal layout. Throws if the engine bundle isn't built — gate on its
+ * presence first if graceful degradation is wanted.
+ *
+ * @param {string} destDir - directory to copy the assets into (created if missing).
+ * @returns {string[]} the copied filenames (the keys of SHELL_ASSET_SPECS).
+ */
+export function copyShellAssets(destDir) {
+  mkdirSync(destDir, { recursive: true });
+  for (const [name, spec] of Object.entries(SHELL_ASSET_SPECS)) {
+    copyFileSync(require.resolve(spec), join(destDir, name));
+  }
+  return Object.keys(SHELL_ASSET_SPECS);
+}
+
+/**
+ * Discover a master document's `<… src>` structure children — the same `master + its src children`
+ * recognition (isMasterSrcEntry) the assembler and the browser live-loader use, so a multi-file
+ * document's child sources are copied alongside it. Deduped, document-order. Returns `[]` for a
+ * single-file document (the common case today). Shared by buildLiveFolder and docs-live (#207).
+ *
+ * @param {string} masterSource - the master document's `.emd` source text.
+ * @returns {string[]} the child `src` filenames, deduped.
+ */
+export function discoverMasterSrcChildren(masterSource) {
+  const tree = buildEnscribePipeline({}).parse(masterSource);
+  return [...new Set((tree.children ?? []).filter(isMasterSrcEntry).map((n) => n.kwargs.src))];
+}
 
 /**
  * Build a self-standing live folder for a master document — book OR article (#216): copy the master
@@ -54,12 +90,11 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
 
   // 1. the master + its `src` children — so the folder is self-standing (the shell fetches them).
   copyInto(masterPath, masterName);
-  const masterTree = buildEnscribePipeline({}).parse(readFileSync(masterPath, 'utf8'));
-  const children = [...new Set((masterTree.children ?? []).filter(isMasterSrcEntry).map((n) => n.kwargs.src))];
+  const children = discoverMasterSrcChildren(readFileSync(masterPath, 'utf8'));
   for (const src of children) copyInto(join(masterDir, src), src);
 
-  // 2. the shell assets + engine bundle, copied flat (resolved via the package exports).
-  for (const [name, spec] of Object.entries(ASSET_SPECS)) copyInto(require.resolve(spec), name);
+  // 2. the shell assets + engine bundle, copied flat into the folder (assetBase './').
+  copyShellAssets(out);
 
   // 3. the emitted live shell — flat assetBase, so every reference resolves inside the folder.
   writeFileSync(
@@ -68,5 +103,5 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
     'utf8',
   );
 
-  return { outDir: out, master: masterName, children, assets: Object.keys(ASSET_SPECS) };
+  return { outDir: out, master: masterName, children, assets: Object.keys(SHELL_ASSET_SPECS) };
 }

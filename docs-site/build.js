@@ -16,8 +16,9 @@
 // any depth); deployment copies dist/ to wherever github.io serves from. See
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
-import { buildEnscribePipeline } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
 import { importJats } from '@enscribejs/cli/jats-import';
+import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
 import { buildGallery } from './gen-gallery.js';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -29,6 +30,12 @@ const repoRoot = resolve(here, '..');
 const SOURCES_DIR = join(here, 'sources');
 const DIST_DIR = join(here, 'dist');
 const ASSETS_DIR = join(DIST_DIR, 'assets');
+// The live companion site (#207 slice 1): a per-page client-side-rendering shell under dist/live/,
+// purely additive to the static site above. The four shell assets (~3 MB, mostly the engine bundle)
+// are copied ONCE into dist/live/assets/ and every page's shell points its assetBase there; each
+// page's `.emd` source is copied beside the shells (which fetch it at runtime).
+const LIVE_DIR = join(DIST_DIR, 'live');
+const LIVE_ASSETS_DIR = join(LIVE_DIR, 'assets');
 const TEMPLATE_PATH = join(here, 'template.html');
 const SITE_CSS = join(here, 'site.css');
 const QUICKSTART_JS = join(here, 'quickstart.js');
@@ -249,25 +256,81 @@ function fillTemplate(template, tokens) {
   );
 }
 
-function buildPageBody(page, rendered) {
+// The static→live link (#207): a per-page deep link to this page's live (client-side-rendered)
+// version, plus a one-click `?edit` into the in-browser editor. Empty when /live wasn't emitted (no
+// engine bundle) or the page has no live counterpart — so the static page is unchanged in that case.
+function liveLinksHtml(slug, liveSlugs) {
+  if (!liveSlugs.has(slug)) return '';
+  return (
+    `<a href="live/${slug}.html">open this page live →</a> ` +
+    `<a class="live-edit-link" href="live/${slug}.html?edit">(edit)</a>`
+  );
+}
+
+function buildPageBody(page, rendered, liveLinks = '') {
   const githubUrl = page.sourceUrl ?? `${GITHUB_BLOB_BASE}/${page.source}`;
+  const liveSpan = liveLinks ? `\n      <span class="live-link"> · ${liveLinks}</span>` : '';
   return (
     `<main class="article">\n${rendered}\n    </main>\n` +
     `    <footer class="site-footer">\n` +
-    `      Source: <a href="${githubUrl}">view this page's enscribe source on GitHub</a>\n` +
+    `      Source: <a href="${githubUrl}">view this page's enscribe source on GitHub</a>${liveSpan}\n` +
     `    </footer>`
   );
 }
 
-function buildPlaygroundBody(source) {
+function buildPlaygroundBody(source, liveLinks = '') {
+  const footer = liveLinks ? `\n    <footer class="site-footer">${liveLinks}</footer>` : '';
   return (
     `<main class="panes">\n` +
     `      <section class="pane" id="editor-pane" aria-label="Source editor"><div id="editor"></div></section>\n` +
     `      <section class="pane" id="output-pane" aria-label="Rendered output"><article id="output"></article></section>\n` +
     `    </main>\n` +
     `    <script>window.__QUICKSTART_SOURCE__ = ${inlineSource(source)};</script>\n` +
-    `    <script type="module" src="assets/quickstart.js"></script>`
+    `    <script type="module" src="assets/quickstart.js"></script>${footer}`
   );
+}
+
+/**
+ * Emit the live companion site (#207 slice 1) under dist/live/: one client-side-rendering shell per
+ * source-bearing page, the four shell assets copied ONCE into dist/live/assets/ (the engine bundle is
+ * ~3 MB — never per page), and each page's `.emd` source(s) copied beside the shells. Purely additive
+ * to the static site. The shell is type-agnostic (emitLiveShell → mountLiveShell, #215/#216): it
+ * auto-detects article vs. book at runtime, so every page gets the SAME uniform shell — today every
+ * page is an article; a future book page (the guide-as-book, #207 slice 2) renders through it unchanged.
+ *
+ * `assetBase` is `./assets/` (leading `./` REQUIRED — the shell's `import … from '<assetBase>editor-
+ * codemirror.js'` is an ES-module specifier, and a bare `assets/…` would be an invalid bare import).
+ * Shells are emitted in READ mode; `?edit` flips to the editor at runtime (always present, #216).
+ *
+ * The live render uses the engine's browser defaults — it does NOT carry the per-page `renderOptions`
+ * (notably `toc`) the static build passes, so a live page lacks the static page's on-this-page toc
+ * sidebar (content is otherwise identical). Injecting those options would touch the shell emitter —
+ * a later enhancement, out of this build-orchestration slice. See docs-site/README.md.
+ *
+ * @param {Array} pages - the source-bearing pages to emit live (each with `slug`, `source`, `title`).
+ * @returns {string[]} the slugs emitted live.
+ */
+function buildLiveSite(pages) {
+  mkdirSync(LIVE_DIR, { recursive: true });
+  const assets = copyShellAssets(LIVE_ASSETS_DIR);   // the four shell assets, ONCE
+  const emitted = [];
+  for (const page of pages) {
+    const masterSource = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
+    // The master + any `<… src>` children (none today — the docs pages are single-file articles; this
+    // future-proofs the guide-as-book and any later multi-file page). The shell fetches them at runtime.
+    copyFileSync(join(SOURCES_DIR, page.source), join(LIVE_DIR, page.source));
+    for (const child of discoverMasterSrcChildren(masterSource)) {
+      copyFileSync(join(SOURCES_DIR, child), join(LIVE_DIR, child));
+    }
+    writeFileSync(
+      join(LIVE_DIR, `${page.slug}.html`),
+      emitLiveShell({ master: page.source, title: page.title, edit: false, assetBase: './assets/' }),
+    );
+    emitted.push(page.slug);
+    console.log(`[docs:build] wrote dist/live/${page.slug}.html (live shell → ${page.source})`);
+  }
+  console.log(`[docs:build] /live — ${emitted.length} live pages + ${assets.length} shared assets in ${LIVE_DIR}`);
+  return emitted;
 }
 
 function main() {
@@ -286,16 +349,25 @@ function main() {
   // The browser bundle is built separately (`npm run build:lib`) and gitignored.
   // Copy it in if present so the playground works; if absent, the read-only pages
   // still build and the playground shows an actionable "build the bundle" notice.
-  if (existsSync(BROWSER_BUNDLE)) {
+  // The same bundle gates the /live companion (it can't render client-side without it).
+  const bundlePresent = existsSync(BROWSER_BUNDLE);
+  if (bundlePresent) {
     copyFileSync(BROWSER_BUNDLE, join(ASSETS_DIR, 'enscribe.browser.global.js'));
   } else {
     console.warn(
       '[docs:build] browser bundle not found — the Quickstart playground will\n' +
-        '             show a "build the bundle" notice until you run:\n' +
+        '             show a "build the bundle" notice (and /live is skipped) until you run:\n' +
         '               cd packages/enscribe && npm run build:lib\n' +
         '             then rebuild the site.',
     );
   }
+
+  // The source-bearing pages get a live companion under dist/live/ (and a static→live link). The
+  // generated pages (gallery, demos) have no single `.emd` source, so they have no live counterpart.
+  // When the engine bundle is absent, /live is skipped and no links are emitted → the static site is
+  // byte-for-byte what it was before this slice.
+  const livePages = PAGES.filter((p) => p.source);
+  const liveSlugs = new Set(bundlePresent ? livePages.map((p) => p.slug) : []);
 
   // Demo papers → self-contained standalone pages under dist/demo/. Render first
   // so the index can list their (extracted) titles. The article theme is inlined
@@ -324,7 +396,7 @@ function main() {
     let headExtra = '';
     if (page.kind === 'playground') {
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
-      body = buildPlaygroundBody(source);
+      body = buildPlaygroundBody(source, liveLinksHtml(page.slug, liveSlugs));
       headExtra = '<script src="assets/enscribe.browser.global.js"></script>';
     } else if (page.kind === 'demo-index') {
       body = buildDemoIndexBody(demoIndex);
@@ -338,7 +410,7 @@ function main() {
       headExtra = gallery.headExtra;
     } else {
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
-      body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}));
+      body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}), liveLinksHtml(page.slug, liveSlugs));
     }
     const html = fillTemplate(template, {
       title: page.title,
@@ -351,7 +423,13 @@ function main() {
     console.log(`[docs:build] wrote dist/${page.slug}.html (${page.kind})`);
   }
 
-  console.log(`[docs:build] done — ${PAGES.length} site pages + ${DEMO_PAPERS.length} demo papers in ${DIST_DIR}`);
+  // The live companion site (#207 slice 1), additive — emitted only when the engine bundle is present.
+  const liveSlugsEmitted = bundlePresent ? buildLiveSite(livePages) : [];
+
+  console.log(
+    `[docs:build] done — ${PAGES.length} site pages + ${DEMO_PAPERS.length} demo papers` +
+      `${liveSlugsEmitted.length ? ` + ${liveSlugsEmitted.length} live pages` : ''} in ${DIST_DIR}`,
+  );
 }
 
 main();
