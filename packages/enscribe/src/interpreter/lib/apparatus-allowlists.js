@@ -44,6 +44,7 @@ export const CONFIG_KWARGS = new Map([
   ['number-figures',          'live'],   // numbering.js
   ['number-tables',           'live'],   // numbering.js
   ['number-sections',         'live'],   // numbering.js (#57; default off articles / on books)
+  ['number-depth',            'live'],   // numbering.js (#218; deepest heading level numbered; default all levels; INDEPENDENT of toc-depth)
 
   // #218: table-of-contents settings — the config-driven contents listing, read in
   // the shared compiler (index.js → lib/toc.js applyConfigToc) so the static build and

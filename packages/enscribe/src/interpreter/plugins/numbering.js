@@ -508,6 +508,18 @@ function resolveNumberSections(treeChildren, config) {
 }
 
 /**
+ * Resolve the deepest heading level that receives a number (#218). Config `number-depth`
+ * (a non-negative integer); default ALL levels (Infinity). INDEPENDENT of `toc-depth`
+ * (which bounds the contents LISTING, in the compiler) — a heading may be numbered but not
+ * listed, or listed but not numbered. For a book the chapter/appendix heading is level 1
+ * and its sections level 2 (so number-depth=2 numbers chapters + their direct sections).
+ */
+function resolveNumberDepth(config) {
+  const n = parseInt(config?.get?.('number-depth'), 10);
+  return Number.isFinite(n) && n >= 0 ? n : Infinity;
+}
+
+/**
  * Stamp a section's computed number on the node (for JATS), on its title child
  * (for HTML schemaDispatch), and on its registry entry (for cross-refs).
  */
@@ -543,14 +555,18 @@ function stampSection(node, num, registry) {
  * article top level, the chapter index for a book chapter, a letter for an
  * appendix — Layer 2). Recurses into each section's nested sub-sections.
  */
-function numberSectionLevel(nodes, prefix, registry) {
+function numberSectionLevel(nodes, prefix, registry, maxDepth = Infinity, level = 1) {
+  if (level > maxDepth) return; // #218 number-depth: this level (and deeper) is past the cutoff.
   let i = 0;
   for (const n of nodes) {
     if (isEnscribeTag(n) && SECTION_TAG_SET.has(n.tagname)) {
+      // #218 +unnumbered: outside the numbered sequence — no number, the counter does NOT advance
+      // (the next numbered sibling continues unbroken), and the subtree is unnumbered (not recursed).
+      if (n.booleans?.unnumbered) continue;
       i += 1;
       const num = prefix ? `${prefix}.${i}` : String(i);
       stampSection(n, num, registry);
-      numberSectionLevel(structuralChildren(n), num, registry);
+      numberSectionLevel(structuralChildren(n), num, registry, maxDepth, level + 1);
     }
   }
 }
@@ -567,15 +583,25 @@ export function numberSections(tree, file) {
   const config = file?.data?.[ENSCRIBE_CONFIG] ?? null;
   if (!resolveNumberSections(tree.children, config)) return;
   const registry = ensureRegistry(file);
+  const maxDepth = resolveNumberDepth(config); // #218: deepest numbered level; default Infinity (all).
 
   const docRoot = (tree.children ?? []).find(
     (c) => isEnscribeTag(c, 'article') || isEnscribeTag(c, 'book'),
   );
   if (!docRoot) return;
 
+  // A top book-part heading (chapter / appendix / article-appendix) is level 1, its sections level 2.
+  // #218: skip a `+unnumbered` part (no label, the counter does NOT advance — caller `continue`s
+  // before the idx bump); number the heading only within number-depth (level 1 ≤ maxDepth); its
+  // sections recurse at level 2 (so number-depth=2 numbers chapters + their direct sections).
+  const numberBookPart = (part, label) => {
+    if (maxDepth >= 1) stampSection(part, label, registry);
+    numberSectionLevel(structuralChildren(part), label, registry, maxDepth, 2);
+  };
+
   if (isEnscribeTag(docRoot, 'article')) {
     const body = findRegionChild(docRoot, 'article-body');
-    if (body) numberSectionLevel(structuralChildren(body), '', registry);
+    if (body) numberSectionLevel(structuralChildren(body), '', registry, maxDepth, 1);
     // #100: article appendices (book-part-type="appendix" in <article-back>, the
     // article projection of <appendix>) join #57's appendix letter scheme — `A`,
     // `A.1` — exactly as book-back appendices do below. Same stamp + section
@@ -586,10 +612,10 @@ export function numberSections(tree, file) {
       for (const part of structuralChildren(articleBack)) {
         if (!isEnscribeTag(part, 'book-part')) continue;
         if ((part.kwargs?.type ?? 'other') !== 'appendix') continue;
+        if (part.booleans?.unnumbered) continue; // #218: outside the sequence — no letter, no advance.
         const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
         appendixIdx += 1;
-        stampSection(part, letter, registry);                        // appendix heading letter
-        numberSectionLevel(structuralChildren(part), letter, registry); // its sections → "A.1"
+        numberBookPart(part, letter);
       }
     }
     return;
@@ -608,9 +634,9 @@ export function numberSections(tree, file) {
       if (!isEnscribeTag(part, 'book-part')) continue;
       const partType = part.kwargs?.type ?? 'other';
       if (!BODY_BOOK_PART_TYPES.has(partType)) continue;
+      if (part.booleans?.unnumbered) continue; // #218: +unnumbered chapter — no number, no advance.
       chapterIdx += 1;
-      stampSection(part, String(chapterIdx), registry);            // chapter heading number
-      numberSectionLevel(structuralChildren(part), String(chapterIdx), registry); // its sections → "N.1"
+      numberBookPart(part, String(chapterIdx)); // chapter number → its sections "N.1"
     }
   }
 
@@ -620,10 +646,10 @@ export function numberSections(tree, file) {
     for (const part of structuralChildren(back)) {
       if (!isEnscribeTag(part, 'book-part')) continue;
       if ((part.kwargs?.type ?? 'other') !== 'appendix') continue;
+      if (part.booleans?.unnumbered) continue; // #218: outside the sequence — no letter, no advance.
       const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
       appendixIdx += 1;
-      stampSection(part, letter, registry);                        // appendix heading letter
-      numberSectionLevel(structuralChildren(part), letter, registry); // its sections → "A.1"
+      numberBookPart(part, letter); // appendix letter → its sections "A.1"
     }
   }
 }

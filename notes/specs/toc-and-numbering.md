@@ -126,8 +126,16 @@ boolean forms the tables show are the target ergonomic, deferred to
 [#219](https://github.com/enscribejs/enscribe/issues/219). The gate-tested behaviors — off-by-default,
 `toc-depth`, `toc-location` body/left/right, `toc-expand` initial expansion, `+unlisted`, and the
 static≡live parity — are checked in `packages/enscribe/test/config-toc.test.js` (and the new
-`document-62`/`document-63` fixtures ride the standing render-parity guard). **Section numbering**
-(`number-sections` / `number-depth` / `+unnumbered`) is the sibling half, the next slice.
+`document-62`/`document-63`/`document-64` fixtures ride the standing render-parity guard).
+
+The **section-numbering** half is also wired (#218) — the destructive number stamp in the shared
+`runSync` (`numberSections`), so static and live number identically. `number-sections` (default off
+articles / on books) stamps hierarchical 1 / 1.1 / 1.1.1; `number-depth` bounds the numbered levels,
+**independent of `toc-depth`**; `<section +unnumbered>` puts a heading outside the sequence (no number,
+the counter does not advance, the subtree is unnumbered). Numbered headings show their numbers in the
+contents listing (the un-glue path). Gate-tested in `packages/enscribe/test/config-numbering.test.js`
+(+ `document-65`). Authoring: `<config number-sections=true number-depth=2>` (kwargs) and
+`<section +unnumbered>` (boolean); the bare forms are #219.
 
 *Spec note for whoever wires this:* the user-facing docs (the authoring guide and the Layer 1
 reference) should describe these settings by role and link back here for the authoritative list,

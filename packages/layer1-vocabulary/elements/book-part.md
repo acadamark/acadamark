@@ -42,6 +42,15 @@ enscribe_attributes:
         appear in the contents. Display-only: it still renders; it is only absent
         from the contents listing. See notes/specs/toc-and-numbering.md. Authored
         as +unlisted; renders to the HTML attribute unlisted.
+    unnumbered:
+      maps_to: unnumbered
+      default: false
+      notes: |
+        Skip this book-part's number, regardless of number-depth (#218) — e.g. an
+        unnumbered "Introduction" chapter. Outside the numbered sequence: no number,
+        no counter advance (the next numbered chapter continues unbroken), subtree
+        unnumbered. (Front-matter and non-appendix back-matter are already unnumbered
+        by region.) See notes/specs/toc-and-numbering.md. Authored as +unnumbered.
 content:
   type: structured
   shape:

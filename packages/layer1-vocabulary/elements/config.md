@@ -26,6 +26,7 @@ enscribe_attributes:
         - number-figures          (live; consumed by numbering)
         - number-tables           (live; consumed by numbering)
         - number-sections         (live; consumed by numbering; default off for articles, on for books)
+        - number-depth            (live; consumed by numbering; deepest heading level that receives a number, #218; default all levels; INDEPENDENT of toc-depth)
         - toc                     (live; consumed by index.js compiler → lib/toc.js; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)
         - toc-depth               (live; deepest heading level the contents lists; default 3)
         - toc-title               (live; the heading shown above the listing; default "Contents")

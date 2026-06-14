@@ -31,7 +31,18 @@ enscribe_attributes:
         absent from the contents listing. The ToC is config-driven
         (<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as
         +unlisted (the boolean shorthand); renders to the HTML attribute unlisted.
-content:
+    unnumbered:
+      maps_to: unnumbered
+      default: false
+      notes: |
+        Skip this section's number, regardless of number-depth (#218). The heading
+        is OUTSIDE the numbered sequence — it gets no number AND does not advance the
+        counter, so the next numbered sibling continues unbroken (the \\section* /
+        Quarto .unnumbered behavior); its subtree is unnumbered too. Numbering is
+        config-driven (<config number-sections=true>); see
+        notes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp
+        reads node.booleans.unnumbered in runSync, and the unnumbered attribute also
+        renders on the element.
   type: structured
   shape:
     - element: section-title

@@ -1,0 +1,31 @@
+<meta type=article>
+<title | Section numbering with a contents listing (#218)>
+<author | The Enscribe Team>
+</meta>
+
+<config number-sections=true toc=true toc-location=body />
+
+<section #sec:intro | Introduction>
+
+Numbering is config-driven (`<config number-sections=true>`), stamped in the shared
+runSync so the static build and the live render number identically. The numbers are
+hierarchical — 1, 1.1, 1.1.1 — and (with a contents listing on) they show in the listing,
+reusing the un-glue path.
+
+<sub-section | Background>
+
+A level-2 heading, numbered 1.1.
+
+<sub-sub-section | Prior work>
+
+A level-3 heading, numbered 1.1.1.
+
+<section +unnumbered | A Note on Notation>
+
+An `+unnumbered` heading — outside the numbered sequence: it gets no number, and the
+counter does not advance, so the next section continues unbroken. (It is still *listed*
+— `+unnumbered` is numbering-only; `+unlisted` is the listing override.)
+
+<section | Methods>
+
+Numbered 2 — the unnumbered section above did not advance the counter.

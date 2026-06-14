@@ -26,6 +26,14 @@ enscribe_attributes:
         regardless of toc-depth (#218). Display-only: it still renders; it is only
         absent from the contents listing. See notes/specs/toc-and-numbering.md.
         Authored as +unlisted; renders to the HTML attribute unlisted.
+    unnumbered:
+      maps_to: unnumbered
+      default: false
+      notes: |
+        Skip this sub-sub-section's number, regardless of number-depth (#218).
+        Outside the numbered sequence — no number, no counter advance, subtree
+        unnumbered; the next numbered sibling continues unbroken. See
+        notes/specs/toc-and-numbering.md. Authored as +unnumbered.
 content:
   type: structured
   shape:
