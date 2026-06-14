@@ -1,0 +1,20 @@
+<meta type=article>
+<title | Config-driven contents — sticky sidebar (#218)>
+<author | The Enscribe Team>
+</meta>
+
+<config toc=true toc-location=right toc-expand=1 toc-title="On this page" />
+
+<section #sec:one | First section>
+
+With `toc-location=right` the contents render as a sticky, scroll-aware sidebar on the
+right — a "floating" contents that follows the reader. `toc-expand=1` expands the first
+level initially; deeper levels start collapsed.
+
+<sub-section | A subsection>
+
+A nested heading — collapsed initially (`toc-expand=1`), expandable in place.
+
+<section | Second section>
+
+A second first-level heading.

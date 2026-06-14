@@ -396,3 +396,162 @@ export function applyToc(hast, toc) {
   hast.children[docIdx] = el('div', { className: ['enscribe-layout', 'enscribe-layout--toc'] }, [nav, main]);
   return docEl.tagName;
 }
+
+// ─── Config-driven contents listing (#218; notes/specs/toc-and-numbering.md) ──────
+//
+// The NEW, config-driven table of contents — read from `<config toc …>` in the SHARED
+// compiler, so the static build and the live render honor it identically (the property
+// the docs-site live-ToC parity fix depends on, #207). It is a contents LISTING (book
+// navigation — chapter rail, prev/next — is the legacy applyToc above and a sibling
+// spec); for a book the listing reflects the assembled whole-book structure (book-parts
+// + their sections). Default OFF: with no `<config toc>` this is never invoked, so a
+// non-ToC document is byte-identical.
+//
+// Three placements (toc-location): `body` (default) inserts a full listing at the top of
+// the document body, after the title block; `left` / `right` render a sticky sidebar — a
+// collapsible listing whose initial expansion is `toc-expand`. `toc-depth` bounds the
+// listed levels; a `+unlisted` heading is dropped from the listing (with its subtree).
+
+/** Coerce a config `toc` value to a boolean (on/off). The discovery map yields `true`
+ *  for `toc=true`; tolerate the string forms too. Absent → off. */
+function tocOn(v) {
+  return v === true || v === 'true' || v === '';
+}
+
+/** Coerce `toc-depth` to a positive integer (default 3). Accepts a number or a string. */
+function tocDepth(v) {
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) && n >= 1 ? n : 3;
+}
+
+/** Coerce `toc-expand` to the count of initially-expanded sidebar levels: `all` →
+ *  Infinity, `none` → 0, an integer → itself, anything else → the default 1. */
+function tocExpand(v) {
+  if (v == null) return 1;
+  const s = String(v).toLowerCase();
+  if (s === 'all') return Infinity;
+  if (s === 'none') return 0;
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) && n >= 0 ? n : 1;
+}
+
+/**
+ * Resolve the ToC settings from the document's `<config>` map (file.data.enscribeConfig).
+ * Returns null when `toc` is off (the default) — the signal to skip the config ToC entirely.
+ *
+ * @param {Map<string,*>|undefined} configMap
+ * @returns {{ depth:number, title:string, location:'body'|'left'|'right', expand:number }|null}
+ */
+export function readTocConfig(configMap) {
+  if (!configMap || !tocOn(configMap.get('toc'))) return null;
+  const locationRaw = String(configMap.get('toc-location') ?? 'body').toLowerCase();
+  const location = locationRaw === 'left' || locationRaw === 'right' ? locationRaw : 'body';
+  return {
+    depth: tocDepth(configMap.get('toc-depth')),
+    title: configMap.get('toc-title') ?? 'Contents',
+    location,
+    expand: tocExpand(configMap.get('toc-expand')),
+  };
+}
+
+/** Prune a collected entry tree for the listing: drop `+unlisted` headings (with their
+ *  subtree — prefatory/appendix material opts out wholesale) and any level past `depth`. */
+function pruneForToc(entries, depth, level = 1) {
+  if (level > depth) return [];
+  const out = [];
+  for (const e of entries) {
+    if (e.el.properties?.unlisted) continue;
+    out.push({ ...e, children: pruneForToc(e.children, depth, level + 1) });
+  }
+  return out;
+}
+
+/** The BODY listing: a heading (toc-title) + the full nested list, shown in full (no
+ *  collapse). A distinct class — not `enscribe-toc` — so the sidebar layout/CSS never
+ *  applies; this is an in-flow block, not a sticky rail. */
+function buildContentsBlock(entries, title) {
+  return el('nav', { className: ['enscribe-contents'], ariaLabel: title }, [
+    el('p', { className: ['enscribe-contents-heading'] }, [text(title)]),
+    buildList(entries, bookLink),
+  ]);
+}
+
+/** A collapsible nested list for a SIDEBAR listing: a parent entry wraps its children in
+ *  a `<details>` whose initial open state follows `expand` (a level-D details is open iff
+ *  D < expand, so its level-(D+1) children are visible iff D+1 ≤ expand). The link sits in
+ *  the `<summary>` (click the marker to toggle, the text to navigate). Leaves are bare links. */
+function buildCollapsibleList(entries, expand, level = 1) {
+  return el('ul', {}, entries.map((e) => {
+    const link = el('a', { href: `#${e.id}` }, bookLink(e));
+    if (e.children.length === 0) return el('li', {}, [link]);
+    const detailsProps = { className: ['enscribe-toc-sub'] };
+    if (level < expand) detailsProps.open = true;
+    return el('li', {}, [
+      el('details', detailsProps, [
+        el('summary', { className: ['enscribe-toc-sub-summary'] }, [link]),
+        buildCollapsibleList(e.children, expand, level + 1),
+      ]),
+    ]);
+  }));
+}
+
+/** The SIDEBAR listing: a `nav.enscribe-toc` (so the existing sticky-sidebar CSS + the
+ *  scroll-spy highlighter apply) carrying the collapsible list, titled by toc-title. */
+function buildSidebarToc(entries, title, expand) {
+  return el('nav', { className: ['enscribe-toc', 'enscribe-toc--collapsible'], ariaLabel: title }, [
+    el('details', { className: ['enscribe-toc-details'], open: true }, [
+      el('summary', { className: ['enscribe-toc-summary'] }, [text(title)]),
+      buildCollapsibleList(entries, expand),
+    ]),
+  ]);
+}
+
+/** Insert a body listing at the top of the document body, after the title block — the
+ *  first child of `<article-body>` (article) / `<book-body>` (book). Falls back to the
+ *  doc element's front if no body region is present. */
+function insertBodyListing(docEl, nav) {
+  const bodyTag = docEl.tagName === 'book' ? 'book-body' : 'article-body';
+  const body = (docEl.children ?? []).find((c) => c.type === 'element' && c.tagName === bodyTag);
+  const host = body ?? docEl;
+  host.children = [nav, ...(host.children ?? [])];
+}
+
+/**
+ * Apply the config-driven contents listing to a compiled hast tree, in place. Called by
+ * the compiler ONLY when `readTocConfig` returned settings (i.e. `<config toc>` is on);
+ * mutually exclusive with the legacy `applyToc` (the build-passed option), so output is
+ * byte-identical when no `<config toc>` is present.
+ *
+ * @param {import('hast').Root} hast - the compiled document hast.
+ * @param {{ depth:number, title:string, location:'body'|'left'|'right', expand:number }} cfg
+ * @returns {'body'|'sidebar'|null} the listing shape (so the caller can gate the scroll-spy
+ *   on a sidebar), or null when there was nothing to list / no doc element.
+ */
+export function applyConfigToc(hast, cfg) {
+  const docIdx = (hast.children ?? []).findIndex(
+    (c) => c.type === 'element' && (c.tagName === 'article' || c.tagName === 'book'),
+  );
+  if (docIdx === -1) return null;
+  const docEl = hast.children[docIdx];
+
+  const entries = pruneForToc(collectEntries(docEl), cfg.depth);
+  if (entries.length === 0) return null;
+
+  // Stable ids on anchorless headings so every entry links to its heading. Slug from the
+  // number-LESS title (e.clean), so a numbered heading gets a clean `sec:introduction` id,
+  // not `sec:1introduction` (matching the book path; identical to glued when unnumbered).
+  assignIds(entries, collectIds(docEl, new Set()), (e) => e.clean);
+
+  if (cfg.location === 'body') {
+    insertBodyListing(docEl, buildContentsBlock(entries, cfg.title));
+    return 'body';
+  }
+
+  const nav = buildSidebarToc(entries, cfg.title, cfg.expand);
+  const main = el('main', { className: ['enscribe-body'] }, [docEl]);
+  const layoutClasses = ['enscribe-layout', 'enscribe-layout--toc',
+    cfg.location === 'right' ? 'enscribe-layout--toc-right' : 'enscribe-layout--toc-left'];
+  const children = cfg.location === 'right' ? [main, nav] : [nav, main];
+  hast.children[docIdx] = el('div', { className: layoutClasses }, children);
+  return 'sidebar';
+}

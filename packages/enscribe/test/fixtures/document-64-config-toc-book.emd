@@ -1,0 +1,27 @@
+<meta type=book>
+<title | Config-driven contents — a book (#218)>
+<author | The Enscribe Team>
+</meta>
+
+<config toc=true toc-location=body />
+
+<chapter | Counting Elephants>
+
+For a book, the config-driven contents listing reflects the assembled whole-book
+structure — chapters and their sections. Books are numbered by default, so the
+listing shows each entry's number un-glued from its title ("1" then the title in
+separate spans), not run together.
+
+<sub-section | Aerial Transects>
+
+A chapter section, listed beneath its chapter.
+
+<sub-section | Ground Counts>
+
+Another section.
+
+<chapter | Browse Pressure>
+
+A second chapter. (Book *navigation* — the chapter rail, prev/next, cover — is a
+separate, deferred concern; `<config toc>` produces the contents listing, not that
+reading-interface chrome.)

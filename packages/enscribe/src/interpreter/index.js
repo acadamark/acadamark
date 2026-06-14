@@ -178,7 +178,7 @@ import { parseCsv, parseTsv } from './handlers/table.js';
 import { formatScopedNumber } from './lib/scoped-number.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
-import { applyToc } from './lib/toc.js';
+import { applyToc, readTocConfig, applyConfigToc } from './lib/toc.js';
 // #33: the margin column. applySidenotes (part 1) relocates numbered-note content
 // into the margin when note-position=margin; markMarginLayout establishes the
 // shared margin layout, factored out so it also fires for a <marginnote>-present
@@ -187,6 +187,10 @@ import { applyToc } from './lib/toc.js';
 // existing fixtures — stay byte-identical.
 import { applySidenotes, markMarginLayout } from './lib/sidenotes.js';
 import { MARGIN_CSS } from './assets/margin-css.js';
+// #218: the config-driven contents-listing CSS — injected as a scoped <style> only when a
+// `<config toc>` listing is rendered (additive; non-ToC docs stay byte-identical), the same
+// opt-in injection model as MARGIN_CSS. Reuses default.css's base `.enscribe-layout--toc`.
+import { TOC_CONFIG_CSS } from './assets/toc-config-css.js';
 // #36 strict mode: the strictness register switch — parse off; re-parse with the
 // register(s) disabled for sigil/canonical. `sigil` turns the markdown register
 // off (canonical + sigils keep interpreting); `canonical` turns markdown AND
@@ -774,12 +778,32 @@ export function enscribeInterpreter(options = {}) {
     // former per-asset walks at each injection site — just one traversal, not six.
     const assets = detectAssets(hast);
 
-    // Phase 8 Slice 1: table-of-contents. Runs before asset injection so the
-    // assets land outside the layout wrapper (at the top of the body), and before
-    // rehype-format so the generated <nav> is formatted with everything else.
-    // A strict no-op when `toc` is off → byte-identical output for non-ToC docs.
-    // Returns 'book' / 'article' / null so chapter-nav can gate on a book ToC.
-    const tocType = applyToc(hast, tocOption);
+    // Table-of-contents. Runs before asset injection so the assets land outside the
+    // layout wrapper (at the top of the body), and before rehype-format so the generated
+    // <nav> is formatted with everything else. A strict no-op when no ToC is requested →
+    // byte-identical output for non-ToC docs.
+    //
+    // #218: the CONFIG-driven contents listing (`<config toc …>`) is the source of truth —
+    // it travels with the document, so the static build and the live render honor it
+    // identically (the property the docs-site live-ToC parity fix depends on, #207). When
+    // it is on it runs INSTEAD of the legacy build-passed `toc` OPTION (no double ToC);
+    // otherwise the legacy applyToc(options.toc) path is unchanged. tocType ('book' /
+    // 'article' / null) gates the book reading-interface scripts (legacy only);
+    // configTocShape ('sidebar' / 'body' / null) gates scroll-spy for a config sidebar.
+    const tocConfig = readTocConfig(configMap);
+    let tocType = null;
+    let configTocShape = null;
+    if (tocConfig) {
+      configTocShape = applyConfigToc(hast, tocConfig);
+    } else {
+      tocType = applyToc(hast, tocOption);
+    }
+    // #218: the contents-listing CSS rides with the listing (injected only when one was
+    // rendered — body or sidebar), so a non-ToC document stays byte-identical. The legacy
+    // option-driven ToC keeps relying on the consumer's default.css (unchanged).
+    if (configTocShape) {
+      hast.children.unshift(makeStyleElement(TOC_CONFIG_CSS));
+    }
 
     // #33: the margin column. Two independent triggers, either of which needs the
     // margin layout + CSS:
@@ -831,11 +855,12 @@ export function enscribeInterpreter(options = {}) {
     }
 
     // #20: scroll-spy — highlight the current entry in the ToC sidebar as the reader
-    // scrolls. Ships wherever a ToC sidebar is rendered (article OR book); no
-    // separate switch. For a book it is now the SOLE highlighter of the left chapter
-    // rail (the retired paging nav no longer competes). A pure progressive
-    // enhancement: JS off → the ToC still navigates, just no live highlight.
-    if (tocType) {
+    // scrolls. Ships wherever a ToC SIDEBAR is rendered: the legacy article/book ToC
+    // (tocType), or a #218 config sidebar (toc-location left|right → configTocShape
+    // 'sidebar'). A body listing (configTocShape 'body') is in-flow, not a sticky rail,
+    // so it needs no scroll-spy. A pure progressive enhancement: JS off → the ToC still
+    // navigates, just no live highlight.
+    if (tocType || configTocShape === 'sidebar') {
       hast.children.unshift(makeScriptElement(SCROLL_SPY_JS));
     }
 

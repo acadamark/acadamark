@@ -21,6 +21,16 @@ enscribe_attributes:
       maps_to: data-numbering-style
       values: [arabic, roman, alpha, none]
       notes: 'Override the inherited numbering style for this section.'
+  booleans:
+    unlisted:
+      maps_to: unlisted
+      default: false
+      notes: |
+        Keep this section out of the generated table of contents, regardless of
+        toc-depth (#218). Display-only: the section still renders; it is only
+        absent from the contents listing. The ToC is config-driven
+        (<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as
+        +unlisted (the boolean shorthand); renders to the HTML attribute unlisted.
 content:
   type: structured
   shape:

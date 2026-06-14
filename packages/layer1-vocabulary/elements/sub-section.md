@@ -18,6 +18,15 @@ enscribe_attributes:
     numbering-style:
       maps_to: data-numbering-style
       values: [arabic, roman, alpha, none]
+  booleans:
+    unlisted:
+      maps_to: unlisted
+      default: false
+      notes: |
+        Keep this sub-section out of the generated table of contents, regardless
+        of toc-depth (#218). Display-only: it still renders; it is only absent
+        from the contents listing. See notes/specs/toc-and-numbering.md. Authored
+        as +unlisted; renders to the HTML attribute unlisted.
 content:
   type: structured
   shape:

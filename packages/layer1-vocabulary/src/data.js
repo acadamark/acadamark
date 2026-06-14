@@ -1396,6 +1396,15 @@ const _book_part = Object.freeze({
           "notes": "Document-level note render mode (#33): \"bottom\" / \"margin\". Collection\n(the per-note `placement` kwarg and `note-scope`) is a separate axis —\nsee <note>.\n",
         },
       },
+      "booleans": {
+        "unlisted": {
+          "maps_to": {
+            "html": "unlisted",
+          },
+          "default": false,
+          "notes": "Keep this book-part out of the generated table of contents, regardless of\ntoc-depth (#218) — e.g. a preface or an index chapter that should not\nappear in the contents. Display-only: it still renders; it is only absent\nfrom the contents listing. See notes/specs/toc-and-numbering.md. Authored\nas +unlisted; renders to the HTML attribute unlisted.\n",
+        },
+      },
     },
     "content": {
       "type": "structured",
@@ -1994,7 +2003,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as its flat authoring\nform (the settled register for flat config; #134). The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')\n  - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  (the reserved `reference-library` was retired: #133 makes external library\n  sources the body element `<library src=…>`, never a <config> kwarg)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\n<config>'s FLAT authoring form. Structured configuration is settled\n(#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured\nregister is future/unbuilt. <config> takes no\nchild elements today: the retired `<bibliography source=… />` form (#133)\nis replaced by the body element `<library src>` (see library.md /\nbibliography.md). See DESIGN.md \"Configuration and metadata are data\".\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as its flat authoring\nform (the settled register for flat config; #134). The current\nallowlist (interpreter-side, see\npackages/enscribe/src/interpreter/lib/apparatus-allowlists.js):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - toc                     (live; consumed by index.js compiler → lib/toc.js; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)\n  - toc-depth               (live; deepest heading level the contents lists; default 3)\n  - toc-title               (live; the heading shown above the listing; default \"Contents\")\n  - toc-location            (live; body | left | right; default body — body is inline near the top, left/right a sticky sidebar)\n  - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)\n  - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')\n  - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  (the reserved `reference-library` was retired: #133 makes external library\n  sources the body element `<library src=…>`, never a <config> kwarg)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\n<config>'s FLAT authoring form. Structured configuration is settled\n(#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured\nregister is future/unbuilt. <config> takes no\nchild elements today: the retired `<bibliography source=… />` form (#133)\nis replaced by the body element `<library src>` (see library.md /\nbibliography.md). See DESIGN.md \"Configuration and metadata are data\".\n",
       },
     },
     "content": {
@@ -5161,6 +5170,15 @@ const _section = Object.freeze({
           "notes": "Override the inherited numbering style for this section.",
         },
       },
+      "booleans": {
+        "unlisted": {
+          "maps_to": {
+            "html": "unlisted",
+          },
+          "default": false,
+          "notes": "Keep this section out of the generated table of contents, regardless of\ntoc-depth (#218). Display-only: the section still renders; it is only\nabsent from the contents listing. The ToC is config-driven\n(<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as\n+unlisted (the boolean shorthand); renders to the HTML attribute unlisted.\n",
+        },
+      },
     },
     "content": {
       "type": "structured",
@@ -5450,6 +5468,15 @@ const _sub_section = Object.freeze({
           ],
         },
       },
+      "booleans": {
+        "unlisted": {
+          "maps_to": {
+            "html": "unlisted",
+          },
+          "default": false,
+          "notes": "Keep this sub-section out of the generated table of contents, regardless\nof toc-depth (#218). Display-only: it still renders; it is only absent\nfrom the contents listing. See notes/specs/toc-and-numbering.md. Authored\nas +unlisted; renders to the HTML attribute unlisted.\n",
+        },
+      },
     },
     "content": {
       "type": "structured",
@@ -5622,6 +5649,15 @@ const _sub_sub_section = Object.freeze({
             "alpha",
             "none",
           ],
+        },
+      },
+      "booleans": {
+        "unlisted": {
+          "maps_to": {
+            "html": "unlisted",
+          },
+          "default": false,
+          "notes": "Keep this sub-sub-section out of the generated table of contents,\nregardless of toc-depth (#218). Display-only: it still renders; it is only\nabsent from the contents listing. See notes/specs/toc-and-numbering.md.\nAuthored as +unlisted; renders to the HTML attribute unlisted.\n",
         },
       },
     },

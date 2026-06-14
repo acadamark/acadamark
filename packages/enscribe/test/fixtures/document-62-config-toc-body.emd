@@ -1,0 +1,30 @@
+<meta type=article>
+<title | Config-driven contents — body placement (#218)>
+<author | The Enscribe Team>
+</meta>
+
+<config toc=true toc-depth=2 toc-location=body />
+
+<section #sec:intro | Introduction>
+
+The contents listing is config-driven (`<config toc>`), read in the shared compiler,
+so the static build and the live render produce it identically. With
+`toc-location=body` it renders at the top of the document, after the title block.
+
+<sub-section | Background>
+
+A second-level heading — listed, because `toc-depth=2` includes levels 1 and 2.
+
+<sub-sub-section | Fine detail>
+
+A third-level heading. Below `toc-depth`, so it is absent from the contents listing
+(it still renders here in the body).
+
+<section | Methods>
+
+A first-level heading, listed.
+
+<section +unlisted | Acknowledgements>
+
+An `+unlisted` section: present in the document, absent from the contents listing,
+regardless of `toc-depth`.

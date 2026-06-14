@@ -44,6 +44,16 @@ export const CONFIG_KWARGS = new Map([
   ['number-figures',          'live'],   // numbering.js
   ['number-tables',           'live'],   // numbering.js
   ['number-sections',         'live'],   // numbering.js (#57; default off articles / on books)
+
+  // #218: table-of-contents settings — the config-driven contents listing, read in
+  // the shared compiler (index.js → lib/toc.js applyConfigToc) so the static build and
+  // the live render honor them identically. Default off. Numbering (number-depth) is the
+  // sibling half (next slice). See notes/specs/toc-and-numbering.md.
+  ['toc',                     'live'],   // index.js compiler → applyConfigToc (default off)
+  ['toc-depth',               'live'],   // deepest heading level listed (default 3)
+  ['toc-title',               'live'],   // heading above the listing (default "Contents")
+  ['toc-location',            'live'],   // body | left | right (default body)
+  ['toc-expand',              'live'],   // sidebar levels expanded initially (default 1)
   // Phase 3 slice 3a (2026-05-28): the three new theorem-family counter
   // suppressions. Same pattern as number-equations/figures/tables —
   // setting any of these to false in a <config> block suppresses the
