@@ -30,11 +30,13 @@ import {
   renderLiveCoverView,
   renderLiveChapterEditView,
   renderLiveChapterPreviewBody,
+  renderLiveArticleEditView,
   createIncrementalRebuilder,
   resolveHash,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
+import { isEnscribeTag } from '../core/tag.js';
 
 const BROWSER_DEFAULTS = {
   embedResources: false,
@@ -422,6 +424,34 @@ function debounce(fn, ms) {
 }
 
 /**
+ * Wire the Write/Preview tab buttons under `root` (engine-managed; no inline script in the
+ * fragment). Shared by the book chapter edit loop and the article edit loop — both mount the SAME
+ * `data-edit-tab` / `data-edit-pane` contract (buildEditMain), so the toggle behavior is one source.
+ * Clicking a tab marks it active and shows its pane, hiding the other.
+ *
+ * @param {Element} root - the mounted edit view (holds the `[data-edit-tab]` / `[data-edit-pane]` nodes)
+ */
+function wireEditTabs(root) {
+  const tabs = [...root.querySelectorAll('[data-edit-tab]')];
+  const panes = {
+    source: root.querySelector('[data-edit-pane="source"]'),
+    preview: root.querySelector('[data-edit-pane="preview"]'),
+  };
+  const activate = (name) => {
+    for (const t of tabs) {
+      const on = t.getAttribute('data-edit-tab') === name;
+      t.classList.toggle('enscribe-edit-tab--active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    }
+    if (panes.source) panes.source.hidden = name !== 'source';
+    if (panes.preview) panes.preview.hidden = name !== 'preview';
+  };
+  for (const t of tabs) {
+    t.addEventListener('click', () => activate(t.getAttribute('data-edit-tab')));
+  }
+}
+
+/**
  * The edit loop (#203). Given the fetched master + children, stand up the incremental
  * rebuilder over an in-memory source map and drive a hash-routed Write/Preview editor:
  * chapter views mount the editor adapter; a debounced edit re-parses only that chapter
@@ -494,34 +524,13 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
     debouncedRebuild();
   };
 
-  // Wire the Write/Preview tab buttons (engine-managed; no inline script in the fragment).
-  const wireTabs = () => {
-    const tabs = [...root.querySelectorAll('[data-edit-tab]')];
-    const panes = {
-      source: root.querySelector('[data-edit-pane="source"]'),
-      preview: root.querySelector('[data-edit-pane="preview"]'),
-    };
-    const activate = (name) => {
-      for (const t of tabs) {
-        const on = t.getAttribute('data-edit-tab') === name;
-        t.classList.toggle('enscribe-edit-tab--active', on);
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-      }
-      if (panes.source) panes.source.hidden = name !== 'source';
-      if (panes.preview) panes.preview.hidden = name !== 'preview';
-    };
-    for (const t of tabs) {
-      t.addEventListener('click', () => activate(t.getAttribute('data-edit-tab')));
-    }
-  };
-
   const renderChapterAt = (idx) => {
     debouncedRebuild.cancel();
     destroyEditor();
     currentIndex = idx;
     currentKey = idx;
     root.innerHTML = renderLiveChapterEditView(model, idx, ctx);
-    wireTabs();
+    wireEditTabs(root);
     const mountEl = root.querySelector('[data-edit-pane="source"]');
     const src = srcForIndex(idx);
     if (mountEl && src != null) {
@@ -561,6 +570,122 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
 }
 
 /**
+ * Mount a single-document (ARTICLE) master as a LIVE view (#216) — the simple case the book live
+ * mount (mountLiveBook) is the complex counterpart of. An article is ONE unit: there is no cover,
+ * no chapter rail, no hash routing, no per-chapter lazy cache — a single render resolves every
+ * cross-reference (the standard pipeline's global pass), so the document just renders into the mount.
+ *
+ *   READ mode → the assembled article, mounted (renderMasterAsync — the SAME path the non-live
+ *     renderMasterIntoAsync takes: discover any `<section src>` children, fetch, assemble, render).
+ *   EDIT mode (an `editor` adapter) → the #211 Write/Preview loop collapsed to one editable unit:
+ *     the master source. Editing it (debounced) re-assembles + re-renders the WHOLE article and
+ *     refreshes the Preview pane; references within it stay correct because the single global pass
+ *     renumbers + re-resolves on every edit. Preview-only (edits live in memory; no save this slice).
+ *
+ * Served over HTTP (the shell fetches; `file://` won't): any `<section src>` children resolve
+ * against `document.baseURI`, like `<library src>`. A single-file article (no `src` children) needs
+ * no fetch beyond the master itself.
+ *
+ * @param {string|Element} target - a CSS selector or the Element to mount into.
+ * @param {string} source - the ARTICLE master's enscribe source (a `<meta type=article>` — or an
+ *   absent/other type, which the pipeline structures as an article — optionally with `<section src>`).
+ * @param {object} [options] - pipeline options (see render()), plus the live edit options:
+ * @param {object} [options.editor] - an editor ADAPTER enabling edit mode (see mountLiveBook).
+ * @param {number} [options.editDebounceMs=250] - debounce (ms) before a re-render on edit.
+ * @returns {Promise<Element>} the mounted element (after the article renders).
+ */
+export async function mountLiveArticle(target, source, options = {}) {
+  const { editor = null, editDebounceMs, ...pipelineOptions } = options;
+  const root = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!root) {
+    throw new Error(`mountLiveArticle: target not found: ${String(target)}`);
+  }
+
+  // READ mode: the assembled article, mounted. renderMasterAsync handles both a multi-file article
+  // (discover + fetch `<section src>` children, then assemble) and a single-file article (no `src`
+  // → the ordinary async render) — the simple case needs no model, no router, no chrome.
+  if (!editor) {
+    root.innerHTML = await renderMasterAsync(source, pipelineOptions);
+    return root;
+  }
+
+  // EDIT mode (#216): pre-fetch any `<section src>` children (+ the master's own `<library src>` /
+  // `<table src>`) ONCE so each edit re-renders synchronously from memory, then run the single-unit
+  // edit loop. (A single-file article fetches nothing here — childSrcs is empty.)
+  const proc = getPipeline(pipelineOptions);
+  const childSrcs = discoverChildSrcs(proc, source);
+  const { loadedFile } = await loadAndAssembleMaster(proc, source, childSrcs);
+  return mountArticleEditLoop({
+    root, proc, masterSource: source, loadedFile, editor,
+    debounceMs: editDebounceMs ?? 250,
+  });
+}
+
+/**
+ * The ARTICLE edit loop (#216) — the single-unit collapse of the book's incremental edit loop
+ * (mountEditLoop). There is one editable source (the master) and one rendered unit (the article),
+ * so there is no chapter rail, no routing, no per-chapter cache, and no source→chapter mapping:
+ * editing the master re-assembles + re-renders the whole article into the Preview pane.
+ *
+ * The render path is the SAME assemble → global pass → stringify that renderMasterAsync runs (minus
+ * the fetch — children ride in memory on `loaded`), so the preview matches the published article and
+ * the single global pass keeps every in-article cross-reference correct after each edit.
+ */
+function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, debounceMs }) {
+  const loaded = loadedFile.data[ENSCRIBE_LOADED_SOURCES] || {};
+  let currentSource = masterSource;   // the single editable unit (the master)
+
+  // Synchronous render of the CURRENT source → cheap global pass → stringify, byte-identical to the
+  // READ render (renderMasterAsync), so the preview matches the published article. It mirrors
+  // renderMasterAsync's OWN top-level branch on HAS_MASTER_SRC: a multi-file article (a `<section src>`
+  // entry) ASSEMBLES its in-memory children first (the same assembler read mode uses); a single-file
+  // article renders the source DIRECTLY — NOT through the assembler — so deferred placement markers
+  // (`<toc>` / `<endnotes>` / `<bibliography>`) survive exactly as read mode's render() leaves them
+  // (the assembler drops them; the direct render does not). A fresh VFile each render (the numbering
+  // registry must not carry over).
+  const renderArticle = (src) => {
+    const file = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } };
+    const tree = HAS_MASTER_SRC.test(src)
+      ? assembleMasterDocument({
+          source: src,
+          parse: (s) => proc.parse(s),
+          resolve: (rel) => rel,
+          readFile: (s) => readPreloadedChild(loaded, s),
+          warn: () => {},
+        })
+      : proc.parse(src);
+    return String(proc.stringify(proc.runSync(tree, file), file));
+  };
+
+  root.innerHTML = renderLiveArticleEditView(renderArticle(currentSource));
+  wireEditTabs(root);
+
+  // Re-render ONLY the preview pane (leave the editor + tabs intact). always-renders: a mid-edit
+  // parse/render error surfaces in the pane, never breaking the loop.
+  const updatePreview = () => {
+    const pane = root.querySelector('[data-edit-pane="preview"]');
+    if (!pane) return;
+    try {
+      pane.innerHTML = renderArticle(currentSource);
+    } catch (err) {
+      const msg = (err && err.message) || String(err);
+      pane.innerHTML = `<p class="enscribe-edit-error">live edit error: ${msg.replace(/</g, '&lt;')}</p>`;
+    }
+  };
+  const debouncedRender = debounce(updatePreview, debounceMs);
+
+  const mountEl = root.querySelector('[data-edit-pane="source"]');
+  if (mountEl) {
+    // The adapter reports every edit; swap the source in synchronously and debounce the re-render.
+    editor.mount(mountEl, {
+      value: currentSource,
+      onChange: (newSource) => { currentSource = newSource; debouncedRender(); },
+    });
+  }
+  return root;
+}
+
+/**
  * mountLiveBook starting from a master URL: fetch the master source, then mount. The
  * one-call bootstrap an app-shell `index.html` uses
  * (`enscribe.mountLiveBookFromUrl('#root', 'master-book.emd')`). The master URL resolves
@@ -572,12 +697,21 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
  * @returns {Promise<Element>} the mounted element.
  */
 export async function mountLiveBookFromUrl(target, url, options = {}) {
+  const source = await fetchMasterSource(url, 'mountLiveBookFromUrl');
+  return mountLiveBook(target, source, options);
+}
+
+/**
+ * Fetch a master document's source text by URL (page-relative, like an `index.html` bootstrap uses).
+ * Throws a `who`-labeled error on a non-OK response. Shared by mountLiveBookFromUrl and the unified
+ * mountLiveShell so the one-call bootstraps fetch the master the same way.
+ */
+async function fetchMasterSource(url, who) {
   const res = await fetch(url);
   if (!res.ok) {
-    throw new Error(`mountLiveBookFromUrl: could not fetch master "${url}": HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`);
+    throw new Error(`${who}: could not fetch master "${url}": HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`);
   }
-  const source = await res.text();
-  return mountLiveBook(target, source, options);
+  return res.text();
 }
 
 /** Read the `data-enscribe-edit` host switch off a mount element: present = on, UNLESS the
@@ -590,34 +724,55 @@ function editAttrOn(el) {
 }
 
 /**
- * The ONE configurable live-shell entry (#213): read↔edit from a HOST-side switch. Editability
- * is a property of the DEPLOYMENT, not the document — the same `.emd` is read-only when published
- * and editable while authored, the difference being WHERE it is served. And mechanically only the
- * host can turn editing on: CodeMirror loads host-side by design (#211, kept out of the engine
- * bundle), so a document `<config>` flag could not load it. So the switch lives here, where the
- * editor is loaded — never in the document.
+ * Read a master's document class from its `<meta type>` — the cheap pre-structuring read the shell
+ * dispatch needs. `book` → the book live path; EVERYTHING else (an article, an absent type, an
+ * unknown type) → the article path. That matches the structuring fallback exactly: only a
+ * `<meta type=book>` produces a `<book>` (which the book live path needs), and an unknown type falls
+ * back to `article` (enscribeDocTypeResolve). A bare kwarg read is enough — no full pipeline run.
+ *
+ * @param {import('unified').Processor} proc - a configured pipeline (its `.parse`)
+ * @param {string} source - the master document's enscribe source
+ * @returns {boolean} true iff the master declares `<meta type=book>`
+ */
+function masterIsBook(proc, source) {
+  const meta = (proc.parse(source).children ?? []).find((n) => isEnscribeTag(n, 'meta'));
+  return meta?.kwargs?.type === 'book';
+}
+
+/**
+ * The ONE configurable live-shell entry (#213/#216): read↔edit from a HOST-side switch, dispatching
+ * book ↔ article by the master's own `<meta type>`. Editability is a property of the DEPLOYMENT, not
+ * the document — the same `.emd` is read-only when published and editable while authored, the
+ * difference being WHERE it is served. And mechanically only the host can turn editing on: CodeMirror
+ * loads host-side by design (#211, kept out of the engine bundle), so a document `<config>` flag
+ * could not load it. So the switch lives here, where the editor is loaded — never in the document.
  *
  * The switch (one knob, two equivalent forms):
  *   - `options.edit` (explicit boolean) wins when provided — the testable core; else
  *   - the `data-enscribe-edit` attribute on the mount element (presence = on; `="false"`/`"off"`/
  *     `"0"` = off) — a declarative, per-mount, build.js-friendly knob with no global mutable state.
  *
+ * DISPATCH (#216): the shell fetches the master ONCE, reads `<meta type>`, and routes — a book to the
+ * existing book live path (mountLiveBook, unchanged), an article to the new article path
+ * (mountLiveArticle). The detection is at RUNTIME here, so the emitter that writes the shell stays
+ * pure and type-agnostic (no emit-time master read): one emitted shell drives either kind of master,
+ * and a document that changes type never needs a re-emit.
+ *
  * ON → `editorFactory()` is awaited to build the editor adapter (the host loads CodeMirror THERE —
- * lazily, so READ mode never loads it) and the book mounts in edit mode (#211's `{ editor }`).
- * OFF → the book mounts in read mode — byte-identical to the read shell (#209). The engine is
- * unchanged: this is host ergonomics over the existing `{ editor }`-present-→-edit branch.
+ * lazily, so READ mode never loads it) and the document mounts in edit mode (#211's `{ editor }`).
+ * OFF → it mounts in read mode — byte-identical to the read shell (#209 book / the article render).
  *
  * @param {string|Element} target - a CSS selector or the Element to mount into.
- * @param {string} url - the BOOK master's URL (relative to the page).
- * @param {object} [options] - mountLiveBook options (see render()), plus the switch:
+ * @param {string} url - the master's URL (relative to the page) — a book OR an article master.
+ * @param {object} [options] - mountLiveBook / mountLiveArticle options (see render()), plus the switch:
  * @param {boolean} [options.edit] - explicit edit flag; overrides the `data-enscribe-edit` attribute.
  * @param {() => (object|Promise<object>)} [options.editorFactory] - builds the editor adapter
  *   (#211 `editor`: `mount(el,{value,onChange}) → {destroy?()}`) when editing is on. Called ONLY
  *   then, so the host can lazy-load CodeMirror and read mode never pulls it in.
  * @returns {Promise<Element>} the mounted element.
  */
-export async function mountLiveBookShell(target, url, options = {}) {
-  const { edit, editorFactory, ...rest } = options;
+export async function mountLiveShell(target, url, options = {}) {
+  const { edit, editorFactory, editDebounceMs, ...pipelineOptions } = options;
   const el = typeof target === 'string'
     ? (typeof document !== 'undefined' ? document.querySelector(target) : null)
     : target;
@@ -625,12 +780,34 @@ export async function mountLiveBookShell(target, url, options = {}) {
   let editor = null;
   if (editEnabled) {
     if (typeof editorFactory !== 'function') {
-      throw new Error('mountLiveBookShell: editing is on but no `editorFactory` was provided to build/load the editor');
+      throw new Error('mountLiveShell: editing is on but no `editorFactory` was provided to build/load the editor');
     }
     editor = await editorFactory();
   }
-  // editor === null → read mode (byte-identical to #209); an adapter → #211's edit mode.
-  return mountLiveBookFromUrl(target, url, { ...rest, editor });
+  // Fetch the master ONCE, then dispatch on its `<meta type>`. editor === null → read mode
+  // (byte-identical to #209 / the article render); an adapter → #211's edit mode (book) / the #216
+  // single-unit edit loop (article). editDebounceMs is re-attached so both mounts read it the same.
+  const source = await fetchMasterSource(url, 'mountLiveShell');
+  const proc = getPipeline(pipelineOptions);
+  const mountOptions = { ...pipelineOptions, editor, editDebounceMs };
+  return masterIsBook(proc, source)
+    ? mountLiveBook(target, source, mountOptions)
+    : mountLiveArticle(target, source, mountOptions);
+}
+
+/**
+ * Back-compat alias for the unified {@link mountLiveShell} (#216). The #213 shell entry was
+ * book-specific (`mountLiveBookShell`); the type-agnostic dispatch superseded it. Kept so the
+ * earlier emitted shells (and any host calling it directly) keep working — it now also drives an
+ * article master, since it delegates to the dispatcher. New shells emit `mountLiveShell`.
+ *
+ * @param {string|Element} target - a CSS selector or the Element to mount into.
+ * @param {string} url - the master's URL (book or article).
+ * @param {object} [options] - see {@link mountLiveShell}.
+ * @returns {Promise<Element>} the mounted element.
+ */
+export async function mountLiveBookShell(target, url, options = {}) {
+  return mountLiveShell(target, url, options);
 }
 
 /**

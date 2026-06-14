@@ -4,7 +4,7 @@
 // (resolved via @enscribejs/enscribe's package exports) flat into an output dir and writes the
 // emitted shell (assetBase './'). This gate proves the result is a SELF-STANDING live folder: every
 // asset the shell references resolves inside the folder (no 404), and the deployed shell mounts the
-// book via mountLiveBookShell with the #213 ?edit switch. Built to a temp dir; the engine bundle is
+// master via mountLiveShell with the #213 ?edit switch. Built to a temp dir; the engine bundle is
 // built first if absent (the build helper copies it).
 
 import assert from 'node:assert';
@@ -53,9 +53,9 @@ export function run_tests() {
     // the deployed flat shell mounts the book and carries the #213 host switch
     assert.ok(html.includes('src="./enscribe.browser.global.js"') && html.includes("from './editor-codemirror.js'"),
       'the shell references the flat-copied engine bundle + default editor');
-    assert.ok(html.includes("mountLiveBookShell('#enscribe-book-root', 'book.emd'") &&
+    assert.ok(html.includes("mountLiveShell('#enscribe-book-root', 'book.emd'") &&
       html.includes("new URLSearchParams(location.search).has('edit')"),
-      'the shell mounts the master via mountLiveBookShell with the #213 ?edit switch');
+      'the shell mounts the master via mountLiveShell with the #213 ?edit switch');
 
     console.log('PASS: #215 cli — buildLiveFolder writes a self-standing live folder; every asset resolves (no 404)');
   } finally {

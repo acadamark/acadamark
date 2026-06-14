@@ -1,7 +1,7 @@
 // Live shell emitter (#215).
 //
 // The inverse of #214's hand-written shell: a PURE function (params → shell HTML string, no I/O)
-// that GENERATES the minimal live shell for any book master. The author bits are parameters —
+// that GENERATES the minimal live shell for any master — book OR article. The author bits are parameters —
 // `master` filename, `title`, the `edit` switch (#213) — and `assetBase`/`assets` say where the
 // shell finds the package plumbing it REFERENCES (the engine bundle, default.css, the shell chrome
 // CSS, the default editor module). It's what the build helper, docs-live, and `serve` all call.
@@ -12,8 +12,11 @@
 // `assets` instead. The CodeMirror-from-CDN load lives inside the editor factory (a document-display
 // CDN concern, #117-deferred); it is not part of `assetBase`.
 //
-// NB the live render is BOOK-ONLY (mountLiveBookShell → buildLiveBook needs a `<book>`); a single
-// article master is the named follow-on. This emits the book shell.
+// TYPE-AGNOSTIC (#216): the emitter does NOT read the master — it emits ONE shell that mounts via
+// `mountLiveShell`, which fetches the master at runtime, reads `<meta type>`, and dispatches book ↔
+// article. So the same emitted shell drives either kind, and a document that changes type never
+// needs a re-emit. Staying pure (no emit-time master read) is the point — the dispatch lives in the
+// engine, not here.
 
 const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -50,11 +53,12 @@ export function resolveShellAssets(assetBase = './', assets) {
 }
 
 /**
- * Emit the minimal live shell HTML for a book master. Pure (no I/O).
+ * Emit the minimal live shell HTML for a master document — book OR article. Pure (no I/O): the type
+ * is detected at runtime by `mountLiveShell`, not read here (#216), so one shell drives either kind.
  *
  * @param {object} opts
  * @param {string} opts.master - the master document's filename, fetched relative to the shell
- *   (e.g. `book.emd`). Required.
+ *   (e.g. `book.emd` or `article.emd`). Required.
  * @param {string} [opts.title] - the page <title> (defaults to the master filename).
  * @param {boolean} [opts.edit=false] - if true, the shell DEFAULTS to the editor by putting
  *   `data-enscribe-edit` on the mount element (#213); `?edit` still flips it at runtime regardless.
@@ -109,7 +113,7 @@ export function emitLiveShell({ master, title, edit = false, assetBase = './', a
   if (new URLSearchParams(location.search).has('edit')) opts.edit = true;
 
   window.enscribe
-    .mountLiveBookShell('#enscribe-book-root', '${masterLiteral}', opts)
+    .mountLiveShell('#enscribe-book-root', '${masterLiteral}', opts)
     .catch((err) => {
       document.getElementById('enscribe-book-root').textContent = 'Failed to mount the live shell: ' + err.message;
       // eslint-disable-next-line no-console

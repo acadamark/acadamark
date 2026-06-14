@@ -506,9 +506,10 @@ export function run(argv, io = {}) {
       case 'build': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(BUILD_HELP); return 0; }
-        // --live (#215): generate a self-standing LIVE FOLDER (the engine renders the book client-
-        // side; ?edit mounts the #211 edit loop). Copies the master + children + shell assets +
-        // engine bundle into -o <dir> and writes the emitted shell. Book-only (the live render is).
+        // --live (#215): generate a self-standing LIVE FOLDER (the engine renders the document client-
+        // side; ?edit mounts the live edit loop). Copies the master + children + shell assets +
+        // engine bundle into -o <dir> and writes the emitted shell. Works for a book OR an article
+        // master (#216) — the emitted shell mounts via mountLiveShell, which dispatches by <meta type>.
         if (opts.live) {
           if (!opts.output) {
             throw new CliError('--live writes a live folder — give an output directory with -o <dir>');

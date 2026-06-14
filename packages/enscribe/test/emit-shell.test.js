@@ -23,8 +23,8 @@ export async function run() {
     const html = emitLiveShell({ master: 'book.emd' });
     assert.ok(html.startsWith('<!DOCTYPE html>') && html.includes('</html>'), 'emits a full HTML document');
     assert.ok(html.includes('<title>book.emd</title>'), 'title defaults to the master filename');
-    assert.ok(html.includes("mountLiveBookShell('#enscribe-book-root', 'book.emd', opts)"),
-      'the bootstrap mounts the given master via mountLiveBookShell');
+    assert.ok(html.includes("mountLiveShell('#enscribe-book-root', 'book.emd', opts)"),
+      'the bootstrap mounts the given master via mountLiveShell (type-agnostic dispatch, #216)');
     console.log('PASS: #215 — emitLiveShell requires `master`, defaults title, mounts the master');
   }
 

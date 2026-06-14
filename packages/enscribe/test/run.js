@@ -62,6 +62,7 @@ import { run as runMasterBookLive } from './master-book-live.test.js';
 import { run as runLiveEditLoop } from './live-edit-loop.test.js';
 import { run as runLiveEditSmoke } from './live-edit-smoke.test.js';
 import { run as runLiveBookShell } from './live-book-shell.test.js';
+import { run as runLiveArticleShell } from './live-article-shell.test.js';
 import { run as runFormatNeutrality } from './format-neutrality.test.js';
 import { run as runShellAssets } from './shell-assets.test.js';
 import { run as runEmitShell } from './emit-shell.test.js';
@@ -130,6 +131,7 @@ const suites = [
   ['live-edit-loop',               runLiveEditLoop],
   ['live-edit-smoke',              runLiveEditSmoke],
   ['live-book-shell',              runLiveBookShell],
+  ['live-article-shell',           runLiveArticleShell],
   ['format-neutrality',            runFormatNeutrality],
   ['shell-assets',                 runShellAssets],
   ['emit-shell',                   runEmitShell],

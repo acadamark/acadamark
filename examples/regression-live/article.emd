@@ -1,0 +1,38 @@
+<meta type=article>
+<title | Ordinary Least Squares in One Page>
+<subtitle | A Single-Article Live Example>
+<author | The Enscribe Team>
+</meta>
+
+<config ref-prefix-eqn="Eq." />
+
+<section | The model>
+
+Given paired observations <$ (x_i, y_i) $> for <$ i = 1, \dots, n $>, the
+simple linear model predicts <$ \hat{y}_i = m x_i + b $>. The fit is judged by
+the residual sum of squares — the total squared vertical distance between the
+data and the line:
+
+<$$ #eqn:rss | S(m, b) = \sum_{i=1}^{n} \left( y_i - m x_i - b \right)^2 $$>
+
+Ordinary least squares chooses the slope <$ m $> and intercept <$ b $> that
+make <ref @eqn:rss> as small as possible.
+
+<section | The normal equations>
+
+Setting the partial derivatives of <ref @eqn:rss> to zero and solving gives the
+closed-form minimizer:
+
+<$$ #eqn:slope | m = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2} $$>
+
+with the intercept following from the means, <$ b = \bar{y} - m \bar{x} $>.
+Because <ref @eqn:rss> is convex in both parameters, the solution in
+<ref @eqn:slope> is the unique global minimum — no iteration required.
+
+<section | Why one render suffices>
+
+This whole document is a single unit: the cross-references in
+<ref @eqn:slope> and the section above resolve in one pass, with no chapters to
+route between. That is exactly what the live shell does in the browser — render
+the one article, and (with <code | ?edit>) let you rewrite the source and watch
+it re-render.

@@ -25,11 +25,14 @@ const ASSET_SPECS = {
 };
 
 /**
- * Build a self-standing live folder for a book master: copy the master + its `src` children + the
- * shell assets + engine bundle into `outDir` (flat), and write the emitted live shell there.
+ * Build a self-standing live folder for a master document — book OR article (#216): copy the master
+ * + its `src` children + the shell assets + engine bundle into `outDir` (flat), and write the
+ * emitted live shell there. The shell is type-agnostic (it mounts via mountLiveShell, which
+ * dispatches by `<meta type>` at runtime), so this helper does not care which kind the master is.
  *
  * @param {object} opts
- * @param {string} opts.master - path to the master `.emd` (a `<meta type=book>` with `src` children).
+ * @param {string} opts.master - path to the master `.emd` (a `<meta type=book>` with book-part `src`
+ *   children, or a `<meta type=article>` — single-file, or with `<section src>` children).
  * @param {string} opts.outDir - the live folder to write (created if missing).
  * @param {string} [opts.title] - the shell <title> (defaults to the master filename).
  * @param {boolean} [opts.edit=false] - default the shell to the editor (#213; `?edit` always works).

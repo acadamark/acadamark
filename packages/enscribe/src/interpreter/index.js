@@ -1072,6 +1072,10 @@ export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderL
 // Write/Preview edit view. The pure core of the authoring loop; browser.js mountLiveBook wires
 // the in-memory source map, the debounced re-render, and the CodeMirror editor adapter onto it.
 export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapterPreviewBody } from '../master-document/live-book.js';
+// The single-document (article) live render (#216): an article is the simple case — one unit, no
+// rail/cover/routing — so its edit view is just the SHARED Write/Preview pane (buildEditMain) in a
+// chrome-free layout. browser.js mountLiveArticle wires the fetch + DOM + the single-source edit loop.
+export { renderLiveArticleEditView } from '../master-document/live-edit-view.js';
 // Live shell emitter (#215): the pure params → shell-HTML generator (the inverse of the #214
 // hand-written shell), and resolveShellAssets (flat vs explicit asset hrefs). The build helper
 // (CLI) imports these to generate a deployable live folder; the shell layer they reference ships

@@ -31,6 +31,7 @@ import { buildChapterRail, buildOnThisPage, chapterNavBar } from '../interpreter
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
 import { assembleMasterDocument } from './assemble.js';
+import { buildEditMain } from './live-edit-view.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 import {
   collectBookParts,
@@ -310,18 +311,7 @@ export function renderLiveChapterEditView(model, idx, ctx) {
   const home = { href: COVER_HASH, title: bookTitle };
   const rail = toHtml(buildChapterRail(parts, chapterHash, part.id, home));
 
-  const tabs =
-    '<div class="enscribe-edit-tabs" role="tablist">' +
-      '<button type="button" class="enscribe-edit-tab enscribe-edit-tab--active" data-edit-tab="source" role="tab" aria-selected="true">Source</button>' +
-      '<button type="button" class="enscribe-edit-tab" data-edit-tab="preview" role="tab" aria-selected="false">Preview</button>' +
-      '<span class="enscribe-edit-status" title="Edits are preview-only — they live in memory and are lost on reload (no save this slice).">preview — unsaved</span>' +
-    '</div>';
-  // The source pane is the editor mount point (the adapter fills it); the preview pane holds
-  // the live render. Source visible by default, preview hidden — toggled by the browser entry.
-  const panes =
-    '<div class="enscribe-edit-pane enscribe-edit-pane--source" data-edit-pane="source"></div>' +
-    `<div class="enscribe-edit-pane enscribe-edit-pane--preview enscribe-body" data-edit-pane="preview" hidden>${previewBody}</div>`;
-
-  const main = `<main class="enscribe-edit-main">${tabs}${panes}</main>`;
-  return `<div class="${BOOK_LAYOUT} enscribe-layout--edit">${rail}${main}</div>`;
+  // The Write/Preview pane is the SHARED edit-view UI (buildEditMain, #216) — single-sourced so the
+  // book and article edit views cannot drift. The book wraps it in the chapter rail + book layout.
+  return `<div class="${BOOK_LAYOUT} enscribe-layout--edit">${rail}${buildEditMain(previewBody)}</div>`;
 }

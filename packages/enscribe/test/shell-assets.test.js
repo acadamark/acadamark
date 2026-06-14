@@ -8,7 +8,7 @@
 //   - the minimal shell references those package assets and no longer inlines either;
 //   - the default editorFactory ships as a host-side, lazy module (importing it loads no CodeMirror).
 // Behavior (read↔edit via the #213 host switch) is unchanged — its functional gate is
-// live-book-shell.test.js (mountLiveBookShell is untouched); real CodeMirror is a your-eyes check.
+// live-book-shell.test.js (the host switch is untouched); real CodeMirror is a your-eyes check.
 
 import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
@@ -65,8 +65,8 @@ export async function run() {
   {
     assert.ok(shellHtml.includes("new URLSearchParams(location.search).has('edit')"),
       'the shell still reads the `?edit` host switch');
-    assert.ok(/mountLiveBookShell\(\s*'#enscribe-book-root'\s*,\s*'master-book\.emd'/.test(shellHtml),
-      'the shell still mounts via mountLiveBookShell with the author master filename');
+    assert.ok(/mountLiveShell\(\s*'#enscribe-book-root'\s*,\s*'master-book\.emd'/.test(shellHtml),
+      'the shell still mounts via mountLiveShell with the author master filename');
     console.log('PASS: #214 — the #213 host switch (?edit / data-enscribe-edit) is intact');
   }
 
