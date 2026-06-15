@@ -124,18 +124,14 @@ shorthand_examples:
         </tbody>
       </table>
     notes: |
-      **Planned — the `<csv>` standalone-handler is not yet implemented**
-      (it is registered in `@enscribejs/enscribe/core/dsl-registry` but no handler
-      exists yet; an authored `<csv | ...>` today falls through to the
-      unknown-element fallback). The example is preserved here as
-      documentation of the intended form. Today's working CSV authoring
-      path is the qualifying form: `<table csv | ... >` — see the
-      table-with-data-format examples below and the DSL-handlers
-      backlog item.
-
-      When implemented, the `<csv>` DSL engine will produce a table
-      from CSV source. See the `<csv>` vocabulary entry for details on
-      engine attributes (header control, alignment, etc.).
+      The `<csv>` shorthand lowers to `<table csv>` (the standalone `<csv>` /
+      `<tsv>` tags were retired to these gate shorthands) and renders today —
+      the table above is its output, parsed from the CSV source by the table
+      handler's csv engine. `<csv | ... >` and the qualifying form
+      `<table csv | ... >` converge to the same parsed table; only the authoring
+      shorthand differs. JSON data uses the qualifying `<table json | ... >` form
+      — there is no standalone `<json>` shorthand. See the `<csv>` vocabulary
+      entry for engine attributes (header control, alignment, etc.).
   - source: |
       <table #revenue type=results>
         <caption | Quarterly revenue>
@@ -165,7 +161,7 @@ Tables in enscribe are reached through three authoring paths, each appropriate f
 
 **Plain markdown** for simple tables in flowing prose. Standard pipe-and-dash syntax (via remark-gfm) produces `<table>` output without any explicit enscribe tags.
 
-**DSL engine tags** like `<csv>`, `<tsv>`, `<json>` for tabular data that exists in a structured file format. The engine parses the data and generates the appropriate `<table>` structure. This is the primary path for data-driven tables.
+**DSL engine tags** like `<csv>` and `<tsv>` (and the qualifying `<table json>` for JSON) for tabular data that exists in a structured file format. The engine parses the data and generates the appropriate `<table>` structure. This is the primary path for data-driven tables.
 
 **Explicit `<table>` with cells** for cases requiring fine control: complex cell content (paragraphs, lists, nested elements), specific cell attributes, manual structural control. Authors reach for this when the simpler paths don't fit.
 
@@ -184,7 +180,7 @@ The element is HTML-native and matches HTML5's semantic intent. Most authors wil
 
 Simple, readable in source, handles most tables in academic writing. The pipe-and-dash syntax produces a complete table including header row.
 
-**CSV (or TSV, JSON).** **Planned — the standalone `<csv>` / `<tsv>` / `<json>` handlers are not yet implemented.** The intended form:
+**CSV (or TSV).** The `<csv>` / `<tsv>` shorthands lower to `<table csv>` / `<table tsv>` and render today:
 
 ```
 <csv | name,price
@@ -193,7 +189,7 @@ bar,2
 >
 ```
 
-When implemented, this will be the path used when the data exists as CSV / TSV / JSON; the engine will handle the conversion to a table. See the `<csv>` vocabulary entry for details on engine-specific attributes (header control, alignment, etc.). Today, the working path for CSV data is the qualifying form `<table csv | name,price\n...>` (see the "Explicit `<table>`" subsection below) — this is the standard `<table>` element with `csv` declared as the data format, and the table handler parses it via the same csv engine. The standalone `<csv>` shortcut and the qualifying `<table csv | ...>` form converge to the same parsed table; only the authoring shorthand differs.
+This is the path used when the data exists as CSV or TSV; the engine handles the conversion to a table. See the `<csv>` vocabulary entry for details on engine-specific attributes (header control, alignment, etc.). The standalone `<csv>` shortcut and the qualifying form `<table csv | name,price\n...>` (see the "Explicit `<table>`" subsection below) converge to the same parsed table — `<csv>` lowers to `<table csv>` — so only the authoring shorthand differs. JSON data uses the qualifying `<table json | ...>` form; there is no standalone `<json>` shorthand.
 
 **Explicit `<table>`.**
 
