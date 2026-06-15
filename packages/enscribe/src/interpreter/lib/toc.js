@@ -27,6 +27,7 @@
 // the book chrome), so it cannot affect non-ToC documents.
 
 import { NAV_ITEM_TAGNAMES } from './section-kinds.js';
+import { readConfigBool } from './config-helpers.js';
 
 // Section-like elements that become ToC entries. `book-part` (a chapter/part) is
 // a top-level entry whose nested `section`s become its children — NAV_ITEM_TAGNAMES
@@ -441,12 +442,6 @@ export function applyToc(hast, toc) {
 // collapsible listing whose initial expansion is `toc-expand`. `toc-depth` bounds the
 // listed levels; a `+unlisted` heading is dropped from the listing (with its subtree).
 
-/** Coerce a config `toc` value to a boolean (on/off). The discovery map yields `true`
- *  for `toc=true`; tolerate the string forms too. Absent → off. */
-function tocOn(v) {
-  return v === true || v === 'true' || v === '';
-}
-
 /** Coerce `toc-depth` to a positive integer (default 3). Accepts a number or a string. */
 function tocDepth(v) {
   const n = parseInt(v, 10);
@@ -472,7 +467,7 @@ function tocExpand(v) {
  * @returns {{ depth:number, title:string, location:'body'|'left'|'right', expand:number }|null}
  */
 export function readTocConfig(configMap) {
-  if (!configMap || !tocOn(configMap.get('toc'))) return null;
+  if (!readConfigBool(configMap, 'toc', false)) return null;  // F12: config-only boolean reader (default off)
   const locationRaw = String(configMap.get('toc-location') ?? 'body').toLowerCase();
   const location = locationRaw === 'left' || locationRaw === 'right' ? locationRaw : 'body';
   return {

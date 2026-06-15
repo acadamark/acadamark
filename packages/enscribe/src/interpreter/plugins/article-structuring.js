@@ -43,6 +43,8 @@ import {
 // Tags that belong in <article-back> — the single source of truth shared with
 // book-structuring (which routes the same set into <book-back>).
 import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
+// Apparatus tags (the single source — F13). The suppressed subset is derived there.
+import { APPARATUS_TAGS } from '../lib/apparatus-allowlists.js';
 
 // <data> is NOT in BACK_MATTER_TAGS. It lives at root level as a sibling of
 // <article>, because it is a data-only block (citation registry) processed by
@@ -58,8 +60,8 @@ function isBackMatter(node) {
 //
 // <library> is included even though it is typically nested inside <data> —
 // the position check below treats <data> as transparent for <library>'s
-// purposes (a <library> inside <data> is correctly placed).
-const APPARATUS_TAGS = new Set(['meta', 'config', 'data', 'library']);
+// purposes (a <library> inside <data> is correctly placed). APPARATUS_TAGS is
+// imported from lib/apparatus-allowlists.js (the single source — F13).
 
 /**
  * Recursively walk enscribeTag content arrays looking for apparatus tags

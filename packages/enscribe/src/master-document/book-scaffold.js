@@ -29,6 +29,7 @@
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { slugify } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
+import { readConfigBool } from '../interpreter/lib/config-helpers.js';
 import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
 
 // The three book regions, in reading order, mapped to a short region key the rail
@@ -201,15 +202,6 @@ export function coverBodyHtml(bookTitle) {
 
 const SPLIT_BY_VALUES = new Set(['chapter', 'section', 'none']);
 
-/** Coerce a <config> flag value with a book-default: absent → dflt; explicit
- *  `false`/'false' → false; bare (''), 'true', or true → true (mirrors #219's
- *  bare-boolean form, where `<config chapter-nav>` stores `'true'`). */
-function configFlag(configMap, key, dflt) {
-  if (!configMap || !configMap.has(key)) return dflt;
-  const v = configMap.get(key);
-  return v !== false && v !== 'false';
-}
-
 /**
  * Resolve the book-navigation settings from a numbered book's VFile (the config
  * map populated by config-discovery in the shared pipeline). Returns the plain
@@ -239,11 +231,11 @@ export function resolveBookNavConfig(file) {
   }
 
   return {
-    chapterNav:     configFlag(configMap, 'chapter-nav', true),
+    chapterNav:     readConfigBool(configMap, 'chapter-nav', true),
     chapterNavDepth,
-    pageNavigation: configFlag(configMap, 'page-navigation', true),
-    cover:          configFlag(configMap, 'cover', true),
-    backToTop:      configFlag(configMap, 'back-to-top', false),
+    pageNavigation: readConfigBool(configMap, 'page-navigation', true),
+    cover:          readConfigBool(configMap, 'cover', true),
+    backToTop:      readConfigBool(configMap, 'back-to-top', false),
     splitBy,
   };
 }

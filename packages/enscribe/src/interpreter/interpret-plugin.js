@@ -26,6 +26,8 @@ import { mapAttributes } from '../core/map-attributes.js';
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { htmlEmit, aggregateHtmlProps } from './lib/html-emit.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
+// Suppressed apparatus — derived from the apparatus set (the single source — F13).
+import { SUPPRESSED_APPARATUS } from './lib/apparatus-allowlists.js';
 import { figureHandler } from './handlers/figure.js';
 import { mathHandler } from './handlers/math.js';
 import { codeHandler } from './handlers/code.js';
@@ -65,7 +67,8 @@ import { convertChildren } from './lib/ast-helpers.js';
 // INTERNAL_REGISTRY below — which is only for plugin-created nodes that have no
 // vocabulary entry — so each registry's name matches its contract. Behaviour is
 // unchanged: these tags still render to null; only the home is now correct.
-const SUPPRESSED_APPARATUS = new Set(['data', 'library']);
+// SUPPRESSED_APPARATUS is imported from lib/apparatus-allowlists.js, derived as the
+// apparatus tags that don't render (F13) — so it can't drift from the apparatus set.
 
 // Internal node types created by the structural plugins (notes / refs / cites) —
 // they have NO vocabulary entry, so they are dispatched here before the

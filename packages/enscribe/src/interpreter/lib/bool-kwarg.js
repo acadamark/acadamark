@@ -8,6 +8,8 @@
 //
 // Priority: booleans > kwargs > config > default.
 
+import { readConfigBool } from './config-helpers.js';
+
 /**
  * Read a boolean kwarg from a node, falling back to document config then a
  * hardcoded default.
@@ -28,10 +30,8 @@ export function readBoolKwarg(node, key, config, configKey, defaultValue = true)
   if (node.kwargs?.[key] !== undefined) {
     return node.kwargs[key] !== 'false';
   }
-  // 3. Document-level config override.
-  if (config && configKey && config.has(configKey)) {
-    return config.get(configKey) !== 'false';
-  }
-  // 4. Hardcoded default.
-  return defaultValue;
+  // 3. Document-level config override, then 4. the hardcoded default — both via the
+  //    config-only boolean reader (F12), so the `!== 'false'` config coercion lives in
+  //    exactly one place. Byte-identical: config.has true → `!== 'false'`; absent → default.
+  return readConfigBool(config, configKey, defaultValue);
 }

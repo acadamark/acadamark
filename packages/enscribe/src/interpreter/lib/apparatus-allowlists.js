@@ -1,4 +1,4 @@
-// Apparatus-tag kwarg allowlists.
+// Apparatus-tag metadata: the <config> kwarg allowlist + the apparatus tag sets.
 //
 // Per the apparatus-tag reconciliation (2026-05-25, `578d6f0`), <meta> and
 // <config> are both authorable with kwargs, with kwargs accepted against a
@@ -14,11 +14,11 @@
 // subset / misuse-partner pointer all live in that registry's spec entry.
 // The interpreter's lift gate consumes the spec from there.
 //
-// This file shrinks accordingly: only <config>'s allowlist remains here.
-// <config> is NOT a structured-data-container — its content is processing
-// options, not a record of named document-descriptive fields, and the
-// authoring surface today is kwargs-only (no child-tag form lifted by the
-// gate). <config> stays kwarg-driven and stays here.
+// This file holds <config>'s kwarg allowlist (below) and the apparatus TAG sets
+// (which tags are apparatus, and which render — F13, at the foot). <config> is NOT
+// a structured-data-container — its content is processing options, not a record of
+// named document-descriptive fields, and the authoring surface today is kwargs-only
+// (no child-tag form lifted by the gate). <config> stays kwarg-driven and stays here.
 //
 // The misuse-feedback pairing still works across the file boundary: <meta>'s
 // spec (in structured-elements.js) names 'config' as its misusePartnerTag,
@@ -28,41 +28,46 @@
 // <config> branch in normalize-to-canonical.js, which consults
 // `isStructuredKwarg('meta', key)` (imported from structured-elements).
 
-/**
- * <config> allowlist — processing and display settings.
- *
- * Each entry's value records the implementation status: 'live' (a plugin
- * consumes this setting today), 'reserved' (settled as a future setting,
- * not yet wired). 'reserved' settings are accepted into the config map
- * silently; their consumer can read them when implemented. Adding a key
- * here does NOT implement its behavior.
- */
+// ── <config> kwarg allowlist (F11: one typed Map) ─────────────────────────────
+//
+// Each entry carries TWO facts in one place: its implementation `status` ('live' = a
+// plugin consumes it today; 'reserved' = settled future surface, accepted silently, no
+// behavior) and its value `type` ('boolean' = a flag, so a BARE `<config X>` resolves to
+// `X=true` per #219; 'valued' = requires a value, e.g. toc-depth / theme). Co-locating
+// type with the key removes the F11 hazard the parallel CONFIG_BOOLEAN_KWARGS Set had:
+// add a boolean key here and forget the Set and it was accepted but never bare-promoted
+// (the silent-inert bug #221 had to dodge by hand). `boolean()` / `valued()` make the
+// type visible at every entry; the allowlist predicate and isBooleanConfigKwarg both
+// derive from this single Map.
+const boolean = (status = 'live') => ({ status, type: 'boolean' });
+const valued = (status = 'live') => ({ status, type: 'valued' });
+
 export const CONFIG_KWARGS = new Map([
   // Live (consumed by current plugins).
-  ['citation-style',          'live'],   // cite-resolution.js
-  ['number-equations',        'live'],   // numbering.js
-  ['number-figures',          'live'],   // numbering.js
-  ['number-tables',           'live'],   // numbering.js
-  ['number-sections',         'live'],   // numbering.js (#57; default off articles / on books)
-  ['number-depth',            'live'],   // numbering.js (#218; deepest heading level numbered; default all levels; INDEPENDENT of toc-depth)
+  ['citation-style',          valued()],    // cite-resolution.js
+  ['number-equations',        boolean()],   // numbering.js
+  ['number-figures',          boolean()],   // numbering.js
+  ['number-tables',           boolean()],   // numbering.js
+  ['number-sections',         boolean()],   // numbering.js (#57; default off articles / on books)
+  ['number-depth',            valued()],    // numbering.js (#218; deepest heading level numbered; default all levels; INDEPENDENT of toc-depth)
 
   // #218: table-of-contents settings — the config-driven contents listing, read in
   // the shared compiler (index.js → lib/toc.js applyConfigToc) so the static build and
   // the live render honor them identically. Default off. Numbering (number-depth) is the
   // sibling half (next slice). See notes/specs/toc-and-numbering.md.
-  ['toc',                     'live'],   // index.js compiler → applyConfigToc (default off)
-  ['toc-depth',               'live'],   // deepest heading level listed (default 3)
-  ['toc-title',               'live'],   // heading above the listing (default "Contents")
-  ['toc-location',            'live'],   // body | left | right (default body)
-  ['toc-expand',              'live'],   // sidebar levels expanded initially (default 1)
+  ['toc',                     boolean()],   // index.js compiler → applyConfigToc (default off)
+  ['toc-depth',               valued()],    // deepest heading level listed (default 3)
+  ['toc-title',               valued()],    // heading above the listing (default "Contents")
+  ['toc-location',            valued()],    // body | left | right (default body)
+  ['toc-expand',              valued()],    // sidebar levels expanded initially (default 1)
   // Phase 3 slice 3a (2026-05-28): the three new theorem-family counter
   // suppressions. Same pattern as number-equations/figures/tables —
   // setting any of these to false in a <config> block suppresses the
   // entire counter for the document.
-  ['number-theorems',         'live'],   // numbering.js (theorem/lemma/corollary/proposition)
-  ['number-definitions',      'live'],   // numbering.js (<definition>)
-  ['number-examples',         'live'],   // numbering.js (<example>)
-  ['number-boxes',            'live'],   // numbering.js (numbered <aside> — the 'box' counter, #31)
+  ['number-theorems',         boolean()],   // numbering.js (theorem/lemma/corollary/proposition)
+  ['number-definitions',      boolean()],   // numbering.js (<definition>)
+  ['number-examples',         boolean()],   // numbering.js (<example>)
+  ['number-boxes',            boolean()],   // numbering.js (numbered <aside> — the 'box' counter, #31)
 
   // Phase 4 slice 4a (2026-05-29): two scope knobs for book documents.
   // Articles default to none/section; books default to chapter/chapter.
@@ -76,21 +81,21 @@ export const CONFIG_KWARGS = new Map([
   //   chapter  — per-book-part <note-list> at each chapter's end
   //   section  — per-outermost-section <note-list> (article default;
   //              slice 7001aaa behavior)
-  ['counter-reset-scope',     'live'],   // numbering.js + ref-resolution.js
-  ['note-scope',              'live'],   // note-placement.js
-  ['bibliography-heading',    'live'],   // bibliography.js (overrides the "References" heading)
+  ['counter-reset-scope',     valued()],    // numbering.js + ref-resolution.js
+  ['note-scope',              valued()],    // note-placement.js
+  ['bibliography-heading',    valued()],    // bibliography.js (overrides the "References" heading)
 
   // #19: reveal the authored DSL source behind a rendered DSL block in a native
   // <details> disclosure. Document-level, default off. Read in index.js's
   // compileToHtml and threaded to the diagram engine handlers (mermaid / abc).
-  ['show-source',             'live'],   // index.js compileToHtml → handlers/{mermaid,abc}.js
+  ['show-source',             boolean()],   // index.js compileToHtml → handlers/{mermaid,abc}.js
 
   // #21: doc-wide default for whether DATA-format table cells (<table csv|json|…>)
   // parse their cells as Enscribe inline markup. Baseline OFF — data stays literal
   // unless the author opts in (per-table +parse-text / parse-columns, or this set
   // on purpose). Per-table attributes override it. Consumed by the table-cell-parse
   // plugin, which reads it through readBoolKwarg's config layer.
-  ['parse-data-tables',       'live'],   // plugins/table-cell-parse.js
+  ['parse-data-tables',       boolean()],   // plugins/table-cell-parse.js
 
   // #221: book navigation chrome — the chapter rail, prev/next, cover, back-to-top,
   // and pagination unit. Book-only (<meta type=book>), default ON for books (declaring
@@ -98,12 +103,12 @@ export const CONFIG_KWARGS = new Map([
   // (master-document/book-scaffold.js → resolveBookNavConfig) so the static separate-pages
   // build and the live render honor them identically. Only split-by=chapter is built;
   // section|none are deferred. See notes/specs/book-navigation.md.
-  ['chapter-nav',             'live'],   // book-scaffold → buildChapterRail (the chapter rail)
-  ['chapter-nav-depth',       'live'],   // rail depth: 1 = chapters; >=2 = chapters + their sections
-  ['page-navigation',         'live'],   // prev/next chapter links (chapterNavBar)
-  ['cover',                   'live'],   // cover landing page; off = land on the first chapter
-  ['back-to-top',             'live'],   // scroll-to-top control within a chapter
-  ['split-by',                'live'],   // pagination unit: chapter (built) | section | none (deferred)
+  ['chapter-nav',             boolean()],   // book-scaffold → buildChapterRail (the chapter rail)
+  ['chapter-nav-depth',       valued()],    // rail depth: 1 = chapters; >=2 = chapters + their sections
+  ['page-navigation',         boolean()],   // prev/next chapter links (chapterNavBar)
+  ['cover',                   boolean()],   // cover landing page; off = land on the first chapter
+  ['back-to-top',             boolean()],   // scroll-to-top control within a chapter
+  ['split-by',                valued()],    // pagination unit: chapter (built) | section | none (deferred)
 
   // The remaining keys, enumerated as intended <config> surface by the
   // apparatus-tag reconciliation. Most are now LIVE with a named consumer
@@ -111,12 +116,12 @@ export const CONFIG_KWARGS = new Map([
   // `display-style` and `bibliography-position` — have no consumer yet; the
   // allowlist accepts them so author input is not rejected before that
   // consumer lands.
-  ['theme',                   'live'],     // index.js compiler (Phase 8 Slice 2)
-  ['display-style',           'reserved'],
-  ['note-position',           'live'],     // index.js compiler → sidenotes (#33, margin render mode)
-  ['strict-mode',             'live'],     // strict-mode.js → the strictness register switch (#36):
-                                           // off | sigil | canonical (each names the loosest register on).
-  ['bibliography-position',   'reserved'],
+  ['theme',                   valued()],            // index.js compiler (Phase 8 Slice 2)
+  ['display-style',           valued('reserved')],
+  ['note-position',           valued()],            // index.js compiler → sidenotes (#33, margin render mode)
+  ['strict-mode',             valued()],            // strict-mode.js → the strictness register switch (#36):
+                                                    // off | sigil | canonical (each names the loosest register on).
+  ['bibliography-position',   valued('reserved')],
   // `reference-library` (a config-level external-library declaration) retired:
   // #133 settled that external library sources are the body element `<library
   // src=…>`, NEVER a <config> kwarg — so the reserved placeholder is superseded.
@@ -138,35 +143,32 @@ export function isConfigKwarg(key) {
 }
 
 /**
- * The BOOLEAN <config> kwargs — those whose value is a flag (true/false), as opposed to the VALUED
- * kwargs (`toc-depth`, `toc-location`, `number-depth`, `citation-style`, `theme`, …) that require a
- * value. The split lets a BARE `<config toc>` resolve to `toc=true` (#219) only for the flag kwargs;
- * a bare valued kwarg (`<config toc-depth>`) is meaningless and stays unrecognized, never a spurious
- * boolean. Each is consumed as a boolean today (number-* family, toc, show-source, parse-data-tables).
+ * Predicate: is `key` a BOOLEAN <config> kwarg (so a bare `<config key>` means `key=true`,
+ * #219)? Derived from the one allowlist Map — boolean-ness lives WITH the key (F11), so it
+ * cannot drift from the accepted set. The VALUED kwargs (`toc-depth`, `theme`, …) return
+ * false: a bare valued kwarg is meaningless and stays unrecognized, never a spurious flag.
  */
-export const CONFIG_BOOLEAN_KWARGS = new Set([
-  'toc',
-  'number-sections',
-  'number-equations',
-  'number-figures',
-  'number-tables',
-  'number-theorems',
-  'number-definitions',
-  'number-examples',
-  'number-boxes',
-  'show-source',
-  'parse-data-tables',
-  // #221 book-navigation booleans (default ON for books, except back-to-top OFF) — so a
-  // bare `<config chapter-nav>` / `<config page-navigation>` resolves to `=true`. The valued
-  // book-nav kwargs (`chapter-nav-depth`, `split-by`) are NOT here. F11: this Set is parallel
-  // to CONFIG_KWARGS above — both must carry these keys; R4 will unify the two lists.
-  'chapter-nav',
-  'page-navigation',
-  'cover',
-  'back-to-top',
-]);
-
-/** Predicate: is `key` a BOOLEAN <config> kwarg (so a bare `<config key>` means `key=true`)? */
 export function isBooleanConfigKwarg(key) {
-  return CONFIG_BOOLEAN_KWARGS.has(key);
+  return CONFIG_KWARGS.get(key)?.type === 'boolean';
 }
+
+// ── Apparatus tag sets (F13: one source, the suppressed subset derived) ────────
+//
+// Apparatus tags are document-apparatus, not body content — they belong at the document
+// edges (the positioning check in article-structuring's warnMisplacedApparatus). Of these,
+// some RENDER (meta → front matter; config → discovered, then an invisible element) and
+// some are STORAGE HOSTS that produce no output (data → a citation registry; library →
+// bibtex source) — the hast handler returns null for the latter (interpret-plugin). The
+// suppressed subset is derived as the complement of the rendered set, so the two consumers
+// (the positioning warning and the render suppression) cannot disagree.
+export const APPARATUS_TAGS = new Set(['meta', 'config', 'data', 'library']);
+
+// The apparatus tags that render/are-handled (so they are NOT suppressed).
+const RENDERED_APPARATUS = new Set(['meta', 'config']);
+
+// Storage-host apparatus — present for data, never rendered. Derived: apparatus minus
+// rendered. A new apparatus tag added above is suppressed by default unless it also joins
+// RENDERED_APPARATUS — which is the safe default for a new storage host.
+export const SUPPRESSED_APPARATUS = new Set(
+  [...APPARATUS_TAGS].filter((tag) => !RENDERED_APPARATUS.has(tag)),
+);

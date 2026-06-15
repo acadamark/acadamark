@@ -25,3 +25,28 @@ export function resolveConfigEnum(treeChildren, config, key, allowed, bookDefaul
   if (allowed.has(value)) return value;
   return findTag(treeChildren ?? [], 'book') ? bookDefault : articleDefault;
 }
+
+/**
+ * Read a CONFIG-only boolean setting (audit F12 — the one place "is this config value
+ * true?" is answered, for config-only readers). Returns `defaultValue` when the key is
+ * absent; otherwise PRESENT-AND-NOT-EXPLICITLY-'false' → true. This is the SAME coercion
+ * `readBoolKwarg` uses for its config tier and `configFlag` used for book-nav, so config
+ * booleans now coerce one way everywhere.
+ *
+ * Canonical forms are byte-stable: a bare `<config X>` stores 'true' (#219) → true;
+ * `=true` → 'true' → true; `=false` → 'false' → false. Undocumented values (e.g. `=''`,
+ * `=yes`) are present-and-not-'false', so they read true — the standardization surfaced in
+ * R4's report (it changed show-source / the toc gate for non-canonical input only; no
+ * fixture authors such values). NOT for tri-state resolvers like number-sections, whose
+ * unrecognized values fall through to a book/article default rather than coercing.
+ *
+ * @param {Map|null|undefined} configMap
+ * @param {string} key
+ * @param {boolean} defaultValue - returned when the key is absent
+ * @returns {boolean}
+ */
+export function readConfigBool(configMap, key, defaultValue) {
+  if (!configMap || !configMap.has(key)) return defaultValue;
+  const v = configMap.get(key);
+  return v !== 'false' && v !== false;
+}

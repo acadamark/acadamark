@@ -179,6 +179,7 @@ import { formatScopedNumber } from './lib/scoped-number.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc, readTocConfig, applyConfigToc } from './lib/toc.js';
+import { readConfigBool } from './lib/config-helpers.js';
 // #33: the margin column. applySidenotes (part 1) relocates numbered-note content
 // into the margin when note-position=margin; markMarginLayout establishes the
 // shared margin layout, factored out so it also fires for a <marginnote>-present
@@ -855,8 +856,7 @@ export function enscribeInterpreter(options = {}) {
     // tree (and therefore the JATS export, which consumes the same tree) is
     // identical whether the switch is on or off.
     const configMap = file?.data?.[ENSCRIBE_CONFIG];
-    const showSource =
-      configMap?.get('show-source') === true || configMap?.get('show-source') === 'true';
+    const showSource = readConfigBool(configMap, 'show-source', false);
     // #195: per-render pre-loaded external sources (browser fetch / CLI async preload)
     // reach the table handler through the handler opts — the compiler has the VFile,
     // the toHast handlers do not.
