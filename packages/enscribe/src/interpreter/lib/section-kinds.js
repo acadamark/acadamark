@@ -10,26 +10,29 @@
 // `book-part` is a REGION (a chapter/part), not a section depth — it joins only
 // NAV_ITEM_TAGNAMES (for nav listing), never the depth machinery.
 //
-// F14 link to the vocab: this DEPTH set is a CURATED SUBSET of the `sections` category, not
-// equal to it. The vocab's `sections` category also contains the section title/subtitle
-// children (section-title, sub-section-subtitle, …) — an orthogonal element-role axis it does
-// not separate — so the set is not a pure category restatement and is NOT derived. (And those
-// section titles sit in `sections` while every OTHER title, incl. book-part-title, is in
-// `metadata`: a category mis-assignment, filed as a follow-up; fixing it would make `sections`
-// == this set and tighten the subset assertion below to equality.) The ORDER (depth) is
-// interpreter knowledge a category cannot hold. So: keep the ordered array; assert the subset.
+// F14 link to the vocab: the `sections` category is now EXACTLY these three depth tagnames.
+// (The section title/subtitle children — section-title, sub-section-subtitle, … — that used to
+// share the `sections` category were moved to `metadata` with every other title, #233.) So the
+// set IS the category — but the ORDER (depth) is interpreter knowledge a category cannot hold,
+// so the ordered array stays the source and a load-time EQUALITY assertion ties it to the vocab.
 
 import { tagnamesInCategory } from './vocab-categories.js';
 
 // The three section tagnames, in canonical nesting order (outermost first).
 export const SECTION_TAGNAMES = Object.freeze(['section', 'sub-section', 'sub-sub-section']);
 
-// F14 guard: every depth tagname must be categorized `sections` in the vocab (a SUBSET of
-// that category — see the note above). Catches a section element being de-categorized; throws
-// at load on drift.
-for (const tag of SECTION_TAGNAMES) {
-  if (!tagnamesInCategory('sections').has(tag)) {
-    throw new Error(`section-kinds (F14): '${tag}' is in SECTION_TAGNAMES but not the vocab 'sections' category — drift.`);
+// F14 guard (#233): SECTION_TAGNAMES is EXACTLY the vocab `sections` category — equality in both
+// directions. Throws at load if a section element is de-categorized OR a non-depth element is
+// added to `sections` (the regression #233 fixed). Order is enforced by SECTION_DEPTH_MAP below.
+{
+  const sectionsCategory = tagnamesInCategory('sections');
+  const equal = sectionsCategory.size === SECTION_TAGNAMES.length
+    && SECTION_TAGNAMES.every((t) => sectionsCategory.has(t));
+  if (!equal) {
+    throw new Error(
+      `section-kinds (F14): SECTION_TAGNAMES {${SECTION_TAGNAMES.join(', ')}} != vocab 'sections' ` +
+      `category {${[...sectionsCategory].sort().join(', ')}} — drift.`,
+    );
   }
 }
 

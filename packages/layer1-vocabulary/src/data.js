@@ -5061,7 +5061,7 @@ const _samp = Object.freeze({
 
 const _section_subtitle = Object.freeze({
     "semantic_role": "section-subtitle",
-    "category": "sections",
+    "category": "metadata",
     "authoring": "generated",
     "html_output": {
       "element": "section-subtitle",
@@ -5095,7 +5095,7 @@ const _section_subtitle = Object.freeze({
 
 const _section_title = Object.freeze({
     "semantic_role": "section-title",
-    "category": "sections",
+    "category": "metadata",
     "authoring": "generated",
     "html_output": {
       "element": "section-title",
@@ -5365,7 +5365,7 @@ const _strong = Object.freeze({
 
 const _sub_section_subtitle = Object.freeze({
     "semantic_role": "sub-section-subtitle",
-    "category": "sections",
+    "category": "metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-section-subtitle",
@@ -5399,7 +5399,7 @@ const _sub_section_subtitle = Object.freeze({
 
 const _sub_section_title = Object.freeze({
     "semantic_role": "sub-section-title",
-    "category": "sections",
+    "category": "metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-section-title",
@@ -5556,7 +5556,7 @@ const _sub_section = Object.freeze({
 
 const _sub_sub_section_subtitle = Object.freeze({
     "semantic_role": "sub-sub-section-subtitle",
-    "category": "sections",
+    "category": "metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-sub-section-subtitle",
@@ -5590,7 +5590,7 @@ const _sub_sub_section_subtitle = Object.freeze({
 
 const _sub_sub_section_title = Object.freeze({
     "semantic_role": "sub-sub-section-title",
-    "category": "sections",
+    "category": "metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-sub-section-title",

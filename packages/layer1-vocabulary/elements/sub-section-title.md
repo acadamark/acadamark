@@ -1,6 +1,6 @@
 ---
 semantic_role: sub-section-title
-category: sections
+category: metadata
 authoring: generated
 html_output:
   element: sub-section-title
