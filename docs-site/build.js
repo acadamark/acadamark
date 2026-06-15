@@ -20,6 +20,7 @@ import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
 import { buildGallery } from './gen-gallery.js';
+import { buildLayer1Catalog, buildShorthandCatalog } from './gen-reference.js';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -101,6 +102,9 @@ const PAGES = [
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page' },
   { slug: 'gallery',         source: null,                  title: 'Gallery — enscribe',             nav: 'Gallery',         kind: 'gallery' },
+  // #223 slice 1: the generated Documentation catalogs (additive; from the vocab source).
+  { slug: 'layer1-catalog',  source: null,                  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'layer1-catalog' },
+  { slug: 'shorthand-catalog', source: null,                title: 'Shorthand catalog — enscribe',   nav: 'Shorthand catalog', kind: 'shorthand-catalog' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
   { slug: 'demos',           source: null,                  title: 'Demos — enscribe',               nav: 'Demos',           kind: 'demo-index' },
 ];
@@ -414,6 +418,17 @@ function main() {
       const gallery = buildGallery({ render: (src) => renderAcm(src) });
       body = gallery.body;
       headExtra = gallery.headExtra;
+    } else if (page.kind === 'layer1-catalog' || page.kind === 'shorthand-catalog') {
+      // #223 slice 1: the Documentation catalogs, generated from the vocab source the
+      // same way the gallery is (render via renderAcm; deduped asset tags → headExtra).
+      const build = page.kind === 'layer1-catalog' ? buildLayer1Catalog : buildShorthandCatalog;
+      const cat = build({ render: (src) => renderAcm(src) });
+      body = cat.body;
+      headExtra = cat.headExtra;
+      const label = page.kind === 'layer1-catalog' ? 'Layer 1 catalog' : 'Shorthand catalog';
+      const count = cat.stats.canonical ?? cat.stats.shorthands;
+      console.log(`[docs:build]   ${label}: ${count} entries${cat.stats.errors.length ? `, ${cat.stats.errors.length} render error(s)` : ''}`);
+      for (const e of cat.stats.errors) console.warn(`[docs:build]   ⚠ ${e}`);
     } else {
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}), liveLinksHtml(page.slug, liveSlugs));
