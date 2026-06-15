@@ -694,6 +694,155 @@ export function enscribeInterpreter(options = {}) {
   // 12. Bibliography: render the bibliography and inject into article-back.
   this.use(enscribeBibliography);
 
+  // ── Post-compile injection helpers (R3 / F10) ─────────────────────────────────
+  // compileToHtml builds the hast, then runs these in a FIXED sequence. Every helper
+  // injects via hast.children.unshift (PREPEND), so the call order in compileToHtml is
+  // the REVERSE of the final node order — it is load-bearing and must not change (the
+  // ToC nav + its CSS land first; CSS before JS; the book scripts go
+  // chapter-nav → on-this-page → scroll-spy; the static-DSL replacement runs AFTER
+  // formatHtml). Each closes over the resolved option config (options / fontsMode /
+  // cssMode / hoverMode / tocOption / chapterNavOption) and takes the per-compile hast.
+
+  // Table-of-contents. The #218 config-driven listing supersedes the legacy build-passed
+  // `toc` OPTION (mutually exclusive — no double ToC). Returns { tocType, configTocShape }
+  // for the book-script gates. The contents-listing CSS rides only when a listing was
+  // rendered → a non-ToC document stays byte-identical.
+  function injectToc(hast, configMap) {
+    const tocConfig = readTocConfig(configMap);
+    let tocType = null;
+    let configTocShape = null;
+    if (tocConfig) {
+      configTocShape = applyConfigToc(hast, tocConfig);
+    } else {
+      tocType = applyToc(hast, tocOption);
+    }
+    if (configTocShape) {
+      hast.children.unshift(makeStyleElement(TOC_CONFIG_CSS));
+    }
+    return { tocType, configTocShape };
+  }
+
+  // #33 the margin column. Two independent triggers: note-position=margin (relocate
+  // numbered notes; the `notePosition` option wins over <config note-position>), or ≥1
+  // <marginnote> present. markMarginLayout + MARGIN_CSS only when one fires → a default
+  // document adds nothing. Display-only (the mdast tree / JATS export is unchanged).
+  function injectMarginLayout(hast, assets, configMap) {
+    const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
+    const relocatedSidenotes = notePosition === 'margin' && applySidenotes(hast);
+    if (relocatedSidenotes || assets.marginnote) {
+      markMarginLayout(hast);
+      hast.children.unshift(makeStyleElement(MARGIN_CSS));
+    }
+  }
+
+  // #36 strict mode: flag would-be-markdown (and, in canonical, would-be-sigil) text and
+  // inject the flag CSS — only for a non-`off` rung (a strict no-op in 'off' → byte-identical).
+  function injectStrictFlag(hast, file) {
+    const strictMode = file?.data?.[ENSCRIBE_STRICT_MODE];
+    if (strictMode === 'sigil' || strictMode === 'canonical') {
+      flagStrictText(hast, strictMode);
+      hast.children.unshift(makeStyleElement(STRICT_FLAG_CSS));
+    }
+  }
+
+  // Slice C book reading-interface scripts, in their load-bearing unshift order:
+  // chapter-nav (opt-in single-chapter paging), on-this-page (book right rail), then
+  // scroll-spy (any ToC SIDEBAR — legacy book/article tocType OR a #218 config sidebar;
+  // a body listing needs none). Pure progressive enhancements; articles inject none.
+  function injectBookScripts(hast, tocType, configTocShape) {
+    if (tocType === 'book' && chapterNavOption === true) {
+      hast.children.unshift(makeScriptElement(CHAPTER_NAV_JS));
+    }
+    if (tocType === 'book') {
+      hast.children.unshift(makeScriptElement(ON_THIS_PAGE_JS));
+    }
+    if (tocType || configTocShape === 'sidebar') {
+      hast.children.unshift(makeScriptElement(SCROLL_SPY_JS));
+    }
+  }
+
+  // Document fonts (Inter, Source Code Pro): 'inline' base64 @font-face, 'link' the CDN,
+  // 'skip' nothing. Emitted unconditionally (every document has body text) unless 'skip'.
+  function injectFonts(hast) {
+    if (fontsMode !== 'skip') {
+      hast.children.unshift(
+        fontsMode === 'link'
+          ? makeLinkElement(DOCUMENT_FONTS_CDN_URL)
+          : makeStyleElement(getDocumentFontsCss()),
+      );
+    }
+  }
+
+  // Theme CSS, after the fonts so its `:root` overrides win the cascade. The `theme`
+  // option wins over <config theme=…>. Unknown theme → warn + fall back to default (no
+  // silent drop, no injection). The nested guard is exact: outer (set, non-default),
+  // inner (known → inject, else warn).
+  function injectTheme(hast, configMap) {
+    const themeName = resolveOption(options, 'theme', configMap, 'theme', 'default');
+    if (themeName && themeName !== 'default') {
+      if (KNOWN_THEMES.has(themeName)) {
+        hast.children.unshift(makeStyleElement(getThemeCss(themeName)));
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[enscribe] unknown theme '${themeName}'; rendering with the default ` +
+            `(available: ${[...KNOWN_THEMES].join(', ')}).`,
+        );
+      }
+    }
+  }
+
+  // KaTeX CSS — only when the document uses math and the mode is not 'skip'.
+  function injectKaTeX(hast, assets) {
+    if (cssMode !== 'skip' && assets.math) {
+      const cssNode =
+        cssMode === 'link'
+          ? makeLinkElement(KATEX_CDN_URL)
+          : makeStyleElement(getKatexCss());
+      hast.children.unshift(cssNode);
+    }
+  }
+
+  // Hover-preview assets (Tippy/Popper) — only when the document has note / ref / cite
+  // markers and the mode is not 'skip'. The CONDITION reads the detectAssets result
+  // (`assets`); the unshift uses a separate local array (formerly a shadowing `const
+  // assets` — kept distinct here). CSS-first ordering within the bundle.
+  function injectHoverPreview(hast, assets) {
+    if (hoverMode !== 'skip' && (assets.notes || assets.refLinks || assets.citeLinks)) {
+      const hoverAssets = buildHoverPreviewAssets(hoverMode);
+      hast.children.unshift(...hoverAssets);
+    }
+  }
+
+  // External-DSL (mermaid, abc) assets. Iterating the registry keeps this open to new
+  // DSLs. Per present DSL: skip emits nothing; live-inline/live-link prepend the library
+  // + init NOW (in registry order — the unshift reversal is preserved by keeping the one
+  // loop); 'static' is COLLECTED and RETURNED for the caller's post-format replacement
+  // (running it before formatHtml would let the formatter reflow the inlined SVG). A
+  // 'static' DSL with no staticRenderer fails explicitly (the guard is not deferred).
+  function injectDslAssets(hast, assets) {
+    const staticDsls = [];
+    for (const dsl of getRegisteredDsls()) {
+      const usesDsl = dsl.detector ? dsl.detector(hast) : assets.dslNames.has(dsl.name);
+      if (!usesDsl) continue;
+      const mode = resolveDslMode(dsl.name, options);
+      if (mode === 'skip') continue;
+      if (mode === 'static') {
+        if (!dsl.staticRenderer) {
+          throw new Error(
+            `dslMode 'static' is not available for '${dsl.name}': it has no static renderer.\n` +
+              `Use ${dsl.name}Mode 'live-inline', 'live-link', or 'skip' ` +
+              `(or leave dslMode at the default 'skip').`,
+          );
+        }
+        staticDsls.push(dsl);
+        continue;
+      }
+      hast.children.unshift(...buildDslAssets(dsl, mode));
+    }
+    return staticDsls;
+  }
+
   // 11. Register a compiler: mdast → hast → HTML.
   // `this.compiler` is the standard unified API for registering the
   // stringify step; it is called by processor.stringify() and
@@ -743,181 +892,34 @@ export function enscribeInterpreter(options = {}) {
     // former per-asset walks at each injection site — just one traversal, not six.
     const assets = detectAssets(hast);
 
-    // Table-of-contents. Runs before asset injection so the assets land outside the
-    // layout wrapper (at the top of the body), and before rehype-format so the generated
-    // <nav> is formatted with everything else. A strict no-op when no ToC is requested →
-    // byte-identical output for non-ToC docs.
-    //
-    // #218: the CONFIG-driven contents listing (`<config toc …>`) is the source of truth —
-    // it travels with the document, so the static build and the live render honor it
-    // identically (the property the docs-site live-ToC parity fix depends on, #207). When
-    // it is on it runs INSTEAD of the legacy build-passed `toc` OPTION (no double ToC);
-    // otherwise the legacy applyToc(options.toc) path is unchanged. tocType ('book' /
-    // 'article' / null) gates the book reading-interface scripts (legacy only);
-    // configTocShape ('sidebar' / 'body' / null) gates scroll-spy for a config sidebar.
-    const tocConfig = readTocConfig(configMap);
-    let tocType = null;
-    let configTocShape = null;
-    if (tocConfig) {
-      configTocShape = applyConfigToc(hast, tocConfig);
-    } else {
-      tocType = applyToc(hast, tocOption);
-    }
-    // #218: the contents-listing CSS rides with the listing (injected only when one was
-    // rendered — body or sidebar), so a non-ToC document stays byte-identical. The legacy
-    // option-driven ToC keeps relying on the consumer's default.css (unchanged).
-    if (configTocShape) {
-      hast.children.unshift(makeStyleElement(TOC_CONFIG_CSS));
-    }
+    // ── The post-compile injection phase (R3 / F10) ──────────────────────────────
+    // FIXED ORDER. Each inject* prepends via hast.children.unshift, so this call
+    // sequence is the REVERSE of the final node order — do NOT reorder. The implicit
+    // constraints, made explicit: the ToC nav + its CSS land first (so the asset CSS/JS
+    // sit outside the layout wrapper, at the top of the body); CSS is injected before JS;
+    // the three book scripts go chapter-nav → on-this-page → scroll-spy; the static-DSL
+    // replacement runs AFTER formatHtml. Values flowing between steps: injectToc yields
+    // the tocType/configTocShape the book scripts gate on; injectDslAssets yields the
+    // static DSLs replaced post-format. A no-op for every feature a document doesn't use →
+    // byte-identical output for a default document. Each helper's rationale lives at its
+    // definition above.
+    const { tocType, configTocShape } = injectToc(hast, configMap);
 
-    // #33: the margin column. Two independent triggers, either of which needs the
-    // margin layout + CSS:
-    //   - note-position=margin (part 1): relocate numbered-note content into the
-    //     margin (applySidenotes; resolved like `theme` — the `notePosition`
-    //     option wins over a `<config note-position=…>` setting, default 'bottom');
-    //   - ≥1 <marginnote> present (part 2): the aside is authored in place and
-    //     needs the margin to float into, INDEPENDENT of note-position.
-    // markMarginLayout marks the (shared) layout and MARGIN_CSS is injected only
-    // when one of those fires — so a default document adds nothing (byte-identical
-    // fixtures). Display-only: the mdast tree (and the JATS export that consumes
-    // it) is unchanged. Runs after applyToc so it can co-mark the layout wrapper,
-    // and before rehype-format so any injected spans are formatted with the rest.
-    const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
-    const relocatedSidenotes = notePosition === 'margin' && applySidenotes(hast);
-    if (relocatedSidenotes || assets.marginnote) {
-      markMarginLayout(hast);
-      hast.children.unshift(makeStyleElement(MARGIN_CSS));
-    }
+    injectMarginLayout(hast, assets, configMap);
 
-    // #36 strict mode: flag would-be-markdown (and, in canonical, would-be-sigil)
-    // text and inject the flag CSS — only for a non-`off` rung. In 'off' this is a
-    // strict no-op, so its output is byte-identical (the sidenote/margin CSS-
-    // injection model). The mode was resolved by resolveStrictMode (file.data); the
-    // sigil/canonical tree already has the register(s) off (re-parsed with the
-    // matching disable), so the lint runs over text that genuinely passed literally.
-    const strictMode = file?.data?.[ENSCRIBE_STRICT_MODE];
-    if (strictMode === 'sigil' || strictMode === 'canonical') {
-      flagStrictText(hast, strictMode);
-      hast.children.unshift(makeStyleElement(STRICT_FLAG_CSS));
-    }
+    injectStrictFlag(hast, file);
 
-    // Slice C: the one-scroll book reading interface is the DEFAULT for a book +
-    // ToC (the three-column chrome — chapter rail, prev/next, on-this-page rail — is
-    // built statically in applyToc). The single-chapter PAGING script is now an
-    // explicit OPT-IN escape hatch: inject it only when `chapterNav: true` is passed.
-    // (Default-off: `undefined === true` is false, so the book renders as one
-    // scrolling document, not one chapter at a time.) Articles never reach this.
-    if (tocType === 'book' && chapterNavOption === true) {
-      hast.children.unshift(makeScriptElement(CHAPTER_NAV_JS));
-    }
+    injectBookScripts(hast, tocType, configTocShape);
 
-    // Slice C: the "on this page" rail script — book + ToC only. Drives the right
-    // rail (current chapter's sections) of the reading interface; the left chapter
-    // rail is scroll-spy's job (below). A pure progressive enhancement over static
-    // rail markup; no-op (not injected) for articles, which have no right rail.
-    if (tocType === 'book') {
-      hast.children.unshift(makeScriptElement(ON_THIS_PAGE_JS));
-    }
+    injectFonts(hast);
 
-    // #20: scroll-spy — highlight the current entry in the ToC sidebar as the reader
-    // scrolls. Ships wherever a ToC SIDEBAR is rendered: the legacy article/book ToC
-    // (tocType), or a #218 config sidebar (toc-location left|right → configTocShape
-    // 'sidebar'). A body listing (configTocShape 'body') is in-flow, not a sticky rail,
-    // so it needs no scroll-spy. A pure progressive enhancement: JS off → the ToC still
-    // navigates, just no live highlight.
-    if (tocType || configTocShape === 'sidebar') {
-      hast.children.unshift(makeScriptElement(SCROLL_SPY_JS));
-    }
+    injectTheme(hast, configMap);
 
-    // Inject document fonts (Inter, Source Code Pro). fontsMode — driven by
-    // embedResources unless documentFontsCss overrides — picks the form: 'inline'
-    // emits a <style> of base64 @font-face rules (self-contained), 'link' a <link>
-    // to the font CDN (lean, external-by-default), 'skip' nothing. Emitted
-    // unconditionally (every document has body text) unless 'skip'.
-    if (fontsMode !== 'skip') {
-      hast.children.unshift(
-        fontsMode === 'link'
-          ? makeLinkElement(DOCUMENT_FONTS_CDN_URL)
-          : makeStyleElement(getDocumentFontsCss()),
-      );
-    }
+    injectKaTeX(hast, assets);
 
-    // Inject the theme CSS (Phase 8 Slice 2) after the fonts, so its `:root`
-    // overrides sit after the document's base default.css in the cascade. The
-    // `theme` render option wins over a <config theme=…> document setting.
-    const themeName = resolveOption(options, 'theme', configMap, 'theme', 'default');
-    if (themeName && themeName !== 'default') {
-      if (KNOWN_THEMES.has(themeName)) {
-        hast.children.unshift(makeStyleElement(getThemeCss(themeName)));
-      } else {
-        // Unknown theme name (e.g. a document carrying a theme this renderer
-        // doesn't ship): warn and fall back to the default rather than failing
-        // the whole render. No silent drop.
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[enscribe] unknown theme '${themeName}'; rendering with the default ` +
-            `(available: ${[...KNOWN_THEMES].join(', ')}).`,
-        );
-      }
-    }
+    injectHoverPreview(hast, assets);
 
-    // Inject KaTeX CSS if the document uses math and the mode is not 'skip'.
-    // Detection is done by walking the hast tree for inline-math / display-math
-    // elements, so CSS is only added when actually needed.
-    if (cssMode !== 'skip' && assets.math) {
-      const cssNode =
-        cssMode === 'link'
-          ? makeLinkElement(KATEX_CDN_URL)
-          : makeStyleElement(getKatexCss());
-      hast.children.unshift(cssNode);
-    }
-
-    // Inject hover preview assets if the document has note markers, ref links,
-    // or cite markers, and the mode is not 'skip'.
-    if (hoverMode !== 'skip' && (assets.notes || assets.refLinks || assets.citeLinks)) {
-      const assets = buildHoverPreviewAssets(hoverMode);
-      // Prepend CSS, append JS (after DOM) — both before main content.
-      // In practice: CSS <style>/<link> first, then JS <script> last.
-      // We prepend all assets and let CSS-first ordering handle the rest.
-      hast.children.unshift(...assets);
-    }
-
-    // Inject external-DSL (mermaid, abc) render assets. Iterating the registry —
-    // rather than naming each DSL here — keeps this open to new DSLs without
-    // edits. For each DSL present in the document, its resolved mode decides the
-    // shape:
-    //   - skip (default): emit nothing (the contract markup already stands);
-    //   - live-inline / live-link: prepend the library + init (additive);
-    //   - static: defer to a post-format replacement pass (collected here).
-    // A DSL resolving to 'static' with no staticRenderer (mermaid) fails
-    // explicitly — the presence check means a global dslMode:'static' is only an
-    // error for documents that actually contain such a DSL.
-    // See src/dsl/registry.js and notes/specs/render-quality.md §9.
-    const staticDsls = [];
-    for (const dsl of getRegisteredDsls()) {
-      // #48: default detection reads the single-pass result; a custom DSL
-      // `detector` still overrides (the forward hook documentUsesDsl provided).
-      const usesDsl = dsl.detector ? dsl.detector(hast) : assets.dslNames.has(dsl.name);
-      if (!usesDsl) continue;
-      const mode = resolveDslMode(dsl.name, options);
-      if (mode === 'skip') continue;
-      if (mode === 'static') {
-        if (!dsl.staticRenderer) {
-          throw new Error(
-            `dslMode 'static' is not available for '${dsl.name}': it has no static renderer.\n` +
-              `Use ${dsl.name}Mode 'live-inline', 'live-link', or 'skip' ` +
-              `(or leave dslMode at the default 'skip').`,
-          );
-        }
-        // Static is a tree mutation that must run after rehype-format (running
-        // before it would let the formatter reflow the inlined SVG); collect the
-        // DSL now and apply the replacement below.
-        staticDsls.push(dsl);
-        continue;
-      }
-      // live-inline / live-link
-      hast.children.unshift(...buildDslAssets(dsl, mode));
-    }
+    const staticDsls = injectDslAssets(hast, assets);
 
     // Format the hast tree for readable HTML output: block elements get
     // indentation and line breaks; inline content is preserved as-is.
