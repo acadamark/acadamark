@@ -370,7 +370,7 @@ for `<meta type=book>` / `<meta type=book-part>` it transforms the tree.
 |---|---|
 | chapter, part, introduction, conclusion, other | book-body |
 | preface, foreword, dedication | book-front |
-| appendix, glossary, colophon | book-back |
+| appendix, glossary, colophon, afterword | book-back |
 
 See `book-part.md` §"Where book-parts appear" for the full table.
 

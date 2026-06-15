@@ -1,8 +1,12 @@
 // Single source of truth for book-part-type → region membership.
 //
-// Front- and back-matter book-part-types are enumerated here; everything else
-// is BODY (the default region). Two consumers derive from this set so they can
-// never disagree (the F4 latent-risk the audit flagged):
+// Front- and back-matter book-part-types are DERIVED from the vocab (#234): the
+// `type.regions` map in `elements/book-part.md` frontmatter (front/back lists;
+// body is the default — the complement). Region is NOT a vocab `category` (every
+// book-part is `category: document-containers`), so it is held as a structured
+// field on the `type` kwarg rather than routed through vocab-categories.js. Two
+// consumers derive from these sets so they can never disagree (the F4 latent-risk
+// the audit flagged):
 //
 //   - book-structuring.js routes each <book-part> to <book-front> / <book-body>
 //     / <book-back> by these sets, defaulting to body.
@@ -13,11 +17,32 @@
 //     body types as its own closed set; deriving the check as the complement of
 //     FRONT ∪ BACK keeps the two passes in lockstep.
 //
-// Body is the default, so a future special region type is classified by adding
-// it to FRONT or BACK below — the natural and only place to do it.
+// Body is the default, so a special region type is classified by adding it to the
+// vocab `type.regions` map — the natural and only place to do it.
 
-export const BOOK_PART_FRONT_TYPES = new Set(['preface', 'foreword', 'dedication']);
-export const BOOK_PART_BACK_TYPES  = new Set(['appendix', 'glossary', 'colophon', 'afterword']);
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+
+const TYPE_KWARG = VOCABULARY['book-part']?.enscribe_attributes?.kwargs?.type ?? {};
+const TYPE_VALUES = new Set(TYPE_KWARG.values ?? []);
+const REGIONS = TYPE_KWARG.regions ?? {};
+
+export const BOOK_PART_FRONT_TYPES = new Set(REGIONS.front ?? []);
+export const BOOK_PART_BACK_TYPES = new Set(REGIONS.back ?? []);
+
+// Load-time parity guard (the section-kinds.js F14 pattern, adapted): every
+// front/back region member must be a real book-part `type` value — a subset
+// check, NOT size-equality. Body is the complement, so "every value is
+// classified" is trivially true and carries no information; the real drift to
+// catch is a region token that is not a legal type (a typo or a removed type).
+{
+  const stray = [...BOOK_PART_FRONT_TYPES, ...BOOK_PART_BACK_TYPES].filter((t) => !TYPE_VALUES.has(t));
+  if (stray.length) {
+    throw new Error(
+      `book-regions: region type(s) {${stray.join(', ')}} not in vocab book-part 'type' values ` +
+      `{${[...TYPE_VALUES].sort().join(', ')}} — drift between the regions map and the value list.`,
+    );
+  }
+}
 
 /** A body book-part (chapter, part, introduction, conclusion, other — or any
  *  type not enumerated as front- or back-matter). Body is the default region. */

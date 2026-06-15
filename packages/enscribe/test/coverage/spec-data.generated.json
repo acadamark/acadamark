@@ -509,7 +509,7 @@
       "id": "RQ-BOOK-M1",
       "area": "RQ-BOOK",
       "kind": "M",
-      "asserts": "a book renders `<book>` wrapping `<book-front>` / `<book-body>` / `<book-back>`; each division renders `<book-part book-part-type=\"…\">`, routed by type (chapter/part/introduction/conclusion → body; preface/foreword/dedication → front; appendix/glossary/colophon → back)."
+      "asserts": "a book renders `<book>` wrapping `<book-front>` / `<book-body>` / `<book-back>`; each division renders `<book-part book-part-type=\"…\">`, routed by type (chapter/part/introduction/conclusion → body; preface/foreword/dedication → front; appendix/glossary/colophon/afterword → back)."
     },
     {
       "id": "RQ-BOOK-M2",

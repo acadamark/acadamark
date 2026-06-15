@@ -14,7 +14,10 @@ enscribe_attributes:
   kwargs:
     type:
       maps_to: book-part-type
-      values: [chapter, part, appendix, preface, foreword, introduction, conclusion, glossary, dedication, afterword, other]
+      values: [chapter, part, appendix, preface, foreword, introduction, conclusion, glossary, dedication, afterword, colophon, other]
+      regions:
+        front: [preface, foreword, dedication]
+        back: [appendix, glossary, colophon, afterword]
       required: true
       notes: |
         The kind of book-part. Authored as `type` (the prefix is redundant inside a
@@ -233,6 +236,8 @@ The `enscribeBookStructuring` plugin places book-parts automatically based on th
 | afterword | book-back |
 | colophon | book-back |
 | other | book-body (default) |
+
+This placement is machine-readable: the `type.regions` map in this element's frontmatter lists the front- and back-matter types (body is the default — the complement), and `book-regions.js` derives its routing sets from it, so the table and the structural plugin cannot disagree.
 
 Authors who want a book-part placed differently can use `<book-front>`, `<book-body>`, or `<book-back>` wrappers explicitly.
 

@@ -37,7 +37,7 @@ enscribe_attributes:
         normal article case: silent default, no diagnostic.
     book-part-type:
       maps_to: book-part-type
-      values: [chapter, part, introduction, conclusion, other, preface, foreword, dedication, appendix, glossary, colophon]
+      values: [chapter, part, introduction, conclusion, other, preface, foreword, dedication, appendix, glossary, colophon, afterword]
       default: chapter
       notes: |
         For a single-file book-part (type=book-part) only: sets the
@@ -246,7 +246,7 @@ The `type` kwarg drives both the wrapper generation and the title-element promot
 
 Same mapping for `<subtitle>` → `<article-subtitle>` / `<book-subtitle>` / `<book-part-subtitle>`.
 
-When `type=book-part`, the **`book-part-type`** kwarg sets the kind of book-part on the generated `<book-part>` wrapper — `<meta type=book-part book-part-type=appendix>` authors a standalone appendix file, for instance. Values are the BITS set (`chapter` — the default — `part`, `introduction`, `conclusion`, `other`, `preface`, `foreword`, `dedication`, `appendix`, `glossary`, `colophon`); an unrecognized value is diagnosed but still renders (#176). This applies only to the single-file book-part case; inside a `<meta type=book>` document, book-parts take their type from the `<chapter>` / `<appendix>` / … shorthand instead (see `book-part.md`).
+When `type=book-part`, the **`book-part-type`** kwarg sets the kind of book-part on the generated `<book-part>` wrapper — `<meta type=book-part book-part-type=appendix>` authors a standalone appendix file, for instance. Values are the BITS set (`chapter` — the default — `part`, `introduction`, `conclusion`, `other`, `preface`, `foreword`, `dedication`, `appendix`, `glossary`, `colophon`, `afterword`); an unrecognized value is diagnosed but still renders (#176). This applies only to the single-file book-part case; inside a `<meta type=book>` document, book-parts take their type from the `<chapter>` / `<appendix>` / … shorthand instead (see `book-part.md`).
 
 If an author writes the wrapper explicitly (e.g. `<article | Title>` with content inside), the structural plugin does not override it — explicit authoring is an escape hatch.
 

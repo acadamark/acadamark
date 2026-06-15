@@ -950,7 +950,7 @@ cross-references, and edited-volume (per-chapter) authorship.
 - **`RQ-BOOK-M1`** — a book renders `<book>` wrapping `<book-front>` /
   `<book-body>` / `<book-back>`; each division renders `<book-part
   book-part-type="…">`, routed by type (chapter/part/introduction/conclusion →
-  body; preface/foreword/dedication → front; appendix/glossary/colophon → back).
+  body; preface/foreword/dedication → front; appendix/glossary/colophon/afterword → back).
 - **`RQ-BOOK-M2`** — the book title renders `<book-title>`; each book-part's
   title renders `<book-part-title>` inside a synthesised per-part `<meta>`.
 - **`RQ-BOOK-M3`** (edited-volume authorship) — an `<author>` at the top of a

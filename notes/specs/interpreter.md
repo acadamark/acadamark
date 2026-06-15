@@ -441,7 +441,7 @@ tree and skips.
 |---|---|
 | chapter, part, introduction, conclusion, other | `<book-body>` |
 | preface, foreword, dedication | `<book-front>` |
-| appendix, glossary, colophon | `<book-back>` |
+| appendix, glossary, colophon, afterword | `<book-back>` |
 
 Per `book-part.md` §"Where book-parts appear".
 
