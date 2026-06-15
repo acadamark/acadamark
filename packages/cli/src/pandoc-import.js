@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, extname, basename, resolve, isAbsolute } from 'node:path';
 import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
+import { SECTION_TAGNAMES } from '@enscribejs/enscribe/interpreter/lib/section-kinds';
 
 // ─── pandoc invocation ──────────────────────────────────────────────────────
 
@@ -207,7 +208,7 @@ function convertBlocks(blocks) {
   return out;
 }
 
-const SECTION_TAG = ['section', 'sub-section', 'sub-sub-section'];
+const SECTION_TAG = SECTION_TAGNAMES; // the interpreter's single source (#224)
 
 function convertBlock(b) {
   switch (b.t) {

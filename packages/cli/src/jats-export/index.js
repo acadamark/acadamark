@@ -42,6 +42,10 @@ import { parseColonId } from '@enscribejs/enscribe/core/colon-id';
 // resolve to them (RQ-BOOK-M4). It is the SAME helper computeRefText uses
 // for the xref text, so the two agree by construction.
 import { parseCsv, parseTsv, formatScopedNumber } from '@enscribejs/enscribe';
+// #224: the front-matter book-part types derive from the interpreter's single source
+// (book-regions.js), the same set book-structuring.js routes by — so the JATS exporter
+// can't disagree with the renderer on which parts are front matter.
+import { BOOK_PART_FRONT_TYPES as BOOK_FRONT_PART_TYPES } from '@enscribejs/enscribe/interpreter/lib/book-regions';
 import { escapeXmlAttr } from '../lib/xml-escape.js';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
@@ -423,8 +427,6 @@ function emitBookBackRegion(bookBack) {
   out += `  </book-back>\n`;
   return out;
 }
-
-const BOOK_FRONT_PART_TYPES = new Set(['preface', 'foreword', 'dedication']);
 
 /**
  * Emit a single BITS `<book-part>`. The book-part's `<meta>` child

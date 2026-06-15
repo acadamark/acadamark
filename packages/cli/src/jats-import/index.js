@@ -62,6 +62,7 @@
 import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
 import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
+import { SECTION_TAGNAMES } from '@enscribejs/enscribe/interpreter/lib/section-kinds';
 import { escapeXmlAttr } from '../lib/xml-escape.js';
 // #105: serialize converted table-cell content (math / cite / note / formatting)
 // to Enscribe inline source, which the cell goes on to carry so #21's cell-parse
@@ -1100,7 +1101,10 @@ function convertBlocks(children, depth) {
  * caps at three named levels, so depth 3+ clamps to sub-sub-section.
  */
 function convertSec(sec, depth) {
-  const tag = ['section', 'sub-section', 'sub-sub-section'][Math.min(depth, 2)];
+  // Derived from the interpreter's single source (#224); the Math.min CLAMP is
+  // preserved (depth 3+ → sub-sub-section) — note this is NOT SECTION_DEPTH_MAP,
+  // which MISSES on out-of-range rather than clamping.
+  const tag = SECTION_TAGNAMES[Math.min(depth, SECTION_TAGNAMES.length - 1)];
   const titleEl = childEl(sec, 'title');
   const titleInline = titleEl ? convertInline(titleEl.children) : [{ type: 'text', value: '' }];
   // Prefix the id so section cross-references resolve and the section is indexed.

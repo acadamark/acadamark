@@ -22,6 +22,10 @@
 //   3. Markdown links de-lift to `<span>` during normalization (Enscribe has no
 //      markdown-link form); the span's literal text is preserved.
 
+// Section tagnames + their depths derive from the interpreter's single source (#224),
+// so the serializer can never disagree with the parser/interpreter on the section ladder.
+import { SECTION_TAGNAMES, SECTION_DEPTH_MAP } from '@enscribejs/enscribe/interpreter/lib/section-kinds';
+
 // Tags whose content is opaque and round-trips via their named long form
 // (these names ARE registered opaque handlers). Emitted verbatim, no escaping.
 // #22 slice 3: `diagram` is the canonical host for the external diagram engines
@@ -30,9 +34,10 @@
 // content (Mermaid `-->`, etc.) needs the truly-opaque long form to round-trip.
 const OPAQUE_NAMED = new Set(['table', 'library', 'diagram', 'mermaid', 'abc', 'math', 'csv', 'tsv', 'matrix', 'cases', 'align', 'eqnarray']);
 
-// Structural section tags: title lives in `content`; body is a sibling.
-const SECTION_TAGS = new Set(['section', 'sub-section', 'sub-sub-section']);
-const SECTION_LEVEL = { section: 1, 'sub-section': 2, 'sub-sub-section': 3 };
+// Structural section tags: title lives in `content`; body is a sibling. Derived from
+// the interpreter's SECTION_TAGNAMES / SECTION_DEPTH_MAP (a Map → plain object here).
+const SECTION_TAGS = new Set(SECTION_TAGNAMES);
+const SECTION_LEVEL = Object.fromEntries(SECTION_DEPTH_MAP);
 
 // Apparatus containers serialized as multi-line long form holding block children.
 const BLOCK_CONTAINER_TAGS = new Set(['data', 'config', 'meta', 'bibliography']);
