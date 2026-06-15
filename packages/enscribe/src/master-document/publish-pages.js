@@ -40,9 +40,18 @@ import {
   bookTitleOf,
   escapeHtml,
   coverBodyHtml,
+  resolveBookNavConfig,
 } from './book-scaffold.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
+import {
+  composeBookBody,
+  BOOK_NAV_NOLEFT_CSS,
+  BOOK_NAV_DEPTH_CSS,
+  BACK_TO_TOP_CSS,
+  BACK_TO_TOP_HTML,
+  BACK_TO_TOP_JS,
+} from '../interpreter/assets/book-nav-asset.js';
 
 /** P1 projection: each chapter's PAGE URL is the shared neutral stem + `.html`
  *  (`1-counting-elephants.html`, `a-field-data-sheets.html`; front-matter without a
@@ -90,7 +99,15 @@ export const BOOK_HOME_CSS = `.enscribe-layout--book .enscribe-toc a.enscribe-bo
  *  masthead CSS) inlined and the two C reading-interface scripts (scroll-spy drives the
  *  left rail — a no-op when its links are page URLs; on-this-page drives the right
  *  rail's in-page highlight). */
-function pageShell(body, title, defaultCss) {
+function pageShell(body, title, defaultCss, bookNav) {
+  // Conditional book-nav assets (#221), appended AFTER default.css so a DEFAULT book
+  // (chapter-nav on, depth 1, back-to-top off) appends nothing and stays byte-identical.
+  const extraCss = [];
+  if (!bookNav.chapterNav) extraCss.push(BOOK_NAV_NOLEFT_CSS);
+  if (bookNav.chapterNavDepth >= 2) extraCss.push(BOOK_NAV_DEPTH_CSS);
+  if (bookNav.backToTop) extraCss.push(BACK_TO_TOP_CSS);
+  const css = extraCss.length ? `\n${extraCss.join('\n')}` : '';
+  const extraJs = bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,21 +116,42 @@ function pageShell(body, title, defaultCss) {
 <title>${escapeHtml(title)}</title>
 <style>
 ${defaultCss}
-${BOOK_HOME_CSS}
+${BOOK_HOME_CSS}${css}
 </style>
 </head>
 <body>
 ${body}
 <script>${SCROLL_SPY_JS}</script>
-<script>${ON_THIS_PAGE_JS}</script>
+<script>${ON_THIS_PAGE_JS}</script>${extraJs}
 </body>
 </html>
 `;
 }
 
-// The book layout class list; the third column (`--book-3col`) is added only when a
-// right rail is present, mirroring C's single-page applyBookToc.
-const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout--book';
+/** cover off (#221): the book lands on the first chapter, so index.html is a minimal
+ *  redirect to it. The masthead 'home' on every page also points straight at the
+ *  chapter, so the redirect only catches a visit to the book root. */
+function redirectPage(targetUrl, title) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0; url=${targetUrl}">
+<title>${escapeHtml(title)}</title>
+</head>
+<body><p><a href="${targetUrl}">${escapeHtml(title)}</a></p></body>
+</html>
+`;
+}
+
+/** Compose a chapter/cover body from the chrome pieces present — delegates to the shared
+ *  composeBookBody (single-sourced with the live render) with the back-to-top control. */
+function bookBodyHtml(rail, content, prevNext, onThisPage, bookNav) {
+  return composeBookBody({
+    rail, content, prevNext, onThisPage,
+    backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
+  });
+}
 
 // The cover/landing page's filename — the single source for both the index map key and
 // the return-to-cover masthead href (#206), so they can never drift apart.
@@ -123,23 +161,26 @@ const INDEX_PAGE = 'index.html';
  *  the three-column chrome (chapter rail → page URLs with the current chapter marked
  *  active; on-this-page → this chapter's sub-sections in-page; prev/next → page URLs). */
 function renderPage(part, parts, idx, registry, idToUrl, opts) {
-  const { proc, file, defaultCss, bookTitle } = opts;
+  const { proc, file, defaultCss, bookTitle, bookNav, homeHref } = opts;
   const chapterHref = (p) => p.slug;
 
   let content = renderChapter(part.node, registry, { proc, file });
   content = rewriteCrossPageRefs(content, part.id, registry, idToUrl);
 
-  const home = { href: INDEX_PAGE, title: bookTitle };
-  const rail = toHtml(buildChapterRail(parts, chapterHref, part.id, home));
+  const home = { href: homeHref, title: bookTitle };
+  // separate-pages section links are cross-page (`page#id`); only built at depth >= 2.
+  const railOpts = bookNav.chapterNavDepth >= 2
+    ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => `${p.slug}#${s.id}` }
+    : {};
+  const rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, chapterHref, part.id, home, railOpts)) : '';
   const onThisPageNav = buildOnThisPage([part]);
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHref);
-  const prevNext = navBar ? toHtml(navBar) : '';
+  const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
 
-  const layout = onThisPage ? `${BOOK_LAYOUT} enscribe-layout--book-3col` : BOOK_LAYOUT;
-  const body = `<div class="${layout}">${rail}<main class="enscribe-body">${content}${prevNext}</main>${onThisPage}</div>`;
+  const body = bookBodyHtml(rail, content, prevNext, onThisPage, bookNav);
   const pageTitle = part.number ? `${part.number} · ${part.clean} — ${bookTitle}` : `${part.clean} — ${bookTitle}`;
-  return pageShell(body, pageTitle, defaultCss);
+  return pageShell(body, pageTitle, defaultCss, bookNav);
 }
 
 /** The landing/index page: the book title + the chapter rail linking to every chapter
@@ -147,14 +188,17 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
  *  carries the same return-to-cover masthead as the chapter pages (here a self-link to
  *  the cover) so the chrome is uniform across every page. */
 function renderIndex(parts, idToUrl, opts) {
-  const { defaultCss, bookTitle } = opts;
+  const { defaultCss, bookTitle, bookNav } = opts;
   // `current: true` — on the cover the masthead is a self-link (index.html → itself), so
   // mark it aria-current="page" rather than presenting a 'home' link to the page you are
   // already on. Chapter pages omit it (their masthead points elsewhere).
   const home = { href: INDEX_PAGE, title: bookTitle, current: true };
-  const rail = toHtml(buildChapterRail(parts, (p) => p.slug, null, home));
-  const body = `<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book">${rail}<main class="enscribe-body">${coverBodyHtml(bookTitle)}</main></div>`;
-  return pageShell(body, bookTitle, defaultCss);
+  const railOpts = bookNav.chapterNavDepth >= 2
+    ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => `${p.slug}#${s.id}` }
+    : {};
+  const rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, (p) => p.slug, null, home, railOpts)) : '';
+  const body = bookBodyHtml(rail, coverBodyHtml(bookTitle), '', '', bookNav);
+  return pageShell(body, bookTitle, defaultCss, bookNav);
 }
 
 /**
@@ -171,6 +215,7 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
   const bookEl = findBook(numbered);
   if (!bookEl) throw new Error('publishBookPages: no <book> element — separate-pages is a book-only build');
 
+  const bookNav = resolveBookNavConfig(file);
   const bookTitle = bookTitleOf(bookEl);
   const parts = collectBookParts(bookEl);
   if (parts.length === 0) throw new Error('publishBookPages: the book has no chapters');
@@ -180,11 +225,16 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
   const registry = harvestCrossRefRegistry(numbered, file);
   const idToUrl = new Map(parts.map((p) => [p.id, p.slug]));
 
-  const opts = { proc, file, defaultCss, bookTitle };
+  // cover on → the masthead 'home' is the cover (index.html); cover off → the book lands
+  // on the first chapter, so 'home' points there and index.html redirects to it (#221).
+  const homeHref = bookNav.cover ? INDEX_PAGE : parts[0].slug;
+  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
   });
-  pages.set(INDEX_PAGE, renderIndex(parts, idToUrl, opts));
+  pages.set(INDEX_PAGE, bookNav.cover
+    ? renderIndex(parts, idToUrl, opts)
+    : redirectPage(parts[0].slug, bookTitle));
   return pages;
 }

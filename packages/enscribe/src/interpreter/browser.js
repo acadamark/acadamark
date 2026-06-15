@@ -36,6 +36,7 @@ import {
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
+import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
 
 const BROWSER_DEFAULTS = {
@@ -376,6 +377,8 @@ export async function mountLiveBook(target, source, options = {}) {
   const numbered = proc.runSync(tree, loadedFile);
   const ctx = { proc, file: loadedFile };
   const model = buildLiveBook({ numbered, file: loadedFile });
+  // #221: inject the active book-nav CSS once (no-op at defaults — a default book adds none).
+  injectBookNavStyles(model.bookNav);
 
   // Lazy per-view render cache: the cover (#209) and each chapter's view (content + chrome)
   // are built on first view and reused after — the authoring payoff (render only what you
@@ -396,6 +399,9 @@ export async function mountLiveBook(target, source, options = {}) {
     if (key !== currentKey) {
       root.innerHTML = viewFor(key);
       currentKey = key;
+      // #221: a <script> inserted via innerHTML does not execute, so bind back-to-top here
+      // after each chapter swap (idempotent; a no-op when back-to-top is off or unbuilt).
+      if (model.bookNav.backToTop) bindBackToTop();
     }
     // An in-chapter / cross-chapter anchor: scroll to it once its owning chapter is mounted.
     if (!dest.cover && dest.anchor && typeof document !== 'undefined') {

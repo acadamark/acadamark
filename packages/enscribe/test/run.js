@@ -58,6 +58,7 @@ import { run as runRenderParity } from './render-parity.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
 import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
 import { run as runLiveBookParity } from './live-book-parity.test.js';
+import { run as runBookNavConfig } from './book-nav-config.test.js';
 import { run as runMasterBookLive } from './master-book-live.test.js';
 import { run as runLiveEditLoop } from './live-edit-loop.test.js';
 import { run as runLiveEditSmoke } from './live-edit-smoke.test.js';
@@ -130,6 +131,7 @@ const suites = [
   ['render-chapter-parity',        runRenderChapterParity],
   ['separate-pages-parity',        runSeparatePagesParity],
   ['live-book-parity',             runLiveBookParity],
+  ['book-nav-config',              runBookNavConfig],
   ['master-book-live',             runMasterBookLive],
   ['live-edit-loop',               runLiveEditLoop],
   ['live-edit-smoke',              runLiveEditSmoke],

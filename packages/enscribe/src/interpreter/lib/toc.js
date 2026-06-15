@@ -224,8 +224,26 @@ function assignBookIds(parts, used) {
   }
 }
 
-/** The LEFT chapter rail: chapters only (no section nesting — that lives in the
- *  right rail), region-grouped, roster-numbered. It is `nav.enscribe-toc` so the
+/** A nested rail list of a chapter's sections, pruned to `levels` depth (chapter-nav-
+ *  depth minus one). Used only when chapter-nav-depth >= 2 (#221); reuses bookLink so the
+ *  section links match the on-this-page rail. Returns null when there are no sections or
+ *  no depth budget left. Section entries share the `{ clean, number, id, children }` shape
+ *  across both part shapes (toc.js collectEntries and book-scaffold collectSections). */
+function railSectionList(part, sections, sectionHref, levels) {
+  if (levels <= 0 || !sections || sections.length === 0) return null;
+  return el('ul', { className: ['enscribe-rail-sections'] }, sections.map((s) => {
+    const kids = [el('a', { href: sectionHref(part, s) }, bookLink(s))];
+    if (levels > 1) {
+      const sub = railSectionList(part, s.children, sectionHref, levels - 1);
+      if (sub) kids.push(sub);
+    }
+    return el('li', { className: ['enscribe-rail-section'] }, kids);
+  }));
+}
+
+/** The LEFT chapter rail: chapters at depth 1 (default; no section nesting — that lives
+ *  in the right rail), or chapters + their sections at chapter-nav-depth >= 2 (#221),
+ *  region-grouped, roster-numbered. It is `nav.enscribe-toc` so the
  *  unchanged scroll-spy script highlights the active chapter, and the existing ToC
  *  CSS applies.
  *
@@ -245,18 +263,26 @@ function assignBookIds(parts, used) {
  *  (the masthead is a separate-pages-only affordance; a single-scroll book has no
  *  separate cover to return to). The `home` shape is checked (href + title), not just
  *  truthiness, so a partial object never emits a broken masthead. */
-export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeId = null, home = null) {
+export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeId = null, home = null, opts = {}) {
+  // chapter-nav-depth (#221): depth 1 (default) lists chapters only — byte-identical to
+  // before; depth >= 2 nests each chapter's sections beneath it, pruned to depth-1 levels.
+  // `sectionHref(part, section)` projects a section link to its target (in-page anchor for
+  // the single-page / live rail; `page#id` for the separate-pages build).
+  const { navDepth = 1, sectionHref = (p, s) => `#${s.id}` } = opts;
   const items = parts.map((p) => {
     const linkProps = { href: chapterHref(p) };
     if (activeId != null && p.id === activeId) {
       linkProps.className = ['enscribe-toc-active'];
       linkProps['aria-current'] = 'location';
     }
+    const liChildren = [el('a', linkProps, bookLink(p))];
+    if (navDepth >= 2) {
+      const sub = railSectionList(p, p.sections, sectionHref, navDepth - 1);
+      if (sub) liChildren.push(sub);
+    }
     return el('li', {
       className: ['enscribe-rail-item', `enscribe-rail-item--${p.region}`],
-    }, [
-      el('a', linkProps, bookLink(p)),
-    ]);
+    }, liChildren);
   });
   const details = el('details', { className: ['enscribe-toc-details'], open: true }, [
     el('summary', { className: ['enscribe-toc-summary'] }, [text('Chapters')]),

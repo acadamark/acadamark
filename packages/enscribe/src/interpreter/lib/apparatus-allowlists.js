@@ -92,6 +92,19 @@ export const CONFIG_KWARGS = new Map([
   // plugin, which reads it through readBoolKwarg's config layer.
   ['parse-data-tables',       'live'],   // plugins/table-cell-parse.js
 
+  // #221: book navigation chrome — the chapter rail, prev/next, cover, back-to-top,
+  // and pagination unit. Book-only (<meta type=book>), default ON for books (declaring
+  // a book opts into book conventions) EXCEPT back-to-top. Read in the shared book model
+  // (master-document/book-scaffold.js → resolveBookNavConfig) so the static separate-pages
+  // build and the live render honor them identically. Only split-by=chapter is built;
+  // section|none are deferred. See notes/specs/book-navigation.md.
+  ['chapter-nav',             'live'],   // book-scaffold → buildChapterRail (the chapter rail)
+  ['chapter-nav-depth',       'live'],   // rail depth: 1 = chapters; >=2 = chapters + their sections
+  ['page-navigation',         'live'],   // prev/next chapter links (chapterNavBar)
+  ['cover',                   'live'],   // cover landing page; off = land on the first chapter
+  ['back-to-top',             'live'],   // scroll-to-top control within a chapter
+  ['split-by',                'live'],   // pagination unit: chapter (built) | section | none (deferred)
+
   // The remaining keys, enumerated as intended <config> surface by the
   // apparatus-tag reconciliation. Most are now LIVE with a named consumer
   // (see the inline comments). The two still marked 'reserved' —
@@ -143,6 +156,14 @@ export const CONFIG_BOOLEAN_KWARGS = new Set([
   'number-boxes',
   'show-source',
   'parse-data-tables',
+  // #221 book-navigation booleans (default ON for books, except back-to-top OFF) — so a
+  // bare `<config chapter-nav>` / `<config page-navigation>` resolves to `=true`. The valued
+  // book-nav kwargs (`chapter-nav-depth`, `split-by`) are NOT here. F11: this Set is parallel
+  // to CONFIG_KWARGS above — both must carry these keys; R4 will unify the two lists.
+  'chapter-nav',
+  'page-navigation',
+  'cover',
+  'back-to-top',
 ]);
 
 /** Predicate: is `key` a BOOLEAN <config> kwarg (so a bare `<config key>` means `key=true`)? */

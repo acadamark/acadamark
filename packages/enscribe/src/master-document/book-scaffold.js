@@ -29,6 +29,7 @@
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { slugify } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
+import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
 
 // The three book regions, in reading order, mapped to a short region key the rail
 // markup carries (so the theme can style front/body/back differently).
@@ -187,4 +188,62 @@ export const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').
  *  this in its own `<main class="enscribe-body">` + rail + layout. */
 export function coverBodyHtml(bookTitle) {
   return `<book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p>`;
+}
+
+// ─── Book navigation config (#221) ────────────────────────────────────────────
+// The shared read of the book-navigation <config> settings, resolved ONCE off the
+// numbered VFile's config map so BOTH render targets — the static separate-pages
+// build (publish-pages.js) and the live render (live-book.js) — gate their chrome
+// identically (the #218/#207 static≡live discipline). Book-only: these helpers are
+// called only from the book paths. Defaults are ON for books (declaring <meta
+// type=book> opts into book conventions) EXCEPT back-to-top.
+// Authority: notes/specs/book-navigation.md.
+
+const SPLIT_BY_VALUES = new Set(['chapter', 'section', 'none']);
+
+/** Coerce a <config> flag value with a book-default: absent → dflt; explicit
+ *  `false`/'false' → false; bare (''), 'true', or true → true (mirrors #219's
+ *  bare-boolean form, where `<config chapter-nav>` stores `'true'`). */
+function configFlag(configMap, key, dflt) {
+  if (!configMap || !configMap.has(key)) return dflt;
+  const v = configMap.get(key);
+  return v !== false && v !== 'false';
+}
+
+/**
+ * Resolve the book-navigation settings from a numbered book's VFile (the config
+ * map populated by config-discovery in the shared pipeline). Returns the plain
+ * object both the static and live book renderers gate their chrome on. Only
+ * split-by=chapter is built; section|none are accepted but deferred (a note is
+ * emitted and chapter pagination is used), per notes/specs/book-navigation.md.
+ *
+ * @param {object} file - the VFile carrying file.data[ENSCRIBE_CONFIG]
+ * @returns {{chapterNav:boolean, chapterNavDepth:number, pageNavigation:boolean,
+ *           cover:boolean, backToTop:boolean, splitBy:string}}
+ */
+export function resolveBookNavConfig(file) {
+  const configMap = file?.data?.[ENSCRIBE_CONFIG] ?? null;
+
+  const depthRaw = parseInt(configMap?.get('chapter-nav-depth'), 10);
+  const chapterNavDepth = Number.isFinite(depthRaw) && depthRaw >= 1 ? depthRaw : 1;
+
+  let splitBy = configMap?.get('split-by') ?? 'chapter';
+  if (!SPLIT_BY_VALUES.has(splitBy)) splitBy = 'chapter';
+  if (splitBy !== 'chapter' && typeof file?.message === 'function') {
+    file.message(
+      `split-by=${splitBy} is named in notes/specs/book-navigation.md but not yet built; ` +
+      `rendering split-by=chapter (the implemented pagination unit).`,
+      undefined,
+      'book-navigation:split-by-deferred',
+    );
+  }
+
+  return {
+    chapterNav:     configFlag(configMap, 'chapter-nav', true),
+    chapterNavDepth,
+    pageNavigation: configFlag(configMap, 'page-navigation', true),
+    cover:          configFlag(configMap, 'cover', true),
+    backToTop:      configFlag(configMap, 'back-to-top', false),
+    splitBy,
+  };
 }

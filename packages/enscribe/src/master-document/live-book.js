@@ -40,7 +40,9 @@ import {
   findBook,
   bookTitleOf,
   coverBodyHtml,
+  resolveBookNavConfig,
 } from './book-scaffold.js';
+import { composeBookBody, BACK_TO_TOP_HTML } from '../interpreter/assets/book-nav-asset.js';
 
 // The book layout class list; the third column (`--book-3col`) is added only when a
 // right "on this page" rail is present — mirroring P1 / C's single-page applyBookToc.
@@ -113,7 +115,7 @@ export function buildLiveBook({ numbered, file }) {
     }
   }
 
-  return { parts, bookTitle, registry, stemToIndex, idToStem };
+  return { parts, bookTitle, registry, stemToIndex, idToStem, bookNav: resolveBookNavConfig(file) };
 }
 
 /**
@@ -148,20 +150,32 @@ export function renderLiveChapterContent(part, model, ctx) {
  * @param {object} ctx - { proc, file }
  * @returns {string} the mounted chapter view HTML (a `<div class="enscribe-layout…">`)
  */
+/** The live chapter rail, gated on chapter-nav and threaded with chapter-nav-depth (#221).
+ *  Live section links resolve via the router's id→chapter map, so buildChapterRail's default
+ *  `#${id}` sectionHref applies. Returns '' when chapter-nav is off. */
+function liveRail(parts, activeId, home, bookNav) {
+  if (!bookNav.chapterNav) return '';
+  const opts = bookNav.chapterNavDepth >= 2 ? { navDepth: bookNav.chapterNavDepth } : {};
+  return toHtml(buildChapterRail(parts, chapterHash, activeId, home, opts));
+}
+
 export function renderLiveChapterView(model, idx, ctx) {
-  const { parts, bookTitle } = model;
+  const { parts, bookTitle, bookNav } = model;
   const part = parts[idx];
 
   const content = renderLiveChapterContent(part, model, ctx);
-  const home = { href: COVER_HASH, title: bookTitle };
-  const rail = toHtml(buildChapterRail(parts, chapterHash, part.id, home));
+  // cover off → the masthead 'home' points at the first chapter (the landing), not the cover.
+  const home = { href: bookNav.cover ? COVER_HASH : chapterHash(parts[0]), title: bookTitle };
+  const rail = liveRail(parts, part.id, home, bookNav);
   const onThisPageNav = buildOnThisPage([part]);
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHash);
-  const prevNext = navBar ? toHtml(navBar) : '';
+  const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
 
-  const layout = onThisPage ? `${BOOK_LAYOUT} enscribe-layout--book-3col` : BOOK_LAYOUT;
-  return `<div class="${layout}">${rail}<main class="enscribe-body">${content}${prevNext}</main>${onThisPage}</div>`;
+  return composeBookBody({
+    rail, content, prevNext, onThisPage,
+    backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
+  });
 }
 
 /**
@@ -176,10 +190,13 @@ export function renderLiveChapterView(model, idx, ctx) {
  * @returns {string} the mounted cover view HTML (a `<div class="enscribe-layout…">`)
  */
 export function renderLiveCoverView(model) {
-  const { parts, bookTitle } = model;
+  const { parts, bookTitle, bookNav } = model;
   const home = { href: COVER_HASH, title: bookTitle, current: true };
-  const rail = toHtml(buildChapterRail(parts, chapterHash, null, home));
-  return `<div class="${BOOK_LAYOUT}">${rail}<main class="enscribe-body">${coverBodyHtml(bookTitle)}</main></div>`;
+  const rail = liveRail(parts, null, home, bookNav);
+  return composeBookBody({
+    rail, content: coverBodyHtml(bookTitle),
+    backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
+  });
 }
 
 /**
@@ -197,7 +214,12 @@ export function renderLiveCoverView(model) {
  */
 export function resolveHash(hash, model) {
   const h = String(hash || '').replace(/^#/, '');
-  if (h === '') return { cover: true };
+  if (h === '') {
+    // #221: cover off → the empty/root route lands on the first chapter, not a cover view.
+    return model.bookNav?.cover === false
+      ? { cover: false, index: 0, anchor: null }
+      : { cover: true };
+  }
   if (model.stemToIndex.has(h)) return { cover: false, index: model.stemToIndex.get(h), anchor: null };
   if (model.idToStem.has(h)) return { cover: false, index: model.stemToIndex.get(model.idToStem.get(h)), anchor: h };
   return null;
@@ -298,18 +320,18 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
  */
 export function renderLiveChapterPreviewBody(model, idx, ctx) {
   const navBar = chapterNavBar(model.parts, idx, chapterHash);
-  const prevNext = navBar ? toHtml(navBar) : '';
+  const prevNext = (model.bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
   return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext;
 }
 
 export function renderLiveChapterEditView(model, idx, ctx) {
-  const { parts, bookTitle } = model;
+  const { parts, bookTitle, bookNav } = model;
   const part = parts[idx];
 
   const previewBody = renderLiveChapterPreviewBody(model, idx, ctx);
 
-  const home = { href: COVER_HASH, title: bookTitle };
-  const rail = toHtml(buildChapterRail(parts, chapterHash, part.id, home));
+  const home = { href: bookNav.cover ? COVER_HASH : chapterHash(parts[0]), title: bookTitle };
+  const rail = liveRail(parts, part.id, home, bookNav);
 
   // The Write/Preview pane is the SHARED edit-view UI (buildEditMain, #216) — single-sourced so the
   // book and article edit views cannot drift. The book wraps it in the chapter rail + book layout.
