@@ -197,8 +197,9 @@ import { TOC_CONFIG_CSS } from './assets/toc-config-css.js';
 // sigils off (via the sigil-less enscribeSyntax variant), leaving only canonical
 // named tags. flagStrictText + STRICT_FLAG_CSS add the lint, injected only when
 // non-`off` (the sidenote-injection model).
-import { resolveStrictMode, detectStrictMode, disableMarkdownIdioms, flagStrictText } from './lib/strict-mode.js';
+import { resolveStrictMode, applyStrictModeReparse, disableMarkdownIdioms, flagStrictText } from './lib/strict-mode.js';
 import { STRICT_FLAG_CSS } from './assets/strict-flag-css.js';
+import { createLazyAsset } from './lib/lazy-asset.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
 // read — so the browser bundle stays fs-free). Now an OPT-IN paging escape hatch
 // (chapterNav:true), NOT the book default — see the one-scroll reading interface
@@ -233,15 +234,10 @@ export const KATEX_CDN_URL = `https://cdn.jsdelivr.net/npm/katex@${_katexVersion
 // Lazy-loaded CSS string — only reads the file when math is actually present.
 // Font URLs in the raw CSS are relative (e.g. url(fonts/KaTeX_Main-Regular.woff2))
 // and are replaced with base64 data URIs so the CSS works when inlined in HTML.
-let _katexCss = null;
-function getKatexCss() {
-  if (_katexCss === null) {
-    const katexDir = dirname(fileURLToPath(import.meta.resolve('katex')));
-    const raw = readFileSync(join(katexDir, 'katex.min.css'), 'utf8');
-    _katexCss = patchKatexFontUrls(raw);
-  }
-  return _katexCss;
-}
+const getKatexCss = createLazyAsset(() => {
+  const katexDir = dirname(fileURLToPath(import.meta.resolve('katex')));
+  return patchKatexFontUrls(readFileSync(join(katexDir, 'katex.min.css'), 'utf8'));
+});
 
 // ─── Theme CSS (Phase 8 Slice 2) ──────────────────────────────────────────────
 //
@@ -280,44 +276,25 @@ export const TIPPY_CDN_LIGHT_BORDER_URL = `https://unpkg.com/tippy.js@6.3.7/them
 // Lazy-loaded inline assets (third-party Tippy/Popper, used by inline hover mode).
 // enscribe's own hover CSS/JS moved to ./assets/hover-preview-assets.js so the
 // browser bundle can swap in build-inlined strings; see the import near the top.
-let _tippyCss = null;
-let _tippyLightBorderCss = null;
-let _popperJs = null;
-let _tippyJs = null;
+const getTippyCss = createLazyAsset(() => {
+  const tippyDir = dirname(fileURLToPath(import.meta.resolve('tippy.js')));
+  return readFileSync(join(tippyDir, 'tippy.css'), 'utf8');
+});
 
-function getTippyCss() {
-  if (_tippyCss === null) {
-    const tippyDir = dirname(fileURLToPath(import.meta.resolve('tippy.js')));
-    _tippyCss = readFileSync(join(tippyDir, 'tippy.css'), 'utf8');
-  }
-  return _tippyCss;
-}
+const getTippyLightBorderCss = createLazyAsset(() => {
+  const tippyDir = dirname(fileURLToPath(import.meta.resolve('tippy.js')));
+  return readFileSync(join(tippyDir, '..', 'themes', 'light-border.css'), 'utf8');
+});
 
-function getTippyLightBorderCss() {
-  if (_tippyLightBorderCss === null) {
-    const tippyDir = dirname(fileURLToPath(import.meta.resolve('tippy.js')));
-    _tippyLightBorderCss = readFileSync(join(tippyDir, '..', 'themes', 'light-border.css'), 'utf8');
-  }
-  return _tippyLightBorderCss;
-}
+const getPopperJs = createLazyAsset(() => {
+  const popperDir = dirname(fileURLToPath(import.meta.resolve('@popperjs/core')));
+  return readFileSync(join(popperDir, '..', 'umd', 'popper.min.js'), 'utf8').replace(/\/\/# sourceMappingURL=.*$/m, '');
+});
 
-function getPopperJs() {
-  if (_popperJs === null) {
-    const popperDir = dirname(fileURLToPath(import.meta.resolve('@popperjs/core')));
-    const raw = readFileSync(join(popperDir, '..', 'umd', 'popper.min.js'), 'utf8');
-    _popperJs = raw.replace(/\/\/# sourceMappingURL=.*$/m, '');
-  }
-  return _popperJs;
-}
-
-function getTippyJs() {
-  if (_tippyJs === null) {
-    const tippyDir = dirname(fileURLToPath(import.meta.resolve('tippy.js')));
-    const raw = readFileSync(join(tippyDir, 'tippy.umd.min.js'), 'utf8');
-    _tippyJs = raw.replace(/\/\/# sourceMappingURL=.*$/m, '');
-  }
-  return _tippyJs;
-}
+const getTippyJs = createLazyAsset(() => {
+  const tippyDir = dirname(fileURLToPath(import.meta.resolve('tippy.js')));
+  return readFileSync(join(tippyDir, 'tippy.umd.min.js'), 'utf8').replace(/\/\/# sourceMappingURL=.*$/m, '');
+});
 
 // getHoverPreviewCss / getHoverPreviewJs are imported from
 // ./assets/hover-preview-assets.js (swappable Node/browser variants).
@@ -372,42 +349,30 @@ function detectAssets(root) {
   return found;
 }
 
-function makeStyleElement(css) {
-  return {
-    type: 'element',
-    tagName: 'style',
-    properties: {},
-    // Use a raw node so the CSS is emitted verbatim (no HTML escaping).
-    // Requires allowDangerousHtml: true in toHtml, which we already use.
-    children: [{ type: 'raw', value: css }],
-  };
+// makeAssetElement — one builder for the four asset hast elements the compiler injects:
+// an inline <style> / <script> (raw verbatim content — no HTML escaping, which requires
+// allowDangerousHtml in toHtml, already on) and an external stylesheet <link> / <script src>
+// (empty children). The four named wrappers below keep the call sites readable.
+function makeAssetElement(kind, content, meta = {}) {
+  switch (kind) {
+    case 'style':      return { type: 'element', tagName: 'style',  properties: {}, children: [{ type: 'raw', value: content }] };
+    case 'script':     return { type: 'element', tagName: 'script', properties: {}, children: [{ type: 'raw', value: content }] };
+    case 'link':       return { type: 'element', tagName: 'link',   properties: { rel: ['stylesheet'], href: meta.href }, children: [] };
+    case 'script-src': return { type: 'element', tagName: 'script', properties: { src: meta.src }, children: [] };
+    default: throw new Error(`makeAssetElement: unknown kind '${kind}'`);
+  }
 }
 
-function makeScriptElement(js) {
-  return {
-    type: 'element',
-    tagName: 'script',
-    properties: {},
-    children: [{ type: 'raw', value: js }],
-  };
-}
+function makeStyleElement(css) { return makeAssetElement('style', css); }
+function makeScriptElement(js) { return makeAssetElement('script', js); }
+function makeLinkElement(href) { return makeAssetElement('link', null, { href }); }
+function makeScriptSrcElement(src) { return makeAssetElement('script-src', null, { src }); }
 
-function makeLinkElement(href) {
-  return {
-    type: 'element',
-    tagName: 'link',
-    properties: { rel: ['stylesheet'], href },
-    children: [],
-  };
-}
-
-function makeScriptSrcElement(src) {
-  return {
-    type: 'element',
-    tagName: 'script',
-    properties: { src },
-    children: [],
-  };
+// resolveOption — the compiler's three-tier setting fallthrough (render option > document
+// <config> > default), previously hand-written per setting. Priority order preserved exactly.
+// (show-source is NOT one of these — it is a config-only boolean coercion, not a fallthrough.)
+function resolveOption(options, optKey, configMap, cfgKey, dflt) {
+  return options[optKey] ?? (configMap && configMap.get(cfgKey)) ?? dflt;
 }
 
 /**
@@ -817,7 +782,7 @@ export function enscribeInterpreter(options = {}) {
     // fixtures). Display-only: the mdast tree (and the JATS export that consumes
     // it) is unchanged. Runs after applyToc so it can co-mark the layout wrapper,
     // and before rehype-format so any injected spans are formatted with the rest.
-    const notePosition = options.notePosition ?? (configMap && configMap.get('note-position')) ?? 'bottom';
+    const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
     const relocatedSidenotes = notePosition === 'margin' && applySidenotes(hast);
     if (relocatedSidenotes || assets.marginnote) {
       markMarginLayout(hast);
@@ -880,7 +845,7 @@ export function enscribeInterpreter(options = {}) {
     // Inject the theme CSS (Phase 8 Slice 2) after the fonts, so its `:root`
     // overrides sit after the document's base default.css in the cascade. The
     // `theme` render option wins over a <config theme=…> document setting.
-    const themeName = options.theme ?? (configMap && configMap.get('theme')) ?? 'default';
+    const themeName = resolveOption(options, 'theme', configMap, 'theme', 'default');
     if (themeName && themeName !== 'default') {
       if (KNOWN_THEMES.has(themeName)) {
         hast.children.unshift(makeStyleElement(getThemeCss(themeName)));
@@ -1018,21 +983,26 @@ export function buildEnscribePipeline(options = {}) {
  * @returns {import('mdast').Root} the post-normalize mdast tree.
  */
 export function liftToCanonicalMdast(source) {
-  // Parse once registers-on so detectStrictMode can find <config strict-mode>.
+  // Parse once registers-on so applyStrictModeReparse (which runs detectStrictMode) can
+  // find <config strict-mode>.
   const onInner = () => unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
   const tree = onInner().parse(source);
 
-  const mode = detectStrictMode(tree, undefined);
+  // The registers-off processors, built like the main compiler's (markdown off; sigils
+  // off only for canonical). applyStrictModeReparse (F9, shared with resolveStrictMode)
+  // does the detect + reparse; this standalone `enscribe lift` path then builds its OWN
+  // inner processor (a separate instance, as before) so the pipe-body sub-parses keep the
+  // register off too.
+  const sigilProcessor = unified().use(remarkParse).use(remarkEnscribe).use(disableMarkdownIdioms);
+  const canonicalProcessor = unified().use(remarkParse).use(remarkEnscribe, { sigils: false }).use(disableMarkdownIdioms);
+  const { mode, reparsedTree } = applyStrictModeReparse(tree, source, undefined, sigilProcessor, canonicalProcessor);
+
   let outerTree = tree;
   let inner = onInner();
-  if (mode === 'sigil' || mode === 'canonical') {
-    // Re-parse with the matching register(s) off (sigil: markdown off; canonical:
-    // markdown + sigils off), and use the same processor for the pipe-body sub-
-    // parses so the register stays off there too.
+  if (reparsedTree) {
+    outerTree = reparsedTree;
     const sigils = mode !== 'canonical';
-    const offProc = () => unified().use(remarkParse).use(remarkEnscribe, { sigils }).use(disableMarkdownIdioms);
-    inner = offProc();
-    outerTree = offProc().parse(source);
+    inner = unified().use(remarkParse).use(remarkEnscribe, { sigils }).use(disableMarkdownIdioms);
   }
   unified()
     .use(remarkRecursiveContent, { processor: inner })

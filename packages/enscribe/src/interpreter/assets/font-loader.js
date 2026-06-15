@@ -28,25 +28,14 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createLazyAsset } from '../lib/lazy-asset.js';
 
 // Directory resolution is deferred into accessors (not computed at module load)
 // so this module imports cleanly in a browser bundle; the fs reads themselves
 // stay Node-only and run only when inline font embedding is actually requested.
-let _fontsDirCache = null;
-function fontsDir() {
-  if (_fontsDirCache === null) {
-    _fontsDirCache = join(dirname(fileURLToPath(import.meta.url)), 'fonts');
-  }
-  return _fontsDirCache;
-}
+const fontsDir = createLazyAsset(() => join(dirname(fileURLToPath(import.meta.url)), 'fonts'));
 
-let _katexFontsDirCache = null;
-function katexFontsDir() {
-  if (_katexFontsDirCache === null) {
-    _katexFontsDirCache = join(dirname(fileURLToPath(import.meta.resolve('katex'))), 'fonts');
-  }
-  return _katexFontsDirCache;
-}
+const katexFontsDir = createLazyAsset(() => join(dirname(fileURLToPath(import.meta.resolve('katex'))), 'fonts'));
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -84,18 +73,14 @@ const DOCUMENT_FONT_FACES = [
 export const DOCUMENT_FONTS_CDN_URL =
   'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap';
 
-let _documentFontsCss = null;
-
 /**
  * Build @font-face CSS for document fonts (Inter, Source Code Pro).
  * Reads woff2 files from src/assets/fonts/ and base64-encodes them.
- * Result is cached after first call.
+ * Result is cached after first call (createLazyAsset).
  *
  * @returns {string} CSS block of @font-face rules.
  */
-export function getDocumentFontsCss() {
-  if (_documentFontsCss !== null) return _documentFontsCss;
-
+export const getDocumentFontsCss = createLazyAsset(() => {
   const rules = DOCUMENT_FONT_FACES.map(([family, style, weight, filename]) => {
     const filePath = join(fontsDir(), filename);
     const dataUri = toBase64DataUri(filePath);
@@ -108,9 +93,8 @@ export function getDocumentFontsCss() {
 }`;
   });
 
-  _documentFontsCss = rules.join('\n');
-  return _documentFontsCss;
-}
+  return rules.join('\n');
+});
 
 // ─── KaTeX fonts ─────────────────────────────────────────────────────────────
 

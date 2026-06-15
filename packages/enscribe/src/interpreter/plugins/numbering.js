@@ -38,6 +38,7 @@ import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
 import { isBodyBookPart } from '../lib/book-regions.js';
+import { resolveConfigEnum } from '../lib/config-helpers.js';
 
 // Maps the canonical post-gate tagname to the registry type used for display
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
@@ -180,16 +181,12 @@ const SCOPED_COUNTER_TYPES = new Set([
  * @param {Map|null} config
  * @returns {string} 'none' | 'chapter' | 'section'
  */
+// counter-reset-scope: none|chapter|section; default chapter for books, none otherwise.
+// The shared resolveConfigEnum (F8) does the read + book-default; the allowed set + the
+// two defaults are the only per-setting difference from note-scope.
+const COUNTER_RESET_SCOPES = new Set(['none', 'chapter', 'section']);
 function resolveCounterResetScope(treeChildren, config) {
-  const configValue = config?.get?.('counter-reset-scope');
-  if (configValue === 'none' || configValue === 'chapter' || configValue === 'section') {
-    return configValue;
-  }
-  // Look for <book> at root; if present, default to chapter scope.
-  for (const child of treeChildren ?? []) {
-    if (isEnscribeTag(child) && child.tagname === 'book') return 'chapter';
-  }
-  return 'none';
+  return resolveConfigEnum(treeChildren, config, 'counter-reset-scope', COUNTER_RESET_SCOPES, 'chapter', 'none');
 }
 
 /**

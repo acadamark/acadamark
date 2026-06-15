@@ -50,6 +50,7 @@ import { makeTag, makeInternalMarker, isEnscribeTag } from '../../core/tag.js';
 import { walkReplace } from '../../core/walkers/walk-replace.js';
 import { ENSCRIBE_NOTES_PENDING, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { findTag } from '../lib/ast-helpers.js';
+import { resolveConfigEnum } from '../lib/config-helpers.js';
 import { notePlacement } from './notes.js';
 
 // ─── Back-matter container helpers ────────────────────────────────────────────
@@ -186,13 +187,12 @@ function findCollectionUnits(treeChildren, scope) {
  * @param {Map|null} config
  * @returns {string} 'document' | 'chapter' | 'section'
  */
+// note-scope: document|chapter|section; default chapter for books, section otherwise.
+// Shares resolveConfigEnum (F8) with counter-reset-scope — only the allowed set + the
+// two defaults differ.
+const NOTE_SCOPES = new Set(['document', 'chapter', 'section']);
 function resolveNoteScope(treeChildren, config) {
-  const configValue = config?.get?.('note-scope');
-  if (configValue === 'document' || configValue === 'chapter' || configValue === 'section') {
-    return configValue;
-  }
-  const book = findTag(treeChildren, 'book');
-  return book ? 'chapter' : 'section';
+  return resolveConfigEnum(treeChildren, config, 'note-scope', NOTE_SCOPES, 'chapter', 'section');
 }
 
 /**

@@ -92,6 +92,24 @@ export function detectStrictMode(tree, option) {
 }
 
 /**
+ * The shared strict-mode reparse core (audit F9): detect the mode and, when it is
+ * sigil/canonical, re-parse `source` with the matching registers-off processor. Pure —
+ * no file.data stamping, no tree mutation. Each caller applies the result its own way:
+ * resolveStrictMode (below) stamps file.data + swaps tree.children in place; the
+ * `enscribe lift` path (liftToCanonicalMdast) uses the returned tree and builds its own
+ * inner processor.
+ *
+ * @returns {{ mode: string, reparsedTree: (import('mdast').Root|null) }} reparsedTree is
+ *   null for mode 'off' (no reparse — the default single parse stands).
+ */
+export function applyStrictModeReparse(tree, source, option, sigilProcessor, canonicalProcessor) {
+  const mode = detectStrictMode(tree, option);
+  if (mode === 'off') return { mode, reparsedTree: null };
+  const offProcessor = mode === 'canonical' ? canonicalProcessor : sigilProcessor;
+  return { mode, reparsedTree: offProcessor.parse(source) };
+}
+
+/**
  * Transform (runs before recursive-content): resolve the strict mode and, when it
  * is sigil/canonical, RE-PARSE the source with the matching registers-off processor
  * and swap in that tree. Stores the mode on file.data so recursive-content selects
@@ -105,18 +123,14 @@ export function detectStrictMode(tree, option) {
  */
 export function resolveStrictMode({ sigilProcessor, canonicalProcessor, option } = {}) {
   return (tree, file) => {
-    const mode = detectStrictMode(tree, option);
+    const source = typeof file?.value === 'string' ? file.value : String(file?.value ?? '');
+    const { mode, reparsedTree } = applyStrictModeReparse(tree, source, option, sigilProcessor, canonicalProcessor);
     if (file) {
       file.data ??= {};
       file.data[ENSCRIBE_STRICT_MODE] = mode;
     }
-    if (mode === 'off') return; // unchanged default parse
-    // Re-parse the original source with the matching register(s) off, then swap
-    // the tree in place so every downstream transform sees the registers-off tree.
-    const proc = mode === 'canonical' ? canonicalProcessor : sigilProcessor;
-    const source = typeof file?.value === 'string' ? file.value : String(file?.value ?? '');
-    const offTree = proc.parse(source);
-    tree.children = offTree.children;
+    // Swap the registers-off tree in place so every downstream transform sees it.
+    if (reparsedTree) tree.children = reparsedTree.children;
   };
 }
 

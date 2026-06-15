@@ -24,30 +24,13 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createLazyAsset } from '../lib/lazy-asset.js';
 
 // Deferred into an accessor (not computed at module load) so this file's mere
 // import is side-effect-free; the fs read happens only when a document actually
 // contains notes/refs/citations and hover assets are requested.
-let _assetsDirCache = null;
-function assetsDir() {
-  if (_assetsDirCache === null) {
-    _assetsDirCache = dirname(fileURLToPath(import.meta.url));
-  }
-  return _assetsDirCache;
-}
+const assetsDir = createLazyAsset(() => dirname(fileURLToPath(import.meta.url)));
 
-let _hoverPreviewCss = null;
-export function getHoverPreviewCss() {
-  if (_hoverPreviewCss === null) {
-    _hoverPreviewCss = readFileSync(join(assetsDir(), 'hover-preview.css'), 'utf8');
-  }
-  return _hoverPreviewCss;
-}
+export const getHoverPreviewCss = createLazyAsset(() => readFileSync(join(assetsDir(), 'hover-preview.css'), 'utf8'));
 
-let _hoverPreviewJs = null;
-export function getHoverPreviewJs() {
-  if (_hoverPreviewJs === null) {
-    _hoverPreviewJs = readFileSync(join(assetsDir(), 'hover-preview.js'), 'utf8');
-  }
-  return _hoverPreviewJs;
-}
+export const getHoverPreviewJs = createLazyAsset(() => readFileSync(join(assetsDir(), 'hover-preview.js'), 'utf8'));
