@@ -411,3 +411,69 @@ main.article.gallery {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ─── Generated <config> option grid (Rendering guide, #223 slice 2) ──────────
+   The grid is emitted as raw HTML by buildConfigGrid() (one table per family),
+   so unlike the rendered-article catalogs it needs its own table styling here. */
+
+.config-options-grid .cfg-family {
+  margin: 2rem 0;
+}
+
+.config-options-grid .cfg-family h3 {
+  margin: 0 0 0.5rem;
+}
+
+.cfg-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.cfg-grid th,
+.cfg-grid td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cfg-grid thead th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+
+.cfg-grid tbody tr:hover {
+  background: var(--editor-bg);
+}
+
+.cfg-grid code {
+  font-size: 0.85em;
+}
+
+.cfg-reserved,
+.cfg-scope-book {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.05rem 0.4rem;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+}
+
+.cfg-reserved {
+  margin-left: 0.4rem;
+  color: var(--muted);
+  background: #f0f2f4;
+}
+
+.cfg-scope-book {
+  color: var(--accent);
+  background: #ddf0ff;
+}

@@ -112,6 +112,8 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Authoring coverage gallery (the completeness surface — every construct a user can write: each vocab element generated from its entries, plus a curated non-vocabulary supplement for Layer-2 constructs with no vocab entry, e.g. `<list>`; source beside rendered output, with loud GAP markers) (#143)
 - [x] JATS-relationship article
 - [x] Imported-article demonstration page (a real published paper, via `import-jats`)
+- [x] Shorthand + Layer 1 reference catalogs (generated from the shorthand tag-forms source and the vocab `elements/*.md` — every form/element listed, never hand-maintained) (#236)
+- [x] Rendering guide — the three orthogonal axes (rendering · file-structure · editing), a yes/no render-choice flowchart, and the generated `<config>` option grid (one row per `CONFIG_KWARGS` key, guarded in lockstep so it cannot drift from what the engine accepts) (#239)
 - [x] Static site build (`npm run docs:build`)
 
 ## Packaging & infrastructure

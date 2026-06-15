@@ -1,0 +1,77 @@
+<meta type=article>
+  <title | Rendering guide>
+  <author | The Enscribe Project>
+</meta>
+
+<config toc toc-location=right />
+
+How an Enscribe document becomes the thing a reader opens is three independent choices, not one. This guide
+names the three dimensions, gives a yes/no path through the rendering choice, and lists every `<config>`
+option that tunes the output — the option grid below is **generated from the engine's own option set**, so it
+can't drift from what the engine actually accepts.
+
+<# #sec:dimensions | The three dimensions #>
+
+A document is described along three axes that vary independently. Pick each one separately.
+
+<## Rendering — how the HTML is produced ##>
+
+- **Precompiled** — the engine compiles the source to static HTML ahead of time. Deploy the files anywhere,
+  no server, no JavaScript required to read; the output is frozen at build time.
+- **Live on a server** — `enscribe serve` renders the `.emd` on each request, so the page is always fresh
+  from the current source; it needs a running server.
+- **Live, client-side** — ship the `.emd` plus a small HTML shell; the browser fetches the source and renders
+  it. Static-host-able like the precompiled form, but the `.emd` stays the source of truth (the rendered HTML
+  is never committed).
+
+<## File structure — how the source is organised ##>
+
+- **Single file** — the whole document in one `.emd`.
+- **Multiple files via `src=`** — a spectrum, not a binary: from a mostly-inline file that pulls in a section
+  or two (`<section src="methods.emd">`), through a skeleton **master** that pulls in everything (the
+  multi-file assembler). The same `src=` mechanism spans the whole range.
+
+<## Editing — how the source is authored ##>
+
+- **Author `.emd` by hand** — the shorthand authoring path; what nearly everyone does.
+- **Author Layer 1 by hand** — write the canonical HTML directly; a rare escape hatch.
+- **In-browser editing** — edit and re-render live in the browser. *(Future — documented here, not yet
+  shipped.)*
+
+<## These axes are orthogonal ##>
+
+The three choices don't constrain each other, and **document type — article, book, or website — gates none of
+them.** An article can be multi-file; a book can be a single file; any type can be precompiled, served live,
+or rendered client-side. Choose each axis for its own reasons.
+
+| Dimension | Options |
+|---|---|
+| Rendering | precompiled · live on server · live client-side |
+| File structure | single file · multiple files via `src=` |
+| Editing | author `.emd` · author Layer 1 · in-browser (future) |
+| Document type *(orthogonal)* | article · book · website |
+
+<# #sec:choosing | Choosing how to render #>
+
+The rendering axis is the one with a real decision behind it. Walk it as a yes/no:
+
+<diagram mermaid |
+flowchart TD
+  A{Do you run a server?} -->|yes| B[Live on server<br/>always fresh from source]
+  A -->|no| C{Need frozen, no-JS HTML<br/>that deploys anywhere?}
+  C -->|yes| D[Precompiled<br/>static build]
+  C -->|no| E[Live, client-side<br/>ship .emd + a shell]
+>
+
+In words: if you run a server, **live on server** keeps the page in lockstep with the source. If not and you
+need self-contained, no-JavaScript HTML, **precompile**. Otherwise **live client-side** keeps the `.emd` as the
+source while still hosting statically.
+
+<# #sec:options | The `<config>` options #>
+
+Every knob below is set with a `<config>` block — `<config number-sections toc-location=right>`. The grid is
+generated from the engine's `<config>` allowlist and its documentation source, grouped by family. Boolean
+options take no value (a bare `<config toc>` means `toc=true`); valued options list their accepted values.
+**book-only** options apply only to a `<meta type=book>` document.
+
+CONFIGOPTIONSGRID

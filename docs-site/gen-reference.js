@@ -21,6 +21,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { SIGIL_TO_TAGNAME } from '@enscribejs/enscribe/core/tagname-sigil-map';
+// The <config> option doc source (#239) lives beside CONFIG_KWARGS in the enscribe package;
+// imported via a relative path (as the vocab .md files are read by path) — it is pure data
+// (no transitive imports), and a guard test keeps it in lockstep with CONFIG_KWARGS.
+import {
+  CONFIG_OPTIONS_DOC, CONFIG_WILDCARD_DOC, CONFIG_FAMILIES,
+} from '../packages/enscribe/src/interpreter/lib/config-options-doc.js';
 
 const ELEMENTS_DIR = join(
   dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'layer1-vocabulary', 'elements',
@@ -369,4 +375,57 @@ function wrap(intro, nav, sections, generator) {
     `      Generated from the <a href="https://github.com/enscribejs/enscribe/tree/main/packages/layer1-vocabulary/elements">Layer 1 vocabulary entries</a> by <code>docs-site/${generator}</code>.\n` +
     '    </footer>'
   );
+}
+
+// ── The <config> option grid (#223 slice 2) ───────────────────────────────────
+// Generated from CONFIG_OPTIONS_DOC (the human doc layer, kept in lockstep with
+// CONFIG_KWARGS by config-options-doc.test.js). One table per family, per-option `id`
+// anchors (for the future #138 search). Returned as an HTML string the Rendering-guide
+// page embeds at its marker (see build.js).
+const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+function optionCells(opt) {
+  const name = opt.key ?? opt.pattern;
+  const reserved = opt.reserved
+    ? ' <span class="cfg-reserved">reserved — no consumer yet</span>'
+    : '';
+  const typeValues = opt.type === 'boolean'
+    ? 'boolean'
+    : `valued${opt.values ? ` · ${escapeHtml(opt.values)}` : ''}`;
+  const scope = opt.scope === 'book-only'
+    ? '<span class="cfg-scope-book">book-only</span>'
+    : 'all';
+  return (
+    `      <tr id="cfg-${escapeHtml(slug(name))}">\n` +
+    `        <td><code>${escapeHtml(name)}</code>${reserved}</td>\n` +
+    `        <td>${escapeHtml(opt.description ?? '')}</td>\n` +
+    `        <td>${typeValues}</td>\n` +
+    `        <td>${opt.default != null ? escapeHtml(opt.default) : '—'}</td>\n` +
+    `        <td>${scope}</td>\n` +
+    '      </tr>'
+  );
+}
+
+/** Build the <config> option grid HTML (grouped by family). @returns {{ html: string, count: number }} */
+export function buildConfigGrid() {
+  const byFamily = new Map(CONFIG_FAMILIES.map((f) => [f, []]));
+  for (const e of CONFIG_OPTIONS_DOC) byFamily.get(e.family)?.push(e);
+
+  const sections = [];
+  let count = 0;
+  for (const family of CONFIG_FAMILIES) {
+    const opts = byFamily.get(family) ?? [];
+    const rows = opts.map(optionCells);
+    count += opts.length;
+    if (CONFIG_WILDCARD_DOC.family === family) { rows.push(optionCells(CONFIG_WILDCARD_DOC)); count += 1; }
+    sections.push(
+      `  <section class="cfg-family" id="cfg-fam-${slug(family)}">\n` +
+      `    <h3>${escapeHtml(family)}</h3>\n` +
+      '    <table class="cfg-grid">\n' +
+      '      <thead><tr><th>option</th><th>what it does</th><th>type / values</th><th>default</th><th>scope</th></tr></thead>\n' +
+      `      <tbody>\n${rows.join('\n')}\n      </tbody>\n` +
+      '    </table>\n  </section>',
+    );
+  }
+  return { html: `<div class="config-options-grid">\n${sections.join('\n')}\n</div>`, count };
 }

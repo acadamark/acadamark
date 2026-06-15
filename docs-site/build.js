@@ -20,7 +20,7 @@ import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
 import { buildGallery } from './gen-gallery.js';
-import { buildLayer1Catalog, buildShorthandCatalog } from './gen-reference.js';
+import { buildLayer1Catalog, buildShorthandCatalog, buildConfigGrid } from './gen-reference.js';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,6 +105,8 @@ const PAGES = [
   // #223 slice 1: the generated Documentation catalogs (additive; from the vocab source).
   { slug: 'layer1-catalog',  source: null,                  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'layer1-catalog' },
   { slug: 'shorthand-catalog', source: null,                title: 'Shorthand catalog — enscribe',   nav: 'Shorthand catalog', kind: 'shorthand-catalog' },
+  // #223 slice 2: the Rendering guide — authored .emd with the generated <config> grid injected.
+  { slug: 'rendering-guide', source: 'rendering-guide.emd', title: 'Rendering guide — enscribe',     nav: 'Rendering guide', kind: 'rendering-guide' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
   { slug: 'demos',           source: null,                  title: 'Demos — enscribe',               nav: 'Demos',           kind: 'demo-index' },
 ];
@@ -376,7 +378,9 @@ function main() {
   // generated pages (gallery, demos) have no single `.emd` source, so they have no live counterpart.
   // When the engine bundle is absent, /live is skipped and no links are emitted → the static site is
   // byte-for-byte what it was before this slice.
-  const livePages = PAGES.filter((p) => p.source);
+  // The Rendering guide has a `.emd` source but its <config> grid is injected at BUILD time
+  // (#223 slice 2), so a client-side live render would show the bare marker — exclude it from live.
+  const livePages = PAGES.filter((p) => p.source && p.kind !== 'rendering-guide');
   const liveSlugs = new Set(bundlePresent ? livePages.map((p) => p.slug) : []);
 
   // Demo papers → self-contained standalone pages under dist/demo/. Render first
@@ -429,6 +433,15 @@ function main() {
       const count = cat.stats.canonical ?? cat.stats.shorthands;
       console.log(`[docs:build]   ${label}: ${count} entries${cat.stats.errors.length ? `, ${cat.stats.errors.length} render error(s)` : ''}`);
       for (const e of cat.stats.errors) console.warn(`[docs:build]   ⚠ ${e}`);
+    } else if (page.kind === 'rendering-guide') {
+      // #223 slice 2: an authored .emd page with the GENERATED <config> grid injected at its
+      // marker. The narrative + mermaid flowchart are authored; the grid generates from the
+      // engine's option set (CONFIG_OPTIONS_DOC, guarded in lockstep with CONFIG_KWARGS).
+      const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
+      const grid = buildConfigGrid();
+      const rendered = renderAcm(source).replace(/<p[^>]*>\s*CONFIGOPTIONSGRID\s*<\/p>/, grid.html);
+      body = buildPageBody(page, rendered, liveLinksHtml(page.slug, liveSlugs));
+      console.log(`[docs:build]   Rendering guide: ${grid.count} <config> options in the grid`);
     } else {
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}), liveLinksHtml(page.slug, liveSlugs));
