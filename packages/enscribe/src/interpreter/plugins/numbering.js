@@ -36,6 +36,8 @@ import { discover } from '../../core/walkers/discover.js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING } from '../../core/file-data-keys.js';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
+import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
+import { isBodyBookPart } from '../lib/book-regions.js';
 
 // Maps the canonical post-gate tagname to the registry type used for display
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
@@ -135,8 +137,8 @@ const CONFIG_KEY = {
   box: 'number-boxes',
 };
 
-// Section tagnames registered for cross-reference lookup (AUD-09).
-const SECTION_TAGNAMES = ['section', 'sub-section', 'sub-sub-section'];
+// SECTION_TAGNAMES (the three section depths, registered for cross-reference
+// lookup — AUD-09) is the single source of truth in lib/section-kinds.js.
 
 // Phase 4 slice 4a (2026-05-29): tagnames whose registry-type counters
 // reset at <book-part> boundaries when counter-reset-scope is 'chapter'
@@ -149,20 +151,19 @@ const SCOPED_COUNTER_TYPES = new Set([
   'theorem', 'definition', 'example',
 ]);
 
-// Phase 5 slice (book-side bugfixes, 2026-05-28): which `book-part-type`
-// values participate in chapter-counter numbering. Mirrors
-// book-structuring.js's region-routing: front-matter (preface, foreword,
-// dedication) and back-matter (appendix, glossary, colophon) book-parts
-// do NOT increment the chapter counter; only body book-parts (chapter,
-// part, introduction, conclusion, other — the default) do.
+// Phase 5 slice (book-side bugfixes, 2026-05-28): only BODY book-parts
+// (chapter, part, introduction, conclusion, other — the default region)
+// participate in chapter-counter numbering. Front-matter (preface, foreword,
+// dedication) and back-matter (appendix, glossary, colophon, afterword)
+// book-parts do NOT increment the chapter counter. The body check is
+// `isBodyBookPart` from lib/book-regions.js — the complement of FRONT ∪ BACK —
+// so this pass and book-structuring's region routing derive from one source
+// and can never disagree.
 //
 // Without this gate, slice 4a's walker treated all `<book-part>`s
 // uniformly, so a preface pushed the first chapter to chapter 2 and a
 // chapter-prefixed cross-ref to fig:intro rendered as "figure 2.1"
 // instead of "figure 1.1" (visible in doc-38's pre-fix HTML snapshot).
-const BODY_BOOK_PART_TYPES = new Set([
-  'chapter', 'part', 'introduction', 'conclusion', 'other',
-]);
 
 /**
  * Resolve the effective counter-reset-scope for a document, per Phase 4
@@ -335,7 +336,7 @@ function walkWithScope(nodes, visitors, scope) {
     if (node == null) return;
 
     // Entering a top-level book-part: increment chapterIndex (only for
-    // body-type book-parts — see BODY_BOOK_PART_TYPES) and reset
+    // body-type book-parts — see isBodyBookPart / lib/book-regions.js) and reset
     // sectionIndex. Nested book-parts (parts containing chapters) do NOT
     // get their own chapter index — they use the outermost's index, so
     // figures inside <part 1><chapter 1> count as chapter 1 figures.
@@ -352,7 +353,7 @@ function walkWithScope(nodes, visitors, scope) {
     let enteredSection = false;
     if (isEnscribeTag(node) && node.tagname === 'book-part' && !insideBookPart) {
       const partType = node.kwargs?.type ?? 'other';
-      if (BODY_BOOK_PART_TYPES.has(partType)) {
+      if (isBodyBookPart(partType)) {
         chapterIndex += 1;
         sectionIndex = 0;
       }
@@ -633,7 +634,7 @@ export function numberSections(tree, file) {
     for (const part of structuralChildren(body)) {
       if (!isEnscribeTag(part, 'book-part')) continue;
       const partType = part.kwargs?.type ?? 'other';
-      if (!BODY_BOOK_PART_TYPES.has(partType)) continue;
+      if (!isBodyBookPart(partType)) continue;
       if (part.booleans?.unnumbered) continue; // #218: +unnumbered chapter — no number, no advance.
       chapterIdx += 1;
       numberBookPart(part, String(chapterIdx)); // chapter number → its sections "N.1"

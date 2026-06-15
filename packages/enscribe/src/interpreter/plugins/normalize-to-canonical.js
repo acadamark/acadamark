@@ -67,6 +67,7 @@ import {
 } from '../lib/apparatus-allowlists.js';
 import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
 import { hostAcceptsLanguage, HOST_ACCEPT_SETS } from '../lib/host-accept-sets.js';
+import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 
 // Phase 4 slice 4a (2026-05-29): book-part shorthand tagnames that
@@ -337,14 +338,11 @@ export function gfmTableToPipeString(node, file) {
 // informative diagnostic (a named, narrow exception to Layer 1's
 // otherwise-closed vocabulary — see DESIGN.md §"The <h4>–<h6> exception").
 
-const HEADING_DEPTH_TO_TAGNAME = {
-  1: 'section',
-  2: 'sub-section',
-  3: 'sub-sub-section',
-};
-
 function headingToSection(node) {
-  const tagname = HEADING_DEPTH_TO_TAGNAME[node.depth];
+  // depth 1/2/3 → section/sub-section/sub-sub-section. The NORMALIZATIONS
+  // predicate gates this to depths 1–3, so SECTION_TAGNAMES[depth − 1] (the
+  // inverse of section-kinds' SECTION_DEPTH_MAP) is always in range.
+  const tagname = SECTION_TAGNAMES[node.depth - 1];
   // Wrap the heading's inline children in a paragraph so the resulting
   // content matches the canonical shape (`content: [paragraph]`) the
   // section-nesting plugin's extractTitleContent expects.

@@ -42,11 +42,11 @@
 import { makeTag } from '../../core/tag.js';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
 import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
-
-// Book-part-type → region routing.
-const BOOK_PART_FRONT_TYPES = new Set(['preface', 'foreword', 'dedication']);
-const BOOK_PART_BACK_TYPES  = new Set(['appendix', 'glossary', 'colophon', 'afterword']);
-// chapter, part, introduction, conclusion, other → book-body (default)
+// Book-part-type → region routing (front/back enumerated, body the default) and
+// the back-matter tag set are single sources of truth in lib/. numbering.js
+// derives its chapter-counter gate from the same book-regions sets (F4).
+import { BOOK_PART_FRONT_TYPES, BOOK_PART_BACK_TYPES } from '../lib/book-regions.js';
+import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
 
 // The full BITS book-part-type set (book-front ∪ book-body ∪ book-back), used to
 // validate an author-supplied `<meta type=book-part book-part-type=…>` (#176).
@@ -55,10 +55,6 @@ const BOOK_PART_TYPES = new Set([
   'preface', 'foreword', 'dedication',                          // → book-front
   'appendix', 'glossary', 'colophon', 'afterword',             // → book-back
 ]);
-
-// Back-matter tags inside a book (besides appendix/glossary book-parts).
-// Same as articles: bibliography, note-list, config.
-const BOOK_BACK_TAGS = new Set(['config', 'bibliography', 'note-list']);
 
 export function isBookPartTag(node) {
   return isEnscribeTag(node) && node.tagname === 'book-part';
@@ -121,7 +117,7 @@ export function bookPartType(node) {
 }
 
 function isBackMatter(node) {
-  return isEnscribeTag(node) && BOOK_BACK_TAGS.has(node.tagname);
+  return isEnscribeTag(node) && BACK_MATTER_TAGS.has(node.tagname);
 }
 
 /**

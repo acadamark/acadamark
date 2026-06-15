@@ -40,9 +40,9 @@ import {
   isBookPartTag,
   bookPartType,
 } from './book-structuring.js';
-
-// Tags that belong in <article-back>.
-const BACK_MATTER_TAGS = new Set(['config', 'bibliography', 'note-list']);
+// Tags that belong in <article-back> — the single source of truth shared with
+// book-structuring (which routes the same set into <book-back>).
+import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
 
 // <data> is NOT in BACK_MATTER_TAGS. It lives at root level as a sibling of
 // <article>, because it is a data-only block (citation registry) processed by

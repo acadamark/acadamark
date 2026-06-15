@@ -7,17 +7,17 @@
 
 export { isEnscribeTag } from '../../core/tag.js';
 import { isEnscribeTag } from '../../core/tag.js';
+import { SECTION_DEPTH_MAP } from './section-kinds.js';
 
 /**
  * Return the section nesting depth of a node: 1 for section, 2 for
- * sub-section, 3 for sub-sub-section, 0 for anything else.
+ * sub-section, 3 for sub-sub-section, 0 for anything else. Depths derive from
+ * the single source of truth in section-kinds.js (SECTION_DEPTH_MAP misses —
+ * including any non-section tagname — fall through to 0).
  */
 export function sectionDepth(node) {
   if (!isEnscribeTag(node)) return 0;
-  if (node.tagname === 'section') return 1;
-  if (node.tagname === 'sub-section') return 2;
-  if (node.tagname === 'sub-sub-section') return 3;
-  return 0;
+  return SECTION_DEPTH_MAP.get(node.tagname) ?? 0;
 }
 
 /**

@@ -28,6 +28,7 @@
 
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { slugify } from '../interpreter/lib/toc.js';
+import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
 
 // The three book regions, in reading order, mapped to a short region key the rail
 // markup carries (so the theme can style front/body/back differently).
@@ -65,7 +66,7 @@ export function titleTextOf(node) {
 function collectSections(node) {
   const out = [];
   for (const c of (Array.isArray(node.content) ? node.content : [])) {
-    if (isEnscribeTag(c) && /^(sub-section|sub-sub-section|section)$/.test(c.tagname)) {
+    if (isEnscribeTag(c) && isSectionTagname(c.tagname)) {
       out.push({ node: c, number: c.computedSectionNumber ?? '', clean: titleTextOf(c), id: null, children: collectSections(c) });
     }
   }

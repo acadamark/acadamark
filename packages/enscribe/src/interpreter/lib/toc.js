@@ -26,9 +26,12 @@
 // default.css, scoped to `.enscribe-layout--toc` (and `.enscribe-layout--book` for
 // the book chrome), so it cannot affect non-ToC documents.
 
+import { NAV_ITEM_TAGNAMES } from './section-kinds.js';
+
 // Section-like elements that become ToC entries. `book-part` (a chapter/part) is
-// a top-level entry whose nested `section`s become its children.
-const NAV_SECTIONS = new Set(['section', 'sub-section', 'sub-sub-section', 'book-part']);
+// a top-level entry whose nested `section`s become its children — NAV_ITEM_TAGNAMES
+// is the three section depths plus `book-part`, from the single source of truth.
+const NAV_SECTIONS = new Set(NAV_ITEM_TAGNAMES);
 
 // The three book regions, in reading order, mapped to a short region key the rail
 // markup carries (so the theme can style front/body/back differently).
