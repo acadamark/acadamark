@@ -3,6 +3,8 @@
   <author | The Enscribe Project>
 </meta>
 
+<config toc toc-location=right />
+
 **Layer 1** is the stable output vocabulary every Enscribe document compiles to: a
 small set of semantic, mostly custom HTML <cite @whatwg-html> elements that record
 what each piece of content *is*. This is the element-by-element reference for that vocabulary — what

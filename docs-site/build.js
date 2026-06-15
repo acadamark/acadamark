@@ -87,15 +87,21 @@ const RENDER_OPTIONS = {
 // size. All carry real content; only Quickstart is a playground (editable). The
 // docs-site content arc (Slices 3b–3f) is complete: Home, Design, Quickstart, the
 // full Authoring Guide, the Layer 1 Vocabulary Reference, and the JATS article.
+//
+// The on-this-page ToC is **config-driven** (#207 adoption): the content pages declare
+// `<config toc toc-location=right>` in their `.emd` source, which the shared compiler
+// reads — so the static build AND the /live render get the floating ToC from the same
+// source (closing the #207 live-pages-have-no-ToC gap). No `renderOptions.toc` here: the
+// build no longer passes the ToC as a build-only option; the document is the source of truth.
 const PAGES = [
-  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                       nav: 'Home',            kind: 'page', renderOptions: { toc: 'auto' } },
-  { slug: 'design',          source: 'design.emd',          title: 'Design — enscribe',              nav: 'Design',          kind: 'page', renderOptions: { toc: 'auto' } },
+  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                       nav: 'Home',            kind: 'page' },
+  { slug: 'design',          source: 'design.emd',          title: 'Design — enscribe',              nav: 'Design',          kind: 'page' },
   { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',          nav: 'Quickstart',      kind: 'playground' },
-  { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page', renderOptions: { toc: true } },
-  { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page', renderOptions: { toc: 'auto' } },
-  { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page', renderOptions: { toc: 'auto' } },
+  { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page' },
+  { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
+  { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page' },
   { slug: 'gallery',         source: null,                  title: 'Gallery — enscribe',             nav: 'Gallery',         kind: 'gallery' },
-  { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page', renderOptions: { toc: 'auto' } },
+  { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
   { slug: 'demos',           source: null,                  title: 'Demos — enscribe',               nav: 'Demos',           kind: 'demo-index' },
 ];
 

@@ -3,6 +3,8 @@
   <author | The Enscribe Project>
 </meta>
 
+<config toc toc-location=right />
+
 A book is more than a long article: it is chapters, parts, and front and back
 matter, written across several files and read as a set. `enscribe build` turns
 that source into a **website** — one standalone HTML page per chapter, at stable

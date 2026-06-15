@@ -3,6 +3,8 @@
   <author | The Enscribe Project>
 </meta>
 
+<config toc toc-location=right />
+
 If you write for journals, the question that matters about any authoring tool is
 narrow and concrete: **can I submit what I produce?** For a growing share of
 scholarly publishing, "what I produce" has to become JATS XML at some point in

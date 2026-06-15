@@ -3,6 +3,8 @@
   <author | The Enscribe Project>
 </meta>
 
+<config toc toc-location=right />
+
 This document captures the design decisions behind enscribe and the reasoning that led to them. It's intended for contributors, for future maintainers, and for the author returning after time away.
 
 # Summary

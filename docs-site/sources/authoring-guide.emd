@@ -3,6 +3,8 @@
   <author | The Enscribe Project>
 </meta>
 
+<config toc toc-location=right />
+
 This is the reference you keep open while writing. It answers "how do I do X" —
 the exact syntax, the available arguments, the edge cases — for every element
 Enscribe offers. It assumes you have done the

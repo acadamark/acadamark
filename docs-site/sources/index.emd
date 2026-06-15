@@ -3,6 +3,8 @@
   <author | The Enscribe Project>
 </meta>
 
+<config toc toc-location=right />
+
 An academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top — combining the simplicity of markdown with the expressiveness needed for scholarly work.
 
 # Motto
