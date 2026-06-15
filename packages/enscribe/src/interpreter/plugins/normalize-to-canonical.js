@@ -68,7 +68,14 @@ import {
 import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
 import { hostAcceptsLanguage, HOST_ACCEPT_SETS } from '../lib/host-accept-sets.js';
 import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
+import { tagnamesInCategory } from '../lib/vocab-categories.js';
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+
+// F1/F14: "is this node a <config>?" derives from the vocab `category`, not a hand-coded
+// tagname check — the one place category is read is lib/vocab-categories.js. Parity today:
+// the `configuration` category is exactly {config}, so this is byte-identical to the former
+// `tagname === 'config'` side-checks (the audit's "finding zero").
+const CONFIGURATION_TAGS = tagnamesInCategory('configuration');
 
 // Phase 4 slice 4a (2026-05-29): book-part shorthand tagnames that
 // expand at the gate to `<book-part book-part-type="...">`. The set
@@ -894,7 +901,7 @@ const NORMALIZATIONS = [
     normalize: (node, file) => liftStructuredKwargs(node, file),
   },
   {
-    predicate: (node) => isEnscribeTag(node) && node.tagname === 'config',
+    predicate: (node) => isEnscribeTag(node) && CONFIGURATION_TAGS.has(node.tagname),
     normalize: (node, file) => liftConfigKwargs(node, file),
   },
 
@@ -1045,7 +1052,7 @@ function validateHostAcceptSet(node, file) {
 
 /** Is `name` a known boolean ON `tagname`? Config: a boolean config kwarg; else: a vocab boolean. */
 function isKnownBoolean(tagname, name) {
-  if (tagname === 'config') return isBooleanConfigKwarg(name);
+  if (CONFIGURATION_TAGS.has(tagname)) return isBooleanConfigKwarg(name);
   return !!VOCABULARY?.[tagname]?.enscribe_attributes?.booleans?.[name];
 }
 
@@ -1053,7 +1060,7 @@ function isKnownBoolean(tagname, name) {
 function promoteNodeBareBooleans(node) {
   const positional = node.positional;
   if (!Array.isArray(positional) || positional.length === 0) return;
-  const isConfig = node.tagname === 'config';
+  const isConfig = CONFIGURATION_TAGS.has(node.tagname);
   const remaining = [];
   for (const p of positional) {
     if (typeof p === 'string' && isKnownBoolean(node.tagname, p)) {

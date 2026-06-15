@@ -9,9 +9,29 @@
 //
 // `book-part` is a REGION (a chapter/part), not a section depth — it joins only
 // NAV_ITEM_TAGNAMES (for nav listing), never the depth machinery.
+//
+// F14 link to the vocab: this DEPTH set is a CURATED SUBSET of the `sections` category, not
+// equal to it. The vocab's `sections` category also contains the section title/subtitle
+// children (section-title, sub-section-subtitle, …) — an orthogonal element-role axis it does
+// not separate — so the set is not a pure category restatement and is NOT derived. (And those
+// section titles sit in `sections` while every OTHER title, incl. book-part-title, is in
+// `metadata`: a category mis-assignment, filed as a follow-up; fixing it would make `sections`
+// == this set and tighten the subset assertion below to equality.) The ORDER (depth) is
+// interpreter knowledge a category cannot hold. So: keep the ordered array; assert the subset.
+
+import { tagnamesInCategory } from './vocab-categories.js';
 
 // The three section tagnames, in canonical nesting order (outermost first).
 export const SECTION_TAGNAMES = Object.freeze(['section', 'sub-section', 'sub-sub-section']);
+
+// F14 guard: every depth tagname must be categorized `sections` in the vocab (a SUBSET of
+// that category — see the note above). Catches a section element being de-categorized; throws
+// at load on drift.
+for (const tag of SECTION_TAGNAMES) {
+  if (!tagnamesInCategory('sections').has(tag)) {
+    throw new Error(`section-kinds (F14): '${tag}' is in SECTION_TAGNAMES but not the vocab 'sections' category — drift.`);
+  }
+}
 
 // tagname → 1-based nesting depth (section=1, sub-section=2, sub-sub-section=3),
 // derived from SECTION_TAGNAMES. A Map (not a plain object) so a lookup of any

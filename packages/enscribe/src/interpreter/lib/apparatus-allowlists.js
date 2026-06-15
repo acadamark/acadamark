@@ -28,6 +28,8 @@
 // <config> branch in normalize-to-canonical.js, which consults
 // `isStructuredKwarg('meta', key)` (imported from structured-elements).
 
+import { tagnamesInCategory } from './vocab-categories.js';
+
 // ── <config> kwarg allowlist (F11: one typed Map) ─────────────────────────────
 //
 // Each entry carries TWO facts in one place: its implementation `status` ('live' = a
@@ -152,23 +154,42 @@ export function isBooleanConfigKwarg(key) {
   return CONFIG_KWARGS.get(key)?.type === 'boolean';
 }
 
-// ── Apparatus tag sets (F13: one source, the suppressed subset derived) ────────
+// ── Apparatus tag sets (F13 set + F14 category-derived suppressed subset) ──────
 //
 // Apparatus tags are document-apparatus, not body content — they belong at the document
 // edges (the positioning check in article-structuring's warnMisplacedApparatus). Of these,
 // some RENDER (meta → front matter; config → discovered, then an invisible element) and
 // some are STORAGE HOSTS that produce no output (data → a citation registry; library →
-// bibtex source) — the hast handler returns null for the latter (interpret-plugin). The
-// suppressed subset is derived as the complement of the rendered set, so the two consumers
-// (the positioning warning and the render suppression) cannot disagree.
+// bibtex source) — the hast handler returns null for the latter (interpret-plugin).
+//
+// APPARATUS_TAGS and RENDERED_APPARATUS stay CURATED: "apparatus" is document-edge-ness, an
+// axis orthogonal to vocab category (meta is apparatus but its structured-data-containers
+// sibling author is NOT), so neither maps to a category union. Only the SUPPRESSED subset is
+// a category — the storage-hosts — so it derives from the vocab (F14): a future storage host
+// is auto-suppressed by the vocab, not a hand-edit (R4's "safe default" now enforced).
 export const APPARATUS_TAGS = new Set(['meta', 'config', 'data', 'library']);
 
-// The apparatus tags that render/are-handled (so they are NOT suppressed).
+// The apparatus tags that render/are-handled (curated — see above).
 const RENDERED_APPARATUS = new Set(['meta', 'config']);
 
-// Storage-host apparatus — present for data, never rendered. Derived: apparatus minus
-// rendered. A new apparatus tag added above is suppressed by default unless it also joins
-// RENDERED_APPARATUS — which is the safe default for a new storage host.
-export const SUPPRESSED_APPARATUS = new Set(
-  [...APPARATUS_TAGS].filter((tag) => !RENDERED_APPARATUS.has(tag)),
-);
+// Storage-host apparatus — DERIVED from the vocab `category` (the one place category is read
+// is lib/vocab-categories.js). A copy, so the exported set is independent of the shared index.
+export const SUPPRESSED_APPARATUS = new Set(tagnamesInCategory('storage-hosts'));
+
+// Invariant (load-time cross-check): RENDERED == APPARATUS − SUPPRESSED still holds — i.e. the
+// category-derived suppressed set is consistent with the curated apparatus/rendered sets.
+// Throws if the vocab storage-hosts category drifts from them (e.g. a storage host that is in
+// APPARATUS_TAGS but not the category, or vice-versa within the apparatus set).
+{
+  const derivedRendered = [...APPARATUS_TAGS].filter((tag) => !SUPPRESSED_APPARATUS.has(tag));
+  const consistent =
+    derivedRendered.length === RENDERED_APPARATUS.size &&
+    derivedRendered.every((tag) => RENDERED_APPARATUS.has(tag));
+  if (!consistent) {
+    throw new Error(
+      `apparatus-allowlists (F14): RENDERED_APPARATUS {${[...RENDERED_APPARATUS].join(', ')}} != ` +
+      `APPARATUS_TAGS − SUPPRESSED_APPARATUS {${derivedRendered.join(', ')}} — the vocab ` +
+      `'storage-hosts' category drifted from the curated apparatus sets.`,
+    );
+  }
+}
