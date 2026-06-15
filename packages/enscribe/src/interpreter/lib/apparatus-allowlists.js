@@ -46,7 +46,7 @@ const valued = (status = 'live') => ({ status, type: 'valued' });
 
 export const CONFIG_KWARGS = new Map([
   // Live (consumed by current plugins).
-  ['citation-style',          valued()],    // cite-resolution.js
+  ['citation-style',          valued()],    // library-load.js:253 (builds the styled index; default chicago-author-date)
   ['number-equations',        boolean()],   // numbering.js
   ['number-figures',          boolean()],   // numbering.js
   ['number-tables',           boolean()],   // numbering.js
