@@ -19,7 +19,7 @@
 import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
-import { buildGallery } from './gen-gallery.js';
+import { buildGallery, buildFeaturedExamples } from './gen-gallery.js';
 import { buildLayer1Catalog, buildShorthandCatalog, buildConfigGrid } from './gen-reference.js';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -102,6 +102,10 @@ const PAGES = [
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page' },
   { slug: 'gallery',         source: null,                  title: 'Gallery — enscribe',             nav: 'Gallery',         kind: 'gallery' },
+  // #223 slice 3: the Vocabulary register intros — authored .emd with a generated featured-examples
+  // fragment injected (examples pulled live from the vocab source, the curated FEATURED_* lists).
+  { slug: 'enscribe-shorthand', source: 'enscribe-shorthand.emd', title: 'Enscribe Shorthand — enscribe', nav: 'Enscribe Shorthand', kind: 'featured-intro', featuredSet: 'shorthand' },
+  { slug: 'layer1',          source: 'layer1.emd',          title: 'Layer 1 — enscribe',             nav: 'Layer 1',         kind: 'featured-intro', featuredSet: 'layer1' },
   // #223 slice 1: the generated Documentation catalogs (additive; from the vocab source).
   { slug: 'layer1-catalog',  source: null,                  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'layer1-catalog' },
   { slug: 'shorthand-catalog', source: null,                title: 'Shorthand catalog — enscribe',   nav: 'Shorthand catalog', kind: 'shorthand-catalog' },
@@ -380,7 +384,7 @@ function main() {
   // byte-for-byte what it was before this slice.
   // The Rendering guide has a `.emd` source but its <config> grid is injected at BUILD time
   // (#223 slice 2), so a client-side live render would show the bare marker — exclude it from live.
-  const livePages = PAGES.filter((p) => p.source && p.kind !== 'rendering-guide');
+  const livePages = PAGES.filter((p) => p.source && p.kind !== 'rendering-guide' && p.kind !== 'featured-intro');
   const liveSlugs = new Set(bundlePresent ? livePages.map((p) => p.slug) : []);
 
   // Demo papers → self-contained standalone pages under dist/demo/. Render first
@@ -439,9 +443,25 @@ function main() {
       // engine's option set (CONFIG_OPTIONS_DOC, guarded in lockstep with CONFIG_KWARGS).
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       const grid = buildConfigGrid();
-      const rendered = renderAcm(source).replace(/<p[^>]*>\s*CONFIGOPTIONSGRID\s*<\/p>/, grid.html);
+      // Function replacement (not a string) so a `$&`/`$\`` sequence in the generated grid can
+      // never be misread as a replacement pattern — the shared marker-injection safety rule.
+      const rendered = renderAcm(source).replace(/<p[^>]*>\s*CONFIGOPTIONSGRID\s*<\/p>/, () => grid.html);
       body = buildPageBody(page, rendered, liveLinksHtml(page.slug, liveSlugs));
       console.log(`[docs:build]   Rendering guide: ${grid.count} <config> options in the grid`);
+    } else if (page.kind === 'featured-intro') {
+      // #223 slice 3: an authored register intro with a GENERATED featured-examples fragment
+      // injected at its marker. Examples are pulled live from the vocab source (the curated,
+      // guarded FEATURED_* lists), so they single-source with the catalogs and cannot drift.
+      // Build-time only (excluded from the live site) — and its math/theorem examples emit
+      // KaTeX/font asset tags, which must ride into the page <head> via headExtra.
+      const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
+      const featured = buildFeaturedExamples({ set: page.featuredSet, render: (src) => renderAcm(src) });
+      // Function replacement (not a string): the generated fragment contains escaped example
+      // sources like `$&gt;`, and `$&` in a string replacement means "the matched substring".
+      const rendered = renderAcm(source).replace(/<p[^>]*>\s*FEATUREDEXAMPLES\s*<\/p>/, () => featured.html);
+      body = buildPageBody(page, rendered, liveLinksHtml(page.slug, liveSlugs));
+      headExtra = featured.headExtra;
+      console.log(`[docs:build]   ${page.nav}: ${featured.count} featured examples`);
     } else {
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}), liveLinksHtml(page.slug, liveSlugs));

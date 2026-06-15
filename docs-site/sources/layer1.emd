@@ -1,0 +1,33 @@
+<meta type=article>
+  <title | Layer 1>
+  <author | The Enscribe Project>
+</meta>
+
+<config toc toc-location=right />
+
+Layer 1 is enscribe's semantic-HTML substrate — a vocabulary of HTML elements for academic content
+(sections, figures, citations, notes, math, theorems, tables, and more). Because it is plain HTML+CSS,
+a Layer 1 document is portable and interoperable rather than a bespoke format, and it is the
+**canonical, archival representation** of a document — the form used for long-term storage and
+interchange (JATS export among them).
+
+Layer 1 is what the shorthand register **expands to**. Authors rarely write it by hand — not because
+they cannot, but because the <a href="enscribe-shorthand.html" | Enscribe Shorthand> register is the
+ergonomic way to produce it. This page introduces the idea and shows a few constructs; the
+comprehensive set lives in the <a href="layer1-catalog.html" | Layer 1 catalog>.
+
+<# #sec:expands | Shorthand expands to Layer 1 #>
+
+Each construct below is shown three ways: the shorthand you write, the Layer 1 markup it expands to,
+and the rendered result. Every example is pulled live from the vocabulary source — the same source the
+<a href="layer1-catalog.html" | Layer 1 catalog> is generated from — so it cannot drift from the engine.
+
+The Layer 1 column shows the canonical markup as the vocabulary stores it; where an element produces a
+large subtree — rendered math, say — the markup elides it with `…` so the structure stays legible.
+
+FEATUREDEXAMPLES
+
+<# #sec:more | The full set #>
+
+This is a curated taste. For every Layer 1 element — with its category, JATS counterpart, and content
+model — see the comprehensive <a href="layer1-catalog.html" | Layer 1 catalog>.

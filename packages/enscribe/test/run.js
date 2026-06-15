@@ -39,6 +39,7 @@ import { run as runToc } from './lib/toc.test.js';
 import { run as runTheme } from './lib/theme.test.js';
 import { run as runSidenotes } from './lib/sidenotes.test.js';
 import { run as runConfigOptionsDoc } from './lib/config-options-doc.test.js';
+import { run as runFeaturedElements } from './lib/featured-elements.test.js';
 import { run as runArticleAppendices } from './article-appendices.test.js';
 import { run as runBookPartType } from './book-part-type.test.js';
 import { run as runLongFormAtref } from './long-form-atref.test.js';
@@ -116,6 +117,7 @@ const suites = [
   ['lib/theme',                    runTheme],
   ['lib/sidenotes',                runSidenotes],
   ['lib/config-options-doc',       runConfigOptionsDoc],
+  ['lib/featured-elements',        runFeaturedElements],
   ['article-appendices',           runArticleAppendices],
   ['book-part-type',               runBookPartType],
   ['long-form-atref',              runLongFormAtref],
