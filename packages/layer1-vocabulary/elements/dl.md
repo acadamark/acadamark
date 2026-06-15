@@ -131,4 +131,4 @@ The JATS exporter groups adjacent `<dt>`/`<dd>` pairs from the enscribe source i
 - [`<dt>`](dt.md) — term within a definition list.
 - [`<dd>`](dd.md) — description within a definition list.
 - [`<glossary>`](glossary.md) — for glossary-specific content with cross-referenceable entries.
-- [`<ul>`](ul.md), [`<ol>`](ol.md) — for unordered and ordered lists.
+- `<ul>` / `<ol>` — unordered / ordered lists, authored via the `<list>` shorthand (a Layer-2 construct with no element page of its own).

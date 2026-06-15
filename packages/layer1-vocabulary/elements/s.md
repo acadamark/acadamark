@@ -90,6 +90,5 @@ Used when attributes (id, class, type) are needed.
 
 ## See also
 
-- [`<del>`](del.md) — for deleted text in editorial workflows.
-- [`<ins>`](ins.md) — for inserted text in editorial workflows.
+- `<del>` / `<ins>` (HTML, not enscribe vocabulary) — for deleted / inserted text in editorial workflows; `<s>` is the semantic strikethrough enscribe ships.
 - GFM markdown's `~~...~~` syntax — the natural shortcut for casual strikethrough.

@@ -354,6 +354,6 @@ directions (§"Design directions (discovered through implementation)"):
 
 ## See also
 
-- [`<csv>`](csv.md), [`<tsv>`](tsv.md) — DSL engines for tabular data.
+- `<table csv>` / `<table tsv>` — CSV / TSV data parsed into this table (the format word rides on `<table>` itself; the standalone `<csv>` / `<tsv>` tags were retired to these shorthands).
 - [`<figure>`](figure.md) — wrapping element for captioned content (use when tables should be numbered as figures).
 - Plain markdown tables (via remark-gfm) — the natural authoring path for simple tables.

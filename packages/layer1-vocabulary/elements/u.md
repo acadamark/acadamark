@@ -87,5 +87,4 @@ The author wrote <u type=misspelling | recieve> in the original.
 
 - [`<em>`](em.md) — for semantic emphasis (preferred for most purposes).
 - [`<strong>`](strong.md) — for strong importance.
-- [`<ins>`](ins.md) — for inserted text in editorial contexts.
-- [`<del>`](del.md) — for deleted text.
+- `<ins>` / `<del>` (HTML, not enscribe vocabulary) — for inserted / deleted text in editorial contexts.

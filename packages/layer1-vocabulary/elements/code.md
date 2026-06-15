@@ -120,5 +120,5 @@ For block-level code with the same opacity, use the code sigil (`` <`code`> `` f
 
 ## See also
 
-- [`<pre>`](pre.md) — for preformatted code blocks (with `<code>` inside).
+- [`<code-block>`](code-block.md) — for preformatted, multi-line code blocks (renders as `<pre><code>`).
 - The code sigil ` <`...`> ` and ` <```...```> ` — for inline and block code with shorthand syntax.

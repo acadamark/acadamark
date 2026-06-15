@@ -172,5 +172,4 @@ The id enables `<ref @fig:phase-diagram>` cross-references resolving to "Figure 
 
 - [`<fig>`](fig.md) — image figures via src.
 - [`<frame>`](frame.md) — generic frameable wrapper.
-- [`<mermaid>`](mermaid.md) — diagram via Mermaid DSL.
-- [`<abc>`](abc.md) — music notation via abc DSL.
+- [`<diagram>`](diagram.md) — diagrams via the Mermaid DSL (`<diagram mermaid>`) and music notation via the abc DSL (`<diagram abc>`).
