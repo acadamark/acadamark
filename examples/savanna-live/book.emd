@@ -4,5 +4,7 @@
 <author | The Enscribe Team>
 </meta>
 
+<config chapter-nav-depth=2 />
+
 <chapter src="chapter-one.emd" | Counting Elephants>
 <chapter src="chapter-two.emd" | Browse Pressure>

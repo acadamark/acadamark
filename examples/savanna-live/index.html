@@ -35,7 +35,7 @@
   if (new URLSearchParams(location.search).has('edit')) opts.edit = true;
 
   window.enscribe
-    .mountLiveBookShell('#enscribe-book-root', 'book.emd', opts)
+    .mountLiveShell('#enscribe-book-root', 'book.emd', opts)
     .catch((err) => {
       document.getElementById('enscribe-book-root').textContent = 'Failed to mount the live shell: ' + err.message;
       // eslint-disable-next-line no-console
