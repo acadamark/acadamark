@@ -1041,7 +1041,7 @@ function validateHostAcceptSet(node, file) {
 // Bare is the canonical HTML / Layer 1 spelling of a boolean attribute (`<config toc>`),
 // so this promotes a bare positional that is a KNOWN boolean to the same `true` the +/=true
 // forms produce, byte-identically:
-//   - on `<config>`: a BOOLEAN config kwarg (CONFIG_BOOLEAN_KWARGS — `toc`, `number-sections`,
+//   - on `<config>`: a BOOLEAN config kwarg (isBooleanConfigKwarg, from the typed CONFIG_KWARGS Map — `toc`, `number-sections`,
 //     …) → `node.kwargs[name] = 'true'` (identical to `name=true`, which config-discovery reads).
 //   - on any other element: a name declared in its vocab `booleans:` (`unlisted`, `unnumbered`,
 //     …) → `node.booleans[name] = true` (identical to `+name`, which mapAttributes / handlers read).
@@ -1050,17 +1050,37 @@ function validateHostAcceptSet(node, file) {
 // Runs as a pre-pass before the rule walk (and before config-discovery / structuring / numbering),
 // so every downstream reader sees the promoted boolean. A parse-level fact → static and live agree.
 
+// The attribute "home" a known boolean lives in for a tagname — the ONE place the
+// config-vs-element decision is made (#235/F2). Decided by the category-derived
+// CONFIGURATION_TAGS identity (R5/F1), so it cannot drift from the vocab's notion of
+// which tags are configuration.
+//
+// This makes a DELIBERATE reuse explicit, not incidental: a `<config>` setting rides
+// `node.kwargs` — the canonical Layer 1 attribute home, the SAME surface every element
+// attribute uses — distinguished from an element boolean (which rides `node.booleans`)
+// ONLY by this category check, which is the guard. `<config>` is intentionally NOT given
+// a separate storage structure; the kwarg surface IS the attribute home (F2 was resolved
+// by documenting + centralizing this reuse, not by forking a config-only path). Both the
+// known-boolean test and the bare-boolean promotion target consult this one rule.
+//
+//   'config'  → known boolean = a boolean <config> kwarg; promote to node.kwargs[name]='true'
+//   'element' → known boolean = a vocab `booleans:` entry; promote to node.booleans[name]=true
+function booleanHome(tagname) {
+  return CONFIGURATION_TAGS.has(tagname) ? 'config' : 'element';
+}
+
 /** Is `name` a known boolean ON `tagname`? Config: a boolean config kwarg; else: a vocab boolean. */
 function isKnownBoolean(tagname, name) {
-  if (CONFIGURATION_TAGS.has(tagname)) return isBooleanConfigKwarg(name);
-  return !!VOCABULARY?.[tagname]?.enscribe_attributes?.booleans?.[name];
+  return booleanHome(tagname) === 'config'
+    ? isBooleanConfigKwarg(name)
+    : !!VOCABULARY?.[tagname]?.enscribe_attributes?.booleans?.[name];
 }
 
 /** Promote a single node's bare known-boolean positionals (see header). */
 function promoteNodeBareBooleans(node) {
   const positional = node.positional;
   if (!Array.isArray(positional) || positional.length === 0) return;
-  const isConfig = CONFIGURATION_TAGS.has(node.tagname);
+  const isConfig = booleanHome(node.tagname) === 'config'; // the one home rule (#235)
   const remaining = [];
   for (const p of positional) {
     if (typeof p === 'string' && isKnownBoolean(node.tagname, p)) {
