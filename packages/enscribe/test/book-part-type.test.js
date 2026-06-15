@@ -10,6 +10,7 @@
 
 import assert from 'node:assert/strict';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 
 const render = (src) => {
   const file = buildEnscribePipeline({}).processSync(src);
@@ -46,5 +47,26 @@ export async function run() {
     assert.ok(html.includes('book-part-type="bogus"'),
       'always-renders: the document still renders with the given value');
     console.log('PASS: #176 — unknown book-part-type warns but still renders');
+  }
+
+  // ── membership pin (#243): the validator's accepted set is DERIVED from the vocab
+  //    `book-part` `type.values` (book-structuring.js, mirroring doc-type's META_TYPE).
+  //    Pin the expected 12 so a future vocab `type.values` edit is a deliberate, caught
+  //    change — not a silent validator drift — and confirm the derived validator accepts
+  //    every one (no diagnostic). ──
+  {
+    const expected = [
+      'afterword', 'appendix', 'chapter', 'colophon', 'conclusion', 'dedication',
+      'foreword', 'glossary', 'introduction', 'other', 'part', 'preface',
+    ];
+    const actual = [...(VOCABULARY['book-part']?.enscribe_attributes?.kwargs?.type?.values ?? [])].sort();
+    assert.deepEqual(actual, expected,
+      `book-part type.values drifted from the pinned 12: {${actual.join(', ')}}`);
+    for (const t of expected) {
+      const { messages } = render(doc(`<meta type=book-part book-part-type=${t}>`));
+      assert.ok(!messages.some((m) => /unknown book-part-type/.test(m)),
+        `book-part-type "${t}" must be accepted by the derived validator (no diagnostic)`);
+    }
+    console.log('PASS: #243 — book-part-type validator accepts exactly the 12 vocab type.values');
   }
 }

@@ -47,14 +47,17 @@ import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 // derives its chapter-counter gate from the same book-regions sets (F4).
 import { BOOK_PART_FRONT_TYPES, BOOK_PART_BACK_TYPES } from '../lib/book-regions.js';
 import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 
-// The full BITS book-part-type set (book-front ∪ book-body ∪ book-back), used to
-// validate an author-supplied `<meta type=book-part book-part-type=…>` (#176).
-const BOOK_PART_TYPES = new Set([
-  'chapter', 'part', 'introduction', 'conclusion', 'other',     // → book-body
-  'preface', 'foreword', 'dedication',                          // → book-front
-  'appendix', 'glossary', 'colophon', 'afterword',             // → book-back
-]);
+// The full BITS book-part-type set (book-front ∪ book-body ∪ book-back), used to validate
+// an author-supplied `<meta type=book-part book-part-type=…>` (#176). DERIVED from the vocab
+// `book-part` `type.values` (the single source — #243), mirroring doc-type.js's META_TYPE so
+// the validator can't drift from the authored vocabulary; book-regions.js routes the same
+// values by region. (In-book `<book-part>` parts take their type from the shorthand name and
+// aren't validated here — this guards the single-file `<meta book-part-type=…>` case.)
+const BOOK_PART_TYPES = new Set(
+  VOCABULARY['book-part']?.enscribe_attributes?.kwargs?.type?.values ?? [],
+);
 
 export function isBookPartTag(node) {
   return isEnscribeTag(node) && node.tagname === 'book-part';
