@@ -969,6 +969,105 @@ ${dateXml}
   validateWithXmllint('doc-marginnote', jats);
 }
 
+// ─── Integration: doc-58 <data> asset export (#190 slice 4) ───────────────
+// The JATS exporter consumes the same shared canonical tree that
+// enscribeAssetResolution already rewrote (interpreter step 5.8), so a body
+// <fig src="@id"> arrives with its src already resolved — embedded to a data:
+// URI, external to the (rebased) path — and emitFigureJats emits the right
+// <graphic xlink:href> with no asset-specific code. This pins that, the DTD
+// validity of an embedded-asset data: URI (the inline-SVG precedent), and that
+// an unresolved @id does not leak into the export.
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-58-jats-assets-article.emd'), 'utf8');
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-58-jats-assets-article.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-58-jats-assets-article.xml)');
+  } else {
+    check('integration doc58: JATS snapshot matches', jats === readFileSync(snapshotPath, 'utf8'));
+  }
+
+  // Embedded raster → a png data: URI on <graphic xlink:href>.
+  check('doc58: embedded png → <graphic xlink:href="data:image/png;base64,…">',
+    /<fig id="fig:photo">[\s\S]*?<graphic xlink:href="data:image\/png;base64,iVBORw0KGgo[^"]*"\/>/.test(jats));
+  // Embedded vector → a svg+xml data: URI (the <fig> src branch, NOT the inline-<svg> branch).
+  check('doc58: embedded svg → <graphic xlink:href="data:image/svg+xml;base64,…">',
+    /<fig id="fig:vector">[\s\S]*?<graphic xlink:href="data:image\/svg\+xml;base64,PHN2Zy8\+"\/>/.test(jats));
+  // External → the declared path on <graphic xlink:href> (a plain path, not data:).
+  check('doc58: external → <graphic xlink:href="figures/chart.png">',
+    /<fig id="fig:chart">[\s\S]*?<graphic xlink:href="figures\/chart\.png"\/>/.test(jats));
+  // Duplicate placement: the asset is placed twice → two <graphic>s, exactly one id="fig:photo".
+  check('doc58: re-placed asset → exactly one id="fig:photo"',
+    (jats.match(/\bid="fig:photo"/g) || []).length === 1);   // \b excludes <xref rid="…">; DTD-valid confirms no duplicate ID
+  check('doc58: re-placed asset → its data: URI appears twice (both placements export)',
+    (jats.match(/data:image\/png;base64,iVBORw0KGgo/g) || []).length === 2);
+  // The <ref>s resolve to <xref> against the placed figures (id present → DTD-valid IDREFS).
+  check('doc58: <ref @fig:photo> → <xref rid="fig:photo">', /<xref [^>]*rid="fig:photo"/.test(jats));
+  // An unresolved @id does not leak a broken <graphic> or an error element into the export.
+  check('doc58: unresolved @undeclared does not leak into JATS',
+    !/undeclared|asset-error|could not resolve/i.test(jats) && !/xlink:href="@/.test(jats));
+  validateWithXmllint('doc58', jats);
+}
+
+// ─── Integration: cross-file external asset → BITS (#190 slice 4) ─────────
+// An external <fig #id src=…> declared in a SUBDIRECTORY chapter is rebased
+// master-relative on assembly; exporting the assembled book to BITS carries that
+// rebased path straight onto <graphic xlink:href>, and the book is BITS DTD-valid.
+{
+  const EXT_DIR = join(FIXTURES_DIR, 'master-asset-ext');
+  const proc = buildEnscribePipeline({ assetsDir: EXT_DIR });
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(EXT_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(EXT_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: () => {},
+  });
+  const bits = enscribeToJats(proc.runSync(tree));
+
+  check('book-asset-ext: BITS doctype', bits.includes('BITS-book2.dtd'));
+  check('book-asset-ext: cross-file external → <graphic xlink:href="parts/diagram.svg">',
+    /<fig id="fig:diagram">[\s\S]*?<graphic xlink:href="parts\/diagram\.svg"\/>/.test(bits));
+  check('book-asset-ext: no <data> and no raw @-src leaked into BITS',
+    !/<data\b/.test(bits) && !/xlink:href="@/.test(bits));
+  validateWithXmllint('book-asset-ext', bits);
+}
+
+// ─── Integration: cross-file EMBEDDED asset → BITS (#190 slice 4) ──────────
+// The embedded cross-chapter happy path in BITS: an asset declared in chapter 1's
+// <data> exports as a data: URI <graphic> at its placement in chapter 2, with a
+// chapter-prefixed <label> (2.1). NOTE (slice-4 critic finding, surfaced not fixed):
+// this fixture also declares the same id in both chapters, whose duplicate-
+// DECLARATION collision flag IS visible in the HTML projection
+// (master-document.test.js) but is currently NOT surfaced in JATS/BITS — the same
+// omission as an unresolved @id (doc58 above). Whether the canonical archival
+// format should carry that integrity warning is an open #190 design question; this
+// slice leaves the behavior unchanged and asserts nothing on the flag either way.
+{
+  const BOOK_DIR = join(FIXTURES_DIR, 'master-asset-book');
+  const proc = buildEnscribePipeline({ assetsDir: BOOK_DIR });
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(BOOK_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(BOOK_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: () => {},
+  });
+  const bits = enscribeToJats(proc.runSync(tree));
+
+  check('book-asset-emb: BITS doctype', bits.includes('BITS-book2.dtd'));
+  check('book-asset-emb: embedded cross-chapter asset → <graphic xlink:href="data:image/png;base64,…">',
+    /<fig id="fig:scatter">[\s\S]*?<graphic xlink:href="data:image\/png;base64,iVBORw0KGgo[^"]*"\/>/.test(bits));
+  check('book-asset-emb: chapter-prefixed BITS <label> (2.1)',
+    /<fig id="fig:scatter">\s*<label>2\.1<\/label>/.test(bits));
+  check('book-asset-emb: no <data> and no raw @-src leaked into BITS',
+    !/<data\b/.test(bits) && !/xlink:href="@/.test(bits));
+  validateWithXmllint('book-asset-emb', bits);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

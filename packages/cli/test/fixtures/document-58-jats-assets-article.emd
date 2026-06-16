@@ -1,0 +1,21 @@
+<meta type=article title="Embedded and External Assets" />
+
+<data>
+<fig #fig:photo png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</fig>
+<fig #fig:vector svg>PHN2Zy8+</fig>
+<fig #fig:chart src="figures/chart.png" />
+</data>
+
+<section | Figures>
+
+See <ref @fig:photo>, <ref @fig:vector>, and <ref @fig:chart>.
+
+<fig src="@fig:photo" | An embedded raster (png).>
+
+<fig src="@fig:vector" | An embedded vector (svg).>
+
+<fig src="@fig:chart" | An external chart.>
+
+<fig src="@fig:photo" | The raster again — a second placement of one asset.>
+
+<fig src="@undeclared" | An unresolved asset reference.>
