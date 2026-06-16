@@ -176,6 +176,7 @@ import { parseCsv, parseTsv } from './handlers/table.js';
 // <xref>s in agreement (RQ-BOOK-M4, JATS side). Same re-export pattern as
 // parseCsv above.
 import { formatScopedNumber } from './lib/scoped-number.js';
+import { extractPlainText } from './lib/ast-helpers.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc, readTocConfig, applyConfigToc } from './lib/toc.js';
@@ -1120,4 +1121,31 @@ export function collectTableSources(source) {
     }
   })(tree.children ?? []);
   return [...new Set(srcs)];
+}
+
+/**
+ * #228: the document's `<title>` text, or '' if it has none. The source-introspection
+ * analog of collectLibrarySources — used to default a live-shell `<title>` to the
+ * document's own title instead of its filename. Uses liftToCanonicalMdast so the
+ * `<title>` (raw text inside `<meta>` at parse stage) is structured, then the shared
+ * plain-text collector (so inline markup in the title is stripped, not literal).
+ *
+ * @param {string} source - enscribe/markdown source text.
+ * @returns {string} the document `<title>` plain text (trimmed), or '' if absent.
+ */
+export function extractDocumentTitle(source) {
+  const tree = liftToCanonicalMdast(source);
+  let title = '';
+  (function walk(nodes) {
+    for (const n of nodes ?? []) {
+      if (title) return;
+      if (n?.type === 'enscribeTag' && n.tagname === 'title') {
+        title = extractPlainText(n.content ?? []);
+        return;
+      }
+      if (n?.type === 'enscribeTag' && Array.isArray(n.content)) walk(n.content);
+      if (Array.isArray(n?.children)) walk(n.children);
+    }
+  })(tree.children ?? []);
+  return title;
 }

@@ -10,7 +10,7 @@
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import { existsSync, readFileSync, rmSync, mkdtempSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, rmSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -57,8 +57,47 @@ export function run_tests() {
       html.includes("new URLSearchParams(location.search).has('edit')"),
       'the shell mounts the master via mountLiveShell with the #213 ?edit switch');
 
+    // #228: an explicit title is used verbatim (it wins over the document title and filename).
+    assert.ok(html.includes('<title>Live Folder Test</title>'),
+      'an explicit title is the shell <title>');
+
     console.log('PASS: #215 cli — buildLiveFolder writes a self-standing live folder; every asset resolves (no 404)');
   } finally {
     rmSync(out, { recursive: true, force: true });
+  }
+
+  // ── #228: the shell <title> defaults to the document's own <title>, then the filename ──────────
+  // Build to a temp dir and return the emitted shell's <title> text.
+  const shellTitleFor = (opts) => {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-live-title-'));
+    try {
+      buildLiveFolder({ outDir: dir, ...opts });
+      const m = readFileSync(join(dir, 'index.html'), 'utf8').match(/<title>([^<]*)<\/title>/);
+      return m ? m[1] : null;
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  };
+  {
+    // no explicit title → the master's own <title> ("Savanna Field Notes"), NOT "book.emd"
+    assert.strictEqual(shellTitleFor({ master: EXAMPLE_MASTER }), 'Savanna Field Notes',
+      'no --title defaults the shell <title> to the document <title>, not the filename');
+
+    // explicit title still wins over the document title
+    assert.strictEqual(shellTitleFor({ master: EXAMPLE_MASTER, title: 'Override' }), 'Override',
+      'an explicit --title overrides the document <title>');
+
+    // a title-less master → fall back to the filename
+    const bareDir = mkdtempSync(join(tmpdir(), 'enscribe-live-bare-'));
+    try {
+      const bare = join(bareDir, 'untitled.emd');
+      writeFileSync(bare, '<meta type=article>\n<author | X>\n</meta>\n\nBody.\n');
+      assert.strictEqual(shellTitleFor({ master: bare }), 'untitled.emd',
+        'a master with no <title> falls back to the filename');
+    } finally {
+      rmSync(bareDir, { recursive: true, force: true });
+    }
+
+    console.log('PASS: #228 cli — shell <title> defaults to the document <title> (explicit --title wins; filename fallback)');
   }
 }

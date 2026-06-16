@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, extractDocumentTitle } from '@enscribejs/enscribe';
 
 const require = createRequire(import.meta.url);
 
@@ -70,7 +70,8 @@ export function discoverMasterSrcChildren(masterSource) {
  * @param {string} opts.master - path to the master `.emd` (a `<meta type=book>` with book-part `src`
  *   children, or a `<meta type=article>` — single-file, or with `<section src>` children).
  * @param {string} opts.outDir - the live folder to write (created if missing).
- * @param {string} [opts.title] - the shell <title> (defaults to the master filename).
+ * @param {string} [opts.title] - the shell <title>. Order: explicit `title` → the master
+ *   document's own `<title>` → the master filename (#228).
  * @param {boolean} [opts.edit=false] - default the shell to the editor (#213; `?edit` always works).
  * @returns {{ outDir: string, master: string, children: string[], assets: string[] }}
  */
@@ -89,17 +90,20 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   };
 
   // 1. the master + its `src` children — so the folder is self-standing (the shell fetches them).
+  const masterSource = readFileSync(masterPath, 'utf8');
   copyInto(masterPath, masterName);
-  const children = discoverMasterSrcChildren(readFileSync(masterPath, 'utf8'));
+  const children = discoverMasterSrcChildren(masterSource);
   for (const src of children) copyInto(join(masterDir, src), src);
 
   // 2. the shell assets + engine bundle, copied flat into the folder (assetBase './').
   copyShellAssets(out);
 
   // 3. the emitted live shell — flat assetBase, so every reference resolves inside the folder.
+  //    Title default (#228): explicit `title` → the document's own `<title>` → the filename.
+  const shellTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
   writeFileSync(
     join(out, 'index.html'),
-    emitLiveShell({ master: masterName, title: title ?? masterName, edit, assetBase: './' }),
+    emitLiveShell({ master: masterName, title: shellTitle, edit, assetBase: './' }),
     'utf8',
   );
 
