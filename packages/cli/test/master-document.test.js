@@ -143,6 +143,23 @@ function renderAssetBook() {
   return { html: proc.stringify(proc.runSync(tree)), warnings };
 }
 
+// Cross-file EXTERNAL asset (#190 slice 3): a BOOK where an external <fig #id src=…> is declared
+// in a subdirectory chapter (so its src is rebased master-relative on assembly) and referenced
+// from another chapter — resolving to a plain <img src="<master-relative path>">.
+const ASSET_EXT_DIR = join(__dirname, 'fixtures', 'master-asset-ext');
+function renderAssetExtBook() {
+  const proc = buildEnscribePipeline({ assetsDir: ASSET_EXT_DIR });
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(ASSET_EXT_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(ASSET_EXT_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
 // The <endnotes> placement marker (#190): a multi-file BOOK where each chapter ends with an
 // <endnotes /> marker placing that chapter's collected notes there.
 const ENDNOTES_BOOK_DIR = join(__dirname, 'fixtures', 'master-endnotes-book');
@@ -442,5 +459,30 @@ export function run_tests() {
 
     assert.equal(warnings.length, 0, `the asset book assembles with no warnings (got: ${warnings.join('; ')})`);
     console.log('PASS: #190 slice 2 — cross-file embedded asset resolves cross-chapter; duplicate id is last-wins with a visible flag');
+  }
+
+  // ── #190 slice 3: cross-file external asset (master-relative rebasing) ───────
+  // An external <fig #id src=…> declared in a subdirectory chapter resolves at a
+  // <fig src="@id" /> in another chapter to a plain <img src="<rebased path>">.
+  {
+    const { html: raw, warnings } = renderAssetExtBook();
+    const book = raw.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '');
+    const imgs = [...book.matchAll(/<img\b[^>]*\bsrc="([^"]*)"/g)].map((m) => m[1]);
+    const figureIds = [...book.matchAll(/<figure\b[^>]*\bid="([^"]*)"/g)].map((m) => m[1]);
+
+    // The external asset declared in parts/methods.emd (subdir) had src="diagram.svg";
+    // assembly rebased it master-relative to "parts/diagram.svg", and it renders as a
+    // plain <img src> (not a data: URI) at the placement in the results chapter.
+    assert.deepEqual(imgs, ['parts/diagram.svg'],
+      'cross-file external asset renders its master-relative (rebased) path as a plain <img src>');
+    assert.deepEqual(figureIds, ['fig:diagram'], 'the placed external figure adopts the asset id');
+    assert.ok(!/<data\b/.test(book) && !/<img\b[^>]*\bsrc="@/.test(book),
+      'no <data> in output and no raw @-src <img> leaked');
+    // The cross-chapter <ref @fig:diagram> resolves to the placed figure (chapter 2 → 2.1).
+    assert.ok(/<a [^>]*href="#fig:diagram"[^>]*>figure 2\.1<\/a>/.test(book),
+      'the cross-chapter <ref @fig:diagram> resolves to "figure 2.1"');
+    assert.equal(warnings.length, 0, `the external-asset book assembles with no warnings (got: ${warnings.join('; ')})`);
+
+    console.log('PASS: #190 slice 3 — cross-file external asset resolves to its rebased path; cross-chapter <ref> resolves');
   }
 }

@@ -32,19 +32,35 @@
 //                            unsupported format becomes a visible __asset-error,
 //                            never a broken @-src <img>.
 //
-// Scope (#190 foundation slice): single-file, embedded PNG only. Cross-file merge,
-// external <fig #id src=…> assets, media types beyond png, and JATS <graphic>
-// export are later slices. FORMAT_MIME below is the one extension point — adding a
-// media type is a one-line entry there.
+// An asset may instead be EXTERNAL — a <fig> with a src and no body:
+//
+//   <data>
+//      <fig #fig:diagram src="figures/diagram.svg" />
+//   </data>
+//
+// Embedded-vs-external is only about where the bytes live; the body reference is
+// the same (<fig src="@id" />). An embedded reference resolves to a data: URI; an
+// external one resolves to the declared path (already assembly-rebased master-
+// relative for a cross-file child), emitting a plain <img src="path">.
+//
+// Scope (#190): single-file and cross-file; embedded (png/jpg/jpeg/svg/gif/webp)
+// and external assets; re-placement of one asset. Only JATS <graphic> export
+// remains (slice 4). FORMAT_MIME below is the embedded media-type extension point.
 
 import { ENSCRIBE_ASSETS } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { collectDataNodes } from './library-load.js';
 
-// #190: the embedded-asset format flag → the image MIME type. PNG only for the
-// foundation slice; jpg/jpeg/svg/gif/webp are a one-line add each when those land.
+// #190: the embedded-asset format flag → the image MIME type for the data: URI.
+// External assets are format-agnostic (the type follows from the path). Adding a
+// media type is a one-line entry here.
 const FORMAT_MIME = {
   png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  svg: 'image/svg+xml',
+  gif: 'image/gif',
+  webp: 'image/webp',
 };
 
 /**
@@ -154,7 +170,12 @@ export function buildAssetIndex(tree, file) {
         // duplicate-citation-key handling, never a silent overwrite.
         errors.push(makeAssetError('', `duplicate embedded-asset id "${id}" declared in more than one <data> block — last declaration wins`));
       }
-      assets.set(id, { format: child.positional?.[0] ?? null, base64: collectAssetPayload(child.content) });
+      // External (<fig #id src="path" />) vs embedded (<fig #id fmt>base64</fig>):
+      // store the (already assembly-rebased) src for external, or the {format,
+      // base64} for embedded. resolveFig resolves each accordingly.
+      assets.set(id, child.kwargs?.src
+        ? { src: child.kwargs.src }
+        : { format: child.positional?.[0] ?? null, base64: collectAssetPayload(child.content) });
       return false;                                           // strip the declaration
     });
   }
@@ -167,8 +188,11 @@ export function buildAssetIndex(tree, file) {
   injectAssetErrors(tree, errors);
 }
 
-/** Resolve one <fig> whose src is an @id asset reference, in place. */
-function resolveFig(node, assets) {
+/**
+ * Resolve one <fig> whose src is an @id asset reference, in place. `adopted` is
+ * the set of asset ids already claimed by an earlier placement this run.
+ */
+function resolveFig(node, assets, adopted) {
   const src = node.kwargs?.src;
   if (typeof src !== 'string' || !src.startsWith('@')) return;  // not an asset reference
 
@@ -177,25 +201,39 @@ function resolveFig(node, assets) {
   const asset = assets?.get(id) ?? null;
 
   if (!asset) {
-    assetError(node, ref, `no embedded asset declared with id "${id}"`);
+    assetError(node, ref, `no asset declared with id "${id}"`);
     return;
   }
-  const mime = asset.format ? FORMAT_MIME[asset.format] : null;
-  if (!mime) {
-    assetError(node, ref, asset.format
-      ? `unsupported embedded-asset format "${asset.format}" (this slice supports: ${Object.keys(FORMAT_MIME).join(', ')})`
-      : `embedded asset "${id}" has no format flag (e.g. png)`);
-    return;
+
+  if (asset.src != null) {
+    // External asset: the declared (assembly-rebased) path goes straight into the
+    // <img src>. External is format-agnostic — the type follows from the path.
+    node.kwargs.src = asset.src;
+  } else {
+    // Embedded asset: rewrite src to a data: URI built from the format flag.
+    const mime = asset.format ? FORMAT_MIME[asset.format] : null;
+    if (!mime) {
+      assetError(node, ref, asset.format
+        ? `unsupported embedded-asset format "${asset.format}" (supported: ${Object.keys(FORMAT_MIME).join(', ')})`
+        : `embedded asset "${id}" has no format flag (e.g. png)`);
+      return;
+    }
+    if (!asset.base64) {
+      assetError(node, ref, `embedded asset "${id}" has no base64 payload`);
+      return;
+    }
+    node.kwargs.src = `data:${mime};base64,${asset.base64}`;
   }
-  if (!asset.base64) {
-    assetError(node, ref, `embedded asset "${id}" has no base64 payload`);
-    return;
+
+  // Adopt the asset id onto the FIRST placement that has no id of its own; each
+  // subsequent placement renders + numbers as its own figure but is NOT the
+  // cross-reference anchor — so there is exactly one id="<id>" in the output.
+  // Re-placing an asset (the same image twice) is legitimate, not an error; an
+  // author who wants to cross-reference a later placement gives it its own #id.
+  if (node.id == null && !adopted.has(id)) {
+    node.id = id;
+    adopted.add(id);
   }
-  // Success: rewrite src to a data: URI; adopt the asset id onto the placed
-  // figure (so it numbers + cross-references as that id) unless it already
-  // carries an explicit id of its own.
-  node.kwargs.src = `data:${mime};base64,${asset.base64}`;
-  if (node.id == null) node.id = id;
 }
 
 /**
@@ -209,11 +247,12 @@ function resolveFig(node, assets) {
 export function enscribeAssetResolution() {
   return (tree, file) => {
     const assets = file?.data?.[ENSCRIBE_ASSETS] ?? null;
+    const adopted = new Set();   // #190 slice 3: ids already adopted by a placement (re-placement is legitimate)
 
     const walk = (nodes) => {
       for (const node of nodes ?? []) {
         if (!node || typeof node !== 'object') continue;
-        if (isEnscribeTag(node, 'fig')) resolveFig(node, assets);
+        if (isEnscribeTag(node, 'fig')) resolveFig(node, assets, adopted);
         if (isEnscribeTag(node) && Array.isArray(node.content)) walk(node.content);
         if (Array.isArray(node.children)) walk(node.children);
       }

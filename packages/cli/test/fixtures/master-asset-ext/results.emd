@@ -1,0 +1,8 @@
+<meta title="Results" />
+
+# Results
+
+The external diagram declared in the methods chapter is placed here and resolves
+to its master-relative path: see <ref @fig:diagram>.
+
+<fig src="@fig:diagram" | The external diagram, declared in a subdirectory chapter.>

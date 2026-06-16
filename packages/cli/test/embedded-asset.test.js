@@ -1,9 +1,11 @@
-// Tests for the embedded-asset half of <data> (#190 foundation slice): an
-// asset declared inside <data> as <fig #id png>base64</fig> and pulled into the
-// body by <fig src="@id" /> renders as a real numbered figure with a data: URI;
-// an unresolved @id renders a visible __asset-error, never a broken @-src <img>.
-// Scope: single-file, embedded png only (cross-file merge / external assets /
-// other media types / JATS export are later slices).
+// Tests for the single-file asset HTML projection of <data> (#190): an asset
+// declared inside <data> and pulled into the body by <fig src="@id" /> renders as
+// a real numbered figure; an unresolved @id renders a visible __asset-error,
+// never a broken @-src <img>. Covers the embedded-png foundation (slice 1) and
+// the rest of the HTML projection (slice 3): external assets (a plain
+// <img src=path>), every embedded media type (png/jpg/svg/gif/webp), and
+// duplicate placement (re-placing one asset is legitimate — two figures, one id).
+// Only JATS <graphic> export remains (slice 4).
 import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -58,4 +60,46 @@ export function run_tests() {
   assert.equal(warnings.length, 0, `no warnings expected, got: ${warnings.join('; ')}`);
 
   console.log('PASS: #190 — <data> embedded-png asset places a numbered figure via src="@id" (data: URI, cross-ref, always-renders error)');
+
+  // ── #190 slice 3: external assets · all media types · duplicate placement ────
+  {
+    const psrc = readFileSync(join(FIXTURES, 'asset-projection.emd'), 'utf8');
+    const pfile = new VFile({ value: psrc, path: 'asset-projection.emd' });
+    const pbody = String(buildEnscribePipeline({}).processSync(pfile))
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '');
+    // The <img> src of a placed figure, keyed by the figure id.
+    const figImg = (id) => {
+      const fig = pbody.match(new RegExp('<figure\\b[^>]*\\bid="' + id + '"[\\s\\S]*?</figure>'));
+      const im = fig && fig[0].match(/<img\b[^>]*\bsrc="([^"]*)"/);
+      return im ? im[1] : null;
+    };
+
+    // A. External asset → the declared path verbatim (a plain <img src=path>, not data:).
+    assert.equal(figImg('fig:ext'), 'images/diagram.png', 'external asset renders its declared path');
+
+    // B. Embedded media types → the right data:<mime>;base64 URI.
+    assert.equal(figImg('fig:jpg'), 'data:image/jpeg;base64,JPGdata1', 'jpg → image/jpeg');
+    assert.equal(figImg('fig:svg'), 'data:image/svg+xml;base64,SVGdata1', 'svg → image/svg+xml');
+    assert.equal(figImg('fig:gif'), 'data:image/gif;base64,GIFdata1', 'gif → image/gif');
+    assert.equal(figImg('fig:webp'), 'data:image/webp;base64,WEBPdata1', 'webp → image/webp');
+    // An unsupported embedded format → a visible asset-error, no figure.
+    assert.equal(figImg('fig:bad'), null, 'unsupported format renders no figure');
+    assert.ok(/@fig:bad: unsupported embedded-asset format/.test(pbody),
+      'unsupported format → an asset-error naming @fig:bad');
+
+    // C. Duplicate placement: two placements of one asset → two figures, exactly one id.
+    assert.equal((pbody.match(/\bid="fig:logo"/g) || []).length, 1,
+      'exactly one id="fig:logo" despite two placements (only the first adopts the id)');
+    assert.equal((pbody.match(/data:image\/png;base64,iVBORw0KGgo/g) || []).length, 2,
+      'both logo placements render the image');
+    assert.ok(/<a [^>]*href="#fig:logo"[^>]*>figure \d+<\/a>/.test(pbody),
+      'the <ref @fig:logo> resolves to the first placement (the adopted anchor)');
+    assert.ok(!/<img\b[^>]*\bsrc="@/.test(pbody), 'no raw @-src <img> leaked');
+
+    const pwarn = (pfile.messages || []).map((m) => String(m));
+    assert.equal(pwarn.length, 0, `no warnings expected, got: ${pwarn.join('; ')}`);
+
+    console.log('PASS: #190 slice 3 — external assets, all media types, and duplicate placement project to HTML');
+  }
 }

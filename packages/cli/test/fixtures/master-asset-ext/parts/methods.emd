@@ -1,0 +1,11 @@
+<meta title="Methods" />
+
+# Methods
+
+The diagram is an external asset declared here, in a chapter that lives in a
+subdirectory; its `src` is rebased master-relative when assembled. It is
+referenced from the results chapter.
+
+<data>
+<fig #fig:diagram src="diagram.svg" />
+</data>

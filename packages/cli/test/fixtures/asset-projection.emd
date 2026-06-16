@@ -1,0 +1,31 @@
+<meta type=article title="Asset HTML Projection" />
+
+<data>
+<fig #fig:ext src="images/diagram.png" />
+<fig #fig:jpg jpg>JPGdata1</fig>
+<fig #fig:svg svg>SVGdata1</fig>
+<fig #fig:gif gif>GIFdata1</fig>
+<fig #fig:webp webp>WEBPdata1</fig>
+<fig #fig:bad bmp>BMPdata1=</fig>
+<fig #fig:logo png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</fig>
+</data>
+
+<section | External assets>
+
+An external asset renders its declared path verbatim: <fig src="@fig:ext" | An external diagram.>
+
+<section | Embedded media types>
+
+JPEG: <fig src="@fig:jpg" | A jpeg.>
+SVG: <fig src="@fig:svg" | An svg.>
+GIF: <fig src="@fig:gif" | A gif.>
+WebP: <fig src="@fig:webp" | A webp.>
+Unsupported: <fig src="@fig:bad" | bmp is not a supported embedded format.>
+
+<section | Duplicate placement>
+
+Re-placing one asset is legitimate — see <ref @fig:logo>, shown twice:
+
+<fig src="@fig:logo" | The logo, first placement — the cross-reference anchor.>
+
+<fig src="@fig:logo" | The logo, placed again.>
