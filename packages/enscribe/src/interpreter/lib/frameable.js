@@ -257,25 +257,32 @@ export function frameableBorderLook(node) {
 }
 
 /**
- * Read the resolved `border` boolean for a frameable, from the parsed boolean
- * surface only — `+border` / `-border` (`node.booleans.border`) or a
- * boolean-typed `kwargs.border` — defaulting to ON. A string-form
- * `border=<name>` is a named look (see `frameableBorderLook`), not a toggle, so
- * it does not turn the border off. Shared by the frame and aside handlers (#170).
+ * Read the resolved `border` boolean for a frameable, defaulting to ON. The
+ * toggle is read from `+border` / `-border` (`node.booleans.border`) or the
+ * string/boolean kwarg forms `border=true` / `border=false` (including the
+ * quoted `border="false"`). A named-look value (`border=<name>`, e.g.
+ * `border=accent`) is NOT a toggle — see `frameableBorderLook` — so it falls
+ * through to the default and does not turn the border off (a look implies
+ * border-on). Shared by the frame and aside handlers (#170).
  *
- * NOTE: this deliberately honors only the boolean kwarg form, not a string
- * `border="true" | "false"` — behavior preserved verbatim from the two former
- * inline reads. (#170 flagged that this is narrower than `readBoolKwarg`;
- * reconciling it is a behavior change, out of scope for this output-neutral dedup.)
+ * #186: the parser stores every `key=value` kwarg as a string, so the bareword
+ * `border=false` and the quoted `border="false"` both arrive as the string
+ * `'false'` — and both were ignored by the prior boolean-only read (only
+ * `-border` worked). Comparing the string `'true'` / `'false'` here aligns all
+ * four spellings, matching `readBoolKwarg`'s string handling and the way
+ * `numbered=true|false` is already read.
  *
  * @param {object} node
  * @returns {boolean}
  */
 export function readFrameableBorder(node) {
-  const borderRaw =
-    node.booleans?.border ??
-    (typeof node.kwargs?.border === 'boolean' ? node.kwargs.border : null);
-  return borderRaw === false ? false : true;
+  // +border / -border — the canonical boolean surface, highest priority.
+  if (typeof node.booleans?.border === 'boolean') return node.booleans.border;
+  const kw = node.kwargs?.border;
+  if (typeof kw === 'boolean') return kw;
+  if (kw === 'false') return false;
+  if (kw === 'true') return true;
+  return true; // default ON (also the path a named look falls through to)
 }
 
 // "See source" disclosure (#19). When a document turns on the `show-source`

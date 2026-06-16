@@ -51,8 +51,9 @@ Every frameable element carries the identical attribute set:
 - **`title`** — optional title rendered at the top of the element.
 - **`caption`** — optional caption rendered at the foot of the element,
   with the number-and-label prefix folded in when numbered.
-- **`border`** — optional outline box. `+border` / `-border` toggle it; the
-  render convention is the `frameable-border` class, which theme stylesheets draw.
+- **`border`** — optional outline box. `+border` / `-border` (or
+  `border=true|false`) toggle it; the render convention is the
+  `frameable-border` class, which theme stylesheets draw.
   `border=<name>` additionally selects a **named look** (and implies the border
   on): the look is emitted as a `frameable-border-<name>` modifier class
   alongside the base class — the document names the look, the theme defines how
