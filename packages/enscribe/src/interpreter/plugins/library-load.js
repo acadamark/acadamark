@@ -110,10 +110,13 @@ const FORMAT_FORCETYPE = {
  * book-part), so a flat root-level scan would miss it. A <data> never
  * nests inside another <data>, so we do not descend into one.
  *
+ * Exported so the embedded-asset index (plugins/asset-load.js, #190) reuses the
+ * same <data> deep-collection the citation index uses.
+ *
  * @param {Array} nodes
  * @returns {Array} the <data> tag nodes found
  */
-function collectDataNodes(nodes) {
+export function collectDataNodes(nodes) {
   const out = [];
   for (const node of nodes) {
     if (isEnscribeTag(node, 'data')) {

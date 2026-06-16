@@ -21,6 +21,11 @@ export const ENSCRIBE_DOC_TYPE           = 'enscribeDocType';
 // processor (and the strict lint) can read it.
 export const ENSCRIBE_STRICT_MODE        = 'enscribeStrictMode';
 export const ENSCRIBE_CITATIONS          = 'enscribeCitations';
+// #190: the embedded-asset store — a Map(id → { format, base64 }) harvested by
+// buildAssetIndex (plugins/asset-load.js) from <fig #id fmt>base64</fig>
+// declarations inside <data>, and read by enscribeAssetResolution to rewrite a
+// body <fig src="@id"> into a data: URI. The asset twin of ENSCRIBE_CITATIONS.
+export const ENSCRIBE_ASSETS             = 'enscribeAssets';
 // #133: pre-fetched <library src> content, keyed by the raw src string:
 //   { [src]: { content: string } | { error: string } }
 // Set by the async pre-load pass (browser renderAsync / the CLI render command)

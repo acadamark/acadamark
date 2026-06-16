@@ -1,0 +1,15 @@
+<meta type=article title="Embedded Asset" />
+
+<data>
+   <fig #fig:scatter png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</fig>
+</data>
+
+<section | Results>
+
+See <ref @fig:scatter> for the scatter plot.
+
+<fig src="@fig:scatter" | A scatter plot of the measured data.>
+
+A reference to an asset that was never declared:
+
+<fig src="@nonexistent" | This one has no declaration.>

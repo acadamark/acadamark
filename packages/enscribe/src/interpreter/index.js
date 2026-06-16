@@ -142,6 +142,7 @@ import { enscribeNotes } from './plugins/notes.js';
 // __note-list-item / __note-marker nodes the JATS emitter consumes).
 import { enscribeNotePlacement } from './plugins/note-placement.js';
 import { buildCitationIndex, enscribeLibraryLoad } from './plugins/library-load.js';
+import { buildAssetIndex, enscribeAssetResolution } from './plugins/asset-load.js';
 import { enscribeNumbering, fillNumbering, numberSections } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
 import { enscribeCiteResolution } from './plugins/cite-resolution.js';
@@ -653,6 +654,22 @@ export function enscribeInterpreter(options = {}) {
   //     import-jats --emd → render round-trip. Runs with the cell-parse pass,
   //     before notes. A no-op for any table without a raw-HTML grid → byte-identical.
   this.use(enscribeHtmlTableCells);
+
+  // 5.7 (#190): Asset index (index-build): harvest embedded <fig #id fmt>base64</fig>
+  //     declarations from <data> nodes into file.data.enscribeAssets, and STRIP each
+  //     harvested declaration from its <data>. Stripping is load-bearing: <data> is
+  //     render-suppressed but numbering still walks it, so an un-stripped declaration
+  //     would consume a figure number (#190 Phase 0). Mirrors the citation index (5).
+  this.use(function enscribeAssetIndex() {
+    return (tree, file) => buildAssetIndex(tree, file);
+  });
+
+  // 5.8 (#190): Asset resolution: a body <fig src="@id"> pulls in an embedded asset —
+  //     rewrite its src to a data: URI and adopt the asset id onto the placed figure
+  //     (so it is the numbered cross-reference anchor). An unresolved @id becomes a
+  //     visible __asset-error. Runs BEFORE numbering so the placed figure registers
+  //     under the adopted id and the error node is not counted as a figure.
+  this.use(enscribeAssetResolution);
 
   // 6. Notes: register note elements (record-only); splice __note-marker nodes
   //    into the tree; store pending data for the apply-numbers stage.

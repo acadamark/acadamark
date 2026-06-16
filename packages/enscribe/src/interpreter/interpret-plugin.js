@@ -53,6 +53,7 @@ import {
 } from './handlers/notes.js';
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler } from './handlers/cite.js';
+import { assetErrorHandler } from './handlers/asset.js';
 import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
 // gate (interpreter/plugins/normalize-to-canonical.js) rewrites
@@ -83,6 +84,7 @@ const INTERNAL_REGISTRY = new Map([
   ['__cite-error',     citeErrorHandler],
   ['__bibliography',   bibliographyHandler],
   ['__library-error',  libraryErrorHandler],
+  ['__asset-error',    assetErrorHandler],
 ]);
 
 // Wrap the build-time-generated VOCABULARY object as a Map at module load,
