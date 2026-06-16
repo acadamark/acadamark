@@ -819,8 +819,10 @@ function emitBlock(node, indent) {
     // Phase 5 slice 5d: bibliography → JATS <ref-list> with structured
     // <element-citation> children built from the CSL-JSON entries
     // threaded through by `bibliography.js`.
+    // #190 split_bib: a per-chapter (chapterScoped) bibliography is HTML-only; JATS keeps
+    // a single document-wide <ref-list> (per-chapter JATS ref-lists are deferred), so skip it.
     case '__bibliography':
-      return emitRefListJats(node, indent);
+      return node.kwargs?.chapterScoped ? '' : emitRefListJats(node, indent);
     default: {
       // Unknown / out-of-scope-for-5b block — emit as <p> with the
       // node's text so the document still renders something.

@@ -1,0 +1,10 @@
+<meta type=book title="Split-Bib Book" author="The Enscribe Project" />
+
+<data>
+<library src="references.bib" />
+</data>
+
+<chapter src=ch1.emd />
+<chapter src=ch2.emd />
+
+<bibliography />

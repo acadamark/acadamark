@@ -120,7 +120,10 @@ export function bookPartType(node) {
 }
 
 function isBackMatter(node) {
-  return isEnscribeTag(node) && BACK_MATTER_TAGS.has(node.tagname);
+  // #190 split_bib: a chapter-scoped <bibliography> (the assembler marks a child's own
+  // bibliography `_chapterBib`) is NOT back-matter — it stays inside its book-part so it
+  // renders that chapter's references only; an unmarked <bibliography> routes to back-matter.
+  return isEnscribeTag(node) && BACK_MATTER_TAGS.has(node.tagname) && !node.kwargs?.['chapter-scoped'];
 }
 
 /**

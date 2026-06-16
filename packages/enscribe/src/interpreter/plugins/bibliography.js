@@ -58,10 +58,11 @@ function findDeep(nodes, tagname) {
  * <article-back> for an article, <book-back> for a book. Returns null if
  * the tree has neither root (nothing to attach to).
  *
- * Book case (Phase 6, 2026-05-29): a book's bibliography is a single
- * document-wide <ref-list> placed at the end of <book-back>, mirroring the
- * article path. Per-chapter bibliographies (scoped like note-scope=chapter)
- * are a deferred post-alpha option — see GitHub Issues. book-structuring creates
+ * Book case (Phase 6, 2026-05-29): a book's default bibliography is a single
+ * document-wide block placed at the end of <book-back>, mirroring the article path.
+ * Per-chapter bibliographies (`split_bib`, scoped like note-scope=chapter) ship via
+ * the per-chapter pass in the plugin below (#190) — a <bibliography> authored inside a
+ * chapter lists that chapter's cited references only. book-structuring creates
  * <book-back> only when there is back-matter (appendix/glossary); if none
  * exists we create one and append it to the <book>.
  */
@@ -103,12 +104,16 @@ function findOrCreateBackMatter(treeChildren) {
  * side's formatted-string `bibBodyHtml`). The JATS path reads
  * `kwargs.cslEntries`; the HTML path ignores it.
  */
-function makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries) {
+function makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries, chapterScoped = false) {
   return makeInternalMarker('__bibliography', {
     kwargs: {
       headingHtml, // "References" heading HTML (may be overridden later)
       bibBodyHtml, // citation-js output with id= injected
       cslEntries,  // Phase 5 slice 5d: structured CSL-JSON entries (JATS path)
+      // #190 split_bib: a per-chapter bibliography is HTML-only — the JATS exporter
+      // emits a document-wide <ref-list> only (per-chapter JATS ref-lists are deferred),
+      // so it skips a chapterScoped node. The HTML handler ignores this flag.
+      ...(chapterScoped ? { chapterScoped: true } : {}),
     },
   });
 }
@@ -129,11 +134,14 @@ function makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries) {
  *     <div id="ref-KEY" data-csl-entry-id="KEY" class="csl-entry">...</div>
  *   </div>
  */
-function formatBibliography(cite, style) {
+function formatBibliography(cite, style, entry) {
   const html = cite.format('bibliography', {
     template: style,
     format: 'html',
     lang: 'en-US',
+    // #190 split_bib: an `entry` key-list filters the bibliography to just those
+    // references (a per-chapter bib); omitted = the whole merged registry (document-wide).
+    ...(entry ? { entry } : {}),
   });
   // Inject id="ref-KEY" alongside each data-csl-entry-id="KEY" attribute.
   // BibTeX keys are alphanumeric + hyphens/underscores — safe for id attributes.
@@ -165,6 +173,83 @@ function findAuthorPlacedBibliography(treeChildren) {
   return { backNode: back, index: idx };
 }
 
+// ─── Per-chapter (split_bib) helpers (#190) ────────────────────────────────────
+
+// Top-level book-parts (chapters), in document order, across the book's regions —
+// the unit a chapter-placed <bibliography> scopes to. Mirrors note-placement's
+// findCollectionUnits('chapter'): OUTERMOST book-parts only (a nested part absorbs its
+// children's citations, the same rule per-chapter notes use).
+function findBookPartUnits(treeChildren) {
+  const book = findDeep(treeChildren, 'book');
+  if (!book) return [];
+  const units = [];
+  for (const region of book.content ?? []) {
+    if (!isEnscribeTag(region)) continue;
+    if (region.tagname !== 'book-front' && region.tagname !== 'book-body' && region.tagname !== 'book-back') continue;
+    for (const child of region.content ?? []) {
+      if (isEnscribeTag(child, 'book-part')) units.push(child);
+    }
+  }
+  return units;
+}
+
+// Deep-find a <bibliography> ANYWHERE in a subtree, returning the array + index that
+// holds it (so it can be replaced/removed in place). A chapter's <bibliography> nests
+// under the chapter's section (the heading wraps the trailing content), so a shallow
+// search misses it. Searches .content (enscribeTag) and .children (mdast).
+function findBibWithParent(root) {
+  for (const arr of [root.content, root.children]) {
+    if (!Array.isArray(arr)) continue;
+    const idx = arr.findIndex(n => isEnscribeTag(n, 'bibliography'));
+    if (idx !== -1) return { parent: arr, index: idx };
+    for (const child of arr) {
+      if (child && typeof child === 'object') {
+        const found = findBibWithParent(child);
+        if (found) return found;
+      }
+    }
+  }
+  return null;
+}
+
+// Chapter-placed <bibliography> markers: a <bibliography> that survives INSIDE a
+// book-part's subtree (the assembler marks a child's own bibliography `chapter-scoped`
+// so book-structuring keeps it in the book-part instead of routing it to back-matter —
+// see master-document.md §Citations). Distinct from the document-wide one in <book-back>.
+// Returns one { unit, parent, index } per book-part holding a <bibliography>.
+function findChapterPlacedBibliographies(treeChildren) {
+  const out = [];
+  for (const unit of findBookPartUnits(treeChildren)) {
+    const at = findBibWithParent(unit);
+    if (at) out.push({ unit, parent: at.parent, index: at.index });
+  }
+  return out;
+}
+
+// The cited keys, in first-cited order, that appear INSIDE this book-part's subtree —
+// the split_bib entry set. After cite-resolution each <cite> is a __cite-marker
+// (kwargs.keys = comma-joined keys) physically inside the chapter that cited it, so a
+// subtree DFS recovers per-chapter ownership with NO change to the cite pipeline. Keys
+// absent from the registry (a missing @key — its inline cite already shows the error)
+// are dropped; a per-chapter bibliography lists only resolvable references.
+function collectChapterCiteKeys(unit, cslById) {
+  const ordered = [];
+  const seen = new Set();
+  const visit = (node) => {
+    if (node == null) return;
+    if (isEnscribeTag(node, '__cite-marker')) {
+      for (const raw of String(node.kwargs?.keys ?? '').split(',')) {
+        const key = raw.trim();
+        if (key && cslById.has(key) && !seen.has(key)) { seen.add(key); ordered.push(key); }
+      }
+    }
+    if (Array.isArray(node.content)) for (const c of node.content) visit(c);
+    if (Array.isArray(node.children)) for (const c of node.children) visit(c);
+  };
+  visit(unit);
+  return ordered;
+}
+
 // ─── Plugin ───────────────────────────────────────────────────────────────────
 
 /**
@@ -177,43 +262,59 @@ export function enscribeBibliography() {
     const citations = file?.data?.[ENSCRIBE_CITATIONS];
 
     const authorPlaced = findAuthorPlacedBibliography(tree.children);
+    const chapterPlaced = findChapterPlacedBibliographies(tree.children);
 
-    if (!citations || !citations.cite || citations.order.length === 0) {
-      // No citations resolved → remove any author-placed <bibliography>.
-      if (authorPlaced) {
-        authorPlaced.backNode.content.splice(authorPlaced.index, 1);
-      }
-      return;
-    }
-
-    const { cite, style, order } = citations;
-
-    // Render HTML (the existing path; for HTML output).
-    const bibBodyHtml = formatBibliography(cite, style);
-    // Phase 5 slice 5d: also gather the structured CSL-JSON entries in
-    // document-citation order (the same order the HTML bibliography
-    // renders in). The JATS exporter uses this to emit
-    // `<element-citation>` with per-field structured data.
-    const cslById = new Map((cite?.data ?? []).map(e => [e.id, e]));
-    const cslEntries = order.map(key => cslById.get(key)).filter(Boolean);
     // #23: the bibliography heading text is a config override (the
     // `bibliography-heading` key); the default stays "References". headingHtml is
     // emitted raw, so the author-supplied text is HTML-escaped before the wrapper.
     const headingText =
       file?.data?.[ENSCRIBE_CONFIG]?.get('bibliography-heading') ?? 'References';
     const headingHtml = `<h2>${escapeHtml(headingText)}</h2>`;
+
+    if (!citations || !citations.cite || citations.order.length === 0) {
+      // No citations resolved → remove every author-placed <bibliography> (back-matter
+      // AND per-chapter), so a stray empty bib never renders.
+      if (authorPlaced) authorPlaced.backNode.content.splice(authorPlaced.index, 1);
+      for (const { parent, index } of chapterPlaced) parent.splice(index, 1);
+      return;
+    }
+
+    const { cite, style, order } = citations;
+    const cslById = new Map((cite?.data ?? []).map(e => [e.id, e]));
+
+    // #190 split_bib: a <bibliography> authored inside a chapter lists ONLY that
+    // chapter's cited references (drawn from the one merged registry, so a key cited in
+    // two chapters appears in each — see master-document.md §Citations). Replace each in
+    // place; a chapter that cites nothing drops its (empty) marker, mirroring the
+    // document-wide empty case. (Each {parent,index} is an independent array, no shift.)
+    for (const { unit, parent, index } of chapterPlaced) {
+      const chapterKeys = collectChapterCiteKeys(unit, cslById);
+      if (chapterKeys.length === 0) {
+        parent.splice(index, 1);
+        continue;
+      }
+      const chapterBody = formatBibliography(cite, style, chapterKeys);
+      const chapterEntries = chapterKeys.map(key => cslById.get(key)).filter(Boolean);
+      parent.splice(index, 1, makeBibliographyNode(headingHtml, chapterBody, chapterEntries, true));
+    }
+
+    // Document-wide bibliography — lists everything in citation order (Phase 5 slice 5d:
+    // cslEntries are the structured CSL-JSON the JATS exporter reads). Unchanged.
+    const bibBodyHtml = formatBibliography(cite, style);
+    const cslEntries = order.map(key => cslById.get(key)).filter(Boolean);
     const bibNode = makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries);
 
     if (authorPlaced) {
-      // Replace the author-placed <bibliography> node in-place.
+      // An explicit back-matter <bibliography> → the document-wide bib, in place. It
+      // coexists with any per-chapter bibs (book-level lists everything).
       authorPlaced.backNode.content.splice(authorPlaced.index, 1, bibNode);
-    } else {
-      // Auto-place: append to the back-matter region (article-back or
-      // book-back) after notes, which used unshift.
+    } else if (chapterPlaced.length === 0) {
+      // Default (no <bibliography> markers at all): auto-place one document-wide bib at
+      // back-matter (after notes, which used unshift). When the author opted into
+      // per-chapter bibs, split_bib REPLACES the auto-placed document-wide one — a
+      // book-level bib is then opt-in via an explicit back-matter <bibliography>.
       const back = findOrCreateBackMatter(tree.children);
-      if (back) {
-        back.content.push(bibNode);
-      }
+      if (back) back.content.push(bibNode);
     }
   };
 }

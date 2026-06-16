@@ -57,7 +57,10 @@ export const HAS_MASTER_SRC = new RegExp(
 );
 
 // Placement markers the spec defines but no slice assembles yet.
-const DEFERRED_MARKERS = new Set(['toc', 'endnotes', 'bibliography', 'endnote-list']);
+// #190: <bibliography> is no longer deferred — a master top-level <bibliography> survives
+// assembly and routes to back-matter (the book-level bib), and a child's <bibliography> is
+// kept in its chapter (split_bib). <toc>/<endnotes> placement remains deferred.
+const DEFERRED_MARKERS = new Set(['toc', 'endnotes', 'endnote-list']);
 // A child's <meta>/<config> are document-wide apparatus only the MASTER may declare
 // (the master's <meta type> picks the document class; its <config> is the doc config),
 // so they are stripped from a child. A child's <data> is NOT stripped — it is HOISTED
@@ -104,7 +107,14 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
         // registry (#190), with each src rewritten from child-relative to master-relative.
         childBody = kids
           .filter((c) => !(isEnscribeTag(c) && CHILD_STRIP_APPARATUS.has(c.tagname)))
-          .map((c) => (isEnscribeTag(c, 'data') ? rebaseChildData(c, src) : c));
+          .map((c) => {
+            if (isEnscribeTag(c, 'data')) return rebaseChildData(c, src);
+            // #190 split_bib: a <bibliography> in a CHILD's body is that chapter's
+            // bibliography. Mark it so book-structuring keeps it INSIDE the book-part — a
+            // flat sibling is otherwise routed to back-matter (a BACK_MATTER_TAGS boundary).
+            if (isEnscribeTag(c, 'bibliography')) return { ...c, kwargs: { ...c.kwargs, 'chapter-scoped': true } };
+            return c;
+          });
       } catch (err) {
         // Always-renders: a missing/unreadable child becomes a visible note, not
         // a crash. (#190 — robust per-child error reporting is a later refinement.)

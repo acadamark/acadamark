@@ -110,6 +110,22 @@ function renderBibChild() {
   return { html: proc.stringify(proc.runSync(tree)), warnings };
 }
 
+// Per-chapter split_bib (#190): a multi-file BOOK where each chapter ends with a
+// <bibliography> (its own cited refs) and a book-level <bibliography> lists everything.
+const BIB_BOOK_DIR = join(__dirname, 'fixtures', 'master-bib-book');
+function renderBibBook() {
+  const proc = buildEnscribePipeline({ assetsDir: BIB_BOOK_DIR });
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(BIB_BOOK_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(BIB_BOOK_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
 export function run_tests() {
   const html = renderMaster();
 
@@ -289,5 +305,41 @@ export function run_tests() {
     assert.equal(warnings.length, 0,
       `the child-library master assembles with no warnings (got: ${warnings.join('; ')})`);
     console.log('PASS: #190 slice 3 — a child\'s own library (inline + subdir src) merges project-wide');
+  }
+
+  // ── #190: per-chapter bibliography (split_bib) ──────────────────────────────
+  // A <bibliography> at a chapter's end lists ONLY that chapter's cited references
+  // (drawn from the one merged registry, so a reference cited in two chapters appears in
+  // each); a book-level <bibliography> lists everything. Default + JATS stay document-wide
+  // (asserted by the byte-identical existing goldens). master-document.md §Citations.
+  {
+    const { html: book, warnings } = renderBibBook();
+    const bibs = [...book.matchAll(/<bibliography>[\s\S]*?<\/bibliography>/g)].map((m) => m[0]);
+    const keysOf = (b) => [...b.matchAll(/id="ref-([A-Za-z0-9]+)"/g)].map((m) => m[1]);
+
+    // TWO chapter bibs + ONE book-level bib. (Without split_bib these collapse into a
+    // single document-wide bib — count === 1 — so 3 is the proof the slicing happened.)
+    assert.equal(bibs.length, 3, 'two per-chapter bibs + one book-level bib');
+
+    // Each chapter's bib lists its OWN cited refs only: chapter 1 has Loomes2017 but NOT
+    // chapter 2's Mantzalas2022, and vice versa.
+    const ch1 = bibs.filter((b) => /ref-Loomes2017/.test(b) && !/ref-Mantzalas2022/.test(b));
+    const ch2 = bibs.filter((b) => /ref-Mantzalas2022/.test(b) && !/ref-Loomes2017/.test(b));
+    assert.equal(ch1.length, 1, 'chapter 1 bib = its cited refs only (Loomes2017, not Mantzalas2022)');
+    assert.equal(ch2.length, 1, 'chapter 2 bib = its cited refs only (Mantzalas2022, not Loomes2017)');
+
+    // The SHARED reference appears in BOTH chapters' bibs (and the book-level one).
+    assert.ok(keysOf(ch1[0]).includes('Pellicano2014') && keysOf(ch2[0]).includes('Pellicano2014'),
+      'a reference cited in two chapters appears in BOTH chapters bibs');
+
+    // The book-level bib lists everything (the one bib carrying both chapters distinct keys).
+    assert.equal(bibs.filter((b) => /ref-Loomes2017/.test(b) && /ref-Mantzalas2022/.test(b)).length, 1,
+      'the book-level bibliography lists everything');
+
+    // Cross-file citation resolution (the prior slice) still holds — the cites render styled.
+    assert.ok(book.includes('<cite class="cite" data-keys="Loomes2017">(Loomes et al., 2017)</cite>'),
+      'cross-file citations still resolve to styled author-year');
+    assert.equal(warnings.length, 0, `the split_bib book assembles with no warnings (got: ${warnings.join('; ')})`);
+    console.log('PASS: #190 — per-chapter split_bib (chapter bibs = own refs; shared ref in both; book-level = all)');
   }
 }
