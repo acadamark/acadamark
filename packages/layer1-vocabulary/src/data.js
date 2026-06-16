@@ -2158,10 +2158,10 @@ const _data = Object.freeze({
           "notes": "Structured bibliography entries authored in enscribe form.",
         },
         {
-          "element": "embedded-image",
+          "element": "fig",
           "required": false,
           "multiple": true,
-          "notes": "Future: hardcoded image data (base64) referenced by figures.",
+          "notes": "Embedded image asset (#190): <fig #id png>base64</fig>, pulled into the body by <fig src=\"@id\" />. Embedded PNG only for now; cross-file merge, external assets, and other media types are later slices.",
         },
         {
           "element": "dataset",
@@ -3100,7 +3100,7 @@ const _fig = Object.freeze({
       "kwargs": {
         "src": {
           "handled_by": "handler",
-          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n",
+          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n\nEmbedded-asset reference (#190): when src is `@id` it pulls in an\nasset declared inside `<data>` as `<fig #id png>base64</fig>`. The\nasset resolver rewrites src to a `data:image/png;base64,…` URI and\nthe placed figure adopts the id, so it numbers and cross-references\n(`<ref @id>`) as that id; the `<data>` declaration itself renders\nnothing. An unresolved `@id` renders a visible asset-error rather\nthan a broken image. Embedded PNG only for now — cross-file merge,\nexternal assets, and other media types are later slices.\n",
         },
         "alt": {
           "handled_by": "handler",

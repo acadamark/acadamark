@@ -26,10 +26,10 @@ content:
       required: false
       multiple: true
       notes: 'Structured bibliography entries authored in enscribe form.'
-    - element: embedded-image
+    - element: fig
       required: false
       multiple: true
-      notes: 'Future: hardcoded image data (base64) referenced by figures.'
+      notes: 'Embedded image asset (#190): <fig #id png>base64</fig>, pulled into the body by <fig src="@id" />. Embedded PNG only for now; cross-file merge, external assets, and other media types are later slices.'
     - element: dataset
       required: false
       multiple: true

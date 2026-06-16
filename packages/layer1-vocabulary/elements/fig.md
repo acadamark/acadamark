@@ -31,6 +31,15 @@ enscribe_attributes:
         URL of an image to embed. The handler generates an <img> child
         element from this kwarg. When src is present, the figure renders
         as an image with a caption.
+
+        Embedded-asset reference (#190): when src is `@id` it pulls in an
+        asset declared inside `<data>` as `<fig #id png>base64</fig>`. The
+        asset resolver rewrites src to a `data:image/png;base64,…` URI and
+        the placed figure adopts the id, so it numbers and cross-references
+        (`<ref @id>`) as that id; the `<data>` declaration itself renders
+        nothing. An unresolved `@id` renders a visible asset-error rather
+        than a broken image. Embedded PNG only for now — cross-file merge,
+        external assets, and other media types are later slices.
     alt:
       handled_by: handler
       notes: |
