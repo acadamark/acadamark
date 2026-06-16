@@ -72,11 +72,11 @@ Notes auto-collect; the collection is generated, not authored (#129). `<endnotes
 ```
 <data>
    <library src="references.bib" />
-   <fig id="fig:scatter" png>{base64}</fig>
+   <fig #fig:scatter png>{base64}</fig>
 </data>
 ```
 
-An asset may be embedded or external — `<fig id="fig:scatter" png>{base64}</fig>` or `<fig src="data/scatter.png" id="fig:scatter" />` — and the body references it the same way: `<fig ref="fig:scatter" />`. Embedded-vs-external is only about where the bytes live. `<library>` is the citation half of the same idea: load sources into a registry, reference by `@key`.
+An asset may be embedded or external — `<fig #fig:scatter png>{base64}</fig>` or `<fig #fig:scatter src="data/scatter.png" />` — and the body pulls it in the same way either way: `<fig src="@fig:scatter" />`. Embedded-vs-external is only about where the bytes live. Assets are **declared** with the `#` id sigil (as everywhere in shorthand) and **referenced** by setting `src` to that id behind the `@` sigil: a `src` whose value begins with `@` resolves from the local `<data>` store — rewritten to a `data:` URI for an embedded asset, or to the asset's external path, before the HTML projection. `@` is the one universal id-reference sigil: the same form names a source in a citation (`@key`) and a target in a cross-reference (`<ref @id>`). `<library>` is the citation half of the same idea: load sources into a registry, reference by `@key`.
 
 ## Citations and bibliographies
 
@@ -92,7 +92,7 @@ When the same `@key` is defined in more than one merged source, the last definit
 
 Two deliberately distinct mechanisms:
 
-- **Cross-references are page-implicit.** `<ref #fig:elephant>` resolves to wherever the target lives across the project, with project numbering ("Figure 3.2") — matching enscribe's existing colon-id resolution and Quarto's `@`-reference behavior. The author never names the page, so references survive a page being renamed or moved. This requires ids to be unique project-wide. *(Realized by the static separate-pages book build (publishing, P1): the cross-reference registry records which chapter owns each anchor, and a cross-chapter ref is emitted as `owner-chapter-page#anchor` at publish time — the author still names only the target, never the page. The live app-shell book render (the editing-surface track's read-only foundation, L2) realizes the same resolution at **navigate** time rather than publish time: under one mount a bare `#anchor` routes to its owning chapter via the same registry, so no per-file href rewrite is needed — the static and live paths share one ownership model, projected to a page URL or a hash route respectively.)*
+- **Cross-references are page-implicit.** `<ref @fig:elephant>` resolves to wherever the target lives across the project, with project numbering ("Figure 3.2") — matching enscribe's existing colon-id resolution and Quarto's `@`-reference behavior. The author never names the page, so references survive a page being renamed or moved. This requires ids to be unique project-wide. *(Realized by the static separate-pages book build (publishing, P1): the cross-reference registry records which chapter owns each anchor, and a cross-chapter ref is emitted as `owner-chapter-page#anchor` at publish time — the author still names only the target, never the page. The live app-shell book render (the editing-surface track's read-only foundation, L2) realizes the same resolution at **navigate** time rather than publish time: under one mount a bare `#anchor` routes to its owning chapter via the same registry, so no per-file href rewrite is needed — the static and live paths share one ownership model, projected to a page URL or a hash route respectively.)*
 - **Raw links are page-explicit.** The `#/page-title/anchor` form is the escape hatch for arbitrary links, parallel to Quarto's `[text](page#anchor)`. *(Not yet implemented.)*
 
 ## `<config>`
