@@ -224,6 +224,27 @@ function collectMatchingNodes(root, targetNodes) {
   return found;
 }
 
+// #190 <endnotes> placement marker. Deep-find an author <endnotes> in a subtree,
+// returning the array + index that holds it, so the collected note-list can replace it
+// in place. A chapter's <endnotes> nests under the chapter's section (the heading wraps
+// the trailing content), so the search descends both .content and .children. Unlike
+// <bibliography>, <endnotes> is NOT a BACK_MATTER_TAGS boundary, so a child's marker is
+// already absorbed into its book-part by book-structuring — no chapter-scoped stamping.
+function findEndnotesWithParent(root) {
+  for (const arr of [root.content, root.children]) {
+    if (!Array.isArray(arr)) continue;
+    const idx = arr.findIndex((n) => isEnscribeTag(n, 'endnotes'));
+    if (idx !== -1) return { parent: arr, index: idx };
+    for (const child of arr) {
+      if (child && typeof child === 'object') {
+        const found = findEndnotesWithParent(child);
+        if (found) return found;
+      }
+    }
+  }
+  return null;
+}
+
 // ─── List-item builder (shared by per-section + residual passes) ──────────────
 
 /**
@@ -374,26 +395,41 @@ export function enscribeNotePlacement() {
     // the unit's body. Empty buckets — units with no foot-notes —
     // produce no list (we never insert into unitBuckets for them, so
     // this branch doesn't fire).
-    for (const [unit, unitPending] of unitBuckets) {
-      const items = unitPending.map(makeNoteListItem);
-      // Class derived from the placements actually present in the
-      // bucket: 'footnotes' for foot-only, 'endnotes' for end-only,
-      // 'notes' for mixed. Phase 4 slice 4a (2026-05-29): chapter-scope
-      // buckets can contain both foot AND end notes (per the chapter-
-      // end convention book.md anticipates); listClassFor handles the
-      // mix.
-      const placements = new Set(unitPending.map(({ node }) => notePlacement(node)));
-      const list = makeInternalMarker('__note-list', {
-        classes: listClassFor(placements),
-        content: items,
-      });
-      if (!Array.isArray(unit.content)) unit.content = [];
-      unit.content.push(list);
+    // Iterate collection units in authored order. #190 <endnotes>: if the unit (chapter)
+    // placed an <endnotes> marker, render its collected block AT the marker; else append
+    // at the unit's end (the default). A unit with a marker but no collected notes drops
+    // the empty marker. listClassFor handles the foot/end mix per the chapter-end convention.
+    for (const unit of collectionUnits) {
+      const unitPending = unitBuckets.get(unit);
+      // Only a BOOK collects end-notes per chapter, so only a chapter (scope=chapter) honors an
+      // in-unit <endnotes> marker. For an article (scope=section) the per-unit list is footnotes —
+      // an <endnotes> marker there relocates the document-level end-notes residual (Step 5).
+      const at = scope === 'chapter' ? findEndnotesWithParent(unit) : null;
+      if (unitPending && unitPending.length > 0) {
+        const items = unitPending.map(makeNoteListItem);
+        const placements = new Set(unitPending.map(({ node }) => notePlacement(node)));
+        const list = makeInternalMarker('__note-list', {
+          classes: listClassFor(placements),
+          content: items,
+        });
+        if (at) {
+          at.parent.splice(at.index, 1, list);
+        } else {
+          if (!Array.isArray(unit.content)) unit.content = [];
+          unit.content.push(list);
+        }
+      } else if (at) {
+        at.parent.splice(at.index, 1); // marker, no notes in this unit → drop it
+      }
     }
 
-    // ─── Step 5: residual __note-list (article-back or book-back) ──────
+    // ─── Step 5: residual __note-list — at a document-level <endnotes>, else back-matter ──
     //
-    // Build only if there are residual notes — don't emit an empty list.
+    // After Step 4 consumed every per-chapter marker, any remaining <endnotes> is a
+    // document-level placement marker. Place the residual block at it (the first one);
+    // else default to back-matter (article-back / book-back). Build only if there are
+    // residual notes — don't emit an empty list.
+    const docMarker = findEndnotesWithParent({ content: tree.children });
     if (residual.length > 0) {
       const items = residual.map(makeNoteListItem);
       const placements = new Set(residual.map(({ node }) => notePlacement(node)));
@@ -401,10 +437,21 @@ export function enscribeNotePlacement() {
         classes: listClassFor(placements),
         content: items,
       });
+      if (docMarker) {
+        docMarker.parent.splice(docMarker.index, 1, noteList);
+      } else {
+        const back = findOrCreateBackMatter(tree.children);
+        if (back) back.content.unshift(noteList);
+      }
+    } else if (docMarker) {
+      docMarker.parent.splice(docMarker.index, 1); // marker, no residual → drop it
+    }
 
-      const back = findOrCreateBackMatter(tree.children);
-      if (!back) return;
-      back.content.unshift(noteList);
+    // Defensive: a document has at most one residual block, so remove any further stray
+    // <endnotes> markers — a marker must never render raw.
+    let stray;
+    while ((stray = findEndnotesWithParent({ content: tree.children }))) {
+      stray.parent.splice(stray.index, 1);
     }
   };
 }

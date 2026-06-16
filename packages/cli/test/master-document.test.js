@@ -126,6 +126,22 @@ function renderBibBook() {
   return { html: proc.stringify(proc.runSync(tree)), warnings };
 }
 
+// The <endnotes> placement marker (#190): a multi-file BOOK where each chapter ends with an
+// <endnotes /> marker placing that chapter's collected notes there.
+const ENDNOTES_BOOK_DIR = join(__dirname, 'fixtures', 'master-endnotes-book');
+function renderEndnotesBook() {
+  const proc = buildEnscribePipeline({});
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(ENDNOTES_BOOK_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(ENDNOTES_BOOK_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
 export function run_tests() {
   const html = renderMaster();
 
@@ -341,5 +357,35 @@ export function run_tests() {
       'cross-file citations still resolve to styled author-year');
     assert.equal(warnings.length, 0, `the split_bib book assembles with no warnings (got: ${warnings.join('; ')})`);
     console.log('PASS: #190 — per-chapter split_bib (chapter bibs = own refs; shared ref in both; book-level = all)');
+  }
+
+  // ── #190: the <endnotes> placement marker ───────────────────────────────────
+  // A <endnotes> at a chapter's end renders THAT chapter's collected notes there (the
+  // notes twin of split_bib). Numbering stays project-wide. Default (no marker) is
+  // unchanged — pinned by the byte-identical existing note goldens. master-document.md §Notes.
+  {
+    const { html: book, warnings } = renderEndnotesBook();
+    const lists = [...book.matchAll(/<note-list[^>]*>[\s\S]*?<\/note-list>/g)].map((m) => m[0]);
+
+    // TWO per-chapter note-lists, placed at each chapter's <endnotes> marker — none routed
+    // to back-matter. (The marker is consumed, never rendered raw.)
+    assert.equal(lists.length, 2, 'one collected note-list per chapter, at its <endnotes> marker');
+    assert.ok(!/<endnotes/.test(book), 'the <endnotes> marker is consumed, not rendered raw');
+    assert.ok(!/<book-back>[\s\S]*<note-list/.test(book), 'no notes routed to back-matter (each placed in its chapter)');
+
+    // Each chapter's notes appear ONLY in that chapter's block.
+    const ch1 = lists.filter((l) => /First chapter, first note/.test(l));
+    const ch2 = lists.filter((l) => /Second chapter, first note/.test(l));
+    assert.equal(ch1.length, 1, "chapter 1's notes render in exactly one block (its own)");
+    assert.equal(ch2.length, 1, "chapter 2's notes render in exactly one block (its own)");
+    assert.ok(!/Second chapter/.test(ch1[0]), "chapter 1's block does not leak chapter 2's notes");
+    assert.ok(!/First chapter/.test(ch2[0]), "chapter 2's block does not leak chapter 1's notes");
+
+    // Numbering stays project-wide across chapters (1,2 in ch1; 3,4 in ch2).
+    const nums = [...new Set([...book.matchAll(/noteref-(\d+)/g)].map((m) => m[1]))].sort();
+    assert.deepEqual(nums, ['1', '2', '3', '4'], 'note numbering is continuous across chapters (project-wide)');
+
+    assert.equal(warnings.length, 0, `the <endnotes> book assembles with no warnings (got: ${warnings.join('; ')})`);
+    console.log('PASS: #190 — <endnotes> places each chapter\'s collected notes at the marker (project-wide numbering)');
   }
 }
