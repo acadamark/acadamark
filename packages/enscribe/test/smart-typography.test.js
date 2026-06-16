@@ -59,6 +59,47 @@ export function run() {
     console.log('PASS: smart-typography — disabled by smartTypography:false');
   }
 
+  // ── #139: arrow shorthands `-->`/`<--`/`<-->` → →/←/↔ in prose; literal inside
+  //    code / pre; the ordering must beat the `--` en-dash rule and `<-->` must
+  //    beat `-->`/`<--`. Additive: only fires on the literal sequences. ──────────
+  {
+    const on = html('Go a --> b, back b <-- a, both a <--> b.');
+    assert.ok(on.includes('a → b'), '`-->` → → (U+2192)');
+    assert.ok(on.includes('b ← a'), '`<--` → ← (U+2190)');
+    assert.ok(on.includes('a ↔ b'), '`<-->` → ↔ (U+2194)');
+    // Ordering guards: the arrows must NOT have been eaten by the en-dash rule
+    // (`–>`) nor partially consumed (`<→` / `←>` from `<-->`).
+    assert.ok(!/[–—]>/.test(on), 'no `–>`/`—>` — arrows ran before the `--`/`---` dash rules');
+    assert.ok(!on.includes('<→') && !on.includes('←>'),
+      'no `<→`/`←>` — `<-->` ran before `-->`/`<--`');
+    // Plain dashes are untouched by the arrow rules: a bare `--` is still an en dash.
+    assert.ok(html('x -- y').includes('x – y'), 'bare `--` still → en dash (arrows did not eat it)');
+
+    // Verbatim-exempt: arrows stay literal inside inline code and fenced blocks.
+    // Proven escape-agnostically by byte-identity with the transform off (the `<`
+    // in `<--`/`<-->` is HTML-escaped by the serializer either way) plus the
+    // absence of any arrow glyph — exactly how the dash/quote skip is proven above.
+    const codeSrc = 'Mermaid `A --> B` and `C <-- D` and `E <--> F`.';
+    const codeOn = region(html(codeSrc), /<code>[\s\S]*?<\/code>/);
+    const codeOff = region(html(codeSrc, { smartTypography: false }), /<code>[\s\S]*?<\/code>/);
+    assert.equal(codeOn, codeOff, 'inline code byte-identical (arrows not converted inside code)');
+    assert.ok(!/[→←↔]/.test(codeOn), 'no arrow glyph inside inline code');
+
+    const preSrc = '```\nflowchart\n  A --> B\n  B <-- C\n  A <--> D\n```';
+    const preOn = region(html(preSrc), /<pre[\s\S]*?<\/pre>/);
+    const preOff = region(html(preSrc, { smartTypography: false }), /<pre[\s\S]*?<\/pre>/);
+    assert.equal(preOn, preOff, 'fenced code block byte-identical (arrows not converted inside pre)');
+    assert.ok(!/[→←↔]/.test(preOn), 'no arrow glyph inside fenced code block');
+
+    // Disabled by the toggle, like the other transforms. (No arrow glyph anywhere
+    // proves all three rules stayed off; the `-->` literal — which has no `<` to
+    // HTML-escape — survives verbatim.)
+    const off = html('a --> b <-- c <--> d', { smartTypography: false });
+    assert.ok(!/[→←↔]/.test(off), 'smartTypography:false → no arrow glyph');
+    assert.ok(off.includes('a --> b'), 'smartTypography:false → `-->` left literal');
+    console.log('PASS: smart-typography — arrows -->/<--/<--> convert in prose, literal in code/pre, toggle-off');
+  }
+
   // ── opaque inline span: an apostrophe immediately after inline code / inline
   //    math CLOSES (option b — the span is a token, word-like for quote context),
   //    regardless of the span's literal last char; a trailing space before a

@@ -2,7 +2,8 @@
 //
 // Converts typewriter punctuation to typographic forms in PROSE display output
 // only: straight quotes → curly (context-aware open/close), `--`/`---` → en/em
-// dash, `...` → ellipsis. It runs at the HTML render stage, on the hast tree, and
+// dash, `...` → ellipsis, and the arrow shorthands `-->`/`<--`/`<-->` → →/←/↔
+// (#139). It runs at the HTML render stage, on the hast tree, and
 // is NEVER stored in the canonical AST — so it never reaches `.emd` source,
 // lift/lower, or the JATS export (the JATS channel carries only JATS-semantic
 // content, never a display transform). Keeping it out of the AST is exactly what
@@ -54,8 +55,16 @@ const isWord = (c) => /[A-Za-z0-9]/.test(c);
 
 /** Educate one prose text run. `prev` is the last emitted char before it. */
 function educate(text, prev) {
-  // Dashes + ellipsis first (no quote-direction dependency); `---` before `--`.
+  // Dashes + ellipsis + arrows first (no quote-direction dependency).
+  // ORDER MATTERS (#139): the arrow shorthands all contain `--`, so they MUST run
+  // before the `---`/`--` dash rules — otherwise `-->` would become `–>` (en-dash)
+  // rather than `→`. And `<-->` (which contains both `<--` and `-->`) must run
+  // before `-->`/`<--`, or it would be eaten as `<` + `→` / `←` + `>`. Among the
+  // dash rules, `---` still runs before `--`.
   const s = text
+    .replace(/<-->/g, '↔') // U+2194 LEFT RIGHT ARROW
+    .replace(/-->/g, '→')  // U+2192 RIGHTWARDS ARROW
+    .replace(/<--/g, '←')  // U+2190 LEFTWARDS ARROW
     .replace(/---/g, '—')
     .replace(/--/g, '–')
     .replace(/\.\.\./g, '…');
