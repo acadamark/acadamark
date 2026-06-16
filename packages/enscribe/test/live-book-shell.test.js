@@ -1,6 +1,6 @@
 // Configurable live shell — the host-side read↔edit switch (#213).
 //
-// One shell, one knob. `mountLiveBookShell` turns editing on/off from the HOST (not the
+// One shell, one knob. `mountLiveShell` turns editing on/off from the HOST (not the
 // document — editability is a deployment property, and only the host can load CodeMirror).
 // The switch is the explicit `edit` option (the testable core) falling back to the
 // `data-enscribe-edit` attribute on the mount element. OFF → read mode (byte-identical to
@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM } from 'jsdom';
-import { mountLiveBookShell } from '../src/interpreter/browser.js';
+import { mountLiveShell } from '../src/interpreter/browser.js';
 
 const BOOK_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-book');
 const readBook = (name) => readFileSync(join(BOOK_DIR, name), 'utf8');
@@ -71,7 +71,7 @@ export async function run() {
     const { dom, orig } = installDom();
     const { factory, s } = makeFactory();
     try {
-      const root = await mountLiveBookShell('#root', 'master-book.emd', { editorFactory: factory, edit: false });
+      const root = await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory, edit: false });
       assert.strictEqual(s.builds, 0, 'edit off → the editorFactory is NOT called (CodeMirror never loaded)');
       assert.ok(root.innerHTML.includes('Select a chapter to begin reading.'),
         'edit off → read mode opens on the cover (#209)');
@@ -87,7 +87,7 @@ export async function run() {
     const { dom, orig } = installDom();
     const { factory, s } = makeFactory();
     try {
-      const root = await mountLiveBookShell('#root', 'master-book.emd', { editorFactory: factory, edit: true });
+      const root = await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory, edit: true });
       assert.strictEqual(s.builds, 1, 'edit on → the editorFactory is built once (CodeMirror loaded host-side)');
       assert.ok(root.innerHTML.includes('Select a chapter to begin reading.') && s.mounts === 0,
         'edit on → still opens on the cover (no editor on the cover)');
@@ -104,7 +104,7 @@ export async function run() {
     const { factory, s } = makeFactory();
     try {
       dom.window.document.getElementById('root').setAttribute('data-enscribe-edit', '');
-      const root = await mountLiveBookShell('#root', 'master-book.emd', { editorFactory: factory });
+      const root = await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory });
       assert.strictEqual(s.builds, 1, 'data-enscribe-edit present → edit mode (factory built)');
       navigate(dom, '#1-counting-elephants');
       assert.ok(root.querySelector('[data-editor-mounted="1"]'), 'data-enscribe-edit → the editor mounts');
@@ -117,7 +117,7 @@ export async function run() {
     const { dom, orig } = installDom();
     const { factory, s } = makeFactory();
     try {
-      const root = await mountLiveBookShell('#root', 'master-book.emd', { editorFactory: factory });
+      const root = await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory });
       assert.strictEqual(s.builds, 0, 'no attribute + no option → read (factory not called)');
       assert.ok(root.innerHTML.includes('Select a chapter to begin reading.'), 'default is read mode');
       console.log('PASS: shell #213 — default (no switch) is read mode');
@@ -128,7 +128,7 @@ export async function run() {
     const { factory, s } = makeFactory();
     try {
       dom.window.document.getElementById('root').setAttribute('data-enscribe-edit', 'false');
-      await mountLiveBookShell('#root', 'master-book.emd', { editorFactory: factory });
+      await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory });
       assert.strictEqual(s.builds, 0, 'data-enscribe-edit="false" → read (explicit off)');
       console.log('PASS: shell #213 — data-enscribe-edit="false" stays read mode');
     } finally { restoreDom(orig); }

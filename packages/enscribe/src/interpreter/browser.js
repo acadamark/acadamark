@@ -802,21 +802,6 @@ export async function mountLiveShell(target, url, options = {}) {
 }
 
 /**
- * Back-compat alias for the unified {@link mountLiveShell} (#216). The #213 shell entry was
- * book-specific (`mountLiveBookShell`); the type-agnostic dispatch superseded it. Kept so the
- * earlier emitted shells (and any host calling it directly) keep working — it now also drives an
- * article master, since it delegates to the dispatcher. New shells emit `mountLiveShell`.
- *
- * @param {string|Element} target - a CSS selector or the Element to mount into.
- * @param {string} url - the master's URL (book or article).
- * @param {object} [options] - see {@link mountLiveShell}.
- * @returns {Promise<Element>} the mounted element.
- */
-export async function mountLiveBookShell(target, url, options = {}) {
-  return mountLiveShell(target, url, options);
-}
-
-/**
  * Render enscribe source and write it into a DOM element.
  *
  * @param {string|Element} target - a CSS selector or an Element to fill.

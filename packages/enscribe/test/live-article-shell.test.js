@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM } from 'jsdom';
-import { mountLiveShell, mountLiveBookShell } from '../src/interpreter/browser.js';
+import { mountLiveShell } from '../src/interpreter/browser.js';
 
 // A small, image-free single-file article: a labeled display equation + a `<ref>` to it, so the
 // edit loop can prove that a structural edit (inserting a PRIOR labeled equation) renumbers the
@@ -215,27 +215,6 @@ export async function run() {
       assert.ok(root.innerHTML.includes('Select a chapter to begin reading.'),
         'a book master dispatches to the book path (the cover renders) — the dispatch is additive');
       console.log('PASS: #216 — one mountLiveShell drives BOTH an article and a book master (dispatch by <meta type>)');
-    } finally { restoreDom(orig); }
-  }
-
-  // ── back-compat: mountLiveBookShell still works (it delegates to the dispatcher) — BOTH ways ──────
-  {
-    const { orig } = installDom();
-    const { factory } = makeFactory();
-    try {
-      const article = await mountLiveBookShell('#root', 'article.emd', { editorFactory: factory, edit: false });
-      assert.ok(article.querySelector('article') && !article.innerHTML.includes('Select a chapter to begin reading.'),
-        'mountLiveBookShell (the back-compat alias) now also drives an article master');
-    } finally { restoreDom(orig); }
-  }
-  {
-    const { orig } = installDom();
-    const { factory } = makeFactory();
-    try {
-      const book = await mountLiveBookShell('#root', 'master-book.emd', { editorFactory: factory, edit: false });
-      assert.ok(book.innerHTML.includes('Select a chapter to begin reading.'),
-        'mountLiveBookShell still dispatches a BOOK master to the book path (no regression for its original use)');
-      console.log('PASS: #216 — mountLiveBookShell remains a working alias of mountLiveShell (article + book)');
     } finally { restoreDom(orig); }
   }
 

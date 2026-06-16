@@ -3,7 +3,7 @@
 // The live shell's editor, shipped as a shell-LAYER module rather than hand-copied inline into
 // every shell. Per #213, CodeMirror stays HOST-side and OUT of the core engine bundle — so this
 // is shipped *alongside* the engine, not folded into it. A shell imports `codeMirrorEditorFactory`
-// and passes it to `mountLiveBookShell` as `editorFactory`; the engine calls it ONLY when editing
+// and passes it to `mountLiveShell` as `editorFactory`; the engine calls it ONLY when editing
 // is on, so read mode never loads CodeMirror. A host may pass its own factory instead.
 //
 // CodeMirror is lazy-imported from a CDN INSIDE the factory, so merely importing this module loads
