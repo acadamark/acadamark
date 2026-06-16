@@ -1,0 +1,7 @@
+<meta title="Introduction" />
+
+<data>
+<library bibtex | @article{child2021, title={A Child-Declared Reference}, author={Childer, Casey}, journal={Journal of Kids}, year={2021}}>
+</data>
+
+The introduction declares its OWN inline library and cites <cite @child2021>.

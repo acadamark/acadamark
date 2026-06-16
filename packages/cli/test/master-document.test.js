@@ -71,6 +71,45 @@ function renderBookMaster() {
   return { html: proc.stringify(proc.runSync(tree)), warnings };
 }
 
+// Slice 3 (#190): the cross-file CITATION registry merge. assetsDir must be set so a
+// `<library src>` resolves (the helpers above pass `{}` because their fixtures have no
+// library src; a copy-paste that forgets assetsDir here silently yields cite-error).
+const BIB_DIR = join(ENSCRIBE_FIXTURES, 'master-bib');
+const BIB_CHILD_DIR = join(__dirname, 'fixtures', 'master-bib-child');
+
+// (a) the EXISTING master-bib fixture — a child cites the MASTER's <library src>. Its
+// golden showed resolved cross-file cites but no test asserted on it (a coverage gap).
+// references.bib lives in fixtures/assets/, so assetsDir points there.
+function renderBibMaster() {
+  const proc = buildEnscribePipeline({ assetsDir: join(ENSCRIBE_FIXTURES, 'assets') });
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(BIB_DIR, 'master-bib.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(BIB_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
+// (b) the NEW behavior — a CHILD's OWN <library> merges project-wide: intro.emd has an
+// inline library; sub/methods.emd has a `<library src>` in a SUBDIRECTORY. assetsDir is the
+// master's own dir (the real CLI's contract, cli.js), so the child src — rewritten
+// master-relative by the assembler — resolves from its subdir.
+function renderBibChild() {
+  const proc = buildEnscribePipeline({ assetsDir: BIB_CHILD_DIR });
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(BIB_CHILD_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(BIB_CHILD_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
 export function run_tests() {
   const html = renderMaster();
 
@@ -213,5 +252,42 @@ export function run_tests() {
     assert.equal(warnings.length, 0,
       `book master assembles with no assembler warnings (got: ${warnings.join('; ')})`);
     console.log('PASS: Slice B — per-chapter numbering + cross-chapter <ref> resolve; clean assembly');
+  }
+
+  // ── Slice 3 (#190): cross-file CITATION registry merge ──────────────────────
+  // Every <library> across the master + every src child merges into ONE project-wide
+  // citation registry (master-document.md §Citations), so a <cite @key> in any file
+  // resolves against a reference declared anywhere in the project.
+  //
+  // (a) the MASTER-library case (already worked; the assertion was missing): a child
+  //     file resolves a cite against the master's <library src>, and the master's own
+  //     section cite resolves — proving the index spans the assembled tree.
+  {
+    const { html: bib } = renderBibMaster();
+    assert.ok(bib.includes('<cite class="cite" data-keys="Pellicano2014">(Pellicano et al., 2014)</cite>'),
+      'a CHILD-file cite resolves against the MASTER library (cross-file), styled author-year');
+    assert.ok(bib.includes('<cite class="cite" data-keys="Loomes2017">(Loomes et al., 2017)</cite>'),
+      "the master section's own cite resolves against the master library");
+    assert.ok(!bib.includes('class="cite-error" data-keys="Pellicano2014"') && !bib.includes('??cite: Pellicano2014??'),
+      'the cross-file child cite is NOT an unresolved-key diagnostic');
+    console.log('PASS: #190 slice 3 — a child cite resolves against the master library (master-bib coverage)');
+  }
+
+  // (b) the CHILD-library case (the new behavior): a child's OWN <library> — inline AND
+  //     a `<library src>` in a subdirectory — merges project-wide, so a sibling resolves
+  //     against it; the subdir src is rewritten master-relative so it loads; a missing key
+  //     still renders the diagnostic (always-renders).
+  {
+    const { html: bib, warnings } = renderBibChild();
+    const child2021 = (bib.match(/<cite class="cite" data-keys="child2021">\(Childer, 2021\)<\/cite>/g) || []).length;
+    assert.equal(child2021, 2,
+      "a child's INLINE library resolves project-wide — cited in its own file AND the sibling (2 styled cites)");
+    assert.ok(bib.includes('<cite class="cite" data-keys="methods2022">(Subby, 2022)</cite>'),
+      "a child's <library src> in a SUBDIRECTORY loads (src rebased master-relative) and resolves");
+    assert.ok(bib.includes('<cite class="cite-error" data-keys="absent">??cite: absent??</cite>'),
+      'a genuinely-missing key still renders the unresolved diagnostic');
+    assert.equal(warnings.length, 0,
+      `the child-library master assembles with no warnings (got: ${warnings.join('; ')})`);
+    console.log('PASS: #190 slice 3 — a child\'s own library (inline + subdir src) merges project-wide');
   }
 }

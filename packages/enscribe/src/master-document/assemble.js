@@ -19,9 +19,14 @@
 // (per-chapter in a book) and resolve <ref> to targets wherever they live (an
 // unresolved ref renders a visible marker).
 //
-// Deferred to later slices (NOT done here): cross-file citation/bibliography
-// registry merge; placement markers (<toc> / <endnotes> / <bibliography>); the
-// website page model; embedded-asset coverage in <data>. Those are the spec's
+// Cross-file citation registry merge IS done here (#190): a child's <data><library>
+// survives assembly (hoisted, not stripped) and its src is rewritten master-relative,
+// so every library — the master's and any per-chapter ones — joins the ONE project-wide
+// registry buildCitationIndex builds over the assembled tree (master-document.md §Citations).
+//
+// Deferred to later slices (NOT done here): the placement markers (<toc> / <endnotes> /
+// <bibliography>); the separate-pages per-chapter bibliography slicing; the website page
+// model; remote-URL <library src> (needs the async render path). Those are the spec's
 // "decide during the build" judgment slices — see #190.
 
 import { isEnscribeTag } from '../core/tag.js';
@@ -53,9 +58,16 @@ export const HAS_MASTER_SRC = new RegExp(
 
 // Placement markers the spec defines but no slice assembles yet.
 const DEFERRED_MARKERS = new Set(['toc', 'endnotes', 'bibliography', 'endnote-list']);
-// Apparatus blocks passed through untouched (their cross-file semantics are
-// later slices; here they ride along so a single-file-ish master still renders).
-const PASSTHROUGH_APPARATUS = new Set(['meta', 'data', 'config']);
+// A child's <meta>/<config> are document-wide apparatus only the MASTER may declare
+// (the master's <meta type> picks the document class; its <config> is the doc config),
+// so they are stripped from a child. A child's <data> is NOT stripped — it is HOISTED
+// so its <library> sources join the project-wide citation registry (#190).
+const CHILD_STRIP_APPARATUS = new Set(['meta', 'config']);
+
+// Src-bearing apparatus inside a <data> block, for the master-relative rewrite (below).
+// Anchored to the opening tag and stopping at the first `|`, so a `src=` inside an inline
+// `<library bibtex | …>` body (e.g. a bibtex `url={…src=…}`) is never matched.
+const DATA_SRC_RE = /(<(?:library|fig|figure|table|csv|tsv)\b[^>|]*?\bsrc\s*=\s*)("[^"]*"|'[^']*'|[^\s/>|]+)/gi;
 
 /**
  * Assemble a master document into a single flat mdast tree (the document-class
@@ -87,9 +99,12 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
         const kids = childTree.children ?? [];
         const childMeta = kids.find((c) => isEnscribeTag(c, 'meta'));
         childMetaTitle = childMeta?.kwargs?.title ?? '';
-        // The child's body is everything except its own apparatus blocks; the
-        // child's title comes from the structure entry / its meta, not a stray tag.
-        childBody = kids.filter((c) => !(isEnscribeTag(c) && PASSTHROUGH_APPARATUS.has(c.tagname)));
+        // The child's body is everything except its own <meta>/<config>. Its <data>
+        // (the home of <library>) is HOISTED so its sources join the project-wide citation
+        // registry (#190), with each src rewritten from child-relative to master-relative.
+        childBody = kids
+          .filter((c) => !(isEnscribeTag(c) && CHILD_STRIP_APPARATUS.has(c.tagname)))
+          .map((c) => (isEnscribeTag(c, 'data') ? rebaseChildData(c, src) : c));
       } catch (err) {
         // Always-renders: a missing/unreadable child becomes a visible note, not
         // a crash. (#190 — robust per-child error reporting is a later refinement.)
@@ -129,4 +144,30 @@ function stripSrc(kwargs) {
   if (!kwargs) return {};
   const { src, ...rest } = kwargs;
   return rest;
+}
+
+// Rewrite a child-relative asset/library `src` to master-relative: prefix it with the
+// child file's directory, so the build's single master-relative resolve (assetsDir =
+// masterDir for the CLI, the master URL for the browser preload) finds it. Absolute
+// paths and URLs (http:, data:, …) are not child-relative — leave them. POSIX-style
+// relative joining only (no node:path — this module runs in the browser too).
+function rebaseSrc(childSrc, src) {
+  if (!src || src.startsWith('/') || /^[a-z][a-z0-9+.-]*:/i.test(src)) return src;
+  const slash = childSrc.lastIndexOf('/');
+  const dir = slash >= 0 ? childSrc.slice(0, slash) : '';
+  return dir ? `${dir}/${src}` : src;
+}
+
+// A hoisted child <data>'s `src`s are authored relative to the child; rewrite them
+// master-relative (#190). At parse stage <data> content is a raw string (the recursive
+// parser structures it later), so the rewrite is a string transform over the src
+// ATTRIBUTES of src-bearing apparatus only (DATA_SRC_RE's pipe guard skips inline content).
+function rebaseChildData(dataNode, childSrc) {
+  if (typeof dataNode.content !== 'string') return dataNode;
+  const content = dataNode.content.replace(DATA_SRC_RE, (_m, pre, val) => {
+    const q = (val[0] === '"' || val[0] === "'") ? val[0] : '';
+    const raw = q ? val.slice(1, -1) : val;
+    return `${pre}${q}${rebaseSrc(childSrc, raw)}${q}`;
+  });
+  return content === dataNode.content ? dataNode : { ...dataNode, content };
 }

@@ -82,6 +82,8 @@ All `<library>` sources — the master's and any per-chapter ones — merge into
 
 Bibliography *display* can be per-chapter: a `<bibliography>` at a chapter's end lists the references that chapter cites (bookdown's `split_bib` behavior), drawn from the merged registry; a `<bibliography>` at book level lists everything. A chapter's own `<library>` is colocation of its sources, not an isolated registry — so a chapter citing a master-library reference still renders.
 
+When the same `@key` is defined in more than one merged source, the last definition wins and a visible diagnostic flags the collision — the same policy as a within-file duplicate, now spanning files. The citation style is the master's: a child's `<config>` is document-wide apparatus that only the master declares, so one `citation-style` governs the whole registry. A per-chapter `<library src>` is resolved relative to the chapter file that declares it (not the master), so a chapter in a subdirectory loads its own `.bib` correctly.
+
 ## Cross-references and links
 
 Two deliberately distinct mechanisms:

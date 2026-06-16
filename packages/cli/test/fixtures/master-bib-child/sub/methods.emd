@@ -1,0 +1,9 @@
+<meta title="Methods" />
+
+<data>
+<library src="refs.bib" />
+</data>
+
+Methods cites the sibling section's reference <cite @child2021> (cross-file, declared in
+intro.emd), its own subdirectory library's reference <cite @methods2022>, and a
+deliberately missing key <cite @absent>.
