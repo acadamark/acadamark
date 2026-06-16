@@ -32,14 +32,23 @@ enscribe_attributes:
         element from this kwarg. When src is present, the figure renders
         as an image with a caption.
 
-        Embedded-asset reference (#190): when src is `@id` it pulls in an
-        asset declared inside `<data>` as `<fig #id png>base64</fig>`. The
-        asset resolver rewrites src to a `data:image/png;base64,…` URI and
-        the placed figure adopts the id, so it numbers and cross-references
-        (`<ref @id>`) as that id; the `<data>` declaration itself renders
-        nothing. An unresolved `@id` renders a visible asset-error rather
-        than a broken image. Embedded PNG only for now — cross-file merge,
-        external assets, and other media types are later slices.
+        Asset reference (#190): when src is `@id` it pulls in an asset
+        declared inside `<data>`, either embedded —
+        `<fig #id png>base64</fig>` (the format flag is one of png, jpg,
+        jpeg, svg, gif, webp) — or external — `<fig #id src="path" />`. An
+        embedded reference resolves to a `data:<mime>;base64,…` URI; an
+        external one resolves to the declared path (rebased master-relative
+        for a cross-file child) as a plain `<img src="path">`. The placed
+        figure adopts the id, so it numbers and cross-references (`<ref @id>`)
+        as that id; the `<data>` declaration itself renders nothing.
+        Re-placing one asset is legitimate — each `<fig src="@id" />` renders
+        and numbers, but only the first adopts the id (the cross-reference
+        anchor); give a later placement its own `#id` to reference it. An
+        unresolved `@id`, or an embedded format outside the list above,
+        renders a visible asset-error rather than a broken image. Assets
+        merge project-wide across an assembled document; the same id declared
+        in two `<data>` blocks is last-wins with a visible collision flag.
+        (JATS `<graphic>` export of assets is the remaining slice.)
     alt:
       handled_by: handler
       notes: |

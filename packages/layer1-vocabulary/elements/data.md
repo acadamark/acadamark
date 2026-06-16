@@ -29,7 +29,7 @@ content:
     - element: fig
       required: false
       multiple: true
-      notes: 'Embedded image asset (#190): <fig #id png>base64</fig>, pulled into the body by <fig src="@id" />. Embedded PNG only for now; cross-file merge, external assets, and other media types are later slices.'
+      notes: 'Image asset (#190): embedded <fig #id png>base64</fig> (png/jpg/jpeg/svg/gif/webp) or external <fig #id src="path" />, pulled into the body by <fig src="@id" />. Merges project-wide across an assembled document. JATS <graphic> export is the remaining slice.'
     - element: dataset
       required: false
       multiple: true

@@ -2161,7 +2161,7 @@ const _data = Object.freeze({
           "element": "fig",
           "required": false,
           "multiple": true,
-          "notes": "Embedded image asset (#190): <fig #id png>base64</fig>, pulled into the body by <fig src=\"@id\" />. Embedded PNG only for now; cross-file merge, external assets, and other media types are later slices.",
+          "notes": "Image asset (#190): embedded <fig #id png>base64</fig> (png/jpg/jpeg/svg/gif/webp) or external <fig #id src=\"path\" />, pulled into the body by <fig src=\"@id\" />. Merges project-wide across an assembled document. JATS <graphic> export is the remaining slice.",
         },
         {
           "element": "dataset",
@@ -3100,7 +3100,7 @@ const _fig = Object.freeze({
       "kwargs": {
         "src": {
           "handled_by": "handler",
-          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n\nEmbedded-asset reference (#190): when src is `@id` it pulls in an\nasset declared inside `<data>` as `<fig #id png>base64</fig>`. The\nasset resolver rewrites src to a `data:image/png;base64,…` URI and\nthe placed figure adopts the id, so it numbers and cross-references\n(`<ref @id>`) as that id; the `<data>` declaration itself renders\nnothing. An unresolved `@id` renders a visible asset-error rather\nthan a broken image. Embedded PNG only for now — cross-file merge,\nexternal assets, and other media types are later slices.\n",
+          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n\nAsset reference (#190): when src is `@id` it pulls in an asset\ndeclared inside `<data>`, either embedded —\n`<fig #id png>base64</fig>` (the format flag is one of png, jpg,\njpeg, svg, gif, webp) — or external — `<fig #id src=\"path\" />`. An\nembedded reference resolves to a `data:<mime>;base64,…` URI; an\nexternal one resolves to the declared path (rebased master-relative\nfor a cross-file child) as a plain `<img src=\"path\">`. The placed\nfigure adopts the id, so it numbers and cross-references (`<ref @id>`)\nas that id; the `<data>` declaration itself renders nothing.\nRe-placing one asset is legitimate — each `<fig src=\"@id\" />` renders\nand numbers, but only the first adopts the id (the cross-reference\nanchor); give a later placement its own `#id` to reference it. An\nunresolved `@id`, or an embedded format outside the list above,\nrenders a visible asset-error rather than a broken image. Assets\nmerge project-wide across an assembled document; the same id declared\nin two `<data>` blocks is last-wins with a visible collision flag.\n(JATS `<graphic>` export of assets is the remaining slice.)\n",
         },
         "alt": {
           "handled_by": "handler",
