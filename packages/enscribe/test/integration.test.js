@@ -1703,6 +1703,35 @@ export function run() {
     console.log('PASS: integration doc50 (frame border looks — border=<name>)');
   }
 
+  // ── #186: border=false / border="false" turn the border OFF, like -border ───
+  // Inline-rendered (no fixture / no snapshot) so this stays output-neutral on the
+  // committed fixtures. The parser stores every key=value kwarg as a string, so the
+  // bareword `border=false` and the quoted `border="false"` are indistinguishable
+  // downstream — BOTH were ignored before #186 (only `-border` worked). All four
+  // spellings must now agree: no frameable-border class.
+  {
+    const hasBorder = (src) => /frameable-border/.test(runPipeline(src).html);
+
+    assert.ok(!hasBorder('<frame border="false" | x>'),
+      'doc186: <frame border="false"> renders with no border (quoted string form)');
+    assert.ok(!hasBorder('<frame border=false | x>'),
+      'doc186: <frame border=false> renders with no border (bareword form, also fixed)');
+    assert.ok(!hasBorder('<frame -border | x>'),
+      'doc186: <frame -border> renders with no border (canonical boolean, unchanged)');
+    assert.ok(!hasBorder('<aside border="false" | x>'),
+      'doc186: <aside border="false"> renders with no border (aside surface too)');
+
+    // Regression guards: the default is still ON, border="true" is still ON, and a
+    // named look (border=accent) still renders (its value is neither true nor false).
+    assert.ok(hasBorder('<frame | x>'),
+      'doc186: <frame> default border stays ON');
+    assert.ok(hasBorder('<frame border="true" | x>'),
+      'doc186: <frame border="true"> stays ON');
+    assert.ok(/frameable-border-accent/.test(runPipeline('<frame border=accent | x>').html),
+      'doc186: <frame border=accent> still emits its named look (not read as a false toggle)');
+    console.log('PASS: integration doc186 (border=false / "false" turn the border off, aligned with -border)');
+  }
+
   // ── Document 51: article section numbering (#57; number-sections on) ────────
   {
     const src = readFileSync(join(FIXTURES_DIR, 'document-51-section-numbering.emd'), 'utf8');
