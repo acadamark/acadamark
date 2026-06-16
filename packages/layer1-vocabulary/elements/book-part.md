@@ -339,7 +339,7 @@ The structural plugin places this in `<book-back>` because `type="appendix"` is 
 **Direct use of `<book-part>` for unusual types.**
 
 ```
-<book-part type="other" id="rare-thing" | An Unusual Section>
+<book-part type="other" #rare-thing | An Unusual Section>
 Content for something not covered by the standard shorthands.
 ```
 
