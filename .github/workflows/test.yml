@@ -1,0 +1,43 @@
+# CI — run the full test suite on every push and pull request (#49).
+#
+# One job on a current Node LTS (20; the packages declare engines ">=18").
+# It installs from the committed root lockfile, runs every workspace's `test`
+# script (each package's own `pretest` compiles the Peggy grammar / runs the
+# data-freshness guard first), then the enscribe `verify` script — which adds
+# the `render-fixtures.js` pass that `npm test` alone skips, so fixture drift
+# is caught in CI too.
+#
+# libxml2-utils provides `xmllint`, which the CLI package's JATS DTD-validation
+# tests require. Locally xmllint comes from micromamba (~/micromamba/bin/xmllint);
+# a clean runner has neither micromamba nor a guaranteed system xmllint, and
+# those checks fail loudly rather than skip-and-stay-green — so the binary is
+# installed explicitly here.
+
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xmllint (CLI JATS DTD validation)
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run workspace test suites
+        run: npm test --workspaces --if-present
+
+      - name: Verify enscribe (test suites + render-fixtures)
+        run: npm run verify --workspace packages/enscribe
