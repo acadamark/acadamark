@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 103 vocabulary entries.
+// Source files: 104 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -2907,6 +2907,61 @@ const _email = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "email.md",
+  });
+
+const _endnotes = Object.freeze({
+    "semantic_role": "endnotes",
+    "category": "block-prose",
+    "authoring": "generated",
+    "html_output": {
+      "element": "endnotes",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "<endnotes> is a placement MARKER: the note-placement plugin replaces it with the\ncollected end-notes block (which renders as <note-list>). It is parallel to an\nauthor-placed <bibliography> — the author writes an empty <endnotes> where the\nnotes should render; absent it, the collection lands at its default position.\n",
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+    },
+    "content": {
+      "type": "structured",
+      "shape": [
+        {
+          "element": "note",
+          "required": false,
+          "multiple": true,
+          "notes": "When the block is rendered the collected notes appear here. Authors do not\nwrite these directly — the note-placement plugin populates the block.\n",
+        },
+      ],
+    },
+    "content_handler": "default",
+    "jats_counterpart": {
+      "element": "fn-group",
+      "notes": "The collected end-notes map to a JATS <fn-group>. Per-chapter <endnotes> are an\nHTML display concern; JATS keeps its existing single note handling.\n",
+    },
+    "interpreter_strategy": "schema",
+    "generated_by": [
+      {
+        "plugin": "enscribeNotePlacement",
+        "when": "The document has notes. The plugin collects notes (per-chapter in a book,\ndocument-level otherwise) and, when an <endnotes> marker is present, renders\nthe collected block at the marker instead of the default position.\n",
+      },
+    ],
+    "related_plugins": [
+      {
+        "name": "enscribeNotePlacement",
+        "runs_after": "enscribeNotes",
+        "purpose": "Collects notes and places the rendered <note-list> block — at an <endnotes> marker when present, else at the default (chapter end / back-matter). See notes/specs/pipeline.md.",
+      },
+    ],
+    "_sourceFile": "endnotes.md",
   });
 
 const _eqnarray = Object.freeze({
@@ -6546,6 +6601,7 @@ export const VOCABULARY = Object.freeze({
   "editor": _editor,
   "em": _em,
   "email": _email,
+  "endnotes": _endnotes,
   "eqnarray": _eqnarray,
   "example": _example,
   "fig": _fig,

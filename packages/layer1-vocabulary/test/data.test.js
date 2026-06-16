@@ -78,9 +78,11 @@ function check(label, cond) {
 // - 2026-06-09: #33 part 2 — `marginnote.md` added (an unnumbered inline margin
 //   aside; the first element whose authoring tagname, `marginnote`, differs from
 //   its HTML element, `aside`). Net: 102 → 103 primary.
+// - 2026-06-15: #190 — `endnotes.md` added (the author placement marker for the
+//   collected end-notes block, parallel to <bibliography>). Net: 103 → 104 primary.
 check(
-  `VOCABULARY has 105 entries (103 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 105,
+  `VOCABULARY has 106 entries (104 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 106,
 );
 
 // Build-time loader has nothing to report in normal state.

@@ -63,7 +63,7 @@ Title precedence: an inline pipe title wins over the child file's title. If neit
 
 ## Notes and endnotes
 
-Notes auto-collect; the collection is generated, not authored (#129). `<endnotes>` is the author's *placement* marker for the collected block, exactly parallel to `<bibliography>` — put it where the notes should render. Absent it, notes default to the end of the document. A `<config>` option selects footnote-vs-endnote and location (page bottom / section / document / margin), following Quarto's `reference-location`.
+Notes auto-collect; the collection is generated, not authored (#129). `<endnotes>` is the author's *placement* marker for the collected block, exactly parallel to `<bibliography>` — put it where the notes should render. Absent the marker, the collection lands at its default position: in a **book**, at the end of each chapter (per-chapter); in an **article**, in back-matter. An `<endnotes>` authored **inside a chapter** renders **that chapter's** collected notes there (the notes twin of per-chapter `split_bib`); a document-level `<endnotes>` relocates the collected block to the marker. The two may coexist, and note numbering stays project-wide regardless of placement. `<endnotes>` moves only the *end* collection's rendered block — the per-note mode (`end` / `foot` / `side`) and the `note-position` config (footnote-vs-endnote and location, following Quarto's `reference-location`) are separate and unchanged.
 
 ## `<data>` — the shared registry
 
