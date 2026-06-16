@@ -26,7 +26,7 @@ Whitespace-separated keyword arguments (no commas):
    type="book"
    author="Ariel Balter"
    date="2026-09-06"
->
+/>
 ```
 
 `type` is load-bearing: it selects the assembler, the allowed structural vocabulary, and the valid output targets.
@@ -45,11 +45,13 @@ The structural vocabulary is type-specific and does **not** mix — matching LaT
 
 A structural element either references a child file or is authored inline:
 
-- `<section src="section_1.emd">` — content comes from the child file.
+- `<section src="section_1.emd" />` — content comes from the child file.
 - `<section src="section_1.emd" | Title Override>` — the pipe overrides the child file's title.
 - `<section | Inline Title>` + following body — authored inline; an open marker, peer-closed by the next structural element (same model as lists and sections).
 
-The same `src` / pipe-title forms apply to every structural element the document's `type` allows — in a book, `<chapter src="chapter_1.emd">`, `<preface src="preface.emd">`, `<appendix src="appendix.emd" | Notation>`, … assemble exactly as `<section src>` does in an article. The assembler is document-class-agnostic: it stitches the resolved children into one flat tree and the pipeline structures that tree as an `<article>` or a `<book>` (front/body/back) according to `<meta type>`. (A child file's own `<meta>` supplies only its fallback title; per-child author/date in that `<meta>` is not assembled — author a book-part's author as a loose `<author>` in the child body.)
+A kwarg-only entry with no pipe body self-closes — `<section src="section_1.emd" />`, and likewise `<meta … />` and `<library src="…" />` — so the parser does not read it as an unterminated long-form opener (the #190-skeleton self-close call, settled as decision (a); no parser change). The pipe forms terminate the tag, so they carry no slash.
+
+The same `src` / pipe-title forms apply to every structural element the document's `type` allows — in a book, `<chapter src="chapter_1.emd" />`, `<preface src="preface.emd" />`, `<appendix src="appendix.emd" | Notation>`, … assemble exactly as `<section src>` does in an article. The assembler is document-class-agnostic: it stitches the resolved children into one flat tree and the pipeline structures that tree as an `<article>` or a `<book>` (front/body/back) according to `<meta type>`. (A child file's own `<meta>` supplies only its fallback title; per-child author/date in that `<meta>` is not assembled — author a book-part's author as a loose `<author>` in the child body.)
 
 Title precedence: an inline pipe title wins over the child file's title. If neither is present, the title renders as "Title Missing" (always-render).
 
@@ -57,7 +59,7 @@ Title precedence: an inline pipe title wins over the child file's title. If neit
 
 ### Placement markers
 
-`<toc>`, `<endnotes>`, and `<bibliography>` are placement markers: they render their (generated) content where you put them. `<toc auto floating depth="2">` builds the table of contents from the structure at that position — `auto` derives entries from the structure; `floating`/`depth` are display flags.
+`<toc>`, `<endnotes>`, and `<bibliography>` are placement markers: they render their (generated) content where you put them. `<toc auto floating depth="2" />` builds the table of contents from the structure at that position — `auto` derives entries from the structure; `floating`/`depth` are display flags.
 
 ## Notes and endnotes
 
@@ -69,12 +71,12 @@ Notes auto-collect; the collection is generated, not authored (#129). `<endnotes
 
 ```
 <data>
-   <library src="references.bib">
+   <library src="references.bib" />
    <fig id="fig:scatter" png>{base64}</fig>
 </data>
 ```
 
-An asset may be embedded or external — `<fig id="fig:scatter" png>{base64}</fig>` or `<fig src="data/scatter.png" id="fig:scatter">` — and the body references it the same way: `<fig ref="fig:scatter">`. Embedded-vs-external is only about where the bytes live. `<library>` is the citation half of the same idea: load sources into a registry, reference by `@key`.
+An asset may be embedded or external — `<fig id="fig:scatter" png>{base64}</fig>` or `<fig src="data/scatter.png" id="fig:scatter" />` — and the body references it the same way: `<fig ref="fig:scatter" />`. Embedded-vs-external is only about where the bytes live. `<library>` is the citation half of the same idea: load sources into a registry, reference by `@key`.
 
 ## Citations and bibliographies
 
@@ -110,7 +112,6 @@ The assembler is the multi-file/project system (#72) plus a build model. Its des
 
 ## Open — to decide during the build
 
-- **Self-close requirement for kwarg-only structure entries and `<meta>`** (surfaced by the #190 skeleton). A kwarg-only tag with no pipe body — `<meta type=article …>` or `<section src="intro.emd">` — parses *today* as an **unterminated long-form opener**: the parser waits for a matching `</meta>` / `</section>` and swallows the rest of the file until it errors. To parse, these must self-close: `<meta type=article … />`, `<section src="intro.emd" />`. (The pipe forms — `<section src="…" | Title>` and the inline `<section | Title>` — are unaffected; the pipe terminates the tag.) The examples in this spec (§`<meta>`, §Structure entries, §`<data>`) currently omit the slash. The skeleton's fixtures adopted the explicit `/>` form with **no parser change**. To settle: either **(a)** require `/>` on kwarg-only entries and update these examples to match, or **(b)** make `<meta>` / `<section src>` *void* in the master-document context so the bare `<… >` form parses. (b) is parser/grammar work; (a) is a doc change. Decide before the multi-file authoring syntax is documented for authors — this is a chat-surface call, not a Claude Code one.
 - Per-type assembler contracts (the bulk of the work; slice by slice).
 - Website page model for anything outside the nav (a home/landing body, blog-style listings).
 - Embedded-asset format coverage in `<data>` (png shown; others to follow).
