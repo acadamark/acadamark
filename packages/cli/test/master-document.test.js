@@ -126,6 +126,23 @@ function renderBibBook() {
   return { html: proc.stringify(proc.runSync(tree)), warnings };
 }
 
+// Cross-file embedded-asset merge (#190 slice 2): a BOOK where an embedded PNG asset is
+// declared in chapter 1's <data> and referenced cross-chapter from chapter 2, plus a
+// duplicate id declared in both chapters (last-wins + a visible collision flag).
+const ASSET_BOOK_DIR = join(__dirname, 'fixtures', 'master-asset-book');
+function renderAssetBook() {
+  const proc = buildEnscribePipeline({ assetsDir: ASSET_BOOK_DIR });
+  const warnings = [];
+  const tree = assembleMasterDocument({
+    source: readFileSync(join(ASSET_BOOK_DIR, 'master.emd'), 'utf8'),
+    readFile: (p) => readFileSync(p, 'utf8'),
+    resolve: (rel) => join(ASSET_BOOK_DIR, rel),
+    parse: (s) => proc.parse(s),
+    warn: (m) => warnings.push(m),
+  });
+  return { html: proc.stringify(proc.runSync(tree)), warnings };
+}
+
 // The <endnotes> placement marker (#190): a multi-file BOOK where each chapter ends with an
 // <endnotes /> marker placing that chapter's collected notes there.
 const ENDNOTES_BOOK_DIR = join(__dirname, 'fixtures', 'master-endnotes-book');
@@ -387,5 +404,43 @@ export function run_tests() {
 
     assert.equal(warnings.length, 0, `the <endnotes> book assembles with no warnings (got: ${warnings.join('; ')})`);
     console.log('PASS: #190 — <endnotes> places each chapter\'s collected notes at the marker (project-wide numbering)');
+  }
+
+  // ── #190 slice 2: cross-file embedded-asset merge ───────────────────────────
+  // An embedded PNG asset declared in chapter 1's <data> is referenced cross-chapter
+  // from chapter 2 — the asset twin of the cross-file citation-registry merge, free via
+  // the assembler hoisting child <data>. A duplicate id declared across two chapters is
+  // last-wins with a visible always-renders collision flag. master-document.md §<data>.
+  {
+    const { html: raw, warnings } = renderAssetBook();
+    // Count markup only — the standalone doc embeds tooltip JS mentioning <figure>/<img>.
+    const book = raw.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '');
+    const imgs = [...book.matchAll(/<img\b[^>]*\bsrc="([^"]*)"/g)].map((m) => m[1]);
+    const figureIds = [...book.matchAll(/<figure\b[^>]*\bid="([^"]*)"/g)].map((m) => m[1]);
+    const labels = [...book.matchAll(/Figure\s+([0-9.]+)/g)].map((m) => m[1]);
+
+    // Cross-chapter resolution: the asset declared in ch1 places a data: URI figure in ch2,
+    // adopts its id, and numbers in chapter 2 (book per-chapter numbering 2.1 / 2.2).
+    assert.equal(imgs.length, 2, 'two placed images (both asset references resolved cross-file)');
+    assert.ok(imgs.every((s) => /^data:image\/png;base64,/.test(s)), 'both placed images are png data: URIs');
+    assert.deepEqual(figureIds, ['fig:scatter', 'fig:dup'], 'both placed figures adopt their asset ids');
+    assert.deepEqual(labels, ['2.1.', '2.2.'], 'figures number cross-chapter (chapter 2: 2.1, 2.2)');
+    assert.ok(/<a [^>]*href="#fig:scatter"[^>]*>figure 2\.1<\/a>/.test(book),
+      'the cross-chapter <ref @fig:scatter> resolves to "figure 2.1"');
+
+    // No stray figure from either <data> declaration (all stripped); <data> absent; no leak.
+    assert.ok(!/<data\b/.test(book), '<data> blocks are not in the rendered output');
+    assert.ok(!/<img\b[^>]*\bsrc="@/.test(book), 'no raw @-src <img> leaked');
+
+    // Duplicate id across chapters: the LAST declaration (chapter 2) wins, with a visible flag.
+    const dupFig = (book.match(/<figure\b[^>]*\bid="fig:dup"[\s\S]*?<\/figure>/) || [''])[0];
+    assert.ok(/hKmMIQ/.test(dupFig) && !/WjR9aw/.test(dupFig),
+      'the duplicated @fig:dup resolves to the chapter-2 payload (last declaration wins)');
+    assert.ok(/class="enscribe-asset-error"/.test(book), 'the duplicate declaration renders a visible collision flag');
+    assert.ok(/duplicate embedded-asset id .fig:dup. declared in more than one/.test(book),
+      'the collision flag names the duplicated id and states last-wins');
+
+    assert.equal(warnings.length, 0, `the asset book assembles with no warnings (got: ${warnings.join('; ')})`);
+    console.log('PASS: #190 slice 2 — cross-file embedded asset resolves cross-chapter; duplicate id is last-wins with a visible flag');
   }
 }

@@ -1,0 +1,17 @@
+<meta title="Results" />
+
+# Results
+
+Cross-chapter reference: see <ref @fig:scatter> for the scatter plot declared back
+in the methods chapter.
+
+<fig src="@fig:scatter" | A scatter plot declared in the methods chapter.>
+
+This chapter re-declares the `dup` asset with a different payload; the last
+declaration across the assembled document wins, with a visible collision flag.
+
+<data>
+<fig #fig:dup png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==</fig>
+</data>
+
+<fig src="@fig:dup" | The duplicated figure, resolved last-wins.>

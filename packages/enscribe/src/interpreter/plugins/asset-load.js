@@ -78,14 +78,46 @@ function collectAssetPayload(content) {
  * (#190, mirroring __library-error): an unresolved @id / unsupported format / empty
  * payload shows a visible block naming the reference, never a broken <img src="@…">.
  */
+function makeAssetError(ref, message) {
+  return { type: 'enscribeTag', tagname: '__asset-error', kwargs: { ref: ref ?? '', message }, content: null };
+}
+
+/**
+ * Turn a <fig> node in place into a visible __asset-error (the resolution path,
+ * before numbering — so the error is never counted as a figure).
+ */
 function assetError(node, ref, message) {
-  node.tagname = '__asset-error';
-  node.kwargs = { ref: ref ?? '', message };
-  node.content = null;
+  Object.assign(node, makeAssetError(ref, message));
   node.id = null;
   node.positional = [];
   node.booleans = {};
   node.atRefs = [];
+}
+
+/**
+ * Inject visible __asset-error nodes at the top of the rendered body so a
+ * duplicate-declaration collision is never silently dropped. Targets the first
+ * <article-body>/<book-body>; falls back to the tree root. Mirrors
+ * library-load.js's injectLibraryErrors (a future shared helper could DRY both).
+ */
+function injectAssetErrors(tree, errors) {
+  if (errors.length === 0) return;
+  let target = null;
+  (function find(nodes) {
+    for (const n of nodes ?? []) {
+      if (target) return;
+      if (isEnscribeTag(n, 'article-body') || isEnscribeTag(n, 'book-body')) { target = n; return; }
+      if (isEnscribeTag(n) && Array.isArray(n.content)) find(n.content);
+      if (Array.isArray(n.children)) find(n.children);
+    }
+  })(tree.children ?? []);
+  if (target) {
+    target.content = Array.isArray(target.content) ? target.content : [];
+    target.content.unshift(...errors);
+  } else {
+    tree.children = tree.children ?? [];
+    tree.children.unshift(...errors);
+  }
 }
 
 /**
@@ -101,6 +133,7 @@ function assetError(node, ref, message) {
 export function buildAssetIndex(tree, file) {
   const dataNodes = collectDataNodes(tree.children ?? []);
   const assets = new Map();
+  const errors = [];
 
   for (const dataNode of dataNodes) {
     if (!Array.isArray(dataNode.content)) continue;
@@ -113,6 +146,14 @@ export function buildAssetIndex(tree, file) {
         file?.message?.('asset-load: <fig> in <data> has no #id — not registered as an asset', child);
         return true;                                          // malformed: leave it (and warn)
       }
+      if (assets.has(id)) {
+        // #190 cross-file merge: the same id declared in more than one <data>
+        // block (e.g. two chapters of an assembled book). dataNodes are in
+        // document order, so the set() below keeps the LAST declaration; emit a
+        // visible always-renders collision flag — mirroring library-load's
+        // duplicate-citation-key handling, never a silent overwrite.
+        errors.push(makeAssetError('', `duplicate embedded-asset id "${id}" declared in more than one <data> block — last declaration wins`));
+      }
       assets.set(id, { format: child.positional?.[0] ?? null, base64: collectAssetPayload(child.content) });
       return false;                                           // strip the declaration
     });
@@ -122,6 +163,8 @@ export function buildAssetIndex(tree, file) {
     file.data = file.data ?? {};
     file.data[ENSCRIBE_ASSETS] = assets;
   }
+  // always-renders: inject any duplicate-declaration collision flags into the body.
+  injectAssetErrors(tree, errors);
 }
 
 /** Resolve one <fig> whose src is an @id asset reference, in place. */

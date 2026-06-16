@@ -1,0 +1,11 @@
+<meta title="Methods" />
+
+# Methods
+
+The scatter plot is declared in this chapter's data block and referenced from the
+results chapter. The `dup` asset is also declared here, and again in chapter 2.
+
+<data>
+<fig #fig:scatter png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</fig>
+<fig #fig:dup png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</fig>
+</data>
