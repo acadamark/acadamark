@@ -87,6 +87,8 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'Show the cover / title page as the landing view. Off = land on the first chapter.' },
   { key: 'back-to-top', family: 'Book navigation', type: 'boolean', values: null, default: 'off', scope: 'book-only',
     description: 'An optional scroll-to-top control within a chapter.' },
+  { key: 'on-this-page', family: 'Book navigation', type: 'boolean', values: null, default: 'on', scope: 'book-only',
+    description: 'The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns.' },
   { key: 'split-by', family: 'Book navigation', type: 'valued', values: 'chapter | section | none', default: 'chapter', scope: 'book-only',
     description: 'The pagination unit. Only chapter is built; section and none are specified but deferred.' },
 

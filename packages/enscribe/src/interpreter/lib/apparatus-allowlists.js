@@ -110,6 +110,7 @@ export const CONFIG_KWARGS = new Map([
   ['page-navigation',         boolean()],   // prev/next chapter links (chapterNavBar)
   ['cover',                   boolean()],   // cover landing page; off = land on the first chapter
   ['back-to-top',             boolean()],   // scroll-to-top control within a chapter
+  ['on-this-page',            boolean()],   // book-scaffold resolveBookNavConfig / lib/toc.js applyBookToc — the per-chapter on-this-page rail (right column); default on; #248
   ['split-by',                valued()],    // pagination unit: chapter (built) | section | none (deferred)
 
   // The remaining keys, enumerated as intended <config> surface by the

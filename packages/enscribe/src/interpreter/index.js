@@ -734,7 +734,10 @@ export function enscribeInterpreter(options = {}) {
     if (tocConfig) {
       configTocShape = applyConfigToc(hast, tocConfig);
     } else {
-      tocType = applyToc(hast, tocOption);
+      // #248: gate the single-scroll book interface's on-this-page rail. Same key + default
+      // as resolveBookNavConfig (the separate-pages / live paths), so the three shapes agree.
+      const onThisPage = readConfigBool(configMap, 'on-this-page', true);
+      tocType = applyToc(hast, tocOption, onThisPage);
     }
     if (configTocShape) {
       hast.children.unshift(makeStyleElement(TOC_CONFIG_CSS));

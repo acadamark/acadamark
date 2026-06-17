@@ -59,6 +59,7 @@ const PREV_NEXT = '<nav class="enscribe-chapter-nav"';
 const BACK_TO_TOP_BTN = '<button type="button" class="enscribe-back-to-top"';
 const BACK_TO_TOP_RULE = '.enscribe-back-to-top--visible';   // a distinctive injected-CSS rule
 const RAIL_SECTIONS = '<ul class="enscribe-rail-sections"';
+const ON_THIS_PAGE = '<nav class="enscribe-onthispage"';   // #248: the per-chapter on-this-page rail
 
 export async function run() {
   // ── defaults: the full chrome, both paths (the byte-identical baseline) ───────────
@@ -72,6 +73,8 @@ export async function run() {
     assert.equal(resolveHash('', model).cover, true, 'default: live empty hash → cover');
     assert.ok(!staticPage.includes(BACK_TO_TOP_BTN), 'default: no back-to-top control');
     assert.ok(!staticPage.includes(RAIL_SECTIONS), 'default: rail is chapters-only (depth 1)');
+    assert.ok(staticPage.includes(ON_THIS_PAGE), 'default: static on-this-page rail present');
+    assert.ok(chapterView.includes(ON_THIS_PAGE), 'default: live on-this-page rail present');
     console.log('PASS: book-nav defaults — full chrome present, both paths');
   }
 
@@ -81,6 +84,39 @@ export async function run() {
     assert.ok(!staticPage.includes(RAIL), 'chapter-nav=false: static rail gone');
     assert.ok(!chapterView.includes(RAIL), 'chapter-nav=false: live rail gone');
     console.log('PASS: chapter-nav=false removes the chapter rail (static + live)');
+  }
+
+  // ── on-this-page=false: the on-this-page rail is gone in both scaffold paths; the
+  //    chapter rail is unaffected (independent toggles) — #248 ───────────────────────
+  {
+    const { staticPage, chapterView } = chrome('<config on-this-page=false />');
+    assert.ok(!staticPage.includes(ON_THIS_PAGE), 'on-this-page=false: static rail gone');
+    assert.ok(!chapterView.includes(ON_THIS_PAGE), 'on-this-page=false: live rail gone');
+    assert.ok(staticPage.includes(RAIL), 'on-this-page=false: chapter rail still present (independent toggle)');
+    console.log('PASS: on-this-page=false removes the on-this-page rail (static + live); chapter rail unaffected');
+  }
+
+  // ── single-scroll book interface (applyBookToc, the compiler `toc` path): on-this-page
+  //    gates the 3rd column, collapsing 3-col → the existing 2-col layout — #248. (The
+  //    blocks above cover the separate-pages + live paths; this covers the third shape.) ─
+  {
+    const BOOK = [
+      '<meta type=book>', '<title | Field Guide>', '</meta>', '',
+      '<chapter #c1 | One>', '', 'Body.', '', '<# #s1 | Alpha #>', '', 'a', '',
+      '<chapter #c2 | Two>', '', 'Body.', '', '<# #s2 | Beta #>', '', 'b', '',
+      '<chapter #c3 | Three>', '', 'Body.', '', '<# #s3 | Gamma #>', '', 'c', '',
+      '<chapter #c4 | Four>', '', 'Body.', '', '<# #s4 | Delta #>', '', 'd',
+    ].join('\n');
+    const THREE_COL = 'enscribe-layout--book enscribe-layout--book-3col"';
+    const render = (src) => String(buildEnscribePipeline({ embedResources: false, toc: true }).processSync(src));
+    const on = render(BOOK);
+    assert.ok(on.includes(ON_THIS_PAGE), 'single-scroll default: on-this-page rail present');
+    assert.ok(on.includes(THREE_COL), 'single-scroll default: 3-col book layout');
+    const off = render(BOOK.replace('</meta>', '</meta>\n\n<config on-this-page=false />'));
+    assert.ok(!off.includes(ON_THIS_PAGE), 'single-scroll on-this-page=false: rail gone');
+    assert.ok(!off.includes(THREE_COL), 'single-scroll on-this-page=false: not 3-col');
+    assert.ok(off.includes('enscribe-layout--book"'), 'single-scroll on-this-page=false: dropped to the existing 2-col --book layout');
+    console.log('PASS: single-scroll applyBookToc — on-this-page gates the 3rd column (3-col → 2-col)');
   }
 
   // ── page-navigation=false: prev/next gone, rail untouched ─────────────────────────

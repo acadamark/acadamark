@@ -173,7 +173,7 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
     ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => `${p.slug}#${s.id}` }
     : {};
   const rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, chapterHref, part.id, home, railOpts)) : '';
-  const onThisPageNav = buildOnThisPage([part]);
+  const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHref);
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';

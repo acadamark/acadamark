@@ -25,6 +25,7 @@ by default, and it preserves the existing book view, which already renders this 
 | `page-navigation` | boolean | on | Prev/next chapter links at the foot of each chapter. | Quarto `page-navigation` |
 | `cover` | boolean | on | Show the cover / title page as the book's landing view. Off = land on the first chapter. | Enscribe cover route |
 | `back-to-top` | boolean | off | An optional scroll-to-top control within a chapter (distinct from the rail's return-to-cover link). | Quarto `back-to-top-navigation` |
+| `on-this-page` | boolean | on | The per-chapter "on this page" rail — the current chapter's section list, shown as the right column of the reading interface. Off drops the interface to two columns (chapter rail + body). Gated identically in all three shapes (single-scroll, separate-pages, live). | Quarto right-margin TOC |
 | `split-by` | `chapter` \| `section` \| `none` | `chapter` | The pagination unit — how the book breaks into navigable pages/routes (see below). | bookdown `split_by` |
 
 ## Pagination (`split-by`)

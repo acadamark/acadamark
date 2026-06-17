@@ -368,7 +368,7 @@ function appendChapterNav(parts) {
 }
 
 /** Build the book's three-column reading interface in place. */
-function applyBookToc(hast, docIdx, bookEl, toc) {
+function applyBookToc(hast, docIdx, bookEl, toc, onThisPageEnabled = true) {
   const parts = collectBookParts(bookEl);
   if (parts.length === 0) return null;
   if (toc === 'auto' && parts.length <= 3) return null;
@@ -376,7 +376,10 @@ function applyBookToc(hast, docIdx, bookEl, toc) {
   assignBookIds(parts, collectIds(bookEl, new Set()));
 
   const chapterRail = buildChapterRail(parts);
-  const onThisPage = buildOnThisPage(parts);
+  // #248: the on-this-page rail (3rd column) is config-gated, default on. When off,
+  // `onThisPage` is null → the layout below drops to the existing 2-col `--book` (no
+  // `--book-3col`), reusing the section-less-chapter path; no new layout or CSS.
+  const onThisPage = onThisPageEnabled ? buildOnThisPage(parts) : null;
   appendChapterNav(parts);
 
   const main = el('main', { className: ['enscribe-body'] }, [bookEl]);
@@ -394,11 +397,13 @@ function applyBookToc(hast, docIdx, bookEl, toc) {
  * @param {import('hast').Root} hast  the compiled document hast (children hold the
  *   `<article>` / `<book>` element; assets are injected by the caller afterwards).
  * @param {boolean|'auto'} toc
+ * @param {boolean} [onThisPage=true] #248 — gate the book interface's on-this-page rail
+ *   (the 3rd column). Off collapses the single-scroll book to 2-col. Ignored for articles.
  * @returns {'article'|'book'|null} the document type when a ToC was applied (so the
  *   caller can gate book-only render assets — the on-this-page script — on it), or
  *   null when nothing was done.
  */
-export function applyToc(hast, toc) {
+export function applyToc(hast, toc, onThisPage = true) {
   if (toc !== true && toc !== 'auto') return null;
 
   const docIdx = (hast.children ?? []).findIndex(
@@ -408,7 +413,7 @@ export function applyToc(hast, toc) {
   const docEl = hast.children[docIdx];
 
   // Book: the three-column reading interface (Slice C).
-  if (docEl.tagName === 'book') return applyBookToc(hast, docIdx, docEl, toc);
+  if (docEl.tagName === 'book') return applyBookToc(hast, docIdx, docEl, toc, onThisPage);
 
   // Article: the single nested sidebar (unchanged since Slice 1 — glued title text
   // and glued-derived ids, so numbered or not it is byte-identical to before).
