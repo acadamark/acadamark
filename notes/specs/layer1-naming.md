@@ -62,7 +62,9 @@ The corresponding title elements follow the container-role rule:
 | `<section-title>`          | `<section>`         |
 | `<section-subtitle>`       | `<section>`         |
 | `<sub-section-title>`      | `<sub-section>`     |
+| `<sub-section-subtitle>`   | `<sub-section>`     |
 | `<sub-sub-section-title>`  | `<sub-sub-section>` |
+| `<sub-sub-section-subtitle>` | `<sub-sub-section>` |
 
 ### Rule 4: Consult JATS before adding new vocabulary
 
