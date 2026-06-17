@@ -28,6 +28,13 @@
     return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [] }
   }
 
+  // #256: the default-attribute block for the shortcut rules, matching
+  // from-markdown.js's defaultEnscribeTagAttrs() field-for-field (the two surfaces
+  // must emit the same node shape). A fresh object per call (mutable [] / {} unaliased).
+  function defaultAttrs() {
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], selfClosing: false }
+  }
+
   function applyAttributes(attrList) {
     const result = emptyAttrs()
     for (const attr of attrList) {
@@ -457,8 +464,7 @@ function peg$parse(input, options) {
         contentHandler: 'default',
         content: processContentItems(content),
         isOpaqueContent: false,
-        positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [],
-        selfClosing: false,
+        ...defaultAttrs(),
       }
     };
   var peg$f40 = function() { return { type: 'enscribeParseError', subtype: 'empty-shortcut', source: text() } };
@@ -469,8 +475,7 @@ function peg$parse(input, options) {
         contentHandler: 'default',
         content: processContentItems(content),
         isOpaqueContent: false,
-        positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [],
-        selfClosing: false,
+        ...defaultAttrs(),
       }
     };
   var peg$f43 = function() { return { type: 'enscribeParseError', subtype: 'empty-shortcut', source: text() } };

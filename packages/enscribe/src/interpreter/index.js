@@ -178,6 +178,7 @@ import { parseCsv, parseTsv } from './handlers/table.js';
 // parseCsv above.
 import { formatScopedNumber } from './lib/scoped-number.js';
 import { extractPlainText } from './lib/ast-helpers.js';
+import { TABLE_TAGS } from './lib/table-constants.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc, readTocConfig, applyConfigToc } from './lib/toc.js';
@@ -1127,10 +1128,9 @@ export function collectLibrarySources(source) {
 export function collectTableSources(source) {
   const tree = liftToCanonicalMdast(source);
   const srcs = [];
-  const TABLE_TAGS = new Set(['table', 'csv', 'tsv']);
   (function walk(nodes) {
     for (const n of nodes ?? []) {
-      if (n?.type === 'enscribeTag' && TABLE_TAGS.has(n.tagname) && n.kwargs?.src) {
+      if (n?.type === 'enscribeTag' && TABLE_TAGS.includes(n.tagname) && n.kwargs?.src) {
         srcs.push(n.kwargs.src);
       }
       if (n?.type === 'enscribeTag' && Array.isArray(n.content)) walk(n.content);

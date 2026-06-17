@@ -25,17 +25,12 @@ import { makeTag, makeInternalMarker } from '../../core/tag.js';
 import { ENSCRIBE_CITATIONS, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { isBookRegionTag } from '../lib/book-regions.js';
+import { escapeHtmlAttr } from '../../core/escape-html.js';
 
-// Escape author-supplied text for embedding in the raw-HTML heading (#23). The
-// bibliography heading is emitted as a raw hast node (cite.js bibliographyHandler),
-// so the override text must be HTML-escaped to avoid injecting markup.
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+// The bibliography heading override (#23) is emitted as a raw hast node
+// (cite.js bibliographyHandler), so author-supplied text is HTML-escaped to avoid
+// injecting markup. Uses the shared quote-escaping escaper (escapeHtmlAttr, #254) —
+// the 4-entity superset, preserving this site's pre-consolidation `"`-escaping.
 
 // ─── Deep-search helpers (same pattern as notes.js) ──────────────────────────
 
@@ -270,7 +265,7 @@ export function enscribeBibliography() {
     // emitted raw, so the author-supplied text is HTML-escaped before the wrapper.
     const headingText =
       file?.data?.[ENSCRIBE_CONFIG]?.get('bibliography-heading') ?? 'References';
-    const headingHtml = `<h2>${escapeHtml(headingText)}</h2>`;
+    const headingHtml = `<h2>${escapeHtmlAttr(headingText)}</h2>`;
 
     if (!citations || !citations.cite || citations.order.length === 0) {
       // No citations resolved → remove every author-placed <bibliography> (back-matter

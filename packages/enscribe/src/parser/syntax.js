@@ -30,6 +30,8 @@ const DASH = 45  // -
 const STAR = 42  // *
 const LI_L = 108 // l
 const LI_I = 105 // i
+const LI_S = 115 // s
+const LI_T = 116 // t
 
 /** @param {Code} code */
 function isAsciiAlphaCode(code) {
@@ -747,7 +749,7 @@ function makeLongFormTokenizer({ multiLine }) {
       nestable =
         tagNameCodes.length === 4 &&
         tagNameCodes[0] === LI_L && tagNameCodes[1] === LI_I &&
-        tagNameCodes[2] === 115 && tagNameCodes[3] === 116 // l i s t
+        tagNameCodes[2] === LI_S && tagNameCodes[3] === LI_T // l i s t
       return scanOpenAttrs(code)
     }
 

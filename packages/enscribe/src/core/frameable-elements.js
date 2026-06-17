@@ -51,17 +51,22 @@
  * schemas and the schema dispatcher's `buildProperties`, not by this
  * registry).
  */
+// Every frameable lifts the same two kwargs; one shared read-only Set (#255) rather
+// than ten identical literals. Read-only (spec.liftedKwargs.has(key)), so sharing the
+// instance is safe.
+const FRAMEABLE_LIFTABLE_KWARGS = new Set(['caption', 'title']);
+
 export const FRAMEABLE_LIFTABLE = new Map([
-  ['fig',     { liftedKwargs: new Set(['caption', 'title']) }],
-  ['table',   { liftedKwargs: new Set(['caption', 'title']) }],
-  ['csv',     { liftedKwargs: new Set(['caption', 'title']) }],
-  ['tsv',     { liftedKwargs: new Set(['caption', 'title']) }],
-  ['mermaid', { liftedKwargs: new Set(['caption', 'title']) }],
-  ['abc',     { liftedKwargs: new Set(['caption', 'title']) }],
-  ['diagram', { liftedKwargs: new Set(['caption', 'title']) }],  // #22 slice 3: the diagram host
-  ['svg',     { liftedKwargs: new Set(['caption', 'title']) }],
-  ['frame',   { liftedKwargs: new Set(['caption', 'title']) }],
-  ['aside',   { liftedKwargs: new Set(['caption', 'title']) }],  // #31: aside joins the frameable class
+  ['fig',     { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['table',   { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['csv',     { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['tsv',     { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['mermaid', { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['abc',     { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['diagram', { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],  // #22 slice 3: the diagram host
+  ['svg',     { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['frame',   { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
+  ['aside',   { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],  // #31: aside joins the frameable class
 ]);
 
 /**

@@ -18,7 +18,7 @@
 // needs a re-emit. Staying pure (no emit-time master read) is the point — the dispatch lives in the
 // engine, not here.
 
-const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+import { escapeHtml } from '../core/escape-html.js';
 
 // Document-display CDN assets (pinned; the KaTeX CSS matches the engine's KATEX_CDN_URL). These are
 // the #117-deferred asset-mode concern, not the shell chrome `assetBase` covers — left as CDN links.
