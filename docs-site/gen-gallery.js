@@ -40,6 +40,7 @@ import { NON_VOCAB_CONSTRUCTS } from './gallery-non-vocab.js';
 // guard runs in that package's suite). Imported via the same relative cross-package
 // path gen-reference.js uses for its data sources.
 import { FEATURED_SHORTHAND, FEATURED_LAYER1 } from '../packages/enscribe/src/interpreter/lib/featured-elements.js';
+import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: 4-entity (& < > ") — the shared attr-grade escaper
 
 // Category display order + human labels. The keys are the `category` field
 // values written into each element's frontmatter (see
@@ -65,8 +66,6 @@ const CATEGORY_ORDER = [
 
 const UNCATEGORIZED = '__uncategorized__';
 
-const escapeHtml = (s) => String(s)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // The pipeline prepends injected asset tags (CDN <link>s for fonts/KaTeX,
 // <script>s for live-link DSLs) to every rendered fragment. Rendering each
