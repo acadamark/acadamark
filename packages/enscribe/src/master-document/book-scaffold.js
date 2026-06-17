@@ -27,7 +27,7 @@
 // the wrapper in each consumer.
 
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
-import { slugify, uniqueId } from '../interpreter/lib/toc.js';
+import { slugify, uniqueId, readTocConfig } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
 import { BOOK_REGIONS } from '../interpreter/lib/book-regions.js';
 import { readConfigBool } from '../interpreter/lib/config-helpers.js';
@@ -177,8 +177,8 @@ export { escapeHtml };
  *  Rendered verbatim by P1's static cover (`pages/index.html`) and the live cover view, so
  *  the published cover and the previewed cover are the same artifact. Each consumer wraps
  *  this in its own `<main class="enscribe-body">` + rail + layout. */
-export function coverBodyHtml(bookTitle) {
-  return `<book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p>`;
+export function coverBodyHtml(bookTitle, contentsHtml = '') {
+  return `<book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p>${contentsHtml}`;
 }
 
 // ─── Book navigation config (#221) ────────────────────────────────────────────
@@ -229,4 +229,28 @@ export function resolveBookNavConfig(file) {
     onThisPage:     readConfigBool(configMap, 'on-this-page', true),
     splitBy,
   };
+}
+
+/**
+ * Resolve the book's contents-OVERVIEW config — the `<config toc>` listing rendered on the
+ * cover / landing page (#226). Returns the toc config ({depth,title,location,expand}) or null
+ * when `toc` is off. Per the document-class decision (notes/decisions.md "Table of contents by
+ * document class"), `<config toc>` on a book is a cover overview, not a sidebar: a
+ * `toc-location=left|right` emits a located non-fatal diagnostic (the chapter rail is the
+ * book's sidebar table of contents) and the listing renders on the cover regardless.
+ *
+ * @param {object} file - the VFile carrying file.data[ENSCRIBE_CONFIG]
+ * @returns {{depth:number,title:string,location:'body'|'left'|'right',expand:number}|null}
+ */
+export function resolveBookContentsConfig(file) {
+  const cfg = readTocConfig(file?.data?.[ENSCRIBE_CONFIG] ?? null);
+  if (cfg && cfg.location !== 'body' && typeof file?.message === 'function') {
+    file.message(
+      `toc-location=${cfg.location} is not supported on a book — the chapter rail is the book's ` +
+      `sidebar table of contents; <config toc> renders a contents overview on the cover instead.`,
+      undefined,
+      'book-navigation:toc-location-on-book',
+    );
+  }
+  return cfg;
 }

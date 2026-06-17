@@ -10,8 +10,16 @@ All settings are `<config>` kwargs.
 
 A document gets **no** table of contents unless it asks for one — `toc` defaults off, for articles and
 books alike. Nothing is auto-inserted, so authoring stays clean and a document carries only the
-structure its author opted into. Books are **not** special-cased for the contents listing: a book that
-wants one sets `<config toc>` in its master (as the example documents and the docs site do).
+structure its author opted into. For a **book**, `<config toc>`'s meaning is per document class (see
+`notes/decisions.md`, "Table of contents by document class"): the persistent **chapter rail is the
+book's table of contents**, and `<config toc>` adds a contents **overview on the cover / landing page**.
+In the **single-page** build that overview is the inline `enscribe-contents` listing reflecting the
+whole-book structure; in the **default separate-pages build and the live render** the same whole-book
+overview is built at assembly time from the chapter/section tree and rendered on the **cover** (the
+`body` location) — uniformly honored across all three book shapes. `toc-location=left|right` is **not**
+supported on a book — the chapter rail already fills the sidebar role — so those locations emit a located
+diagnostic and the overview renders on the cover regardless. (The rail itself is configured by the
+chapter-nav family; see `notes/specs/book-navigation.md`.)
 
 `number-sections`, by contrast, splits by document class — **off for articles, on for books**.
 Declaring `<meta type=book>` opts into book conventions, where numbered chapters and sections
