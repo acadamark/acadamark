@@ -201,7 +201,7 @@ const SPLIT_BY_VALUES = new Set(['chapter', 'section', 'none']);
  *
  * @param {object} file - the VFile carrying file.data[ENSCRIBE_CONFIG]
  * @returns {{chapterNav:boolean, chapterNavDepth:number, pageNavigation:boolean,
- *           cover:boolean, backToTop:boolean, splitBy:string}}
+ *           cover:boolean, backToTop:boolean, onThisPage:boolean, splitBy:string}}
  */
 export function resolveBookNavConfig(file) {
   const configMap = file?.data?.[ENSCRIBE_CONFIG] ?? null;
@@ -226,6 +226,7 @@ export function resolveBookNavConfig(file) {
     pageNavigation: readConfigBool(configMap, 'page-navigation', true),
     cover:          readConfigBool(configMap, 'cover', true),
     backToTop:      readConfigBool(configMap, 'back-to-top', false),
+    onThisPage:     readConfigBool(configMap, 'on-this-page', true),
     splitBy,
   };
 }

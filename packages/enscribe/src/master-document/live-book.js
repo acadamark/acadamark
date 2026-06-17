@@ -163,7 +163,7 @@ export function renderLiveChapterView(model, idx, ctx) {
   // cover off → the masthead 'home' points at the first chapter (the landing), not the cover.
   const home = { href: bookNav.cover ? COVER_HASH : chapterHash(parts[0]), title: bookTitle };
   const rail = liveRail(parts, part.id, home, bookNav);
-  const onThisPageNav = buildOnThisPage([part]);
+  const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHash);
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
