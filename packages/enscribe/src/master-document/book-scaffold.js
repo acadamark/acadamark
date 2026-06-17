@@ -29,12 +29,9 @@
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { slugify } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
+import { BOOK_REGIONS } from '../interpreter/lib/book-regions.js';
 import { readConfigBool } from '../interpreter/lib/config-helpers.js';
 import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
-
-// The three book regions, in reading order, mapped to a short region key the rail
-// markup carries (so the theme can style front/body/back differently).
-const BOOK_REGIONS = { 'book-front': 'front', 'book-body': 'body', 'book-back': 'back' };
 
 const cleanText = (s) => s.replace(/\s+/g, ' ').trim();
 

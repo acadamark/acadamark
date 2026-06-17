@@ -21,6 +21,7 @@
 // vocab `type.regions` map — the natural and only place to do it.
 
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { tagnamesInCategory } from './vocab-categories.js';
 
 const TYPE_KWARG = VOCABULARY['book-part']?.enscribe_attributes?.kwargs?.type ?? {};
 const TYPE_VALUES = new Set(TYPE_KWARG.values ?? []);
@@ -48,4 +49,41 @@ export const BOOK_PART_BACK_TYPES = new Set(REGIONS.back ?? []);
  *  type not enumerated as front- or back-matter). Body is the default region. */
 export function isBodyBookPart(type) {
   return !BOOK_PART_FRONT_TYPES.has(type) && !BOOK_PART_BACK_TYPES.has(type);
+}
+
+// ─── Book-region WRAPPER tagnames ────────────────────────────────────────────
+// The three structural regions a <book> body is split into. Distinct from the
+// book-part *type* regions above (which classify each <book-part>): these are the
+// <book-front>/<book-body>/<book-back> wrapper elements themselves. Hand-encoded
+// in five sites before #252 (two note-placement filters, bibliography, toc.js's
+// and book-scaffold.js's BOOK_REGIONS map); now one source, mirroring section-kinds.js.
+
+/** The three book-region wrapper tagnames, in document order. */
+export const BOOK_REGION_TAGNAMES = Object.freeze(['book-front', 'book-body', 'book-back']);
+
+/** Book-region wrapper tagname → its short presentation token (front/body/back). */
+export const BOOK_REGIONS = Object.freeze({
+  'book-front': 'front',
+  'book-body': 'body',
+  'book-back': 'back',
+});
+
+// Load-time guard (the book-regions subset-check style above): every wrapper
+// tagname must be a real vocab `structural-regions` element. A SUBSET check —
+// the category also holds the article-front/body/back regions, so equality would
+// wrongly throw; the drift to catch is a renamed/removed book-region element.
+{
+  const structuralRegions = tagnamesInCategory('structural-regions');
+  const stray = BOOK_REGION_TAGNAMES.filter((t) => !structuralRegions.has(t));
+  if (stray.length) {
+    throw new Error(
+      `book-regions: wrapper tagname(s) {${stray.join(', ')}} not in vocab 'structural-regions' ` +
+      `category {${[...structuralRegions].sort().join(', ')}} — drift.`,
+    );
+  }
+}
+
+/** Whether a tagname is one of the three book-region wrappers. */
+export function isBookRegionTag(tagname) {
+  return BOOK_REGION_TAGNAMES.includes(tagname);
 }

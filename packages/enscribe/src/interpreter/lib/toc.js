@@ -27,16 +27,13 @@
 // the book chrome), so it cannot affect non-ToC documents.
 
 import { NAV_ITEM_TAGNAMES } from './section-kinds.js';
+import { BOOK_REGIONS } from './book-regions.js';
 import { readConfigBool } from './config-helpers.js';
 
 // Section-like elements that become ToC entries. `book-part` (a chapter/part) is
 // a top-level entry whose nested `section`s become its children — NAV_ITEM_TAGNAMES
 // is the three section depths plus `book-part`, from the single source of truth.
 const NAV_SECTIONS = new Set(NAV_ITEM_TAGNAMES);
-
-// The three book regions, in reading order, mapped to a short region key the rail
-// markup carries (so the theme can style front/body/back differently).
-const BOOK_REGIONS = { 'book-front': 'front', 'book-body': 'body', 'book-back': 'back' };
 
 const el = (tagName, properties, children) => ({ type: 'element', tagName, properties, children });
 const text = (value) => ({ type: 'text', value });

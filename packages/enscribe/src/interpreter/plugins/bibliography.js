@@ -24,6 +24,7 @@
 import { makeTag, makeInternalMarker } from '../../core/tag.js';
 import { ENSCRIBE_CITATIONS, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
+import { isBookRegionTag } from '../lib/book-regions.js';
 
 // Escape author-supplied text for embedding in the raw-HTML heading (#23). The
 // bibliography heading is emitted as a raw hast node (cite.js bibliographyHandler),
@@ -185,7 +186,7 @@ function findBookPartUnits(treeChildren) {
   const units = [];
   for (const region of book.content ?? []) {
     if (!isEnscribeTag(region)) continue;
-    if (region.tagname !== 'book-front' && region.tagname !== 'book-body' && region.tagname !== 'book-back') continue;
+    if (!isBookRegionTag(region.tagname)) continue;
     for (const child of region.content ?? []) {
       if (isEnscribeTag(child, 'book-part')) units.push(child);
     }

@@ -51,6 +51,7 @@ import { walkReplace } from '../../core/walkers/walk-replace.js';
 import { ENSCRIBE_NOTES_PENDING, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { findTag } from '../lib/ast-helpers.js';
 import { resolveConfigEnum } from '../lib/config-helpers.js';
+import { isBookRegionTag } from '../lib/book-regions.js';
 import { notePlacement } from './notes.js';
 
 // ─── Back-matter container helpers ────────────────────────────────────────────
@@ -128,8 +129,7 @@ function findCollectionUnits(treeChildren, scope) {
       const units = [];
       for (const region of book.content ?? []) {
         if (!isEnscribeTag(region)) continue;
-        if (region.tagname !== 'book-front' && region.tagname !== 'book-body' &&
-            region.tagname !== 'book-back') continue;
+        if (!isBookRegionTag(region.tagname)) continue;
         for (const child of region.content ?? []) {
           if (isEnscribeTag(child) && child.tagname === 'book-part') {
             units.push(child);
@@ -150,8 +150,7 @@ function findCollectionUnits(treeChildren, scope) {
     }
     for (const region of book.content ?? []) {
       if (!isEnscribeTag(region)) continue;
-      if (region.tagname !== 'book-front' && region.tagname !== 'book-body' &&
-          region.tagname !== 'book-back') continue;
+      if (!isBookRegionTag(region.tagname)) continue;
       for (const child of region.content ?? []) {
         if (isEnscribeTag(child) && child.tagname === 'book-part') {
           collectSectionsFromBookPart(child);
