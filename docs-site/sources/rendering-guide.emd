@@ -35,8 +35,9 @@ A document is described along three axes that vary independently. Pick each one 
 
 - **Author `.emd` by hand** — the shorthand authoring path; what nearly everyone does.
 - **Author Layer 1 by hand** — write the canonical HTML directly; a rare escape hatch.
-- **In-browser editing** — edit and re-render live in the browser. *(Future — documented here, not yet
-  shipped.)*
+- **In-browser editing** — edit `.emd` and re-render live in the browser: the live app-shell's
+  Write/Preview edit loop, which re-renders only the edited chapter (#203 / #216). *(Shipped,
+  preview-only — edits live in memory; save / write-back is the named follow-on.)*
 
 <## These axes are orthogonal ##>
 
@@ -48,7 +49,7 @@ or rendered client-side. Choose each axis for its own reasons.
 |---|---|
 | Rendering | precompiled · live on server · live client-side |
 | File structure | single file · multiple files via `src=` |
-| Editing | author `.emd` · author Layer 1 · in-browser (future) |
+| Editing | author `.emd` · author Layer 1 · in-browser (live edit loop, preview-only) |
 | Document type *(orthogonal)* | article · book · website |
 
 <# #sec:choosing | Choosing how to render #>
