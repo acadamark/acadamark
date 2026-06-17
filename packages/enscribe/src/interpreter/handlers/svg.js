@@ -21,7 +21,7 @@
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
-import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFrameableBorder } from '../lib/frameable.js';
 
 /**
  * Handler for the `<svg>` tag.
@@ -56,9 +56,12 @@ export function svgHandler(state, node, vocab) {
     return innerSvg;
   }
 
-  // Phase 3 frameable surface: +border opts in to the frameable-border
+  // Phase 3 frameable surface: border opts in to the frameable-border
   // class on the wrapping <figure>.
-  const border = node.booleans?.border === true;
+  // #250: read via the shared helper with defaultOn:false (svg defaults border
+  // OFF) so the documented `border=true|false` kwarg form works — not just
+  // +border/-border — matching frame/aside.
+  const border = readFrameableBorder(node, false);
   // #58: border=<name> selects a named look. Like +border on <svg>, it applies
   // to the framed form (captioned/numbered); a bare <svg> stays the lone element.
   const borderLook = frameableBorderLook(node);

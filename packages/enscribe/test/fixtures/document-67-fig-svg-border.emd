@@ -1,0 +1,18 @@
+<# Fig / svg border kwarg form (#250) #>
+
+These exercise the `border=true|false` kwarg on `<fig>` and `<svg>` — the form
+`<frame>` / `<aside>` already honored via #186, but which `<fig>` / `<svg>`
+formerly ignored (they read only `+border` / `-border`). Both default border OFF;
+the kwarg now toggles it, via the shared `readFrameableBorder` helper.
+
+<fig src=chart.png border=true | A figure with border=true — framed.>
+
+<fig src=chart.png border="false" | A figure with quoted border="false" — unframed.>
+
+<fig src=chart.png | A figure with no border kwarg — unframed (the fig default).>
+
+<fig src=chart.png +border | A figure with +border — framed (the boolean form, unchanged).>
+
+<svg border=true | <rect width="20" height="20" fill="teal" />>
+
+<svg border=false | <rect width="20" height="20" fill="teal" />>

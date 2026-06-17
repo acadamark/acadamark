@@ -21,7 +21,7 @@ import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractPlainText, convertChildren } from '../lib/ast-helpers.js';
 import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
-import { extractFrameableChildren, renderFrameable, frameableBorderLook } from '../lib/frameable.js';
+import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFrameableBorder } from '../lib/frameable.js';
 
 /**
  * Legacy pipe-content-as-caption fallback. When the author writes
@@ -90,8 +90,11 @@ export function figureHandler(state, node, vocab) {
     });
   }
 
-  // Phase 3 frameable surface: +border opts in to the frameable-border class.
-  const border = node.booleans?.border === true;
+  // Phase 3 frameable surface: border opts in to the frameable-border class.
+  // #250: read via the shared helper with defaultOn:false (fig defaults border
+  // OFF) so the documented `border=true|false` kwarg form works — not just
+  // +border/-border — matching frame/aside.
+  const border = readFrameableBorder(node, false);
   // #58: border=<name> selects a named look (and implies border-on).
   const borderLook = frameableBorderLook(node);
 

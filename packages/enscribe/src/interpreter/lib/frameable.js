@@ -257,13 +257,21 @@ export function frameableBorderLook(node) {
 }
 
 /**
- * Read the resolved `border` boolean for a frameable, defaulting to ON. The
- * toggle is read from `+border` / `-border` (`node.booleans.border`) or the
+ * Read the resolved `border` boolean for a frameable, defaulting to `defaultOn`.
+ * The toggle is read from `+border` / `-border` (`node.booleans.border`) or the
  * string/boolean kwarg forms `border=true` / `border=false` (including the
  * quoted `border="false"`). A named-look value (`border=<name>`, e.g.
  * `border=accent`) is NOT a toggle — see `frameableBorderLook` — so it falls
  * through to the default and does not turn the border off (a look implies
- * border-on). Shared by the frame and aside handlers (#170).
+ * border-on). Shared by the frame / aside / fig / svg handlers (#170, #250).
+ *
+ * `defaultOn` is each member's documented default when no toggle is present:
+ * frame / aside default ON (the border is the point), fig / svg default OFF
+ * (vocab `border.default === false`). #250: fig / svg formerly read only the
+ * inline boolean form (`node.booleans.border === true`), silently ignoring the
+ * documented `border=true|false` kwarg form that frame / aside honored — routing
+ * them through this shared helper with `defaultOn: false` closes that gap while
+ * preserving their OFF default.
  *
  * #186: the parser stores every `key=value` kwarg as a string, so the bareword
  * `border=false` and the quoted `border="false"` both arrive as the string
@@ -275,14 +283,14 @@ export function frameableBorderLook(node) {
  * @param {object} node
  * @returns {boolean}
  */
-export function readFrameableBorder(node) {
+export function readFrameableBorder(node, defaultOn = true) {
   // +border / -border — the canonical boolean surface, highest priority.
   if (typeof node.booleans?.border === 'boolean') return node.booleans.border;
   const kw = node.kwargs?.border;
   if (typeof kw === 'boolean') return kw;
   if (kw === 'false') return false;
   if (kw === 'true') return true;
-  return true; // default ON (also the path a named look falls through to)
+  return defaultOn; // member default (frame/aside ON; fig/svg OFF) — a named look falls through here too
 }
 
 // "See source" disclosure (#19). When a document turns on the `show-source`
