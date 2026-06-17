@@ -85,6 +85,8 @@ The plugin registration order in `enscribeInterpreter` is:
                                  canonical processors; see notes/specs/strict-mode.md)
     inner processor: remarkParse + remarkEnscribe + remarkMath + remarkGfm
 1.   remarkRecursiveContent     (Phase 2 — content parsing; takes inner processor)
+1.4. enscribeDocTypeResolve     (Phase 0 — #200 — resolves the document class and
+                                 stamps <meta type> so the structural plugins branch on it)
 1.5. enscribeNormalizeToCanonical (Phase 0 — normalize delegated-parser nodes
                                  to canonical enscribeTag nodes)
 2.  enscribeConfigDiscovery    (Phase 1 — discovery)
@@ -99,6 +101,10 @@ The plugin registration order in `enscribeInterpreter` is:
                                  cells as inline markup; before notes/numbering/refs)
 5.6. enscribeHtmlTableCells     (Phase 3 — #108 — re-resolves inline content in raw-HTML
                                  (_htmlTable) cells produced by a JATS import)
+5.7. buildAssetIndex            (Phase 3 — #190 — collects <data>-declared <fig #id …>
+                                 assets into a keyed store; via anonymous plugin)
+5.8. enscribeAssetResolution    (Phase 3 — #190 — rewrites a body <fig src="@id" /> to the
+                                 resolved data: URI / external path; before notes/numbering)
 6.  enscribeNotes              (Phase 3 — notes; register-only)
 7.  enscribeNumbering          (Phase 3 — numbering; register-only)
 8.  enscribeApplyNumbers       (Phase 3 — apply display numbers; anonymous plugin)
