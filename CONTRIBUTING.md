@@ -29,8 +29,9 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `spec_lift-lower-round-trip.md`, `master-document.md`, `multi-file-authoring.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
+| `notes/code-review.md` | Governance/Spec (process) | The deep code-review method — the method behind release-audit reconciliation #1. |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
 | `docs-site/sources/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Layer 1 Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
@@ -92,7 +93,7 @@ Each subsystem's blueprint:
   `notes/specs/appendices.md` (the `<appendix>` element's article + book
   projections). The per-element vocabulary entries live separately in
   `packages/layer1-vocabulary/elements/` with `SPEC.md` alongside.
-- **Round-trip transforms** — `notes/specs/spec_lift-lower-round-trip.md`
+- **Round-trip transforms** — `notes/specs/lift-lower-round-trip.md`
   (the correctness model for the `lift` / `lower` register transforms).
 - **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
   processor-delegation principle) and `notes/specs/principles.md`
@@ -100,9 +101,7 @@ Each subsystem's blueprint:
 - **Extension blueprints (designed; unbuilt unless noted)** —
   `notes/specs/master-document.md` (the multi-file assembler — article-level
   assembly with cross-file numbering/refs is **built** (#190) and renders live
-  in the browser (#194); the remaining slices are designed), with
-  `notes/specs/multi-file-authoring.md` (the earlier authoring-side sketch it
-  superseded),
+  in the browser (#194); the remaining slices are designed),
   `notes/specs/multi-column-display.md`,
   `notes/specs/render-mode.md`, and
   `notes/specs/interchange.md`. Their design is specified at the

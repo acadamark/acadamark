@@ -33,6 +33,9 @@ Three lenses; each finding is the observation, the fix lands in a `.x.5` slice.
 A behavior-changing fix or a project-sized restructure is itself a finding (its own Issue),
 never folded into the audit.
 
+The deep, architectural-fit form of this code review — its readers, lenses, and output
+discipline — is specified in `code-review.md`.
+
 ## 2 · Specs ⇄ code
 
 Every subsystem spec must describe what the code actually does — emitted HTML and JATS, the
