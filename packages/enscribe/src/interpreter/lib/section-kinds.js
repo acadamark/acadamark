@@ -43,6 +43,12 @@ export const SECTION_TAGNAMES = Object.freeze(['section', 'sub-section', 'sub-su
 // of normalize-to-canonical's heading depth→tagname map.
 export const SECTION_DEPTH_MAP = new Map(SECTION_TAGNAMES.map((t, i) => [t, i + 1]));
 
+// tagname → its title element name (section → section-title, …), derived from
+// SECTION_TAGNAMES so the section→title pairing has one origin (#251). A Map so a
+// lookup of any non-section string is a clean miss. Replaces section-nesting.js's
+// hand-written TITLE_TAG object.
+export const SECTION_TITLE_MAP = new Map(SECTION_TAGNAMES.map((t) => [t, `${t}-title`]));
+
 // Nav-listing tagnames: the three section depths PLUS `book-part`. `book-part`
 // is a top-level nav entry (a chapter/part) whose nested sections become its
 // children — a region, not a section depth, so it is added here and nowhere

@@ -21,13 +21,7 @@
 
 import { makeTag } from '../../core/tag.js';
 import { isEnscribeTag, sectionDepth } from '../lib/ast-helpers.js';
-
-// Map from section tagname to its title element name.
-const TITLE_TAG = {
-  'section':          'section-title',
-  'sub-section':      'sub-section-title',
-  'sub-sub-section':  'sub-sub-section-title',
-};
+import { SECTION_TITLE_MAP } from '../lib/section-kinds.js';
 
 /**
  * Extract the title children from a section node's pipe content.
@@ -65,7 +59,7 @@ function nestSectionArray(siblings) {
     if (depth > 0) {
       // Extract title from the section's existing pipe content.
       const titleContent = extractTitleContent(child);
-      const titleNode = makeTag(TITLE_TAG[child.tagname], titleContent);
+      const titleNode = makeTag(SECTION_TITLE_MAP.get(child.tagname), titleContent);
 
       // Replace the section's content with just the title element; body
       // content will be appended as we encounter following siblings.

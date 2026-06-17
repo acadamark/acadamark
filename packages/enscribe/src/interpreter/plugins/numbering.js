@@ -31,6 +31,7 @@
 // fillNumbering(file) (exported):
 //   - Reads enscribeNumberingPending and sets node.computedNumber from entry.number
 
+import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { ensureRegistry } from '../../core/registry.js';
 import { discover } from '../../core/walkers/discover.js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING } from '../../core/file-data-keys.js';
@@ -113,11 +114,17 @@ const NUMBERED_TAGNAMES = new Map([
   ['aside',   'box'],
 ]);
 
-// Phase 3 slice 3c (2026-05-28): tagnames whose `numbered` kwarg
-// defaults to FALSE rather than the universal TRUE. Today only
-// <frame> (per frame.md's vocab default: numbered: false). Other
-// frameables (<fig>, <table>, etc.) default to numbered=true; their
-// authors suppress with -numbered per-instance.
+// Phase 3 slice 3c (2026-05-28): registered tagnames whose `numbered` kwarg
+// defaults to FALSE rather than the universal TRUE (today <frame> and <aside>;
+// other frameables like <fig>/<table> default true, suppressed with -numbered).
+//
+// #251: derived from the single declared source — the vocab `numbered` default —
+// rather than hand-listed. Scoped to NUMBERED_TAGNAMES (the tagnames this plugin
+// registers), so an element the vocab marks unnumbered-by-default but that this
+// plugin does not register (e.g. <remark>/<proof>, numbered by handlers/theorem.js,
+// never entered in NUMBERED_TAGNAMES) is correctly excluded. Today this yields
+// exactly {frame, aside}; adding a registered frameable with a false vocab default
+// includes it automatically, with no parallel edit here.
 //
 // Visitor logic: for tagnames in this set, an unset `numbered` kwarg
 // resolves to false → the entry registers as unnumbered (label-only
@@ -125,7 +132,11 @@ const NUMBERED_TAGNAMES = new Map([
 // without any colon-id-derived label have no reason to be in the
 // registry. The visitor short-circuits and skips registration entirely
 // when the resolved numbered is false and the node has no id.
-const NUMBERED_DEFAULT_FALSE = new Set(['frame', 'aside']);
+const NUMBERED_DEFAULT_FALSE = new Set(
+  [...NUMBERED_TAGNAMES.keys()].filter(
+    (tagname) => VOCABULARY[tagname]?.enscribe_attributes?.booleans?.numbered?.default === false,
+  ),
+);
 
 // Maps registry type to the document-level config key that can suppress numbering.
 const CONFIG_KEY = {

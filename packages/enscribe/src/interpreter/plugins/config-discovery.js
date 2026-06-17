@@ -24,14 +24,22 @@
 
 import { isEnscribeTag } from '../../core/tag.js';
 import { ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
+import { tagnamesInCategory } from '../lib/vocab-categories.js';
+
+// #251: "is this a <config>?" derives from the vocab `configuration` category —
+// the single source the #232 capstone established (normalize-to-canonical.js's
+// CONFIGURATION_TAGS). Today the category is exactly {config}, so this is
+// byte-identical to the former `tagname === 'config'` side-check; a second
+// configuration tag would be discovered automatically instead of silently missed.
+const CONFIGURATION_TAGS = tagnamesInCategory('configuration');
 
 /**
- * Recursively visit every enscribeTag with tagname 'config' in the tree,
- * descending through both mdast `children` and enscribeTag `content` arrays.
+ * Recursively visit every enscribeTag in a configuration-category tag in the
+ * tree, descending through both mdast `children` and enscribeTag `content` arrays.
  */
 function visitConfigs(nodes, visit) {
   for (const node of (nodes ?? [])) {
-    if (isEnscribeTag(node) && node.tagname === 'config') {
+    if (isEnscribeTag(node) && CONFIGURATION_TAGS.has(node.tagname)) {
       visit(node);
     }
     // Descend through mdast children.
