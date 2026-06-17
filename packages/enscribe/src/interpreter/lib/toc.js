@@ -117,8 +117,9 @@ export function slugify(title) {
   return `sec:${base}`;
 }
 
-/** A slug not already in `used`, suffixed `-2`, `-3`, … on collision. */
-function uniqueId(candidate, used) {
+/** A slug not already in `used`, suffixed `-2`, `-3`, … on collision. Exported so
+ *  book-scaffold.js shares this one collision-dedup helper (#253), not a copy. */
+export function uniqueId(candidate, used) {
   let id = candidate;
   let n = 2;
   while (used.has(id)) id = `${candidate}-${n++}`;

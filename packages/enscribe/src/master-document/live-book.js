@@ -42,11 +42,7 @@ import {
   coverBodyHtml,
   resolveBookNavConfig,
 } from './book-scaffold.js';
-import { composeBookBody, BACK_TO_TOP_HTML } from '../interpreter/assets/book-nav-asset.js';
-
-// The book layout class list; the third column (`--book-3col`) is added only when a
-// right "on this page" rail is present — mirroring P1 / C's single-page applyBookToc.
-const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout--book';
+import { composeBookBody, BACK_TO_TOP_HTML, BOOK_LAYOUT } from '../interpreter/assets/book-nav-asset.js';
 
 // The cover route (#209): the empty / root hash. Opening the shell (no hash) lands on the
 // cover, and the return-to-cover masthead points here, so every chapter round-trips to it —

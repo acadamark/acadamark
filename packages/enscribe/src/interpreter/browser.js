@@ -35,6 +35,7 @@ import {
   resolveHash,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
+import { HAS_TABLE_SRC } from './lib/table-constants.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
@@ -106,9 +107,9 @@ export function render(source, options = {}) {
 // external library source, so renderAsync can short-circuit to the sync render
 // for the common (inline / no-src) case without a discovery parse.
 const HAS_LIBRARY_SRC = /<library\b[^>]*\bsrc\s*=/i;
-// #195: a `<table src>` / `<csv src>` / `<tsv src>` data-source gate — the table analog
-// of HAS_LIBRARY_SRC, so renderAsync pre-fetches external table data too.
-const HAS_TABLE_SRC = /<(table|csv|tsv)\b[^>]*\bsrc\s*=/i;
+// #195: the `<table|csv|tsv src>` data-source gate (analog of HAS_LIBRARY_SRC, so
+// renderAsync pre-fetches external table data) is HAS_TABLE_SRC, imported from
+// lib/table-constants.js (#253) where it is derived from the shared TABLE_TAGS set.
 
 /**
  * Fetch a library source's text, resolving a relative src against the document

@@ -27,7 +27,7 @@
 // the wrapper in each consumer.
 
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
-import { slugify } from '../interpreter/lib/toc.js';
+import { slugify, uniqueId } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
 import { BOOK_REGIONS } from '../interpreter/lib/book-regions.js';
 import { readConfigBool } from '../interpreter/lib/config-helpers.js';
@@ -116,15 +116,6 @@ export function collectBookParts(bookEl) {
   return parts;
 }
 
-/** A slug not already in `used`, suffixed `-2`, `-3`, … on collision. */
-function uniqueSlug(candidate, used) {
-  let s = candidate;
-  let n = 2;
-  while (used.has(s)) s = `${candidate}-${n++}`;
-  used.add(s);
-  return s;
-}
-
 /** Assign each chapter a deterministic, collision-deduped slug STEM — number/letter
  *  + title-slug (`1-counting-elephants`, `a-field-data-sheets`); front-matter without a
  *  roster number gets no prefix (`about-this-book`). The NEUTRAL stem: P1 appends
@@ -134,7 +125,7 @@ export function assignSlugStems(parts) {
   for (const p of parts) {
     const titleSlug = slugify(p.clean).replace(/^sec:/, '');
     const prefix = p.number ? `${p.number.toLowerCase()}-` : '';
-    p.stem = uniqueSlug(prefix + titleSlug, used);
+    p.stem = uniqueId(prefix + titleSlug, used);
   }
 }
 
@@ -161,13 +152,13 @@ export function assignIds(parts, bookEl) {
   const used = collectExistingIds(bookEl, new Set());
   const assignSections = (sections) => {
     for (const s of sections) {
-      if (!s.node.id) s.node.id = uniqueSlug(slugify(s.clean), used);
+      if (!s.node.id) s.node.id = uniqueId(slugify(s.clean), used);
       s.id = s.node.id;
       assignSections(s.children);
     }
   };
   for (const p of parts) {
-    if (!p.node.id) p.node.id = uniqueSlug(slugify(p.clean), used);
+    if (!p.node.id) p.node.id = uniqueId(slugify(p.clean), used);
     p.id = p.node.id;
   }
   for (const p of parts) assignSections(p.sections);
