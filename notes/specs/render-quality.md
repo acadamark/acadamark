@@ -707,9 +707,10 @@ mode.
 - **`RQ-MATH-S3`** — the environment wrappers (`math`, `align`, `cases`,
   `matrix`, `eqnarray`) render as display blocks with vertical margin, and an
   `.equation-number` contained in any of them is presented consistently with the
-  `display-math` case (flush-right). *(The default theme's equation-number rule
-  is currently scoped to `display-math >` only; consistency across the
-  environment wrappers is the intended standard.)*
+  `display-math` case (flush-right). *(Shipped: the default theme applies the
+  `.equation-number` rule across all six wrappers — `display-math`, `math`,
+  `align`, `cases`, `matrix`, `eqnarray` — so the flush-right presentation is
+  consistent; see `default.css`.)*
 
 **Out of spec.** Equation cross-reference text is specified in §12. Per-line
 numbering within an `align` environment (one number per row) is not specified;
@@ -1017,9 +1018,9 @@ cross-references, and edited-volume (per-chapter) authorship.
   book-appropriate prominence: `book-title` as the most prominent heading on the
   page (block, at least `--enscribe-h1-size`), `book-part-title` as a chapter-level
   heading (block, prominent, clearly above section-title scale), and
-  `book-front`/`book-body`/`book-back` as block regions. *(The default theme's
-  article rules do not currently extend to the book elements; book-appropriate
-  styling is the intended standard.)*
+  `book-front`/`book-body`/`book-back` as block regions. *(Shipped in the default
+  theme: `default.css` gives `book-front`/`book-body`/`book-back` block regions and
+  block `book-title` / `book-part-title` styling.)*
 - **`RQ-BOOK-S2`** (reading-interface chrome) — the default theme styles the book
   reading interface (`RQ-BOOK-M7`), book-gated on `.enscribe-layout--book` so an
   article ToC is untouched: a desktop three-column grid (chapter rail | reading

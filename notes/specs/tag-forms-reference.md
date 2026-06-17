@@ -118,7 +118,7 @@ parsed table data, DSL diagram source, or inline SVG.
 | Tag | Pipe | Slash | Long | Notes |
 |---|---|---|---|---|
 | `<fig>` | ✓ | ✓ | ✓ | Pipe form `<fig src=x.jpg | caption>` is most common for images. Slash form `<fig src=x.jpg />` for images without inline caption. Long form for non-image figures wrapping body content. `<figure>` is an authoring alias rewriting to `<fig>` at the gate. |
-| `<svg>` | — | — | ✓ | Opaque content (raw SVG source); long form only. |
+| `<svg>` | ✓ | — | ✓ | Opaque content (raw SVG source); pipe and long forms both work. |
 | `<frame>` | ✓ | — | ✓ | Generic frameable container. Both forms work; defaults vary (border on, numbered off). |
 | `<table>` | ✓ | — | ✓ | Pipe form `<table csv \| data>` is the qualifying-tag pattern for parsed data. Long form `<table>...HTML...</table>` is the raw-HTML escape hatch. |
 | `<csv>` | ✓ | — | ✓ | Pipe form `<csv \| a,b,c>` for inline CSV. Long form for multi-line. Opaque content. |
