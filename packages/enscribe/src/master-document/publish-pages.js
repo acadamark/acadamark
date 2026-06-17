@@ -28,6 +28,7 @@ import { toHtml } from 'hast-util-to-html';
 import {
   buildChapterRail,
   buildOnThisPage,
+  buildContentsListing,
   chapterNavBar,
 } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
@@ -41,6 +42,7 @@ import {
   escapeHtml,
   coverBodyHtml,
   resolveBookNavConfig,
+  resolveBookContentsConfig,
 } from './book-scaffold.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
@@ -188,7 +190,7 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
  *  carries the same return-to-cover masthead as the chapter pages (here a self-link to
  *  the cover) so the chrome is uniform across every page. */
 function renderIndex(parts, idToUrl, opts) {
-  const { defaultCss, bookTitle, bookNav } = opts;
+  const { defaultCss, bookTitle, bookNav, file } = opts;
   // `current: true` — on the cover the masthead is a self-link (index.html → itself), so
   // mark it aria-current="page" rather than presenting a 'home' link to the page you are
   // already on. Chapter pages omit it (their masthead points elsewhere).
@@ -197,7 +199,21 @@ function renderIndex(parts, idToUrl, opts) {
     ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => `${p.slug}#${s.id}` }
     : {};
   const rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, (p) => p.slug, null, home, railOpts)) : '';
-  const body = bookBodyHtml(rail, coverBodyHtml(bookTitle), '', '', bookNav);
+  // #226: a `<config toc>` book gets a whole-book contents overview on the cover (the chapter
+  // rail is the book's sidebar ToC; this is the landing-page index, the Quarto book pattern).
+  // Built from `parts` with the rail's cross-page resolvers. No `<config toc>` → '' → the
+  // cover is byte-identical. A `toc-location=left|right` emits a located diagnostic (handled
+  // in resolveBookContentsConfig) and still renders here on the cover.
+  const contentsCfg = resolveBookContentsConfig(file);
+  const contentsHtml = contentsCfg
+    ? toHtml(buildContentsListing(parts, {
+        chapterHref: (p) => p.slug,
+        sectionHref: (p, s) => `${p.slug}#${s.id}`,
+        title: contentsCfg.title,
+        depth: contentsCfg.depth,
+      }))
+    : '';
+  const body = bookBodyHtml(rail, coverBodyHtml(bookTitle, contentsHtml), '', '', bookNav);
   return pageShell(body, bookTitle, defaultCss, bookNav);
 }
 

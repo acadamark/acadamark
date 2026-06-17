@@ -16,6 +16,7 @@ import {
   publishBookPages,
   buildLiveBook,
   renderLiveChapterView,
+  renderLiveCoverView,
   resolveHash,
 } from '../src/interpreter/index.js';
 
@@ -168,5 +169,49 @@ export async function run() {
     assert.ok(sRail && lRail, 'both paths emit a chapter rail');
     assert.equal(sRail, lRail, 'static ≡ live: the chapter rail is byte-identical once target hrefs are normalised');
     console.log('PASS: static ≡ live — one <config> drives an identical rail (hrefs aside)');
+  }
+
+  // ── #226: `<config toc>` renders a whole-book contents OVERVIEW on the cover, in BOTH the
+  //    separate-pages cover and the live cover view (the chapter rail is the book's sidebar
+  //    ToC; this is the landing index). No `<config toc>` ⇒ no overview (byte-identical cover). ─
+  {
+    const CONTENTS = '<nav class="enscribe-contents"';
+
+    // default book (no <config toc>): neither cover has the overview.
+    const plain = chrome();
+    assert.ok(!plain.pages.get('index.html').includes(CONTENTS), 'no <config toc>: static cover has no overview');
+    assert.ok(!renderLiveCoverView(plain.model).includes(CONTENTS), 'no <config toc>: live cover has no overview');
+
+    // <config toc>: the overview renders on BOTH covers.
+    const s = buildBook('<config toc />');
+    const staticCover = publishBookPages({ numbered: s.numbered, file: s.file, proc: s.proc, defaultCss: DEFAULT_CSS }).get('index.html');
+    const l = buildBook('<config toc />');
+    const liveCover = renderLiveCoverView(buildLiveBook({ numbered: l.numbered, file: l.file }));
+    assert.ok(staticCover.includes(CONTENTS), '<config toc>: static cover renders the contents overview');
+    assert.ok(liveCover.includes(CONTENTS), '<config toc>: live cover renders the contents overview');
+    // cross-shape hrefs: static cross-page (`slug.html`, `slug.html#id`), live route (`#stem`).
+    assert.ok(/href="1-counting-elephants\.html"/.test(staticCover), 'static overview: chapter href is the page URL');
+    assert.ok(/href="1-counting-elephants\.html#/.test(staticCover), 'static overview: section href is page#anchor');
+    assert.ok(/href="#1-counting-elephants"/.test(liveCover), 'live overview: chapter href is the #stem route');
+    // static ≡ live: the same listing, modulo href form (proves both shapes build one overview).
+    const listingOf = (html) => {
+      const m = html.match(/<nav class="enscribe-contents"[\s\S]*?<\/nav>/);
+      return m ? m[0].replace(/href="[^"]*"/g, 'href="·"') : null;
+    };
+    assert.ok(listingOf(staticCover) && listingOf(liveCover), 'both covers emit the overview');
+    assert.equal(listingOf(staticCover), listingOf(liveCover), 'static ≡ live: the cover overview is byte-identical once hrefs are normalised');
+    console.log('PASS: #226 — <config toc> renders the whole-book contents overview on the cover (static + live, parity)');
+  }
+
+  // ── #226: `toc-location=left|right` on a book → a located non-fatal diagnostic (the rail is
+  //    the book's sidebar ToC) and the overview still renders on the cover (always-renders). ──
+  {
+    const CONTENTS = '<nav class="enscribe-contents"';
+    const s = buildBook('<config toc toc-location=left />');
+    const cover = publishBookPages({ numbered: s.numbered, file: s.file, proc: s.proc, defaultCss: DEFAULT_CSS }).get('index.html');
+    assert.ok(cover.includes(CONTENTS), 'toc-location=left: the overview still renders on the cover');
+    assert.ok(s.file.messages.some((m) => m.source === 'book-navigation' && m.ruleId === 'toc-location-on-book'),
+      'toc-location=left on a book: a located diagnostic is emitted');
+    console.log('PASS: #226 — toc-location=left on a book emits a located diagnostic and renders on the cover');
   }
 }

@@ -27,7 +27,7 @@
 // One mount, one hash space: the router IS the cross-page link.
 
 import { toHtml } from 'hast-util-to-html';
-import { buildChapterRail, buildOnThisPage, chapterNavBar } from '../interpreter/lib/toc.js';
+import { buildChapterRail, buildOnThisPage, buildContentsListing, chapterNavBar } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
 import { assembleMasterDocument } from './assemble.js';
@@ -41,6 +41,7 @@ import {
   bookTitleOf,
   coverBodyHtml,
   resolveBookNavConfig,
+  resolveBookContentsConfig,
 } from './book-scaffold.js';
 import { composeBookBody, BACK_TO_TOP_HTML, BOOK_LAYOUT } from '../interpreter/assets/book-nav-asset.js';
 
@@ -111,7 +112,7 @@ export function buildLiveBook({ numbered, file }) {
     }
   }
 
-  return { parts, bookTitle, registry, stemToIndex, idToStem, bookNav: resolveBookNavConfig(file) };
+  return { parts, bookTitle, registry, stemToIndex, idToStem, bookNav: resolveBookNavConfig(file), contents: resolveBookContentsConfig(file) };
 }
 
 /**
@@ -186,11 +187,23 @@ export function renderLiveChapterView(model, idx, ctx) {
  * @returns {string} the mounted cover view HTML (a `<div class="enscribe-layout…">`)
  */
 export function renderLiveCoverView(model) {
-  const { parts, bookTitle, bookNav } = model;
+  const { parts, bookTitle, bookNav, contents } = model;
   const home = { href: COVER_HASH, title: bookTitle, current: true };
   const rail = liveRail(parts, null, home, bookNav);
+  // #226: a `<config toc>` book renders its whole-book contents overview on the cover view —
+  // the live counterpart of the separate-pages cover, structurally identical (static≡live),
+  // differing only in href form: chapter → `#stem` route, section → `#id` (resolveHash maps it
+  // to the owning chapter via idToStem and scrolls). No `<config toc>` → '' → byte-identical.
+  const contentsHtml = contents
+    ? toHtml(buildContentsListing(parts, {
+        chapterHref: (p) => chapterHash(p),
+        sectionHref: (p, s) => `#${s.id}`,
+        title: contents.title,
+        depth: contents.depth,
+      }))
+    : '';
   return composeBookBody({
-    rail, content: coverBodyHtml(bookTitle),
+    rail, content: coverBodyHtml(bookTitle, contentsHtml),
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
   });
 }

@@ -156,11 +156,14 @@ export const bookLink = (e) => {
   return [text(title)];
 };
 
-/** Build a nested `<ul>` of links from an entry tree, using `content` for each link. */
-export function buildList(entries, content) {
+/** Build a nested `<ul>` of links from an entry tree, using `content` for each link and
+ *  `hrefFor` for each `href`. `hrefFor` defaults to an in-page anchor (`#id`) — today's
+ *  behavior for every existing caller — and is the seam #226/#246 use to emit cross-page /
+ *  page-tree links (a tree + a resolver, no document-class assumptions baked in). */
+export function buildList(entries, content, hrefFor = (e) => `#${e.id}`) {
   return el('ul', {}, entries.map((e) => el('li', {}, [
-    el('a', { href: `#${e.id}` }, content(e)),
-    ...(e.children.length ? [buildList(e.children, content)] : []),
+    el('a', { href: hrefFor(e) }, content(e)),
+    ...(e.children.length ? [buildList(e.children, content, hrefFor)] : []),
   ])));
 }
 
@@ -500,6 +503,45 @@ function buildContentsBlock(entries, title) {
   return el('nav', { className: ['enscribe-contents'], ariaLabel: title }, [
     el('p', { className: ['enscribe-contents-heading'] }, [text(title)]),
     buildList(entries, bookLink),
+  ]);
+}
+
+/**
+ * Build a whole-book contents OVERVIEW `<nav class="enscribe-contents">` from a book's
+ * `parts` (the scaffold-level chapter/section tree from collectBookParts). Emits the SAME
+ * markup as the article body listing (buildContentsBlock above), so the existing
+ * `enscribe-contents` CSS applies — no new CSS. Chapters are the top level; their sections
+ * nest beneath, included while their depth ≤ `depth` (chapters are level 1, sections 2+).
+ *
+ * Generic over the link resolvers, so each book render shape passes its own hrefs — static
+ * `slug#id`, live `#stem`/`#id` — and #226's two shapes (and #246's page tree, later) reuse
+ * one builder. #226. NOTE (follow-up): this duplicates buildContentsBlock's nav shape;
+ * folding the article path onto this builder is deferred (it would touch the byte-identical
+ * single-page path).
+ *
+ * @param {object[]} parts  collectBookParts output: { id, clean, number, sections }
+ * @param {{chapterHref:(p:object)=>string, sectionHref:(p:object,s:object)=>string,
+ *          title?:string, depth?:number}} opts
+ */
+export function buildContentsListing(parts, { chapterHref, sectionHref, title = 'Contents', depth = Infinity }) {
+  // A section's href depends on its OWNING chapter, which a per-entry resolver can't see —
+  // so resolve hrefs here (with chapter context) into a flat id→href map and hand buildList a
+  // by-id lookup. Chapters are level 1; sections start at level 2 (kept while level ≤ depth).
+  const hrefById = new Map();
+  const sectionEntries = (part, secs, level) => {
+    if (level > depth) return [];
+    return (secs ?? []).map((s) => {
+      hrefById.set(s.id, sectionHref(part, s));
+      return { id: s.id, clean: s.clean, number: s.number, children: sectionEntries(part, s.children, level + 1) };
+    });
+  };
+  const entries = parts.map((p) => {
+    hrefById.set(p.id, chapterHref(p));
+    return { id: p.id, clean: p.clean, number: p.number, children: sectionEntries(p, p.sections, 2) };
+  });
+  return el('nav', { className: ['enscribe-contents'], ariaLabel: title }, [
+    el('p', { className: ['enscribe-contents-heading'] }, [text(title)]),
+    buildList(entries, bookLink, (e) => hrefById.get(e.id) ?? `#${e.id}`),
   ]);
 }
 
