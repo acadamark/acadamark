@@ -60,6 +60,7 @@
 // not a frameable consumer).
 
 import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
+import { FRAMEABLE_LIFTABLE } from '../../core/frameable-elements.js';
 import { formatScopedNumber } from './scoped-number.js';
 import { convertChildren } from './ast-helpers.js';
 
@@ -121,6 +122,24 @@ const KIND_META = new Map([
   // number-boxes, ref-prefix box); <aside> is unnumbered by default.
   ['aside',   { prefix: 'Box',    captionEl: 'p',          layout: 'boxed-prose' }],
 ]);
+
+// #255 load-time sync guard (the section-kinds.js equality-assertion pattern): the
+// kinds renderFrameable handles (KIND_META) must equal the liftable frameable tagnames
+// (FRAMEABLE_LIFTABLE) MINUS the `diagram` host, which resolves to a concrete kind
+// before render and so never reaches KIND_META. Throws at load if a frameable is added
+// to one registry and not the other.
+{
+  const liftableKinds = [...FRAMEABLE_LIFTABLE.keys()].filter((t) => t !== 'diagram');
+  const missingFromKindMeta = liftableKinds.filter((t) => !KIND_META.has(t));
+  const extraInKindMeta = [...KIND_META.keys()].filter((t) => !FRAMEABLE_LIFTABLE.has(t));
+  if (missingFromKindMeta.length || extraInKindMeta.length) {
+    throw new Error(
+      `frameable (#255): KIND_META kinds {${[...KIND_META.keys()].sort().join(', ')}} != ` +
+      `FRAMEABLE_LIFTABLE tagnames minus 'diagram' {${liftableKinds.sort().join(', ')}} — ` +
+      'a frameable was added to one registry but not the other.',
+    );
+  }
+}
 
 // ─── Caption / title extraction ────────────────────────────────────────────
 
