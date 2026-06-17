@@ -18,10 +18,11 @@ file is what needs updating.
 The spine, in order — each step unblocks the next:
 
 1. **Multi-file / master-document system** — the long pole. A real document spans
-   many files; nothing downstream works without it. *Article-level assembly landed —
-   cross-file numbering and cross-references resolve across files, and the browser
-   renders the same assembly live; cross-file citations/bibliography, placement
-   markers, and book/website types are what remain.*
+   many files; nothing downstream works without it. *Article- and book-level
+   assembly landed — cross-file numbering and cross-references resolve across files,
+   cross-file citations/bibliography merge, placement markers, and the book type
+   (assembly + separate-pages publish + live app-shell render) all shipped, and the
+   browser renders the same assembly live; the **website** type is what remains.*
 2. **Dogfood** — build Enscribe's own website and book in the multi-file system.
    The centerpiece demo, not housekeeping: the tool authoring its own docs is the
    proof.
@@ -54,9 +55,9 @@ and Quarto-perfection are post-launch.
 - **Interchange.** Quarto round-trip + LaTeX/DOCX import-export. Draws from the
   Interchange epic. (#187, #188, #189)
 - **Later releases (v0.7.0, v0.8.0).** Post-launch polish and features, held in
-  their milestones — browser-bundle trim and arrow typography (#25, #139), then
-  presentations/slides (#50), minipage panels (#115), and the MDN-grade
-  vocabulary reference (#122).
+  their milestones — browser-bundle trim (#25), then presentations/slides (#50),
+  minipage panels (#115), and the MDN-grade vocabulary reference (#122). *(Arrow
+  smart-typography #139 shipped early on `main`.)*
 - **Not planned / icebox.** Out-of-scope and parked items live in the `Not Planned`
   and `future` milestones, not here.
 
@@ -64,16 +65,18 @@ and Quarto-perfection are post-launch.
 
 The bodies of work feeding the releases, with where each stands:
 
-- **HTML output** — *in progress, mostly delegable.* Figures migrated. Queue:
+- **HTML output** — *in progress, mostly delegable.* Lists and figures migrated. Queue:
   frame/diagram, code, cross-refs (output-neutral reconciliations); then the
   genuinely output-changing groups (theorem, math, front-matter). **Sections are
   blocked** on the #40 heading-level decision (see below).
 - **Multi-file / master-document** — *in progress, foreground.* Assembles
-  `<section src>` children into an article, with cross-file continuous numbering and
-  cross-references resolved across files, and the same assembly rendered live in the
-  browser (`renderMasterAsync`, #194). Next slices, in the loop: cross-file citation
-  registry, master-level `<library src>` live-loading (#197), placement markers
-  (toc/endnotes/bibliography), then book + website page model.
+  `<section src>` children into an article and book-part `src` children into a book,
+  with cross-file continuous numbering and cross-references resolved across files,
+  and the same assembly rendered live in the browser (`renderMasterAsync`, #194).
+  Shipped since: the cross-file citation registry, master-level `<library src>`
+  live-loading (#197), placement markers (toc/endnotes/bibliography), and the book
+  type (assembly + separate-pages publish #205 + live app-shell render #216 + book
+  navigation #221). Next: the **website** page model (#246).
 - **Data model** — *needs Phase-0.* Settle the taxonomy (#166) and the meta-data
   block (#168) before the slices delegate.
 - **Interchange** — *needs Phase-0.* Settle import coverage (IX-Q1) — the launch
