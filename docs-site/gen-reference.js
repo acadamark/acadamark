@@ -21,6 +21,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { SIGIL_TO_TAGNAME } from '@enscribejs/enscribe/core/tagname-sigil-map';
+import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: 4-entity (& < > ") — the shared attr-grade escaper
 // The <config> option doc source (#239) lives beside CONFIG_KWARGS in the enscribe package;
 // imported via a relative path (as the vocab .md files are read by path) — it is pure data
 // (no transitive imports), and a guard test keeps it in lockstep with CONFIG_KWARGS.
@@ -33,8 +34,6 @@ const ELEMENTS_DIR = join(
 );
 const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 
-const escapeHtml = (s) => String(s)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const tag = (n) => `<code>&lt;${escapeHtml(n)}&gt;</code>`;
 const oneLine = (s) => String(s).replace(/\s+/g, ' ').trim();
 

@@ -58,10 +58,10 @@ source text
     │  resolveStrictMode (#36) → remarkRecursiveContent
     │
     ▼  Stage 3: mdast transforms
-    │  normalize to canonical → config discovery →
+    │  doc-type resolve → normalize to canonical → config discovery →
     │  book structure → article structure → section nesting →
     │  list structuring → citation index → table-cell parse →
-    │  html-table cells → notes → numbering →
+    │  html-table cells → asset index → asset resolution → notes → numbering →
     │  apply numbers → ref resolution → cite resolution →
     │  note placement → bibliography
     │
@@ -216,12 +216,15 @@ including the mixed-content (escape-errors) path.
 
 ## 4. Stage 3: mdast transforms
 
-A sequence of mdast-transform plugins runs in order: the normalization pass,
+A sequence of mdast-transform plugins runs in order: document-type resolution
+(`enscribeDocTypeResolve`, #200 — resolves the document class and stamps `<meta
+type>` so the structural plugins can branch on it), then the normalization pass,
 then configuration discovery, then the structural plugins (book structuring,
 article structuring, section nesting, and list structuring), then the semantic
 plugins (citation index, the opt-in table-cell passes — table-cell-parse and
-html-table-cells, notes, numbering, apply-numbers, ref-resolution,
-cite-resolution, note-placement, bibliography). (Strict-mode resolution runs
+html-table-cells, the `<data>` asset index and asset resolution (#190), notes,
+numbering, apply-numbers, ref-resolution, cite-resolution, note-placement,
+bibliography). (Strict-mode resolution runs
 earlier still, before recursive-content — see §0/Stage 2.) Each is registered on
 the unified processor in this order and runs as a unified transform during the
 `processor.run()` step. The per-plugin detail follows in §4.0–§4.10; book-structuring is in §4.2.5, the
@@ -236,10 +239,12 @@ model.
 (Exported as `enscribeNormalizeToCanonical`; `enscribeNormalizeMarkdown` is a
 backward-compat alias of the same plugin.)
 
-**When:** First in Stage 3, immediately after `remarkRecursiveContent`. By this
-point both the outer `remarkParse` run and the inner one (inside
-`remarkRecursiveContent`) have completed, so every delegated-parser node and
-every pipe-content subtree is present on both surfaces.
+**When:** Early in Stage 3 — `enscribeDocTypeResolve` (#200) runs first, immediately
+after `remarkRecursiveContent`: it resolves the document class and stamps `<meta
+type>` on the tree so the structural plugins below can branch on it; this
+normalization gate runs next. By this point both the outer `remarkParse` run and
+the inner one (inside `remarkRecursiveContent`) have completed, so every
+delegated-parser node and every pipe-content subtree is present on both surfaces.
 
 **What it does:** The single normalization gate. It coerces *every* authored form
 to its canonical Layer 1 shape, so downstream structural and semantic plugins see
@@ -488,6 +493,21 @@ table that is not a raw-HTML grid. Full detail: `interpreter.md` §3.5.6.
 
 **Dependencies:** runs after `enscribeTableCellParse` (a table already carrying
 `_parsedCells` / `_htmlTable` is skipped); must precede `enscribeNotes`.
+
+#### 4.4.7 buildAssetIndex + enscribeAssetResolution
+
+**Source:** `packages/enscribe/src/interpreter/plugins/asset-load.js` (registered
+via the anonymous wrapper `enscribeAssetIndex`, then `enscribeAssetResolution`).
+
+**What it does:** The `<data>` embedded/external asset registry (#190).
+`buildAssetIndex` collects the `<fig #id …>` assets declared inside `<data>` into a
+keyed, id-addressed store; `enscribeAssetResolution` rewrites a body
+`<fig src="@id" />` reference to the resolved asset — a `data:` URI (embedded) or
+the (assembly-rebased) path (external) — inheriting the figure's caption,
+numbering, and cross-reference behavior.
+
+**Dependencies:** runs after `buildCitationIndex` and the table-cell passes; must
+precede `enscribeNotes` and numbering, so a resolved asset numbers as a figure.
 
 #### 4.5 enscribeNotes
 

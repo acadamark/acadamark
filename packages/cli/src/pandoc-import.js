@@ -19,6 +19,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, extname, basename, resolve, isAbsolute } from 'node:path';
 import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
 import { SECTION_TAGNAMES } from '@enscribejs/enscribe/interpreter/lib/section-kinds';
+import { escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: shared 3-entity element-text escaper
 
 // ─── pandoc invocation ──────────────────────────────────────────────────────
 
@@ -320,7 +321,6 @@ function htmlRows(rows, cellTag) {
 }
 
 const csvCell = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // ─── metadata + assembly ────────────────────────────────────────────────────
 

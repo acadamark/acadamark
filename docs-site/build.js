@@ -17,6 +17,7 @@
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
 import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
+import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: this script's escaper is 4-entity (& < > "), the shared attr-grade escaper
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
 import { buildGallery, buildFeaturedExamples } from './gen-gallery.js';
@@ -200,8 +201,6 @@ function inlineText(nodes) {
     .trim();
 }
 
-const escapeHtml = (s) => String(s)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**
  * A standalone demo-paper page: a minimal HTML shell with the article theme

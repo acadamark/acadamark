@@ -50,42 +50,11 @@ import { makeTag, makeInternalMarker, isEnscribeTag } from '../../core/tag.js';
 import { walkReplace } from '../../core/walkers/walk-replace.js';
 import { ENSCRIBE_NOTES_PENDING, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { findTag } from '../lib/ast-helpers.js';
+import { findOrCreateBackMatter } from '../lib/back-matter.js'; // #264: shared home
 import { resolveConfigEnum } from '../lib/config-helpers.js';
 import { isBookRegionTag } from '../lib/book-regions.js';
 import { notePlacement } from './notes.js';
 
-// ─── Back-matter container helpers ────────────────────────────────────────────
-
-/**
- * Find or create the document's back-matter container (article-back for
- * articles; book-back for books). Returns null if no document root exists.
- *
- * Phase 4 slice 4a (2026-05-29): generalized from article-only to handle
- * both article and book trees uniformly. The book branch is the new path;
- * the article branch preserves slice 7001aaa behavior.
- *
- * @param {Array} treeChildren — root.children
- * @returns {object|null} the back-matter container, or null
- */
-function findOrCreateBackMatter(treeChildren) {
-  const book = findTag(treeChildren, 'book');
-  if (book) {
-    let back = findTag(book.content ?? [], 'book-back');
-    if (!back) {
-      back = makeTag('book-back');
-      book.content.push(back);
-    }
-    return back;
-  }
-  const article = findTag(treeChildren, 'article');
-  if (!article) return null;
-  let back = findTag(article.content ?? [], 'article-back');
-  if (!back) {
-    back = makeTag('article-back');
-    article.content.push(back);
-  }
-  return back;
-}
 
 // ─── Top-level collection-unit helpers ────────────────────────────────────────
 
