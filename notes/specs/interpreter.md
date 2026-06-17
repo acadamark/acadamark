@@ -1062,10 +1062,12 @@ which the `html` handler has already converted.
 
 ### 4.2 Asset injection
 
-After `toHast` produces the hast tree, the compiler prepends a document-fonts
-`<style>` element unconditionally, then conditionally prepends KaTeX CSS
-(when math is present) and hover-preview JS+CSS (when notes, refs, or cites
-are present). See section 10 for details.
+After `toHast` produces the hast tree, the compiler runs a fixed-order
+post-compile injection phase of nine injectors — table-of-contents, margin
+layout, strict-mode flag, book scripts, document fonts, theme, KaTeX CSS,
+hover-preview, and external-DSL assets — each prepending to `hast.children` only
+when its feature is in use. See section 10 for the full enumeration, trigger
+conditions, and the load-bearing order.
 
 ### 4.3 Formatting and serialization
 
@@ -1553,11 +1555,44 @@ Plugins communicate via `file.data`. Fields set during a pipeline run:
 
 ## 10. Asset injection
 
-Asset injection happens post-hast, pre-serialize, inside the compiler. Four
-categories of assets are managed: document fonts (every document unless
-`documentFontsCss: 'skip'`), KaTeX CSS (conditional on math), hover-preview
-JS+CSS (conditional on notes/refs/cites), and lazy-loading machinery shared by
-the conditional categories.
+Asset injection happens post-hast, pre-serialize, inside the compiler — the
+"post-compile injection phase" in `compileToHtml`. **Nine injectors** run in a
+fixed order, each prepending to `hast.children` via `unshift`, so the call order
+is the *reverse* of the final node order. Each is a no-op for a document that
+does not use its feature, so a default document stays byte-identical.
+
+1. **`injectToc`** — table-of-contents nav (the #218 config listing, or the
+   legacy build-passed `toc`), plus the contents-listing CSS only when a config
+   listing was rendered. Returns the `tocType` / `configTocShape` the book
+   scripts gate on.
+2. **`injectMarginLayout`** — the #33 margin column: `MARGIN_CSS` + margin layout
+   when `note-position=margin` relocates numbered notes, or ≥1 `<marginnote>` is
+   present.
+3. **`injectStrictFlag`** — the #36 strict-mode flag CSS, only on a non-`off` rung
+   (`sigil`/`canonical`).
+4. **`injectBookScripts`** — the book reading-interface scripts in their
+   load-bearing order: chapter-nav (opt-in single-chapter paging, book ToC only),
+   on-this-page (book right rail), scroll-spy (any ToC sidebar — book/article
+   `tocType` or a #218 config sidebar).
+5. **`injectFonts`** — document fonts (§10.0), every document unless `'skip'`.
+6. **`injectTheme`** — theme `:root` overrides, injected after the fonts so they
+   win the cascade; an unknown theme warns and falls back to default (no injection).
+7. **`injectKaTeX`** — KaTeX CSS (§10.1), when the document uses math.
+8. **`injectHoverPreview`** — hover-preview JS+CSS (§10.2), when the document has
+   note / ref / cite markers.
+9. **`injectDslAssets`** — external-DSL (mermaid, abc) assets per used DSL; a
+   `static` DSL is collected and replaced *after* `formatHtml`.
+
+The order is load-bearing and the compiler flags it "do NOT reorder": the ToC nav
++ its CSS land first (so the asset CSS/JS sit outside the layout wrapper, at the
+top of the body); CSS is injected before JS; the three book scripts go chapter-nav
+→ on-this-page → scroll-spy; `injectTheme` follows `injectFonts` so its `:root`
+overrides win; the static-DSL replacement runs after `formatHtml` (running it
+before would let the formatter reflow the inlined SVG).
+
+The detailed subsections below cover the three core asset categories — document
+fonts, KaTeX CSS, hover-preview — and the shared lazy-loading machinery; the other
+six injectors are described inline above.
 
 ### 10.0 Document fonts (every document unless `'skip'`)
 

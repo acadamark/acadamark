@@ -685,7 +685,33 @@ section 6 (Schema dispatch) for full dispatch details.
 
 **When:** After `toHast()` produces the hast tree, before formatting/serialization.
 
-**What:** CSS and JavaScript nodes prepended to `hast.children`.
+**What:** CSS and JavaScript nodes prepended to `hast.children` by **nine
+injectors** in a fixed order. Each `unshift`s, so the call order is the *reverse*
+of the final node order, and each is a no-op when its feature is unused (default
+document → byte-identical). In call order:
+
+1. **ToC** — table-of-contents nav (#218 config listing or the legacy `toc`
+   option) + the contents-listing CSS when a config listing rendered; yields the
+   `tocType` / `configTocShape` the book scripts gate on.
+2. **Margin layout** — `MARGIN_CSS` + margin column (#33) when
+   `note-position=margin` relocates notes, or a `<marginnote>` is present.
+3. **Strict-mode flag** — the #36 flag CSS, only on a non-`off` rung
+   (`sigil`/`canonical`).
+4. **Book scripts** — chapter-nav (opt-in, book ToC) → on-this-page (book right
+   rail) → scroll-spy (any ToC sidebar).
+5. **Document fonts** — see below.
+6. **Theme** — theme `:root` overrides, after the fonts so they win the cascade;
+   unknown theme warns and falls back (no injection).
+7. **KaTeX CSS** — see below.
+8. **Hover preview** — see below.
+9. **External-DSL assets** — mermaid / abc per used DSL; a `static` DSL is
+   collected and replaced *after* formatting.
+
+The order is load-bearing (the compiler flags it "do NOT reorder"): ToC nav + its
+CSS first (asset CSS/JS sit outside the layout wrapper), CSS before JS, the book
+scripts in the order above, theme after fonts, and the static-DSL replacement
+after `rehypeFormat` (so the formatter cannot reflow the inlined SVG). The four
+core categories below give the per-mode detail.
 
 **Document fonts:** Prepended on every document unless `documentFontsCss:
 'skip'`. In `'inline'` mode: a `<style>` of base64 `@font-face` rules (Inter +
