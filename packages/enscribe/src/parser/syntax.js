@@ -4,6 +4,22 @@
 
 import { markdownLineEnding } from 'micromark-util-character'
 
+// PG-11 / #264: in flow (multiLine) position, tolerate a single trailing space/tab
+// before the line ending — consume it and re-enter `ok` to re-check the next char;
+// a non-whitespace, non-line-ending char disqualifies (nok). Returns null when the
+// rule does not apply (not flow / EOF / already at a line ending) so the caller
+// proceeds with its normal close. Extracted from three byte-identical tokenizer sites.
+function tolerateTrailingFlowWhitespace(effects, code, multiLine, ok, nok) {
+  if (multiLine && code !== null && !markdownLineEnding(code)) {
+    if (code === 32 || code === 9) {
+      effects.consume(code)
+      return ok
+    }
+    return nok(code)
+  }
+  return null
+}
+
 const LT = 60         // <
 const GT = 62         // >
 const PIPE = 124      // |
@@ -217,14 +233,8 @@ function makeSigilTagTokenizer({ multiLine }) {
       // Without this, `<# Heading #> ` (trailing space) is silently reclaimed
       // by the text-position tokenizer as inline, which is rarely what the
       // author meant.
-      if (multiLine && code !== null && !markdownLineEnding(code)) {
-        if (code === 32 || code === 9) {
-          // Skip whitespace and re-check the next char.
-          effects.consume(code)
-          return afterClose
-        }
-        return nok(code)
-      }
+      const ws = tolerateTrailingFlowWhitespace(effects, code, multiLine, afterClose, nok)
+      if (ws !== null) return ws
       effects.exit('enscribeTagRaw')
       effects.exit('enscribeTag')
       return ok(code)
@@ -409,13 +419,8 @@ function makeNamedTagTokenizer({ multiLine }) {
       //
       // PG-11 (2026-05-25): trailing whitespace (space/tab) before the line
       // ending is tolerated — same reasoning as the sigil afterClose above.
-      if (multiLine && code !== null && !markdownLineEnding(code)) {
-        if (code === 32 || code === 9) {
-          effects.consume(code)
-          return afterGt
-        }
-        return nok(code)
-      }
+      const ws = tolerateTrailingFlowWhitespace(effects, code, multiLine, afterGt, nok)
+      if (ws !== null) return ws
       effects.exit('enscribeTagRaw')
       effects.exit('enscribeTag')
       return ok(code)
@@ -859,13 +864,8 @@ function makeLongFormTokenizer({ multiLine }) {
       // text-position tokenizer claims `<b>bold</b> rest` as a single inline
       // run. Trailing whitespace before the line ending is tolerated. Mirrors
       // the named-tag tokenizer's afterGt (Issue 2 fix).
-      if (multiLine && code !== null && !markdownLineEnding(code)) {
-        if (code === 32 || code === 9) {
-          effects.consume(code)
-          return afterSameLineClose
-        }
-        return nok(code)
-      }
+      const ws = tolerateTrailingFlowWhitespace(effects, code, multiLine, afterSameLineClose, nok)
+      if (ws !== null) return ws
       effects.exit('enscribeLongFormTag')
       return ok(code)
     }

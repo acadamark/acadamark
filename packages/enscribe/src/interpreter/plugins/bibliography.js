@@ -26,6 +26,7 @@ import { ENSCRIBE_CITATIONS, ENSCRIBE_CONFIG } from '../../core/file-data-keys.j
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { isBookRegionTag } from '../lib/book-regions.js';
 import { escapeHtmlAttr } from '../../core/escape-html.js';
+import { findOrCreateBackMatter } from '../lib/back-matter.js'; // #264: shared home
 
 // The bibliography heading override (#23) is emitted as a raw hast node
 // (cite.js bibliographyHandler), so author-supplied text is HTML-escaped to avoid
@@ -49,43 +50,6 @@ function findDeep(nodes, tagname) {
   return null;
 }
 
-/**
- * Find (or create) the back-matter region that holds the bibliography:
- * <article-back> for an article, <book-back> for a book. Returns null if
- * the tree has neither root (nothing to attach to).
- *
- * Book case (Phase 6, 2026-05-29): a book's default bibliography is a single
- * document-wide block placed at the end of <book-back>, mirroring the article path.
- * Per-chapter bibliographies (`split_bib`, scoped like note-scope=chapter) ship via
- * the per-chapter pass in the plugin below (#190) — a <bibliography> authored inside a
- * chapter lists that chapter's cited references only. book-structuring creates
- * <book-back> only when there is back-matter (appendix/glossary); if none
- * exists we create one and append it to the <book>.
- */
-function findOrCreateBackMatter(treeChildren) {
-  const article = findDeep(treeChildren, 'article');
-  if (article) {
-    let back = findDeep(article.content ?? [], 'article-back');
-    if (!back) {
-      back = makeTag('article-back');
-      article.content.push(back);
-    }
-    return back;
-  }
-
-  const book = findDeep(treeChildren, 'book');
-  if (book) {
-    let back = findDeep(book.content ?? [], 'book-back');
-    if (!back) {
-      back = makeTag('book-back');
-      book.content = book.content ?? [];
-      book.content.push(back);
-    }
-    return back;
-  }
-
-  return null;
-}
 
 // ─── Internal node factory ────────────────────────────────────────────────────
 
