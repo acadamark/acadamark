@@ -54,3 +54,5 @@ ghc-prompt-*.md
 #   !packages/layer1-vocabulary/src/data.js
 #   !packages/enscribe/src/parser/generated/parser.js
 .claude/worktrees/
+*:Zone.Identifier
+*:Zone.Identifier
