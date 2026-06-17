@@ -54,6 +54,11 @@ const THEOREM_PREFIXES = new Map([
   ['proof',       'Proof'],
 ]);
 
+// The theorem-family tagnames that are unnumbered by default — their label renders
+// as a numberless "Remark." / "Proof." (kept in sync with the unnumbered set; these
+// are deliberately absent from numbering.js's NUMBERED_TAGNAMES).
+const UNNUMBERED_THEOREM_TAGNAMES = new Set(['remark', 'proof']);
+
 /**
  * Convert the theorem's pipe content (the body) to hast children. Prose-
  * shape unwrap matches the schema-dispatch behavior for prose content.
@@ -97,7 +102,7 @@ export function theoremFamilyHandler(state, node, vocab) {
   // The shared formatLabel helper requires a number; build the
   // numberless label inline here. Same className shape for consistency.
   const fallbackLabel =
-    labelSpan == null && (node.tagname === 'remark' || node.tagname === 'proof')
+    labelSpan == null && UNNUMBERED_THEOREM_TAGNAMES.has(node.tagname)
       ? {
           type: 'element',
           tagName: 'span',

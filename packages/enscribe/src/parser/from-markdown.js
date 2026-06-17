@@ -27,6 +27,7 @@
 
 import { parse as peggyParse } from './generated/parser.js'
 import { getContentHandler } from '../core/dsl-registry.js'
+import { defaultEnscribeTagAttrs } from '../interpreter/lib/default-tag-attrs.js'
 
 // Node types that the built-in onexitlineending treats as containers for
 // end-of-line characters. This list mirrors mdast-util-from-markdown's
@@ -167,13 +168,7 @@ function buildShortcutNode(node, source) {
     contentHandler: 'default',
     content,
     isOpaqueContent: false,
-    positional: [],
-    booleans: {},
-    kwargs: {},
-    id: null,
-    classes: [],
-    atRefs: [],
-    selfClosing: false,
+    ...defaultEnscribeTagAttrs(),
   })
 }
 
@@ -221,13 +216,7 @@ function buildItemMarkerNode(node, source) {
     content,
     isOpaqueContent: false,
     contentHandler: 'default',
-    positional: [],
-    booleans: {},
-    kwargs: {},
-    id: null,
-    classes: [],
-    atRefs: [],
-    selfClosing: false,
+    ...defaultEnscribeTagAttrs(),
   })
 }
 
@@ -239,13 +228,7 @@ function enterEnscribeLongFormTag(token) {
       type: 'enscribeTag',
       form: 'long',
       tagname: null,
-      positional: [],
-      booleans: {},
-      kwargs: {},
-      atRefs: [],
-      id: null,
-      classes: [],
-      selfClosing: false,
+      ...defaultEnscribeTagAttrs(),
       content: '',
       isOpaqueContent: true,
       contentHandler: 'default',

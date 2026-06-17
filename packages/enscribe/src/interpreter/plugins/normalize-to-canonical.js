@@ -116,8 +116,10 @@ function isBookDocType(docType) {
 // core-vocabulary name — host and core-vocabulary names stay first-class. The
 // reservation is enforced only for UNCONDITIONAL shorthands; conditional ones
 // are exempt (their condition is the deliberate disambiguation — the book-part
-// `<glossary>` case). HOST_NAMES lists the two-axis hosts; the rest comes from
-// the generated vocabulary.
+// `<glossary>` case). HOST_NAMES are the extra names reserved against shorthand
+// shadowing beyond the vocab keys — the format-word hosts (diagram/table/library/data)
+// plus core names (fig/math/code) a shorthand must not shadow; the rest of the
+// reserved set is the generated vocabulary.
 const HOST_NAMES = new Set(['diagram', 'table', 'library', 'data', 'fig', 'math', 'code']);
 const RESERVED_NAMES = new Set([...Object.keys(VOCABULARY), ...HOST_NAMES]);
 const shorthandRegistry = createShorthandRegistry({ reservedNames: RESERVED_NAMES });
