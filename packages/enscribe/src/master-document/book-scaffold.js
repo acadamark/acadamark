@@ -31,6 +31,7 @@ import { slugify, uniqueId } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
 import { BOOK_REGIONS } from '../interpreter/lib/book-regions.js';
 import { readConfigBool } from '../interpreter/lib/config-helpers.js';
+import { escapeHtml } from '../core/escape-html.js';
 import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
 
 const cleanText = (s) => s.replace(/\s+/g, ' ').trim();
@@ -168,8 +169,9 @@ export function assignIds(parts, bookEl) {
 // The one presentation fragment both render targets share. Kept as a raw string (not a
 // hast builder) so P1's committed cover golden stays byte-identical to the existing form.
 
-/** Minimal HTML escape for interpolated text (e.g. the book title). */
-export const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// escapeHtml is the shared element-text escaper from core/escape-html.js (#254);
+// re-exported here so publish-pages.js keeps importing it from book-scaffold.
+export { escapeHtml };
 
 /** The book cover's `<main>` body: the book-title hero + the "select a chapter" lede.
  *  Rendered verbatim by P1's static cover (`pages/index.html`) and the live cover view, so
