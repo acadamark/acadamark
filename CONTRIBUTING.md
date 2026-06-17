@@ -29,6 +29,7 @@ recording it in the spec.
 |----------|------|-------|
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
+| `notes/decisions.md` | Spec (strategic) | Product-shape / strategic design decisions — the target default views and the cross-cutting choices that steer them. The tier above `DESIGN.md`'s engineering rationale; subsystem specs defer up to it. |
 | `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
 | `notes/code-review.md` | Governance/Spec (process) | The deep code-review method — the method behind release-audit reconciliation #1. |
