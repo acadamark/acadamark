@@ -1,0 +1,16 @@
+<meta type=website>
+<title | Enscribe>
+</meta>
+
+<nav>
+<item src="sources/index.emd" | Home>
+<item src="sources/design.emd" | Design>
+<nav-group title="Vocabulary">
+<item src="sources/enscribe-shorthand.emd" | Enscribe Shorthand>
+<item src="sources/layer1.emd" | Layer 1>
+</nav-group>
+<nav-group title="Documentation">
+<item src="sources/rendering-guide.emd" | Rendering guide>
+<item src="sources/jats.emd" | JATS export>
+</nav-group>
+</nav>

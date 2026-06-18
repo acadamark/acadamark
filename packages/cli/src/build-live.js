@@ -60,6 +60,41 @@ export function discoverMasterSrcChildren(masterSource) {
   return [...new Set((tree.children ?? []).filter(isMasterSrcEntry).map((n) => n.kwargs.src))];
 }
 
+/** A bare `<meta type=website>` read (parse only) — buildLiveFolder branches page discovery on it. */
+function isWebsiteMaster(masterSource) {
+  const meta = (buildEnscribePipeline({}).parse(masterSource).children ?? [])
+    .find((n) => n && n.type === 'enscribeTag' && n.tagname === 'meta');
+  return meta?.kwargs?.type === 'website';
+}
+
+/**
+ * Discover a WEBSITE master's pages (#223 / #246). A website's pages are `<item src>` entries nested
+ * inside `<nav>` — NOT assembler children (MASTER_SRC_TAGS excludes `<item>`), so discoverMasterSrcChildren
+ * returns `[]` for a website and the live folder would 404 on every page fetch. The pages live in the nav
+ * model: run the website pipeline once and read the external page srcs (descending `<nav-group>`s) — the
+ * SAME set mountLiveWebsite fetches at runtime, so the folder ships exactly the pages the shell requests.
+ * Deduped, document order.
+ *
+ * @param {string} masterSource - the website master's `.emd` source text.
+ * @returns {string[]} the external page `src` filenames, deduped.
+ */
+export function discoverWebsitePages(masterSource) {
+  const proc = buildEnscribePipeline({});
+  const file = { data: {} };
+  proc.runSync(proc.parse(masterSource), file);
+  // ENSCRIBE_NAV_MODEL (= 'enscribeNavModel'); the key constant is not a package export, so read the literal.
+  const navModel = file.data.enscribeNavModel ?? { entries: [] };
+  const srcs = [];
+  const walk = (entries) => {
+    for (const e of entries ?? []) {
+      if (e.kind === 'group') walk(e.children);
+      else if (e.kind === 'page' && e.src) srcs.push(e.src);
+    }
+  };
+  walk(navModel.entries);
+  return [...new Set(srcs)];
+}
+
 /**
  * Build a self-standing live folder for a master document — book OR article (#216): copy the master
  * + its `src` children + the shell assets + engine bundle into `outDir` (flat), and write the
@@ -86,13 +121,21 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   // e.g. when building in place over a committed example folder).
   const copyInto = (srcPath, name) => {
     const dest = join(out, name);
-    if (resolve(srcPath) !== dest) copyFileSync(srcPath, dest);
+    if (resolve(srcPath) !== dest) {
+      mkdirSync(dirname(dest), { recursive: true });   // a website page may sit in a subdir (sources/…); flat for book/article (no-op)
+      copyFileSync(srcPath, dest);
+    }
   };
 
-  // 1. the master + its `src` children — so the folder is self-standing (the shell fetches them).
+  // 1. the master + its children — so the folder is self-standing (the shell fetches them). A website's
+  //    pages are NOT assembler children (`<item>` is excluded from MASTER_SRC_TAGS); discover them from
+  //    the nav model instead (#223/#246), so the folder ships every page the shell will fetch. Book and
+  //    article masters keep the assembler child set — byte-identical.
   const masterSource = readFileSync(masterPath, 'utf8');
   copyInto(masterPath, masterName);
-  const children = discoverMasterSrcChildren(masterSource);
+  const children = isWebsiteMaster(masterSource)
+    ? discoverWebsitePages(masterSource)
+    : discoverMasterSrcChildren(masterSource);
   for (const src of children) copyInto(join(masterDir, src), src);
 
   // 2. the shell assets + engine bundle, copied flat into the folder (assetBase './').
