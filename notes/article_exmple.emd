@@ -1,0 +1,27 @@
+<meta 
+   type="article",
+   author="Ariel Balter",
+   date="2026-09-06"
+>
+
+<toc auto floating depth="2">
+<section src="section_1.emd" | This Title Overrides>
+<section src="section_2.emd" >
+<section | Inline Section Title>
+I'm going to author this section inline, without a source file.
+<fig src="data/figure_1.png" alt="A figure of something interesting">
+<section src="section_3.emd" | This Title Also Overrides>
+<appendix src="appendix_a.emd">
+<appendix src="appendix_b.emd" >
+
+<data>
+<library src="references.bib">
+<fig png>
+{base64-encoded PNG data}
+</fig>   
+</data>
+
+<config
+   theme="modern"
+   layout="two-column"
+   toc-position="left"

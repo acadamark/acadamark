@@ -1,0 +1,32 @@
+<meta 
+   type="website",
+   author="Ariel Balter",
+   date="2026-09-06"
+   title="My Awesome Website" <!-- the title of the website -->
+>
+
+<header>
+   <icon src="data/icon.png" alt="Website Icon">
+   <title>My Awesome Website</title>
+   <nav>
+      <item src="home.emd" | Home>
+      <item src="about.emd" | About>
+      <dropdown | Resources>
+         <item src="resources/tutorials.emd" | Tutorials>
+         <item src="resources/documentation.emd" | Documentation>
+         <item src="resources/community.emd" | Community>
+      </dropdown>
+      <item src="contact.emd" | Contact>
+   </nav>
+</header>
+
+<body src="home.emd">
+
+<footer src="footer.emd">
+
+<config
+   theme="light"
+   layout="single-column"
+   toc-position="left"
+>
+

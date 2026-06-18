@@ -1,0 +1,24 @@
+<meta 
+   type="book",
+   author="Ariel Balter",
+   date="2026-09-06"
+>
+
+<dedication src="dedication.emd">
+<preface src="preface.emd">
+<toc auto depth="2">
+<chapter src="chapter_1.emd" | This Title Overrides>
+<chapter src="chapter_2.emd" >
+<appendix src="appendix_a.emd">
+<endnotes>
+
+<data>
+<library src="references.bib">
+<!-- or maybe chapters have their own libraries? -->
+</data>
+
+<config
+   theme="classic"
+   layout="one-column"
+   chapter-numbering="roman"
+>
