@@ -6,6 +6,7 @@
 import { run as runConfigDiscovery } from './plugins/config-discovery.test.js';
 import { run as runDocType } from './plugins/doc-type.test.js';
 import { run as runArticleStructuring } from './plugins/article-structuring.test.js';
+import { run as runWebsiteStructuring } from './plugins/website-structuring.test.js';
 import { run as runSectionNesting } from './plugins/section-nesting.test.js';
 import { run as runListStructuring } from './plugins/list-structuring.test.js';
 import { run as runNumbering } from './plugins/numbering.test.js';
@@ -81,6 +82,7 @@ const suites = [
   ['plugins/doc-type',             runDocType],
   ['plugins/config-discovery',     runConfigDiscovery],
   ['plugins/article-structuring',  runArticleStructuring],
+  ['plugins/website-structuring',  runWebsiteStructuring],
   ['plugins/section-nesting',      runSectionNesting],
   ['plugins/list-structuring',     runListStructuring],
   ['plugins/numbering',            runNumbering],
