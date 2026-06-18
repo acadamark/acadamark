@@ -37,14 +37,18 @@ import {
   buildLiveWebsite,
   renderLiveWebsitePage,
   renderNotFoundView,
-  buildWebsiteNav,
   resolvePageParam,
   flattenNavPages,
+  extractDocumentTitle,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
 import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL } from '../core/file-data-keys.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
+import {
+  injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
+  setActivePage, bindWebsiteNav, buildOnThisPage,
+} from './assets/website-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
 
 const BROWSER_DEFAULTS = {
@@ -819,8 +823,15 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const proc = getPipeline(pipelineOptions);
 
   // Pass 1 (cheap — the master is just `<meta>` + `<nav>`): harvest the S1 nav model (page list).
+  // Read the brand (<meta> title + icon) and the site-wide <footer src> off the master BEFORE
+  // runSync mutates it.
+  const masterTree = proc.parse(source);
+  const masterChildren = masterTree.children ?? [];
+  const metaNode = masterChildren.find((n) => isEnscribeTag(n, 'meta'));
+  const footerNode = masterChildren.find((n) => isEnscribeTag(n, 'footer') && n.kwargs?.src);
+  const brandIcon = metaNode?.kwargs?.icon ?? null;
   const navFile = { data: {} };
-  proc.runSync(proc.parse(source), navFile);
+  proc.runSync(masterTree, navFile);
   const navModel = navFile.data[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
   const allPages = flattenNavPages(navModel.entries);
   const externalPages = allPages.filter((p) => p.src != null);
@@ -840,10 +851,31 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const model = buildLiveWebsite({ numbered, file, pages: externalPages });
   const ctx = { proc, file };
 
-  // Persistent shell built ONCE: the minimal nav + a content region. route() swaps ONLY the
-  // content region (never root), so the chrome survives a page swap — the topology S2b extends.
-  root.innerHTML = `${buildWebsiteNav(model.pages)}<main data-enscribe-content></main>`;
+  // The site-wide <footer src>: fetched ONCE (base-relative), rendered OUTSIDE the content region
+  // so it survives a page swap. Rendered minimally (its inner article-shell is a later cosmetic
+  // refinement); a fetch failure degrades to no footer.
+  let footerHtml = '';
+  if (footerNode) {
+    try {
+      const fsrc = await fetchSourceText(footerNode.kwargs.src, baseUrl);
+      footerHtml = `<footer class="enscribe-site-footer">${String(proc.stringify(proc.runSync(proc.parse(fsrc), { data: {} })))}</footer>`;
+    } catch { footerHtml = ''; }
+  }
+
+  // Persistent shell built ONCE from the nav TREE (with groups): the top bar (brand + nav, a
+  // <nav-group> → a dropdown), the sidebar (the full tree via buildList), and the footer.
+  // route() swaps ONLY `[data-enscribe-content]`, so the chrome survives every page swap.
+  injectWebsiteNavStyles();
+  const brand = { title: extractDocumentTitle(source) || '', icon: brandIcon, firstSlug: model.firstSlug };
+  root.innerHTML = composeWebsiteShell({
+    topBar: buildWebsiteTopBar(brand, navModel.entries),
+    sidebar: buildWebsiteSidebar(navModel.entries),
+    footer: footerHtml,
+  });
+  if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');
+  bindWebsiteNav(root);                                   // wire the top-bar dropdowns
   const contentRegion = root.querySelector('[data-enscribe-content]');
+  const onThisPageRegion = root.querySelector('[data-enscribe-onthispage]');
 
   // Lazy per-page render cache; executeAssets runs on a slug's FIRST build only (a cached
   // re-show re-injects the same HTML and must not re-init interactive page assets).
@@ -872,6 +904,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
       currentSlug = slug;
       // innerHTML does not run <script>; activate a page's assets ONCE, on first build.
       if (slug != null && !dest.notFound && !executed.has(slug)) { executeAssets(contentRegion); executed.add(slug); }
+      // S2b: move aria-current to the active page in the (persistent) chrome — no rebuild — and
+      // rebuild the per-page "on this page" rail from the current page's headings.
+      setActivePage(root, dest.notFound ? null : slug);
+      if (onThisPageRegion) onThisPageRegion.innerHTML = dest.notFound ? '' : buildOnThisPage(contentRegion);
     }
     // Resolve a `?page=…#anchor` deep-link AFTER the page is mounted (native hash-scroll fires
     // before the body exists), and on each swap.

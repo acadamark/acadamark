@@ -159,10 +159,17 @@ export const bookLink = (e) => {
 /** Build a nested `<ul>` of links from an entry tree, using `content` for each link and
  *  `hrefFor` for each `href`. `hrefFor` defaults to an in-page anchor (`#id`) — today's
  *  behavior for every existing caller — and is the seam #226/#246 use to emit cross-page /
- *  page-tree links (a tree + a resolver, no document-class assumptions baked in). */
+ *  page-tree links (a tree + a resolver, no document-class assumptions baked in).
+ *
+ *  An entry with NO id is a non-navigable LABEL (#246 S2b: a website `<nav-group>` has no page
+ *  of its own) — it renders a `<span class="enscribe-nav-label">`, never an `<a>` (no href).
+ *  Every existing caller's entries carry an id, so this branch is never taken for them — the
+ *  article/book ToC and #226 contents listing stay byte-identical. */
 export function buildList(entries, content, hrefFor = (e) => `#${e.id}`) {
   return el('ul', {}, entries.map((e) => el('li', {}, [
-    el('a', { href: hrefFor(e) }, content(e)),
+    e.id == null
+      ? el('span', { className: ['enscribe-nav-label'] }, content(e))
+      : el('a', { href: hrefFor(e) }, content(e)),
     ...(e.children.length ? [buildList(e.children, content, hrefFor)] : []),
   ])));
 }

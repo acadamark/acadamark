@@ -1,3 +1,11 @@
-<section | API Reference>
+<section #sec:api | API Reference>
 
 The reference content lives here.
+
+<section #sec:types | Types>
+
+Type definitions go here.
+
+<section #sec:functions | Functions>
+
+The function listing.

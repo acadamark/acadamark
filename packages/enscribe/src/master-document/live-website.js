@@ -135,15 +135,6 @@ export function renderNotFoundView(slug, model) {
   );
 }
 
-/** The MINIMAL S2a chrome: a plain `<ul>` of `?page=` links, enough to drive the router.
- *  The styled top bar / dropdowns / sidebar / active-state are S2b. */
-export function buildWebsiteNav(pages) {
-  const items = (pages ?? [])
-    .map((p) => `<li><a href="?page=${esc(p.slug)}">${esc(p.title ?? p.slug)}</a></li>`)
-    .join('');
-  return `<nav class="enscribe-website-nav"><ul>${items}</ul></nav>`;
-}
-
 /**
  * The `?page=` router's pure resolver. Empty `?page=` → the first page; a known slug → that
  * page; an unknown slug → a not-found result (the caller renders renderNotFoundView).
