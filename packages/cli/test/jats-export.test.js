@@ -164,6 +164,18 @@ function validateWithXmllint(fixtureName, jatsXml) {
   );
 }
 
+// ─── #246: enscribeToJats refuses a website at the LIBRARY layer ────────────
+// The rule (a site has no JATS/BITS projection) holds for EVERY caller, not just the CLI's
+// doExportJats guard — so a direct library consumer can't silently mis-emit an empty <article>.
+{
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const tree = proc.runSync(proc.parse('<meta type=website />\n<nav>\n<item src="home.emd" | Home>\n</nav>'));
+  let threw = false; let msg = '';
+  try { enscribeToJats(tree); } catch (e) { threw = true; msg = (e && e.message) || String(e); }
+  check('#246: enscribeToJats throws on a <meta type=website> tree (no JATS/BITS projection)',
+    threw && /no JATS\/BITS projection/.test(msg));
+}
+
 // ─── Integration: doc-39 minimal article through full pipeline ─────────────
 
 {

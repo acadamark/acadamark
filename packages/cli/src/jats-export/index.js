@@ -100,6 +100,15 @@ export function enscribeToJats(tree, opts = {}) {
   const bookType    = opts.bookType    ?? 'book';
   const lang        = opts.lang        ?? 'en';
 
+  // #246: a website (<meta type=website>) has NO JATS/BITS projection — a site isn't a scholarly
+  // document. Refuse here so the rule holds for EVERY caller (not just the CLI's doExportJats
+  // guard); otherwise a website tree falls through to the defensive no-wrapper branch below and
+  // silently mis-emits an empty <article>.
+  const metaNode = findTagInChildren(tree.children, 'meta');
+  if (metaNode?.kwargs?.type === 'website') {
+    throw new Error('enscribeToJats: a website (<meta type=website>) has no JATS/BITS projection (HTML render only)');
+  }
+
   // Phase 5 slice 5c: dispatch on the root tag. Book documents take
   // the BITS path; article documents take the JATS Archiving path.
   const bookNode = findTagInChildren(tree.children, 'book');

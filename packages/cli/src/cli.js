@@ -450,8 +450,15 @@ function doExportJats(opts) {
   // buildEnscribePipeline assembly is the same one the export test mirrors.
   return withQuiet(opts.quiet, () => {
     const proc = buildEnscribePipeline({ assetsDir: dirname(resolve(opts.input)) });
-    const tree = proc.runSync(proc.parse(src));
-    return enscribeToJats(tree);
+    const tree = proc.parse(src);
+    // #246: a website is HTML-only ("no JATS/BITS — a site isn't a scholarly document"). Refuse the
+    // export (a bare <meta type> read on the parsed master — no VFile/assembler needed) rather than
+    // let it fall through and mis-emit an empty article JATS. Read BEFORE runSync mutates the tree.
+    const metaNode = (tree.children ?? []).find((n) => n && n.type === 'enscribeTag' && n.tagname === 'meta');
+    if (metaNode?.kwargs?.type === 'website') {
+      throw new CliError('export-jats: websites have no JATS/BITS projection (HTML render only)');
+    }
+    return enscribeToJats(proc.runSync(tree));
   });
 }
 
