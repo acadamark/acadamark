@@ -1097,6 +1097,11 @@ export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderL
 // Write/Preview edit view. The pure core of the authoring loop; browser.js mountLiveBook wires
 // the in-memory source map, the debounced re-render, and the CodeMirror editor adapter onto it.
 export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapterPreviewBody } from '../master-document/live-book.js';
+// Live app-shell WEBSITE render (#246 S2a): a website is "the book with pages instead of
+// chapters" — these pure fns assemble external `<item src>` pages as `<book-part>`s, build the
+// model + the `?page=` resolver, and render a page (renderChapter + a cross-page href rewrite).
+// The browser entry (browser.js mountLiveWebsite) wraps them with the fetch + DOM + History router.
+export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, buildWebsiteNav, resolvePageParam, flattenNavPages, rewriteCrossPageHrefs } from '../master-document/live-website.js';
 // The single-document (article) live render (#216): an article is the simple case — one unit, no
 // rail/cover/routing — so its edit view is just the SHARED Write/Preview pane (buildEditMain) in a
 // chrome-free layout. browser.js mountLiveArticle wires the fetch + DOM + the single-source edit loop.
