@@ -128,12 +128,13 @@ site is not a scholarly document, so there is no JATS projection.
 
 - **Pages and navigation are one tree.** The master declares a `<nav>` of `<item>`s (pages) and
   `<nav-group>`s (groups — a dropdown in the top bar, an expandable node in the sidebar). An `<item>` is a
-  page (external via `src`, or authored inline like a section); a `<nav-group>` purely groups — so each tag
-  has one meaning. There is no separate `<page>` tag — the nav entry *is* the page, Quarto-style. The one
-  tree feeds both surfaces: the top level becomes the top bar; the whole tree feeds the automatic sidebar
-  (built from the shared #226 list builder). The first cut is shallow (one level of grouping); deeper
-  nesting comes later. `<nav>`/`<nav-group>`/`<item>` parse with the existing `<list>`/`<li>` machinery — a
-  nav tree is a nested list, so there's no second nested-structure parser.
+  page (external via `src`, or authored inline like a section); a `<nav-group title="…"> … </nav-group>` is
+  a long-form container that purely groups — so each tag has one meaning. There is no separate `<page>` tag —
+  the nav entry *is* the page, Quarto-style. The one tree feeds both surfaces: the top level becomes the top
+  bar; the whole tree feeds the automatic sidebar. The first cut is shallow (one level of grouping); deeper
+  nesting comes later. Pages take the short pipe form, groups the long container form — the language's usual
+  short-leaf / long-container pattern. The nesting is the website structurer's peer-close (like sections),
+  and the sidebar/top bar render through the shared #226 list builder — not parser-level list reuse.
 - **Brand and chrome.** The top-bar name and the icon come from `<meta>` (title + icon) — no in-header
   `<title>`/`<icon>` tags. `<footer src>` is site-wide, set once in the master.
 - **Routing.** Client-side `?page=slug`, with the browser's back/forward buttons working via history.

@@ -65,6 +65,73 @@ Title precedence: an inline pipe title wins over the child file's title. If neit
 
 Notes auto-collect; the collection is generated, not authored (#129). `<endnotes>` is the author's *placement* marker for the collected block, exactly parallel to `<bibliography>` — put it where the notes should render. Absent the marker, the collection lands at its default position: in a **book**, at the end of each chapter (per-chapter); in an **article**, in back-matter. An `<endnotes>` authored **inside a chapter** renders **that chapter's** collected notes there (the notes twin of per-chapter `split_bib`); a document-level `<endnotes>` relocates the collected block to the marker. The two may coexist, and note numbering stays project-wide regardless of placement. `<endnotes>` moves only the *end* collection's rendered block — the per-note mode (`end` / `foot` / `side`) and the `note-position` config (footnote-vs-endnote and location, following Quarto's `reference-location`) are separate and unchanged.
 
+### Website structure
+
+A website's structure is a single navigation tree. The master declares a `<nav>` containing `<item>`
+elements; that one tree is both the site's **page set** and its **menu structure** (as in Quarto, where one
+declaration drives the navbar and the sidebar). There is no separate `<page>` element — a nav entry *is* a
+page.
+
+The two structural tags are `<item>` (a page) and `<nav-group>` (a grouping):
+
+- **An external page** — `<item src="about.emd" | About>`. `src` names the page's child `.emd`; the pipe
+  gives the menu label and overrides the child's own title, exactly as `<section src | Title>` does in an
+  article.
+- **An inline page** — `<item | Welcome>` followed by body content, authored in the master instead of a
+  child file. Same inline form as `<section | Title>` + body: an open marker, peer-closed by the next entry.
+  (So a website, like an article, mixes inline and referenced content freely.)
+- **A group** — `<nav-group title="Resources"> … </nav-group>` containing `<item>`s (and, later, nested
+  `<nav-group>`s), with no `src` or body of its own. A group is a **long-form container** — no pipe: by the
+  three-form grammar (DESIGN.md §"Tag forms"), a tag with neither `|` nor `/` is a long-form opener that
+  pairs with its close tag. Its `title` is the display label — the same attribute a page's title is sourced
+  into when no pipe override is given. A group is a dropdown in the top bar and an expandable node in the
+  sidebar. Keeping the group its own tag — rather than an `<item>` with children — means `<item>` is
+  unambiguously a page and `<nav-group>` unambiguously a grouping.
+
+```
+<nav>
+<item src="home.emd" | Home>
+<item src="about.emd" | About>
+<nav-group title="Resources">
+<item src="resources/tutorials.emd" | Tutorials>
+<item src="resources/documentation.emd" | Documentation>
+</nav-group>
+<item src="contact.emd" | Contact>
+</nav>
+```
+
+Entries sit **flush-left** — indentation is not used for structure, and content indented four-plus spaces
+parses as a markdown code block (the same constraint `<list>` has). The `<nav-group>` close tag, not
+indentation, bounds the group.
+
+The nav tree feeds **both** navigation surfaces: its top level becomes the top bar, and the tree as a whole
+feeds the automatic sidebar. The first cut is shallow — one level of grouping; deeper nesting is later work.
+
+Structuring and rendering reuse existing machinery **at the right layers** — this is **not** parser-level
+list reuse. The **parser** handles the forms directly: a `<nav-group>` (no pipe) is a long-form container
+whose children nest by the ordinary close-tag grammar, and a pipe-form `<item | Title>` is a peer-closed
+leaf (its inline body, if any, runs to the next entry — the `<section | Title>` model). The **website
+structurer** walks the nav tree and gathers each group's members (peer-close for the leaf items, the close
+tag for the group), building a nav model on `file.data` — analogous to section-nesting, not list parsing.
+The **renderer** reuses the document-class-agnostic #226 list builder (`buildList` / `buildContentsListing`)
+to emit the sidebar and top bar from that model. The `src` / pipe-title affordance is the same one every
+structural element carries (`<section src>`, `<chapter src>`).
+
+Site chrome is minimal and mostly metadata:
+
+- The top-bar **brand name** is `<meta>`'s `title`; the **icon** is `<meta>`'s `icon`. There are no
+  in-header `<title>`/`<icon>` tags — the redundant chrome of the original sketch is dropped.
+- `<footer src="footer.emd">` is the **site-wide** footer, declared once in the master (like the nav, it is
+  not per-page).
+
+A page's content — inline body or referenced `.emd` — is an ordinary document body, the same vocabulary an
+article uses.
+
+**Composition is independent of rendering.** The master *assembles* the pages (inline or external) into the
+site; *how* the site is then rendered — static, the live shell, or (future) `enscribe serve` — is the
+render/serve matrix, not the structure. The first build targets the existing live render (already
+type-agnostic over article/book); the static per-page projection and `enscribe serve` follow later.
+
 ## `<data>` — the shared registry
 
 `<data>` is a keyed registry of libraries and assets. Everything in it has an id; the body references by id, never by path.
@@ -115,5 +182,5 @@ The assembler is the multi-file/project system (#72) plus a build model. Its des
 ## Open — to decide during the build
 
 - Per-type assembler contracts (the bulk of the work; slice by slice).
-- Website page model for anything outside the nav (a home/landing body, blog-style listings).
+- Website: a distinct home/landing body (a hero/feature layout beyond a plain page) and blog-style auto-listings — content beyond the nav-declared pages. (The core page model — nav items as inline/external pages — is settled.)
 - Embedded-asset format coverage in `<data>` (png shown; others to follow).
