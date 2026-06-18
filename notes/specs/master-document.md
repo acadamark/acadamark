@@ -39,7 +39,7 @@ The structural vocabulary is type-specific and does **not** mix — matching LaT
 |---|---|
 | article | `<toc>`, `<section>` (+ subsections), `<appendix>` |
 | book | `<dedication>`, `<preface>`, `<toc>`, `<chapter>`, book parts, `<appendix>`, `<endnotes>`; front/main/back matter |
-| website | `<header>` (`<icon>`, `<title>`, `<nav>` → `<item>`/`<dropdown>`), `<footer>`, sidebar, search, page navigation |
+| website | `<nav>` → `<item>` (page) + `<nav-group>` (group), `<footer>`; brand + icon from `<meta>` |
 
 ### Structure entries
 

@@ -207,6 +207,14 @@ export function enscribeArticleStructuring() {
       return; // out of scope for this plugin
     }
 
+    if (docType === 'website') {
+      // #246 S1: a website is structured by enscribeWebsiteStructuring (which builds a
+      // nav model on file.data); it gets NO <article> wrapper. Without this guard the
+      // non-book fall-through would wrap a website as a plain <article> — the silent
+      // mis-render this slice closes.
+      return;
+    }
+
     // Promote <title> / <subtitle> inside <meta> to article-scoped names.
     if (metaNode) {
       promoteTitles(metaNode);

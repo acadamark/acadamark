@@ -26,12 +26,12 @@ function resolve(metaType, { hasMeta = true } = {}) {
 
 export function run() {
   // Declared types pass through unchanged, no warning.
-  for (const t of ['article', 'book', 'book-part']) {
+  for (const t of ['article', 'book', 'book-part', 'website']) {
     const { docType, messages } = resolve(t);
     assert.equal(docType, t, `<meta type=${t}> resolves to ${t}`);
     assert.equal(messages.length, 0, `<meta type=${t}> does not warn`);
   }
-  console.log('PASS: doc-type — declared types (article/book/book-part) resolve unchanged, no warning');
+  console.log('PASS: doc-type — declared types (article/book/book-part/website) resolve unchanged, no warning');
 
   // Explicit unknown → warn + fall back to article (the audit gap).
   {

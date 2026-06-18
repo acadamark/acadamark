@@ -128,6 +128,7 @@ import { enscribeDocTypeResolve } from './plugins/doc-type.js';
 import { enscribeConfigDiscovery } from './plugins/config-discovery.js';
 import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
+import { enscribeWebsiteStructuring } from './plugins/website-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
 // #137: lower the `<list>` construct (+ `<-`/`<*` markers, `-`/`*` idiom) to a
 // markdown list node, reusing the existing list render + JATS mapping.
@@ -219,7 +220,7 @@ import { ON_THIS_PAGE_JS } from './assets/on-this-page-asset.js';
 import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 
 export { enscribeDocTypeResolve } from './plugins/doc-type.js';
-export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
+export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeWebsiteStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 
@@ -614,6 +615,11 @@ export function enscribeInterpreter(options = {}) {
 
   // 2–4. Structural transformation.
   this.use(enscribeConfigDiscovery);
+  // #246 S1: website-structuring owns <meta type=website>, building the nav model on
+  // file.data (no <article>/<book> wrapper). Like book/article structuring it gates on
+  // the resolved class and is a byte-identical no-op for every other document, so order
+  // among the three mutually-exclusive structurers does not matter; it sits first.
+  this.use(enscribeWebsiteStructuring);
   // Phase 4 slice 4a (2026-05-29): book-structuring runs BEFORE article-
   // structuring. For documents with <meta type=book> or <meta type=book-part>,
   // book-structuring wraps the tree in <book>/<book-part> and the

@@ -10,7 +10,7 @@
 
 export const ENSCRIBE_CONFIG             = 'enscribeConfig';
 export const ENSCRIBE_REGISTRY           = 'enscribeRegistry';
-// Slice A: the resolved document class ('article' | 'book' | 'book-part'), computed
+// Slice A: the resolved document class ('article' | 'book' | 'book-part' | 'website'), computed
 // ONCE by enscribeDocTypeResolve from <meta type> (validated against meta.md's declared
 // set) before the structuring plugins. The structuring plugins and the gate's
 // book-context detection read this instead of re-reading <meta type> ad-hoc; the
@@ -42,3 +42,14 @@ export const ENSCRIBE_NUMBERING_PENDING  = 'enscribeNumberingPending';
 // layer (a cross-chapter ref whose target chapter was never rendered still has its
 // number+title here). Built from numbering's output — never re-numbered.
 export const ENSCRIBE_CROSSREF_REGISTRY  = 'enscribeCrossRefRegistry';
+// S1 (#246): the website navigation model — the ordered page/group tree built by
+// enscribeWebsiteStructuring from the master's <nav> (the Quarto-style tree that is
+// BOTH the site's page set and its menu). Shape: { entries: [...] } where each entry is
+//   { kind: 'page',  title, slug, src }    — an external page (<item src | Title>)
+//   { kind: 'page',  title, slug, body }   — an inline page (<item | Title> + body)
+//   { kind: 'group', title, children }     — a grouping (<nav-group title> … </nav-group>)
+// The S2 live render reads this to build the ?page= router + the sidebar/top bar; no
+// rendering happens in S1 (the model is the product). Per R1 the model lives here on
+// file.data, not as a <website> hast wrapper, so both the live render and the later
+// static projection consume a plain model rather than re-parsing hast.
+export const ENSCRIBE_NAV_MODEL          = 'enscribeNavModel';

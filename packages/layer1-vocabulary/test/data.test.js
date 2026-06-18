@@ -80,9 +80,12 @@ function check(label, cond) {
 //   its HTML element, `aside`). Net: 102 → 103 primary.
 // - 2026-06-15: #190 — `endnotes.md` added (the author placement marker for the
 //   collected end-notes block, parallel to <bibliography>). Net: 103 → 104 primary.
+// - 2026-06-18: #246 S1 — `nav.md` / `item.md` / `nav-group.md` added (the website
+//   navigation vocabulary: a <nav> of <item> pages and <nav-group> groups, consumed by
+//   enscribeWebsiteStructuring into a nav model). Net: 104 → 107 primary.
 check(
-  `VOCABULARY has 106 entries (104 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 106,
+  `VOCABULARY has 109 entries (107 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 109,
 );
 
 // Build-time loader has nothing to report in normal state.

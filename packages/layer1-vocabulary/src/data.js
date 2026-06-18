@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 104 vocabulary entries.
+// Source files: 107 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -3622,6 +3622,57 @@ const _inline_math = Object.freeze({
     "_sourceFile": "inline-math.md",
   });
 
+const _item = Object.freeze({
+    "semantic_role": "navigation-item",
+    "category": "navigation",
+    "html_output": {
+      "element": "item",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+      "kwargs": {
+        "src": {
+          "maps_to": {
+            "html": "data-src",
+          },
+          "notes": "For an EXTERNAL page: the child `.emd` file that supplies the page body. The\npipe gives the menu label and overrides the child's own title, exactly as\n`<section src | Title>` does in an article. Omitted for an INLINE page, whose\nbody is authored in the master after the `<item | Title>` marker (peer-closed\nby the next entry, the `<section | Title>` model). The website render (S2)\nloads the child; S1 records the `src` as a reference only.\n",
+        },
+      },
+      "type": "structured",
+      "shape": [
+        {
+          "element": "body",
+          "required": false,
+          "contains": [
+            "inline",
+            "block",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "enscribeWebsiteStructuring",
+        "runs_before": "enscribeInterpreter",
+        "purpose": "Records this page (external src or inline body) in the nav model with a ?page= slug (#246).",
+      },
+    ],
+    "_sourceFile": "item.md",
+  });
+
 const _kbd = Object.freeze({
     "semantic_role": "kbd",
     "category": "inline-formatting",
@@ -4150,9 +4201,10 @@ const _meta = Object.freeze({
             "article",
             "book",
             "book-part",
+            "website",
           ],
           "default": "article",
-          "notes": "Declares the document class. Resolved ONCE before structuring by\nenscribeDocTypeResolve: the value is validated against this set, stored on\nfile.data, and an explicitly-set unknown type (a typo, an unbuilt class) is\nreported with a non-fatal diagnostic and falls back to \"article\"\n(always-renders). The structural plugins (enscribeArticleStructuring /\nenscribeBookStructuring) read the resolved class to decide which Layer 1\nwrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\nDefault is \"article\" — the most common case. An absent type kwarg is the\nnormal article case: silent default, no diagnostic.\n",
+          "notes": "Declares the document class. Resolved ONCE before structuring by\nenscribeDocTypeResolve: the value is validated against this set, stored on\nfile.data, and an explicitly-set unknown type (a typo, an unbuilt class) is\nreported with a non-fatal diagnostic and falls back to \"article\"\n(always-renders). The structural plugins (enscribeArticleStructuring /\nenscribeBookStructuring) read the resolved class to decide which Layer 1\nwrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\ntype=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav\nmodel on file.data from the master's <nav> (#246). HTML render only — no\nJATS/BITS (a site is not a scholarly document).\nDefault is \"article\" — the most common case. An absent type kwarg is the\nnormal article case: silent default, no diagnostic.\n",
         },
         "book-part-type": {
           "maps_to": {
@@ -4174,6 +4226,12 @@ const _meta = Object.freeze({
           ],
           "default": "chapter",
           "notes": "For a single-file book-part (type=book-part) only: sets the\nbook-part-type on the generated <book-part> wrapper (#176). This is how\na standalone book-part file declares whether it is an appendix, preface,\netc. — a single-file appendix needs book-part-type=appendix (#100), so it\nis not always \"chapter\". Read by enscribeBookStructuring; allowlisted but\nnot lifted (a structural kwarg, like type — it configures the wrapper, it\nis not a descriptive <meta> field). Default \"chapter\" when unset. An\nunknown value is reported with a non-fatal diagnostic and the document\nstill renders (always-renders). Ignored on type=article / type=book\ndocuments, which route their book-parts by the <chapter> / <appendix> /\n… shorthand instead.\n",
+        },
+        "icon": {
+          "maps_to": {
+            "html": "data-icon",
+          },
+          "notes": "Optional brand icon for a website's top bar (#246): the path or URL of the\nsite icon, read by the website chrome (S2). Descriptive metadata, like the\ntitle; ignored by article/book documents. The brand NAME is <meta>'s title —\nthere is no in-header <icon>/<title> tag.\n",
         },
       },
     },
@@ -4291,6 +4349,108 @@ const _name = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "name.md",
+  });
+
+const _nav_group = Object.freeze({
+    "semantic_role": "navigation-group",
+    "category": "navigation",
+    "html_output": {
+      "element": "nav-group",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+      "kwargs": {
+        "title": {
+          "maps_to": {
+            "html": "data-title",
+          },
+          "notes": "The group's display label — its heading in the top bar (a dropdown) and the\nsidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a `<nav-group>`\nis a long-form container (neither `|` nor `/`), so the label cannot ride the\npipe slot the way a page's title does.\n",
+        },
+      },
+      "type": "structured",
+      "shape": [
+        {
+          "element": "item",
+          "required": false,
+          "contains": [
+            "item",
+            "nav-group",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "enscribeWebsiteStructuring",
+        "runs_before": "enscribeInterpreter",
+        "purpose": "Recurses this group into the nav model (#246).",
+      },
+    ],
+    "_sourceFile": "nav-group.md",
+  });
+
+const _nav = Object.freeze({
+    "semantic_role": "navigation",
+    "category": "navigation",
+    "html_output": {
+      "element": "nav",
+      "is_html_native": true,
+      "default_attributes": {},
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+      "type": "structured",
+      "shape": [
+        {
+          "element": "item",
+          "required": false,
+          "contains": [
+            "item",
+            "nav-group",
+          ],
+        },
+        {
+          "element": "nav-group",
+          "required": false,
+          "contains": [
+            "item",
+            "nav-group",
+          ],
+        },
+      ],
+    },
+    "content_handler": "default",
+    "interpreter_strategy": "schema",
+    "related_plugins": [
+      {
+        "name": "enscribeWebsiteStructuring",
+        "runs_before": "enscribeInterpreter",
+        "purpose": "Builds the website nav model on file.data from this tree (#246). See notes/specs/master-document.md §\"Website structure\".",
+      },
+    ],
+    "_sourceFile": "nav.md",
   });
 
 const _note_list = Object.freeze({
@@ -6612,6 +6772,7 @@ export const VOCABULARY = Object.freeze({
   "i": _i,
   "inline-code": _inline_code,
   "inline-math": _inline_math,
+  "item": _item,
   "kbd": _kbd,
   "keywords": _keywords,
   "lang": _lang,
@@ -6623,6 +6784,8 @@ export const VOCABULARY = Object.freeze({
   "matrix": _matrix,
   "meta": _meta,
   "name": _name,
+  "nav-group": _nav_group,
+  "nav": _nav,
   "note-list": _note_list,
   "note": _note,
   "orcid": _orcid,

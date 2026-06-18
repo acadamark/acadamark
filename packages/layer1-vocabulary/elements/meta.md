@@ -19,7 +19,7 @@ enscribe_attributes:
   kwargs:
     type:
       maps_to: data-document-type
-      values: [article, book, book-part]
+      values: [article, book, book-part, website]
       default: article
       notes: |
         Declares the document class. Resolved ONCE before structuring by
@@ -33,6 +33,9 @@ enscribe_attributes:
         type=book → <book> with <book-front>/<book-body>/<book-back>;
         type=book-part → <book-part> containing <meta> and body content directly
         (no nested front/body/back wrappers).
+        type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav
+        model on file.data from the master's <nav> (#246). HTML render only — no
+        JATS/BITS (a site is not a scholarly document).
         Default is "article" — the most common case. An absent type kwarg is the
         normal article case: silent default, no diagnostic.
     book-part-type:
@@ -51,6 +54,13 @@ enscribe_attributes:
         still renders (always-renders). Ignored on type=article / type=book
         documents, which route their book-parts by the <chapter> / <appendix> /
         … shorthand instead.
+    icon:
+      maps_to: data-icon
+      notes: |
+        Optional brand icon for a website's top bar (#246): the path or URL of the
+        site icon, read by the website chrome (S2). Descriptive metadata, like the
+        title; ignored by article/book documents. The brand NAME is <meta>'s title —
+        there is no in-header <icon>/<title> tag.
 content:
   type: structured
   shape:
