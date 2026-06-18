@@ -184,3 +184,25 @@ The assembler is the multi-file/project system (#72) plus a build model. Its des
 - Per-type assembler contracts (the bulk of the work; slice by slice).
 - Website: a distinct home/landing body (a hero/feature layout beyond a plain page) and blog-style auto-listings — content beyond the nav-declared pages. (The core page model — nav items as inline/external pages — is settled.)
 - Embedded-asset format coverage in `<data>` (png shown; others to follow).
+
+### Website assembly
+
+A website's pages live inside `<nav>` (`<item src>`), not at the master's top level, and `<nav>` content is
+unstructured until the pipeline runs — so the book's top-level child discovery and `loadAndAssembleMaster`
+do **not** apply. The website assembler instead:
+
+1. **reads the nav model** (the structurer's `ENSCRIBE_NAV_MODEL`) for the page list — slug, title, `src`,
+   and group nesting;
+2. **fetches the external `<item src>` pages** and assembles them into one tree, building a **cross-page
+   registry** (which page owns each anchor);
+3. **resolves cross-page references** to `?page=owner-slug#anchor` via that registry (intra-page refs stay a
+   bare `#anchor`);
+4. renders each page from the assembled tree.
+
+**Per-page numbering** (each page numbered independently, article-style — not continuous across pages) is the
+intended scope; the first cut may inherit book-style numbering from the assembly and refine to per-page when
+a site actually numbers sections/figures.
+
+**Inline pages** (`<item | Title>` + body) are a fast-follow: the first cut renders external `<item src>`
+pages (the docs-site dogfood is entirely external). Inline rendering needs a single global pass that gets
+fresh page content in without double-processing — specified when it lands.
