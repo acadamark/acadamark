@@ -24,7 +24,8 @@
   "scripts": {
     "test": "npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",
-    "docs:build": "node docs-site/build.js"
+    "docs:build": "node docs-site/build.js",
+    "docs:build-live": "npm run build:lib -w @enscribejs/enscribe && node packages/cli/bin/enscribe.js build docs-site/site.emd --live -o docs-site/dist-live"
   },
   "dependencies": {
     "jats-xml": "^1.1.5"

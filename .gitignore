@@ -19,6 +19,9 @@ node_modules/
 # leading slash) matches the per-package dist directory at any depth — and does
 # not match either committed `src/` file below.
 dist/
+# #223/#246: the live-folder dogfood output (`docs:build-live` → docs-site/dist-live/) — also
+# machine-built (it copies the ~3 MB engine bundle), reproducible via the script, never tracked.
+dist-live/
 
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo

@@ -10,7 +10,7 @@
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import { existsSync, readFileSync, writeFileSync, rmSync, mkdtempSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, rmSync, mkdtempSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -99,5 +99,39 @@ export function run_tests() {
     }
 
     console.log('PASS: #228 cli — shell <title> defaults to the document <title> (explicit --title wins; filename fallback)');
+  }
+
+  // ── #223/#246: a WEBSITE master's nav pages are copied (they are NOT assembler children) ───────
+  {
+    // A website's `<item src>` pages live in the nav model, not the assembler child set
+    // (MASTER_SRC_TAGS excludes `<item>`) — so the old discovery copied none and the live site 404'd
+    // on every page fetch. Build a tiny site to a temp dir and confirm the pages are copied (nested).
+    const siteDir = mkdtempSync(join(tmpdir(), 'enscribe-live-site-'));
+    const out = mkdtempSync(join(tmpdir(), 'enscribe-live-site-out-'));
+    try {
+      writeFileSync(join(siteDir, 'site.emd'), [
+        '<meta type=website>', '<title | Tiny Site>', '</meta>', '',
+        '<nav>', '<item src="pages/a.emd" | A>',
+        '<nav-group title="Docs">', '<item src="pages/b.emd" | B>', '</nav-group>', '</nav>',
+      ].join('\n'));
+      mkdirSync(join(siteDir, 'pages'));
+      writeFileSync(join(siteDir, 'pages', 'a.emd'), '<section | Page A>\n\nBody A.');
+      writeFileSync(join(siteDir, 'pages', 'b.emd'), '<section | Page B>\n\nBody B.');
+
+      const res = buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out });
+      assert.deepStrictEqual([...res.children].sort(), ['pages/a.emd', 'pages/b.emd'],
+        'the website\'s nav pages (descending groups), NOT assembler children, are discovered + copied');
+      for (const name of [res.master, ...res.children, ...res.assets]) {
+        assert.ok(existsSync(join(out, name)), `copied into the website folder: ${name}`);
+      }
+      const html = readFileSync(join(out, 'index.html'), 'utf8');
+      assert.ok(html.includes("mountLiveShell('#enscribe-book-root', 'site.emd'"),
+        'the shell mounts the website master (mountLiveShell dispatches it to mountLiveWebsite at runtime)');
+      assert.ok(html.includes('<title>Tiny Site</title>'), 'the shell <title> is the master\'s <title>');
+      console.log('PASS: #223/#246 cli — build --live ships a website folder with its nav pages copied (no 404)');
+    } finally {
+      rmSync(siteDir, { recursive: true, force: true });
+      rmSync(out, { recursive: true, force: true });
+    }
   }
 }
