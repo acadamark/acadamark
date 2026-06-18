@@ -204,6 +204,9 @@ function findEmd(dir) {
   const out = [];
   for (const f of readdirSync(dir)) {
     if (f === 'archive') continue;
+    // master-website is a LIVE-ONLY fixture (#246 S2a): a website has no static build yet, so it
+    // gets no static golden — the jsdom live test (master-website-live.test.js) is its proof.
+    if (f === 'master-website') continue;
     const p = join(dir, f);
     if (statSync(p).isDirectory()) out.push(...findEmd(p));
     else if (f.endsWith('.emd') || f.endsWith('.enscribe')) out.push(p);

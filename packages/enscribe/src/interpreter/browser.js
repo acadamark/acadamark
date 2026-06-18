@@ -33,10 +33,17 @@ import {
   renderLiveArticleEditView,
   createIncrementalRebuilder,
   resolveHash,
+  buildWebsiteTree,
+  buildLiveWebsite,
+  renderLiveWebsitePage,
+  renderNotFoundView,
+  buildWebsiteNav,
+  resolvePageParam,
+  flattenNavPages,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
-import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
+import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL } from '../core/file-data-keys.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
 
@@ -741,9 +748,13 @@ function editAttrOn(el) {
  * @param {string} source - the master document's enscribe source
  * @returns {boolean} true iff the master declares `<meta type=book>`
  */
-function masterIsBook(proc, source) {
+function masterType(proc, source) {
   const meta = (proc.parse(source).children ?? []).find((n) => isEnscribeTag(n, 'meta'));
-  return meta?.kwargs?.type === 'book';
+  const t = meta?.kwargs?.type;
+  // The bare <meta type> read (no pipeline run) the live dispatch routes on. Absent/unknown
+  // falls to 'article', matching enscribeDocTypeResolve's fallback — so only an explicit
+  // type=book / type=website routes to the book / website mount (book-part → article path, as before).
+  return t === 'book' ? 'book' : t === 'website' ? 'website' : 'article';
 }
 
 /**
@@ -778,12 +789,149 @@ function masterIsBook(proc, source) {
  *   then, so the host can lazy-load CodeMirror and read mode never pulls it in.
  * @returns {Promise<Element>} the mounted element.
  */
+/**
+ * Mount a multi-file WEBSITE master as a LIVE, `?page=`-routed site (#246 S2a). A website is
+ * "the book with pages instead of chapters": it reuses the book's assemble → ONE global
+ * numbering/cross-ref pass → lazy per-view render machinery, swapping the router (`?page=slug`
+ * + History back/forward) for the book's hash router. This slice handles EXTERNAL `<item src>`
+ * pages (inline `<item | Title>` + body pages are a documented follow-on) and renders read-only
+ * (the website edit loop is a follow-on); chrome styling (top bar / dropdowns / sidebar) is S2b —
+ * here the chrome is a minimal `<ul>` of `?page=` links, enough to drive the router.
+ *
+ * Pass 1 harvests the S1 nav model (the page list) from the master; the external pages are then
+ * fetched FRESH (base-relative), assembled as `<book-part #slug>` under a synthetic `<book>`, and
+ * run through ONE global pass — so a cross-page `<ref>` resolves exactly as a cross-chapter ref in
+ * a book, and its href is rewritten to `?page=owner#anchor`. Persistent chrome + a swapped content
+ * region: `route()` swaps ONLY the content region, never `root`.
+ *
+ * @param {string|Element} target - a CSS selector or the Element to mount into.
+ * @param {string} source - the website master's enscribe source (`<meta type=website>` + `<nav>`).
+ * @param {object} [options] - pipeline options (see render()).
+ * @returns {Promise<Element>} the mounted element (after the initial view renders).
+ */
+export async function mountLiveWebsite(target, source, options = {}) {
+  // editor / editDebounceMs are intentionally unused — a website renders read-only this slice
+  // (its edit loop is a follow-on). Destructured out so they don't leak into pipelineOptions.
+  const { editor, editDebounceMs, ...pipelineOptions } = options;
+  if (editor || editDebounceMs) { /* read-only this slice */ }
+  const root = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!root) throw new Error(`mountLiveWebsite: target not found: ${String(target)}`);
+  const proc = getPipeline(pipelineOptions);
+
+  // Pass 1 (cheap — the master is just `<meta>` + `<nav>`): harvest the S1 nav model (page list).
+  const navFile = { data: {} };
+  proc.runSync(proc.parse(source), navFile);
+  const navModel = navFile.data[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
+  const allPages = flattenNavPages(navModel.entries);
+  const externalPages = allPages.filter((p) => p.src != null);
+  const inlinePages = allPages.filter((p) => p.src == null);
+  if (inlinePages.length && typeof console !== 'undefined' && typeof console.info === 'function') {
+    console.info(`enscribe: ${inlinePages.length} inline website page(s) render in a follow-on slice; skipped this slice.`);
+  }
+
+  // Fetch each external page FRESH and base-relative (like child srcs — NOT fetchMasterSource,
+  // which is master-URL-relative), then assemble as `<book-part #slug>` and run ONE global pass.
+  const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
+  const contents = await Promise.all(
+    externalPages.map(async (p) => proc.parse(await fetchSourceText(p.src, baseUrl)).children ?? []),
+  );
+  const file = { data: {} };
+  const numbered = proc.runSync(buildWebsiteTree(externalPages, contents), file);
+  const model = buildLiveWebsite({ numbered, file, pages: externalPages });
+  const ctx = { proc, file };
+
+  // Persistent shell built ONCE: the minimal nav + a content region. route() swaps ONLY the
+  // content region (never root), so the chrome survives a page swap — the topology S2b extends.
+  root.innerHTML = `${buildWebsiteNav(model.pages)}<main data-enscribe-content></main>`;
+  const contentRegion = root.querySelector('[data-enscribe-content]');
+
+  // Lazy per-page render cache; executeAssets runs on a slug's FIRST build only (a cached
+  // re-show re-injects the same HTML and must not re-init interactive page assets).
+  const viewCache = new Map();
+  const executed = new Set();
+  const viewFor = (slug) => {
+    if (!viewCache.has(slug)) viewCache.set(slug, renderLiveWebsitePage(model, slug, ctx));
+    return viewCache.get(slug);
+  };
+
+  const scrollToHash = () => {
+    const anchor = ((typeof location !== 'undefined' && location.hash) || '').replace(/^#/, '');
+    if (anchor && typeof document !== 'undefined') {
+      const a = document.getElementById(anchor);
+      if (a && typeof a.scrollIntoView === 'function') { a.scrollIntoView(); return; }
+    }
+    if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+  };
+
+  let currentSlug = null;
+  const route = () => {
+    const dest = resolvePageParam((typeof location !== 'undefined' && location.search) || '', model);
+    const { slug } = dest;
+    if (slug !== currentSlug) {
+      contentRegion.innerHTML = dest.notFound ? renderNotFoundView(slug, model) : (slug == null ? '' : viewFor(slug));
+      currentSlug = slug;
+      // innerHTML does not run <script>; activate a page's assets ONCE, on first build.
+      if (slug != null && !dest.notFound && !executed.has(slug)) { executeAssets(contentRegion); executed.add(slug); }
+    }
+    // Resolve a `?page=…#anchor` deep-link AFTER the page is mounted (native hash-scroll fires
+    // before the body exists), and on each swap.
+    scrollToHash();
+  };
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('popstate', route);   // back/forward — pushState does NOT fire popstate
+    // Delegated internal nav: any `?page=` link (incl. cross-page ref hrefs) → pushState + route,
+    // PRESERVING other query params (e.g. &edit) — never a bare `?page=slug` that wipes the query.
+    root.addEventListener('click', (ev) => {
+      const a = ev.target && ev.target.closest && ev.target.closest('a[href^="?page="]');
+      if (!a) return;
+      ev.preventDefault();
+      const here = (typeof location !== 'undefined' && location.href) || 'http://localhost/';
+      const link = new URL(a.getAttribute('href'), here);
+      const next = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+      next.set('page', link.searchParams.get('page') || model.firstSlug || '');
+      if (typeof history !== 'undefined' && typeof history.pushState === 'function') {
+        history.pushState(null, '', `?${next}${link.hash}`);
+      }
+      route();
+    });
+  }
+
+  // Initial deep-link: normalize the URL with replaceState (no duplicate history entry), then render.
+  if (typeof history !== 'undefined' && typeof history.replaceState === 'function') {
+    const init = resolvePageParam((typeof location !== 'undefined' && location.search) || '', model);
+    const params = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+    if (init.slug != null) {
+      params.set('page', init.slug);
+      history.replaceState(null, '', `?${params}${(typeof location !== 'undefined' && location.hash) || ''}`);
+    }
+  }
+  route();                                          // initial render from the current ?page=
+  return root;
+}
+
 export async function mountLiveShell(target, url, options = {}) {
   const { edit, editorFactory, editDebounceMs, ...pipelineOptions } = options;
   const el = typeof target === 'string'
     ? (typeof document !== 'undefined' ? document.querySelector(target) : null)
     : target;
   const editEnabled = edit !== undefined ? !!edit : editAttrOn(el);
+  // Fetch the master ONCE and resolve its class BEFORE building the editor (#246 S2a), so a
+  // website — whose live edit loop is a follow-on — never loads CodeMirror.
+  const source = await fetchMasterSource(url, 'mountLiveShell');
+  const proc = getPipeline(pipelineOptions);
+  const type = masterType(proc, source);
+  if (type === 'website') {
+    // `?edit` is inherited at the shell (decisions.md), but the website edit loop arrives in a
+    // follow-on — note it and render read-only this slice (no editor constructed).
+    if (editEnabled && typeof console !== 'undefined' && typeof console.info === 'function') {
+      console.info('enscribe: website editing arrives in a follow-on slice; rendering read-only.');
+    }
+    return mountLiveWebsite(target, source, { ...pipelineOptions, editDebounceMs });
+  }
+  // book / article (unchanged): build the editor adapter on demand (READ mode never loads it),
+  // then dispatch. editor === null → read mode (byte-identical to #209 / the article render); an
+  // adapter → #211's edit mode (book) / the #216 single-unit edit loop (article).
   let editor = null;
   if (editEnabled) {
     if (typeof editorFactory !== 'function') {
@@ -791,13 +939,8 @@ export async function mountLiveShell(target, url, options = {}) {
     }
     editor = await editorFactory();
   }
-  // Fetch the master ONCE, then dispatch on its `<meta type>`. editor === null → read mode
-  // (byte-identical to #209 / the article render); an adapter → #211's edit mode (book) / the #216
-  // single-unit edit loop (article). editDebounceMs is re-attached so both mounts read it the same.
-  const source = await fetchMasterSource(url, 'mountLiveShell');
-  const proc = getPipeline(pipelineOptions);
   const mountOptions = { ...pipelineOptions, editor, editDebounceMs };
-  return masterIsBook(proc, source)
+  return type === 'book'
     ? mountLiveBook(target, source, mountOptions)
     : mountLiveArticle(target, source, mountOptions);
 }

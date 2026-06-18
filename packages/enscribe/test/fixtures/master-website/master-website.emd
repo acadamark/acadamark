@@ -1,0 +1,8 @@
+<meta type=website />
+<nav>
+<item src="home.emd" | Home>
+<nav-group title="Docs">
+<item src="guide.emd" | Guide>
+<item src="reference.emd" | Reference>
+</nav-group>
+</nav>
