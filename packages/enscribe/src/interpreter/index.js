@@ -1101,7 +1101,7 @@ export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapte
 // chapters" — these pure fns assemble external `<item src>` pages as `<book-part>`s, build the
 // model + the `?page=` resolver, and render a page (renderChapter + a cross-page href rewrite).
 // The browser entry (browser.js mountLiveWebsite) wraps them with the fetch + DOM + History router.
-export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, buildWebsiteNav, resolvePageParam, flattenNavPages, rewriteCrossPageHrefs } from '../master-document/live-website.js';
+export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, resolvePageParam, flattenNavPages, rewriteCrossPageHrefs } from '../master-document/live-website.js';
 // The single-document (article) live render (#216): an article is the simple case — one unit, no
 // rail/cover/routing — so its edit view is just the SHARED Write/Preview pane (buildEditMain) in a
 // chrome-free layout. browser.js mountLiveArticle wires the fetch + DOM + the single-source edit loop.

@@ -1,4 +1,7 @@
-<meta type=website />
+<meta type=website icon="logo.png">
+<title | Demo Site>
+</meta>
+
 <nav>
 <item src="home.emd" | Home>
 <nav-group title="Docs">
@@ -6,3 +9,5 @@
 <item src="reference.emd" | Reference>
 </nav-group>
 </nav>
+
+<footer src="footer.emd" />
