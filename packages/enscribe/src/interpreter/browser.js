@@ -774,18 +774,18 @@ function masterType(proc, source) {
  *   - the `data-enscribe-edit` attribute on the mount element (presence = on; `="false"`/`"off"`/
  *     `"0"` = off) — a declarative, per-mount, build.js-friendly knob with no global mutable state.
  *
- * DISPATCH (#216): the shell fetches the master ONCE, reads `<meta type>`, and routes — a book to the
- * existing book live path (mountLiveBook, unchanged), an article to the new article path
- * (mountLiveArticle). The detection is at RUNTIME here, so the emitter that writes the shell stays
- * pure and type-agnostic (no emit-time master read): one emitted shell drives either kind of master,
- * and a document that changes type never needs a re-emit.
+ * DISPATCH (#216 / #246 S2c): the shell fetches the master ONCE, reads `<meta type>` (masterType), and
+ * routes 3-way — a book → mountLiveBook (unchanged), a website → mountLiveWebsite (#246), else an
+ * article → mountLiveArticle. All three receive the same `editor`/`editDebounceMs`. The detection is at
+ * RUNTIME here, so the emitter that writes the shell stays pure and type-agnostic (no emit-time master
+ * read): one emitted shell drives any kind of master, and a document that changes type never needs a re-emit.
  *
  * ON → `editorFactory()` is awaited to build the editor adapter (the host loads CodeMirror THERE —
  * lazily, so READ mode never loads it) and the document mounts in edit mode (#211's `{ editor }`).
  * OFF → it mounts in read mode — byte-identical to the read shell (#209 book / the article render).
  *
  * @param {string|Element} target - a CSS selector or the Element to mount into.
- * @param {string} url - the master's URL (relative to the page) — a book OR an article master.
+ * @param {string} url - the master's URL (relative to the page) — a book, website, or article master.
  * @param {object} [options] - mountLiveBook / mountLiveArticle options (see render()), plus the switch:
  * @param {boolean} [options.edit] - explicit edit flag; overrides the `data-enscribe-edit` attribute.
  * @param {() => (object|Promise<object>)} [options.editorFactory] - builds the editor adapter
@@ -814,10 +814,11 @@ function masterType(proc, source) {
  * @returns {Promise<Element>} the mounted element (after the initial view renders).
  */
 export async function mountLiveWebsite(target, source, options = {}) {
-  // editor / editDebounceMs are intentionally unused — a website renders read-only this slice
-  // (its edit loop is a follow-on). Destructured out so they don't leak into pipelineOptions.
-  const { editor, editDebounceMs, ...pipelineOptions } = options;
-  if (editor || editDebounceMs) { /* read-only this slice */ }
+  // #246 S2c: an `editor` adapter enables the per-page edit loop — the CURRENT page edits inside the
+  // persistent chrome (only [data-enscribe-content] becomes the Write/Preview region). No editor →
+  // read mode, byte-identical to S2b.
+  const { editor = null, editDebounceMs, ...pipelineOptions } = options;
+  const debounceMs = editDebounceMs ?? 250;
   const root = typeof target === 'string' ? document.querySelector(target) : target;
   if (!root) throw new Error(`mountLiveWebsite: target not found: ${String(target)}`);
   const proc = getPipeline(pipelineOptions);
@@ -843,9 +844,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // Fetch each external page FRESH and base-relative (like child srcs — NOT fetchMasterSource,
   // which is master-URL-relative), then assemble as `<book-part #slug>` and run ONE global pass.
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
-  const contents = await Promise.all(
-    externalPages.map(async (p) => proc.parse(await fetchSourceText(p.src, baseUrl)).children ?? []),
-  );
+  const pageSources = await Promise.all(externalPages.map((p) => fetchSourceText(p.src, baseUrl)));
+  const contents = pageSources.map((s) => proc.parse(s).children ?? []);
+  // slug → the page's source TEXT (already fetched) — the editor's `value` in edit mode (no re-fetch).
+  const sourceBySlug = new Map(externalPages.map((p, i) => [p.slug, pageSources[i]]));
   const file = { data: {} };
   const numbered = proc.runSync(buildWebsiteTree(externalPages, contents), file);
   const model = buildLiveWebsite({ numbered, file, pages: externalPages });
@@ -886,6 +888,50 @@ export async function mountLiveWebsite(target, source, options = {}) {
     return viewCache.get(slug);
   };
 
+  // EDIT mode (#246 S2c): render the current page's source into a Write/Preview pane (the SAME
+  // wireEditTabs + editor.mount contract the article edit loop uses, browser.js mountArticleEditLoop),
+  // inside the persistent chrome. The preview is a STANDALONE render of the edited page (one runSync
+  // over JUST that page — NOT the multi-page global pass): the live-preview approximation. Cross-page
+  // refs can't resolve standalone, so they show unresolved WHILE EDITING; the authoritative
+  // ?page=owner#… link is the read render / on reload (a known, accepted limitation).
+  const renderPageStandalone = (src) => {
+    try {
+      const f = { data: {} };
+      return String(proc.stringify(proc.runSync(proc.parse(src), f), f));
+    } catch (err) {
+      return `<p class="enscribe-edit-error">live edit error: ${String((err && err.message) || err).replace(/</g, '&lt;')}</p>`;
+    }
+  };
+  let editHandle = null;
+  let activeDebounced = null;
+  // Tear down the CURRENT page's editor before showing another (or a not-found): cancel its pending
+  // preview re-render (else page A's debounced render fires into page B's pane — a cross-page leak)
+  // and destroy its editor adapter (else a real CodeMirror instance + its listeners leak). Mirrors
+  // mountEditLoop.renderChapterAt (cancel-first) + destroyEditor (guarded destroy). Runs BEFORE any
+  // innerHTML wipe so destroy() sees its own DOM.
+  const teardownEdit = () => {
+    if (activeDebounced) { activeDebounced.cancel(); activeDebounced = null; }
+    if (editHandle && typeof editHandle.destroy === 'function') { try { editHandle.destroy(); } catch { /* adapter destroy is best-effort */ } }
+    editHandle = null;
+  };
+  const showEditPage = (slug, notFound) => {
+    teardownEdit();                                              // every entry tears down the prior page first
+    if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, model) : ''; return; }
+    let currentSource = sourceBySlug.get(slug) ?? '';
+    contentRegion.innerHTML = renderLiveArticleEditView(renderPageStandalone(currentSource));
+    wireEditTabs(contentRegion);
+    if (onThisPageRegion) onThisPageRegion.innerHTML = '';        // the Write/Preview pane owns the width
+    const updatePreview = () => {
+      const pane = contentRegion.querySelector('[data-edit-pane="preview"]');
+      if (pane) pane.innerHTML = renderPageStandalone(currentSource);
+    };
+    activeDebounced = debounce(updatePreview, debounceMs);
+    const mountEl = contentRegion.querySelector('[data-edit-pane="source"]');
+    editHandle = mountEl
+      ? editor.mount(mountEl, { value: currentSource, onChange: (s) => { currentSource = s; activeDebounced(); } })
+      : null;
+  };
+
   const scrollToHash = () => {
     const anchor = ((typeof location !== 'undefined' && location.hash) || '').replace(/^#/, '');
     if (anchor && typeof document !== 'undefined') {
@@ -900,14 +946,20 @@ export async function mountLiveWebsite(target, source, options = {}) {
     const dest = resolvePageParam((typeof location !== 'undefined' && location.search) || '', model);
     const { slug } = dest;
     if (slug !== currentSlug) {
-      contentRegion.innerHTML = dest.notFound ? renderNotFoundView(slug, model) : (slug == null ? '' : viewFor(slug));
+      if (editor) {
+        // EDIT mode: the current page's Write/Preview pane. A nav re-renders the pane and re-mounts
+        // the editor with the NEW page's source; the chrome + the editor adapter persist.
+        showEditPage(slug, dest.notFound);
+      } else {
+        contentRegion.innerHTML = dest.notFound ? renderNotFoundView(slug, model) : (slug == null ? '' : viewFor(slug));
+        // innerHTML does not run <script>; activate a page's assets ONCE, on first build.
+        if (slug != null && !dest.notFound && !executed.has(slug)) { executeAssets(contentRegion); executed.add(slug); }
+        // rebuild the per-page "on this page" rail from the current page's headings.
+        if (onThisPageRegion) onThisPageRegion.innerHTML = dest.notFound ? '' : buildOnThisPage(contentRegion);
+      }
       currentSlug = slug;
-      // innerHTML does not run <script>; activate a page's assets ONCE, on first build.
-      if (slug != null && !dest.notFound && !executed.has(slug)) { executeAssets(contentRegion); executed.add(slug); }
-      // S2b: move aria-current to the active page in the (persistent) chrome — no rebuild — and
-      // rebuild the per-page "on this page" rail from the current page's headings.
+      // move aria-current to the active page in the (persistent) chrome — no rebuild (both modes).
       setActivePage(root, dest.notFound ? null : slug);
-      if (onThisPageRegion) onThisPageRegion.innerHTML = dest.notFound ? '' : buildOnThisPage(contentRegion);
     }
     // Resolve a `?page=…#anchor` deep-link AFTER the page is mounted (native hash-scroll fires
     // before the body exists), and on each swap.
@@ -952,22 +1004,10 @@ export async function mountLiveShell(target, url, options = {}) {
     ? (typeof document !== 'undefined' ? document.querySelector(target) : null)
     : target;
   const editEnabled = edit !== undefined ? !!edit : editAttrOn(el);
-  // Fetch the master ONCE and resolve its class BEFORE building the editor (#246 S2a), so a
-  // website — whose live edit loop is a follow-on — never loads CodeMirror.
-  const source = await fetchMasterSource(url, 'mountLiveShell');
-  const proc = getPipeline(pipelineOptions);
-  const type = masterType(proc, source);
-  if (type === 'website') {
-    // `?edit` is inherited at the shell (decisions.md), but the website edit loop arrives in a
-    // follow-on — note it and render read-only this slice (no editor constructed).
-    if (editEnabled && typeof console !== 'undefined' && typeof console.info === 'function') {
-      console.info('enscribe: website editing arrives in a follow-on slice; rendering read-only.');
-    }
-    return mountLiveWebsite(target, source, { ...pipelineOptions, editDebounceMs });
-  }
-  // book / article (unchanged): build the editor adapter on demand (READ mode never loads it),
-  // then dispatch. editor === null → read mode (byte-identical to #209 / the article render); an
-  // adapter → #211's edit mode (book) / the #216 single-unit edit loop (article).
+  // Build the editor adapter on demand (READ mode never loads it), then fetch the master ONCE and
+  // dispatch 3-way on its `<meta type>`. editor === null → read mode (byte-identical to #209 / the
+  // article render); an adapter → the edit loop: #211 (book) / #216 (article) / #246 S2c (the website
+  // per-page loop). All three mounts receive `editor` the same way.
   let editor = null;
   if (editEnabled) {
     if (typeof editorFactory !== 'function') {
@@ -975,9 +1015,12 @@ export async function mountLiveShell(target, url, options = {}) {
     }
     editor = await editorFactory();
   }
+  const source = await fetchMasterSource(url, 'mountLiveShell');
+  const proc = getPipeline(pipelineOptions);
+  const type = masterType(proc, source);
   const mountOptions = { ...pipelineOptions, editor, editDebounceMs };
-  return type === 'book'
-    ? mountLiveBook(target, source, mountOptions)
+  return type === 'book' ? mountLiveBook(target, source, mountOptions)
+    : type === 'website' ? mountLiveWebsite(target, source, mountOptions)
     : mountLiveArticle(target, source, mountOptions);
 }
 

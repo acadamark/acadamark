@@ -69,6 +69,24 @@ const activeHref = (root) => {
   const a = root.querySelector('.enscribe-site-header a[aria-current="page"], .enscribe-site-sidebar a[aria-current="page"]');
   return a && a.getAttribute('href');
 };
+// A fake editor adapter (like the article edit tests): captures each mount's value/onChange, reflects
+// the value into the pane, and tracks destroy() so a re-mount on page nav is observable.
+function makeEditorStub() {
+  const mounts = [];
+  return {
+    mounts,
+    get last() { return mounts[mounts.length - 1]; },
+    editor: {
+      mount(el, { value, onChange }) {
+        const handle = { el, value, onChange, destroyed: false, destroy() { this.destroyed = true; } };
+        el.textContent = value;
+        mounts.push(handle);
+        return handle;
+      },
+    },
+  };
+}
+const tick = (ms = 5) => new Promise((r) => setTimeout(r, ms));
 
 export async function run() {
   // ── mount: chrome (brand + dropdown + sidebar + footer) + first-page content + cross-page ref ──
@@ -135,6 +153,60 @@ export async function run() {
     }
   }
 
+  // ── S2c: the per-page EDIT loop (editor adapter present) ──
+  {
+    const { dom, orig } = installDom();
+    try {
+      const stub = makeEditorStub();
+      const root = await mountLiveWebsite('#root', MASTER, { editor: stub.editor, editDebounceMs: 0 });
+      // The content region is the Write/Preview pane; the editor mounted with the FIRST page's SOURCE.
+      const content = root.querySelector('[data-enscribe-content]');
+      assert.ok(content.querySelector('[data-edit-tab]') && content.querySelector('[data-edit-pane="source"]'),
+        'edit mode renders the Write/Preview pane in the content region');
+      assert.ok(stub.last && /Welcome to the site/.test(stub.last.value),
+        'the editor mounted with the current page (Home) SOURCE');
+      assert.ok(content.querySelector('[data-edit-pane="preview"]').innerHTML.includes('Welcome to the site'),
+        'the preview pane shows the rendered page');
+      // The chrome is built around the edit pane (persistent).
+      const headerBefore = root.querySelector('.enscribe-site-header');
+      assert.ok(headerBefore, 'the chrome (top bar) wraps the edit pane');
+      console.log('PASS: S2c — edit mode mounts the current page source + a rendered preview inside the chrome');
+
+      // onChange re-renders the preview (standalone), debounced.
+      stub.last.onChange('<section | Edited>\n\nBrand new content here.');
+      await tick();
+      assert.ok(root.querySelector('[data-edit-pane="preview"]').innerHTML.includes('Brand new content here'),
+        'onChange(newSource) re-renders the preview (standalone)');
+      console.log('PASS: S2c — onChange re-renders the preview');
+
+      // Nav while editing: load the NEW page's source; the chrome persists; the prior editor re-mounts.
+      const priorMount = stub.last;
+      clickLink(dom, root, '?page=guide');
+      assert.ok(stub.last !== priorMount && /Installation/.test(stub.last.value),
+        'a ?page= nav loads the NEW page (Guide) source into the editor');
+      assert.strictEqual(priorMount.destroyed, true, 'the prior page editor was destroyed on nav');
+      assert.strictEqual(root.querySelector('.enscribe-site-header'), headerBefore,
+        'the chrome (top bar) is the SAME element across the edit-mode nav (persistent)');
+      console.log('PASS: S2c — nav-while-editing swaps the page source; chrome + editor adapter persist');
+    } finally { restoreDom(orig); }
+  }
+
+  // ── S2c regression: a pending preview re-render must NOT leak into the next page (debounce cancelled on nav) ──
+  {
+    const { dom, orig } = installDom();
+    try {
+      const stub = makeEditorStub();
+      const root = await mountLiveWebsite('#root', MASTER, { editor: stub.editor, editDebounceMs: 50 });
+      stub.last.onChange('<section | Home>\n\nUNIQUE-HOME-MARKER content.');   // type on Home …
+      clickLink(dom, root, '?page=guide');                                     // … then nav BEFORE the 50ms debounce fires
+      await tick(80);                                                          // let the (cancelled) timer window pass
+      const preview = root.querySelector('[data-edit-pane="preview"]').innerHTML;
+      assert.ok(!/UNIQUE-HOME-MARKER/.test(preview), 'a pending Home preview re-render does NOT leak into the Guide pane');
+      assert.ok(/Installation/.test(preview), 'the Guide preview is intact');
+      console.log('PASS: S2c — a pending preview re-render is cancelled on nav (no cross-page leak)');
+    } finally { restoreDom(orig); }
+  }
+
   // ── deep-link on first load + mountLiveShell dispatch ──
   {
     const { dom, orig } = installDom('https://example.com/site/?page=guide#sec:install');
@@ -150,6 +222,26 @@ export async function run() {
       const root = await mountLiveShell('#root', 'master-website.emd');
       assert.ok(root.querySelector('.enscribe-site-header'), 'mountLiveShell dispatches type=website → mountLiveWebsite (chrome present)');
       console.log('PASS: S2a — mountLiveShell routes type=website → mountLiveWebsite');
+    } finally { restoreDom(orig); }
+  }
+  // ── S2c: mountLiveShell builds the editor + dispatches a website to the edit loop (+ the no-factory throw) ──
+  {
+    const { dom, orig } = installDom();
+    try {
+      const stub = makeEditorStub();
+      let builds = 0;
+      const root = await mountLiveShell('#root', 'master-website.emd', { edit: true, editorFactory: () => { builds++; return stub.editor; } });
+      assert.strictEqual(builds, 1, 'mountLiveShell builds the editor once for a website + ?edit');
+      assert.ok(root.querySelector('[data-enscribe-content] [data-edit-pane="source"]'), 'the website edit pane renders via the shell');
+      assert.ok(stub.last && /Welcome to the site/.test(stub.last.value), 'the editor mounted the first page source');
+      console.log('PASS: S2c — mountLiveShell builds the editor + dispatches a website to the edit loop');
+      // edit:true but NO editorFactory → throws, the SAME contract as book/article.
+      await assert.rejects(
+        mountLiveShell('#root', 'master-website.emd', { edit: true }),
+        /editorFactory/,
+        'website + ?edit with no editorFactory throws',
+      );
+      console.log('PASS: S2c — website + ?edit with no editorFactory throws (same as book/article)');
     } finally { restoreDom(orig); }
   }
 

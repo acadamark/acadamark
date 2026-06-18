@@ -17,6 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE = join(__dirname, 'fixtures', 'sample.emd');
 const JATS_FIXTURE = join(__dirname, 'fixtures', 'article.xml');
 const BOOK_FIXTURE = join(__dirname, 'fixtures', 'book.emd');
+const WEBSITE_FIXTURE = join(__dirname, 'fixtures', 'website.emd');
 const TEX_FIXTURE = join(__dirname, 'fixtures', 'paper.tex');
 const BIN = join(__dirname, '..', 'bin', 'enscribe.js');
 const VERSION = createRequire(import.meta.url)('../package.json').version;
@@ -138,6 +139,14 @@ export function run_tests() {
     assert.ok(out.includes('<bold>bold</bold>') && out.includes('<italic>italic</italic>'), 'inline → JATS inline');
     assert.ok(out.includes('<inline-formula><tex-math>'), 'math → inline-formula/tex-math');
     console.log('PASS: export-jats → JATS 1.3 XML');
+  }
+
+  // ── export-jats refuses a website (HTML-only; #246) ──────────────────────────
+  {
+    const { code, err } = invoke(['export-jats', WEBSITE_FIXTURE]);
+    assert.equal(code, 1, 'export-jats on a <meta type=website> exits non-zero');
+    assert.ok(/no JATS\/BITS projection/.test(err), 'the error explains a website is HTML-only');
+    console.log('PASS: export-jats refuses a website (no JATS/BITS projection)');
   }
 
   // ── lift → canonical source ─────────────────────────────────────────────────
