@@ -13,11 +13,11 @@
 // the same model.)
 //
 // TARGET PROJECTION stays in the consumer. The shared output is the neutral STEM
-// (`1-counting-elephants`) plus the ids both paths MUST share for content parity
-// (renderChapter emits a chapter's book-part + sub-section ids into its fragment,
+// (`counting-elephants` — the title slug, number-free) plus the ids both paths MUST share for content
+// parity (renderChapter emits a chapter's book-part + sub-section ids into its fragment,
 // so divergent ids = divergent content). P1 projects the stem to a page URL
-// (`1-counting-elephants.html`); the live path projects it to a hash route
-// (`#1-counting-elephants`). The `.html`-vs-`#` difference is legitimate
+// (`counting-elephants.html`); the live path projects it to a hash route
+// (`#counting-elephants`). The `.html`-vs-`#` difference is legitimate
 // per-target formatting, not drift — so it lives in each consumer, never here.
 //
 // It also holds the one shared piece of COVER content (#209): the book-title hero + lede.
@@ -117,16 +117,16 @@ export function collectBookParts(bookEl) {
   return parts;
 }
 
-/** Assign each chapter a deterministic, collision-deduped slug STEM — number/letter
- *  + title-slug (`1-counting-elephants`, `a-field-data-sheets`); front-matter without a
- *  roster number gets no prefix (`about-this-book`). The NEUTRAL stem: P1 appends
- *  `.html` for a page URL, the live path prepends `#` for a hash route. */
+/** Assign each chapter a deterministic, collision-deduped slug STEM from its TITLE alone —
+ *  `counting-elephants`, `field-data-sheets`, `about-this-book`. The stem is **decoupled from chapter
+ *  numbering** (#246/core): a chapter's URL must be stable whether or not section numbering is on, so the
+ *  roster number is NOT part of the slug (it is a display concern — the rail/label render it). The NEUTRAL
+ *  stem: P1 appends `.html` for a page URL, the live path prepends `#` for a hash route. */
 export function assignSlugStems(parts) {
   const used = new Set();
   for (const p of parts) {
     const titleSlug = slugify(p.clean).replace(/^sec:/, '');
-    const prefix = p.number ? `${p.number.toLowerCase()}-` : '';
-    p.stem = uniqueId(prefix + titleSlug, used);
+    p.stem = uniqueId(titleSlug, used);
   }
 }
 

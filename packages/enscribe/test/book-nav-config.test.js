@@ -43,14 +43,14 @@ function buildBook(configLine) {
 /** The static body-chapter page + index, and the live body-chapter view + model, for a
  *  given config. Static and live get independent numbered trees (publishBookPages and
  *  buildLiveBook each assign ids), matching how the two real flows run. Chapter 1 (index 1)
- *  is `1-counting-elephants` — a body chapter with sub-sections. */
+ *  is `counting-elephants` — a body chapter with sub-sections. */
 function chrome(configLine = '') {
   const s = buildBook(configLine);
   const pages = publishBookPages({ numbered: s.numbered, file: s.file, proc: s.proc, defaultCss: DEFAULT_CSS });
   const l = buildBook(configLine);
   const model = buildLiveBook({ numbered: l.numbered, file: l.file });
   const chapterView = renderLiveChapterView(model, 1, { proc: l.proc, file: l.file });
-  return { pages, staticPage: pages.get('1-counting-elephants.html'), chapterView, model };
+  return { pages, staticPage: pages.get('counting-elephants.html'), chapterView, model };
 }
 
 // Element open-tag markers — NOT bare class strings, which also appear in the inlined
@@ -190,9 +190,9 @@ export async function run() {
     assert.ok(staticCover.includes(CONTENTS), '<config toc>: static cover renders the contents overview');
     assert.ok(liveCover.includes(CONTENTS), '<config toc>: live cover renders the contents overview');
     // cross-shape hrefs: static cross-page (`slug.html`, `slug.html#id`), live route (`#stem`).
-    assert.ok(/href="1-counting-elephants\.html"/.test(staticCover), 'static overview: chapter href is the page URL');
-    assert.ok(/href="1-counting-elephants\.html#/.test(staticCover), 'static overview: section href is page#anchor');
-    assert.ok(/href="#1-counting-elephants"/.test(liveCover), 'live overview: chapter href is the #stem route');
+    assert.ok(/href="counting-elephants\.html"/.test(staticCover), 'static overview: chapter href is the page URL');
+    assert.ok(/href="counting-elephants\.html#/.test(staticCover), 'static overview: section href is page#anchor');
+    assert.ok(/href="#counting-elephants"/.test(liveCover), 'live overview: chapter href is the #stem route');
     // static ≡ live: the same listing, modulo href form (proves both shapes build one overview).
     const listingOf = (html) => {
       const m = html.match(/<nav class="enscribe-contents"[\s\S]*?<\/nav>/);

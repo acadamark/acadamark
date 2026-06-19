@@ -75,8 +75,8 @@ export async function run() {
     assert.ok(names.includes('index.html'), 'an index.html landing is emitted');
     assert.deepStrictEqual(
       names.filter((n) => n !== 'index.html').sort(),
-      ['1-counting-elephants.html', '2-estimating-browse-pressure.html', 'a-field-data-sheets.html', 'about-this-book.html'],
-      'deterministic per-chapter slugs (number/letter + title; front-matter unprefixed)',
+      ['about-this-book.html', 'counting-elephants.html', 'estimating-browse-pressure.html', 'field-data-sheets.html'],
+      'deterministic per-chapter slugs — title only, NUMBER-FREE (#246/core), so a chapter URL is stable whether or not numbering is on',
     );
     for (const [name, html] of pages) {
       assert.ok(html.startsWith('<!DOCTYPE html>') && /<html[\s>]/.test(html) && html.includes('</html>') &&
@@ -110,12 +110,12 @@ export async function run() {
 
   // ── cross-page references ───────────────────────────────────────────────────
   {
-    const ch1 = pages.get('1-counting-elephants.html');   // owns fig:transect
-    const ch2 = pages.get('2-estimating-browse-pressure.html'); // references it (cross-chapter)
+    const ch1 = pages.get('counting-elephants.html');   // owns fig:transect
+    const ch2 = pages.get('estimating-browse-pressure.html'); // references it (cross-chapter)
     assert.ok(ch1.includes('id="fig:transect"'), 'fig:transect lives on chapter 1\'s page');
     assert.ok(ch1.includes('<a href="#fig:transect" class="ref">'),
       'a same-page ref to fig:transect stays an in-page anchor on chapter 1\'s page');
-    assert.ok(ch2.includes('<a href="1-counting-elephants.html#fig:transect" class="ref">figure 1.1</a>'),
+    assert.ok(ch2.includes('<a href="counting-elephants.html#fig:transect" class="ref">figure 1.1</a>'),
       'a cross-chapter ref in chapter 2 links to chapter 1\'s PAGE + anchor, with the registry number');
     assert.ok(ch2.includes('<a href="#fig:browse" class="ref">'),
       'a same-page ref in chapter 2 (to its own fig:browse) stays an in-page anchor');
@@ -137,12 +137,12 @@ export async function run() {
     // the cover's masthead is a self-link → marked current; a chapter's is a plain link out
     assert.ok(index.includes('<a class="enscribe-book-home" href="index.html" aria-current="page">'),
       'on the cover the masthead self-link is aria-current="page" (you are here)');
-    const ch1 = pages.get('1-counting-elephants.html');
+    const ch1 = pages.get('counting-elephants.html');
     assert.ok(ch1.includes('<a class="enscribe-book-home" href="index.html">'),
       'on a chapter page the masthead is a plain link to the cover (no aria-current)');
     assert.ok(/<li class="enscribe-rail-item enscribe-rail-item--front"><a href="about-this-book\.html">/.test(ch1),
       'about-this-book.html stays a normal front-matter rail item — reachable via the sidebar, not masquerading as home');
-    assert.ok(index.includes('<a href="1-counting-elephants.html"'),
+    assert.ok(index.includes('<a href="counting-elephants.html"'),
       'the cover (index.html) links into the book — a genuine round-trip destination, not a dead-end entry point');
     console.log('PASS: P1/#206 — every page round-trips to the cover (masthead → index.html); About this Book stays a rail item');
   }

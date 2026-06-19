@@ -83,12 +83,12 @@ export async function run() {
       'the cover has no chapter content (no <book-part>)');
     assert.ok(root.querySelector('a.enscribe-book-home'),
       'the cover carries the return-to-cover masthead');
-    assert.ok(root.innerHTML.includes('<a href="#1-counting-elephants"'),
+    assert.ok(root.innerHTML.includes('<a href="#counting-elephants"'),
       'the rail links chapters by hash route (#stem)');
     console.log('PASS: L2/#209 — mountLiveBook lands on the cover (book title + lede + masthead + rail)');
 
     // ── navigate to chapter 2 by hash: it renders lazily, with its cross-chapter ref ──
-    navigate(dom, '#2-estimating-browse-pressure');
+    navigate(dom, '#estimating-browse-pressure');
     assert.ok(root.querySelector('book-part') && root.innerHTML.includes('id="fig:browse"'),
       'navigating to #2-… lazily renders chapter 2 (its own fig:browse)');
     assert.ok(root.innerHTML.includes('<a href="#fig:transect" class="ref">figure 1.1</a>'),
@@ -108,7 +108,7 @@ export async function run() {
     console.log('PASS: L2 — a cross-chapter anchor routes to its owning chapter and mounts it');
 
     // ── lazy cache: returning to a visited chapter still renders it ───────────────────
-    navigate(dom, '#2-estimating-browse-pressure');
+    navigate(dom, '#estimating-browse-pressure');
     assert.ok(root.innerHTML.includes('id="fig:browse"'),
       'returning to a previously-rendered chapter renders it again (cache hit)');
     console.log('PASS: L2 — chapters render lazily and cached views re-mount on return');
