@@ -18,6 +18,12 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
 // The website chrome CSS. Modeled on docs-site/site.css, retoken'd to --enscribe-*.
 export const WEBSITE_NAV_CSS = `
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
+/* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
+   <body>. default.css sizes <body> for a single reading column (a centred content-width column with
+   side padding), which traps the whole site at article width — the content collapses to a sliver. The
+   website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
+   fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
+body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-header {
   display: flex; align-items: center; gap: var(--enscribe-space-6, 1.5rem); flex-wrap: wrap;
   padding: var(--enscribe-space-3, 0.6rem) var(--enscribe-space-5, 1.25rem);
@@ -68,16 +74,36 @@ export const WEBSITE_NAV_CSS = `
 .enscribe-site-onthispage ul { list-style: none; margin: 0; padding: 0; }
 .enscribe-site-onthispage a { font-size: 0.82rem; color: var(--enscribe-text-muted, #57606a); text-decoration: none; }
 .enscribe-site-onthispage a:hover, .enscribe-site-onthispage a.active { color: var(--enscribe-link, #0969da); }
+/* An empty on-this-page rail (a page with <2 headings → innerHTML '') drops out of the flow entirely,
+   so its grid column can be reclaimed (the :has rules below) instead of leaving a blank padded box. */
+.enscribe-site-onthispage:empty { display: none; }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
   font-size: 0.85rem; color: var(--enscribe-text-muted, #57606a);
 }
 @media (min-width: 900px) {
+  /* The grid reflows to whatever columns are actually present (#246 S1.5). The sidebar is a master
+     opt-in (<config sidebar>), so it may be absent from the DOM; the on-this-page rail may be empty
+     (hidden above) on a short page. Four states, resolved by :has in source order (the most specific
+     last so it wins when several match). */
   .enscribe-site-layout {
     display: grid; gap: var(--enscribe-space-8, 2rem);
+    align-items: start; justify-content: center;
+    /* default: sidebar OFF, on-this-page present → content + the right rail. */
+    grid-template-columns: minmax(0, 46rem) 13rem;
+  }
+  /* sidebar ON → the full three columns. */
+  .enscribe-site-layout:has(.enscribe-site-sidebar) {
     grid-template-columns: 14rem minmax(0, 46rem) 13rem;
-    align-items: start;
+  }
+  /* no on-this-page rail → drop its column (a centred single content column when the sidebar is off too). */
+  .enscribe-site-layout:has(.enscribe-site-onthispage:empty) {
+    grid-template-columns: minmax(0, 46rem);
+  }
+  /* sidebar ON but no rail → sidebar + content. (Last, so it wins over the two single-condition rules.) */
+  .enscribe-site-layout:has(.enscribe-site-sidebar):has(.enscribe-site-onthispage:empty) {
+    grid-template-columns: 14rem minmax(0, 46rem);
   }
   .enscribe-site-sidebar, .enscribe-site-onthispage {
     position: sticky; top: calc(var(--enscribe-site-nav-height, 3.25rem) + 0.5rem);

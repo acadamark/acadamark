@@ -101,9 +101,10 @@ export async function run() {
       // Top bar: the <nav-group> "Docs" is a dropdown.
       const toggle = root.querySelector('.enscribe-site-dropdown-toggle');
       assert.ok(toggle && /Docs/.test(toggle.textContent), 'a <nav-group> renders a top-bar dropdown toggle');
-      // Sidebar: the group is a NON-LINK label; its child pages are links.
+      // Sidebar (ON-path): the master opts in via <config sidebar> (S1.5 — default OFF). The group is
+      // a NON-LINK label; its child pages are links.
       const sidebar = root.querySelector('.enscribe-site-sidebar');
-      assert.ok(sidebar, 'the sidebar is mounted');
+      assert.ok(sidebar, 'the opted-in sidebar is mounted');
       const groupLabel = [...sidebar.querySelectorAll('.enscribe-nav-label')].find((s) => /Docs/.test(s.textContent));
       assert.ok(groupLabel && groupLabel.tagName === 'SPAN', 'the sidebar renders the group as a non-link <span> label (not an <a>)');
       assert.ok([...sidebar.querySelectorAll('a')].some((a) => a.getAttribute('href') === '?page=guide'), 'the sidebar nests the group\'s page links');
@@ -148,6 +149,28 @@ export async function run() {
       popTo(dom, '?page=nope');
       assert.ok(root.querySelector('[data-enscribe-content]').innerHTML.includes('Page not found'), 'an unknown ?page= renders not-found');
       console.log('PASS: S2a — popstate routing + unknown-slug not-found (intact under the chrome)');
+    } finally {
+      restoreDom(orig);
+    }
+  }
+
+  // ── S1.5: the left sidebar is OFF by default — the off-path (no <config sidebar>) ──
+  {
+    const { dom, orig } = installDom();
+    try {
+      // A master WITHOUT <config sidebar> — the default. Same nav page (home.emd, served from FILES),
+      // no opt-in: the chrome must mount with NO left sidebar, the top bar carrying the nav.
+      const offMaster = [
+        '<meta type=website>', '<title | Off Site>', '</meta>', '',
+        '<nav>', '<item src="home.emd" | Home>', '</nav>',
+      ].join('\n');
+      const root = await mountLiveWebsite('#root', offMaster);
+      assert.ok(root.querySelector('.enscribe-site-header'), 'the top bar (a website\'s primary nav) is always built');
+      assert.ok(!root.querySelector('.enscribe-site-sidebar'),
+        'a default master (no <config sidebar>) mounts NO left sidebar — the top bar is the only nav');
+      assert.ok(root.querySelector('[data-enscribe-content]').innerHTML.includes('Welcome to the site'),
+        'content still lands on the first page with the sidebar off');
+      console.log('PASS: S1.5 — the left sidebar is OFF by default (a master opts in via <config sidebar>)');
     } finally {
       restoreDom(orig);
     }

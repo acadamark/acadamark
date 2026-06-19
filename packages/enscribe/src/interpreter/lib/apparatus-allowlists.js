@@ -113,6 +113,12 @@ export const CONFIG_KWARGS = new Map([
   ['on-this-page',            boolean()],   // book-scaffold resolveBookNavConfig / lib/toc.js applyBookToc — the per-chapter on-this-page rail (right column); default on; #248
   ['split-by',                valued()],    // pagination unit: chapter (built) | section | none (deferred)
 
+  // #246: website navigation chrome. The website's primary nav is the sticky TOP bar; the left
+  // sidebar (the full nav tree) is an opt-in, default OFF (the top bar suffices for a small site).
+  // Read in the live website mount (browser.js mountLiveWebsite → readConfigBool) so the chrome is
+  // built with the sidebar column only when the master asks for it. Website-only (<meta type=website>).
+  ['sidebar',                 boolean()],   // mountLiveWebsite → buildWebsiteSidebar (the left nav rail; default off)
+
   // The remaining keys, enumerated as intended <config> surface by the
   // apparatus-tag reconciliation. Most are now LIVE with a named consumer
   // (see the inline comments). The two still marked 'reserved' —
