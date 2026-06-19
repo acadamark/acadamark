@@ -104,7 +104,7 @@ export async function run() {
   {
     const BOOK = [
       '<meta type=book>', '<title | B>', '</meta>', '',
-      '<config toc=true toc-location=body />', '',
+      '<config toc=true toc-location=body number-sections />', '',
       '<chapter | First Chapter>', '', 'x.', '',
       '<sub-section | A Part>', '', 's.', '',
       '<chapter | Second Chapter>', '', 'y.',
@@ -114,8 +114,8 @@ export async function run() {
     assert.ok(nav, 'a book renders a config-driven contents listing');
     assert.ok(['First Chapter', 'A Part', 'Second Chapter'].every((t) => nav.includes(t)),
       'the listing reflects the whole-book structure (chapters + their sections)');
-    // Books are numbered by default → the entry must be UN-GLUED (number + title in separate spans),
-    // not the run-together "1First Chapter".
+    // This book opts IN to numbering (<config number-sections>); default is now OFF (#246/core). The
+    // numbered entry must be UN-GLUED (number + title in separate spans), not the run-together "1First Chapter".
     assert.ok(/class="enscribe-toc-num">1<\/span>/.test(nav) && /class="enscribe-toc-title">First Chapter<\/span>/.test(nav),
       'a numbered book chapter is listed un-glued (number span + title span), not "1First Chapter"');
     assert.ok(h.indexOf('enscribe-contents') < h.indexOf('book-part-type'),

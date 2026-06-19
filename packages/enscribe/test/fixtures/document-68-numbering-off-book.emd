@@ -1,0 +1,18 @@
+<meta type=book title="Section numbering off (the default)">
+</meta>
+
+<chapter #ch:methods | Methods>
+
+A book with no `<config number-sections>` — the default since #246/core. Headings carry no number, and a
+cross-reference to a heading shows its TITLE: see <ref @sec:setup> and <ref @ch:results>. Float numbering is
+independent and stays on, so a reference to a figure still resolves: <ref @fig:plot>.
+
+<section #sec:setup | Setup>
+
+Setup details, used throughout.
+
+<figure #fig:plot | A diagnostic plot.>
+
+<chapter #ch:results | Results>
+
+The results build on the approach in <ref @ch:methods>.

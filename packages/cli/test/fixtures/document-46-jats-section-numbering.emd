@@ -1,6 +1,8 @@
 <meta type=book title="Numbered book">
 </meta>
 
+<config number-sections />
+
 <chapter #chapter:one | First Chapter>
 
 Body text.

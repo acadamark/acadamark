@@ -6,7 +6,7 @@ cover) is a sibling concern with its own spec.
 
 All settings are `<config>` kwargs.
 
-## Defaults: contents opt-in; numbering off for articles, on for books
+## Defaults: contents opt-in; heading numbering off for every document type
 
 A document gets **no** table of contents unless it asks for one — `toc` defaults off, for articles and
 books alike. Nothing is auto-inserted, so authoring stays clean and a document carries only the
@@ -21,14 +21,15 @@ supported on a book — the chapter rail already fills the sidebar role — so t
 diagnostic and the overview renders on the cover regardless. (The rail itself is configured by the
 chapter-nav family; see `notes/specs/book-navigation.md`.)
 
-`number-sections`, by contrast, splits by document class — **off for articles, on for books**.
-Declaring `<meta type=book>` opts into book conventions, where numbered chapters and sections
-("2.1 Methods") are standard; a book that does *not* want them sets `number-sections=false`, and an
-article that does want them sets `number-sections`. This mirrors the book-navigation default
-(declaring a book opts into book chrome) and the LaTeX model (auto-numbered sections + an opt-in
-`\tableofcontents`). (Quarto and LaTeX disagree on numbering — Quarto off, LaTeX on — so Enscribe
-splits by class rather than picking one.) A `<config>` setting in the master overrides the default
-either way.
+`number-sections` is likewise **off by default — for every document type, including books** (#246/core).
+Heading numbering is opt-in: a document (article, book, or website) that wants numbered headings sets
+`<config number-sections>`. The previous split-by-class default (on for books) was dropped because the
+unnumbered reading is the cleaner baseline — auto-numbering every heading is a strong choice to impose by
+default, and the chapter rail already orders a book without numbers. (Quarto agrees — numbering off by
+default; LaTeX numbers automatically. Enscribe sides with the opt-in baseline.) When a heading is
+unnumbered, a cross-reference to it shows the heading's **title** ("see *Methods*") rather than a number,
+and a book's separate-pages chapter URLs are number-free regardless (so they are stable across the
+toggle). Float numbering (figures, tables, equations) is independent and stays on.
 
 ## Table of contents
 
@@ -48,7 +49,7 @@ simply `toc-location: right` (or `left`): a sidebar location is sticky and scrol
 
 | kwarg | type | default | meaning |
 |---|---|---|---|
-| `number-sections` | boolean | off (article) · on (book) | Number the headings. |
+| `number-sections` | boolean | off (all types) | Number the headings. A `<ref>` to an unnumbered heading shows its title. |
 | `number-depth` | integer | all levels | Deepest heading level that receives a number. |
 
 ## Listing depth and numbering depth are independent
@@ -143,7 +144,7 @@ static≡live parity — are checked in `packages/enscribe/test/config-toc.test.
 
 The **section-numbering** half is also wired (#218) — the destructive number stamp in the shared
 `runSync` (`numberSections`), so static and live number identically. `number-sections` (default off
-articles / on books) stamps hierarchical 1 / 1.1 / 1.1.1; `number-depth` bounds the numbered levels,
+for ALL types — #246/core) stamps hierarchical 1 / 1.1 / 1.1.1; `number-depth` bounds the numbered levels,
 **independent of `toc-depth`**; `<section +unnumbered>` puts a heading outside the sequence (no number,
 the counter does not advance, the subtree is unnumbered). Numbered headings show their numbers in the
 contents listing (the un-glue path). Gate-tested in `packages/enscribe/test/config-numbering.test.js`

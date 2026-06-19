@@ -181,40 +181,41 @@ export async function run() {
     }
   }
 
-  // ── #246: per-page numbering — each page numbers as a STANDALONE ARTICLE, refs resolve globally ──
+  // ── #246/core: a website is UNNUMBERED by default (section numbering off for ALL types) ──
+  // Section headings carry no number; the per-page numbering MACHINERY stays intact, proven by the FLOAT
+  // counters (they still reset per page); a cross-page ref to an unnumbered section shows its TITLE.
   {
     const { dom, orig } = installDom();
     try {
       const root = await mountLiveWebsite('#root', FILES['numbering-site.emd']);
-      // Each section-number renders twice (section node + its title) — dedupe to the distinct sequence.
-      const sectionNums = (c) => [...new Set([...c.querySelectorAll('.section-number')].map((s) => s.textContent.trim()))];
       const content = () => root.querySelector('[data-enscribe-content]');
 
-      // Page A (Alpha, the first/default page): sections number article-style — 1, 1.1 (nested), 2 —
-      // NOT chaptered (no "4.1"); the page title carries NO number (it is a title, not a chapter).
-      assert.deepStrictEqual(sectionNums(content()), ['1', '1.1', '2'],
-        'page A sections number per-page article-style (1, 1.1, 2) — no chapter prefix');
+      // Page A (Alpha, first/default): sections are UNnumbered (no <config number-sections>; default OFF),
+      // and the page title carries no number.
+      assert.strictEqual(content().querySelectorAll('.section-number').length, 0,
+        'page A: section headings are unnumbered by default (numbering is opt-in)');
       assert.ok(!content().querySelector('book-part-title .section-number'),
-        'the page title carries NO number (no page-level/chapter number)');
-      assert.ok(/Figure 1\./.test(content().textContent),
-        'page A figure numbers per-page (Figure 1)');
+        'the page title carries no number');
+      // Floats stay numbered, per page — the per-page ('page' scope) machinery is intact and dormant only for sections.
+      assert.ok(/Figure 1\./.test(content().textContent), 'page A figure numbers per-page (Figure 1)');
 
-      // Page B (Beta): numbering RESTARTS — first section is 1 (not 3), first figure is Figure 1 (not 2).
+      // Page B (Beta): also unnumbered; its figure RESTARTS at Figure 1 (the float per-page reset still works).
       popTo(dom, '?page=beta');
-      assert.deepStrictEqual(sectionNums(content()), ['1', '2'],
-        'page B sections RESTART at 1 per page (1, 2) — not continued (3, 4) from page A');
+      assert.strictEqual(content().querySelectorAll('.section-number').length, 0,
+        'page B: section headings are unnumbered');
       assert.ok(/Figure 1\./.test(content().textContent),
-        'page B figure RESTARTS per page (Figure 1, not Figure 2)');
+        'page B figure RESTARTS per page (Figure 1, not Figure 2) — float per-page reset intact');
 
-      // Cross-page refs resolve GLOBALLY: to ?page=owner#anchor, labelled with the TARGET's per-page number.
+      // Cross-page refs resolve GLOBALLY (to ?page=owner#anchor). The section is unnumbered → the ref
+      // shows its TITLE ("Alpha One"); the figure is still numbered → "figure 1".
       const refTo = (href) => [...content().querySelectorAll('a')].find((a) => a.getAttribute('href') === href);
       const secRef = refTo('?page=alpha#sec:a1');
       const figRef = refTo('?page=alpha#fig:alpha');
-      assert.ok(secRef && /section 1/i.test(secRef.textContent),
-        'a cross-page <ref> to a section resolves to ?page=owner#anchor with the target\'s per-page label ("section 1")');
+      assert.ok(secRef && /Alpha One/i.test(secRef.textContent),
+        'a cross-page <ref> to an UNnumbered section resolves to ?page=owner#anchor with the section TITLE ("Alpha One")');
       assert.ok(figRef && /figure 1/i.test(figRef.textContent),
-        'a cross-page <ref> to a figure resolves to ?page=owner#anchor with the target\'s per-page label ("figure 1")');
-      console.log('PASS: #246 — per-page article numbering (sections + floats restart per page, no page number); cross-page refs resolve globally with per-page labels');
+        'a cross-page <ref> to a still-numbered figure shows "figure 1" + ?page=owner#anchor');
+      console.log('PASS: #246/core — a website is unnumbered by default (sections no number; floats still per-page); cross-page section ref shows the title');
     } finally {
       restoreDom(orig);
     }

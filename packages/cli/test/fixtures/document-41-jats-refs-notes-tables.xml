@@ -20,7 +20,7 @@ footnote<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref>.</p>
   <body>
     <sec id="sec:intro">
       <title>Introduction</title>
-      <p>A paragraph that references <xref ref-type="sec" rid="sec:intro">intro</xref> itself, plus
+      <p>A paragraph that references <xref ref-type="sec" rid="sec:intro">Introduction</xref> itself, plus
 <xref ref-type="fig" rid="fig:elephant">figure 1</xref>, <xref ref-type="disp-formula" rid="eqn:euler">equation 1</xref>, <xref ref-type="table" rid="tab:demo">table 1</xref>, and
 <xref ref-type="statement" rid="thm:pyth">theorem 1</xref>. It also has a foot-placed footnote
 here<xref ref-type="fn" id="noteref-2" rid="note-2">2</xref> which collects
