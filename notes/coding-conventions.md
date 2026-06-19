@@ -42,3 +42,10 @@ absorbed this case natively.
 ## 5 · This doc is audited
 Reconciliation 2 (specs ⇄ code) keeps it honest — a home listed here that has moved or forked is
 itself a finding. Trust the list; fix the doc when the audit flags it.
+
+## 6 · Report-first finish protocol
+Every slice ends by writing `slice-report-<task>.md` to the worktree as the **first** finish step —
+before the merge. A slice is not complete until that file exists. A resumed session (including a
+post-compact resume) rewrites the report; never leave a stale in-progress report as the final
+artifact. This is the durable fix for report drift: it holds even when a prompt is terse or a
+session compacts mid-slice.
