@@ -210,10 +210,17 @@ function isWebsiteAssembly(treeChildren) {
 // "Figure 1", not "1.1"). It is the per-page analogue of the book's 'chapter' scope, by design fixed for
 // the website (its numbering model is per-page, the way a book's is chaptered), so a config override is
 // not consulted here.
+//
+// #246/core: chaptered float scope ('chapter') only makes sense when chapters are NUMBERED — the float
+// prefix IS the chapter number. With heading numbering off (the default since the numbering-default
+// slice), a book's bookDefault falls back to 'none' so floats number flat ("Figure 1, 2, 3"), not
+// "Figure 1.1" against a chapter number that no longer renders. An explicit <config counter-reset-scope=…>
+// still wins (an author can force chaptered floats); only the DEFAULT follows the heading scheme.
 const COUNTER_RESET_SCOPES = new Set(['none', 'chapter', 'section']);
 function resolveCounterResetScope(treeChildren, config) {
   if (isWebsiteAssembly(treeChildren)) return 'page';
-  return resolveConfigEnum(treeChildren, config, 'counter-reset-scope', COUNTER_RESET_SCOPES, 'chapter', 'none');
+  const bookDefault = resolveNumberSections(treeChildren, config) ? 'chapter' : 'none';
+  return resolveConfigEnum(treeChildren, config, 'counter-reset-scope', COUNTER_RESET_SCOPES, bookDefault, 'none');
 }
 
 /**

@@ -436,14 +436,16 @@ export function run_tests() {
     const figureIds = [...book.matchAll(/<figure\b[^>]*\bid="([^"]*)"/g)].map((m) => m[1]);
     const labels = [...book.matchAll(/Figure\s+([0-9.]+)/g)].map((m) => m[1]);
 
-    // Cross-chapter resolution: the asset declared in ch1 places a data: URI figure in ch2,
-    // adopts its id, and numbers in chapter 2 (book per-chapter numbering 2.1 / 2.2).
+    // Cross-chapter resolution: the asset declared in ch1 places a data: URI figure in ch2 and adopts
+    // its id. The book is UNnumbered (no <config number-sections>), so floats number flat (#246/core) —
+    // the two placed figures are "Figure 1" / "Figure 2", not chaptered "2.1 / 2.2". Cross-chapter
+    // placement + id adoption are what this asserts; the figure number is incidental.
     assert.equal(imgs.length, 2, 'two placed images (both asset references resolved cross-file)');
     assert.ok(imgs.every((s) => /^data:image\/png;base64,/.test(s)), 'both placed images are png data: URIs');
     assert.deepEqual(figureIds, ['fig:scatter', 'fig:dup'], 'both placed figures adopt their asset ids');
-    assert.deepEqual(labels, ['2.1.', '2.2.'], 'figures number cross-chapter (chapter 2: 2.1, 2.2)');
-    assert.ok(/<a [^>]*href="#fig:scatter"[^>]*>figure 2\.1<\/a>/.test(book),
-      'the cross-chapter <ref @fig:scatter> resolves to "figure 2.1"');
+    assert.deepEqual(labels, ['1.', '2.'], 'placed figures number flat (unnumbered book → "Figure 1", "Figure 2")');
+    assert.ok(/<a [^>]*href="#fig:scatter"[^>]*>figure 1<\/a>/.test(book),
+      'the cross-chapter <ref @fig:scatter> resolves to "figure 1"');
 
     // No stray figure from either <data> declaration (all stripped); <data> absent; no leak.
     assert.ok(!/<data\b/.test(book), '<data> blocks are not in the rendered output');
@@ -478,9 +480,9 @@ export function run_tests() {
     assert.deepEqual(figureIds, ['fig:diagram'], 'the placed external figure adopts the asset id');
     assert.ok(!/<data\b/.test(book) && !/<img\b[^>]*\bsrc="@/.test(book),
       'no <data> in output and no raw @-src <img> leaked');
-    // The cross-chapter <ref @fig:diagram> resolves to the placed figure (chapter 2 → 2.1).
-    assert.ok(/<a [^>]*href="#fig:diagram"[^>]*>figure 2\.1<\/a>/.test(book),
-      'the cross-chapter <ref @fig:diagram> resolves to "figure 2.1"');
+    // The cross-chapter <ref @fig:diagram> resolves to the placed figure (unnumbered book → flat "figure 1").
+    assert.ok(/<a [^>]*href="#fig:diagram"[^>]*>figure 1<\/a>/.test(book),
+      'the cross-chapter <ref @fig:diagram> resolves to "figure 1"');
     assert.equal(warnings.length, 0, `the external-asset book assembles with no warnings (got: ${warnings.join('; ')})`);
 
     console.log('PASS: #190 slice 3 — cross-file external asset resolves to its rebased path; cross-chapter <ref> resolves');

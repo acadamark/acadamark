@@ -4,6 +4,8 @@
 <author | The Enscribe Team>
 </meta>
 
+<config number-sections />
+
 <preface | About this Book>
 This preface introduces the book.<note | A preface footnote.>
 

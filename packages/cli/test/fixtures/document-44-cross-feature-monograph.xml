@@ -38,6 +38,7 @@ to point at.<xref ref-type="fn" id="noteref-1" rid="note-1">1</xref></p>
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>1</label>
           <title>Foundations</title>
         </title-group>
       </book-part-meta>
@@ -83,6 +84,7 @@ reference to <xref ref-type="statement" rid="thm:octave">theorem 1.1</xref> reso
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>2</label>
           <title>Consonance and Ratios</title>
         </title-group>
         <contrib-group>
@@ -156,6 +158,7 @@ alone.<xref ref-type="fn" id="noteref-3" rid="note-3">3</xref></p>
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>3</label>
           <title>Visual and Aural Structure</title>
         </title-group>
       </book-part-meta>
@@ -203,6 +206,7 @@ figures in this chapter.<xref ref-type="fn" id="noteref-4" rid="note-4">4</xref>
     <book-part book-part-type="appendix">
       <book-part-meta>
         <title-group>
+          <label>A</label>
           <title>Notation and Sources</title>
         </title-group>
       </book-part-meta>

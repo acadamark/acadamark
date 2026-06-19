@@ -124,14 +124,14 @@
                       "value": "This preface introduces the book.",
                       "position": {
                         "start": {
-                          "line": 8,
+                          "line": 10,
                           "column": 1,
-                          "offset": 170
+                          "offset": 198
                         },
                         "end": {
-                          "line": 8,
+                          "line": 10,
                           "column": 34,
-                          "offset": 203
+                          "offset": 231
                         }
                       }
                     },
@@ -161,14 +161,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 8,
+                      "line": 10,
                       "column": 1,
-                      "offset": 170
+                      "offset": 198
                     },
                     "end": {
-                      "line": 8,
+                      "line": 10,
                       "column": 62,
-                      "offset": 231
+                      "offset": 259
                     }
                   }
                 },
@@ -269,6 +269,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "1"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -277,6 +292,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Introduction"
@@ -295,28 +325,28 @@
                       "value": "This is the introduction chapter. It contains some figures, equations,\nand footnotes that should collect at the chapter's end.",
                       "position": {
                         "start": {
-                          "line": 11,
+                          "line": 13,
                           "column": 1,
-                          "offset": 258
+                          "offset": 286
                         },
                         "end": {
-                          "line": 12,
+                          "line": 14,
                           "column": 56,
-                          "offset": 384
+                          "offset": 412
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 11,
+                      "line": 13,
                       "column": 1,
-                      "offset": 258
+                      "offset": 286
                     },
                     "end": {
-                      "line": 12,
+                      "line": 14,
                       "column": 56,
-                      "offset": 384
+                      "offset": 412
                     }
                   }
                 },
@@ -684,14 +714,14 @@
                       "value": "A reference to ",
                       "position": {
                         "start": {
-                          "line": 18,
+                          "line": 20,
                           "column": 1,
-                          "offset": 476
+                          "offset": 504
                         },
                         "end": {
-                          "line": 18,
+                          "line": 20,
                           "column": 16,
-                          "offset": 491
+                          "offset": 519
                         }
                       }
                     },
@@ -716,14 +746,14 @@
                       "value": " should resolve to \"figure 1.1\"\n(chapter 1, figure 1).",
                       "position": {
                         "start": {
-                          "line": 18,
+                          "line": 20,
                           "column": 32,
-                          "offset": 507
+                          "offset": 535
                         },
                         "end": {
-                          "line": 19,
+                          "line": 21,
                           "column": 23,
-                          "offset": 561
+                          "offset": 589
                         }
                       }
                     },
@@ -753,14 +783,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 18,
+                      "line": 20,
                       "column": 1,
-                      "offset": 476
+                      "offset": 504
                     },
                     "end": {
-                      "line": 19,
+                      "line": 21,
                       "column": 57,
-                      "offset": 595
+                      "offset": 623
                     }
                   }
                 },
@@ -774,14 +804,14 @@
                       "value": "A second reference to ",
                       "position": {
                         "start": {
-                          "line": 21,
+                          "line": 23,
                           "column": 1,
-                          "offset": 597
+                          "offset": 625
                         },
                         "end": {
-                          "line": 21,
+                          "line": 23,
                           "column": 23,
-                          "offset": 619
+                          "offset": 647
                         }
                       }
                     },
@@ -806,14 +836,14 @@
                       "value": " should resolve to\n\"equation 1.1\".",
                       "position": {
                         "start": {
-                          "line": 21,
+                          "line": 23,
                           "column": 39,
-                          "offset": 635
+                          "offset": 663
                         },
                         "end": {
-                          "line": 22,
+                          "line": 24,
                           "column": 16,
-                          "offset": 669
+                          "offset": 697
                         }
                       }
                     },
@@ -843,14 +873,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 21,
+                      "line": 23,
                       "column": 1,
-                      "offset": 597
+                      "offset": 625
                     },
                     "end": {
-                      "line": 22,
+                      "line": 24,
                       "column": 48,
-                      "offset": 701
+                      "offset": 729
                     }
                   }
                 },
@@ -1005,6 +1035,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "2"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -1013,6 +1058,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Methods"
@@ -1054,28 +1114,28 @@
                       "value": "This chapter has its own author distinct from the book-level author.\nThe chapter contains its own figure and equation, which should be\nnumbered starting from 1 in this chapter.",
                       "position": {
                         "start": {
-                          "line": 26,
+                          "line": 28,
                           "column": 1,
-                          "offset": 747
+                          "offset": 775
                         },
                         "end": {
-                          "line": 28,
+                          "line": 30,
                           "column": 42,
-                          "offset": 923
+                          "offset": 951
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 26,
+                      "line": 28,
                       "column": 1,
-                      "offset": 747
+                      "offset": 775
                     },
                     "end": {
-                      "line": 28,
+                      "line": 30,
                       "column": 42,
-                      "offset": 923
+                      "offset": 951
                     }
                   }
                 },
@@ -1321,14 +1381,14 @@
                       "value": "Cross-reference ",
                       "position": {
                         "start": {
-                          "line": 34,
+                          "line": 36,
                           "column": 1,
-                          "offset": 1016
+                          "offset": 1044
                         },
                         "end": {
-                          "line": 34,
+                          "line": 36,
                           "column": 17,
-                          "offset": 1032
+                          "offset": 1060
                         }
                       }
                     },
@@ -1353,14 +1413,14 @@
                       "value": " resolves to \"figure 2.1\"\n(chapter 2, figure 1).",
                       "position": {
                         "start": {
-                          "line": 34,
+                          "line": 36,
                           "column": 34,
-                          "offset": 1049
+                          "offset": 1077
                         },
                         "end": {
-                          "line": 35,
+                          "line": 37,
                           "column": 23,
-                          "offset": 1097
+                          "offset": 1125
                         }
                       }
                     },
@@ -1390,14 +1450,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 34,
+                      "line": 36,
                       "column": 1,
-                      "offset": 1016
+                      "offset": 1044
                     },
                     "end": {
-                      "line": 35,
+                      "line": 37,
                       "column": 51,
-                      "offset": 1125
+                      "offset": 1153
                     }
                   }
                 },
@@ -1411,14 +1471,14 @@
                       "value": "A cross-chapter reference: ",
                       "position": {
                         "start": {
-                          "line": 37,
+                          "line": 39,
                           "column": 1,
-                          "offset": 1127
+                          "offset": 1155
                         },
                         "end": {
-                          "line": 37,
+                          "line": 39,
                           "column": 28,
-                          "offset": 1154
+                          "offset": 1182
                         }
                       }
                     },
@@ -1443,28 +1503,28 @@
                       "value": " should still resolve\ncorrectly to \"figure 1.1\" from this chapter (the prefix path\nidentifies the target's chapter, not the reference's location).",
                       "position": {
                         "start": {
-                          "line": 37,
+                          "line": 39,
                           "column": 44,
-                          "offset": 1170
+                          "offset": 1198
                         },
                         "end": {
-                          "line": 39,
+                          "line": 41,
                           "column": 64,
-                          "offset": 1316
+                          "offset": 1344
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 37,
+                      "line": 39,
                       "column": 1,
-                      "offset": 1127
+                      "offset": 1155
                     },
                     "end": {
-                      "line": 39,
+                      "line": 41,
                       "column": 64,
-                      "offset": 1316
+                      "offset": 1344
                     }
                   }
                 },
@@ -1558,11 +1618,32 @@
           "children": [
             {
               "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            },
+            {
+              "type": "element",
               "tagName": "book-part",
               "properties": {
                 "book-part-type": "appendix"
               },
               "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
                 {
                   "type": "element",
                   "tagName": "meta",
@@ -1573,6 +1654,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Notation"
@@ -1591,14 +1687,14 @@
                       "value": "This appendix appears in book-back. Its footnotes also collect per-\nchapter (per-book-part, more precisely).",
                       "position": {
                         "start": {
-                          "line": 42,
+                          "line": 44,
                           "column": 1,
-                          "offset": 1340
+                          "offset": 1368
                         },
                         "end": {
-                          "line": 43,
+                          "line": 45,
                           "column": 41,
-                          "offset": 1448
+                          "offset": 1476
                         }
                       }
                     },
@@ -1628,14 +1724,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 42,
+                      "line": 44,
                       "column": 1,
-                      "offset": 1340
+                      "offset": 1368
                     },
                     "end": {
-                      "line": 43,
+                      "line": 45,
                       "column": 71,
-                      "offset": 1478
+                      "offset": 1506
                     }
                   }
                 },
@@ -1732,9 +1828,9 @@
       "offset": 0
     },
     "end": {
-      "line": 44,
+      "line": 46,
       "column": 1,
-      "offset": 1479
+      "offset": 1507
     }
   }
 }

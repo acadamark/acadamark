@@ -124,14 +124,14 @@
                       "value": "This monograph is a believable miniature: it exercises every alpha feature in\none document so the alpha integration check has a single cross-feature artifact\nto point at.",
                       "position": {
                         "start": {
-                          "line": 9,
+                          "line": 10,
                           "column": 1,
-                          "offset": 213
+                          "offset": 240
                         },
                         "end": {
-                          "line": 11,
+                          "line": 12,
                           "column": 13,
-                          "offset": 383
+                          "offset": 410
                         }
                       }
                     },
@@ -161,14 +161,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 9,
+                      "line": 10,
                       "column": 1,
-                      "offset": 213
+                      "offset": 240
                     },
                     "end": {
-                      "line": 11,
+                      "line": 12,
                       "column": 135,
-                      "offset": 505
+                      "offset": 532
                     }
                   }
                 },
@@ -269,6 +269,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "1"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -277,6 +292,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Foundations"
@@ -295,14 +325,14 @@
                       "value": "The pitch of a note is its fundamental frequency, measured in hertz. Concert A\nis ",
                       "position": {
                         "start": {
-                          "line": 14,
+                          "line": 15,
                           "column": 1,
-                          "offset": 531
+                          "offset": 558
                         },
                         "end": {
-                          "line": 15,
+                          "line": 16,
                           "column": 4,
-                          "offset": 613
+                          "offset": 640
                         }
                       }
                     },
@@ -378,14 +408,14 @@
                       "value": " Hz, and the perfect fifth above it stands in the ratio ",
                       "position": {
                         "start": {
-                          "line": 15,
+                          "line": 16,
                           "column": 9,
-                          "offset": 618
+                          "offset": 645
                         },
                         "end": {
-                          "line": 15,
+                          "line": 16,
                           "column": 65,
-                          "offset": 674
+                          "offset": 701
                         }
                       }
                     },
@@ -461,28 +491,28 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 15,
+                          "line": 16,
                           "column": 70,
-                          "offset": 679
+                          "offset": 706
                         },
                         "end": {
-                          "line": 15,
+                          "line": 16,
                           "column": 71,
-                          "offset": 680
+                          "offset": 707
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 14,
+                      "line": 15,
                       "column": 1,
-                      "offset": 531
+                      "offset": 558
                     },
                     "end": {
-                      "line": 15,
+                      "line": 16,
                       "column": 71,
-                      "offset": 680
+                      "offset": 707
                     }
                   }
                 },
@@ -1084,28 +1114,28 @@
                       "value": "The equal-tempered scale divides the octave into twelve equal ratios:",
                       "position": {
                         "start": {
-                          "line": 23,
+                          "line": 24,
                           "column": 1,
-                          "offset": 972
+                          "offset": 999
                         },
                         "end": {
-                          "line": 23,
+                          "line": 24,
                           "column": 70,
-                          "offset": 1041
+                          "offset": 1068
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 23,
+                      "line": 24,
                       "column": 1,
-                      "offset": 972
+                      "offset": 999
                     },
                     "end": {
-                      "line": 23,
+                      "line": 24,
                       "column": 70,
-                      "offset": 1041
+                      "offset": 1068
                     }
                   }
                 },
@@ -1804,14 +1834,14 @@
                       "value": "Benson's treatment ",
                       "position": {
                         "start": {
-                          "line": 27,
+                          "line": 28,
                           "column": 1,
-                          "offset": 1090
+                          "offset": 1117
                         },
                         "end": {
-                          "line": 27,
+                          "line": 28,
                           "column": 20,
-                          "offset": 1109
+                          "offset": 1136
                         }
                       }
                     },
@@ -1836,14 +1866,14 @@
                       "value": " develops this from first principles. A\nreference to ",
                       "position": {
                         "start": {
-                          "line": 27,
+                          "line": 28,
                           "column": 38,
-                          "offset": 1127
+                          "offset": 1154
                         },
                         "end": {
-                          "line": 28,
+                          "line": 29,
                           "column": 14,
-                          "offset": 1180
+                          "offset": 1207
                         }
                       }
                     },
@@ -1868,14 +1898,14 @@
                       "value": " resolves to the theorem above.",
                       "position": {
                         "start": {
-                          "line": 28,
+                          "line": 29,
                           "column": 31,
-                          "offset": 1197
+                          "offset": 1224
                         },
                         "end": {
-                          "line": 28,
+                          "line": 29,
                           "column": 62,
-                          "offset": 1228
+                          "offset": 1255
                         }
                       }
                     },
@@ -1905,14 +1935,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 27,
+                      "line": 28,
                       "column": 1,
-                      "offset": 1090
+                      "offset": 1117
                     },
                     "end": {
-                      "line": 28,
+                      "line": 29,
                       "column": 129,
-                      "offset": 1295
+                      "offset": 1322
                     }
                   }
                 },
@@ -2066,6 +2096,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "2"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -2074,6 +2119,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Consonance and Ratios"
@@ -2115,28 +2175,28 @@
                       "value": "This chapter has its own author — the edited-volume case — distinct from the\nbook-level author.",
                       "position": {
                         "start": {
-                          "line": 34,
+                          "line": 35,
                           "column": 1,
-                          "offset": 1427
+                          "offset": 1454
                         },
                         "end": {
-                          "line": 35,
+                          "line": 36,
                           "column": 19,
-                          "offset": 1522
+                          "offset": 1549
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 34,
+                      "line": 35,
                       "column": 1,
-                      "offset": 1427
+                      "offset": 1454
                     },
                     "end": {
-                      "line": 35,
+                      "line": 36,
                       "column": 19,
-                      "offset": 1522
+                      "offset": 1549
                     }
                   }
                 },
@@ -2150,14 +2210,14 @@
                       "value": "Small whole-number ratios sound consonant. The just-intonation intervals are\ncollected in ",
                       "position": {
                         "start": {
-                          "line": 37,
+                          "line": 38,
                           "column": 1,
-                          "offset": 1524
+                          "offset": 1551
                         },
                         "end": {
-                          "line": 38,
+                          "line": 39,
                           "column": 14,
-                          "offset": 1614
+                          "offset": 1641
                         }
                       }
                     },
@@ -2182,28 +2242,28 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 38,
+                          "line": 39,
                           "column": 31,
-                          "offset": 1631
+                          "offset": 1658
                         },
                         "end": {
-                          "line": 38,
+                          "line": 39,
                           "column": 32,
-                          "offset": 1632
+                          "offset": 1659
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 37,
+                      "line": 38,
                       "column": 1,
-                      "offset": 1524
+                      "offset": 1551
                     },
                     "end": {
-                      "line": 38,
+                      "line": 39,
                       "column": 32,
-                      "offset": 1632
+                      "offset": 1659
                     }
                   }
                 },
@@ -2470,28 +2530,28 @@
                       "value": "The fifth and the fourth are the two principal consonances:",
                       "position": {
                         "start": {
-                          "line": 48,
+                          "line": 49,
                           "column": 1,
-                          "offset": 1782
+                          "offset": 1809
                         },
                         "end": {
-                          "line": 48,
+                          "line": 49,
                           "column": 60,
-                          "offset": 1841
+                          "offset": 1868
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 48,
+                      "line": 49,
                       "column": 1,
-                      "offset": 1782
+                      "offset": 1809
                     },
                     "end": {
-                      "line": 48,
+                      "line": 49,
                       "column": 60,
-                      "offset": 1841
+                      "offset": 1868
                     }
                   }
                 },
@@ -3554,14 +3614,14 @@
                       "value": "Sethares ",
                       "position": {
                         "start": {
-                          "line": 55,
+                          "line": 56,
                           "column": 1,
-                          "offset": 1911
+                          "offset": 1938
                         },
                         "end": {
-                          "line": 55,
+                          "line": 56,
                           "column": 10,
-                          "offset": 1920
+                          "offset": 1947
                         }
                       }
                     },
@@ -3586,14 +3646,14 @@
                       "value": " ties consonance to timbre rather than to ratios\nalone.",
                       "position": {
                         "start": {
-                          "line": 55,
+                          "line": 56,
                           "column": 30,
-                          "offset": 1940
+                          "offset": 1967
                         },
                         "end": {
-                          "line": 56,
+                          "line": 57,
                           "column": 7,
-                          "offset": 1995
+                          "offset": 2022
                         }
                       }
                     },
@@ -3623,14 +3683,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 55,
+                      "line": 56,
                       "column": 1,
-                      "offset": 1911
+                      "offset": 1938
                     },
                     "end": {
-                      "line": 56,
+                      "line": 57,
                       "column": 73,
-                      "offset": 2061
+                      "offset": 2088
                     }
                   }
                 },
@@ -3724,6 +3784,21 @@
               "children": [
                 {
                   "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "3"
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
                   "tagName": "meta",
                   "properties": {},
                   "children": [
@@ -3732,6 +3807,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "3"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Visual and Aural Structure"
@@ -3750,28 +3840,28 @@
                       "value": "Two external notations close the body. A flow of the analysis pipeline:",
                       "position": {
                         "start": {
-                          "line": 59,
+                          "line": 60,
                           "column": 1,
-                          "offset": 2102
+                          "offset": 2129
                         },
                         "end": {
-                          "line": 59,
+                          "line": 60,
                           "column": 72,
-                          "offset": 2173
+                          "offset": 2200
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 59,
+                      "line": 60,
                       "column": 1,
-                      "offset": 2102
+                      "offset": 2129
                     },
                     "end": {
-                      "line": 59,
+                      "line": 60,
                       "column": 72,
-                      "offset": 2173
+                      "offset": 2200
                     }
                   }
                 },
@@ -3837,28 +3927,28 @@
                       "value": "And a short tune in ABC notation:",
                       "position": {
                         "start": {
-                          "line": 68,
+                          "line": 69,
                           "column": 1,
-                          "offset": 2348
+                          "offset": 2375
                         },
                         "end": {
-                          "line": 68,
+                          "line": 69,
                           "column": 34,
-                          "offset": 2381
+                          "offset": 2408
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 68,
+                      "line": 69,
                       "column": 1,
-                      "offset": 2348
+                      "offset": 2375
                     },
                     "end": {
-                      "line": 68,
+                      "line": 69,
                       "column": 34,
-                      "offset": 2381
+                      "offset": 2408
                     }
                   }
                 },
@@ -3924,14 +4014,14 @@
                       "value": "Cross-references ",
                       "position": {
                         "start": {
-                          "line": 79,
+                          "line": 80,
                           "column": 1,
-                          "offset": 2524
+                          "offset": 2551
                         },
                         "end": {
-                          "line": 79,
+                          "line": 80,
                           "column": 18,
-                          "offset": 2541
+                          "offset": 2568
                         }
                       }
                     },
@@ -3956,14 +4046,14 @@
                       "value": " and ",
                       "position": {
                         "start": {
-                          "line": 79,
+                          "line": 80,
                           "column": 35,
-                          "offset": 2558
+                          "offset": 2585
                         },
                         "end": {
-                          "line": 79,
+                          "line": 80,
                           "column": 40,
-                          "offset": 2563
+                          "offset": 2590
                         }
                       }
                     },
@@ -3988,14 +4078,14 @@
                       "value": " resolve to the two\nfigures in this chapter.",
                       "position": {
                         "start": {
-                          "line": 79,
+                          "line": 80,
                           "column": 55,
-                          "offset": 2578
+                          "offset": 2605
                         },
                         "end": {
-                          "line": 80,
+                          "line": 81,
                           "column": 25,
-                          "offset": 2622
+                          "offset": 2649
                         }
                       }
                     },
@@ -4025,14 +4115,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 79,
+                      "line": 80,
                       "column": 1,
-                      "offset": 2524
+                      "offset": 2551
                     },
                     "end": {
-                      "line": 80,
+                      "line": 81,
                       "column": 90,
-                      "offset": 2687
+                      "offset": 2714
                     }
                   }
                 },
@@ -4126,11 +4216,32 @@
           "children": [
             {
               "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            },
+            {
+              "type": "element",
               "tagName": "book-part",
               "properties": {
                 "book-part-type": "appendix"
               },
               "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "properties": {
+                    "className": [
+                      "section-number"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
                 {
                   "type": "element",
                   "tagName": "meta",
@@ -4141,6 +4252,21 @@
                       "tagName": "book-part-title",
                       "properties": {},
                       "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "section-number"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A"
+                            }
+                          ]
+                        },
                         {
                           "type": "text",
                           "value": "Notation and Sources"
@@ -4159,14 +4285,14 @@
                       "value": "This appendix lives in book-back. The interval names follow the usual Western\nconvention; the frequency model is the equal-tempered one of ",
                       "position": {
                         "start": {
-                          "line": 83,
+                          "line": 84,
                           "column": 1,
-                          "offset": 2723
+                          "offset": 2750
                         },
                         "end": {
-                          "line": 84,
+                          "line": 85,
                           "column": 62,
-                          "offset": 2862
+                          "offset": 2889
                         }
                       }
                     },
@@ -4191,14 +4317,14 @@
                       "value": ".",
                       "position": {
                         "start": {
-                          "line": 84,
+                          "line": 85,
                           "column": 78,
-                          "offset": 2878
+                          "offset": 2905
                         },
                         "end": {
-                          "line": 84,
+                          "line": 85,
                           "column": 79,
-                          "offset": 2879
+                          "offset": 2906
                         }
                       }
                     },
@@ -4228,14 +4354,14 @@
                   ],
                   "position": {
                     "start": {
-                      "line": 83,
+                      "line": 84,
                       "column": 1,
-                      "offset": 2723
+                      "offset": 2750
                     },
                     "end": {
-                      "line": 84,
+                      "line": 85,
                       "column": 157,
-                      "offset": 2957
+                      "offset": 2984
                     }
                   }
                 },
@@ -4343,9 +4469,9 @@
       "offset": 0
     },
     "end": {
-      "line": 107,
+      "line": 108,
       "column": 1,
-      "offset": 3462
+      "offset": 3489
     }
   }
 }
