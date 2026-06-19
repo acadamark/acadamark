@@ -30,6 +30,7 @@
 // FORMAT (must mirror the pre-slice-B inline logic in computeRefText
 // exactly — see that function's history):
 //   - no scope, or chapter === 0 (front/back-matter, articles)  → "N"
+//   - flat scope (#246, websites: reset per page, article labels) → "N"
 //   - chapter scope (section === 0)                              → "C.N"
 //   - section scope (section > 0)                                → "C.S.N"
 
@@ -48,7 +49,9 @@
  */
 export function formatScopedNumber(number, scope) {
   if (number == null) return null;
-  if (scope && scope.chapter > 0) {
+  // #246: a website's 'page' scope resets counters per page (so the number is per-page) but stamps
+  // `flat` to render UNprefixed — a page numbers as a standalone article ("Figure 1", not "1.1").
+  if (scope && scope.chapter > 0 && !scope.flat) {
     // 'section' scope includes the section index when non-zero.
     if (scope.section > 0) return `${scope.chapter}.${scope.section}.${number}`;
     return `${scope.chapter}.${number}`;

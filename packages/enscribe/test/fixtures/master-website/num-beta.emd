@@ -1,0 +1,9 @@
+<section #sec:b1 | Beta One>
+
+The first section on the Beta page. It refers across pages to <ref @sec:a1> and to <ref @fig:alpha>.
+
+<section #sec:b2 | Beta Two>
+
+The second section, with its own figure.
+
+<figure #fig:beta | A beta figure.>

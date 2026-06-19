@@ -128,7 +128,10 @@ Site chrome is minimal and mostly metadata:
   not per-page).
 
 A page's content — inline body or referenced `.emd` — is an ordinary document body, the same vocabulary an
-article uses.
+article uses, and it **numbers as one**: each page numbers as a standalone article — top-level sections
+restart at 1 per page (no chapter prefix), float counters reset per page, and the page itself carries no
+number (its title is a title, not a numbered chapter). Cross-page `<ref>`s still resolve globally with the
+target's per-page label — numbering is per page, but the cross-reference registry spans the whole site.
 
 **Composition is independent of rendering.** The master *assembles* the pages (inline or external) into the
 site; *how* the site is then rendered — static, the live shell, or (future) `enscribe serve` — is the

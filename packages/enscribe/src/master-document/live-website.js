@@ -23,8 +23,11 @@
 // for free but the master-resident inline bodies do not (re-running them double-processes).
 // mountLiveWebsite skips them this slice.
 //
-// NUMBERING is chaptered (page-index . n) — the book's behavior, adopted as-is this slice.
-// Per-page (article-style) numbering is a separate refinement (the dogfood does not number).
+// NUMBERING is per-page ARTICLE numbering (#246): each page numbers exactly as its `.emd` would if
+// opened on its own — top-level sections restart at 1 per page (no chapter prefix), the page carries no
+// number, and float counters reset per page. The synthetic <book> is marked `isWebsiteAssembly` so
+// numbering.js routes it to the 'page' scope, NOT the book/chaptered path. Cross-page refs still resolve
+// globally (one registry over the assembly) — numbering and ref-resolution are separate concerns.
 
 import { makeTag, isEnscribeTag } from '../core/tag.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
@@ -64,7 +67,13 @@ export function buildWebsiteTree(pages, contents) {
       { id: p.slug },
     ),
   );
-  return { type: 'root', children: [makeTag('book', [makeTag('book-body', parts)])] };
+  const book = makeTag('book', [makeTag('book-body', parts)]);
+  // The synthetic book exists ONLY to resolve cross-page refs in one registry. It is NOT a statement
+  // that the document is a book — numbering must NOT treat it as chaptered. This marker routes numbering
+  // to the 'page' scope: each book-part (page) numbers as a standalone article (sections restart at 1, no
+  // chapter prefix, no page number; float counters reset per page).
+  book.isWebsiteAssembly = true;
+  return { type: 'root', children: [book] };
 }
 
 /**
