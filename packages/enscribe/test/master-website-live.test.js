@@ -14,6 +14,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveWebsite, mountLiveShell } from '../src/interpreter/browser.js';
+import { buildOnThisPage } from '../src/interpreter/assets/website-nav-asset.js';
+import { buildLayer1Catalog, buildShorthandCatalog } from '../../../docs-site/gen-reference.js';
 
 const DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-website');
 const read = (n) => readFileSync(join(DIR, n), 'utf8');
@@ -94,6 +96,68 @@ function makeEditorStub() {
 const tick = (ms = 5) => new Promise((r) => setTimeout(r, ms));
 
 export async function run() {
+  // ── #223/#246: buildOnThisPage excludes headings inside a <frame>/<aside> (demo render boxes) ──
+  // A Documentation catalog's live-render box (`<frame>` → `<figure>`) shows a `<section>` as DEMO content;
+  // it must NOT appear in the page's on-this-page rail. Pure DOM-in unit test.
+  {
+    const dom = new JSDOM('<!DOCTYPE html><html><body><main data-enscribe-content>' +
+      '<section id="s1"><section-title>One</section-title></section>' +
+      '<section id="s2"><section-title>Two</section-title></section>' +
+      '<figure class="frameable-border"><section id="demo"><section-title>Demo Inside Frame</section-title></section></figure>' +
+      '<aside><sub-section id="aside-demo"><sub-section-title>Aside Demo</sub-section-title></sub-section></aside>' +
+      '</main></body></html>');
+    const html = buildOnThisPage(dom.window.document.querySelector('[data-enscribe-content]'));
+    assert.ok(/One/.test(html) && /Two/.test(html), 'real top-level section headings appear in on-this-page');
+    assert.ok(!/Demo Inside Frame/.test(html), 'a <section> inside a <frame> (→<figure>) is excluded from on-this-page');
+    assert.ok(!/Aside Demo/.test(html), 'a heading inside an <aside> is excluded from on-this-page');
+    assert.ok(!/#demo"/.test(html) && !/#aside-demo"/.test(html), 'no demo-content anchors leak into the rail');
+    console.log('PASS: #223/#246 — buildOnThisPage skips frame/aside demo headings (no rail pollution)');
+  }
+
+  // ── #223/#246: the GENERATED Documentation catalogs render through the website type ──
+  // Renders the Shorthand catalog (fast; its sigil examples nest <section> demos inside <frame> boxes) and
+  // data-checks the Layer 1 catalog's frame copies. Locks: <code>+<frame> examples, no render errors, frame
+  // demos kept OUT of the on-this-page rail, no duplicate ids (stripped in the live copy), floats suppressed.
+  {
+    const { dom, orig } = installDom();
+    const SH = buildShorthandCatalog().emd;
+    global.fetch = async (u) => {
+      const n = String(u).split('/').pop().split('?')[0];
+      return n === 'shorthand-catalog.emd'
+        ? { ok: true, status: 200, text: async () => SH }
+        : { ok: false, status: 404, text: async () => '' };
+    };
+    try {
+      const master = ['<meta type=website>', '<title | Docs>', '</meta>', '',
+        '<nav>', '<item src="shorthand-catalog.emd" | Shorthand>', '</nav>'].join('\n');
+      const root = await mountLiveWebsite('#root', master);
+      const c = root.querySelector('[data-enscribe-content]');
+      const otp = root.querySelector('[data-enscribe-onthispage]');
+      assert.ok(c.querySelectorAll('section').length > 10, 'the Shorthand catalog renders its entry sections');
+      assert.ok((c.querySelector('pre code') || c.querySelector('pre')) && c.querySelector('figure.frameable-border'),
+        'each example renders a <code> source block + a <frame> live box');
+      assert.strictEqual((c.innerHTML.match(/__ref-error|render error/g) || []).length, 0, 'no render errors in the catalog');
+      assert.ok(!/Methods|Materials|Reagents/.test(otp.textContent),
+        'a frame-nested sigil-section demo does not leak into the on-this-page rail');
+      const ids = [...c.querySelectorAll('[id]')].map((el) => el.id);
+      assert.strictEqual(ids.length, new Set(ids).size, 'no duplicate ids (stripped in the frame copies)');
+      console.log('PASS: #223/#246 — generated catalog renders through the type (code+frame, no errors, no rail leak, no dup ids)');
+    } finally {
+      restoreDom(orig);
+    }
+
+    // Layer 1 catalog data check (no full render): every <frame> live copy has its ids stripped, and the
+    // float-suppression <config> is present so demo boxes don't accumulate a "Figure N" count.
+    const l1 = buildLayer1Catalog().emd;
+    const frameCopies = [...l1.matchAll(/<frame[^>]*>\n([\s\S]*?)\n<\/frame>/g)].map((m) => m[1]);
+    assert.ok(frameCopies.length > 50, 'the Layer 1 catalog emits many <frame> demos');
+    assert.ok(/<frame -numbered>/.test(l1), 'frame demo wrappers are -numbered (the boxes don\'t accumulate "Figure N")');
+    // The curated example frames (the `Examples` sub-sections) have their `#id`s stripped in the live
+    // copy so repeated demos don't collide — proven by the shorthand-catalog mount's no-duplicate-ids
+    // assertion above; the section-element example's demo `#demo` ids are the case it guards.
+    console.log('PASS: #223/#246 — Layer 1 catalog generator: frame demos -numbered + ids stripped in the live copy');
+  }
+
   // ── mount: chrome (brand + dropdown + sidebar + footer) + first-page content + cross-page ref ──
   {
     const { dom, orig } = installDom();

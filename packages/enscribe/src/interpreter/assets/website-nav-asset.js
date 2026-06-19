@@ -216,12 +216,18 @@ export function bindWebsiteNav(root) {
 
 /** Build the current page's "on this page" list from its id'd section-family headings (the id is on
  *  the `<section>` / `<sub-section>` / `<h*>`; the text is its `*-title` child). Pure DOM-in → HTML-out;
- *  the live mount re-runs it per page swap. Returns '' for fewer than two headings (no rail worth it). */
+ *  the live mount re-runs it per page swap. Returns '' for fewer than two headings (no rail worth it).
+ *
+ *  #223/#246: a heading nested inside a `<frame>` (rendered `<figure class="frameable-border">`) or an
+ *  `<aside>` is DEMO content — e.g. a Documentation catalog's live-render box showing a `<section>` — and
+ *  must NOT appear in the page's on-this-page rail. Exclude any heading with a `figure` / `aside` ancestor
+ *  (a real section heading never lives inside a float / boxed-prose element). */
 const ONTHISPAGE_HEADING_RE = /^(SECTION|SUB-SECTION|SUB-SUB-SECTION|H[1-6])$/;
 export function buildOnThisPage(contentEl) {
   if (!contentEl || typeof contentEl.querySelectorAll !== 'function') return '';
   const heads = Array.from(contentEl.querySelectorAll('[id]'))
-    .filter((el) => ONTHISPAGE_HEADING_RE.test(el.tagName))
+    .filter((el) => ONTHISPAGE_HEADING_RE.test(el.tagName)
+      && !(typeof el.closest === 'function' && el.closest('figure, aside')))
     .map((el) => {
       const titleEl = el.querySelector('section-title, sub-section-title, sub-sub-section-title');
       const text = ((titleEl || el).textContent || '').trim().split('\n')[0].trim();

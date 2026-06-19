@@ -21,7 +21,9 @@ import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-h
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
 import { buildGallery, buildFeaturedExamples } from './gen-gallery.js';
-import { buildLayer1Catalog, buildShorthandCatalog, buildConfigGrid } from './gen-reference.js';
+import { buildConfigGrid } from './gen-reference.js';
+// #223/#246: the Documentation catalogs are now generated `.emd` (gen-catalogs.js, run by `docs:gen`)
+// rendered like any other page — build.js no longer special-cases them (the catalog builders moved out).
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -107,9 +109,10 @@ const PAGES = [
   // fragment injected (examples pulled live from the vocab source, the curated FEATURED_* lists).
   { slug: 'enscribe-shorthand', source: 'enscribe-shorthand.emd', title: 'Enscribe Shorthand — enscribe', nav: 'Enscribe Shorthand', kind: 'featured-intro', featuredSet: 'shorthand' },
   { slug: 'layer1',          source: 'layer1.emd',          title: 'Layer 1 — enscribe',             nav: 'Layer 1',         kind: 'featured-intro', featuredSet: 'layer1' },
-  // #223 slice 1: the generated Documentation catalogs (additive; from the vocab source).
-  { slug: 'layer1-catalog',  source: null,                  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'layer1-catalog' },
-  { slug: 'shorthand-catalog', source: null,                title: 'Shorthand catalog — enscribe',   nav: 'Shorthand catalog', kind: 'shorthand-catalog' },
+  // #223/#246: the generated Documentation catalogs — ordinary `.emd` pages now (gen-catalogs.js writes
+  // sources/{layer1,shorthand}-catalog.emd from the vocab source; rendered through the type, static + live).
+  { slug: 'layer1-catalog',  source: 'layer1-catalog.emd',  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'page' },
+  { slug: 'shorthand-catalog', source: 'shorthand-catalog.emd', title: 'Shorthand catalog — enscribe', nav: 'Shorthand catalog', kind: 'page' },
   // #223 slice 2: the Rendering guide — authored .emd with the generated <config> grid injected.
   { slug: 'rendering-guide', source: 'rendering-guide.emd', title: 'Rendering guide — enscribe',     nav: 'Rendering guide', kind: 'rendering-guide' },
   { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
@@ -425,17 +428,6 @@ function main() {
       const gallery = buildGallery({ render: (src) => renderAcm(src) });
       body = gallery.body;
       headExtra = gallery.headExtra;
-    } else if (page.kind === 'layer1-catalog' || page.kind === 'shorthand-catalog') {
-      // #223 slice 1: the Documentation catalogs, generated from the vocab source the
-      // same way the gallery is (render via renderAcm; deduped asset tags → headExtra).
-      const build = page.kind === 'layer1-catalog' ? buildLayer1Catalog : buildShorthandCatalog;
-      const cat = build({ render: (src) => renderAcm(src) });
-      body = cat.body;
-      headExtra = cat.headExtra;
-      const label = page.kind === 'layer1-catalog' ? 'Layer 1 catalog' : 'Shorthand catalog';
-      const count = cat.stats.canonical ?? cat.stats.shorthands;
-      console.log(`[docs:build]   ${label}: ${count} entries${cat.stats.errors.length ? `, ${cat.stats.errors.length} render error(s)` : ''}`);
-      for (const e of cat.stats.errors) console.warn(`[docs:build]   ⚠ ${e}`);
     } else if (page.kind === 'rendering-guide') {
       // #223 slice 2: an authored .emd page with the GENERATED <config> grid injected at its
       // marker. The narrative + mermaid flowchart are authored; the grid generates from the
