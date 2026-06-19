@@ -1073,8 +1073,8 @@ ${dateXml}
   check('book-asset-emb: BITS doctype', bits.includes('BITS-book2.dtd'));
   check('book-asset-emb: embedded cross-chapter asset → <graphic xlink:href="data:image/png;base64,…">',
     /<fig id="fig:scatter">[\s\S]*?<graphic xlink:href="data:image\/png;base64,iVBORw0KGgo[^"]*"\/>/.test(bits));
-  check('book-asset-emb: chapter-prefixed BITS <label> (2.1)',
-    /<fig id="fig:scatter">\s*<label>2\.1<\/label>/.test(bits));
+  check('book-asset-emb: flat BITS <label> (1) — the book is unnumbered, so floats number flat',
+    /<fig id="fig:scatter">\s*<label>1<\/label>/.test(bits));
   check('book-asset-emb: no <data> and no raw @-src leaked into BITS',
     !/<data\b/.test(bits) && !/xlink:href="@/.test(bits));
   validateWithXmllint('book-asset-emb', bits);

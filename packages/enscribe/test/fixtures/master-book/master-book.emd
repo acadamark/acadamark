@@ -4,6 +4,8 @@
 <author | The Enscribe Team>
 </meta>
 
+<config number-sections />
+
 <preface src="preface.emd" | About this Book>
 <chapter src="chapter-1.emd" | Counting Elephants>
 <chapter src="chapter-2.emd" | Estimating Browse Pressure>

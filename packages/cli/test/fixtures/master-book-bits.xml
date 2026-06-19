@@ -29,6 +29,7 @@ It is authored in its own child file and assembled into the book by reference.</
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>1</label>
           <title>Counting Elephants</title>
         </title-group>
       </book-part-meta>
@@ -36,6 +37,7 @@ It is authored in its own child file and assembled into the book by reference.</
         <p>Aerial transects and ground counts are the two standard survey methods for
 savanna elephants.</p>
         <sec>
+          <label>1.1</label>
           <title>Aerial Transects</title>
           <p>Aerial transects remain the standard method. See <xref ref-type="fig" rid="fig:transect">figure 1.1</xref> for the grid
 layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).</p>
@@ -48,6 +50,7 @@ layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure
           </fig>
         </sec>
         <sec>
+          <label>1.2</label>
           <title>Ground Counts</title>
           <p>Ground counts complement the aerial survey at known aggregation points such as
 waterholes during the dry season.</p>
@@ -57,6 +60,7 @@ waterholes during the dry season.</p>
     <book-part book-part-type="chapter">
       <book-part-meta>
         <title-group>
+          <label>2</label>
           <title>Estimating Browse Pressure</title>
         </title-group>
         <contrib-group>
@@ -69,6 +73,7 @@ waterholes during the dry season.</p>
         <p>This chapter carries its own author, distinct from the book-level author, and
 renumbers its figures from one.</p>
         <sec>
+          <label>2.1</label>
           <title>Browse Scoring</title>
           <p>Its own figure is <xref ref-type="fig" rid="fig:browse">figure 2.1</xref>; a cross-chapter reference to <xref ref-type="fig" rid="fig:transect">figure 1.1</xref>
 still resolves to chapter 1 (figure 1.1).</p>
@@ -81,6 +86,7 @@ still resolves to chapter 1 (figure 1.1).</p>
           </fig>
         </sec>
         <sec>
+          <label>2.2</label>
           <title>Limitations</title>
           <p>Browse scoring is observer-dependent and should be calibrated across surveyors
 before the season's counts begin.</p>
@@ -92,6 +98,7 @@ before the season's counts begin.</p>
     <book-part book-part-type="appendix">
       <book-part-meta>
         <title-group>
+          <label>A</label>
           <title>Field Data Sheets</title>
         </title-group>
       </book-part-meta>

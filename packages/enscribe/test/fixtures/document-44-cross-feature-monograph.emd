@@ -4,6 +4,7 @@
 <author | The Enscribe Team>
 </meta>
 
+<config number-sections />
 
 <preface | About this Monograph>
 This monograph is a believable miniature: it exercises every alpha feature in

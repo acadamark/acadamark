@@ -4,6 +4,8 @@
 <author | The Enscribe Team>
 </meta>
 
+<config number-sections />
+
 <preface | About this Book>
 This preface sits in `<front-matter>` per BITS convention.<note | A preface footnote.>
 

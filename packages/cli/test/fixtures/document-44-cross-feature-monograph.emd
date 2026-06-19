@@ -4,6 +4,8 @@
 <author | The Enscribe Team>
 </meta>
 
+<config number-sections />
+
 <data>
 <library |
 @book{Benson2007,
