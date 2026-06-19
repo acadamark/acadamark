@@ -1875,4 +1875,61 @@ export function run() {
     snapshotHast('document-55', hast);
     console.log('PASS: integration doc55 (data-table cell parsing — parse-columns / +parse-text / -parse-text)');
   }
+
+  // --- doc69: minipage — the sealed frameable (#115) ---
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-69-minipage.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // The minipage renders as a bordered <figure> (border default true) with its
+    // own "Minipage N." label in the figcaption.
+    assert.ok(/<figure id="mp:numbering" class="frameable-border">/.test(html),
+      'doc69: minipage renders as <figure class="frameable-border"> with its id');
+    assert.ok(/<span class="minipage-label">Minipage 1\.<\/span> A sealed box with a private figure/.test(html),
+      'doc69: numbered minipage gets its own "Minipage 1." caption label');
+
+    // Private numbering: the document figure and the box-private figure are BOTH
+    // "Figure 1" — the inner figure counts in the box registry and does NOT
+    // advance the document figure counter.
+    assert.ok(/<figure id="fig:doc">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> A document figure\./.test(html),
+      'doc69: the document figure is "Figure 1"');
+    assert.ok(/<figure id="fig:inner">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> An inner figure/.test(html),
+      'doc69: the box-private figure is ALSO "Figure 1" (private counter, document counter untouched)');
+    assert.ok(html.includes('<a href="#fig:doc" class="ref">figure 1</a>'),
+      'doc69: the document figure cross-ref is "figure 1" — not bumped to 2 by the box figure');
+
+    // Internal ref resolves within the box (baked text); inbound ref is forbidden.
+    assert.ok(html.includes('<a href="#fig:inner" class="ref">figure 1</a>'),
+      'doc69: a body <ref @fig:inner> resolves WITHIN the box to "figure 1"');
+    assert.ok(html.includes('<a href="#fig:inner" class="ref-error">??ref: fig:inner??</a>'),
+      'doc69: an inbound document <ref @fig:inner> to a box label is a not-found ref-error');
+
+    // Own label referenceable; minipage-A and minipage-B both resolve, distinct
+    // numbers. The "Minipage N" counter is document-global, so A/B are 2/3 here
+    // (mp:numbering above is Minipage 1) — a numbered minipage advances the shared
+    // minipage series.
+    assert.ok(html.includes('<a href="#mp:a" class="ref">minipage 2</a>'),
+      'doc69: minipage A is referenceable in the "Minipage N" series (minipage 2)');
+    assert.ok(html.includes('<a href="#mp:b" class="ref">minipage 3</a>'),
+      'doc69: minipage B is referenceable and the series advances (minipage 3)');
+
+    // Box-local footnote: the note collects into a <note-list> INSIDE the box
+    // figure (its own bottom boundary), before the figcaption.
+    assert.ok(/<figure id="mp:notes"[\s\S]*?<note-list[\s\S]*?The footnote is collected at the box bottom[\s\S]*?<\/note-list>[\s\S]*?<span class="minipage-label">Minipage \d+\.<\/span>[\s\S]*?<\/figure>/.test(html),
+      'doc69: a footnote inside the box collects at the box boundary (note-list inside the figure)');
+
+    // Nested minipage: each level numbers privately ("Minipage 1" inside, the
+    // outer is the document-level minipage count).
+    assert.ok(/<figure id="mp:outer"[\s\S]*?<figure id="mp:inner"[\s\S]*?<span class="minipage-label">Minipage 1\.<\/span> Inner box[\s\S]*?<\/figure>[\s\S]*?<\/figure>/.test(html),
+      'doc69: a nested minipage renders inside its parent, numbered privately ("Minipage 1")');
+
+    // No external pulls: an @src inside a minipage is a visible error, not a resolved image.
+    assert.ok(/<figure id="mp:guard"[\s\S]*?<div class="enscribe-asset-error" role="alert" data-ref="@logo">[\s\S]*?not allowed inside a minipage[\s\S]*?<\/div>/.test(html),
+      'doc69: an @src pull inside a minipage is rejected with a visible asset-error');
+    assert.ok(!/<img src="@logo"/.test(html) && !/<img src="logo/.test(html),
+      'doc69: the forbidden @src is NOT resolved into a working <img>');
+
+    snapshotHast('document-69', hast);
+    console.log('PASS: integration doc69 (minipage — sealed frameable: private numbering, inbound ref-error, own-series refs, box-local notes, nesting, no-external guard)');
+  }
 }
