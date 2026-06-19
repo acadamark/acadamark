@@ -83,7 +83,7 @@ export async function run() {
       'edit mode still opens on the cover; the cover has no editor');
 
     // ── open chapter 1: the editor mounts with chapter 1's source; the preview shows fig 1.1
-    navigate(dom, '#1-counting-elephants');
+    navigate(dom, '#counting-elephants');
     assert.strictEqual(state.mounts, 1, 'opening a chapter mounts the editor once');
     assert.ok(root.querySelector('[data-edit-pane="source"][data-editor-mounted="1"]'),
       'the editor is mounted into the source pane');
@@ -110,7 +110,7 @@ export async function run() {
     console.log('PASS: edit-loop DOM — typing re-renders only the current chapter\'s preview (debounced)');
 
     // ── the structural edit is consistent across chapters: chapter 2\'s cross-ref follows ──
-    navigate(dom, '#2-estimating-browse-pressure');
+    navigate(dom, '#estimating-browse-pressure');
     assert.strictEqual(state.destroys, 1, 'navigating away destroyed the chapter-1 editor');
     assert.strictEqual(state.mounts, 2, 'and mounted a fresh editor for chapter 2');
     assert.ok(state.value.includes('Browse Scoring'), 'chapter 2\'s source is handed to the editor');

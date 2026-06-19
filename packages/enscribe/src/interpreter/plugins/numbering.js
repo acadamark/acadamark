@@ -265,12 +265,22 @@ export function enscribeNumbering() {
 
     // Visitors for section types. Sections are registered with numbered: false —
     // they become findable by label for <ref #sec:...> but are not sequentially
-    // numbered through the registry (AUD-09 fix, sections only).
+    // numbered through the registry (AUD-09 fix, sections only). The title is stored so a `<ref>` to an
+    // UNnumbered section renders the section's title rather than its id-tail (#246/core).
     for (const tagname of SECTION_TAGNAMES) {
       visitors.set(tagname, (node) => {
-        registry.assign('section', node.id || null, { numbered: false, data: {} });
+        registry.assign('section', node.id || null, { numbered: false, data: { title: structuralTitleText(node) } });
       });
     }
+
+    // Visitor for book-parts (chapters / parts / appendices). Registered numbered:false with their
+    // title so a cross-ref to a chapter RESOLVES even when section numbering is off (#246/core: a
+    // `<ref @ch:methods>` then shows "Methods", not a ref-error). When numbering is ON, numberSections
+    // (#57 Layer 2) stamps the chapter/appendix number onto this same entry. Registering here (not only
+    // on-demand in stampSection) is what keeps unnumbered chapter refs from breaking.
+    visitors.set('book-part', (node) => {
+      registry.assign('book-part', node.id || null, { numbered: false, data: { title: structuralTitleText(node) } });
+    });
 
     // Visitor for code-block nodes (canonical tagname 'code-block'; the gate
     // rewrites the sigil ```' to its canonical name before this plugin runs).
@@ -522,24 +532,55 @@ function findRegionChild(node, tagname) {
   return structuralChildren(node).find((c) => isEnscribeTag(c, tagname)) ?? null;
 }
 
+/** Concatenated text of a node's content (string, or inline/structural array). */
+function nodeText(node) {
+  if (node == null) return '';
+  if (node.type === 'text') return node.value ?? '';
+  if (typeof node.content === 'string') return node.content;
+  const kids = Array.isArray(node.content) ? node.content : (node.children ?? []);
+  return kids.map(nodeText).join('');
+}
+
 /**
- * Resolve whether section numbering is on. Config `number-sections` (true/false)
- * wins; otherwise the default is ON for books, OFF for articles.
+ * The heading element of a section / book-part: the `${tagname}-title` child — a DIRECT child for a
+ * section, or (book-parts) one inside the synthesized `<meta>`. Single source of truth for both
+ * stampSection (which writes the number onto it) and the cross-ref title fallback below.
+ */
+function findTitleNode(node) {
+  const titleTag = `${node.tagname}-title`;
+  const kids = structuralChildren(node);
+  let title = kids.find((c) => isEnscribeTag(c, titleTag));
+  if (!title) {
+    const meta = kids.find((c) => isEnscribeTag(c, 'meta'));
+    if (meta) title = structuralChildren(meta).find((c) => isEnscribeTag(c, titleTag));
+  }
+  return title ?? null;
+}
+
+/** A section / book-part's title text, or null — the cross-ref label when the heading is unnumbered
+ *  (#246/core: numbering is opt-in, so a `<ref>` to an unnumbered heading shows its title). */
+function structuralTitleText(node) {
+  const title = findTitleNode(node);
+  if (!title) return null;
+  const text = nodeText(title).replace(/\s+/g, ' ').trim();
+  return text || null;
+}
+
+/**
+ * Resolve whether section/heading numbering is on. **Default OFF for every document type**
+ * (#246/core) — an author opts IN with `<config number-sections>` (or `=true`). Previously books (and
+ * the website's synthetic `<book>`) defaulted ON via a `<book>` heuristic; that heuristic is removed, so
+ * a book/website now renders headings unnumbered unless the document asks for numbers. Float numbering
+ * (figures / tables / equations) is independent and stays ON. When a heading is unnumbered, a `<ref>` to
+ * it falls back to the heading's TITLE (see computeRefText), so section/book-part registry entries carry
+ * their title text for that purpose.
  *
- * #246: a website's synthetic <book> takes the book default (ON) — the bug being fixed is the chaptered
- * STYLE, not whether sections number (defect 1 and the per-page rule both treat sections as numbered).
- * numberSections then numbers each page article-style (per-page restart, no chapter prefix, no page
- * number). (Honoring a master `<config number-sections=false>` opt-OUT needs the master config threaded
- * into the page pass — a separate gap, recorded as a finding; today the site numbers per-page by default.)
+ * (Website opt-in still waits on master `<config>` threading into the page pass — the tracked follow-on;
+ * until then a website is unnumbered, with the per-page numbering machinery dormant but intact.)
  */
 function resolveNumberSections(treeChildren, config) {
   const cv = config?.get?.('number-sections');
-  if (cv === true || cv === 'true') return true;
-  if (cv === false || cv === 'false') return false;
-  for (const child of treeChildren ?? []) {
-    if (isEnscribeTag(child) && child.tagname === 'book') return true;
-  }
-  return false;
+  return cv === true || cv === 'true';
 }
 
 /**

@@ -103,6 +103,8 @@ export async function run() {
 <title | Test Book>
 </meta>
 
+<config number-sections />
+
 <chapter | One>
 Intro.
 

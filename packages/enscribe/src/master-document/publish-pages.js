@@ -56,8 +56,8 @@ import {
 } from '../interpreter/assets/book-nav-asset.js';
 
 /** P1 projection: each chapter's PAGE URL is the shared neutral stem + `.html`
- *  (`1-counting-elephants.html`, `a-field-data-sheets.html`; front-matter without a
- *  roster number is unprefixed, `about-this-book.html`). The stem is the byte-stable,
+ *  (`counting-elephants.html`, `field-data-sheets.html`, `about-this-book.html` — the title slug,
+ *  number-free, so the URL is stable whether or not numbering is on). The stem is the byte-stable,
  *  collision-deduped slug computed in book-scaffold; the `.html` suffix is this static
  *  target's own concern (the live path prepends `#` instead). */
 function computeSlugs(parts) {
@@ -225,7 +225,7 @@ function renderIndex(parts, idToUrl, opts) {
  * @param {object} opts.file - the VFile carrying file.data.enscribeRegistry
  * @param {object} opts.proc - a configured pipeline (its stringify renders chapter content)
  * @param {string} opts.defaultCss - default.css text, inlined into each page's shell
- * @returns {Map<string, string>} filename ('1-counting-elephants.html', 'index.html', …) → HTML
+ * @returns {Map<string, string>} filename ('counting-elephants.html', 'index.html', …) → HTML
  */
 export function publishBookPages({ numbered, file, proc, defaultCss }) {
   const bookEl = findBook(numbered);

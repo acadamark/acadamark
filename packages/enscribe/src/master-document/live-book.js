@@ -51,7 +51,7 @@ import { composeBookBody, BACK_TO_TOP_HTML, BOOK_LAYOUT } from '../interpreter/a
 const COVER_HASH = '#';
 
 /** Live projection: a chapter's hash route is the shared neutral stem with a leading
- *  `#` (`#1-counting-elephants`) — the per-chapter URL scheme matching P1's slugs, sans
+ *  `#` (`#counting-elephants`) — the per-chapter URL scheme matching P1's slugs, sans
  *  the `.html` P1 appends. This is the live target's own formatting (book-scaffold owns
  *  the stem; the suffix/prefix is each consumer's). */
 export const chapterHash = (p) => `#${p.stem}`;

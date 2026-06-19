@@ -73,8 +73,12 @@ function computeRefText(id, entry, config) {
   const labelTail = parsed ? parsed.tail   : id;
 
   if (entry.number === null) {
-    // Target exists but is unnumbered — author chose -numbered. Use label-tail.
-    return labelTail;
+    // Target exists but is unnumbered. A titled structural target — a section or book-part whose
+    // heading numbering is off (#246/core: numbering is opt-in) — shows its TITLE ("see Methods");
+    // everything else falls back to the label-tail (an author-unnumbered float labelled "energy",
+    // a code block). The title is stored on the registry entry by numbering.js's section/book-part
+    // visitors; floats/code carry none, so their label-tail behaviour is unchanged.
+    return entry.data?.title || labelTail;
   }
 
   const prefixWord =

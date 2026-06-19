@@ -44,8 +44,8 @@ export async function run() {
   assert.strictEqual(parseCount, 1 + childNames.length,
     `the first rebuild parses the master + all ${childNames.length} children once (cold cache)`);
 
-  const ch2Idx = r0.model.stemToIndex.get('2-estimating-browse-pressure');
-  const ch1Idx = r0.model.stemToIndex.get('1-counting-elephants');
+  const ch2Idx = r0.model.stemToIndex.get('estimating-browse-pressure');
+  const ch1Idx = r0.model.stemToIndex.get('counting-elephants');
   const ctx0 = { proc, file: r0.file };
   {
     assert.strictEqual(r0.model.registry.get('fig:transect').number, '1.1',

@@ -91,11 +91,11 @@ export async function run() {
 
   // ── the live VIEW carries C's chrome with HASH hrefs and routes cross-chapter refs ──
   {
-    const ch2Idx = model.stemToIndex.get('2-estimating-browse-pressure');
+    const ch2Idx = model.stemToIndex.get('estimating-browse-pressure');
     const view = renderLiveChapterView(model, ch2Idx, ctx);
     assert.ok(/<nav class="enscribe-toc enscribe-chapter-rail"/.test(view),
       'the live view carries the left chapter rail');
-    assert.ok(view.includes('<a href="#1-counting-elephants"'),
+    assert.ok(view.includes('<a href="#counting-elephants"'),
       'the rail links chapters by HASH route (#stem), not a page URL');
     assert.ok(/class="enscribe-chapter-(prev|next)"/.test(view),
       'the live view carries a prev/next chapter bar');
@@ -113,16 +113,16 @@ export async function run() {
     assert.deepStrictEqual(resolveHash('#about-this-book', model),
       { cover: false, index: model.stemToIndex.get('about-this-book'), anchor: null },
       'a chapter stem hash routes to that chapter, no scroll');
-    assert.deepStrictEqual(resolveHash('#1-counting-elephants', model),
-      { cover: false, index: model.stemToIndex.get('1-counting-elephants'), anchor: null },
+    assert.deepStrictEqual(resolveHash('#counting-elephants', model),
+      { cover: false, index: model.stemToIndex.get('counting-elephants'), anchor: null },
       'the body chapter stem routes to chapter 1');
 
     // fig:transect is OWNED by chapter 1; a #fig:transect hash (from anywhere — e.g. the
     // cross-chapter ref in chapter 2) routes to chapter 1 AND scrolls to the figure.
-    assert.strictEqual(model.idToStem.get('fig:transect'), '1-counting-elephants',
+    assert.strictEqual(model.idToStem.get('fig:transect'), 'counting-elephants',
       'fig:transect is owned by the Counting Elephants chapter');
     assert.deepStrictEqual(resolveHash('#fig:transect', model),
-      { cover: false, index: model.stemToIndex.get('1-counting-elephants'), anchor: 'fig:transect' },
+      { cover: false, index: model.stemToIndex.get('counting-elephants'), anchor: 'fig:transect' },
       'a cross-chapter anchor routes to its OWNING chapter and carries the scroll anchor');
 
     assert.strictEqual(resolveHash('#no-such-anchor', model), null,
@@ -146,7 +146,7 @@ export async function run() {
     assert.ok(/<a class="enscribe-book-home" href="#"/.test(cover) &&
       /enscribe-book-home"[^>]*aria-current="page"/.test(cover),
       'the cover masthead self-links to the cover route, marked aria-current="page"');
-    const chView = renderLiveChapterView(model, model.stemToIndex.get('1-counting-elephants'), ctx);
+    const chView = renderLiveChapterView(model, model.stemToIndex.get('counting-elephants'), ctx);
     assert.ok(/<a class="enscribe-book-home" href="#"/.test(chView),
       'a chapter view carries the return-to-cover masthead → the cover route (#)');
     assert.ok(!/enscribe-book-home"[^>]*aria-current/.test(chView),
