@@ -3,7 +3,7 @@
   <author | The Enscribe Project>
 </meta>
 
-<config toc toc-location=right />
+<config toc toc-location=right toc-depth=2 />
 
 Enscribe Shorthand is the register you write by hand — an ergonomic authoring syntax that keeps the
 source close to what you mean. It is one of enscribe's two registers, and everything you write in it
@@ -36,7 +36,7 @@ accepted as shortcuts — so familiar markup just works.
 
 Each example below is pulled live from the vocabulary source — the same source the
 <a href="shorthand-catalog.html" | Shorthand catalog> is generated from — so it cannot drift from what
-the engine actually accepts. The authored shorthand is on the left, its rendered result on the right.
+the engine actually accepts. Each shows the authored shorthand, then its rendered result.
 
 FEATUREDEXAMPLES
 

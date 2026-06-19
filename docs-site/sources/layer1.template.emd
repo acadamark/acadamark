@@ -3,7 +3,7 @@
   <author | The Enscribe Project>
 </meta>
 
-<config toc toc-location=right />
+<config toc toc-location=right toc-depth=2 />
 
 Layer 1 is enscribe's semantic-HTML substrate — a vocabulary of HTML elements for academic content
 (sections, figures, citations, notes, math, theorems, tables, and more). Because it is plain HTML+CSS,
@@ -22,7 +22,7 @@ Each construct below is shown three ways: the shorthand you write, the Layer 1 m
 and the rendered result. Every example is pulled live from the vocabulary source — the same source the
 <a href="layer1-catalog.html" | Layer 1 catalog> is generated from — so it cannot drift from the engine.
 
-The Layer 1 column shows the canonical markup as the vocabulary stores it; where an element produces a
+The Layer 1 block shows the canonical markup as the vocabulary stores it; where an element produces a
 large subtree — rendered math, say — the markup elides it with `…` so the structure stays legible.
 
 FEATUREDEXAMPLES

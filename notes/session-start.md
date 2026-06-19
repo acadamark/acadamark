@@ -32,7 +32,7 @@ From `raw.githubusercontent.com/enscribejs/enscribe/main/`:
 - **Worktree discipline:** the primary checkout `~/enscribe` stays on `main` — merge desk only, no session runs there. Each parallel task gets its own dedicated worktree (`~/enscribe-wt/<task>`); the session stays in it, commits to its branch, never touches main. **Never tear down a worktree or branch until its session reports done.**
 - **Merge rule:** a *solo* session finishes by merging to main and committing, leaving only the push for Ariel. A *concurrent* session commits to its branch and lets Ariel serialize the merges (avoids a main-ref race).
 - **Commits:** per-issue, `Closes #N` trailers, commit bodies via `-F <file>` (never heredoc).
-- **Slice reports** go to `~/<filename>` (your choice of name).
+- **Report-first (load-bearing):** every slice ends by writing `slice-report-<task>.md` to the worktree as the **first** finish step — before the merge. A slice is not complete until that file exists. A resumed session (including a post-compact resume) rewrites it; never leave a stale in-progress report as the final artifact.
 - **Verify-first (load-bearing):** a prior observation — an issue body, a note, an earlier finding — is a *lead, not a fact*. Re-verify against current code before acting or filing. This has repeatedly caught false premises (issues calling "unbuilt" things that had shipped end-to-end). If a "defect" turns out to be live or intended behavior, stop and report — don't mis-fix.
 - **Audit cadence:** spec-ahead-of-code is healthy by design; the periodic release audit reconciles. The dominant drift class is single-source stragglers — the docs lag a more-complete codebase, rarely the reverse.
 
