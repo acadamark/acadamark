@@ -43,7 +43,8 @@ import {
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
-import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL } from '../core/file-data-keys.js';
+import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL, ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
+import { readConfigBool } from './lib/config-helpers.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
@@ -834,6 +835,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const navFile = { data: {} };
   proc.runSync(masterTree, navFile);
   const navModel = navFile.data[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
+  // #246 S1.5: the left sidebar is a master opt-in (<config sidebar>), default OFF. The top bar is the
+  // website's primary nav; the sidebar is a second surface a larger site asks for. Read off the master's
+  // config (config-discovery populated it during the pass-1 runSync above), like the book's nav config.
+  const showSidebar = readConfigBool(navFile.data[ENSCRIBE_CONFIG], 'sidebar', false);
   const allPages = flattenNavPages(navModel.entries);
   const externalPages = allPages.filter((p) => p.src != null);
   const inlinePages = allPages.filter((p) => p.src == null);
@@ -871,7 +876,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const brand = { title: extractDocumentTitle(source) || '', icon: brandIcon, firstSlug: model.firstSlug };
   root.innerHTML = composeWebsiteShell({
     topBar: buildWebsiteTopBar(brand, navModel.entries),
-    sidebar: buildWebsiteSidebar(navModel.entries),
+    sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
     footer: footerHtml,
   });
   if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');

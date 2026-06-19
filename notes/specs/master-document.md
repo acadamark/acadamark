@@ -104,8 +104,11 @@ Entries sit **flush-left** — indentation is not used for structure, and conten
 parses as a markdown code block (the same constraint `<list>` has). The `<nav-group>` close tag, not
 indentation, bounds the group.
 
-The nav tree feeds **both** navigation surfaces: its top level becomes the top bar, and the tree as a whole
-feeds the automatic sidebar. The first cut is shallow — one level of grouping; deeper nesting is later work.
+The nav tree feeds **both** navigation surfaces: its top level becomes the top bar (a website's primary
+nav), and the tree as a whole feeds the left **sidebar**. The sidebar is an opt-in second surface — **off by
+default** (the top bar suffices for a small site); a master turns it on with `<config sidebar>`, and the
+layout reflows to give the content the freed column when it is off. The first cut is shallow — one level of
+grouping; deeper nesting is later work.
 
 Structuring and rendering reuse existing machinery **at the right layers** — this is **not** parser-level
 list reuse. The **parser** handles the forms directly: a `<nav-group>` (no pipe) is a long-form container

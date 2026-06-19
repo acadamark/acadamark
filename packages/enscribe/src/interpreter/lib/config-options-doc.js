@@ -20,6 +20,7 @@ export const CONFIG_FAMILIES = [
   'Citations & bibliography',
   'Notes',
   'Book navigation',
+  'Website navigation',
   'Display / DSL / strict',
 ];
 
@@ -91,6 +92,10 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns.' },
   { key: 'split-by', family: 'Book navigation', type: 'valued', values: 'chapter | section | none', default: 'chapter', scope: 'book-only',
     description: 'The pagination unit. Only chapter is built; section and none are specified but deferred.' },
+
+  // ── Website navigation (website-only) ────────────────────────────────────────
+  { key: 'sidebar', family: 'Website navigation', type: 'boolean', values: null, default: 'off', scope: 'website-only',
+    description: 'The left navigation sidebar (the full nav tree). The sticky top bar is a website’s primary nav; the sidebar is an opt-in second surface — off by default, and the layout reflows to give the content the freed column.' },
 
   // ── Display / DSL / strict ───────────────────────────────────────────────────
   { key: 'theme', family: 'Display / DSL / strict', type: 'valued', values: 'default | modern | compact', default: 'default', scope: 'all',

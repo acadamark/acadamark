@@ -2,6 +2,8 @@
 <title | Demo Site>
 </meta>
 
+<config sidebar />
+
 <nav>
 <item src="home.emd" | Home>
 <nav-group title="Docs">
