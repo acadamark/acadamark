@@ -11,6 +11,8 @@
 </nav-group>
 <nav-group title="Documentation">
 <item src="sources/rendering-guide.emd" | Rendering guide>
+<item src="sources/shorthand-catalog.emd" | Shorthand catalog>
+<item src="sources/layer1-catalog.emd" | Layer 1 catalog>
 <item src="sources/jats.emd" | JATS export>
 </nav-group>
 </nav>
