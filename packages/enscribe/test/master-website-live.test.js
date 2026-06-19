@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveWebsite, mountLiveShell } from '../src/interpreter/browser.js';
+import { buildOnThisPage } from '../src/interpreter/assets/website-nav-asset.js';
 
 const DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-website');
 const read = (n) => readFileSync(join(DIR, n), 'utf8');
@@ -94,6 +95,24 @@ function makeEditorStub() {
 const tick = (ms = 5) => new Promise((r) => setTimeout(r, ms));
 
 export async function run() {
+  // ── #223/#246: buildOnThisPage excludes headings inside a <frame>/<aside> (demo render boxes) ──
+  // A Documentation catalog's live-render box (`<frame>` → `<figure>`) shows a `<section>` as DEMO content;
+  // it must NOT appear in the page's on-this-page rail. Pure DOM-in unit test.
+  {
+    const dom = new JSDOM('<!DOCTYPE html><html><body><main data-enscribe-content>' +
+      '<section id="s1"><section-title>One</section-title></section>' +
+      '<section id="s2"><section-title>Two</section-title></section>' +
+      '<figure class="frameable-border"><section id="demo"><section-title>Demo Inside Frame</section-title></section></figure>' +
+      '<aside><sub-section id="aside-demo"><sub-section-title>Aside Demo</sub-section-title></sub-section></aside>' +
+      '</main></body></html>');
+    const html = buildOnThisPage(dom.window.document.querySelector('[data-enscribe-content]'));
+    assert.ok(/One/.test(html) && /Two/.test(html), 'real top-level section headings appear in on-this-page');
+    assert.ok(!/Demo Inside Frame/.test(html), 'a <section> inside a <frame> (→<figure>) is excluded from on-this-page');
+    assert.ok(!/Aside Demo/.test(html), 'a heading inside an <aside> is excluded from on-this-page');
+    assert.ok(!/#demo"/.test(html) && !/#aside-demo"/.test(html), 'no demo-content anchors leak into the rail');
+    console.log('PASS: #223/#246 — buildOnThisPage skips frame/aside demo headings (no rail pollution)');
+  }
+
   // ── mount: chrome (brand + dropdown + sidebar + footer) + first-page content + cross-page ref ──
   {
     const { dom, orig } = installDom();
