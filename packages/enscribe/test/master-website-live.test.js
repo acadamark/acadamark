@@ -24,6 +24,11 @@ const FILES = {
   'guide.emd': read('guide.emd'),
   'reference.emd': read('reference.emd'),
   'footer.emd': read('footer.emd'),
+  // #246 per-page numbering: a two-page site (Alpha / Beta), each multi-section with a figure + a
+  // cross-page ref, exercising restart-per-page + cross-page resolution against per-page labels.
+  'numbering-site.emd': read('numbering-site.emd'),
+  'num-alpha.emd': read('num-alpha.emd'),
+  'num-beta.emd': read('num-beta.emd'),
 };
 
 function installDom(url = 'https://example.com/site/') {
@@ -171,6 +176,45 @@ export async function run() {
       assert.ok(root.querySelector('[data-enscribe-content]').innerHTML.includes('Welcome to the site'),
         'content still lands on the first page with the sidebar off');
       console.log('PASS: S1.5 — the left sidebar is OFF by default (a master opts in via <config sidebar>)');
+    } finally {
+      restoreDom(orig);
+    }
+  }
+
+  // ── #246: per-page numbering — each page numbers as a STANDALONE ARTICLE, refs resolve globally ──
+  {
+    const { dom, orig } = installDom();
+    try {
+      const root = await mountLiveWebsite('#root', FILES['numbering-site.emd']);
+      // Each section-number renders twice (section node + its title) — dedupe to the distinct sequence.
+      const sectionNums = (c) => [...new Set([...c.querySelectorAll('.section-number')].map((s) => s.textContent.trim()))];
+      const content = () => root.querySelector('[data-enscribe-content]');
+
+      // Page A (Alpha, the first/default page): sections number article-style — 1, 1.1 (nested), 2 —
+      // NOT chaptered (no "4.1"); the page title carries NO number (it is a title, not a chapter).
+      assert.deepStrictEqual(sectionNums(content()), ['1', '1.1', '2'],
+        'page A sections number per-page article-style (1, 1.1, 2) — no chapter prefix');
+      assert.ok(!content().querySelector('book-part-title .section-number'),
+        'the page title carries NO number (no page-level/chapter number)');
+      assert.ok(/Figure 1\./.test(content().textContent),
+        'page A figure numbers per-page (Figure 1)');
+
+      // Page B (Beta): numbering RESTARTS — first section is 1 (not 3), first figure is Figure 1 (not 2).
+      popTo(dom, '?page=beta');
+      assert.deepStrictEqual(sectionNums(content()), ['1', '2'],
+        'page B sections RESTART at 1 per page (1, 2) — not continued (3, 4) from page A');
+      assert.ok(/Figure 1\./.test(content().textContent),
+        'page B figure RESTARTS per page (Figure 1, not Figure 2)');
+
+      // Cross-page refs resolve GLOBALLY: to ?page=owner#anchor, labelled with the TARGET's per-page number.
+      const refTo = (href) => [...content().querySelectorAll('a')].find((a) => a.getAttribute('href') === href);
+      const secRef = refTo('?page=alpha#sec:a1');
+      const figRef = refTo('?page=alpha#fig:alpha');
+      assert.ok(secRef && /section 1/i.test(secRef.textContent),
+        'a cross-page <ref> to a section resolves to ?page=owner#anchor with the target\'s per-page label ("section 1")');
+      assert.ok(figRef && /figure 1/i.test(figRef.textContent),
+        'a cross-page <ref> to a figure resolves to ?page=owner#anchor with the target\'s per-page label ("figure 1")');
+      console.log('PASS: #246 — per-page article numbering (sections + floats restart per page, no page number); cross-page refs resolve globally with per-page labels');
     } finally {
       restoreDom(orig);
     }

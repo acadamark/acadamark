@@ -1,0 +1,13 @@
+<section #sec:a1 | Alpha One>
+
+The first section on the Alpha page.
+
+<sub-section #sec:a1a | Alpha One Detail>
+
+A nested subsection — its number prefixes from its parent section.
+
+<section #sec:a2 | Alpha Two>
+
+The second section, with a figure.
+
+<figure #fig:alpha | An alpha figure.>
