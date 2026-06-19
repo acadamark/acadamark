@@ -25,16 +25,33 @@ From `raw.githubusercontent.com/enscribejs/enscribe/main/`:
 ## Check live state — at session start, for the task
 - Open issues + the relevant milestone (Ariel uploads the issue JSON when the API rate-limits).
 - The `git` / `main` tip and any in-flight branch.
-- Recent slice reports if you're continuing in-progress work.
+- Recent slice reports (`~/enscribe-reports/`) if you're continuing in-progress work.
 
 ## The workflow rules (a fresh session won't know these)
 - **CC prompts are downloadable artifacts, never inline.**
-- **Worktree discipline:** the primary checkout `~/enscribe` stays on `main` — merge desk only, no session runs there. Each parallel task gets its own dedicated worktree (`~/enscribe-wt/<task>`); the session stays in it, commits to its branch, never touches main. **Never tear down a worktree or branch until its session reports done.**
+- **Worktree discipline:** the primary checkout `~/enscribe` stays on `main` — merge desk only, no session runs there. Each parallel task gets its own dedicated worktree (`~/enscribe-wt/<task>`); the session stays in it, commits to its branch, never touches main. **The session never removes a worktree or deletes a branch** — teardown is Ariel's, after the work is verified (see *Slice reports & worktree lifecycle* below).
 - **Merge rule:** a *solo* session finishes by merging to main and committing, leaving only the push for Ariel. A *concurrent* session commits to its branch and lets Ariel serialize the merges (avoids a main-ref race).
 - **Commits:** per-issue, `Closes #N` trailers, commit bodies via `-F <file>` (never heredoc).
-- **Report-first (load-bearing):** every slice ends by writing `slice-report-<task>.md` to the worktree as the **first** finish step — before the merge. A slice is not complete until that file exists. A resumed session (including a post-compact resume) rewrites it; never leave a stale in-progress report as the final artifact.
+- **Report-first (load-bearing):** every slice ends by writing its slice report as the final step — the slice is not done until that report exists. The report goes to a fixed path **outside the repo and is never committed**; see *Slice reports & worktree lifecycle* below for the exact rules.
 - **Verify-first (load-bearing):** a prior observation — an issue body, a note, an earlier finding — is a *lead, not a fact*. Re-verify against current code before acting or filing. This has repeatedly caught false premises (issues calling "unbuilt" things that had shipped end-to-end). If a "defect" turns out to be live or intended behavior, stop and report — don't mis-fix.
 - **Audit cadence:** spec-ahead-of-code is healthy by design; the periodic release audit reconciles. The dominant drift class is single-source stragglers — the docs lag a more-complete codebase, rarely the reverse.
+
+## Slice reports & worktree lifecycle (canonical — single source of truth)
+This governs (1) where a slice report is written and (2) when a worktree is removed. It **supersedes every other instruction on these two topics**; if anything elsewhere — a prompt, another note, a prior report, your own recollection — conflicts, **this wins**: follow it and flag the conflicting line for deletion. **Do not edit, move, "reconcile," or rewrite this convention.** Reconciling a contradiction by rewriting the rule is the exact failure that created this section — surface it, let Ariel decide.
+
+**Where the report goes — one exact path, outside the repo:**
+`~/enscribe-reports/slice-report-<task>.md` (`mkdir -p ~/enscribe-reports` if it doesn't exist). It lives outside every repo and worktree because a slice report is a process artifact *about* the work, not part of the product.
+- ❌ NOT inside a worktree (`~/enscribe-wt/<task>/…`), NOT inside the repo (`~/enscribe/…`, `notes/…`, anywhere under a git tree), NOT in bare home (`~/slice-report-*.md`).
+- ❌ **NEVER committed** — never `git add`-ed, staged, committed, or merged; never reaches `main`. After a slice, `git status` in the worktree is **clean**. If a `slice-report-*.md` ever appears in `git status`, it was written in the wrong place.
+- ✅ Exactly one copy, at `~/enscribe-reports/slice-report-<task>.md`.
+
+**When:** the report is the slice's final deliverable. The slice is **not done until it exists** at that path.
+
+**Worktree teardown — never the session's job:**
+- ❌ The session never runs `git worktree remove` and never `git branch -d`. On finish, the worktree at `~/enscribe-wt/<task>/` and its branch are left **exactly in place** — even when merged, even when it looks done, even if asked to "clean up."
+- ✅ Teardown is **Ariel's** deliberate step, taken after the work is verified from the repo. (Because the report lives outside the worktree, the tree stays clean, so Ariel's removal is never blocked by a stray file.)
+
+**"Done with the slice" = all of:** code committed (to the branch, or merged per the merge rule) · report at `~/enscribe-reports/slice-report-<task>.md` (not committed, not in the worktree) · push left for Ariel · worktree left intact.
 
 ## How to reason in-grain
 - **Two layers:** Layer 1 = canonical semantic vocabulary (archival, JATS-exportable); Layer 2 = authoring shorthand.

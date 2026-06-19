@@ -43,9 +43,11 @@ absorbed this case natively.
 Reconciliation 2 (specs ⇄ code) keeps it honest — a home listed here that has moved or forked is
 itself a finding. Trust the list; fix the doc when the audit flags it.
 
-## 6 · Report-first finish protocol
-Every slice ends by writing `slice-report-<task>.md` to the worktree as the **first** finish step —
-before the merge. A slice is not complete until that file exists. A resumed session (including a
-post-compact resume) rewrites the report; never leave a stale in-progress report as the final
-artifact. This is the durable fix for report drift: it holds even when a prompt is terse or a
-session compacts mid-slice.
+## 6 · Slice reports & worktree lifecycle
+Report location and worktree teardown are governed by the canonical **Slice reports & worktree
+lifecycle** convention in `session-start.md` — the single source of truth. In short: the slice
+report is written to `~/enscribe-reports/slice-report-<task>.md` (outside the repo, **never
+committed**), the slice is not done until that report exists, and **the session never removes a
+worktree or deletes a branch** — that is Ariel's step, taken after the work is verified. Do not
+restate or fork those rules here; if they seem to conflict with anything, follow `session-start.md`
+and flag the conflict.
