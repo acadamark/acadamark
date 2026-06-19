@@ -1,0 +1,64 @@
+<meta type=article title="Minipage: a sealed frameable (#115)">
+</meta>
+
+<section | Private numbering and inbound references>
+
+A document figure outside any box, on the document figure counter:
+
+<fig #fig:doc src=doc.png | A document figure.>
+
+A sealed minipage holding its own private figure. The figure inside counts
+in the box's PRIVATE figure registry, so it is "Figure 1" even though a
+document figure already exists — the document counter is untouched:
+
+<minipage #mp:numbering +numbered caption="A sealed box with a private figure" |
+The inner figure resolves within the box: <ref @fig:inner>.
+
+<fig #fig:inner src=inner.png | An inner figure, numbered privately.>
+>
+
+The document figure is <ref @fig:doc>. An inbound reference to the box's
+inner figure does not resolve — the body's labels never entered the
+document registry, so it is a normal not-found ref-error: <ref @fig:inner>.
+
+<section | Cross-referencing minipages>
+
+A minipage gets its own outward label in the "Minipage N" series, so it is
+itself cross-referenceable and one minipage's label can be referenced
+alongside another's:
+
+<minipage #mp:a +numbered caption="The first box" | First sealed box.>
+
+<minipage #mp:b +numbered caption="The second box" | Second sealed box.>
+
+The boxes are <ref @mp:a> and <ref @mp:b>.
+
+<section | Box-local footnotes>
+
+A footnote authored inside a minipage is collected at the box's own bottom
+boundary (the LaTeX bottom-of-minipage behavior), not hoisted to the
+document's notes:
+
+<minipage #mp:notes +numbered caption="A box with a footnote" |
+This box has a footnote.<note | The footnote is collected at the box bottom.>
+>
+
+<section | Nested minipages>
+
+A minipage inside a minipage recurses within the deferred phase; each level
+numbers in its own private registry:
+
+<minipage #mp:outer +numbered caption="Outer box" |
+Outer content.
+
+<minipage #mp:inner +numbered caption="Inner box" |
+Inner content with its own private figure: <fig #fig:nested src=nested.png | Nested figure.>
+>
+>
+
+<section | External pulls are forbidden>
+
+A minipage is self-contained: an `@src`/`<data>` external asset pull inside
+the body is rejected with a visible error, never resolved:
+
+<minipage #mp:guard | This box tries to pull an external asset: <fig src="@logo" | A logo.>>

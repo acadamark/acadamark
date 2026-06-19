@@ -103,6 +103,15 @@ export const LANGUAGES = new Map([
   ['table',    'table'],
   ['library',  'library'],
   ['svg',      'svg'],
+  // #115: the minipage host. Its pipe content is a SEALED sub-document —
+  // held opaque (raw source string) at parse time so the main pipeline never
+  // descends into it (recursive-content skips it; the discover/walk-replace
+  // walks skip it via the `!isOpaqueContent` guard). The body is processed in
+  // its own pipeline run (the deferred phase, plugins/minipage-deferred.js),
+  // NOT by a content-dispatch handler keyed off this value — like every other
+  // frameable, the minipage renders through its vocab `handler_module`
+  // (handlers/minipage.js), dispatched by interpret-plugin.js, not by this map.
+  ['minipage', 'minipage'],
 ]);
 
 /**

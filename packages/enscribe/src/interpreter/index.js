@@ -146,6 +146,8 @@ import { buildCitationIndex, enscribeLibraryLoad } from './plugins/library-load.
 import { buildAssetIndex, enscribeAssetResolution } from './plugins/asset-load.js';
 import { enscribeNumbering, fillNumbering, numberSections } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
+import { enscribeMinipageGuard } from './plugins/minipage-guard.js';
+import { projectMinipageBody, walkMinipageNodes, MAX_MINIPAGE_DEPTH, minipageDepthErrorNode } from './lib/minipage.js';
 import { enscribeCiteResolution } from './plugins/cite-resolution.js';
 import { enscribeBibliography } from './plugins/bibliography.js';
 import { enscribeTagHandler, createEnscribeTagHandler, htmlNodeHandler } from './interpret-plugin.js';
@@ -163,9 +165,9 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 // DSLs (mermaid, abc). Distinct concern from @enscribejs/enscribe/core's vocabulary
 // registry imported immediately below.
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
-import { ensureRegistry } from '../core/registry.js';
+import { ensureRegistry, makeReadThroughRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH, ENSCRIBE_REGISTRY } from '../core/file-data-keys.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -634,6 +636,14 @@ export function enscribeInterpreter(options = {}) {
   // wherever it landed; before the semantic plugins, which see a plain list.
   this.use(enscribeListStructuring);
 
+  // 4.9 (#115): minipage no-external guard. A NO-OP on every normal document;
+  //     active only on a minipage SEALED sub-run (the deferred phase sets the
+  //     ENSCRIBE_MINIPAGE_SUBRUN flag on the child VFile). Runs BEFORE the
+  //     citation / asset index passes (5 / 5.7 / 5.8) so a forbidden @src/<data>
+  //     in a sealed body is neutralized to a visible __asset-error before any of
+  //     them would resolve it — reject, not resolve.
+  this.use(enscribeMinipageGuard);
+
   // 5. Citation index (index-build, not a tree transformation): parse <library>
   //    content from <data> nodes (deep-collected wherever they land — at root
   //    in an article, nested in <book-body> in a book), build
@@ -699,6 +709,59 @@ export function enscribeInterpreter(options = {}) {
       // entries exist (registration ran in step 7) and cross-refs (step 9) see
       // the numbers.
       numberSections(tree, file);
+    };
+  });
+
+  // 8.5 (#115): minipage deferred phase — the sealed sub-interpret. The parent
+  //    registry is complete now (step 8 ran numberRegistry + fillNumbering +
+  //    numberSections), so each minipage's held body can be processed. A minipage
+  //    body is opaque (raw source on node.content), so steps 1-8 of THIS run never
+  //    touched it — its floats took no document numbers, its labels never entered
+  //    this registry, its notes never bubbled. Here it is finally processed, each
+  //    body in its OWN pipeline run with its OWN VFile (fresh file.data ⇒ fresh
+  //    registry via ensureRegistry — the seal). The sub-run resolves the body's
+  //    own numbering / notes / refs / cites internally and we splice the resolved
+  //    Layer 1 mdast onto node.minipageResolved for the compile-time handler.
+  //
+  //    Runs BEFORE step 9 so the parent's ref-resolution then walks past each
+  //    minipage as an opaque black box (its body, still the raw string on
+  //    node.content with isOpaqueContent set, is skipped; the resolved body lives
+  //    on the side-channel field the walks don't traverse). A nested minipage in a
+  //    body recurses here within that body's own sub-run (this same pass is in the
+  //    sub-run's pipeline), bounded by ENSCRIBE_MINIPAGE_DEPTH.
+  this.use(function enscribeMinipageDeferred() {
+    return (tree, file) => {
+      const depth = file?.data?.[ENSCRIBE_MINIPAGE_DEPTH] ?? 0;
+      // The parent registry is COMPLETE here (step 8 numbered it). Seed it into
+      // each sealed sub-run read-through (one-way): a body <ref> to a DOCUMENT
+      // label resolves (outbound), but the child's own labels and counters stay
+      // private — they never merge up, so inbound stays forbidden and numbering
+      // stays private. See makeReadThroughRegistry.
+      const parentRegistry = ensureRegistry(file);
+      let proc = null; // built lazily; documents with no minipage build nothing
+      walkMinipageNodes(tree, (node) => {
+        if (depth + 1 > MAX_MINIPAGE_DEPTH) {
+          node.minipageResolved = [minipageDepthErrorNode()];
+          if (typeof file?.message === 'function') {
+            file.message(`minipage nesting exceeds the maximum depth (${MAX_MINIPAGE_DEPTH})`, node.position);
+          }
+          return;
+        }
+        const bodySource = typeof node.content === 'string' ? node.content : '';
+        if (!proc) proc = buildEnscribePipeline(options);
+        // Fresh VFile per body, but seeded with a read-through view of the parent
+        // registry (set BEFORE the sub-run so ensureRegistry reuses it). The
+        // subrun flag turns on the no-external guard; the depth bounds nesting.
+        const childFile = {
+          data: {
+            [ENSCRIBE_REGISTRY]: makeReadThroughRegistry(parentRegistry),
+            [ENSCRIBE_MINIPAGE_SUBRUN]: true,
+            [ENSCRIBE_MINIPAGE_DEPTH]: depth + 1,
+          },
+        };
+        const resolved = proc.runSync(proc.parse(bodySource), childFile);
+        node.minipageResolved = projectMinipageBody(resolved);
+      });
     };
   });
 

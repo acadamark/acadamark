@@ -53,3 +53,13 @@ export const ENSCRIBE_CROSSREF_REGISTRY  = 'enscribeCrossRefRegistry';
 // file.data, not as a <website> hast wrapper, so both the live render and the later
 // static projection consume a plain model rather than re-parsing hast.
 export const ENSCRIBE_NAV_MODEL          = 'enscribeNavModel';
+// #115: minipage sealed sub-interpret. ENSCRIBE_MINIPAGE_SUBRUN is a boolean flag
+// the deferred phase sets on a child VFile so the guard pass (enscribeMinipageGuard)
+// knows it is processing a minipage body — where @src/<data> external pulls are
+// forbidden — and is a no-op on every normal document run (flag absent).
+// ENSCRIBE_MINIPAGE_DEPTH is the nesting depth carried into each sealed sub-run so a
+// minipage-in-a-minipage chain is bounded (each sub-run starts a fresh
+// recursive-content MAX_DEPTH, so nesting needs its own counter — the master's
+// loop-guard role).
+export const ENSCRIBE_MINIPAGE_SUBRUN    = 'enscribeMinipageSubrun';
+export const ENSCRIBE_MINIPAGE_DEPTH     = 'enscribeMinipageDepth';

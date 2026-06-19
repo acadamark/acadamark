@@ -94,15 +94,19 @@ function collectAssetPayload(content) {
  * (#190, mirroring __library-error): an unresolved @id / unsupported format / empty
  * payload shows a visible block naming the reference, never a broken <img src="@…">.
  */
-function makeAssetError(ref, message) {
+export function makeAssetError(ref, message) {
   return { type: 'enscribeTag', tagname: '__asset-error', kwargs: { ref: ref ?? '', message }, content: null };
 }
 
 /**
  * Turn a <fig> node in place into a visible __asset-error (the resolution path,
  * before numbering — so the error is never counted as a figure).
+ *
+ * Exported (#115): the minipage no-external guard reuses this to neutralize a
+ * forbidden <data>/@src node in a sealed body, so the `__asset-error` shape (and
+ * its numbering-safe field clearing) stays defined in one place.
  */
-function assetError(node, ref, message) {
+export function assetError(node, ref, message) {
   Object.assign(node, makeAssetError(ref, message));
   node.id = null;
   node.positional = [];

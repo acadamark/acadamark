@@ -67,6 +67,11 @@ export const FRAMEABLE_LIFTABLE = new Map([
   ['svg',     { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
   ['frame',   { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
   ['aside',   { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],  // #31: aside joins the frameable class
+  // #115: minipage is a frameable, so caption=/title= lift to child tags — but
+  // its body is opaque (a raw source string), so liftFrameableKwargs' opaque
+  // guard (`typeof node.content === 'string'`) leaves them as kwargs, read via
+  // extractFrameableChildren's kwarg fallback, exactly like svg/table/csv.
+  ['minipage', { liftedKwargs: FRAMEABLE_LIFTABLE_KWARGS }],
 ]);
 
 /**

@@ -12,8 +12,10 @@
 import assert from 'node:assert/strict';
 import { LANGUAGES, getContentHandler } from '../src/core/dsl-registry.js';
 
-// The pre-reshape flat map, frozen here as the byte-identity oracle: identifier
-// → handler, in insertion order. LANGUAGES and getContentHandler() must match.
+// The flat map, frozen here as the byte-identity oracle: identifier → handler,
+// in insertion order. LANGUAGES and getContentHandler() must match. The first 18
+// entries are the pre-reshape (#175) map, preserved entry-for-entry; later
+// entries are post-reshape additions (each a deliberate new opaque-content host).
 const EXPECTED = [
   ['$',        'math'],
   ['$$',       'math-display'],
@@ -33,6 +35,9 @@ const EXPECTED = [
   ['table',    'table'],
   ['library',  'library'],
   ['svg',      'svg'],
+  // #115: the minipage host — its sealed body is held opaque (raw source) at
+  // parse time so the main pipeline never descends into it.
+  ['minipage', 'minipage'],
 ];
 
 export function run() {

@@ -1,0 +1,517 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Minipage outbound references (#115)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:intro"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Introduction",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 14,
+                          "offset": 13
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The document has a section and a figure that a minipage body can reference\noutward, while the box's own labels stay sealed inside.",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 110
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 56,
+                          "offset": 240
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 110
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 56,
+                      "offset": 240
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "fig:doc"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "img",
+                      "properties": {
+                        "src": "doc.png",
+                        "alt": "A document figure."
+                      },
+                      "children": []
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "figure-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Figure 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A document figure.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 20,
+                              "offset": 19
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "id": "mp:out",
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "This box references the document figure ",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 1,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 2,
+                              "column": 41,
+                              "offset": 41
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#fig:doc",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "figure 1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " and the introduction\n",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 55,
+                              "offset": 55
+                            },
+                            "end": {
+                              "line": 3,
+                              "column": 1,
+                              "offset": 77
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#sec:intro",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Introduction"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " — both resolve outward (read-through against the document\nregistry). It also references its own private figure ",
+                          "position": {
+                            "start": {
+                              "line": 3,
+                              "column": 17,
+                              "offset": 93
+                            },
+                            "end": {
+                              "line": 4,
+                              "column": 54,
+                              "offset": 205
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "a",
+                          "properties": {
+                            "href": "#fig:local",
+                            "className": [
+                              "ref"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "figure 1"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": ", which\nresolves within the box.",
+                          "position": {
+                            "start": {
+                              "line": 4,
+                              "column": 70,
+                              "offset": 221
+                            },
+                            "end": {
+                              "line": 5,
+                              "column": 25,
+                              "offset": 253
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 2,
+                          "column": 1,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 5,
+                          "column": 25,
+                          "offset": 253
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figure",
+                      "properties": {
+                        "id": "fig:local"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "img",
+                          "properties": {
+                            "src": "local.png",
+                            "alt": "A box-private figure."
+                          },
+                          "children": []
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "figcaption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 1."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            },
+                            {
+                              "type": "text",
+                              "value": "A box-private figure.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 23,
+                                  "offset": 22
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "figcaption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "minipage-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Minipage 1."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        },
+                        {
+                          "type": "text",
+                          "value": "A box that references the document"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The document references the box itself ",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "offset": 678
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 40,
+                          "offset": 717
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#mp:out",
+                        "className": [
+                          "ref"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "minipage 1"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ". But an inbound reference\nto the box's private figure does NOT resolve — the read-through is one-way, so\nthe box's labels never merge up into the document registry: ",
+                      "position": {
+                        "start": {
+                          "line": 20,
+                          "column": 53,
+                          "offset": 730
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 61,
+                          "offset": 896
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "a",
+                      "properties": {
+                        "href": "#fig:local",
+                        "className": [
+                          "ref-error"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "??ref: fig:local??"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ".",
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 77,
+                          "offset": 912
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 78,
+                          "offset": 913
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "offset": 678
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 78,
+                      "offset": 913
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 23,
+      "column": 1,
+      "offset": 914
+    }
+  }
+}
