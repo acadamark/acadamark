@@ -52,12 +52,23 @@ const ROOT_ONLY = new Set([
   'article-body', 'article-front', 'article-back',
 ]);
 
-// A catalog demo box shows an element's STRUCTURE, not a running document — suppress float auto-numbering
-// so a `<fig>` / `<table>` / `<$$>` / theorem demo doesn't pick up a misleading global "Figure 47" /
-// "Table 9" label that accumulates down the page. (The frame wrapper itself is already unnumbered.)
-const SUPPRESS_NUMBERING =
-  '<config number-figures=false number-tables=false number-equations=false ' +
-  'number-theorems=false number-definitions=false number-examples=false number-boxes=false />';
+// A catalog demos element STRUCTURE, not a running document — so the many demo boxes (the `<frame>`
+// wrapper itself, an inner `<fig>`/`<table>` example, an inline figure in the prose) must not accumulate a
+// misleading "Figure 47" / "Table 9" label down the page. Suppressed at SOURCE with a `-numbered` boolean,
+// which works in EVERY render path (a page-scoped `<config>` does NOT — the static article render ignores
+// it for frames, and the live website applies only one page's config). Three places: the frame wrapper
+// (emitted `<frame -numbered>`), float tags inside a frame copy, and float tags in the live prose (never
+// inside a ``` / `code` span — that markup is literal documentation). A tag already carrying an explicit
+// `+numbered` / `numbered=` (a demo OF numbering) is left as-authored.
+const FRAME_FLOAT_TAGS = 'fig|figure|table|frame|svg|mermaid|abc|diagram|aside|theorem|lemma|corollary|proposition|definition|example|csv|tsv';
+const suppressFloats = (src) => String(src).replace(
+  new RegExp(`<(${FRAME_FLOAT_TAGS})\\b([^>|]*)`, 'gi'),
+  (m, tag, rest) => (/[+-]numbered|numbered\s*=/.test(rest) ? m : `<${tag} -numbered${rest}`),
+);
+const suppressOutsideCode = (text) => String(text)
+  .split(/(```[\s\S]*?```|`[^`\n]*`)/g)
+  .map((part, i) => (i % 2 === 1 ? part : suppressFloats(part)))
+  .join('');
 
 // ── source: read every element .md as { name, spec, body } ────────────────────
 function readElements() {
@@ -83,7 +94,7 @@ function exampleEmd(src, notes, { rootOnly = false } = {}) {
   if (rootOnly) {
     lines.push('*Renders as a whole document — shown as source; see the live examples and the demo book.*', '');
   } else {
-    lines.push('<frame>', stripIds(verbatim), '</frame>', '');
+    lines.push('<frame -numbered>', suppressFloats(stripIds(verbatim)), '</frame>', '');
   }
   if (notes) lines.push('*' + oneLine(notes).replace(/\*/g, '') + '*', '');
   return lines;
@@ -169,7 +180,7 @@ function l1ElementEmd({ name, spec, body }, linkTarget) {
   }
   lines.push(...specEmd(name, spec));
 
-  const prose = body.trim() ? prepareBody(body, linkTarget) : '';
+  const prose = body.trim() ? suppressOutsideCode(prepareBody(body, linkTarget)) : '';
   if (prose) lines.push(prose, '');
 
   if (examples.length) {
@@ -215,7 +226,6 @@ export function buildLayer1Catalog() {
 
   const lines = [
     '<meta type=article>', '<title | Layer 1 catalog>', '</meta>', '',
-    SUPPRESS_NUMBERING, '',
     'The comprehensive reference for every canonical Layer 1 element — its structured spec, full ' +
     'documentation, and live examples — generated from the ' +
     '<a href="https://github.com/enscribejs/enscribe/tree/main/packages/layer1-vocabulary/elements" | vocabulary source> ' +
@@ -252,11 +262,10 @@ export function buildShorthandCatalog() {
 
   const lines = [
     '<meta type=article>', '<title | Shorthand catalog>', '</meta>', '',
-    SUPPRESS_NUMBERING, '',
     'Every authoring shorthand — the sigil cipher and each element’s alias / expansion forms — with what ' +
     'it compiles to in Layer 1, generated from the vocabulary source so the shorthand→Layer 1 mapping is ' +
     'inherent and can’t drift. The canonical elements these compile to are documented in the ' +
-    '<a href="?page=layer1-catalog" | Layer 1 catalog>.', '',
+    '<a href="?page=layer-1-catalog" | Layer 1 catalog>.', '',
   ];
 
   // 1) Sigil forms — the tagname↔sigil cipher (sections, math, code).
@@ -271,7 +280,7 @@ export function buildShorthandCatalog() {
     count += 1;
     lines.push(...shorthandEntryEmd({
       form: `${sigil} … ${sigil}`,
-      expandsTo: 'the Layer 1 ' + emdTag(target) + ' (see the <a href="?page=layer1-catalog#l1-' + target + '" | Layer 1 catalog>)',
+      expandsTo: 'the Layer 1 ' + emdTag(target) + ' (see the <a href="?page=layer-1-catalog#l1-' + target + '" | Layer 1 catalog>)',
       notes: `The sigil shorthand for <${target}>.`,
       exampleSrc: SIGIL_EXAMPLE[target], exampleNote: null, anchor: `sigil-${target}`,
       rootOnly: ROOT_ONLY.has(target),
@@ -295,7 +304,7 @@ export function buildShorthandCatalog() {
       const ex = examplesByShorthand.get(exp.shorthand);
       const entry = shorthandEntryEmd({
         form: exp.shorthand,
-        expandsTo: emdTag(exp.expands_to) + ' (the Layer 1 ' + emdTag(name) + ', see the <a href="?page=layer1-catalog#l1-' + name + '" | Layer 1 catalog>)',
+        expandsTo: emdTag(exp.expands_to) + ' (the Layer 1 ' + emdTag(name) + ', see the <a href="?page=layer-1-catalog#l1-' + name + '" | Layer 1 catalog>)',
         notes: exp.notes,
         exampleSrc: ex?.source ?? null, exampleNote: ex?.notes ?? null,
         anchor: `exp-${exp.shorthand}`,
