@@ -22,6 +22,10 @@ dist/
 # #223/#246: the live-folder dogfood output (`docs:build-live` → docs-site/dist-live/) — also
 # machine-built (it copies the ~3 MB engine bundle), reproducible via the script, never tracked.
 dist-live/
+# #223/#246: the generated Documentation catalog .emd (`docs:gen` → gen-catalogs.js, from the vocab
+# source) — build product, regenerated each build; never tracked.
+docs-site/sources/layer1-catalog.emd
+docs-site/sources/shorthand-catalog.emd
 
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo
