@@ -1932,4 +1932,33 @@ export function run() {
     snapshotHast('document-69', hast);
     console.log('PASS: integration doc69 (minipage — sealed frameable: private numbering, inbound ref-error, own-series refs, box-local notes, nesting, no-external guard)');
   }
+
+  // --- doc70: minipage outbound references — the one-way read-through (#115) ---
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-70-minipage-outbound.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // Outbound: a body <ref> to a DOCUMENT figure / section resolves read-through
+    // against the parent registry (which is complete before the sub-run).
+    assert.ok(html.includes('<a href="#fig:doc" class="ref">figure 1</a>'),
+      'doc70: a body <ref @fig:doc> resolves OUTBOUND to the document figure ("figure 1")');
+    assert.ok(html.includes('<a href="#sec:intro" class="ref">Introduction</a>'),
+      'doc70: a body <ref @sec:intro> resolves OUTBOUND to the document section (its title)');
+
+    // Internal still resolves: the box's own figure, in its private registry.
+    assert.ok(html.includes('<a href="#fig:local" class="ref">figure 1</a>'),
+      'doc70: a body <ref @fig:local> still resolves WITHIN the box ("figure 1", private)');
+
+    // The box's own outward label is referenceable from the document.
+    assert.ok(html.includes('<a href="#mp:out" class="ref">minipage 1</a>'),
+      'doc70: the minipage is referenceable from the document ("minipage 1")');
+
+    // The seal still holds: an inbound document <ref> to a box-private label is a
+    // not-found ref-error — the read-through is one-way, child labels never leak up.
+    assert.ok(html.includes('<a href="#fig:local" class="ref-error">??ref: fig:local??</a>'),
+      'doc70: an inbound document <ref @fig:local> is still a ref-error (one-way seal holds)');
+
+    snapshotHast('document-70', hast);
+    console.log('PASS: integration doc70 (minipage outbound — one-way read-through: outbound resolves, inbound still forbidden)');
+  }
 }

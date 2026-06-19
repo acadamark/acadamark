@@ -1,0 +1,22 @@
+<meta type=article title="Minipage outbound references (#115)">
+</meta>
+
+<section #sec:intro | Introduction>
+
+The document has a section and a figure that a minipage body can reference
+outward, while the box's own labels stay sealed inside.
+
+<fig #fig:doc src=doc.png | A document figure.>
+
+<minipage #mp:out +numbered caption="A box that references the document" |
+This box references the document figure <ref @fig:doc> and the introduction
+<ref @sec:intro> — both resolve outward (read-through against the document
+registry). It also references its own private figure <ref @fig:local>, which
+resolves within the box.
+
+<fig #fig:local src=local.png | A box-private figure.>
+>
+
+The document references the box itself <ref @mp:out>. But an inbound reference
+to the box's private figure does NOT resolve — the read-through is one-way, so
+the box's labels never merge up into the document registry: <ref @fig:local>.

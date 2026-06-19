@@ -165,9 +165,9 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 // DSLs (mermaid, abc). Distinct concern from @enscribejs/enscribe/core's vocabulary
 // registry imported immediately below.
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
-import { ensureRegistry } from '../core/registry.js';
+import { ensureRegistry, makeReadThroughRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH, ENSCRIBE_REGISTRY } from '../core/file-data-keys.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -732,6 +732,12 @@ export function enscribeInterpreter(options = {}) {
   this.use(function enscribeMinipageDeferred() {
     return (tree, file) => {
       const depth = file?.data?.[ENSCRIBE_MINIPAGE_DEPTH] ?? 0;
+      // The parent registry is COMPLETE here (step 8 numbered it). Seed it into
+      // each sealed sub-run read-through (one-way): a body <ref> to a DOCUMENT
+      // label resolves (outbound), but the child's own labels and counters stay
+      // private — they never merge up, so inbound stays forbidden and numbering
+      // stays private. See makeReadThroughRegistry.
+      const parentRegistry = ensureRegistry(file);
       let proc = null; // built lazily; documents with no minipage build nothing
       walkMinipageNodes(tree, (node) => {
         if (depth + 1 > MAX_MINIPAGE_DEPTH) {
@@ -743,10 +749,12 @@ export function enscribeInterpreter(options = {}) {
         }
         const bodySource = typeof node.content === 'string' ? node.content : '';
         if (!proc) proc = buildEnscribePipeline(options);
-        // Fresh VFile per body ⇒ fresh registry: the seal. The subrun flag turns
-        // on the no-external guard; the depth bounds nested minipages.
+        // Fresh VFile per body, but seeded with a read-through view of the parent
+        // registry (set BEFORE the sub-run so ensureRegistry reuses it). The
+        // subrun flag turns on the no-external guard; the depth bounds nesting.
         const childFile = {
           data: {
+            [ENSCRIBE_REGISTRY]: makeReadThroughRegistry(parentRegistry),
             [ENSCRIBE_MINIPAGE_SUBRUN]: true,
             [ENSCRIBE_MINIPAGE_DEPTH]: depth + 1,
           },

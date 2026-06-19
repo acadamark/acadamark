@@ -146,6 +146,39 @@ export function createRegistry() {
 }
 
 /**
+ * Build a ONE-WAY read-through registry over a parent registry (#115, minipage
+ * outbound refs). It wraps a FRESH child registry: every WRITE (assign / number /
+ * reset) and every enumeration (entries / lookup) is child-local, so the child's
+ * labels and counters never touch the parent — the seal (private numbering,
+ * inbound-forbidden) is preserved. Only `findByLabel` reads through: the child's
+ * own labels shadow, then the parent is consulted on a miss, so a body `<ref>` to
+ * a DOCUMENT label resolves (outbound) while the parent is never mutated. The
+ * parent may itself be a read-through registry (nested minipages), so the
+ * fall-through chains up through every enclosing scope.
+ *
+ * Why a wrapper and not a copy: createRegistry's label index is a private
+ * closure with no enumerate/seed API, so the parent's labels cannot be copied in;
+ * delegating findByLabel to the live parent object is the only way to read them
+ * without ever writing to it (registry.js findByLabel is the single method
+ * ref-resolution calls).
+ *
+ * @param {object} parent - the parent registry (its findByLabel is read on miss)
+ * @returns {object} a registry with the same method surface, child-private writes
+ */
+export function makeReadThroughRegistry(parent) {
+  const child = createRegistry();
+  return {
+    assign: (type, providedId, opts) => child.assign(type, providedId, opts),
+    lookup: (type, id) => child.lookup(type, id),
+    entries: (type) => child.entries(type),
+    numberRegistry: () => child.numberRegistry(),
+    reset: () => child.reset(),
+    // Child labels shadow; the parent is the read-through fallback (never written).
+    findByLabel: (id) => child.findByLabel(id) ?? parent.findByLabel(id),
+  };
+}
+
+/**
  * Return the shared registry attached to `file.data.enscribeRegistry`,
  * creating it on first call. If `file` is null/undefined or has no `.data`
  * property, returns a fresh transient registry (not attached anywhere) so
