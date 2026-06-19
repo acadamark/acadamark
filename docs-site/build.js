@@ -20,7 +20,7 @@ import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
 import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: this script's escaper is 4-entity (& < > "), the shared attr-grade escaper
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
-import { buildGallery, buildFeaturedExamples } from './gen-gallery.js';
+import { buildGallery } from './gen-gallery.js';
 import { buildConfigGrid } from './gen-reference.js';
 // #223/#246: the Documentation catalogs are now generated `.emd` (gen-catalogs.js, run by `docs:gen`)
 // rendered like any other page — build.js no longer special-cases them (the catalog builders moved out).
@@ -105,10 +105,15 @@ const PAGES = [
   { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
   { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page' },
   { slug: 'gallery',         source: null,                  title: 'Gallery — enscribe',             nav: 'Gallery',         kind: 'gallery' },
-  // #223 slice 3: the Vocabulary register intros — authored .emd with a generated featured-examples
-  // fragment injected (examples pulled live from the vocab source, the curated FEATURED_* lists).
-  { slug: 'enscribe-shorthand', source: 'enscribe-shorthand.emd', title: 'Enscribe Shorthand — enscribe', nav: 'Enscribe Shorthand', kind: 'featured-intro', featuredSet: 'shorthand' },
-  { slug: 'layer1',          source: 'layer1.emd',          title: 'Layer 1 — enscribe',             nav: 'Layer 1',         kind: 'featured-intro', featuredSet: 'layer1' },
+  // #223/#246/#241: the Vocabulary register intros — authored `.template.emd` PROSE with the generated
+  // featured-examples block injected at the FEATUREDEXAMPLES marker by `docs:gen` (examples pulled live from
+  // the vocab source via the curated FEATURED_* lists, the SAME <code>/<frame> shape the catalogs use). The
+  // served `.emd` is generated build product like the catalogs, so `source` is the generated file build.js
+  // reads; `sourceUrl` points "view source" at the committed `.template.emd` (the generated `.emd` is
+  // gitignored — not on GitHub). Plain `page` now: rendered through the type like any other page, so the
+  // live website type shows the examples too (no build-time HTML injection for the type render to skip).
+  { slug: 'enscribe-shorthand', source: 'enscribe-shorthand.emd', sourceUrl: `${GITHUB_BLOB_BASE}/enscribe-shorthand.template.emd`, title: 'Enscribe Shorthand — enscribe', nav: 'Enscribe Shorthand', kind: 'page' },
+  { slug: 'layer1',          source: 'layer1.emd', sourceUrl: `${GITHUB_BLOB_BASE}/layer1.template.emd`, title: 'Layer 1 — enscribe', nav: 'Layer 1', kind: 'page' },
   // #223/#246: the generated Documentation catalogs — ordinary `.emd` pages now (gen-catalogs.js writes
   // sources/{layer1,shorthand}-catalog.emd from the vocab source; rendered through the type, static + live).
   { slug: 'layer1-catalog',  source: 'layer1-catalog.emd',  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'page' },
@@ -386,7 +391,9 @@ function main() {
   // byte-for-byte what it was before this slice.
   // The Rendering guide has a `.emd` source but its <config> grid is injected at BUILD time
   // (#223 slice 2), so a client-side live render would show the bare marker — exclude it from live.
-  const livePages = PAGES.filter((p) => p.source && p.kind !== 'rendering-guide' && p.kind !== 'featured-intro');
+  // (The Vocabulary intros were likewise excluded until #241 moved their featured examples into the
+  // generated `.emd` via docs:gen — they now render live like the catalogs, so they are NOT excluded.)
+  const livePages = PAGES.filter((p) => p.source && p.kind !== 'rendering-guide');
   const liveSlugs = new Set(bundlePresent ? livePages.map((p) => p.slug) : []);
 
   // Demo papers → self-contained standalone pages under dist/demo/. Render first
@@ -439,20 +446,6 @@ function main() {
       const rendered = renderAcm(source).replace(/<p[^>]*>\s*CONFIGOPTIONSGRID\s*<\/p>/, () => grid.html);
       body = buildPageBody(page, rendered, liveLinksHtml(page.slug, liveSlugs));
       console.log(`[docs:build]   Rendering guide: ${grid.count} <config> options in the grid`);
-    } else if (page.kind === 'featured-intro') {
-      // #223 slice 3: an authored register intro with a GENERATED featured-examples fragment
-      // injected at its marker. Examples are pulled live from the vocab source (the curated,
-      // guarded FEATURED_* lists), so they single-source with the catalogs and cannot drift.
-      // Build-time only (excluded from the live site) — and its math/theorem examples emit
-      // KaTeX/font asset tags, which must ride into the page <head> via headExtra.
-      const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
-      const featured = buildFeaturedExamples({ set: page.featuredSet, render: (src) => renderAcm(src) });
-      // Function replacement (not a string): the generated fragment contains escaped example
-      // sources like `$&gt;`, and `$&` in a string replacement means "the matched substring".
-      const rendered = renderAcm(source).replace(/<p[^>]*>\s*FEATUREDEXAMPLES\s*<\/p>/, () => featured.html);
-      body = buildPageBody(page, rendered, liveLinksHtml(page.slug, liveSlugs));
-      headExtra = featured.headExtra;
-      console.log(`[docs:build]   ${page.nav}: ${featured.count} featured examples`);
     } else {
       const source = readFileSync(join(SOURCES_DIR, page.source), 'utf8');
       body = buildPageBody(page, renderAcm(source, page.renderOptions ?? {}), liveLinksHtml(page.slug, liveSlugs));

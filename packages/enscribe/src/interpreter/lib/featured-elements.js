@@ -5,9 +5,11 @@
 // introductions to each register: the idea plus a few live examples, linking
 // INTO the comprehensive Documentation catalogs for the full set (IA principle 2,
 // notes/docs-site-ia-design.md:44-47). The intro examples are not hand-copied —
-// they are pulled from the same vocab source the catalogs use (the docs generator
-// looks each tagname up in `@enscribejs/layer1-vocabulary`'s VOCABULARY and renders
-// its `shorthand_examples[0]` live), so they cannot drift from the catalog.
+// they are pulled from the same vocab source the catalogs use (`docs:gen` emits each
+// tagname's `shorthand_examples[0]` as `.emd` — the SAME `<code>`/`<frame>` shape the
+// catalogs use, via gen-reference.js's `buildFeaturedIntro` — injected into the intro
+// template, so BOTH the static build and the live website type render it), so they
+// cannot drift from the catalog.
 //
 // "A flagged subset" (IA principle 2) is realised as THESE curated tagname lists,
 // guarded in lockstep with the vocab — there is no per-example `featured:` flag in
@@ -19,8 +21,8 @@
 //   • CONTEXT-FREE — no `requires-context` element (<cite> needs a bibliography and
 //     <book-part> shorthands need a book; both render empty/misleading in isolation).
 //   • Carries a usable example — `shorthand_examples[0].source` must exist, and for
-//     the Layer 1 list its `.layer1_html` expansion too (the Layer 1 intro DISPLAYS
-//     the canonical expansion beside the live render — the "shorthand → Layer 1" form).
+//     the Layer 1 list its `.layer1_html` expansion too (the Layer 1 intro DISPLAYS the
+//     canonical expansion in a three-part shorthand → Layer 1 → rendered form).
 //   • Beginner-legible and representative — a section, a figure, a note, math, etc.
 //
 // The lists live in the enscribe package (not docs-site, which has no test runner)
@@ -28,7 +30,7 @@
 
 /**
  * Featured constructs for the **Enscribe Shorthand** intro — the by-hand authoring
- * register. Shown as authored shorthand source beside its live render.
+ * register. Shown as authored shorthand source (`<code>`) then its live render (`<frame>`).
  */
 export const FEATURED_SHORTHAND = [
   'section',

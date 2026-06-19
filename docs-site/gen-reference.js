@@ -28,6 +28,10 @@ import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-h
 import {
   CONFIG_OPTIONS_DOC, CONFIG_WILDCARD_DOC, CONFIG_FAMILIES,
 } from '../packages/enscribe/src/interpreter/lib/config-options-doc.js';
+// #223 slice 3 / #241: the curated featured lists for the Vocabulary intros live beside the
+// <config> doc source in the enscribe package (docs-site has no test runner, so the #241 guard
+// runs in that package's suite). Same relative cross-package path the catalog data sources use.
+import { FEATURED_SHORTHAND, FEATURED_LAYER1 } from '../packages/enscribe/src/interpreter/lib/featured-elements.js';
 
 const ELEMENTS_DIR = join(
   dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'layer1-vocabulary', 'elements',
@@ -324,6 +328,54 @@ export function buildShorthandCatalog() {
     for (const e of expansionEntries) lines.push(...e);
   }
   return { emd: lines.join('\n') + '\n', stats: { shorthands: count } };
+}
+
+// ── Featured-examples for the Vocabulary intros (#223 slice 3 / #241) ─────────────────────────────────
+// The two Vocabulary intros are LIGHT curated tastes: a few constructs, each pulled LIVE from the vocab
+// source (the guarded FEATURED_* lists in the enscribe package), so the intro examples single-source with
+// the catalogs and cannot drift. Emitted as `.emd` — the SAME <code>/<frame> shape the catalogs use (via
+// exampleEmd) — and injected at the FEATUREDEXAMPLES marker by docs:gen, so BOTH the static build and the
+// live website type render them (unlike the former build-time HTML injection, which the type render skipped
+// — leaving the literal marker on the live dogfood).
+//
+//   • shorthand set → two-part: the authored shorthand <code> + its live <frame>.
+//   • layer1 set    → three-part: shorthand <code> → its canonical layer1_html <code> (the "expands to
+//                     Layer 1" form, elided for large subtrees) → the live <frame>. Off layer1_html.
+
+// One three-part Layer 1 example: shorthand source, its canonical Layer 1 markup, then the live render.
+function featuredLayer1Example(ex) {
+  const shorthand = String(ex.source).replace(/\r\n/g, '\n').replace(/\n+$/, '');
+  const layer1 = String(ex.layer1_html ?? '').replace(/\r\n/g, '\n').replace(/\n+$/, '');
+  return [
+    '**Shorthand**', '', '<code>', shorthand, '</code>', '',
+    '**Layer 1**', '', '<code>', layer1, '</code>', '',
+    '**Rendered**', '', '<frame -numbered>', suppressFloats(stripIds(shorthand)), '</frame>', '',
+  ];
+}
+
+/**
+ * Build the featured-examples `.emd` block for a Vocabulary intro page (injected at the
+ * FEATUREDEXAMPLES marker by docs:gen). Examples come LIVE from the vocab source via the guarded
+ * FEATURED_* lists, so they single-source with the catalogs.
+ * @param {'shorthand'|'layer1'} set
+ * @returns {string} the `.emd` example blocks (no trailing newline)
+ */
+export function buildFeaturedIntro(set) {
+  const list = set === 'layer1' ? FEATURED_LAYER1 : FEATURED_SHORTHAND;
+  const byName = new Map(readElements().map((e) => [e.name, e]));
+  const lines = [];
+  for (const tag of list) {
+    const ex = byName.get(tag)?.spec?.shorthand_examples?.[0];
+    if (!ex || !ex.source) {
+      // The #241 guard prevents this; a loud marker keeps a build from silently dropping a cell.
+      lines.push(`<sub-section | ${emdTag(tag)}>`, '', `*⚠ no example for ${emdTag(tag)}*`, '');
+      continue;
+    }
+    lines.push(`<sub-section #featured-${tag} | ${emdTag(tag)}>`, '');
+    if (set === 'layer1') lines.push(...featuredLayer1Example(ex));
+    else lines.push(...exampleEmd(ex.source, null)); // two-part: <code> + <frame -numbered>
+  }
+  return lines.join('\n');
 }
 
 // ── The <config> option grid (#239) — stays HTML (injected into the Rendering-guide page) ────────────

@@ -35,11 +35,6 @@
 
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { NON_VOCAB_CONSTRUCTS } from './gallery-non-vocab.js';
-// #223 slice 3: the curated featured lists for the Vocabulary intros live beside the
-// <config> doc source in the enscribe package (docs-site has no test runner, so the
-// guard runs in that package's suite). Imported via the same relative cross-package
-// path gen-reference.js uses for its data sources.
-import { FEATURED_SHORTHAND, FEATURED_LAYER1 } from '../packages/enscribe/src/interpreter/lib/featured-elements.js';
 import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: 4-entity (& < > ") — the shared attr-grade escaper
 
 // Category display order + human labels. The keys are the `category` field
@@ -285,83 +280,4 @@ export function buildGallery({ render }) {
     '    </footer>';
 
   return { body, headExtra: [...assetSet].join('\n    ') };
-}
-
-// ── Featured-examples fragment for the Vocabulary intros (#223 slice 3) ────────
-//
-// A LIGHT, curated subset (the guarded FEATURED_* lists) rendered the same way the
-// gallery renders elements — each tagname looked up in VOCABULARY, its
-// `shorthand_examples[0]` rendered LIVE through the same pipeline — so the intro
-// examples single-source with the catalogs and cannot drift (IA principle 2).
-//
-// Two cell shapes:
-//   • shorthand set → the authored shorthand source beside its live render.
-//   • layer1 set    → the shorthand source → its canonical `layer1_html` expansion
-//                     → one live render (the "shorthand expands to Layer 1" form;
-//                     the layer1_html is the vocab's stored canonical markup, shown
-//                     as static illustrative text — it is schematic and not itself
-//                     re-rendered, so the live render is driven by the shorthand).
-
-// Render one shorthand source to a deduped HTML fragment (assets peeled into assetSet).
-// Always-renders: a pipeline throw becomes an inline error marker, never a blank cell.
-function liveRender(src, render, assetSet) {
-  try {
-    const { assets, content } = splitAssets(render(src));
-    for (const a of assets) assetSet.add(a);
-    return content || '<span class="featured-empty">(no output)</span>';
-  } catch (err) {
-    return `<div class="featured-render-error">render error: ${escapeHtml(err.message)}</div>`;
-  }
-}
-
-const featuredStep = (label, inner) =>
-  `        <div class="featured-step">\n` +
-  `          <span class="featured-label">${escapeHtml(label)}</span>\n` +
-  `          ${inner}\n` +
-  '        </div>';
-
-const featuredArrow = '        <div class="featured-arrow" aria-hidden="true">→</div>';
-
-function featuredCell(tag, spec, set, render, assetSet) {
-  const ex = Array.isArray(spec.shorthand_examples) ? spec.shorthand_examples[0] : null;
-  if (!ex || !ex.source) {
-    // The guard prevents this; a loud marker keeps a build from silently dropping a cell.
-    return `    <section class="featured-example">\n      <div class="featured-gap">⚠ no example for <code>&lt;${escapeHtml(tag)}&gt;</code></div>\n    </section>`;
-  }
-  const rendered = liveRender(ex.source, render, assetSet);
-  const head = `      <h3><code>&lt;${escapeHtml(tag)}&gt;</code></h3>`;
-  const id = `featured-${escapeHtml(tag)}`;
-
-  if (set === 'layer1') {
-    const steps = [
-      featuredStep('you write (shorthand)', `<pre class="featured-source"><code>${escapeHtml(ex.source)}</code></pre>`),
-      featuredArrow,
-      featuredStep('Layer 1', `<pre class="featured-source featured-source--layer1"><code>${escapeHtml(ex.layer1_html ?? '')}</code></pre>`),
-      featuredArrow,
-      featuredStep('rendered', `<div class="featured-render">${rendered}</div>`),
-    ].join('\n');
-    return `    <section class="featured-example featured-example--expansion" id="${id}">\n${head}\n      <div class="featured-cell">\n${steps}\n      </div>\n    </section>`;
-  }
-
-  const steps = [
-    featuredStep('you write', `<pre class="featured-source"><code>${escapeHtml(ex.source)}</code></pre>`),
-    featuredStep('rendered', `<div class="featured-render">${rendered}</div>`),
-  ].join('\n');
-  return `    <section class="featured-example" id="${id}">\n${head}\n      <div class="featured-cell">\n${steps}\n      </div>\n    </section>`;
-}
-
-/**
- * Build the featured-examples fragment for a Vocabulary intro page.
- *
- * @param {{ set: 'shorthand' | 'layer1', render: (src: string) => string }} opts
- * @returns {{ html: string, headExtra: string, count: number }} — `headExtra` carries
- *   the deduped asset tags (KaTeX/fonts) the math/theorem examples emit; REQUIRED in
- *   the page <head> or those renders break.
- */
-export function buildFeaturedExamples({ set, render }) {
-  const list = set === 'layer1' ? FEATURED_LAYER1 : FEATURED_SHORTHAND;
-  const assetSet = new Set();
-  const cells = list.map((tag) => featuredCell(tag, VOCABULARY[tag] ?? {}, set, render, assetSet));
-  const html = `<div class="featured-examples">\n${cells.join('\n')}\n</div>`;
-  return { html, headExtra: [...assetSet].join('\n    '), count: list.length };
 }

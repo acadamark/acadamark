@@ -25,7 +25,7 @@ function checkList(name, list, { requireLayer1Html }) {
       canonicalName(spec), tag,
       `${name}: featured tag '${tag}' is an alias of '${canonicalName(spec)}' — feature the canonical tagname.`,
     );
-    // (3) Carries a usable shorthand example (the intro renders shorthand_examples[0].source live).
+    // (3) Carries a usable shorthand example (docs:gen emits shorthand_examples[0].source as the intro's .emd).
     const ex = Array.isArray(spec.shorthand_examples) ? spec.shorthand_examples[0] : undefined;
     assert.ok(
       ex && typeof ex.source === 'string' && ex.source.trim(),
