@@ -44,7 +44,7 @@ export function run() {
     !docByKey.has(CONFIG_WILDCARD_DOC.pattern),
     'the ref-prefix-* wildcard must be documented as a pattern, not a fixed CONFIG_OPTIONS_DOC key.',
   );
-  // The wildcard's family must be a real family — buildConfigGrid only emits the wildcard row when
+  // The wildcard's family must be a real family — buildConfigOptionsEmd only emits the wildcard row when
   // its family matches a CONFIG_FAMILIES entry, so an unknown family drops it silently from the grid.
   assert.ok(
     CONFIG_FAMILIES.includes(CONFIG_WILDCARD_DOC.family),

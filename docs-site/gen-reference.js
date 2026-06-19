@@ -14,15 +14,15 @@
 //     in a page box, so they show source + a static note (the ROOT_ONLY allowlist).
 //
 // build.js renders these `.emd` like any other page; the live website type renders them at mount — one
-// source, both targets. `buildConfigGrid` (the #239 `<config>` grid) stays HTML: it is injected into the
-// Rendering-guide page, not a catalog.
+// source, both targets. `buildConfigOptionsEmd` (the #239 `<config>` grid) emits `.emd` the same way and is
+// injected into the Rendering-guide page at its marker by `docs:gen` — so the grid, too, renders through the
+// type (the former build-time HTML injection was skipped by the type render, leaking the literal marker).
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { SIGIL_TO_TAGNAME } from '@enscribejs/enscribe/core/tagname-sigil-map';
-import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: 4-entity (& < > ") — the shared attr-grade escaper
 // The <config> option doc source (#239) lives beside CONFIG_KWARGS in the enscribe package; imported via
 // a relative path (pure data, no transitive imports; a guard test keeps it in lockstep with CONFIG_KWARGS).
 import {
@@ -378,51 +378,48 @@ export function buildFeaturedIntro(set) {
   return lines.join('\n');
 }
 
-// ── The <config> option grid (#239) — stays HTML (injected into the Rendering-guide page) ────────────
+// ── The <config> options grid — generated `.emd` (#239 / #246) ────────────────────────────────────────
+// The Rendering-guide's <config> option grid, emitted as `.emd` (a `<sub-section>` + markdown pipe table per
+// family) from the single source CONFIG_OPTIONS_DOC (+ the wildcard pattern), so it can't drift from the
+// engine's option set. Injected at the CONFIGOPTIONSGRID marker by docs:gen, so BOTH the static build and the
+// live website type render it (the former build-time HTML injection was skipped by the type render). Family
+// headings are real content sections — they belong in the page ToC, so there is no demo-section leak.
 const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-function optionCells(opt) {
+// A FREE-TEXT pipe cell: entity-escape angle brackets FIRST so a bare `<tag>` mention in the prose (six of
+// the descriptions name elements: <aside>, <ref>, <book-part>, <section>, <details>, <table …>) renders as
+// literal text instead of being parsed as a live element and SILENTLY consumed by the type's tag-finder;
+// then cell() for the pipe/whitespace pipe-table escaping. (The option-name column stays in backticks, which
+// already protects its `<…>` — so the wildcard `ref-prefix-<type>` survives without this.)
+const textCell = (s) => cell(String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+
+// One option as a pipe-table row: `key` (reserved?) | what it does | type / values | default | scope.
+function configRow(opt) {
   const name = opt.key ?? opt.pattern;
-  const reserved = opt.reserved
-    ? ' <span class="cfg-reserved">reserved — no consumer yet</span>'
-    : '';
-  const typeValues = opt.type === 'boolean'
-    ? 'boolean'
-    : `valued${opt.values ? ` · ${escapeHtml(opt.values)}` : ''}`;
-  const scope = opt.scope === 'book-only'
-    ? '<span class="cfg-scope-book">book-only</span>'
-    : 'all';
-  return (
-    `      <tr id="cfg-${escapeHtml(slug(name))}">\n` +
-    `        <td><code>${escapeHtml(name)}</code>${reserved}</td>\n` +
-    `        <td>${escapeHtml(opt.description ?? '')}</td>\n` +
-    `        <td>${typeValues}</td>\n` +
-    `        <td>${opt.default != null ? escapeHtml(opt.default) : '—'}</td>\n` +
-    `        <td>${scope}</td>\n` +
-    '      </tr>'
-  );
+  const reserved = opt.reserved ? ' *(reserved)*' : '';
+  const typeValues = opt.type === 'boolean' ? 'boolean' : 'valued' + (opt.values ? ' · ' + opt.values : '');
+  const dflt = opt.default != null ? textCell(opt.default) : '—';
+  return `| \`${cell(name)}\`${reserved} | ${textCell(opt.description ?? '')} | ${textCell(typeValues)} | ${dflt} | ${cell(opt.scope ?? 'all')} |`;
 }
 
-/** Build the <config> option grid HTML (grouped by family). @returns {{ html: string, count: number }} */
-export function buildConfigGrid() {
+/**
+ * Build the <config> options grid as `.emd` (a `<sub-section>` + pipe table per family), generated from the
+ * single source CONFIG_OPTIONS_DOC (+ the wildcard pattern) — injected at the CONFIGOPTIONSGRID marker by
+ * docs:gen. @returns {{ emd: string, count: number }}
+ */
+export function buildConfigOptionsEmd() {
   const byFamily = new Map(CONFIG_FAMILIES.map((f) => [f, []]));
   for (const e of CONFIG_OPTIONS_DOC) byFamily.get(e.family)?.push(e);
 
-  const sections = [];
+  const lines = [];
   let count = 0;
   for (const family of CONFIG_FAMILIES) {
     const opts = byFamily.get(family) ?? [];
-    const rows = opts.map(optionCells);
+    const rows = opts.map(configRow);
     count += opts.length;
-    if (CONFIG_WILDCARD_DOC.family === family) { rows.push(optionCells(CONFIG_WILDCARD_DOC)); count += 1; }
-    sections.push(
-      `  <section class="cfg-family" id="cfg-fam-${slug(family)}">\n` +
-      `    <h3>${escapeHtml(family)}</h3>\n` +
-      '    <table class="cfg-grid">\n' +
-      '      <thead><tr><th>option</th><th>what it does</th><th>type / values</th><th>default</th><th>scope</th></tr></thead>\n' +
-      `      <tbody>\n${rows.join('\n')}\n      </tbody>\n` +
-      '    </table>\n  </section>',
-    );
+    if (CONFIG_WILDCARD_DOC.family === family) { rows.push(configRow(CONFIG_WILDCARD_DOC)); count += 1; }
+    lines.push(`<sub-section #cfg-fam-${slug(family)} | ${family}>`, '');
+    lines.push('| option | what it does | type / values | default | scope |', '|---|---|---|---|---|', ...rows, '');
   }
-  return { html: `<div class="config-options-grid">\n${sections.join('\n')}\n</div>`, count };
+  return { emd: lines.join('\n'), count };
 }

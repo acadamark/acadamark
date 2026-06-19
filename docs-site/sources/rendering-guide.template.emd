@@ -73,6 +73,7 @@ source while still hosting statically.
 Every knob below is set with a `<config>` block — `<config number-sections toc-location=right>`. The grid is
 generated from the engine's `<config>` allowlist and its documentation source, grouped by family. Boolean
 options take no value (a bare `<config toc>` means `toc=true`); valued options list their accepted values.
-**book-only** options apply only to a `<meta type=book>` document.
+**book-only** options apply only to a `<meta type=book>` document, and **website-only** only to a
+`<meta type=website>`.
 
 CONFIGOPTIONSGRID
