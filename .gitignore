@@ -30,6 +30,9 @@ docs-site/sources/shorthand-catalog.emd
 # `.template.emd` and writes these served files; build product, regenerated each build; never tracked.
 docs-site/sources/enscribe-shorthand.emd
 docs-site/sources/layer1.emd
+# #246: the generated Rendering guide .emd — `docs:gen` injects the <config> options grid into the authored
+# `.template.emd`; build product, regenerated each build; never tracked.
+docs-site/sources/rendering-guide.emd
 
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo
