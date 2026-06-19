@@ -45,6 +45,7 @@ import { diagramHandler } from './handlers/diagram.js';
 import { svgHandler } from './handlers/svg.js';
 import { frameHandler } from './handlers/frame.js';
 import { asideHandler } from './handlers/aside.js';
+import { minipageHandler } from './handlers/minipage.js';
 import { theoremFamilyHandler } from './handlers/theorem.js';
 import {
   noteMarkerHandler,
@@ -107,6 +108,7 @@ const HANDLER_REGISTRY = new Map([
   ['./handlers/svg.js', svgHandler],
   ['./handlers/frame.js', frameHandler],
   ['./handlers/aside.js', asideHandler],
+  ['./handlers/minipage.js', minipageHandler],
   ['./handlers/theorem.js', theoremFamilyHandler],
 ]);
 

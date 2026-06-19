@@ -83,9 +83,11 @@ function check(label, cond) {
 // - 2026-06-18: #246 S1 — `nav.md` / `item.md` / `nav-group.md` added (the website
 //   navigation vocabulary: a <nav> of <item> pages and <nav-group> groups, consumed by
 //   enscribeWebsiteStructuring into a nav model). Net: 104 → 107 primary.
+// - 2026-06-19: #115 — `minipage.md` added (a sealed frameable: a box whose body is a
+//   self-contained sub-document processed in its own pipeline run). Net: 107 → 108 primary.
 check(
-  `VOCABULARY has 109 entries (107 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 109,
+  `VOCABULARY has 110 entries (108 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 110,
 );
 
 // Build-time loader has nothing to report in normal state.

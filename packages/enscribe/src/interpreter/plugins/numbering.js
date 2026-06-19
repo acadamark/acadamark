@@ -112,6 +112,16 @@ const NUMBERED_TAGNAMES = new Map([
   // counter. Unnumbered by default (NUMBERED_DEFAULT_FALSE below); +numbered
   // opts in. Per-type callout numbering ("Note 1"/"Tip 1") is deferred.
   ['aside',   'box'],
+  // #115: <minipage> joins the frameable class with its OWN 'minipage' counter
+  // ("Minipage N", config key number-minipages, ref-prefix mp) — not the figure
+  // counter (Ariel's ruling: a sealed sub-document is distinct from a figure and
+  // must not consume document figure numbers). Unnumbered by default
+  // (NUMBERED_DEFAULT_FALSE, derived from vocab numbered.default:false); +numbered
+  // opts in. Like 'box', it is NOT in SCOPED_COUNTER_TYPES, so it counts flat
+  // (globally) even in books. The minipage node's OWN label is what numbers
+  // here; its sealed body is opaque (raw source) so the discover walk never
+  // descends into it — body floats never reach this counter.
+  ['minipage', 'minipage'],
 ]);
 
 // Phase 3 slice 3c (2026-05-28): registered tagnames whose `numbered` kwarg
@@ -147,6 +157,7 @@ const CONFIG_KEY = {
   definition: 'number-definitions',
   example: 'number-examples',
   box: 'number-boxes',
+  minipage: 'number-minipages',  // #115: <minipage> own counter suppress key
 };
 
 // SECTION_TAGNAMES (the three section depths, registered for cross-reference

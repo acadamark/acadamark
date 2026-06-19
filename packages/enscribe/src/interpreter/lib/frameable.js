@@ -121,6 +121,12 @@ const KIND_META = new Map([
   // uses. `prefix: 'Box'` is the own "Box N" counter label (config key
   // number-boxes, ref-prefix box); <aside> is unnumbered by default.
   ['aside',   { prefix: 'Box',    captionEl: 'p',          layout: 'boxed-prose' }],
+  // minipage (#115) — a sealed sub-document in a <figure> wrapper. Its own
+  // outward identity is the "Minipage N" series (own counter / ref-prefix,
+  // Ariel's ruling), NOT the figure counter — so prefix is 'Minipage', distinct
+  // from frame's 'Figure'. inside-figure layout: <figcaption> inside the
+  // <figure>, like fig/svg/frame.
+  ['minipage', { prefix: 'Minipage', captionEl: 'figcaption', layout: 'inside-figure' }],
 ]);
 
 // #255 load-time sync guard (the section-kinds.js equality-assertion pattern): the

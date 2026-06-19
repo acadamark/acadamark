@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 107 vocabulary entries.
+// Source files: 108 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -4305,6 +4305,82 @@ const _meta = Object.freeze({
     "_sourceFile": "meta.md",
   });
 
+const _minipage = Object.freeze({
+    "semantic_role": "minipage",
+    "category": "frameables",
+    "html_output": {
+      "element": "minipage",
+      "is_html_native": false,
+      "default_attributes": {},
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+      "kwargs": {
+        "title": {
+          "handled_by": "handler",
+          "notes": "Optional title rendered at the top of the minipage (the frameable\ntitle-top convention). Authored as a title= kwarg. Because the body\nis opaque (a sealed sub-document), the kwarg stays a kwarg — it is not\nlifted to a <title> child tag the way it is for prose frameables; a\n<title> written inside the pipe would be part of the sealed body, not\nthe box's outward title. Same opaque-frameable convention as\n<svg>/<table>/<csv>.\n",
+        },
+        "caption": {
+          "handled_by": "handler",
+          "notes": "Optional caption rendered at the bottom of the minipage (the frameable\ncaption-bottom convention), with the \"Minipage N.\" label folded in when\nnumbered. Authored as a caption= kwarg (kwarg-only, for the same\nopaque-body reason as title).\n",
+        },
+      },
+      "booleans": {
+        "numbered": {
+          "handled_by": "handler",
+          "default": false,
+          "notes": "Whether this minipage is numbered. **Off by default** (most minipages\nare layout boxes, not cross-referenced floats). When +numbered, the\nminipage counts in its OWN \"Minipage N\" series (the `minipage` counter,\nconfig key number-minipages, ref-prefix `mp`) — NOT the figure counter.\nA sealed sub-document is distinct from a figure, and its private body\nnumbering must not touch the document's figure sequence (#115).\n",
+        },
+        "border": {
+          "handled_by": "handler",
+          "default": true,
+          "notes": "The frameable surface. **On by default for minipage** — the visual box\nis the point (a minipage sets its sealed content apart, like <frame>).\nUse -border to suppress the outline and keep only the seal. border=<name>\nselects a named look (accent / thick / dashed / subtle) and implies the\nborder on (#58; see frameable.md).\n",
+        },
+      },
+    },
+    "content": {
+      "type": "opaque",
+      "becomes": "sealed-subdocument",
+      "notes": "The pipe content is the minipage's body — a SEALED sub-document. It is held\nopaque (the raw source string) at parse time, so the main pipeline never\ndescends into it: the body's floats do not consume document counters, its\nlabels never enter the document registry, and its footnotes do not bubble to\nthe document. The body is processed in its OWN pipeline run with its OWN\nregistry (the deferred phase), producing resolved Layer 1 that is spliced\ninto the <figure> shell. Recursive content parsing applies INSIDE that\nsealed run, so the full enscribe vocabulary works in the body — including a\nnested <minipage>. External pulls (@src / <data>) are disallowed inside a\nminipage (a visible error, not a silent drop).\n",
+    },
+    "content_handler": "opaque",
+    "jats_counterpart": {
+      "element": "boxed-text",
+      "attributes": {},
+      "notes": "JATS <boxed-text> is the closest counterpart — a generic boxed, set-apart\ncontent block — matching <frame>. A numbered minipage wraps in <fig> at\nexport. The sealed body's resolved Layer 1 is the boxed-text content.\n",
+    },
+    "shorthand_examples": [
+      {
+        "source": "<minipage | Two panels side by side.>",
+        "layer1_html": "<figure class=\"frameable-border\">Two panels side by side.</figure>\n",
+        "notes": "The simplest case. The handler emits a <figure> wrapper (the vocab\nhtml_output.element `minipage` is only the lookup key for handler-strategy\nentries — the handler controls the actual element). +border is default on\nfor <minipage>, so the class appears automatically. The body renders as\nsealed Layer 1.\n",
+      },
+      {
+        "source": "<minipage #mp:compare +numbered caption=\"Side-by-side comparison\" |\nA figure here counts privately.\n\n<fig #fig:left src=\"left.png\" | Left panel.>\n<fig #fig:right src=\"right.png\" | Right panel.>\n>\n",
+        "layer1_html": "<figure class=\"frameable-border\" id=\"mp:compare\">\n  <p>A figure here counts privately.</p>\n  <figure id=\"fig:left\"><img src=\"left.png\"><figcaption>Figure 1. Left panel.</figcaption></figure>\n  <figure id=\"fig:right\"><img src=\"right.png\"><figcaption>Figure 2. Right panel.</figcaption></figure>\n  <figcaption>Minipage 1. Side-by-side comparison</figcaption>\n</figure>\n",
+        "notes": "Numbered minipage, opted in via +numbered. It counts in its own\n\"Minipage N\" series — `<ref @mp:compare>` resolves to \"minipage 1\". The two\ninner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT\nthe document's: a document <fig> elsewhere is unaffected, and an outside\n`<ref @fig:left>` is a normal not-found ref-error (the seal forbids inbound\nreferences to the body).\n",
+      },
+    ],
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/minipage.js",
+    "handler_responsibilities": [
+      "Emit the <minipage> wrapper element (a custom element rendered as <figure>; not HTML-native).",
+      "Apply `frameable-border` class by default (border flag default true).",
+      "Render optional title at the top and optional caption (with \"Minipage N.\" label prefix if numbered) at the bottom.",
+      "Splice the sealed body's resolved Layer 1 (produced by the deferred phase) as the figure body.",
+    ],
+    "_sourceFile": "minipage.md",
+  });
+
 const _name = Object.freeze({
     "semantic_role": "name",
     "category": "metadata",
@@ -6783,6 +6859,7 @@ export const VOCABULARY = Object.freeze({
   "math": _math,
   "matrix": _matrix,
   "meta": _meta,
+  "minipage": _minipage,
   "name": _name,
   "nav-group": _nav_group,
   "nav": _nav,
