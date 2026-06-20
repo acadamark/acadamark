@@ -115,8 +115,11 @@ const PAGES = [
   { slug: 'layer1',          source: 'layer1.emd', sourceUrl: `${GITHUB_BLOB_BASE}/layer1.template.emd`, title: 'Layer 1 — enscribe', nav: 'Layer 1', kind: 'page' },
   // #223/#246: the generated Documentation catalogs — ordinary `.emd` pages now (gen-catalogs.js writes
   // sources/{layer1,shorthand}-catalog.emd from the vocab source; rendered through the type, static + live).
-  { slug: 'layer1-catalog',  source: 'layer1-catalog.emd',  title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'page' },
-  { slug: 'shorthand-catalog', source: 'shorthand-catalog.emd', title: 'Shorthand catalog — enscribe', nav: 'Shorthand catalog', kind: 'page' },
+  // They are FULLY generated from the vocab — there is no single authored source file to view — so they set
+  // `sourceUrl: null` to SUPPRESS the "view source" footer link (it would otherwise 404 at the gitignored
+  // generated `.emd`). Unlike the intros/rendering-guide, there is no `.template.emd` to point at.
+  { slug: 'layer1-catalog',  source: 'layer1-catalog.emd',  sourceUrl: null, title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'page' },
+  { slug: 'shorthand-catalog', source: 'shorthand-catalog.emd', sourceUrl: null, title: 'Shorthand catalog — enscribe', nav: 'Shorthand catalog', kind: 'page' },
   // #223/#246: the Rendering guide — authored `.template.emd` with the generated <config> options grid
   // injected at the CONFIGOPTIONSGRID marker by `docs:gen` (like the catalogs/intros). The served `.emd` is
   // generated build product, so `source` is the generated file build.js reads; `sourceUrl` points "view
@@ -294,14 +297,21 @@ function liveLinksHtml(slug, liveSlugs) {
 }
 
 function buildPageBody(page, rendered, liveLinks = '') {
-  const githubUrl = page.sourceUrl ?? `${GITHUB_BLOB_BASE}/${page.source}`;
-  const liveSpan = liveLinks ? `\n      <span class="live-link"> · ${liveLinks}</span>` : '';
-  return (
-    `<main class="article">\n${rendered}\n    </main>\n` +
-    `    <footer class="site-footer">\n` +
-    `      Source: <a href="${githubUrl}">view this page's enscribe source on GitHub</a>${liveSpan}\n` +
-    `    </footer>`
-  );
+  // `sourceUrl: null` (explicit) SUPPRESSES the "view source" link — the fully-generated catalogs have no
+  // authored source file, and a fallback link would 404 at the gitignored generated `.emd`. Absent sourceUrl
+  // (the default) still falls back to the committed source on GitHub. The live link, when present, sits
+  // beside Source (" · " separator) when both show, or alone when Source is suppressed; with neither, the
+  // footer is omitted entirely (no empty `<footer>`).
+  const githubUrl = page.sourceUrl === null ? null : (page.sourceUrl ?? `${GITHUB_BLOB_BASE}/${page.source}`);
+  const sourceLine = githubUrl
+    ? `      Source: <a href="${githubUrl}">view this page's enscribe source on GitHub</a>`
+    : '';
+  const liveLine = liveLinks
+    ? `${sourceLine ? '\n      <span class="live-link"> · ' : '      <span class="live-link">'}${liveLinks}</span>`
+    : '';
+  const inner = sourceLine + liveLine;
+  const footer = inner ? `\n    <footer class="site-footer">\n${inner}\n    </footer>` : '';
+  return `<main class="article">\n${rendered}\n    </main>` + footer;
 }
 
 function buildPlaygroundBody(source, liveLinks = '') {
