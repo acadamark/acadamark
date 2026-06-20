@@ -1,0 +1,37 @@
+<meta type=article>
+<title | ToC frame-skip — demo boxes never leak into the contents (#223/#246)>
+<author | The Enscribe Team>
+</meta>
+
+<config toc=true toc-location=right toc-depth=3 />
+
+<section #sec:real-a | First real section>
+
+A real section. The two boxes below hold live-demo `<section>`s — a `<frame>`
+(compiled to `<figure class="frameable-border">`) and an `<aside>`. Their inner
+demo headings are box content, not page structure, so they must NOT appear in the
+contents rail. This is the leak `collectEntries` fixed (#223/#246), mirroring the
+client-side rail fix 4ece570.
+
+<frame | A live-render demo box:
+<section #sec:demo-frame | Frame demo heading>
+This section is shown as demo content; it stays out of the contents.
+>
+>
+
+An aside demo box:
+
+<aside | An aside demo box:
+<section #sec:demo-aside | Aside demo heading>
+Likewise box content, never a contents entry.
+>
+>
+
+<sub-section #sub:real | A real subsection>
+
+A genuine nested subsection sitting OUTSIDE any box — ordinary section nesting, so
+it still appears in the contents, nested under its parent section.
+
+<section #sec:real-b | Second real section>
+
+A second first-level section, outside any box — it still appears.

@@ -1,0 +1,735 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "ToC frame-skip — demo boxes never leak into the contents (#223/#246)",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 70,
+                          "offset": 69
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "author",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The Enscribe Team",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 19,
+                          "offset": 18
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:real-a"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "First real section",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 20,
+                          "offset": 19
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A real section. The two boxes below hold live-demo ",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 1,
+                          "offset": 233
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 52,
+                          "offset": 284
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<section>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "s — a ",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 63,
+                          "offset": 295
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 69,
+                          "offset": 301
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<frame>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "\n(compiled to ",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 78,
+                          "offset": 310
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 14,
+                          "offset": 324
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<figure class=\"frameable-border\">"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ") and an ",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 49,
+                          "offset": 359
+                        },
+                        "end": {
+                          "line": 11,
+                          "column": 58,
+                          "offset": 368
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<aside>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ". Their inner\ndemo headings are box content, not page structure, so they must NOT appear in the\ncontents rail. This is the leak ",
+                      "position": {
+                        "start": {
+                          "line": 11,
+                          "column": 67,
+                          "offset": 377
+                        },
+                        "end": {
+                          "line": 13,
+                          "column": 33,
+                          "offset": 505
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "collectEntries"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " fixed (#223/#246), mirroring the\nclient-side rail fix 4ece570.",
+                      "position": {
+                        "start": {
+                          "line": 13,
+                          "column": 49,
+                          "offset": 521
+                        },
+                        "end": {
+                          "line": 14,
+                          "column": 30,
+                          "offset": 584
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 10,
+                      "column": 1,
+                      "offset": 233
+                    },
+                    "end": {
+                      "line": 14,
+                      "column": 30,
+                      "offset": 584
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "figure",
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A live-render demo box:",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 25,
+                              "offset": 24
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 25,
+                          "offset": 24
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "section",
+                      "properties": {
+                        "id": "sec:demo-frame"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Frame demo heading",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 20,
+                              "offset": 19
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "This section is shown as demo content; it stays out of the contents.",
+                          "position": {
+                            "start": {
+                              "line": 3,
+                              "column": 1,
+                              "offset": 72
+                            },
+                            "end": {
+                              "line": 3,
+                              "column": 69,
+                              "offset": 140
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 3,
+                          "column": 1,
+                          "offset": 72
+                        },
+                        "end": {
+                          "line": 3,
+                          "column": 69,
+                          "offset": 140
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "blockquote",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "offset": 737
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 2,
+                      "offset": 738
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "An aside demo box:",
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 1,
+                          "offset": 740
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 19,
+                          "offset": 758
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 22,
+                      "column": 1,
+                      "offset": 740
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 19,
+                      "offset": 758
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "An aside demo box:",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 20,
+                              "offset": 19
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 20,
+                          "offset": 19
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "section",
+                      "properties": {
+                        "id": "sec:demo-aside"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Aside demo heading",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 20,
+                              "offset": 19
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Likewise box content, never a contents entry.",
+                          "position": {
+                            "start": {
+                              "line": 3,
+                              "column": 1,
+                              "offset": 67
+                            },
+                            "end": {
+                              "line": 3,
+                              "column": 46,
+                              "offset": 112
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 3,
+                          "column": 1,
+                          "offset": 67
+                        },
+                        "end": {
+                          "line": 3,
+                          "column": 46,
+                          "offset": 112
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "blockquote",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "\n"
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 28,
+                      "column": 1,
+                      "offset": 883
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 2,
+                      "offset": 884
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {
+                    "id": "sub:real"
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A real subsection",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 19,
+                              "offset": 18
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A genuine nested subsection sitting OUTSIDE any box — ordinary section nesting, so\nit still appears in the contents, nested under its parent section.",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 1,
+                              "offset": 931
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 67,
+                              "offset": 1080
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 32,
+                          "column": 1,
+                          "offset": 931
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 67,
+                          "offset": 1080
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {
+                "id": "sec:real-b"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Second real section",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 21,
+                          "offset": 20
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A second first-level section, outside any box — it still appears.",
+                      "position": {
+                        "start": {
+                          "line": 37,
+                          "column": 1,
+                          "offset": 1127
+                        },
+                        "end": {
+                          "line": 37,
+                          "column": 66,
+                          "offset": 1192
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 37,
+                      "column": 1,
+                      "offset": 1127
+                    },
+                    "end": {
+                      "line": 37,
+                      "column": 66,
+                      "offset": 1192
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-back",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "config",
+              "properties": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 38,
+      "column": 1,
+      "offset": 1193
+    }
+  }
+}

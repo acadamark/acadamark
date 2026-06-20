@@ -35,6 +35,23 @@ import { readConfigBool } from './config-helpers.js';
 // is the three section depths plus `book-part`, from the single source of truth.
 const NAV_SECTIONS = new Set(NAV_ITEM_TAGNAMES);
 
+// #223/#246: hast tagnames whose nested `<section>`s are BOX content, not host-page
+// structure — collectEntries must NOT descend into them. Two correct-to-skip cases:
+//   • DEMO boxes — a `<frame>`/`<aside>` showing a live-rendered `<section>` (e.g. a
+//     Documentation catalog's live-render box): the heading is illustration, not structure.
+//   • SEALED sub-documents — a `<minipage>` (#115), whose internal sections are private to
+//     the box by design (inbound refs forbidden, own registry) and must not enter the host ToC.
+// `'figure'` is the COMPILED wrapper for `<frame>`, `<fig>`, `<svg>`, AND `<minipage>` (they
+// all emit `<figure …>`), so skipping it covers every one; `'aside'` covers `<aside>`. Without
+// this, those headings leak into every ToC the collector feeds — the book ToC, the article ToC,
+// and the `<config toc>` rail. Mirrors 4ece570's client-side buildOnThisPage skip-set exactly
+// (`!el.closest('figure, aside')`), the same {figure, aside} principle now reaching the
+// build-time collector it never touched. (frame/aside legally ACCEPT section content per their
+// vocab content model, so a nested section is not "impossible" — it is simply box content.
+// Whether an author could ever want such a section LISTED is an open spec question, surfaced as
+// a drift finding for toc-and-numbering.md, not decided here.)
+const DEMO_BOX_TAGNAMES = new Set(['figure', 'aside']);
+
 const el = (tagName, properties, children) => ({ type: 'element', tagName, properties, children });
 const text = (value) => ({ type: 'text', value });
 const clean = (s) => s.replace(/\s+/g, ' ').trim();
@@ -88,7 +105,9 @@ export function titleParts(node) {
  * Collect the ToC tree from a container, preserving nesting. Each entry is
  * `{ el, glued, number, clean, id, children }`: `el` is the hast section element,
  * `glued`/`number`/`clean` are the title forms (see titleParts), and `id` is its
- * authored id or null (assigned later). Non-section elements are descended into.
+ * authored id or null (assigned later). Non-section elements are descended into,
+ * EXCEPT `<figure>`/`<aside>` box containers (DEMO_BOX_TAGNAMES) — their inner sections
+ * are box content, not page structure, and must not leak into the ToC (#223/#246).
  */
 function collectEntries(container) {
   const out = [];
@@ -97,7 +116,10 @@ function collectEntries(container) {
     if (NAV_SECTIONS.has(child.tagName)) {
       const { glued, number, clean: cleanTitle } = titleParts(child);
       out.push({ el: child, glued, number, clean: cleanTitle, id: child.properties?.id ?? null, children: collectEntries(child) });
-    } else {
+    } else if (!DEMO_BOX_TAGNAMES.has(child.tagName)) {
+      // Descend into ordinary non-section wrappers; a top-down walk means the demo-box
+      // skip is simply NOT recursing into a `<figure>`/`<aside>` (no `closest` needed —
+      // that idiom was for 4ece570's flat client-side heading list). See DEMO_BOX_TAGNAMES.
       out.push(...collectEntries(child));
     }
   }

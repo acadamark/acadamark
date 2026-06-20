@@ -1961,4 +1961,56 @@ export function run() {
     snapshotHast('document-70', hast);
     console.log('PASS: integration doc70 (minipage outbound — one-way read-through: outbound resolves, inbound still forbidden)');
   }
+
+  // --- doc71: ToC frame-skip — demo `<section>`s inside `<frame>`/`<aside>` boxes never
+  // leak into the contents rail (#223/#246). The principled build-time counterpart of
+  // 4ece570's client-side rail fix: collectEntries no longer descends into a `<frame>`
+  // (compiled to `<figure class="frameable-border">`) or an `<aside>` demo box, so a
+  // `<config toc>` rail lists only real page sections — not the box demos. ---
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-71-toc-frame-skip.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    // The contents rail region (the `<config toc toc-location=right>` sidebar).
+    const navMatch = html.match(/<nav class="enscribe-toc[\s\S]*?<\/nav>/);
+    assert.ok(navMatch, 'doc71: a config-toc contents rail is rendered');
+    const nav = navMatch[0];
+
+    // Real sections appear: both first-level sections and the genuine (out-of-box)
+    // nested subsection.
+    assert.ok(nav.includes('href="#sec:real-a"'),
+      'doc71: the first real section is listed in the contents rail');
+    assert.ok(nav.includes('href="#sec:real-b"'),
+      'doc71: a real section sitting OUTSIDE any box still appears');
+    assert.ok(nav.includes('href="#sub:real"'),
+      'doc71: a genuine nested subsection (outside any box) still appears');
+
+    // Demo sections inside the `<frame>` (→ <figure class="frameable-border">) and the
+    // `<aside>` box are EXCLUDED — collectEntries does not descend into the boxes.
+    assert.ok(!nav.includes('#sec:demo-frame'),
+      'doc71: a `<section>` inside a `<frame>` demo box does NOT leak into the contents');
+    assert.ok(!nav.includes('#sec:demo-aside'),
+      'doc71: a `<section>` inside an `<aside>` demo box does NOT leak into the contents');
+
+    // The intros symptom (spurious title-less rail entries) is gone: a leaked demo
+    // section has no `*-title`, so it would render as "Untitled". This re-tests the exact
+    // #223/#246 symptom, but the id-based negative asserts above are the PRIMARY leak
+    // detectors (they'd catch a leak even if the demo section carried a title).
+    assert.ok(!/Untitled/.test(nav),
+      'doc71: no spurious "Untitled" entry — the demo-box leak is closed');
+
+    // Ordinary nesting is preserved: the real subsection nests UNDER its parent section.
+    // The trailing `#sec:real-b` pins the nested <ul> as CLOSING before the next top-level
+    // entry, so this catches a flatten-to-sibling regression, not just textual ordering.
+    assert.ok(/href="#sec:real-a"[\s\S]*?<ul>[\s\S]*?href="#sub:real"[\s\S]*?<\/ul>[\s\S]*?href="#sec:real-b"/.test(nav),
+      'doc71: the real subsection nests under its parent section (nesting unchanged)');
+
+    // The demo sections still RENDER in the body (they are real content, just not ToC
+    // entries) — the skip is ToC-only, it does not drop the boxes' content.
+    assert.ok(/<section id="sec:demo-frame"/.test(html) && /<section id="sec:demo-aside"/.test(html),
+      'doc71: the demo sections still render in the body (the skip is ToC-only)');
+
+    snapshotHast('document-71', hast);
+    console.log('PASS: integration doc71 (ToC frame-skip — `<frame>`/`<aside>` demo sections excluded from the contents rail; real sections + nesting preserved)');
+  }
 }
