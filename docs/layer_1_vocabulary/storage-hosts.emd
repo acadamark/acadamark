@@ -1,0 +1,87 @@
+<section #l1-data | `<data>`>
+
+<sub-section | Specification>
+
+`category` `storage-hosts` · Layer 1 `<data>` · JATS `<no direct equivalent>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<data>`.
+
+<sub-section | Examples>
+
+<code #code:l1-data-1>
+<data>
+  <library format=bibtex>
+    @article{goodall2024,
+      author = {Goodall, Jane},
+      title = {The Effect of Elephants on Climate},
+      journal = {Nature},
+      year = {2024}
+    }
+  </library>
+</data>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &lt;data&gt; block itself produces no rendered output.*
+
+</section>
+
+<section #l1-library | `<library>`>
+
+<sub-section | Specification>
+
+`category` `storage-hosts` · Layer 1 `<library>` · JATS `<no direct equivalent (entries lift into ref-list)>` · `content` `opaque` → `<parsed entries (registered in citation system)>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `format` | kwarg | `bibtex` `csl-json` `ris` `endnote-xml` `other` | Attribute-form equivalent of the format-word positional. When both the positional and the kwarg are omitted, the library-load plugin auto-detects the format via citation-js (works reliably for BibTeX and CSL-JSON). A named format is passed to citation-js as a forceType. |
+| `src` | kwarg |  | External source (#133): a filesystem path, an http(s) URL, or any reachable URL (e.g. a GitHub raw link). The reference data is loaded from there and parsed exactly as inline content (same formats; never injected as markup). With src= the node's own (empty) body is ignored; inline and src libraries are both valid and multiple of either merge. A failed load (unreachable / 404 / CORS-blocked / parse-fail) renders a visible error and never aborts the document (always-renders). Filesystem paths apply on the CLI/build; in the browser a relative path resolves against the document base URL and is fetched (cross-origin URLs are CORS-limited). A URL source needs an async render (the CLI render command / the browser renderAsync); a synchronous render flags it. |
+
+Produced by: canonical `<library>`.
+
+<sub-section | Examples>
+
+<code #code:l1-library-1>
+<library format=bibtex>
+  @article{goodall2024,
+    author = {Goodall, Jane},
+    title = {The Effect of Elephants on Climate},
+    journal = {Nature},
+    year = {2024}
+  }
+
+  @book{darwin1859,
+    author = {Darwin, Charles},
+    title = {On the Origin of Species},
+    publisher = {John Murray},
+    year = {1859}
+  }
+</library>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &lt;cite goodall2024&gt;) resolve against these entries. The library block itself produces no rendered output.*
+
+<code #code:l1-library-2>
+<library format=csl-json>
+  [
+    {
+      "id": "goodall2024",
+      "type": "article-journal",
+      "author": [{"family": "Goodall", "given": "Jane"}],
+      "title": "The Effect of Elephants on Climate",
+      "container-title": "Nature",
+      "issued": {"date-parts": [[2024]]}
+    }
+  ]
+</library>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+</section>
+

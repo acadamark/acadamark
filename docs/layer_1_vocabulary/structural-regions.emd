@@ -1,0 +1,72 @@
+<section #l1-article-back | `<article-back>`>
+
+<sub-section | Specification>
+
+`category` `structural-regions` · Layer 1 `<article-back>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-article-body | `<article-body>`>
+
+<sub-section | Specification>
+
+`category` `structural-regions` · Layer 1 `<article-body>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-article-front | `<article-front>`>
+
+<sub-section | Specification>
+
+`category` `structural-regions` · Layer 1 `<article-front>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-back | `<book-back>`>
+
+<sub-section | Specification>
+
+`category` `structural-regions` · Layer 1 `<book-back>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-body | `<book-body>`>
+
+<sub-section | Specification>
+
+`category` `structural-regions` · Layer 1 `<book-body>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-front | `<book-front>`>
+
+<sub-section | Specification>
+
+`category` `structural-regions` · Layer 1 `<book-front>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
