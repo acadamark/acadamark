@@ -1893,13 +1893,16 @@ export function run() {
     // advance the document figure counter.
     assert.ok(/<figure id="fig:doc">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> A document figure\./.test(html),
       'doc69: the document figure is "Figure 1"');
-    assert.ok(/<figure id="fig:inner">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> An inner figure/.test(html),
+    // #267: a minipage member's id is scope-qualified by the box slug (mp:numbering → mp-numbering)
+    // so two boxes don't collide on id="fig:inner". The PRIVATE NUMBER is still "Figure 1".
+    assert.ok(/<figure id="mp-numbering-fig:inner">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> An inner figure/.test(html),
       'doc69: the box-private figure is ALSO "Figure 1" (private counter, document counter untouched)');
     assert.ok(html.includes('<a href="#fig:doc" class="ref">figure 1</a>'),
       'doc69: the document figure cross-ref is "figure 1" — not bumped to 2 by the box figure');
 
     // Internal ref resolves within the box (baked text); inbound ref is forbidden.
-    assert.ok(html.includes('<a href="#fig:inner" class="ref">figure 1</a>'),
+    // #267: the in-box ref href is rewritten in lockstep with the qualified id, so it still resolves.
+    assert.ok(html.includes('<a href="#mp-numbering-fig:inner" class="ref">figure 1</a>'),
       'doc69: a body <ref @fig:inner> resolves WITHIN the box to "figure 1"');
     assert.ok(html.includes('<a href="#fig:inner" class="ref-error">??ref: fig:inner??</a>'),
       'doc69: an inbound document <ref @fig:inner> to a box label is a not-found ref-error');
@@ -1920,7 +1923,9 @@ export function run() {
 
     // Nested minipage: each level numbers privately ("Minipage 1" inside, the
     // outer is the document-level minipage count).
-    assert.ok(/<figure id="mp:outer"[\s\S]*?<figure id="mp:inner"[\s\S]*?<span class="minipage-label">Minipage 1\.<\/span> Inner box[\s\S]*?<\/figure>[\s\S]*?<\/figure>/.test(html),
+    // #267: the nested box's own id (mp:inner) is qualified by its parent's slug (mp-outer-mp:inner),
+    // so two parents could each hold a #mp:inner without colliding; the PRIVATE NUMBER is still "Minipage 1".
+    assert.ok(/<figure id="mp:outer"[\s\S]*?<figure id="mp-outer-mp:inner"[\s\S]*?<span class="minipage-label">Minipage 1\.<\/span> Inner box[\s\S]*?<\/figure>[\s\S]*?<\/figure>/.test(html),
       'doc69: a nested minipage renders inside its parent, numbered privately ("Minipage 1")');
 
     // No external pulls: an @src inside a minipage is a visible error, not a resolved image.
@@ -1946,7 +1951,8 @@ export function run() {
       'doc70: a body <ref @sec:intro> resolves OUTBOUND to the document section (its title)');
 
     // Internal still resolves: the box's own figure, in its private registry.
-    assert.ok(html.includes('<a href="#fig:local" class="ref">figure 1</a>'),
+    // #267: the in-box id and its in-box ref are qualified by the box slug (mp:out → mp-out) in lockstep.
+    assert.ok(html.includes('<a href="#mp-out-fig:local" class="ref">figure 1</a>'),
       'doc70: a body <ref @fig:local> still resolves WITHIN the box ("figure 1", private)');
 
     // The box's own outward label is referenceable from the document.

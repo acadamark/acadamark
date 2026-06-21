@@ -231,7 +231,7 @@
                           "type": "element",
                           "tagName": "a",
                           "properties": {
-                            "href": "#fig:inner",
+                            "href": "#mp-numbering-fig:inner",
                             "className": [
                               "ref"
                             ]
@@ -277,7 +277,7 @@
                       "type": "element",
                       "tagName": "figure",
                       "properties": {
-                        "id": "fig:inner"
+                        "id": "mp-numbering-fig:inner"
                       },
                       "children": [
                         {
@@ -882,15 +882,15 @@
                           "type": "element",
                           "tagName": "sup",
                           "properties": {
-                            "id": "noteref-1",
-                            "dataNoteId": "note-1"
+                            "id": "mp-notes-noteref-1",
+                            "dataNoteId": "mp-notes-note-1"
                           },
                           "children": [
                             {
                               "type": "element",
                               "tagName": "a",
                               "properties": {
-                                "href": "#note-1"
+                                "href": "#mp-notes-note-1"
                               },
                               "children": [
                                 {
@@ -933,7 +933,7 @@
                               "type": "element",
                               "tagName": "li",
                               "properties": {
-                                "id": "note-1"
+                                "id": "mp-notes-note-1"
                               },
                               "children": [
                                 {
@@ -975,7 +975,7 @@
                                   "type": "element",
                                   "tagName": "a",
                                   "properties": {
-                                    "href": "#noteref-1",
+                                    "href": "#mp-notes-noteref-1",
                                     "className": [
                                       "note-backref"
                                     ],
@@ -1140,7 +1140,7 @@
                       "type": "element",
                       "tagName": "figure",
                       "properties": {
-                        "id": "mp:inner",
+                        "id": "mp-outer-mp:inner",
                         "className": [
                           "frameable-border"
                         ]
@@ -1171,7 +1171,7 @@
                               "type": "element",
                               "tagName": "figure",
                               "properties": {
-                                "id": "fig:nested"
+                                "id": "mp-outer-mp-inner-fig:nested"
                               },
                               "children": [
                                 {

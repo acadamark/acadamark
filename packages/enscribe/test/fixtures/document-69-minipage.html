@@ -1509,8 +1509,8 @@ note-list li {
         document figure already exists — the document counter is untouched:
       </p>
       <figure id="mp:numbering" class="frameable-border">
-        <p>The inner figure resolves within the box: <a href="#fig:inner" class="ref">figure 1</a>.</p>
-        <figure id="fig:inner">
+        <p>The inner figure resolves within the box: <a href="#mp-numbering-fig:inner" class="ref">figure 1</a>.</p>
+        <figure id="mp-numbering-fig:inner">
           <img src="inner.png" alt="An inner figure, numbered privately.">
           <figcaption><span class="figure-label">Figure 1.</span> An inner figure, numbered privately.</figcaption>
         </figure>
@@ -1547,10 +1547,10 @@ note-list li {
         document’s notes:
       </p>
       <figure id="mp:notes" class="frameable-border">
-        <p>This box has a footnote.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup></p>
+        <p>This box has a footnote.<sup id="mp-notes-noteref-1" data-note-id="mp-notes-note-1"><a href="#mp-notes-note-1">1</a></sup></p>
         <note-list class="endnotes">
           <ol>
-            <li id="note-1"><sup>1</sup> The footnote is collected at the box bottom. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+            <li id="mp-notes-note-1"><sup>1</sup> The footnote is collected at the box bottom. <a href="#mp-notes-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
           </ol>
         </note-list>
         <figcaption><span class="minipage-label">Minipage 4.</span> A box with a footnote</figcaption>
@@ -1564,9 +1564,9 @@ note-list li {
       </p>
       <figure id="mp:outer" class="frameable-border">
         <p>Outer content.</p>
-        <figure id="mp:inner" class="frameable-border">
+        <figure id="mp-outer-mp:inner" class="frameable-border">
           <p>Inner content with its own private figure:
-            <figure id="fig:nested">
+            <figure id="mp-outer-mp-inner-fig:nested">
               <img src="nested.png" alt="Nested figure.">
               <figcaption><span class="figure-label">Figure 1.</span> Nested figure.</figcaption>
             </figure>

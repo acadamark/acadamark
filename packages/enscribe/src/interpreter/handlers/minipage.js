@@ -26,6 +26,7 @@ import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFrameableBorder } from '../lib/frameable.js';
 import { convertChildren } from '../lib/ast-helpers.js';
+import { qualifyMinipageIds, minipageScopeSlug } from '../lib/minipage.js';
 
 /**
  * Handler for the `<minipage>` tag.
@@ -46,6 +47,10 @@ export function minipageHandler(state, node, vocab) {
   // run (e.g. an isolated unit test of this handler) — render an empty box then.
   const resolvedBody = Array.isArray(node.minipageResolved) ? node.minipageResolved : [];
   const bodyHast = convertChildren(state, node, resolvedBody);
+  // #267: the sealed body restarts ids per box (auto note-N / noteref-N, author colon-ids),
+  // so two boxes collide on id="note-1" / id="fig:x" in the assembled document. Scope-qualify
+  // every id defined in THIS box (and its in-box references) with the box's unique slug.
+  qualifyMinipageIds(bodyHast, minipageScopeSlug(node));
 
   // Border defaults TRUE (per minipage.md); -border / border=false suppresses it.
   // Shared boolean read with the frame / aside handlers.
