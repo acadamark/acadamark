@@ -1,0 +1,266 @@
+<meta type=article>
+  <title | Getting Started with Enscribe>
+  <author | The Enscribe Project>
+</meta>
+
+You are reading an Enscribe document — not a description of one, but the actual
+source rendered to HTML in your browser. If you are on the docs site, the panel
+beside this text holds that source; change anything and the output re-renders as
+you type. Everything below is at once an explanation of a feature and a use of
+it. **The page teaches by being what it describes.** You already know HTML and
+Markdown, so this guide skips what a heading is and spends its time on what
+Enscribe adds: a compact, uniform way to write the *structure* — citations,
+figures, cross-references, math — that Markdown never covered and raw HTML makes
+painful. Ten minutes from now you will have seen every feature you need to write
+a real article, exercised here in the writing of one.
+
+<# Your first document #>
+
+An Enscribe document opens with a metadata block. Here is the one at the top of
+this page:
+
+```
+<meta type=article>
+  <title | Getting Started with Enscribe>
+  <author | The Enscribe Project>
+</meta>
+```
+
+`<meta>` carries the document's identity — title, authors, and optionally a
+`<date>`, an `<abstract>`, affiliations, and the rest of the front matter a
+scholarly article needs. It is pinned to the very top because it describes the
+document rather than belonging to its body; Enscribe keeps such *apparatus* at
+the document's edges, where structural processing can find it. The `type=article`
+attribute picks the article shape; `type=book` would instead expect chapters.
+After the metadata you simply write. A blank line starts a new paragraph,
+exactly as in Markdown. That part you know — so the rest of this guide is the
+parts you don't.
+
+<# Sections come in three forms #>
+
+A heading can be written three ways, and all three compile to the *same* thing —
+a Layer 1 `<section>` wrapping a `<section-title>`:
+
+```
+<# Methods #>           — sigil form: the fewest keystrokes
+<section | Methods>     — canonical form: explicit; what the others become
+# Methods               — Markdown form: familiar, and it works
+```
+
+If you are in the playground, try it: change one of this guide's `<# ... #>`
+headings to `# ...` and back. The rendered heading does not move — because all
+three forms reduce to the same node before anything else in the pipeline sees
+them.
+
+Why three? Because Enscribe separates the *form you type* from the *form it
+becomes*. Underneath every document is one canonical representation — semantic
+HTML — and the shorthand is just a faster way to reach it. The sigil `<#>` is the
+day-to-day default: it is the lightest to type and still carries everything a
+section needs. The named `<section>` is the explicit form, and it is exactly what
+you would read if you converted the finished HTML back to shorthand. The Markdown
+`#` is there so muscle memory works on day one. This guide writes its own
+headings in the sigil form — the line just above this paragraph was
+`<# Sections come in three forms #>`. Give a section an id when something will
+point back to it, by adding `#name` before a pipe:
+`<# #sec:forms | Sections come in three forms #>`. The three forms are not three
+parsers racing each other.<note | The Markdown heading is a *lossy* convenience:
+it lifts into the canonical section but has nowhere to put an id, so converting
+Layer 1 back to shorthand emits the canonical form, never the `#`. The sigil and
+canonical forms are co-equal and round-trip without loss — a distinction this
+guide's own headings rely on.> Their trade-offs are laid out in <ref @tab:layers>
+below.
+
+<## Subsections add one sigil character ##>
+
+`<##>` is a sub-section and `<###>` a sub-sub-section, as this heading shows. The
+ladder stops at three levels on purpose. Three is what a journal article needs;
+once a document wants to nest deeper, it usually wants to be a *book*, with
+chapters and parts — a different top-level shape, not a fourth heading level. The
+cap keeps the vocabulary small and the output predictable.
+
+<# Inline formatting, and math #>
+
+Inside a paragraph, `**bold**` is **bold**, `*italic*` is *italic*, and backticks
+give `inline code` — all plain Markdown, unchanged. Enscribe does not reinvent
+the things Markdown already does well; it delegates them and adds only what is
+missing. The first addition you reach for in scholarly prose is mathematics.
+Inline math uses LaTeX dollar signs: typing `$\varphi = (1 + \sqrt{5})/2$` sets
+the golden ratio, $\varphi = (1 + \sqrt{5})/2$, right in the run of text.
+Everything between the dollars is handed to KaTeX, the same engine many journals
+use.<note | KaTeX renders math to HTML and CSS rather than to an image or to
+MathML, so the result is selectable, searchable text that scales with the
+surrounding type. The canonical tag form of inline math is `<$ ... $>`; the
+`$...$` you just saw is the Markdown-style shorthand for it, and the two produce
+identical output.> Delegating the hard parts — math, syntax highlighting,
+citation formatting — is a deliberate stance: Enscribe owns the vocabulary, not
+the typesetting of every embedded language.
+
+<# Display math #>
+
+A result that deserves its own line gets the *display* form, written with the
+doubled-dollar tag `<$$ | ... $$>`. Here is the Gaussian integral — the kind of
+identity a methods section states once and then leans on:
+
+<$$ | \int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi} $$>
+
+Display math is centered and set larger than inline math, and like a figure or a
+table it can take an id (`<$$ #eqn:gauss | ... $$>`) so the prose can refer back
+to it. In the playground, try changing the exponent — the equation re-typesets on
+every keystroke.
+
+<# A nested list #>
+
+Lists carry their own marker. Each item starts with `<li>` (or the sigil `<->`,
+or a markdown `-`), and an item runs until the next marker — so nesting is just a
+`<list>` inside an item, with no indentation to count:
+
+<list>
+<li> Gather the data
+<li> Fit the model
+<list ordered>
+<li> Choose the priors
+<li> Run the sampler
+</list>
+<li> Write it up
+</list>
+
+The inner list there is `<list ordered>`, so it numbers while the outer stays
+bulleted. `marker=` (any CSS `list-style-type`), `start`, and `reversed` are there
+when you need them.
+
+<# Data, as a table #>
+
+Tables are laborious in raw HTML and finicky in Markdown, and academic tables are
+mostly *data*. Enscribe lets you write the rows as CSV and supplies the table
+scaffolding — the element, the header row, the cells — for you. The source below
+produced <ref @tab:layers>:
+
+```
+<table #tab:layers csv caption="..." |
+Form,Keystrokes,Carries an id,Round-trips from Layer 1
+Canonical,most,yes,yes
+...
+>
+```
+
+The first line is the header; each line after it is a row. The `caption`
+attribute is rendered below the table, and the table number is added for you.
+Rendered, it is:
+
+<table #tab:layers csv caption="The three authoring forms compared. All three compile to identical Layer 1 HTML, so the choice between them is ergonomic, not semantic." |
+Form,Keystrokes,Carries an id,Round-trips from Layer 1
+Canonical,most,yes,yes
+Sigil,fewest,yes,yes
+Markdown,few,no,no — lossy
+>
+
+That table is the three-layer model made concrete: the same structure, three
+notations, one meaning. Try adding a row in the playground; the table grows to
+fit it.
+
+<# A figure #>
+
+A `<figure>` interrupts the text flow, carries an optional caption, and is
+numbered automatically — you never type the number. Figures, tables, code blocks,
+and the rest share this one *frameable* capability, so they all behave the same
+way: caption below, number folded in, an optional border. The image source can be
+a local path or a URL:
+
+<figure #fig:pipeline src="https://picsum.photos/seed/enscribe/720/360" | The Enscribe pipeline in one breath — shorthand is parsed, *lifted* to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)>
+
+Because the figure carries an id, prose elsewhere can point at it by name rather
+than by a number you would otherwise have to keep correct by hand: see
+<ref @fig:pipeline>.
+
+<# Footnotes and citations #>
+
+You have already met footnotes — the two asides above are `<note | ... >` tags,
+written immediately after the word they attach to, with no space. On the docs
+site they render as small markers you can **hover** to read in place, without
+losing your spot; in print they fall to the foot of the page or the end of the
+section. Same source, different surfaces.
+
+Citations work against a bibliography you supply. The `<data>` block at the end
+of this page holds a `<library>` of BibTeX entries — apparatus like `<data>` and
+`<config>` goes at the document's edges, by convention at the end. Nothing is
+fetched from disk, so the whole document stays self-contained and editable in the
+browser. You cite an entry by its key, and the formatting is not Enscribe's job:
+it is delegated to citation-js and the CSL styles the rest of scholarly
+publishing uses, so switching from one journal's style to another's is a
+configuration change, not a rewrite.<note | This is the same delegation principle
+as the math: Enscribe holds only the citation *keys* and the chosen *style name*,
+and lets a dedicated engine do the formatting, ordering, and disambiguation.>
+Markdown <cite @gruber2004> is the ancestor every lightweight markup language
+descends from, and Enscribe keeps its ease for prose while refusing its ceiling.
+HTML <cite @whatwg2024> is the rendering substrate underneath — already a
+complete, universal document format. And JATS <cite @jats2021>, the archival XML
+the scholarly-publishing world runs on, is Enscribe's downstream export target.
+Each marker is numbered as it appears, and the full, formatted list is gathered
+at the foot of the page.
+
+<# Cross-references, by name #>
+
+You have seen two cross-references already: <ref @tab:layers> and
+<ref @fig:pipeline>. A `<ref>` names its target by a *typed* id — `tab:layers`,
+`fig:pipeline`, `eqn:gauss` — where the prefix says what kind of thing is being
+referenced. Enscribe resolves these in a pass after the whole document is parsed,
+so a reference can point forward or backward freely, and the rendered number
+("Table 1", "Figure 1") is always the one the target actually received. Move the
+table, renumber nothing — the references follow.
+
+<# Naming things: a definition #>
+
+The theorem family — `<theorem>`, `<lemma>`, `<proof>`, and friends — gives formal
+statements their own numbered, styled blocks, each on its own counter. A
+`<definition>` is the plainest member, and this guide has been leaning on one term
+that earns it:
+
+<definition name="Layer 1" #def:layer1 | *Layer 1* is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as `<section>`, `<fig>`, and `<cite>` that record what each piece of content *is*, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.>
+
+<# What you've built #>
+
+Scroll back up. In a few dozen lines of source you wrote a document with sections
+in three notations, inline and display math, a captioned table and a captioned
+figure, two cross-references that found their own targets, hover-preview
+footnotes, three real citations with an automatically formatted bibliography, and
+a numbered definition — and the rendered result is self-contained, semantic HTML
+that a browser shows with no toolchain in the way. That is the whole pitch in one
+page: the ease of Markdown, the reach of HTML, and the apparatus of scholarly
+writing, in a single source file you can read, edit, and archive.
+
+<# Where to go next #>
+
+For the architecture behind the two-layer model — why Layer 1 is canonical, how
+the shorthand lifts to it, and where JATS fits — read the
+<a href="design.html" | Design article>. The **Authoring Guide**, covering every element in
+depth, and the **Layer 1 Reference**, cataloguing the output vocabulary, are the
+next documents to land on this site. Until then, the best next step is the one
+right beside this text: keep editing, and watch what changes.
+
+<data>
+<library |
+@misc{gruber2004,
+  author = {Gruber, John},
+  title  = {Markdown},
+  year   = {2004},
+  url    = {https://daringfireball.net/projects/markdown/}
+}
+@misc{whatwg2024,
+  author = {{WHATWG}},
+  title  = {HTML Living Standard},
+  year   = {2024},
+  url    = {https://html.spec.whatwg.org/}
+}
+@techreport{jats2021,
+  author      = {{National Information Standards Organization}},
+  title       = {JATS: Journal Article Tag Suite, version 1.3},
+  number      = {ANSI/NISO Z39.96-2021},
+  institution = {NISO},
+  year        = {2021},
+  url         = {https://www.niso.org/standards-committees/jats}
+}
+>
+</data>
+
+<bibliography>
+</bibliography>

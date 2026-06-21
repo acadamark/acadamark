@@ -1,0 +1,15 @@
+<meta type=website>
+	<title>Enscribe</title>
+</meta>
+
+<nav>
+	<item src="home" +homepage | Home>
+	<item src="design" | Design>
+	<item src=authoring_guide | Authoring Guide>
+	<nav-group +dropdown | Reference>
+		<item src="enscribe_vocabulary" | Enscribe Shorthand Vocabulary>
+		<item src="layer_1_vocabulary" | Layer 1 Vocabulary>
+		<item src="jats" | JATS Import and Export>
+		</nav-group>
+	<item src="try-it" | Try It!>
+</nav>

@@ -1,0 +1,542 @@
+<section #l1-aside | `<aside>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<aside>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `note` `sidebar` `callout` `warning` `tip` `info` `caution` | Optional classification of the aside's role. Affects rendering (callouts get visual emphasis; sidebars get layout treatment). Maps to JATS via boxed-text content-type at export. |
+| `title` | kwarg |  | Optional title rendered at the top of the aside (the frameable title-top convention, #31). Lifts to a <title> child tag at the normalize-to-canonical gate; the child form is equivalent. |
+| `caption` | kwarg |  | Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the "Box N." label folded in when numbered. Lifts to a <caption> child tag at the gate. |
+| `+numbered` | boolean | default `false` | Whether this aside is numbered. **Off by default** (boxed prose is usually a one-off callout). When +numbered, the aside counts in its OWN "Box N" series (the `box` counter / ref-prefix `box`), not the figure counter. |
+| `+border` | boolean | default `true` | Frameable surface (#31). **On by default for boxed prose** — the visual box is the point of a callout / sidebar. Use -border to suppress the outline. |
+
+Produced by: canonical `<aside>`.
+
+<sub-section | Examples>
+
+<code #code:l1-aside-1>
+<aside | A side note about the elephant.>
+</code>
+
+<minipage #mp:l1-aside-1>
+<aside | A side note about the elephant.>
+</minipage>
+
+<code #code:l1-aside-2>
+<aside type=warning .important | Be careful here.>
+</code>
+
+<minipage #mp:l1-aside-2>
+<aside type=warning .important | Be careful here.>
+</minipage>
+
+<code #code:l1-aside-3>
+<aside type=callout |
+This is a multi-line callout.
+
+It can contain multiple paragraphs and other content like
+<strong | emphasis> and inline references.
+>
+</code>
+
+<minipage #mp:l1-aside-3>
+<aside type=callout |
+This is a multi-line callout.
+
+It can contain multiple paragraphs and other content like
+<strong | emphasis> and inline references.
+>
+</minipage>
+
+</section>
+
+<section #l1-blockquote | `<blockquote>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<blockquote>` · JATS `<disp-quote or epigraph>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `cite` | kwarg |  | URL of the source being quoted. Maps to HTML's standard cite attribute on <blockquote>. For inline citation references (citing a bibliography entry), use a <cite> element inside the blockquote instead. |
+| `type` | kwarg | `verse` `dialogue` `epigraph` `pullquote` `other` | Optional classification of the quotation's role. Affects styling and may affect JATS export. |
+
+Produced by: canonical `<blockquote>` · markdown `> …` · alias `<quote>`.
+
+<sub-section | Examples>
+
+<code #code:l1-blockquote-1>
+<quote | A short quotation.>
+</code>
+
+<minipage #mp:l1-blockquote-1>
+<quote | A short quotation.>
+</minipage>
+
+*The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at Layer 1.*
+
+<code #code:l1-blockquote-2>
+<quote cite=https://example.com/source |
+A longer quotation that may contain multiple paragraphs.
+
+The second paragraph of the quotation.
+>
+</code>
+
+<minipage #mp:l1-blockquote-2>
+<quote cite=https://example.com/source |
+A longer quotation that may contain multiple paragraphs.
+
+The second paragraph of the quotation.
+>
+</minipage>
+
+<code #code:l1-blockquote-3>
+<quote type=epigraph |
+All happy families are alike; each unhappy family is unhappy in its own way.
+>
+</code>
+
+<minipage #mp:l1-blockquote-3>
+<quote type=epigraph |
+All happy families are alike; each unhappy family is unhappy in its own way.
+>
+</minipage>
+
+<code #code:l1-blockquote-4>
+<blockquote | Same as <quote> but using the explicit Layer 1 name.>
+</code>
+
+*Render pending — the example source has an unescaped `<…>` tag-mention the parser consumes into an empty nested element (issue #277).*
+
+*Authors can also write &lt;blockquote&gt; directly. Both forms produce the same Layer 1 output.*
+
+</section>
+
+<section #l1-dd | `<dd>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<dd>` · JATS `<def>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<dd>`.
+
+<sub-section | Examples>
+
+<code #code:l1-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+</code>
+
+<minipage #mp:l1-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+</minipage>
+
+*A definition-list description. Appears as a child of &lt;dl&gt;, following the term it defines.*
+
+<code #code:l1-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
+</code>
+
+<minipage #mp:l1-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
+</minipage>
+
+*Multi-paragraph descriptions are valid — the pipe content's paragraph structure is preserved.*
+
+</section>
+
+<section #l1-details | `<details>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<details>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `open` | kwarg | `true` `false` | HTML's open attribute on <details>. When present, the disclosure is expanded by default. Either +open or open=true form works; absence (or -open / open=false) renders collapsed. |
+
+Produced by: canonical `<details>`.
+
+<sub-section | Examples>
+
+<code #code:l1-details-1>
+<details>
+  <summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+</details>
+</code>
+
+<minipage #mp:l1-details-1>
+<details>
+  <summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+</details>
+</minipage>
+
+*The canonical shape: a &lt;summary&gt; for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.*
+
+<code #code:l1-details-2>
+<details +open>
+  <summary | Always-expanded section>
+  This disclosure is expanded by default.
+</details>
+</code>
+
+<minipage #mp:l1-details-2>
+<details +open>
+  <summary | Always-expanded section>
+  This disclosure is expanded by default.
+</details>
+</minipage>
+
+*The +open boolean kwarg expands the disclosure by default. Maps to HTML's standard open attribute.*
+
+</section>
+
+<section #l1-dl | `<dl>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<dl>` · JATS `<def-list>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<dl>`.
+
+<sub-section | Examples>
+
+<code #code:l1-dl-1>
+<dl>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+  <dt | Layer 1>
+  <dd | The canonical semantic HTML vocabulary.>
+  <dt | Layer 2>
+  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+</dl>
+</code>
+
+<minipage #mp:l1-dl-1>
+<dl>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+  <dt | Layer 1>
+  <dd | The canonical semantic HTML vocabulary.>
+  <dt | Layer 2>
+  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+</dl>
+</minipage>
+
+*Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural authoring pattern.*
+
+<code #code:l1-dl-2>
+<dl .compact>
+  <dt | term-1>
+  <dd | First definition of term-1.>
+  <dd | Second definition of term-1.>
+</dl>
+</code>
+
+<minipage #mp:l1-dl-2>
+<dl .compact>
+  <dt | term-1>
+  <dd | First definition of term-1.>
+  <dd | Second definition of term-1.>
+</dl>
+</minipage>
+
+*One term with multiple definitions — a valid HTML pattern.*
+
+</section>
+
+<section #l1-dt | `<dt>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<dt>` · JATS `<term>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<dt>`.
+
+<sub-section | Examples>
+
+<code #code:l1-dt-1>
+<dt | enscribe>
+</code>
+
+<minipage #mp:l1-dt-1>
+<dt | enscribe>
+</minipage>
+
+*A definition-list term. Appears as a child of &lt;dl&gt;.*
+
+<code #code:l1-dt-2>
+<dt | <code | strict-mode>>
+</code>
+
+<minipage #mp:l1-dt-2>
+<dt | <code | strict-mode>>
+</minipage>
+
+*Inline markup in a term. The recursive-content pass parses the pipe content normally.*
+
+</section>
+
+<section #l1-endnotes | `<endnotes>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<endnotes>` · JATS `<fn-group>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-glossary | `<glossary>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<glossary>` · JATS `<glossary>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<glossary>`.
+
+<sub-section | Examples>
+
+<code #code:l1-glossary-1>
+<glossary #project-terms>
+  <glossary-entry>
+    <dt | enscribe>
+    <dd | An academic publishing system built on HTML+CSS+JS.>
+  </glossary-entry>
+  <glossary-entry>
+    <dt | Layer 1>
+    <dd | The canonical semantic HTML vocabulary.>
+  </glossary-entry>
+</glossary>
+</code>
+
+*Render pending — indented long-form closing tag not recognised → tag-error (issue #276).*
+
+*A glossary with two entries. Each &lt;glossary-entry&gt; uses &lt;dt&gt;/&lt;dd&gt; for its term and definition (the same shapes &lt;dl&gt; uses), wrapped in the entry's own envelope for cross-reference / styling.*
+
+</section>
+
+<section #l1-glossary-entry | `<glossary-entry>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<glossary-entry>` · JATS `<def-item>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<glossary-entry>`.
+
+<sub-section | Examples>
+
+<code #code:l1-glossary-entry-1>
+<glossary-entry #term:enscribe>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+</glossary-entry>
+</code>
+
+<minipage #mp:l1-glossary-entry-1>
+<glossary-entry #term:enscribe>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+</glossary-entry>
+</minipage>
+
+*A single glossary entry. The id uses the "term:" colon-prefix convention so cross-references like &lt;ref @term:enscribe&gt; can resolve into the entry.*
+
+</section>
+
+<section #l1-hr | `<hr>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<hr>` · JATS `<hr>` · `content` `none`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `scene-break` `section-break` `ornamental` `decorative` `other` | Optional classification of the thematic break's role. Affects rendering (scene breaks render as blank space; ornamental breaks render with decorative characters or images). |
+
+Produced by: canonical `<hr>` · markdown `---`.
+
+<sub-section | Examples>
+
+<code #code:l1-hr-1>
+<hr>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<code #code:l1-hr-2>
+<hr type=scene-break>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<code #code:l1-hr-3>
+<p | First paragraph.>
+
+<hr type=ornamental>
+
+<p | Second paragraph after a thematic break.>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+</section>
+
+<section #l1-note | `<note>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<note>` · JATS `<fn>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `placement` | kwarg | `end` `foot` `side` | Determines where the note content is collected. "end" collects at article-back; "foot" collects at article-back (distinguished from "end" by CSS class on the note-list); "side" renders the content inline-adjacent to the marker. Document-wide default is "end". |
+| `position` | kwarg | `end` `foot` `side` | Legacy alias for "placement" (same values, same data-note-placement output). Retained for backwards compatibility; "placement" is preferred for new documents. |
+| `type` | kwarg | `substantive` `technical` `editorial` `translator` `other` | Optional classification. Most notes are substantive (authorial commentary). |
+
+Produced by: canonical `<note>`.
+
+<sub-section | Examples>
+
+<code #code:l1-note-1>
+Some text<note | A substantive note about the text.>.
+</code>
+
+<minipage #mp:l1-note-1>
+Some text<note | A substantive note about the text.>.
+</minipage>
+
+<code #code:l1-note-2>
+A claim<note placement=foot | A footnote.>.
+</code>
+
+<minipage #mp:l1-note-2>
+A claim<note placement=foot | A footnote.>.
+</minipage>
+
+<code #code:l1-note-3>
+A definition<note placement=side | Inline-adjacent note.>.
+</code>
+
+<minipage #mp:l1-note-3>
+A definition<note placement=side | Inline-adjacent note.>.
+</minipage>
+
+</section>
+
+<section #l1-note-list | `<note-list>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<note-list>` · JATS `<fn-group>` · `content` `structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `end-notes` `chapter-notes` `footnotes-collected` `other` |  |
+
+Produced by: canonical `<note-list>`.
+
+</section>
+
+<section #l1-p | `<p>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<p>` · JATS `<p>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `normal` `lead` `intro` `abstract` `summary` `other` | Optional classification of the paragraph's role. Mostly used for styling (lead paragraphs render larger; abstract paragraphs styled distinctly). |
+
+Produced by: canonical `<p>`.
+
+<sub-section | Examples>
+
+<code #code:l1-p-1>
+<p | A simple paragraph.>
+</code>
+
+<minipage #mp:l1-p-1>
+<p | A simple paragraph.>
+</minipage>
+
+<code #code:l1-p-2>
+A paragraph written without explicit tags.
+</code>
+
+<minipage #mp:l1-p-2>
+A paragraph written without explicit tags.
+</minipage>
+
+*In most cases, paragraphs do not need to be written with explicit tags. Plain markdown handles paragraph separation: blank lines delineate paragraphs. The explicit &lt;p&gt; form is used when attributes (id, classes, type) are needed.*
+
+<code #code:l1-p-3>
+<p type=lead | The opening paragraph of an article.>
+</code>
+
+<minipage #mp:l1-p-3>
+<p type=lead | The opening paragraph of an article.>
+</minipage>
+
+</section>
+
+<section #l1-summary | `<summary>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<summary>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<summary>`.
+
+<sub-section | Examples>
+
+<code #code:l1-summary-1>
+<summary | More background>
+</code>
+
+<minipage #mp:l1-summary-1>
+<summary | More background>
+</minipage>
+
+*The visible heading of a &lt;details&gt; disclosure. Appears as a child of &lt;details&gt;.*
+
+<code #code:l1-summary-2>
+<summary | Click to reveal the <em | hidden> details>
+</code>
+
+<minipage #mp:l1-summary-2>
+<summary | Click to reveal the <em | hidden> details>
+</minipage>
+
+*Inline markup in a summary. The recursive-content pass parses the pipe content normally.*
+
+</section>
+

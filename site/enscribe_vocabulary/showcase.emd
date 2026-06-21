@@ -1,0 +1,100 @@
+<section #sh-showcase-1 | A short paper>
+
+Meta, sections, inline + display math, a theorem, a numbered figure, and a cross-reference, in one document. (Citations are authored with `<cite>` + `<library>`; they resolve via the build / async render path, not shown live here — see issue #273.)
+
+<code #code:sh-showcase-1>
+<meta type=article>
+<title | On the Convergence of Iterative Maps>
+<author | A. Researcher>
+</meta>
+
+<section #sec:intro | Introduction>
+
+We study the fixed point of an iterative map $x_{n+1} = f(x_n)$. The displayed relation
+
+<$$ #eqn:fix | x^\* = f(x^\*) $$>
+
+defines the fixed point referenced throughout.
+
+<section #sec:result | Result>
+
+<theorem #thm:main | A contraction on a complete space has a unique fixed point.>
+
+The schematic in <ref @fig:map> sketches the iteration, and equation <ref @eqn:fix> states the fixed-point condition.
+
+<fig #fig:map src=iteration.png | The iteration approaching its fixed point.>
+</code>
+
+<minipage #mp:sh-showcase-1>
+<meta type=article>
+<title | On the Convergence of Iterative Maps>
+<author | A. Researcher>
+</meta>
+
+<section #sec:intro | Introduction>
+
+We study the fixed point of an iterative map $x_{n+1} = f(x_n)$. The displayed relation
+
+<$$ #eqn:fix | x^\* = f(x^\*) $$>
+
+defines the fixed point referenced throughout.
+
+<section #sec:result | Result>
+
+<theorem #thm:main | A contraction on a complete space has a unique fixed point.>
+
+The schematic in <ref @fig:map> sketches the iteration, and equation <ref @eqn:fix> states the fixed-point condition.
+
+<fig #fig:map src=iteration.png | The iteration approaching its fixed point.>
+</minipage>
+
+</section>
+
+<section #sh-showcase-2 | A boxed worked example>
+
+A definition, a list, a table, and a callout — the everyday block constructs together.
+
+<code #code:sh-showcase-2>
+<section #sec:method | Method>
+
+<definition #def:residual | The *residual* is the difference between observed and predicted values.>
+
+The procedure has three steps:
+
+<list ordered>
+<li> Fit the model.
+<li> Compute residuals.
+<li> Inspect their distribution.
+</list>
+
+<table csv caption="Residual summary." |
+stat,value
+mean,0.01
+sd,0.98>
+
+<aside type=tip | Standardize residuals before comparing across models.>
+</code>
+
+<minipage #mp:sh-showcase-2>
+<section #sec:method | Method>
+
+<definition #def:residual | The *residual* is the difference between observed and predicted values.>
+
+The procedure has three steps:
+
+<list ordered>
+<li> Fit the model.
+<li> Compute residuals.
+<li> Inspect their distribution.
+</list>
+
+<table csv caption="Residual summary." |
+stat,value
+mean,0.01
+sd,0.98>
+
+<aside type=tip | Standardize residuals before comparing across models.>
+</minipage>
+
+</section>
+
