@@ -239,6 +239,15 @@ function parseCsvLine(line, delimiter) {
   const cells = [];
   let pos = 0;
   for (;;) {
+    // #271: a space after the comma delimiter must not defeat a quoted field —
+    // `, "x, y"` should parse the quote the same as `,"x, y"`. Skip optional
+    // leading whitespace before the opening-quote test. CSV (`,`) ONLY: a TSV
+    // cell may legitimately begin with spaces (the tab is the delimiter), so
+    // TSV behavior is left intact. For unquoted CSV cells this is a no-op —
+    // they are trimmed below anyway — so only the quoted case changes.
+    if (delimiter === ',') {
+      while (line[pos] === ' ' || line[pos] === '\t') pos++;
+    }
     if (line[pos] === '"') {
       // Quoted field: may contain the delimiter, newlines, and doubled quotes.
       pos++; // skip opening quote

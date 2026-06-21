@@ -368,6 +368,18 @@ export function run() {
     console.log('PASS: table handler: parseCsv no phantom trailing cell (quoted final field)');
   }
 
+  // ─── #271: a space after the comma must not defeat a quoted field ─────────────
+  // `, "x, y"` is standard-CSV-tolerant and should parse the quote exactly as
+  // `,"x, y"` does — the leading space is skipped before the quote test.
+  {
+    const row = (text) => parseCsv(text, { hasHeaders: false }).rows[0];
+    assert.deepEqual(row('label, "x, y"'), ['label', 'x, y'], 'space-after-comma: quote honored, no inner split');
+    assert.deepEqual(row('label,"x, y"'), ['label', 'x, y'], 'no-space form still parses identically');
+    assert.deepEqual(row('a,  "b, c",  "d"'), ['a', 'b, c', 'd'], 'multiple spaces, multiple quoted fields');
+    assert.deepEqual(row('a, plain, c'), ['a', 'plain', 'c'], 'unquoted fields after a space are unaffected (still trimmed)');
+    console.log('PASS: table handler: #271 space-after-comma does not defeat a quoted CSV field');
+  }
+
   // ─── render: a quoted comma-bearing last column → header width == body width ──
   {
     const node = makeNode({ positional: ['csv'], content: 'name,tags\nA,"x, y, z"\nB,"p, q"' });
