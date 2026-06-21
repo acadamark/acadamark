@@ -718,7 +718,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "Frame opt-in numbering",
+                      "value": "Frame numbering",
                       "position": {
                         "start": {
                           "line": 1,
@@ -727,8 +727,8 @@
                         },
                         "end": {
                           "line": 1,
-                          "column": 24,
-                          "offset": 23
+                          "column": 17,
+                          "offset": 16
                         }
                       }
                     }
@@ -741,44 +741,17 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "Frames default to unnumbered (per ",
+                      "value": "Frames are numbered by default (#272), like figures and tables. A one-off\ncallout opts out of the figure counter with ",
                       "position": {
                         "start": {
                           "line": 42,
                           "column": 1,
-                          "offset": 1362
+                          "offset": 1355
                         },
                         "end": {
-                          "line": 42,
-                          "column": 35,
-                          "offset": 1396
-                        }
-                      }
-                    },
-                    {
-                      "type": "element",
-                      "tagName": "code",
-                      "properties": {},
-                      "children": [
-                        {
-                          "type": "text",
-                          "value": "frame.md"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "value": "'s vocab default). The\nfollowing frame has no ",
-                      "position": {
-                        "start": {
-                          "line": 42,
+                          "line": 43,
                           "column": 45,
-                          "offset": 1406
-                        },
-                        "end": {
-                          "line": 43,
-                          "column": 24,
-                          "offset": 1452
+                          "offset": 1473
                         }
                       }
                     },
@@ -789,23 +762,23 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "+numbered"
+                          "value": "-numbered"
                         }
                       ]
                     },
                     {
                       "type": "text",
-                      "value": " marker, so no number registers:",
+                      "value": ", so no number registers:",
                       "position": {
                         "start": {
                           "line": 43,
-                          "column": 35,
-                          "offset": 1463
+                          "column": 56,
+                          "offset": 1484
                         },
                         "end": {
                           "line": 43,
-                          "column": 67,
-                          "offset": 1495
+                          "column": 81,
+                          "offset": 1509
                         }
                       }
                     }
@@ -814,12 +787,12 @@
                     "start": {
                       "line": 42,
                       "column": 1,
-                      "offset": 1362
+                      "offset": 1355
                     },
                     "end": {
                       "line": 43,
-                      "column": 67,
-                      "offset": 1495
+                      "column": 81,
+                      "offset": 1509
                     }
                   }
                 },
@@ -857,17 +830,17 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "This one explicitly opts in:",
+                      "value": "This frame is numbered (the default) and cross-referenceable via its id:",
                       "position": {
                         "start": {
                           "line": 47,
                           "column": 1,
-                          "offset": 1575
+                          "offset": 1599
                         },
                         "end": {
                           "line": 47,
-                          "column": 29,
-                          "offset": 1603
+                          "column": 73,
+                          "offset": 1671
                         }
                       }
                     }
@@ -876,12 +849,12 @@
                     "start": {
                       "line": 47,
                       "column": 1,
-                      "offset": 1575
+                      "offset": 1599
                     },
                     "end": {
                       "line": 47,
-                      "column": 29,
-                      "offset": 1603
+                      "column": 73,
+                      "offset": 1671
                     }
                   }
                 },
@@ -950,17 +923,17 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "The opt-in frame counts as figure 3.",
+                      "value": "The numbered frame is figure 4 in the document figure sequence.",
                       "position": {
                         "start": {
                           "line": 53,
                           "column": 1,
-                          "offset": 1689
+                          "offset": 1747
                         },
                         "end": {
                           "line": 53,
-                          "column": 37,
-                          "offset": 1725
+                          "column": 64,
+                          "offset": 1810
                         }
                       }
                     }
@@ -969,12 +942,12 @@
                     "start": {
                       "line": 53,
                       "column": 1,
-                      "offset": 1689
+                      "offset": 1747
                     },
                     "end": {
                       "line": 53,
-                      "column": 37,
-                      "offset": 1725
+                      "column": 64,
+                      "offset": 1810
                     }
                   }
                 }
@@ -1020,12 +993,12 @@
                         "start": {
                           "line": 57,
                           "column": 1,
-                          "offset": 1753
+                          "offset": 1838
                         },
                         "end": {
                           "line": 57,
                           "column": 41,
-                          "offset": 1793
+                          "offset": 1878
                         }
                       }
                     },
@@ -1047,12 +1020,12 @@
                         "start": {
                           "line": 57,
                           "column": 49,
-                          "offset": 1801
+                          "offset": 1886
                         },
                         "end": {
                           "line": 58,
                           "column": 63,
-                          "offset": 1884
+                          "offset": 1969
                         }
                       }
                     }
@@ -1061,12 +1034,12 @@
                     "start": {
                       "line": 57,
                       "column": 1,
-                      "offset": 1753
+                      "offset": 1838
                     },
                     "end": {
                       "line": 58,
                       "column": 63,
-                      "offset": 1884
+                      "offset": 1969
                     }
                   }
                 },
@@ -1155,12 +1128,12 @@
                         "start": {
                           "line": 62,
                           "column": 1,
-                          "offset": 1945
+                          "offset": 2030
                         },
                         "end": {
                           "line": 62,
                           "column": 49,
-                          "offset": 1993
+                          "offset": 2078
                         }
                       }
                     }
@@ -1169,12 +1142,12 @@
                     "start": {
                       "line": 62,
                       "column": 1,
-                      "offset": 1945
+                      "offset": 2030
                     },
                     "end": {
                       "line": 62,
                       "column": 49,
-                      "offset": 1993
+                      "offset": 2078
                     }
                   }
                 }
@@ -1194,7 +1167,7 @@
     "end": {
       "line": 63,
       "column": 1,
-      "offset": 1994
+      "offset": 2079
     }
   }
 }

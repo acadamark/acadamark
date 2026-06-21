@@ -215,7 +215,7 @@
       "id": "RQ-FRM-M9",
       "area": "RQ-FRM",
       "kind": "M",
-      "asserts": "a frameable adds its wrapper only when it carries something to frame. **`fig` and `frame` always wrap** in `<figure>` (the figure / bordered box is the construct itself). **`table` / `csv` / `tsv` always render** as `<table>`. **`svg`, `mermaid`, `abc` wrap only when captioned, titled, or numbered** — bare, they emit the lone `<svg>` / pass-through contract. Because `svg` / `mermaid` / `abc` are **numbered by default** (they share the figure counter), a bare `<svg>` / `<mermaid>` / `<abc>` *is* numbered and therefore frames; `-numbered` (with no caption or title) is what yields the truly lone form. (`frame` is unnumbered by default but always wraps, because its border/box — not a number — is the point.)"
+      "asserts": "a frameable adds its wrapper only when it carries something to frame. **`fig` and `frame` always wrap** in `<figure>` (the figure / bordered box is the construct itself). **`table` / `csv` / `tsv` always render** as `<table>`. **`svg`, `mermaid`, `abc` wrap only when captioned, titled, or numbered** — bare, they emit the lone `<svg>` / pass-through contract. Because `svg` / `mermaid` / `abc` are **numbered by default** (they share the figure counter), a bare `<svg>` / `<mermaid>` / `<abc>` *is* numbered and therefore frames; `-numbered` (with no caption or title) is what yields the truly lone form. (`frame` is numbered by default (#272) and always wraps regardless of its number, because its border/box — not a number — is the point; `-numbered` drops the number but still wraps.)"
     },
     {
       "id": "RQ-FRM-M10",

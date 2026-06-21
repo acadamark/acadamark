@@ -34,12 +34,12 @@ enscribe_attributes:
   booleans:
     numbered:
       handled_by: handler
-      default: false
+      default: true
       notes: |
         Whether this frame participates in the document-wide figure
-        sequence. **Off by default for frame** (unlike <fig>/<svg>/etc.)
-        because a generic frame is typically a sidebar / callout /
-        annotation, not a numbered float. Use +numbered to opt in.
+        sequence. **On by default** (#272: captioned floats and frames are
+        numbered by default, consistent with <fig>/<table>/<svg>). Use
+        -numbered to opt out for a one-off sidebar / callout / annotation.
     border:
       handled_by: handler
       default: true
@@ -89,7 +89,7 @@ shorthand_examples:
     notes: |
       With a title rendered at the top.
   - source: |
-      <frame #fig:method-box +numbered caption="Workflow steps" |
+      <frame #fig:method-box caption="Workflow steps" |
       1. Collect data.
       2. Clean.
       3. Model.
@@ -102,8 +102,8 @@ shorthand_examples:
         <figcaption>Figure 1. Workflow steps</figcaption>
       </figure>
     notes: |
-      Numbered frame, opted in via +numbered. Shares the figure
-      counter with <fig>/<svg>/<mermaid>/<abc>.
+      Numbered by default (#272). Shares the figure counter with
+      <fig>/<svg>/<mermaid>/<abc>; use -numbered for an unnumbered frame.
 interpreter_strategy: handler
 handler_module: ./handlers/frame.js
 handler_responsibilities:
@@ -124,10 +124,10 @@ A generic frameable container — an outline-box wrapper around arbitrary conten
 
 ## Frameable membership
 
-`<frame>` is the generic member of the frameable class. Unlike `<fig>`/`<svg>` (which default to numbered+borderless), `<frame>` defaults the opposite way: **borderless by default → no, +border is default-true; numbered by default → no, default-false**. The reasoning:
+`<frame>` is the generic member of the frameable class. It is **bordered and numbered by default** — border default-true (the box is the point), and numbered default-true (#272: floats are numbered by default, consistent with `<fig>`/`<table>`/`<svg>`). The reasoning:
 
 - A generic `<frame>` is most often used as a visual callout where the frame IS the point — so border defaults on.
-- A generic `<frame>` is not always a numbered float — it's often a one-off annotation that doesn't need cross-referencing. So numbering defaults off; authors opt in via `+numbered` when they want it.
+- #272: rather than split frames from the other captioned floats, everything is numbered by default. An author who wants a one-off annotation that doesn't need cross-referencing opts out per-frame with `-numbered` (or document-wide via `<config>`).
 
 ## Authoring patterns
 
@@ -152,12 +152,12 @@ The title renders at the top of the frame; the `type` is preserved as a data att
 **Numbered frame (callable from elsewhere).**
 
 ```
-<frame #fig:setup +numbered caption="Experimental setup" |
+<frame #fig:setup caption="Experimental setup" |
 …description…
 >
 ```
 
-Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure N".
+Frames are numbered by default and share the figure counter; `<ref @fig:setup>` resolves to "Figure N". Add `-numbered` for an unnumbered callout.
 
 ## Attributes
 
@@ -166,7 +166,7 @@ Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure
 - `type` — classification (note / warning / tip / methodology / etc.). Renders as `data-frame-type` for CSS targeting.
 - `+border` / `-border` — the frameable surface. **Default: on.**
 - `border=<name>` — select a named border look — `accent`, `thick`, `dashed`, or `subtle` (the default theme's starter menu); implies the border on. The document names the look; the theme defines how it renders (#58). Emitted as a `frameable-border-<name>` modifier class. See `frameable.md`.
-- `+numbered` / `-numbered` — the frameable surface. **Default: off.**
+- `+numbered` / `-numbered` — the frameable surface. **Default: on** (#272). Use `-numbered` for an unnumbered callout.
 
 ## JATS mapping
 

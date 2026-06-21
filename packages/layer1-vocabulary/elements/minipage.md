@@ -31,10 +31,10 @@ enscribe_attributes:
   booleans:
     numbered:
       handled_by: handler
-      default: false
+      default: true
       notes: |
-        Whether this minipage is numbered. **Off by default** (most minipages
-        are layout boxes, not cross-referenced floats). When +numbered, the
+        Whether this minipage is numbered. **On by default** (#272: floats are
+        numbered by default; use -numbered for a layout-only box). A numbered
         minipage counts in its OWN "Minipage N" series (the `minipage` counter,
         config key number-minipages, ref-prefix `mp`) — NOT the figure counter.
         A sealed sub-document is distinct from a figure, and its private body
@@ -81,7 +81,7 @@ shorthand_examples:
       for <minipage>, so the class appears automatically. The body renders as
       sealed Layer 1.
   - source: |
-      <minipage #mp:compare +numbered caption="Side-by-side comparison" |
+      <minipage #mp:compare caption="Side-by-side comparison" |
       A figure here counts privately.
 
       <fig #fig:left src="left.png" | Left panel.>
@@ -95,7 +95,7 @@ shorthand_examples:
         <figcaption>Minipage 1. Side-by-side comparison</figcaption>
       </figure>
     notes: |
-      Numbered minipage, opted in via +numbered. It counts in its own
+      Numbered by default (#272). It counts in its own
       "Minipage N" series — `<ref @mp:compare>` resolves to "minipage 1". The two
       inner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT
       the document's: a document <fig> elsewhere is unaffected, and an outside
@@ -112,7 +112,7 @@ handler_responsibilities:
 
 # `<minipage>`
 
-A sealed, self-contained box holding recursively-processed content — enscribe's analogue of LaTeX's `minipage`. Outwardly it is an ordinary **frameable** (id, title, caption, opt-in numbering, optional border, the `<figure>` wrapper), so it is itself cross-referenceable like any float. Inwardly its content is a **sealed sub-document**: processed in its own pipeline run with its own registry.
+A sealed, self-contained box holding recursively-processed content — enscribe's analogue of LaTeX's `minipage`. Outwardly it is an ordinary **frameable** (id, title, caption, numbering, optional border, the `<figure>` wrapper), so it is itself cross-referenceable like any float. Inwardly its content is a **sealed sub-document**: processed in its own pipeline run with its own registry.
 
 ## Semantic intent
 
@@ -129,9 +129,9 @@ Everything a minipage does follows from "process the body as its own sealed sub-
 
 ## Frameable membership
 
-`<minipage>` is a frameable member. Unlike `<fig>`/`<svg>` (numbered + borderless by default), it defaults the opposite way, like `<frame>`/`<aside>`: **border default-true** (the box is the point) and **numbered default-false** (most minipages are layout boxes, not cross-referenced floats; opt in with `+numbered`).
+`<minipage>` is a frameable member. Like `<fig>`/`<svg>` it is **numbered by default** (#272), and like `<frame>`/`<aside>` it is **bordered by default**: **border default-true** (the box is the point) and **numbered default-true** (a layout-only box opts out with `-numbered`).
 
-A numbered minipage counts in its OWN "Minipage N" series — the `minipage` counter and the `mp` ref-prefix — not the figure counter (a sealed sub-document is distinct from a figure, and must not consume document figure numbers). `<minipage #mp:setup +numbered>` makes `<ref @mp:setup>` resolve to "minipage N".
+A numbered minipage counts in its OWN "Minipage N" series — the `minipage` counter and the `mp` ref-prefix — not the figure counter (a sealed sub-document is distinct from a figure, and must not consume document figure numbers). `<minipage #mp:setup>` makes `<ref @mp:setup>` resolve to "minipage N"; add `-numbered` for an unnumbered layout box.
 
 ## No external files
 
@@ -143,7 +143,7 @@ The body is sealed inline content with no outward pulls. `@src` / `<data>` (the 
 - `caption` — optional caption at the bottom (with "Minipage N." prefix when numbered).
 - `+border` / `-border` — the frameable surface. **Default: on.**
 - `border=<name>` — a named border look (`accent` / `thick` / `dashed` / `subtle`); implies the border on (#58).
-- `+numbered` / `-numbered` — the frameable surface. **Default: off.**
+- `+numbered` / `-numbered` — the frameable surface. **Default: on** (#272). Use `-numbered` for a layout-only box.
 
 ## JATS mapping
 

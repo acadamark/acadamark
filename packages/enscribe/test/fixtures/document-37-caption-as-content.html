@@ -1544,17 +1544,17 @@ note-list li {
       </p>
     </section>
     <section>
-      <section-title>Frame opt-in numbering</section-title>
+      <section-title>Frame numbering</section-title>
       <p>
-        Frames default to unnumbered (per <code>frame.md</code>’s vocab default). The
-        following frame has no <code>+numbered</code> marker, so no number registers:
+        Frames are numbered by default (#272), like figures and tables. A one-off
+        callout opts out of the figure counter with <code>-numbered</code>, so no number registers:
       </p>
       <figure class="frameable-border">A bordered callout that doesn’t participate in the figure counter.</figure>
-      <p>This one explicitly opts in:</p>
+      <p>This frame is numbered (the default) and cross-referenceable via its id:</p>
       <figure id="fig:opt-in" class="frameable-border">Body content here.
         <figcaption><span class="figure-label">Figure 4.</span> Numbered frame</figcaption>
       </figure>
-      <p>The opt-in frame counts as figure 3.</p>
+      <p>The numbered frame is figure 4 in the document figure sequence.</p>
     </section>
     <section>
       <section-title>Title wiring</section-title>

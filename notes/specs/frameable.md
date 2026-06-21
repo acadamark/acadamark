@@ -137,18 +137,23 @@ overridable.
 | Content float | `<fig>`, `<svg>`, `<mermaid>`, `<abc>`, DSL blocks | **off** | **on** |
 | Content float | `<table>`, `<csv>`, `<tsv>` | off | on |
 | Future member (surface unbuilt) | `<code>` / `<code-block>` | — | — *(no frameable surface or numbering today; both are future work)* |
-| Boxed prose | `<frame>`, `<aside>` | **on** | **off** |
+| Boxed float | `<frame>`, `<minipage>` | **on** | **on** |
+| Boxed prose | `<aside>` | **on** | **off** |
 
-The rule: a **float** is, by convention, an unboxed numbered object — a
-figure rarely wants an outer rule, but does want a number. A **box** is,
-by convention, the opposite — the visual frame is the point, and it is
-usually a one-off that needs no cross-reference number. "Framed by
-default, switchable off" therefore holds for the boxed-prose members;
-the float members start unframed and switch a border *on* when wanted.
+The rule (#272): **numbered by default is now universal across the
+frameables** — a content float wants a number, and a boxed float (`<frame>`,
+`<minipage>`) is numbered too so authors don't have to remember a per-member
+exception. The lone hold-out is `<aside>`: boxed prose is, by convention, a
+one-off callout that needs no cross-reference number, so it stays
+unnumbered-by-default. Any member's number is switchable: `-numbered` on a
+float/box that should not count, `+numbered` on an `<aside>` that should.
+Border defaults split the other way: floats start unframed and switch a
+border *on* when wanted; boxes are framed by default.
 
 Numbered frameables share the **`figure`** counter by default
-(`<fig>`/`<svg>`/`<mermaid>`/`<abc>`/numbered `<frame>`), except
-`<table>`/`<csv>`/`<tsv>` (the `table` counter).
+(`<fig>`/`<svg>`/`<mermaid>`/`<abc>`/`<frame>`), except `<table>`/`<csv>`/`<tsv>`
+(the `table` counter) and `<minipage>` (its own `minipage` counter, so a sealed
+sub-document never consumes document figure numbers — see `minipage.md`).
 
 `<code>` / `<code-block>` is **not numbered today** (registered
 `numbered: false`), so it has no counter — the `listing` counter that would
@@ -262,11 +267,11 @@ members: JATS import maps `<boxed-text>` back to `<aside>` (carrying
 >
 ```
 
-**Numbered, cross-referenced frame** (opts into a number, shares the
-figure counter):
+**Numbered, cross-referenced frame** (numbered by default since #272, shares
+the figure counter):
 
 ```
-<frame #fig:setup +numbered | <caption | Experimental setup.>>
+<frame #fig:setup | <caption | Experimental setup.>>
 … see <ref @fig:setup> …
 ```
 

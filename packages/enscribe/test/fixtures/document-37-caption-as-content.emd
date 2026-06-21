@@ -37,20 +37,20 @@ search.
 Cross-reference resolves: <ref @fig:zebra> → figure 1, <ref @fig:method>
 → figure 2 (the frame opted in via +numbered).
 
-<section | Frame opt-in numbering>
+<section | Frame numbering>
 
-Frames default to unnumbered (per `frame.md`'s vocab default). The
-following frame has no `+numbered` marker, so no number registers:
+Frames are numbered by default (#272), like figures and tables. A one-off
+callout opts out of the figure counter with `-numbered`, so no number registers:
 
-<frame | A bordered callout that doesn't participate in the figure counter.>
+<frame -numbered | A bordered callout that doesn't participate in the figure counter.>
 
-This one explicitly opts in:
+This frame is numbered (the default) and cross-referenceable via its id:
 
-<frame +numbered #fig:opt-in caption="Numbered frame">
+<frame #fig:opt-in caption="Numbered frame">
 Body content here.
 </frame>
 
-The opt-in frame counts as figure 3.
+The numbered frame is figure 4 in the document figure sequence.
 
 <section | Title wiring>
 

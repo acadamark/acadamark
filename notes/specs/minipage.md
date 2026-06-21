@@ -2,8 +2,9 @@
 
 ## What it is
 A LaTeX-style minipage: a box holding self-contained, recursively-processed content that returns
-Layer 1. Outwardly it is an ordinary **frameable** (caption, title, opt-in numbering, label, ref-prefix,
-the `<figure>` wrapper) — so it is itself cross-referenceable like any float. Inwardly its content is a
+Layer 1. Outwardly it is an ordinary **frameable** (caption, title, numbering — on by default since #272,
+its own `minipage` counter — label, ref-prefix, the `<figure>` wrapper) — so it is itself
+cross-referenceable like any float. Inwardly its content is a
 **sealed sub-document**: processed in its own pipeline run with its own registry.
 
 The seal is the design. Everything Ariel wants from a minipage falls out of "process the body as its own
@@ -90,7 +91,7 @@ A numbered minipage counts in its **own "Minipage N" series** — the `minipage`
 `number-minipages` config suppress key, the `mp` ref-prefix (`<ref @mp:x>` → "minipage N") — **not** the figure
 counter. A sealed sub-document is distinct from a figure and must never consume a document figure number. Like
 `<aside>`'s "Box N", the counter is global (flat), not chapter-scoped. border defaults **true**, numbered defaults
-**false** (opt-in, like `<frame>`). Caption / title are **kwarg-only** (`caption=` / `title=`), not child tags —
+**true** (#272, like `<frame>`; `-numbered` for a layout-only box). Caption / title are **kwarg-only** (`caption=` / `title=`), not child tags —
 the body is opaque, so the gate's frameable-lift opaque guard leaves them as kwargs, the same as every other
 opaque frameable (`<svg>` / `<table>` / `<csv>`); a `<caption>` written inside the pipe is part of the sealed body.
 

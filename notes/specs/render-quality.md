@@ -460,8 +460,9 @@ styling), and the external DSLs (§9, which share the figure counter).
   pass-through contract. Because `svg` / `mermaid` / `abc` are **numbered by
   default** (they share the figure counter), a bare `<svg>` / `<mermaid>` /
   `<abc>` *is* numbered and therefore frames; `-numbered` (with no caption or
-  title) is what yields the truly lone form. (`frame` is unnumbered by default
-  but always wraps, because its border/box — not a number — is the point.)
+  title) is what yields the truly lone form. (`frame` is numbered by default
+  (#272) and always wraps regardless of its number, because its border/box — not
+  a number — is the point; `-numbered` drops the number but still wraps.)
 - **`RQ-FRM-M10`** (aside / boxed prose) — an `<aside>` keeps the semantic
   `<aside>` element (it is **not** wrapped in `<figure>`, since `<figcaption>` is
   invalid outside `<figure>`); its title renders `<p class="title">` (first

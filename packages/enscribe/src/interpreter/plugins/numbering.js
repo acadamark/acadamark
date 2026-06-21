@@ -125,16 +125,19 @@ const NUMBERED_TAGNAMES = new Map([
 ]);
 
 // Phase 3 slice 3c (2026-05-28): registered tagnames whose `numbered` kwarg
-// defaults to FALSE rather than the universal TRUE (today <frame> and <aside>;
-// other frameables like <fig>/<table> default true, suppressed with -numbered).
+// defaults to FALSE rather than the universal TRUE. Most frameables (<fig>/
+// <table>/<frame>/<minipage>/…) default numbered, suppressed with -numbered;
+// #272 (2026-06-21) moved <frame> and <minipage> to numbered-by-default,
+// leaving <aside> (boxed prose callouts) as the lone unnumbered-by-default
+// frameable.
 //
 // #251: derived from the single declared source — the vocab `numbered` default —
 // rather than hand-listed. Scoped to NUMBERED_TAGNAMES (the tagnames this plugin
 // registers), so an element the vocab marks unnumbered-by-default but that this
 // plugin does not register (e.g. <remark>/<proof>, numbered by handlers/theorem.js,
-// never entered in NUMBERED_TAGNAMES) is correctly excluded. Today this yields
-// exactly {frame, aside}; adding a registered frameable with a false vocab default
-// includes it automatically, with no parallel edit here.
+// never entered in NUMBERED_TAGNAMES) is correctly excluded. The set is computed,
+// so flipping a member's vocab `numbered.default` is the only edit needed — this
+// list updates with no parallel change here.
 //
 // Visitor logic: for tagnames in this set, an unset `numbered` kwarg
 // resolves to false → the entry registers as unnumbered (label-only

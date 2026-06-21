@@ -3251,8 +3251,8 @@ const _frame = Object.freeze({
       "booleans": {
         "numbered": {
           "handled_by": "handler",
-          "default": false,
-          "notes": "Whether this frame participates in the document-wide figure\nsequence. **Off by default for frame** (unlike <fig>/<svg>/etc.)\nbecause a generic frame is typically a sidebar / callout /\nannotation, not a numbered float. Use +numbered to opt in.\n",
+          "default": true,
+          "notes": "Whether this frame participates in the document-wide figure\nsequence. **On by default** (#272: captioned floats and frames are\nnumbered by default, consistent with <fig>/<table>/<svg>). Use\n-numbered to opt out for a one-off sidebar / callout / annotation.\n",
         },
         "border": {
           "handled_by": "handler",
@@ -3284,9 +3284,9 @@ const _frame = Object.freeze({
         "notes": "With a title rendered at the top.\n",
       },
       {
-        "source": "<frame #fig:method-box +numbered caption=\"Workflow steps\" |\n1. Collect data.\n2. Clean.\n3. Model.\n>\n",
+        "source": "<frame #fig:method-box caption=\"Workflow steps\" |\n1. Collect data.\n2. Clean.\n3. Model.\n>\n",
         "layer1_html": "<figure class=\"frameable-border\" id=\"fig:method-box\">\n  1. Collect data.\n  2. Clean.\n  3. Model.\n  <figcaption>Figure 1. Workflow steps</figcaption>\n</figure>\n",
-        "notes": "Numbered frame, opted in via +numbered. Shares the figure\ncounter with <fig>/<svg>/<mermaid>/<abc>.\n",
+        "notes": "Numbered by default (#272). Shares the figure counter with\n<fig>/<svg>/<mermaid>/<abc>; use -numbered for an unnumbered frame.\n",
       },
     ],
     "interpreter_strategy": "handler",
@@ -4337,8 +4337,8 @@ const _minipage = Object.freeze({
       "booleans": {
         "numbered": {
           "handled_by": "handler",
-          "default": false,
-          "notes": "Whether this minipage is numbered. **Off by default** (most minipages\nare layout boxes, not cross-referenced floats). When +numbered, the\nminipage counts in its OWN \"Minipage N\" series (the `minipage` counter,\nconfig key number-minipages, ref-prefix `mp`) — NOT the figure counter.\nA sealed sub-document is distinct from a figure, and its private body\nnumbering must not touch the document's figure sequence (#115).\n",
+          "default": true,
+          "notes": "Whether this minipage is numbered. **On by default** (#272: floats are\nnumbered by default; use -numbered for a layout-only box). A numbered\nminipage counts in its OWN \"Minipage N\" series (the `minipage` counter,\nconfig key number-minipages, ref-prefix `mp`) — NOT the figure counter.\nA sealed sub-document is distinct from a figure, and its private body\nnumbering must not touch the document's figure sequence (#115).\n",
         },
         "border": {
           "handled_by": "handler",
@@ -4365,9 +4365,9 @@ const _minipage = Object.freeze({
         "notes": "The simplest case. The handler emits a <figure> wrapper (the vocab\nhtml_output.element `minipage` is only the lookup key for handler-strategy\nentries — the handler controls the actual element). +border is default on\nfor <minipage>, so the class appears automatically. The body renders as\nsealed Layer 1.\n",
       },
       {
-        "source": "<minipage #mp:compare +numbered caption=\"Side-by-side comparison\" |\nA figure here counts privately.\n\n<fig #fig:left src=\"left.png\" | Left panel.>\n<fig #fig:right src=\"right.png\" | Right panel.>\n>\n",
+        "source": "<minipage #mp:compare caption=\"Side-by-side comparison\" |\nA figure here counts privately.\n\n<fig #fig:left src=\"left.png\" | Left panel.>\n<fig #fig:right src=\"right.png\" | Right panel.>\n>\n",
         "layer1_html": "<figure class=\"frameable-border\" id=\"mp:compare\">\n  <p>A figure here counts privately.</p>\n  <figure id=\"fig:left\"><img src=\"left.png\"><figcaption>Figure 1. Left panel.</figcaption></figure>\n  <figure id=\"fig:right\"><img src=\"right.png\"><figcaption>Figure 2. Right panel.</figcaption></figure>\n  <figcaption>Minipage 1. Side-by-side comparison</figcaption>\n</figure>\n",
-        "notes": "Numbered minipage, opted in via +numbered. It counts in its own\n\"Minipage N\" series — `<ref @mp:compare>` resolves to \"minipage 1\". The two\ninner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT\nthe document's: a document <fig> elsewhere is unaffected, and an outside\n`<ref @fig:left>` is a normal not-found ref-error (the seal forbids inbound\nreferences to the body).\n",
+        "notes": "Numbered by default (#272). It counts in its own\n\"Minipage N\" series — `<ref @mp:compare>` resolves to \"minipage 1\". The two\ninner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT\nthe document's: a document <fig> elsewhere is unaffected, and an outside\n`<ref @fig:left>` is a normal not-found ref-error (the seal forbids inbound\nreferences to the body).\n",
       },
     ],
     "interpreter_strategy": "handler",
