@@ -570,7 +570,20 @@ export function enscribeInterpreter(options = {}) {
   // all resulting inlineMath/math nodes to canonical enscribeTag nodes.
   // NORM-tables: remarkGfm added so bare pipe tables inside named-tag content
   // are tokenized and normalized on both surfaces.
-  const innerProcessor = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+  // Slice 4 (#279 replacement): the inner re-parse must NOT treat indented lines as an
+  // indented code block. An indented container body (a tab-indented <nav>, an indented
+  // <aside>) must re-parse its inner constructs, not get swallowed whole as a code block.
+  // We turn OFF only `codeIndented` (the accepted narrowing: fenced ``` and <code> still
+  // work inside container bodies; literal 4-space/tab-indented code blocks do not). Always
+  // on — not gated on strict mode. The sigil/canonical processors below already disable
+  // codeIndented via disableMarkdownIdioms (DISABLED_IDIOMS includes it), so only the
+  // default innerProcessor needs this.
+  const disableCodeIndented = function () {
+    const data = this.data();
+    data.micromarkExtensions ??= [];
+    data.micromarkExtensions.push({ disable: { null: ['codeIndented'] } });
+  };
+  const innerProcessor = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm).use(disableCodeIndented);
 
   // #36 strict mode: the registers-OFF processors, one per non-`off` rung.
   //   sigilProcessor    — markdown idioms disabled; the enscribe extension intact
