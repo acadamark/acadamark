@@ -101,4 +101,76 @@ export function run() {
     assert.equal(bare.model, undefined, 'a typeless document gets no nav model (strict no-op)');
   }
   console.log('PASS: website-structuring — strict no-op for non-website documents');
+
+  // #279: a tab-indented <nav> body still parses every entry (the recursive-content dedent),
+  // and an indented nav-group's indented closer is recognized so its children nest.
+  {
+    const src = [
+      '<meta type=website>', '</meta>', '',
+      '<nav>',
+      '\t<item src="a.emd" | A>',
+      '\t<nav-group title="G">',
+      '\t\t<item src="b.emd" | B>',
+      '\t\t</nav-group>',
+      '\t<item src="c.emd" | C>',
+      '</nav>',
+    ].join('\n');
+    const { model } = buildModel(src);
+    assert.equal(model.entries.length, 3, '#279: tab-indented nav parses all 3 top-level entries');
+    const group = model.entries.find((e) => e.kind === 'group');
+    assert.equal(group && group.children.length, 1,
+      '#279: indented nav-group nests its child (its indented closer is recognized)');
+  }
+  console.log('PASS: website-structuring — indented nav body parses all entries (#279)');
+
+  // #279 safety net: a <nav> with content but zero recognized entries warns (never silent-empty).
+  {
+    const { messages } = buildModel('<meta type=website>\n</meta>\n\n<nav>\njust prose, no items\n</nav>');
+    assert.ok(
+      messages.some((m) => m.source === 'website-structuring' && m.ruleId === 'nav-no-entries'),
+      '#279: a non-empty <nav> that yields no entries is surfaced, not silently empty',
+    );
+  }
+  console.log('PASS: website-structuring — zero-entry nav warns (#279)');
+
+  // nav-group pipe label: a pipe-form <nav-group> drops its label and orphans its children.
+  // Warn (directing the author to title=); a correct title= form does not warn.
+  {
+    const pipe = buildModel([
+      '<meta type=website>', '</meta>', '',
+      '<nav>', '<nav-group | Reference>', '<item src="a.emd" | A>', '</nav-group>', '</nav>',
+    ].join('\n'));
+    assert.ok(
+      pipe.messages.some((m) => m.source === 'website-structuring' && m.ruleId === 'nav-group-pipe-label'),
+      'a pipe-form <nav-group> warns to move its label into title=',
+    );
+    const titled = buildModel([
+      '<meta type=website>', '</meta>', '',
+      '<nav>', '<nav-group title="Reference">', '<item src="a.emd" | A>', '</nav-group>', '</nav>',
+    ].join('\n'));
+    assert.ok(
+      !titled.messages.some((m) => m.ruleId === 'nav-group-pipe-label'),
+      'the correct title= form does NOT warn',
+    );
+    // False-positive guard: a long-form nav-group with NO title= (and stray prose) must not warn —
+    // keying on node.form==='short' (not on titleText) avoids that. False-negative guard: an
+    // empty-pipe nav-group still orphans its children, so it must warn.
+    const longNoTitle = buildModel([
+      '<meta type=website>', '</meta>', '',
+      '<nav>', '<nav-group>', '<item src="a.emd" | A>', 'stray prose', '</nav-group>', '</nav>',
+    ].join('\n'));
+    assert.ok(
+      !longNoTitle.messages.some((m) => m.ruleId === 'nav-group-pipe-label'),
+      'a long-form nav-group with no title= does NOT warn (no false positive)',
+    );
+    const emptyPipe = buildModel([
+      '<meta type=website>', '</meta>', '',
+      '<nav>', '<nav-group |>', '<item src="a.emd" | A>', '</nav-group>', '</nav>',
+    ].join('\n'));
+    assert.ok(
+      emptyPipe.messages.some((m) => m.ruleId === 'nav-group-pipe-label'),
+      'an empty-pipe nav-group still warns (no false negative)',
+    );
+  }
+  console.log('PASS: website-structuring — nav-group form diagnostic (pipe/empty-pipe warn; title=/long-form do not)');
 }

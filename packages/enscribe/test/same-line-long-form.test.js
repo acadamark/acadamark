@@ -131,5 +131,45 @@ export function run() {
     console.log('PASS: multi-line long-form unchanged (regression guard)');
   }
 
+  // ── Indented long-form closing tag is recognized (#276) ────────────────────
+  // A multi-line `</tag>` carrying leading indentation still closes its opener instead of
+  // erroring with "long-form tag has no closing tag". The TAB case is the important one:
+  // micromark preprocesses a leading tab into virtual-space codes, so the close tokenizer must
+  // skip with markdownSpace (which matches space + those virtual spaces — NOT the literal tab 9),
+  // not a bare 32/9 test.
+  {
+    const tab = render('<aside>\nbody\n\t</aside>');
+    assert.ok(!/tag-error|\?\?/.test(tab), 'tab-indented </aside> closes (no tag-error)');
+    const spaces = render('<aside>\nbody\n    </aside>');
+    assert.ok(!/tag-error|\?\?/.test(spaces), '4-space-indented </aside> closes (no tag-error)');
+    console.log('PASS: indented long-form closing tag recognized (#276)');
+  }
+
+  // ── Indented nested <list> still balances (#276 regression guard) ──────────
+  // The nestable <list> depth-counts inner <list>/<\/list> to find its balanced close. Making the
+  // CLOSER indent-tolerant without the symmetric OPENER skip would let an indented inner </list>
+  // close the OUTER list prematurely, leaving a stray list-item. Guard: no error and no stray
+  // list-item (the premature-close signature), matching the flush form's balance.
+  {
+    const proc = buildEnscribePipeline({ embedResources: false, dslMode: 'skip' });
+    const counts = (src) => {
+      const root = proc.parse(src);
+      let listItem = 0, err = 0;
+      const walk = (n) => {
+        if (n.type === 'enscribeTagError') err++;
+        if (n.type === 'enscribeTag' && n.tagname === 'list-item') listItem++;
+        (n.children || []).forEach(walk);
+      };
+      walk(root);
+      return { listItem, err };
+    };
+    const flush = counts('<list>\n<li> a\n<list>\n<li> x\n</list>\n<li> b\n</list>');
+    const indented = counts('<list>\n<li> a\n\t<list>\n\t<li> x\n\t</list>\n<li> b\n</list>');
+    assert.equal(indented.err, 0, 'indented nested <list>: no parse error');
+    assert.equal(indented.listItem, flush.listItem,
+      'indented nested <list>: no stray list-item — outer list not closed prematurely');
+    console.log('PASS: indented nested <list> balancing preserved (#276 regression guard)');
+  }
+
   console.log('All same-line long-form tests passed.');
 }

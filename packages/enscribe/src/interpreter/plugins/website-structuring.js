@@ -70,7 +70,7 @@ const isEntry = (n) => isEnscribeTag(n, 'item') || isEnscribeTag(n, 'nav-group')
  * @param {(title: string, src: string|null) => string} assignSlug  slug allocator (dedup + diag)
  * @returns {Array} model entries (page / group nodes)
  */
-function walkEntries(content, assignSlug) {
+function walkEntries(content, assignSlug, file) {
   const entries = [];
   const nodes = content ?? [];
   let i = 0;
@@ -96,8 +96,28 @@ function walkEntries(content, assignSlug) {
       }
     } else if (isEnscribeTag(node, 'nav-group')) {
       // A grouping — its <item> children are already parser-nested in its content.
+      // A nav-group is a long-form container: its label is the `title=` kwarg, never the pipe
+      // slot (nav-group.md). `node.form` is the structural signal — a long-form nav-group is the
+      // only form that can nest its <item> children. Any short form (a pipe label, an empty pipe,
+      // or self-closing) parses as a self-delimiting leaf, so the label (if any) is dropped AND the
+      // children are orphaned to the top level. Warn rather than fail silently (#282); recovering a
+      // pipe label is a separate maintainer enhancement. Keying on `node.form` (not on titleText/
+      // title) avoids a false positive on a correct long-form group with stray text and a false
+      // negative on an empty-pipe group.
+      if (node.form === 'short' && file?.message) {
+        const label = titleText(node);
+        file.message(
+          'website: <nav-group> must be a long-form container with its label in title="…" — ' +
+            (label
+              ? `it was written with a pipe label ("${label}"), so the label is dropped and its ` +
+                '<item> children become top-level pages instead of nesting under it.'
+              : 'it was written in short/self-closing form, so it cannot nest <item> children.'),
+          node,
+          'website-structuring:nav-group-pipe-label',
+        );
+      }
       const title = node.kwargs?.title ?? '';
-      entries.push({ kind: 'group', title, children: walkEntries(node.content, assignSlug) });
+      entries.push({ kind: 'group', title, children: walkEntries(node.content, assignSlug, file) });
       i += 1;
     } else {
       // A stray non-entry node (e.g. whitespace/text before the first entry) — skip it.
@@ -140,7 +160,19 @@ export function enscribeWebsiteStructuring() {
       );
     }
 
-    const entries = nav ? walkEntries(nav.content, assignSlug) : [];
+    const entries = nav ? walkEntries(nav.content, assignSlug, file) : [];
+    // #279 safety net: a <nav> that has content but yields zero entries is the worst failure
+    // mode (the site builds to nothing, silently). The dedent fix above should prevent the
+    // common cause (indentation swallowing items into a code block), but warn unconditionally
+    // so a future regression can never fail silently.
+    if (nav && (nav.content?.length ?? 0) > 0 && entries.length === 0 && file?.message) {
+      file.message(
+        'website: <nav> has content but no <item>/<nav-group> entries were recognized — ' +
+          'leading indentation can swallow nav items into a code block; keep nav items flush-left',
+        nav,
+        'website-structuring:nav-no-entries',
+      );
+    }
     file.data[ENSCRIBE_NAV_MODEL] = { entries };
     // S1 builds the model only — the <nav>/<footer> tree is left in place; S2 consumes
     // the model to render chrome + per-page bodies and decides the tree's fate there.
