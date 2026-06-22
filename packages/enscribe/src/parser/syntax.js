@@ -2,7 +2,7 @@
  * @import {Code, Effects, State, Tokenizer} from 'micromark-util-types'
  */
 
-import { markdownLineEnding } from 'micromark-util-character'
+import { markdownLineEnding, markdownSpace } from 'micromark-util-character'
 
 // PG-11 / #264: in flow (multiLine) position, tolerate a single trailing space/tab
 // before the line ending — consume it and re-enter `ok` to re-check the next char;
@@ -1015,7 +1015,35 @@ function makeLongFormTokenizer({ multiLine }) {
         openEffects.enter('lineEnding')
         openEffects.consume(code)
         openEffects.exit('lineEnding')
-        return expectLt
+        return beforeOpenLt
+      }
+
+      /**
+       * #276: skip leading indentation before a nested opener, symmetric with the close
+       * tokenizer's `beforeLt`. This MUST match: the nestable `<list>` depth-counts inner
+       * `<list>` openers and `</list>` closers to find its balanced close. Now that an indented
+       * `</list>` is recognized as a (depth-decrementing) close, an indented `<list>` opener must
+       * likewise be recognized as a (depth-incrementing) opener — otherwise the count unbalances
+       * and the outer list closes prematurely. `markdownSpace` matches the virtual-space codes a
+       * leading tab is preprocessed into (and a literal space) — the same tab handling as `beforeLt`.
+       * @param {Code} code
+       */
+      function beforeOpenLt(code) {
+        if (markdownSpace(code)) {
+          openEffects.enter('enscribeOpenIndent')
+          return inOpenIndent(code)
+        }
+        return expectLt(code)
+      }
+
+      /** @param {Code} code */
+      function inOpenIndent(code) {
+        if (markdownSpace(code)) {
+          openEffects.consume(code)
+          return inOpenIndent
+        }
+        openEffects.exit('enscribeOpenIndent')
+        return expectLt(code)
       }
 
       /** @param {Code} code */
@@ -1053,7 +1081,39 @@ function makeLongFormTokenizer({ multiLine }) {
         closeEffects.enter('lineEnding')
         closeEffects.consume(code)
         closeEffects.exit('lineEnding')
-        return expectLt
+        return beforeLt
+      }
+
+      /**
+       * #276: tolerate leading indentation before the closing tag, so an indented
+       * `</tag>` (e.g. inside an indented block) still closes its opener instead of being
+       * mistaken for content. `markdownSpace` (not a bare 32/9 test) is required: micromark
+       * preprocesses a leading tab into *virtual-space* codes filling the tab stop, and
+       * markdownSpace matches space and those virtual-space codes (it does NOT match the literal
+       * tab code 9) — so a TAB-indented closer is skipped, where a bare `32 || 9` test would miss
+       * the virtual spaces and fail. The skipped indent is captured in its own `enscribeCloseIndent`
+       * token so every consumed char stays inside a token and micromark's offsets do not
+       * desync; from-markdown ignores the token (it is neither content nor the close marker).
+       * If the line turns out not to be a closer, `expectLt` returns `closeNok` and the whole
+       * attempt (line ending + indent) rolls back to content — as the flush-left path did.
+       * @param {Code} code
+       */
+      function beforeLt(code) {
+        if (markdownSpace(code)) {
+          closeEffects.enter('enscribeCloseIndent')
+          return inCloseIndent(code)
+        }
+        return expectLt(code)
+      }
+
+      /** @param {Code} code */
+      function inCloseIndent(code) {
+        if (markdownSpace(code)) {
+          closeEffects.consume(code)
+          return inCloseIndent
+        }
+        closeEffects.exit('enscribeCloseIndent')
+        return expectLt(code)
       }
 
       /** @param {Code} code */
