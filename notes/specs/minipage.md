@@ -135,17 +135,23 @@ read-through) cover, with HTML assertions + hast snapshots:
 
 ## Limitations
 - **DOM id namespace — body ids are scope-qualified (#267, implemented).** The seal is at the registry /
-  cross-ref level; the DOM-id level is closed by `qualifyMinipageIds` (lib/minipage.js), called from the
-  minipage handler. Every id a box emits — auto `note-N` / `noteref-N`, author colon-ids, and ids baked into a
-  raw-HTML escape-hatch (`type:'raw'`) node — is prefixed with the box's document-unique slug
-  (`minipageScopeSlug`: the box's own id, else its source position for a bare box), and every in-box reference
-  to one (an `href="#id"`, the note marker's `data-note-id`) is rewritten in lockstep, so the marker↔list and
-  any in-box `<ref>` still resolve. Outbound references — targets NOT defined in the box (the document labels
-  commit 4 resolves read-through) — are left untouched, so the one-way seal holds. Two narrow boundaries remain
-  documented rather than guarded: (a) `<svg>`-internal ids (mermaid/abc marker/clip defs, referenced by
-  `url(#id)` this does not track) are left intact, so two diagram boxes can still share an SVG-internal id;
-  (b) the slug fold is not injective, so two box ids differing only by colon-vs-hyphen (`#mp:x` vs `#mp-x`) fold
-  to one slug — pathological, as colon-form is the steered convention.
+  cross-ref level; the DOM-id level is closed by `qualifyScopeIds` (lib/minipage.js), called at the sub-run
+  tail (index.js's deferred phase) on the box's **resolved body mdast**, before the handler converts it to hast.
+  Every id a box emits — auto `note-N` / `noteref-N`, author colon-ids — is prefixed with the box's
+  document-unique slug (`minipageScopeSlug`: the box's own id, else its source position for a bare box), and
+  every in-box reference to one (a resolved `<ref>`'s `targetId`, the note marker↔list `noteId` / `refId`) is
+  rewritten in lockstep, so the marker↔list and any in-box `<ref>` still resolve. Acting on the structured mdast
+  (not the serialized hast) means a `<table>`/`<csv>` colon-id is qualified on `node.id` **before** the handler
+  bakes it into a raw-HTML (`type:'raw'`) string — no regex over the literal. Outbound references — targets NOT
+  defined in the box (the document labels the sub-run resolves read-through) — are left untouched, so the one-way
+  seal holds. **Nesting composes:** the pass descends a nested box's `node.minipageResolved` (already qualified
+  with the inner slug by that box's own sub-run), so inner ids also pick up the outer prefix
+  (`outer-inner-fig:x`) and a repeated nested example stays unique. Two narrow boundaries remain documented
+  rather than guarded: (a) `<svg>`-internal ids (mermaid/abc marker/clip defs, referenced by `url(#id)` this
+  does not track) live in the box's string content, which the pass does not descend, so they are left intact and
+  two diagram boxes can still share an SVG-internal id; (b) the slug fold is not injective, so two box ids
+  differing only by colon-vs-hyphen (`#mp:x` vs `#mp-x`) fold to one slug — pathological, as colon-form is the
+  steered convention.
 - **Book-typed body (deliberate non-goal).** The body is processed as an article; a `<meta type=book>` body is
   out of scope (`projectMinipageBody` falls back to splicing the resolved root as-is).
 

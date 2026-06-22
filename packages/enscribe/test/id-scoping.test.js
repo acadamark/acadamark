@@ -4,14 +4,15 @@
 // (note-N / noteref-N) and author colon-ids restart per box. Two minipages — or the
 // same example repeated down an assembled book — therefore collide on id="note-1" /
 // id="fig:x" in the rendered document (invalid HTML; an in-page anchor resolves to the
-// wrong target, first-match-wins). The minipage handler scope-qualifies every id emitted
-// inside a box with the box's unique slug (minipageScopeSlug + qualifyMinipageIds). These
-// regressions assert the emitted ids stay UNIQUE and the box's references stay matched,
-// while the one-way seal (outbound refs to document labels) is preserved.
+// wrong target, first-match-wins). The sub-run scope-qualifies every id emitted inside a
+// box with the box's unique slug (minipageScopeSlug + qualifyScopeIds), on the RESOLVED
+// MDAST at the sub-run tail — before the body is converted to hast. These regressions
+// assert the emitted ids stay UNIQUE and the box's references stay matched, while the
+// one-way seal (outbound refs to document labels) is preserved.
 
 import assert from 'node:assert/strict';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
-import { qualifyMinipageIds } from '../src/interpreter/lib/minipage.js';
+import { qualifyScopeIds } from '../src/interpreter/lib/minipage.js';
 
 const render = (s) => String(buildEnscribePipeline({}).processSync(s));
 // Real `id=` attributes only — the leading \s excludes data-*-id substrings (e.g. data-note-id).
@@ -68,22 +69,44 @@ export function run() {
     assertNoDuplicateIds(html, 'two bare minipages');
   }
 
-  // 6) Unit: qualifyMinipageIds covers ids baked into raw-HTML nodes (the <table>/<csv>
-  //    escape hatch emits id= inside a type:'raw' string) and rewrites references into
-  //    them — while leaving <svg> internals intact (the documented out-of-scope boundary:
-  //    SVG marker/clip ids are referenced by url(#id) we don't track).
+  // 6) Unit: qualifyScopeIds acts on the RESOLVED MDAST. A colon-id'd element is qualified on
+  //    node.id (so a <table>/<csv> handler later bakes the qualified id straight into its raw
+  //    HTML — no regex over the serialized string); an in-box reference (here a __ref-marker's
+  //    kwargs.targetId) is rewritten in lockstep; and a node's STRING content (an <svg> body,
+  //    opaque DSL) is NOT descended, so an SVG-internal id is left intact — the documented
+  //    boundary (SVG marker/clip ids are referenced by url(#id) we don't track).
   {
     const body = [
-      { type: 'raw', value: '<table id="tbl:x"><tr><td>x</td></tr></table>' },
-      { type: 'element', tagName: 'a', properties: { href: '#tbl:x' }, children: [] },
-      { type: 'element', tagName: 'svg', properties: {}, children: [
-        { type: 'element', tagName: 'marker', properties: { id: 'arrow' }, children: [] },
-      ] },
+      { type: 'enscribeTag', tagname: 'table', id: 'tbl:x', kwargs: {}, content: '' },
+      { type: 'enscribeTag', tagname: '__ref-marker', kwargs: { targetId: 'tbl:x', text: 'Table 1' } },
+      { type: 'enscribeTag', tagname: 'svg', id: 'fig:s', content: '<marker id="arrow"></marker>' },
     ];
-    qualifyMinipageIds(body, 'box');
-    assert.ok(body[0].value.includes('id="box-tbl:x"'), 'a raw-node id is scope-qualified');
-    assert.equal(body[1].properties.href, '#box-tbl:x', 'a reference into a raw-node id is rewritten in lockstep');
-    assert.equal(body[2].children[0].properties.id, 'arrow', 'an <svg>-internal id is left intact (documented boundary)');
+    qualifyScopeIds(body, 'box');
+    assert.equal(body[0].id, 'box-tbl:x', "a colon-id'd element is scope-qualified on node.id");
+    assert.equal(body[1].kwargs.targetId, 'box-tbl:x', 'an in-box ref (kwargs.targetId) is rewritten in lockstep');
+    assert.equal(body[2].id, 'box-fig:s', "the <svg> wrapper's own id is qualified");
+    assert.ok(body[2].content.includes('id="arrow"'), 'an <svg>-internal id (in string content) is left intact (documented boundary)');
+  }
+
+  // 7) Nesting composes: an inner box's ids pick up BOTH the inner and the outer prefix, so the
+  //    same nested example repeated down an assembled book stays unique. The inner box's own id
+  //    also gets the outer prefix (two outer boxes each holding an <minipage #mp:i> won't collide).
+  {
+    const html = render('<minipage #mp:o |\nOuter<note | o.>.\n\n<minipage #mp:i |\n<fig #fig:z src=x.png | inner.>\nInner<note | i.>.\nSee <ref @fig:z>.\n>\n>');
+    assertNoDuplicateIds(html, 'nested minipages');
+    assert.ok(html.includes('id="mp-o-mp-i-note-1"'), 'an inner-box id is double-prefixed (outer-inner)');
+    assert.ok(html.includes('id="mp-o-mp:i"'), "the inner box's own id gets the outer prefix");
+    assert.ok(html.includes('href="#mp-o-mp-i-fig:z"'), 'an inner in-box ref is qualified in lockstep with the double prefix');
+  }
+
+  // 8) End-to-end raw-HTML path: a colon-id'd data table inside a box emits its id INSIDE the
+  //    <table>/<csv> raw-HTML escape hatch. Qualifying node.id before conversion (case 6) lands
+  //    the box-unique id in that raw string, and an in-box <ref> to it resolves to the same id.
+  {
+    const html = render('<minipage #mp:t |\n<table #tab:x csv | a,b\n1,2>\nSee <ref @tab:x>.\n>');
+    assertNoDuplicateIds(html, 'colon-id table inside a box');
+    assert.ok(/\sid="mp-t-tab:x"/.test(html), "the raw-HTML table id is scope-qualified");
+    assert.ok(html.includes('href="#mp-t-tab:x"'), 'an in-box ref into the raw table id is rewritten in lockstep');
   }
 
   console.log('PASS: id-scoping — minipage member ids are scope-qualified; ids stay unique and box references resolve (#267)');

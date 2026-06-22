@@ -147,7 +147,7 @@ import { buildAssetIndex, enscribeAssetResolution } from './plugins/asset-load.j
 import { enscribeNumbering, fillNumbering, numberSections } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
 import { enscribeMinipageGuard } from './plugins/minipage-guard.js';
-import { projectMinipageBody, walkMinipageNodes, MAX_MINIPAGE_DEPTH, minipageDepthErrorNode } from './lib/minipage.js';
+import { projectMinipageBody, walkMinipageNodes, MAX_MINIPAGE_DEPTH, minipageDepthErrorNode, qualifyScopeIds, minipageScopeSlug } from './lib/minipage.js';
 import { enscribeCiteResolution } from './plugins/cite-resolution.js';
 import { enscribeBibliography } from './plugins/bibliography.js';
 import { enscribeTagHandler, createEnscribeTagHandler, htmlNodeHandler } from './interpret-plugin.js';
@@ -761,6 +761,13 @@ export function enscribeInterpreter(options = {}) {
         };
         const resolved = proc.runSync(proc.parse(bodySource), childFile);
         node.minipageResolved = projectMinipageBody(resolved);
+        // #267: scope-qualify every id DEFINED in this box (auto note-N / noteref-N, author
+        // colon-ids) with the box's document-unique slug, and rewrite its in-box references in
+        // lockstep — on the RESOLVED MDAST, before the handler converts it to hast. Acting here
+        // (not on the serialized hast) qualifies a table/csv colon-id on node.id before it is
+        // baked into raw HTML, and composes with nesting: this same pass ran in the inner box's
+        // sub-run, so descending node.minipageResolved adds the outer prefix to inner ids too.
+        qualifyScopeIds(node.minipageResolved, minipageScopeSlug(node));
       });
     };
   });

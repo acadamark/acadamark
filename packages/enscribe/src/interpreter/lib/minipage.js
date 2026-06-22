@@ -103,57 +103,78 @@ export function minipageScopeSlug(node) {
   return String(raw).replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'mp';
 }
 
+// Internal-marker tagnames whose kwargs carry an id-valued REFERENCE to another in-box id.
+//   __note-marker     kwargs.noteId  → the note list-item it links to (href + data-note-id)
+//   __note-list-item  kwargs.refId   → the note marker it back-links to (href)
+//   __ref-marker /    kwargs.targetId → the element a resolved <ref> points to (href)
+//   __ref-error
+// A reference is qualified only when its target is DEFINED in this box (the localIds gate),
+// so an OUTBOUND ref to a document label is left bare — the one-way seal.
+const REF_KWARG_BY_TAG = {
+  '__note-marker': 'noteId',
+  '__note-list-item': 'refId',
+  '__ref-marker': 'targetId',
+  '__ref-error': 'targetId',
+};
+
 /**
- * Scope-qualify the DOM ids emitted INSIDE a minipage's rendered body (#267).
+ * Scope-qualify the ids emitted INSIDE a minipage's RESOLVED BODY MDAST (#267), before it is
+ * converted to hast. This is the single-pass replacement for the older post-hoc hast rewrite
+ * (qualifyMinipageIds): a minipage is a SEALED sub-run with its own private registry, so its
+ * members' ids (auto note-N / noteref-N, author colon-ids) restart per box and collide across
+ * boxes in the assembled document. Acting on the structured mdast — not the serialized HTML —
+ * means a `<table>`/`<csv>` colon-id is qualified on `node.id` (so the handler bakes the
+ * qualified id straight into its raw-HTML output, with no regex over the literal string) and
+ * the marker↔list↔ref links are rewritten by named field, not by attribute scraping.
  *
- * Prefix every id DEFINED in the box with the box's unique `slug`, and rewrite every
- * in-box reference to one of those ids — an `href="#id"`, the note marker's
- * `data-note-id`, etc. — to match, so the marker↔list and any in-box `<ref>` still
- * resolve. A reference whose target is NOT defined in the box (an OUTBOUND `<ref>` to a
- * document label, which the one-way seal resolves through to the parent) is left
- * untouched — its `#target` is not in the box's local-id set.
+ * Prefix every id DEFINED in the box with the box's unique `slug` and rewrite every in-box
+ * reference to one in lockstep:
+ *   - DEFINITIONS: `node.id` (colon-id'd elements and the `__note-list-item`'s own id),
+ *     and the `__note-marker`'s own id `kwargs.refId`.
+ *   - REFERENCES: the id-valued kwarg named in REF_KWARG_BY_TAG, qualified only if its target
+ *     is a box-local id (so outbound refs to document labels — the seal's read-through — stay bare).
  *
- * Covers ids on hast ELEMENTS and ids baked into `type:'raw'` nodes — the `<table>`/`<csv>`
- * raw-HTML escape hatch emits `id="…"` inside a literal string, which an element-only walk
- * would miss. `<svg>` subtrees are skipped whole: their internal ids are referenced by
- * `url(#id)` in attributes/styles this does not track, and SVG-internal collisions are out
- * of scope here (a known boundary; see notes/specs/minipage.md).
+ * NESTING composes: the walk descends a nested minipage's `node.minipageResolved` (already
+ * qualified with the INNER slug by that box's own sub-run), so the inner ids also pick up the
+ * OUTER prefix — `outer-inner-fig:x` — keeping a repeated nested example unique. (The old hast
+ * pass got this for free because the inner box's hast was spliced in before the outer rewrite.)
  *
- * Mutates `bodyHast` in place.
+ * String content (an `<svg>` body, opaque DSL) is NOT descended, so an SVG-internal id stays
+ * intact (it is referenced by `url(#id)` this does not track — a documented boundary; see
+ * notes/specs/minipage.md). Mutates the nodes in place.
  *
- * @param {Array} bodyHast - the minipage body's hast nodes
- * @param {string} slug    - the box's document-unique scope slug (minipageScopeSlug)
+ * @param {Array} bodyMdast - the minipage's resolved body mdast nodes (node.minipageResolved)
+ * @param {string} slug     - the box's document-unique scope slug (minipageScopeSlug)
  */
-export function qualifyMinipageIds(bodyHast, slug) {
-  const ID_ATTR = /\bid="([^"]+)"/g;
+export function qualifyScopeIds(bodyMdast, slug) {
   const visit = (n, fn) => {
     if (!n || typeof n !== 'object') return;
     fn(n);
-    if (n.tagName === 'svg') return; // leave SVG internals (and their url(#…) refs) intact
-    if (Array.isArray(n.children)) for (const c of n.children) visit(c, fn);
+    // Descend ordinary children, array-form tag content, and a nested box's resolved body
+    // (for the nesting compose). A string `content` (svg/opaque) is intentionally not entered.
+    for (const arr of [n.children, Array.isArray(n.content) ? n.content : null, n.minipageResolved]) {
+      if (Array.isArray(arr)) for (const c of arr) visit(c, fn);
+    }
   };
-  // Pass 1 — collect every id DEFINED in the box (element properties + raw-string `id="…"`).
+
+  // Pass 1 — collect every id DEFINED in the box (and its nested boxes).
   const localIds = new Set();
-  for (const n of bodyHast) visit(n, (e) => {
-    if (e.type === 'element' && e.properties?.id != null) localIds.add(String(e.properties.id));
-    else if (e.type === 'raw' && typeof e.value === 'string') for (const m of e.value.matchAll(ID_ATTR)) localIds.add(m[1]);
+  for (const n of bodyMdast) visit(n, (e) => {
+    if (e.id != null) localIds.add(String(e.id));                                   // elements + __note-list-item
+    if (e.tagname === '__note-marker' && e.kwargs?.refId != null) localIds.add(String(e.kwargs.refId)); // the <sup> id
   });
   if (localIds.size === 0) return;
+
   const q = (id) => `${slug}-${id}`;
-  // Pass 2 — prefix each id and rewrite each in-box reference (href="#id", data-note-id, …).
-  for (const n of bodyHast) visit(n, (e) => {
-    if (e.type === 'element' && e.properties) {
-      for (const [k, v] of Object.entries(e.properties)) {
-        if (typeof v !== 'string') continue;
-        // id definitions + id-valued references (data-note-id → properties.dataNoteId, …)
-        if ((k === 'id' || k.endsWith('Id')) && localIds.has(v)) e.properties[k] = q(v);
-        // fragment references (href="#id")
-        else if (k === 'href' && v[0] === '#' && localIds.has(v.slice(1))) e.properties[k] = `#${q(v.slice(1))}`;
-      }
-    } else if (e.type === 'raw' && typeof e.value === 'string') {
-      e.value = e.value
-        .replace(/\bid="([^"]+)"/g, (m, id) => (localIds.has(id) ? `id="${q(id)}"` : m))
-        .replace(/\bhref="#([^"]+)"/g, (m, id) => (localIds.has(id) ? `href="#${q(id)}"` : m));
+  // Pass 2 — prefix each definition; rewrite each in-box reference in lockstep.
+  for (const n of bodyMdast) visit(n, (e) => {
+    // Definitions: node.id (always box-local), and the note marker's own refId.
+    if (e.id != null && localIds.has(String(e.id))) e.id = q(e.id);
+    if (e.tagname === '__note-marker' && e.kwargs?.refId != null) e.kwargs.refId = q(e.kwargs.refId);
+    // References: the one id-valued kwarg for this marker kind, gated on box-locality (the seal).
+    const refKw = REF_KWARG_BY_TAG[e.tagname];
+    if (refKw && e.kwargs && e.kwargs[refKw] != null && localIds.has(String(e.kwargs[refKw]))) {
+      e.kwargs[refKw] = q(e.kwargs[refKw]);
     }
   });
 }
