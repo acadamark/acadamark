@@ -22,6 +22,25 @@ A table with explicit column alignment:
 | A    | B    | C      | D       |
 | 1    | 2    | 3      | 4       |
 
+<section #sec:markup-cells | Inline markup in cells>
+
+Bare GFM pipe-table body cells preserve inline markup — emphasis, inline code, and
+inline math — instead of flattening to plain text (#280). A cross-reference in a cell
+resolves like any other (the carried cell mdast is reached by the resolution passes):
+
+| Construct   | Example                     |
+| ----------- | --------------------------- |
+| Emphasis    | *stressed* and **strong**   |
+| Inline code | `f(x)`                      |
+| Inline math | $E = mc^2$                  |
+| Reference   | see <ref @sec:markup-cells> |
+
+Header markup, by contrast, is flattened (the headers model is text-only):
+
+| *Header markup is dropped* | Plain header |
+| -------------------------- | ------------ |
+| body                       | cells        |
+
 <section | Table inside named-tag content>
 
 A bare pipe table inside a named tag's pipe-content (inner processor path):

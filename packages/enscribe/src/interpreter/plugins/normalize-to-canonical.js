@@ -187,28 +187,23 @@ if (_tableHandler !== 'table') {
   );
 }
 
-// ─── GFM table → pipe-table string serializer ────────────────────────────────
+// ─── GFM table → canonical <table md> carrying parsed cells (#280) ────────────
 //
-// Option A: serialize the structured remark-gfm `table` node into a GFM
-// pipe-table string so the table handler's `parseMd` path can re-parse it.
+// A remark-gfm pipe table is normalized to a canonical <table md> that CARRIES its
+// already-parsed cells as `_parsedCells` (the same model data-format tables use), instead
+// of serializing the cells back to a pipe-string and re-parsing them (the old "Option A"
+// round-trip, which flattened inline markup — #280). Body-cell inline markup (emphasis,
+// inline code, math, refs/cites) is preserved; plain-text cells stay byte-identical.
 //
-// Loss contract: inline markup (emphasis, links, etc.) in cells is flattened
-// to plain text. When this happens, a file.message() warning is emitted.
-// Plain-text-only cells are lossless. `|` in cell text is escaped as `\|`
-// (parseMd has been updated to handle this escape).
+// Residual limitations (named, not silent):
+//   - Header cells render as plain text in both render channels (the `_parsedCells.headers`
+//     model is text-only), so header markup is still flattened — and warned about.
+//   - Column alignment (`node.align`) is not carried; the old `parseMd` path already dropped
+//     it, so this is output-neutral, not a regression. Carrying it is a separate, output-adding
+//     follow-up.
 //
-// GFM alignment → delimiter string:
-//   null     → ---
-//   'left'   → :--
-//   'right'  → --:
-//   'center' → :-:
-
-function alignToDelim(align) {
-  if (align === 'center') return ':-:';
-  if (align === 'right') return '--:';
-  if (align === 'left') return ':--';
-  return '---';
-}
+// `extractCellText` (below) is kept: it flattens a cell's inline mdast to plain text, reused
+// for header cells and to classify a body cell as plain (`{ text }`) vs markup-bearing (`{ inline }`).
 
 /**
  * Extract plain text from inline mdast children of a tableCell.
@@ -265,62 +260,73 @@ function extractCellText(nodes, result) {
 }
 
 /**
- * Serialize a remark-gfm `table` mdast node to a GFM pipe-table string.
- * `file` is the unified VFile; used for warning emission when markup is lost.
+ * Normalize a remark-gfm `table` mdast node to a canonical `<table md>` enscribeTag that
+ * CARRIES its already-parsed cells as `_parsedCells` — the same carry model the data-format
+ * (`csv`/`tsv`/…) opt-in uses (table-cell-parse.js). The table handler prefers `_parsedCells`
+ * when present, so the carrier's content string is never read (we pass `''`); the cells render
+ * straight from the parsed mdast, with no serialize-to-pipe-string + re-parse round-trip (#280).
+ *
+ * Cell classification (per body cell): `extractCellText` decides plain vs markup-bearing.
+ *   - plain   → `{ text }`     (byte-identical to the old parseMd path: that path round-tripped
+ *                               the same text through `\|` escape/unescape to the same string)
+ *   - markup  → `{ inline }`   (the cell's inline children, normalized in place to canonical
+ *                               inline mdast by the in-module gate — so refs/cites/math then
+ *                               resolve in the mdast phase via the `_parsedCells`-descending walkers)
+ *
+ * Header cells stay plain text (the `_parsedCells.headers` model is text-only in both render
+ * channels); a header carrying markup is flattened AND warned about. Alignment is not carried
+ * (the old path dropped it too — output-neutral).
  *
  * @param {object} node - remark-gfm table node
  * @param {object} file - unified VFile (may be a plain object with .message)
- * @returns {string} - GFM pipe-table string suitable for parseMd()
+ * @returns {object} - a canonical `<table md>` enscribeTag with `_parsedCells` stamped
  */
-export function gfmTableToPipeString(node, file) {
+export function gfmTableToParsedCellsTag(node, file) {
   const rows = node.children ?? [];
+  const tag = makeOpaqueTag('table', '', {
+    contentHandler: _tableHandler,
+    positional: ['md'],
+  });
   if (rows.length === 0) {
-    return '';
+    tag._parsedCells = { headers: null, rows: [] };
+    return tag;
   }
 
-  const align = node.align ?? [];
-  let anyMarkup = false;
-
-  // Build text rows from all tableRow children.
-  const textRows = rows.map(row => {
-    const cells = row.children ?? [];
-    return cells.map(cell => {
-      const result = { text: '', hasMarkup: false };
-      extractCellText(cell.children ?? [], result);
-      if (result.hasMarkup) anyMarkup = true;
-      // Escape literal `|` so parseMd's \| handling round-trips correctly.
-      return result.text.replace(/\|/g, '\\|');
-    });
+  // Header row (always the first row of a GFM table) → plain text. Warn on any header markup,
+  // so the one residual flatten is named, not silent.
+  let headerMarkup = false;
+  const headers = (rows[0].children ?? []).map((cell) => {
+    const r = { text: '', hasMarkup: false };
+    extractCellText(cell.children ?? [], r);
+    if (r.hasMarkup) headerMarkup = true;
+    return r.text;
   });
 
-  if (anyMarkup && file && typeof file.message === 'function') {
+  // Body rows → carry each cell's parsed nodes. Plain cells stay `{ text }`; markup-bearing
+  // cells normalize their inline children in place and carry them as `{ inline }`.
+  const bodyRows = rows.slice(1).map((row) =>
+    (row.children ?? []).map((cell) => {
+      const r = { text: '', hasMarkup: false };
+      extractCellText(cell.children ?? [], r);
+      if (!r.hasMarkup) return { text: r.text };
+      const children = cell.children ?? [];
+      walkNormalize(children, isNormalizable, (n) => normalizeNode(n, file));
+      return { inline: children };
+    }),
+  );
+
+  if (headerMarkup && file && typeof file.message === 'function') {
     file.message(
-      'GFM table cell contains inline markup (emphasis, links, math, etc.) — ' +
-      'markup is lost when normalizing to <table md>. ' +
-      'Use an authored <table md | ...> tag to preserve markup.',
+      'GFM table HEADER cell contains inline markup (emphasis, links, math, etc.) — ' +
+      'header cells render as plain text, so the markup is flattened. ' +
+      'Move it into a body cell to preserve it.',
       node,
-      'enscribe:normalize-markdown:table-markup-loss',
+      'enscribe:normalize-markdown:table-header-markup-loss',
     );
   }
 
-  // Determine column count from the header row.
-  const colCount = textRows[0]?.length ?? 0;
-  if (colCount === 0) return '';
-
-  // Emit header row.
-  const headerRow = '| ' + textRows[0].join(' | ') + ' |';
-
-  // Emit delimiter row.
-  const delimCells = [];
-  for (let c = 0; c < colCount; c++) {
-    delimCells.push(alignToDelim(align[c] ?? null));
-  }
-  const delimRow = '| ' + delimCells.join(' | ') + ' |';
-
-  // Emit body rows.
-  const bodyLines = textRows.slice(1).map(row => '| ' + row.join(' | ') + ' |');
-
-  return [headerRow, delimRow, ...bodyLines].join('\n');
+  tag._parsedCells = { headers, rows: bodyRows };
+  return tag;
 }
 
 // ─── Per-construct mapping ────────────────────────────────────────────────────
@@ -782,20 +788,16 @@ const NORMALIZATIONS = [
 
   // remark-gfm: pipe table
   // remark-gfm produces: { type: 'table', align: [...], children: [tableRow...] }
-  // Canonical target: enscribeTag with tagname 'table', format 'md',
-  //   content = GFM pipe-table string re-parseable by parseMd().
+  // Canonical target: enscribeTag with tagname 'table', format 'md', CARRYING its
+  // already-parsed cells as `_parsedCells` (see gfmTableToParsedCellsTag).
   //
-  // Option A (decided in AUD-20): serialize structured table node to pipe-table
-  // string → opaque string content in the canonical node. Lossy for cells
-  // containing inline markup (emphasis, links, inline math); lossless for
-  // plain-text cells. Loss is visible via file.message() warning.
+  // This supersedes the original AUD-20 "Option A" (serialize → pipe-string → re-parse),
+  // which flattened inline markup in cells (#280). Carrying the parsed cells preserves
+  // body-cell markup; the only residual flatten is header-cell markup (the headers model
+  // is text-only), which is warned about.
   {
     predicate: (node) => node.type === 'table',
-    normalize: (node, file) =>
-      makeOpaqueTag('table', gfmTableToPipeString(node, file), {
-        contentHandler: _tableHandler,
-        positional: ['md'],
-      }),
+    normalize: (node, file) => gfmTableToParsedCellsTag(node, file),
   },
 
   // ─── Group A: sigil tagname rewrite (the tagname↔sigil cipher, lift) ───

@@ -420,6 +420,20 @@ export function run() {
     // The aligned table has columns A, B, C, D.
     assert.ok(html.includes('>A<'), 'doc12: aligned table A cell present');
 
+    // #280: bare GFM body cells CARRY their parsed inline markup (no serialize → re-parse
+    // round-trip that flattened it). Emphasis, strong, inline code, and inline math all survive.
+    assert.ok(html.includes('<td><i>stressed</i> and <b>strong</b></td>'),
+      'doc12: body-cell emphasis/strong preserved');
+    assert.ok(html.includes('<td><code>f(x)</code></td>'), 'doc12: body-cell inline code preserved');
+    assert.ok(/<td><inline-math>.*katex/.test(html), 'doc12: body-cell inline math rendered');
+    // A cross-reference in a cell resolves (the carried cell mdast is reached by the ref pass).
+    assert.ok(html.includes('<a href="#sec:markup-cells" class="ref">Inline markup in cells</a>'),
+      'doc12: cross-reference inside a body cell resolves');
+    // Header markup is the one residual flatten (the headers model is text-only): the
+    // `*…*` emphasis renders as plain header text, not an <i>.
+    assert.ok(html.includes('<th>Header markup is dropped</th>'), 'doc12: header markup flattened to text');
+    assert.ok(!/<th><i>/.test(html), 'doc12: no markup element survives in a header cell');
+
     snapshotHast('document-12', hast);
     console.log('PASS: integration doc12 (bare pipe table normalization — both surfaces)');
   }

@@ -4,7 +4,7 @@ import remarkParse from 'remark-parse';
 import remarkEnscribe from '../../src/parser/index.js';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
-import { enscribeNormalizeToCanonical, gfmTableToPipeString } from '../../src/interpreter/plugins/normalize-to-canonical.js';
+import { enscribeNormalizeToCanonical, gfmTableToParsedCellsTag } from '../../src/interpreter/plugins/normalize-to-canonical.js';
 // Alias kept locally so the existing test bodies (which use the prior
 // function name) need fewer edits. The exported `enscribeNormalizeMarkdown`
 // is itself a backward-compat alias for `enscribeNormalizeToCanonical`.
@@ -260,87 +260,91 @@ export function run() {
     };
   }
 
-  // ── gfmTableToPipeString: serializer unit tests ───────────────────────────
+  // ── gfmTableToParsedCellsTag: carry-tag unit tests (#280) ─────────────────
+  //
+  // The GFM table is normalized to a canonical <table md> that CARRIES its parsed cells
+  // as `_parsedCells` (no serialize-to-pipe-string + re-parse). Plain cells stay `{ text }`
+  // (byte-identical to the old path); markup-bearing cells carry `{ inline }`.
 
-  // --- simple plain-text table serializes correctly ---
+  // --- simple plain-text table → carrier tag with {text} cells, empty content ---
   {
     const tableNode = parseGfmTable('| A | B |\n| - | - |\n| 1 | 2 |');
     assert.ok(tableNode, 'table node found');
-    const str = gfmTableToPipeString(tableNode, null);
-    assert.ok(str.includes('| A | B |'), 'header row present');
-    assert.ok(str.includes('| --- | --- |') || str.includes('| --- |'), 'delimiter row present');
-    assert.ok(str.includes('| 1 | 2 |'), 'body row present');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: simple plain-text table');
+    const tag = gfmTableToParsedCellsTag(tableNode, null);
+    assert.equal(tag.type, 'enscribeTag', 'returns an enscribeTag');
+    assert.equal(tag.tagname, 'table', 'tagname is table');
+    assert.deepEqual(tag.positional, ['md'], "positional is ['md']");
+    assert.equal(tag.content, '', 'carrier content is empty (handler reads _parsedCells)');
+    assert.ok(tag._parsedCells, '_parsedCells stamped');
+    assert.deepEqual(tag._parsedCells.headers, ['A', 'B'], 'headers carried as plain text');
+    assert.deepEqual(tag._parsedCells.rows, [[{ text: '1' }, { text: '2' }]],
+      'plain body cells carried as { text } (byte-identical guarantee)');
+    console.log('PASS: normalize-markdown: gfmTableToParsedCellsTag: plain table → {text} cells');
   }
 
-  // --- alignment: left/right/center/null → correct delimiter cells ---
+  // --- literal pipe in a cell (authored \|) → unescaped text, no pipe-string round-trip ---
   {
-    const tableNode = parseGfmTable('| A | B | C | D |\n| :- | -: | :-: | - |\n| 1 | 2 | 3 | 4 |');
-    assert.ok(tableNode, 'table node found');
-    const str = gfmTableToPipeString(tableNode, null);
-    assert.ok(str.includes(':--'), 'left align delimiter');
-    assert.ok(str.includes('--:'), 'right align delimiter');
-    assert.ok(str.includes(':-:'), 'center align delimiter');
-    assert.ok(str.includes('---'), 'no-align delimiter');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: alignment delimiters');
-  }
-
-  // --- pipe in cell text is escaped as \\| ---
-  {
-    // In GFM, `\|` in a cell is a literal `|`. remark-gfm parses `\|` → text `|`.
+    // remark-gfm parses `\|` in a cell → a text node with value `|`. The carry model stores
+    // that text directly (the old path round-tripped it through `\|` escape/unescape to the
+    // same string), so the cell text is the bare `|`.
     const tableNode = parseGfmTable('| A\\|B | C |\n| - | - |\n| D | E |');
     assert.ok(tableNode, 'table node found');
-    const str = gfmTableToPipeString(tableNode, null);
-    // The serialized string must have \\| for the cell containing a literal pipe.
-    assert.ok(str.includes('\\|'), 'pipe in cell text is escaped');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: pipe in cell text escaped as \\|');
+    const tag = gfmTableToParsedCellsTag(tableNode, null);
+    assert.deepEqual(tag._parsedCells.headers, ['A|B', 'C'], 'literal pipe in header is unescaped text');
+    assert.deepEqual(tag._parsedCells.rows, [[{ text: 'D' }, { text: 'E' }]], 'body cells plain');
+    console.log('PASS: normalize-markdown: gfmTableToParsedCellsTag: literal pipe is unescaped text');
   }
 
-  // --- markup loss warning emitted when emphasis present ---
+  // --- body-cell markup → { inline } carried (NOT flattened), no warning ---
+  {
+    const tableNode = parseGfmTable('| Normal | Plain |\n| - | - |\n| **Bold** | `code` |');
+    assert.ok(tableNode, 'table node found');
+    const messages = [];
+    const fakeFile = { message(msg) { messages.push(msg); } };
+    const tag = gfmTableToParsedCellsTag(tableNode, fakeFile);
+    const [boldCell, codeCell] = tag._parsedCells.rows[0];
+    assert.ok(boldCell.inline, 'bold body cell carries { inline } (markup preserved)');
+    assert.ok(!('text' in boldCell), 'markup cell is not a { text } cell');
+    assert.ok(Array.isArray(boldCell.inline) && boldCell.inline.length > 0, 'inline mdast is non-empty');
+    assert.ok(codeCell.inline, 'inline-code body cell carries { inline }');
+    assert.equal(messages.length, 0, 'NO warning — body-cell markup is preserved, not lost');
+    console.log('PASS: normalize-markdown: gfmTableToParsedCellsTag: body markup carried as {inline}, no warning');
+  }
+
+  // --- header-cell markup → flattened to text + warning (the one residual loss) ---
   {
     const tableNode = parseGfmTable('| **Bold** | Normal |\n| - | - |\n| 1 | 2 |');
     assert.ok(tableNode, 'table node found');
     const messages = [];
     const fakeFile = { message(msg) { messages.push(msg); } };
-    const str = gfmTableToPipeString(tableNode, fakeFile);
-    assert.ok(messages.length > 0, 'warning emitted for markup');
-    assert.ok(typeof str === 'string' && str.length > 0, 'string still produced');
-    // The bold text is present as plain text in the output.
-    assert.ok(str.includes('Bold'), 'plain text from bold cell is present');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: warning emitted for markup loss');
+    const tag = gfmTableToParsedCellsTag(tableNode, fakeFile);
+    assert.deepEqual(tag._parsedCells.headers, ['Bold', 'Normal'], 'header markup flattened to text');
+    assert.equal(messages.length, 1, 'exactly one warning for header markup loss');
+    assert.ok(/header-markup-loss/.test(String(messages[0].ruleId ?? messages[0].source ?? '')) ||
+      /HEADER cell contains inline markup/.test(String(messages[0].reason ?? messages[0])),
+      'warning names the header markup loss');
+    console.log('PASS: normalize-markdown: gfmTableToParsedCellsTag: header markup flattened + warned');
   }
 
-  // --- no warning for plain-text-only cells ---
-  {
-    const tableNode = parseGfmTable('| X | Y |\n| - | - |\n| 1 | 2 |');
-    assert.ok(tableNode, 'table node found');
-    const messages = [];
-    const fakeFile = { message(msg) { messages.push(msg); } };
-    gfmTableToPipeString(tableNode, fakeFile);
-    assert.equal(messages.length, 0, 'no warning for plain-text cells');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: no warning for plain-text cells');
-  }
-
-  // --- single-column table serializes correctly ---
+  // --- single-column table → carrier with single-cell rows ---
   {
     const tableNode = parseGfmTable('| Single |\n| - |\n| Row1 |\n| Row2 |');
     assert.ok(tableNode, 'table node found');
-    const str = gfmTableToPipeString(tableNode, null);
-    assert.ok(str.includes('| Single |'), 'header present');
-    assert.ok(str.includes('| Row1 |'), 'body row 1 present');
-    assert.ok(str.includes('| Row2 |'), 'body row 2 present');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: single-column table');
+    const tag = gfmTableToParsedCellsTag(tableNode, null);
+    assert.deepEqual(tag._parsedCells.headers, ['Single'], 'single header');
+    assert.deepEqual(tag._parsedCells.rows, [[{ text: 'Row1' }], [{ text: 'Row2' }]], 'two single-cell rows');
+    console.log('PASS: normalize-markdown: gfmTableToParsedCellsTag: single-column table');
   }
 
-  // --- header-only table (no body rows) serializes correctly ---
+  // --- header-only table (no body rows) → headers carried, empty rows ---
   {
     // GFM requires a delimiter row, but the table can have zero body rows.
     const tableNode = parseGfmTable('| H1 | H2 |\n| - | - |');
     assert.ok(tableNode, 'table node found');
-    const str = gfmTableToPipeString(tableNode, null);
-    const lines = str.split('\n').filter(l => l.trim() !== '');
-    assert.equal(lines.length, 2, 'exactly header + delimiter (no body)');
-    console.log('PASS: normalize-markdown: gfmTableToPipeString: header-only table');
+    const tag = gfmTableToParsedCellsTag(tableNode, null);
+    assert.deepEqual(tag._parsedCells.headers, ['H1', 'H2'], 'headers carried');
+    assert.deepEqual(tag._parsedCells.rows, [], 'no body rows');
+    console.log('PASS: normalize-markdown: gfmTableToParsedCellsTag: header-only table');
   }
 
   // ── Normalization pass: table entry ──────────────────────────────────────
@@ -370,7 +374,12 @@ export function run() {
     assert.equal(node.selfClosing, false, 'selfClosing');
     assert.equal(node.contentHandler, 'table', 'contentHandler');
     assert.ok(typeof node.content === 'string', 'content is a string');
-    assert.ok(node.content.length > 0, 'content is non-empty');
+    // #280: the carrier holds its cells in `_parsedCells`, so `content` is empty — the table
+    // handler prefers `_parsedCells` and never reads the carrier content string.
+    assert.equal(node.content, '', 'carrier content is empty');
+    assert.ok(node._parsedCells, '_parsedCells carried');
+    assert.deepEqual(node._parsedCells.headers, ['X', 'Y'], 'headers carried');
+    assert.deepEqual(node._parsedCells.rows, [[{ text: 'a' }, { text: 'b' }]], 'body cells carried as {text}');
     console.log('PASS: normalize-markdown: all required fields on normalized table node');
   }
 
@@ -379,6 +388,11 @@ export function run() {
   // The normalization principle: a bare pipe table through remark-gfm
   // + normalization pass must produce a node with the same structure-level
   // fields as an authored <table md | ...> tag.
+  //
+  // `content` and `_parsedCells` are intentionally NOT compared (and now differ by design):
+  // the normalized carrier holds its cells in `_parsedCells` with empty content (#280), while
+  // the authored tag holds an unparsed pipe-string in `content`. The structure-level fields
+  // below are what must match.
   {
     // Authored node: parse <table md | ...> via @enscribejs/enscribe/parser.
     const authoredTree = unified().use(remarkParse).use(remarkEnscribe).parse(
