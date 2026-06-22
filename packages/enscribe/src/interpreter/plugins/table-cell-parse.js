@@ -66,6 +66,12 @@ export function enscribeTableCellParse(options = {}) {
 }
 
 function stampTable(node, config, assetsDir, loaded) {
+  // A table that already carries parsed cells is done — re-stamping would clobber it.
+  // This happens for a GFM pipe table: normalize-to-canonical rewrites it to a canonical
+  // `<table md>` that CARRIES `_parsedCells` (#280), and `md` is in TABLE_FORMATS, so under a
+  // doc-wide <config parse-data-tables=true> this plugin would otherwise re-parse it from a
+  // (now empty) content string and wipe the carried markup. Skip it.
+  if (node._parsedCells) return;
   const format = node.positional?.[0] ?? null;
   // Only data-format tables. The no-format raw-HTML escape-hatch and any
   // out-of-accept-set token are left to the handler untouched.

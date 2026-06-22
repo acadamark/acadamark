@@ -1488,7 +1488,7 @@ note-list li {
     init();
   }
 })();
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
 <article>
   <article-front>
     <meta data-document-type="article">
@@ -1553,6 +1553,57 @@ note-list li {
         </tbody>
       </table>
     </section>
+    <section id="sec:markup-cells">
+      <section-title>Inline markup in cells</section-title>
+      <p>
+        Bare GFM pipe-table body cells preserve inline markup — emphasis, inline code, and
+        inline math — instead of flattening to plain text (#280). A cross-reference in a cell
+        resolves like any other (the carried cell mdast is reached by the resolution passes):
+      </p>
+      <table>
+        <caption><span class="table-label">Table 3.</span></caption>
+        <thead>
+          <tr>
+            <th>Construct</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Emphasis</td>
+            <td><i>stressed</i> and <b>strong</b></td>
+          </tr>
+          <tr>
+            <td>Inline code</td>
+            <td><code>f(x)</code></td>
+          </tr>
+          <tr>
+            <td>Inline math</td>
+            <td><inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord mathnormal">m</span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math></td>
+          </tr>
+          <tr>
+            <td>Reference</td>
+            <td>see <a href="#sec:markup-cells" class="ref">Inline markup in cells</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Header markup, by contrast, is flattened (the headers model is text-only):</p>
+      <table>
+        <caption><span class="table-label">Table 4.</span></caption>
+        <thead>
+          <tr>
+            <th>Header markup is dropped</th>
+            <th>Plain header</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>body</td>
+            <td>cells</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
     <section>
       <section-title>Table inside named-tag content</section-title>
       <p>A bare pipe table inside a named tag’s pipe-content (inner processor path):</p><sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup>&#x3C;/content>
@@ -1561,7 +1612,7 @@ note-list li {
           <li id="note-1"><sup>1</sup>
             <p>Here is a note with a table:</p>
             <table>
-              <caption><span class="table-label">Table 3.</span></caption>
+              <caption><span class="table-label">Table 5.</span></caption>
               <thead>
                 <tr>
                   <th>Key</th>

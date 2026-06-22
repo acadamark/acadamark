@@ -569,6 +569,760 @@
             {
               "type": "element",
               "tagName": "section",
+              "properties": {
+                "id": "sec:markup-cells"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Inline markup in cells",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 24,
+                          "offset": 23
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Bare GFM pipe-table body cells preserve inline markup — emphasis, inline code, and\ninline math — instead of flattening to plain text (#280). A cross-reference in a cell\nresolves like any other (the carried cell mdast is reached by the resolution passes):",
+                      "position": {
+                        "start": {
+                          "line": 27,
+                          "column": 1,
+                          "offset": 600
+                        },
+                        "end": {
+                          "line": 29,
+                          "column": 86,
+                          "offset": 854
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 27,
+                      "column": 1,
+                      "offset": 600
+                    },
+                    "end": {
+                      "line": 29,
+                      "column": 86,
+                      "offset": 854
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "table",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "caption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "table-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Table 3."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "thead",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Construct"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Example"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "tbody",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Emphasis"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "i",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "stressed",
+                                      "position": {
+                                        "start": {
+                                          "line": 33,
+                                          "column": 18,
+                                          "offset": 965
+                                        },
+                                        "end": {
+                                          "line": 33,
+                                          "column": 26,
+                                          "offset": 973
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "value": " and ",
+                                  "position": {
+                                    "start": {
+                                      "line": 33,
+                                      "column": 27,
+                                      "offset": 974
+                                    },
+                                    "end": {
+                                      "line": 33,
+                                      "column": 32,
+                                      "offset": 979
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "b",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "strong",
+                                      "position": {
+                                        "start": {
+                                          "line": 33,
+                                          "column": 34,
+                                          "offset": 981
+                                        },
+                                        "end": {
+                                          "line": 33,
+                                          "column": 40,
+                                          "offset": 987
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Inline code"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "code",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "f(x)"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Inline math"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "inline-math",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "span",
+                                      "properties": {
+                                        "className": [
+                                          "katex"
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "element",
+                                          "tagName": "span",
+                                          "properties": {
+                                            "className": [
+                                              "katex-html"
+                                            ],
+                                            "ariaHidden": "true"
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "element",
+                                              "tagName": "span",
+                                              "properties": {
+                                                "className": [
+                                                  "base"
+                                                ]
+                                              },
+                                              "children": [
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "strut"
+                                                    ],
+                                                    "style": "height:0.6833em;"
+                                                  },
+                                                  "children": []
+                                                },
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "mord",
+                                                      "mathnormal"
+                                                    ],
+                                                    "style": "margin-right:0.0576em;"
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "type": "text",
+                                                      "value": "E"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "mspace"
+                                                    ],
+                                                    "style": "margin-right:0.2778em;"
+                                                  },
+                                                  "children": []
+                                                },
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "mrel"
+                                                    ]
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "type": "text",
+                                                      "value": "="
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "mspace"
+                                                    ],
+                                                    "style": "margin-right:0.2778em;"
+                                                  },
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "element",
+                                              "tagName": "span",
+                                              "properties": {
+                                                "className": [
+                                                  "base"
+                                                ]
+                                              },
+                                              "children": [
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "strut"
+                                                    ],
+                                                    "style": "height:0.8141em;"
+                                                  },
+                                                  "children": []
+                                                },
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "mord",
+                                                      "mathnormal"
+                                                    ]
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "type": "text",
+                                                      "value": "m"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "type": "element",
+                                                  "tagName": "span",
+                                                  "properties": {
+                                                    "className": [
+                                                      "mord"
+                                                    ]
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "type": "element",
+                                                      "tagName": "span",
+                                                      "properties": {
+                                                        "className": [
+                                                          "mord",
+                                                          "mathnormal"
+                                                        ]
+                                                      },
+                                                      "children": [
+                                                        {
+                                                          "type": "text",
+                                                          "value": "c"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "type": "element",
+                                                      "tagName": "span",
+                                                      "properties": {
+                                                        "className": [
+                                                          "msupsub"
+                                                        ]
+                                                      },
+                                                      "children": [
+                                                        {
+                                                          "type": "element",
+                                                          "tagName": "span",
+                                                          "properties": {
+                                                            "className": [
+                                                              "vlist-t"
+                                                            ]
+                                                          },
+                                                          "children": [
+                                                            {
+                                                              "type": "element",
+                                                              "tagName": "span",
+                                                              "properties": {
+                                                                "className": [
+                                                                  "vlist-r"
+                                                                ]
+                                                              },
+                                                              "children": [
+                                                                {
+                                                                  "type": "element",
+                                                                  "tagName": "span",
+                                                                  "properties": {
+                                                                    "className": [
+                                                                      "vlist"
+                                                                    ],
+                                                                    "style": "height:0.8141em;"
+                                                                  },
+                                                                  "children": [
+                                                                    {
+                                                                      "type": "element",
+                                                                      "tagName": "span",
+                                                                      "properties": {
+                                                                        "style": "top:-3.063em;margin-right:0.05em;"
+                                                                      },
+                                                                      "children": [
+                                                                        {
+                                                                          "type": "element",
+                                                                          "tagName": "span",
+                                                                          "properties": {
+                                                                            "className": [
+                                                                              "pstrut"
+                                                                            ],
+                                                                            "style": "height:2.7em;"
+                                                                          },
+                                                                          "children": []
+                                                                        },
+                                                                        {
+                                                                          "type": "element",
+                                                                          "tagName": "span",
+                                                                          "properties": {
+                                                                            "className": [
+                                                                              "sizing",
+                                                                              "reset-size6",
+                                                                              "size3",
+                                                                              "mtight"
+                                                                            ]
+                                                                          },
+                                                                          "children": [
+                                                                            {
+                                                                              "type": "element",
+                                                                              "tagName": "span",
+                                                                              "properties": {
+                                                                                "className": [
+                                                                                  "mord",
+                                                                                  "mtight"
+                                                                                ]
+                                                                              },
+                                                                              "children": [
+                                                                                {
+                                                                                  "type": "text",
+                                                                                  "value": "2"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Reference"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "see ",
+                                  "position": {
+                                    "start": {
+                                      "line": 36,
+                                      "column": 17,
+                                      "offset": 1102
+                                    },
+                                    "end": {
+                                      "line": 36,
+                                      "column": 21,
+                                      "offset": 1106
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "a",
+                                  "properties": {
+                                    "href": "#sec:markup-cells",
+                                    "className": [
+                                      "ref"
+                                    ]
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "Inline markup in cells"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Header markup, by contrast, is flattened (the headers model is text-only):",
+                      "position": {
+                        "start": {
+                          "line": 38,
+                          "column": 1,
+                          "offset": 1133
+                        },
+                        "end": {
+                          "line": 38,
+                          "column": 75,
+                          "offset": 1207
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 38,
+                      "column": 1,
+                      "offset": 1133
+                    },
+                    "end": {
+                      "line": 38,
+                      "column": 75,
+                      "offset": 1207
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "table",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "caption",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "span",
+                          "properties": {
+                            "className": [
+                              "table-label"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Table 4."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " "
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "thead",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Header markup is dropped"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "th",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Plain header"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "tbody",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "tr",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "body"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "td",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "cells"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
               "properties": {},
               "children": [
                 {
@@ -604,28 +1358,28 @@
                       "value": "A bare pipe table inside a named tag's pipe-content (inner processor path):",
                       "position": {
                         "start": {
-                          "line": 27,
+                          "line": 46,
                           "column": 1,
-                          "offset": 590
+                          "offset": 1392
                         },
                         "end": {
-                          "line": 27,
+                          "line": 46,
                           "column": 76,
-                          "offset": 665
+                          "offset": 1467
                         }
                       }
                     }
                   ],
                   "position": {
                     "start": {
-                      "line": 27,
+                      "line": 46,
                       "column": 1,
-                      "offset": 590
+                      "offset": 1392
                     },
                     "end": {
-                      "line": 27,
+                      "line": 46,
                       "column": 76,
-                      "offset": 665
+                      "offset": 1467
                     }
                   }
                 },
@@ -657,14 +1411,14 @@
                   "value": "</content>",
                   "position": {
                     "start": {
-                      "line": 37,
+                      "line": 56,
                       "column": 1,
-                      "offset": 787
+                      "offset": 1589
                     },
                     "end": {
-                      "line": 37,
+                      "line": 56,
                       "column": 11,
-                      "offset": 797
+                      "offset": 1599
                     }
                   }
                 },
@@ -760,7 +1514,7 @@
                                       "children": [
                                         {
                                           "type": "text",
-                                          "value": "Table 3."
+                                          "value": "Table 5."
                                         }
                                       ]
                                     },
@@ -914,9 +1668,9 @@
       "offset": 0
     },
     "end": {
-      "line": 38,
+      "line": 57,
       "column": 1,
-      "offset": 798
+      "offset": 1600
     }
   }
 }
