@@ -36,6 +36,7 @@ import { run as runSameLineLongForm } from './same-line-long-form.test.js';
 import { run as runSvgContent } from './svg-content.test.js';
 import { run as runLinksImages } from './links-images.test.js';
 import { run as runIntegration } from './integration.test.js';
+import { run as runIdScoping } from './id-scoping.test.js';
 import { run as runToc } from './lib/toc.test.js';
 import { run as runTheme } from './lib/theme.test.js';
 import { run as runSidenotes } from './lib/sidenotes.test.js';
@@ -117,6 +118,7 @@ const suites = [
   ['svg-content',                  runSvgContent],
   ['links-images',                 runLinksImages],
   ['integration',                  runIntegration],
+  ['id-scoping',                   runIdScoping],
   ['lib/toc',                      runToc],
   ['lib/theme',                    runTheme],
   ['lib/sidenotes',                runSidenotes],

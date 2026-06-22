@@ -226,7 +226,7 @@ function findEndnotesWithParent(root) {
 function makeNoteListItem({ node: noteNode, entry }) {
   const { id: noteId } = entry;
   const number = entry.number;
-  const refId = `noteref-${number}`;
+  const refId = entry.refId; // computed once in enscribeNotePlacement; see the stamp loop there
   const placement = notePlacement(noteNode);
   const sidenote = placement === 'side';
   return makeInternalMarker('__note-list-item', {
@@ -272,6 +272,13 @@ export function enscribeNotePlacement() {
     const pending = file?.data?.[ENSCRIBE_NOTES_PENDING];
     if (!pending || pending.length === 0) return;
 
+    // Compute each note's marker id (noteref-N) ONCE and stamp it on the registry entry, so the
+    // marker (Step 3) and the list-item (makeNoteListItem) read the same `entry.refId` instead of
+    // each rebuilding `noteref-${number}` — they must agree, and a single source is the only way
+    // a later rewrite (e.g. the minipage scope-qualification) keeps them in lockstep. entry.number
+    // is set by now (numberRegistry ran in apply-numbers, before this placement step).
+    for (const { entry } of pending) entry.refId = `noteref-${entry.number}`;
+
     // ─── Step 1: collection-unit-membership map ────────────────────────
     //
     // BEFORE walkReplace mutates the tree. For each top-level collection
@@ -316,7 +323,7 @@ export function enscribeNotePlacement() {
       if (!entry) return [noteNode]; // defensive: unregistered note stays in place
       const { id: noteId } = entry;
       const number = entry.number;
-      const refId = `noteref-${number}`;
+      const refId = entry.refId; // computed once in enscribeNotePlacement; see the stamp loop there
       return [makeInternalMarker('__note-marker', {
         kwargs: { noteId, number, refId },
         content: [],

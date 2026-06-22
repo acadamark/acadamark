@@ -44,6 +44,11 @@ export function minipageHandler(state, node, vocab) {
   // The sealed body's resolved Layer 1 mdast, stamped by the deferred phase
   // (plugins/minipage-deferred.js). Absent only if the deferred phase did not
   // run (e.g. an isolated unit test of this handler) — render an empty box then.
+  // #267: the sealed body restarts ids per box (auto note-N / noteref-N, author colon-ids), so
+  // two boxes would collide on id="note-1" / id="fig:x" in the assembled document. The ids are
+  // scope-qualified at the sub-run tail (qualifyScopeIds, on the resolved mdast in index.js's
+  // deferred phase) BEFORE this conversion — so resolvedBody already carries the box-unique ids,
+  // and this handler just converts. (Pre-rework this was a post-hoc hast rewrite here.)
   const resolvedBody = Array.isArray(node.minipageResolved) ? node.minipageResolved : [];
   const bodyHast = convertChildren(state, node, resolvedBody);
 
