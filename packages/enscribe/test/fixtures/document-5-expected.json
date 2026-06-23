@@ -10794,7 +10794,7 @@
                       "tagName": "img",
                       "properties": {
                         "src": "assets/scatter-regression.svg",
-                        "alt": "A scatter plot of predictor  versus outcome , with the OLS regression line overlaid."
+                        "alt": "A scatter plot of predictor x versus outcome y, with the OLS regression line overlaid."
                       },
                       "children": []
                     },
