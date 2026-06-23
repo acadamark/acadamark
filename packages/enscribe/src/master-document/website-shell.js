@@ -26,6 +26,7 @@ import {
 } from '../interpreter/assets/book-nav-asset.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
+import { KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../interpreter/assets/font-loader.js';
 import { BOOK_HOME_CSS } from './publish-pages.js';
 import { escapeHtml } from './book-scaffold.js';
 
@@ -54,20 +55,27 @@ export const WEBSITE_SHELL_CSS = `
     top: calc(var(--enscribe-site-nav-height, 3.25rem) + var(--enscribe-space-4));
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - var(--enscribe-space-8));
   }
+  /* Cover↔chapter jump: the book COVER has no right rail (a 2-col grid), the chapters have one (a
+     3-col grid), so the centred grid recenters wider on a chapter and the chapter rail + reading
+     column shift sideways. Give the cover the chapter's 3-col template + max-width (an empty reserved
+     right column) so moving cover↔chapter does not move the layout. Website-only (scoped to
+     .enscribe-site .content) — the standalone separate-pages book's own pageShell is untouched. */
+  .enscribe-site .content .enscribe-layout--book:not(.enscribe-layout--book-3col) {
+    grid-template-columns: 14rem minmax(0, var(--enscribe-content-width)) 13rem;
+    max-width: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+  }
 }`;
 
-/** The ONE universal website head — the union of every page type's current head-assets, in
- *  their current (inline) form. Article heads carry default.css + WEBSITE_NAV_CSS; book heads
- *  (pageShell) carry default.css + BOOK_HOME_CSS (+ conditional book-nav CSS) and the website
- *  added WEBSITE_NAV_CSS. This union folds them all together: default.css, the nav/dropdown CSS
- *  (slice 1, unchanged), the book pageShell CSS (the #206 masthead + the chapter-rail / reading-
- *  column rules live in default.css), and the conditional book-nav CSS — which is each scoped to
- *  a class that only appears when its feature is active (`--book-noleft`, `.enscribe-rail-sections`,
- *  `.enscribe-back-to-top`), so it is INERT on a page that does not use it and is therefore safe to
- *  include on every page. WEBSITE_SHELL_CSS is last so its content-region overrides win. The
- *  per-page assets a page actually needs (KaTeX CSS, fonts, citation/syntax CSS, DSL runtime) are
- *  NOT head assets today — they ride INLINE in each fragment and are kept in that form here (no
- *  inlining of a linked asset, no new externalising — that byte-diet is a separate follow-up). */
+/** The ONE universal website head — the union of every page type's current head-assets. Article
+ *  heads carry default.css + WEBSITE_NAV_CSS; book heads (pageShell) carry default.css +
+ *  BOOK_HOME_CSS (+ conditional book-nav CSS) and the website added WEBSITE_NAV_CSS. This union
+ *  folds them all together: default.css, the nav/dropdown CSS (slice 1, unchanged), the book
+ *  pageShell CSS (the #206 masthead + the chapter-rail / reading-column rules live in default.css),
+ *  and the conditional book-nav CSS — each scoped to a class that only appears when its feature is
+ *  active (`--book-noleft`, `.enscribe-rail-sections`, `.enscribe-back-to-top`), so it is INERT on a
+ *  page that does not use it and is safe to include on every page. WEBSITE_SHELL_CSS is last so its
+ *  content-region overrides win. (The KaTeX + document-fonts CSS are LINKED separately — see
+ *  HEAD_ASSET_LINKS — not inlined here.) */
 function universalHeadStyle(defaultCss) {
   return [
     defaultCss,
@@ -79,6 +87,23 @@ function universalHeadStyle(defaultCss) {
     WEBSITE_SHELL_CSS,
   ].join('\n');
 }
+
+// The universal head's LINKED assets — the document fonts (Inter body + Source Code Pro code) and
+// the KaTeX math CSS, in `'link'` form (the website is multi-page + linked-not-baked). These are the
+// SAME assets/versions the full single-page render and the article fragments use — reused via the
+// exported constants, never a hardcoded URL. Emitted UNCONDITIONALLY (like the rest of the head) so
+// the head stays byte-identical across pages: a page without math just carries an unused KaTeX
+// stylesheet, harmless. This is the fix for book pages rendering math, fonts (and so code) UNSTYLED —
+// the separate-pages pageShell only inlines default.css + the book CSS and never linked these, so
+// book math fell back to bare KaTeX HTML and code to a system mono font. (Article fragments still
+// carry their own KaTeX/fonts links too → article pages now link KaTeX twice, head + fragment; the
+// browser dedups the fetch. Making the head the single asset source + stripping per-fragment assets
+// is the externalisation follow-up, not this slice.) NB: there is no separate syntax-highlight
+// stylesheet — enscribe emits plain `<pre><code class="language-X">` (no token spans); code styling
+// is default.css's `pre`/`code` rules (already in the head) + the Source Code Pro web font here.
+const HEAD_ASSET_LINKS =
+  `<link rel="stylesheet" href="${escapeHtml(DOCUMENT_FONTS_CDN_URL)}">\n` +
+  `<link rel="stylesheet" href="${escapeHtml(KATEX_CDN_URL)}">`;
 
 // The book reading-interface scripts, appended once at body-end on EVERY page. Each guards on its
 // target element (`nav.enscribe-toc` / `nav.enscribe-onthispage` / `[data-enscribe-back-to-top]`)
@@ -107,6 +132,7 @@ export function composeWebsiteShellPage({ defaultCss, title, topBar, content }) 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title || 'Enscribe')}</title>
+${HEAD_ASSET_LINKS}
 <style>
 ${universalHeadStyle(defaultCss)}
 </style>
