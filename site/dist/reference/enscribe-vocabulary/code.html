@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Configuration — The Enscribe Vocabulary</title>
+<title>Code — The Enscribe Vocabulary</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1218,7 +1218,7 @@ body:has(.enscribe-layout--toc) {
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
    <body>
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The
    website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
    fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
@@ -1312,25 +1312,37 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </style>
 </head>
 <body>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html" class="enscribe-toc-active" aria-current="location">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:configuration" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html" class="enscribe-toc-active" aria-current="location">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:code" book-part-type="chapter">
       <meta>
-        <book-part-title>Configuration</book-part-title>
+        <book-part-title>Code</book-part-title>
       </meta>
-      <section id="sh-config">
-        <section-title><code>&#x3C;config></code></section-title>
-        <sub-section id="sec:general-usage-65">
+      <section id="sh-code">
+        <section-title><code>&#x3C;code></code></section-title>
+        <sub-section id="sec:general-usage-35">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>config</i>. Compiles to Layer 1 <code>&#x3C;config></code>.</p>
+          <p>Semantic role: <i>code</i>. Compiles to Layer 1 <code>&#x3C;code></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;config></code></li>
-          </ul><code id="code:sh-config-1">&#x3C;config citation-style=author-year number-sections=true /></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>The authoring form for &#x3C;config> is kwargs. Settings are read at the discovery pass into the configuration registry; the element itself produces no body output (it renders as an empty &#x3C;config>).</i></p><code id="code:sh-config-2">&#x3C;config number-figures=true number-tables=true show-source=true /></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>More operational options, all from the live kwarg allowlist (citation-style, number-sections, number-figures, number-tables, number-equations, show-source, parse-data-tables, ref-prefix-).</i></p>
+            <li>Canonical: <code>&#x3C;code></code></li>
+          </ul><code id="code:sh-code-1">The function is `factorial`.</code>
+          <figure id="mp:sh-code-1" class="frameable-border">
+            <p>The function is <code>factorial</code>.</p>
+            <figcaption><span class="minipage-label">Minipage 73.</span></figcaption>
+          </figure>
+          <p><i>Plain markdown backticks produce inline &#x3C;code>. The most common authoring path.</i></p><code id="code:sh-code-2">Use `&#x3C;`code`>` for inline code.</code>
+          <figure id="mp:sh-code-2" class="frameable-border">
+            <p>Use <code>&#x3C;</code>code<code>></code> for inline code.</p>
+            <figcaption><span class="minipage-label">Minipage 74.</span></figcaption>
+          </figure>
+          <p><i>The enscribe sigil form. Equivalent to plain markdown backticks but supports attributes.</i></p><code id="code:sh-code-3">&#x3C;code language=python | def hello(): print("hi")></code>
+          <figure id="mp:sh-code-3" class="frameable-border"><code class="language-python">def hello(): print("hi")</code>
+            <figcaption><span class="minipage-label">Minipage 75.</span></figcaption>
+          </figure><code id="code:sh-code-4">&#x3C;code #factorial-impl language=python | def factorial(n):></code>
+          <figure id="mp:sh-code-4" class="frameable-border"><code class="language-python" id="mp-sh-code-4-factorial-impl">def factorial(n):</code>
+            <figcaption><span class="minipage-label">Minipage 76.</span></figcaption>
+          </figure>
         </sub-section>
-        <sub-section id="sec:arguments-40">
+        <sub-section id="sec:arguments-19">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1343,16 +1355,62 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             </thead>
             <tbody>
               <tr>
-                <td><code>notes</code></td>
+                <td><code>language</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td></td>
+                <td>The programming language of the code. Maps to a class like “language-python” for syntax highlighting via shiki/prism.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="storage-hosts.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Storage hosts</span></a><a class="enscribe-chapter-next" href="navigation.html" rel="next"><span class="enscribe-toc-title">Navigation</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:configuration"><ul><li><a href="#sh-config">&#x3C;config></a><ul><li><a href="#sec:general-usage-65">General Usage</a></li><li><a href="#sec:arguments-40">Arguments</a></li></ul></li></ul></div></details></nav></div>
+      <section id="sh-code-block">
+        <section-title><code>&#x3C;code-block></code></section-title>
+        <sub-section id="sec:general-usage-36">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>code-block</i>. Compiles to Layer 1 <code>&#x3C;code-block></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;code-block></code></li>
+            <li>Sigil: <code>&#x3C;``` … ``` ></code></li>
+            <li>Markdown: <code>…</code></li>
+          </ul><code id="code:sh-code-block-1">&#x3C;``` python | print("hello, world") ```></code>
+          <figure id="mp:sh-code-block-1" class="frameable-border">
+            <pre><code class="language-python"> print("hello, world") </code></pre>
+            <figcaption><span class="minipage-label">Minipage 77.</span></figcaption>
+          </figure>
+          <p><i>The triple-backtick sigil. The first positional token is the language (emitted as a <code>language-X</code> class on the &#x3C;code>); the pipe separates it from the verbatim, newline-preserving content.</i></p><code id="code:sh-code-block-2">&#x3C;``` this is all content ```></code>
+          <figure id="mp:sh-code-block-2" class="frameable-border">
+            <pre><code> this is all content </code></pre>
+            <figcaption><span class="minipage-label">Minipage 78.</span></figcaption>
+          </figure>
+          <p><i>The no-pipe form: the entire body is opaque content with no language extraction.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-inline-code">
+        <section-title><code>&#x3C;inline-code></code></section-title>
+        <sub-section id="sec:general-usage-37">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>inline-code</i>. Compiles to Layer 1 <code>&#x3C;inline-code></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;inline-code></code></li>
+            <li>Sigil: <code>&#x3C;</code> … <code>></code></li>
+            <li>Markdown: <code>…</code></li>
+          </ul><code id="code:sh-inline-code-1">Assign with &#x3C;` x = 1 `> at the top of the function.</code>
+          <figure id="mp:sh-inline-code-1" class="frameable-border">
+            <p>Assign with <code>x = 1 </code>at the top of the function.</p>
+            <figcaption><span class="minipage-label">Minipage 79.</span></figcaption>
+          </figure>
+          <p><i>The single-backtick sigil. With no pipe, the whole body is opaque code content rendered as &#x3C;code> (the same output as a markdown backtick span).</i></p><code id="code:sh-inline-code-2">Call &#x3C;` python | factorial(n) `> to recurse.</code>
+          <figure id="mp:sh-inline-code-2" class="frameable-border">
+            <p>Call <code class="language-python">factorial(n) </code>to recurse.</p>
+            <figcaption><span class="minipage-label">Minipage 80.</span></figcaption>
+          </figure>
+          <p><i>The first positional token before the pipe is the language, emitted as a <code>language-X</code> class on the &#x3C;code> (discoverable by highlighters; the interpreter applies no highlighting itself).</i></p></section>
+        </sub-section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="inline-formatting.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Inline formatting</span></a><a class="enscribe-chapter-next" href="frameables.html" rel="next"><span class="enscribe-toc-title">Frameables</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:code"><ul><li><a href="#sh-code">&#x3C;code></a><ul><li><a href="#sec:general-usage-35">General Usage</a></li><li><a href="#sec:arguments-19">Arguments</a></li></ul></li><li><a href="#sh-code-block">&#x3C;code-block></a><ul><li><a href="#sec:general-usage-36">General Usage</a></li></ul></li><li><a href="#sh-inline-code">&#x3C;inline-code></a><ul><li><a href="#sec:general-usage-37">General Usage</a></li></ul></li></ul></div></details></nav></div>
 <script>(function () {
   function init() {
     var nav = document.querySelector('nav.enscribe-toc');
