@@ -162,54 +162,100 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const pages = flattenNavPages(entries);
   if (pages.length === 0) throw new Error('website master has a <meta type=website> but no nav pages');
 
-  // 2. Each page's OUTPUT location mirrors its position in the nav TREE (#278 slice 1): a page under
-  //    groups "References → Layer 1" with slug `export` is written at references/layer-1/export/index.html
-  //    and addressed as references/layer-1/export/. Home (the first nav page) is the dist root. Group
-  //    segments are the slugified group TITLES; the final segment is the page's own slug.
+  // 2. PRE-PASS (#289): a page's SLUG is its stable identity, harvested from its own `<meta>` — the
+  //    explicit `<meta slug=…>` if present, else slugifyPage(its `<meta>` title). This supersedes the
+  //    nav-title slug (slice 1): the nav `<item>` keeps src + menu label, but no longer defines the
+  //    slug. We harvest every page up front (so an `<a {slug}>` can target ANY page), REMAP the nav
+  //    model's page.slug to the meta-slug (so buildNavPaths + the chrome + every link key on it
+  //    uniformly), and build slug → {title, isDerived, src}. A DUPLICATE slug is a HARD build error
+  //    (the identity + the link resolver depend on site-wide uniqueness).
+  const pageData = [];                 // [{ page, resolved, source, slug, isBook }] in nav order
+  const pageInfo = new Map();          // slug → { title, isDerived, src }
+  // Capture the FULL raw slug value (everything up to whitespace/quote/`>`), then normalize it through
+  // slugifyPage so a page's identity is ALWAYS a clean lowercase [a-z0-9-] slug — the same shape the
+  // <a> handler's bare-slug detector (PAGE_SLUG_RE) recognizes (#289). A permissive [a-z0-9-] capture
+  // here would silently TRUNCATE `slug=Foo_Bar` to "Foo" and admit uppercase the detector can never
+  // match, leaving the page unreachable by any authored <a {slug}> link (and minting false collisions).
+  const META_SLUG_RE = /<meta\b[^>]*?\bslug\s*=\s*["']?([^\s"'>]+)/i;
+  const META_TYPE_RE = /<meta\s+type\s*=\s*["']?([A-Za-z-]+)/; // the page's OWN type (first meta, not an example)
+  for (const page of pages) {
+    const resolved = resolvePageSource(masterDir, page.src);
+    if (!resolved) {
+      warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
+      continue;
+    }
+    const source = readFileSync(resolved.sourcePath, 'utf8');
+    const rawSlug = (source.match(META_SLUG_RE) || [])[1] || null;
+    const explicitSlug = rawSlug ? slugifyPage(rawSlug) || null : null; // normalize → clean identity
+    if (rawSlug && explicitSlug && explicitSlug !== rawSlug) {
+      warnings.push(
+        `page "${page.src}": <meta slug="${rawSlug}"> was normalized to "${explicitSlug}" — ` +
+        `author internal links to it as <a ${explicitSlug}> (slugs are lowercase letters, digits, hyphens).`,
+      );
+    }
+    const pageTitle = extractDocumentTitle(source) || page.title || page.slug;
+    const slug = explicitSlug || slugifyPage(pageTitle) || page.slug;
+    if (pageInfo.has(slug)) {
+      throw new Error(
+        `#289: duplicate page slug "${slug}" — "${pageInfo.get(slug).src}" and "${page.src}" resolve to the ` +
+        `same identity. Give one a distinct <meta slug=…> (or a distinct title).`,
+      );
+    }
+    pageInfo.set(slug, { title: pageTitle, isDerived: !explicitSlug, src: page.src });
+    page.slug = slug;                  // remap the nav model → the page's meta-slug is its identity
+    pageData.push({ page, resolved, source, slug, isBook: (source.match(META_TYPE_RE) || [])[1]?.toLowerCase() === 'book' });
+  }
+  if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
+
+  // 3. Output location mirrors the nav TREE (slice 1): group segments (slugified group titles) + the
+  //    page's slug; home (the first nav page) → the dist root. Now keyed on meta-slugs (remapped above).
   const homeSlug = pages[0].slug;
-  const title = extractDocumentTitle(masterSource) || 'Enscribe';
+  const masterTitle = extractDocumentTitle(masterSource) || 'Enscribe';
   const navPathOf = buildNavPaths(entries, homeSlug);
 
-  // Links are PRETTY trailing-slash path URLs, RELATIVE to the current page's depth. The chrome emits
-  // `?page=slug` (the live SPA's router form); convert each to the TARGET page's `<navPath>/` (home →
-  // root), prefixed with one `../` per path segment of the CURRENT page (its outPath's depth). No
-  // `<navPath>/index.html`, no absolute `/…`, no `?page=` — a trailing slash, the HTTP host serves the
-  // directory's index.html. (Trailing-slash URLs need a server, not file:// — the accepted trade.)
-  const staticize = (html, outPath) => {
+  // Links are PRETTY trailing-slash path URLs, RELATIVE to the current page's depth. Two link sources:
+  //   - the chrome's `?page=slug` (live-SPA router form) → the target's `<navPath>/`;
+  //   - an authored `<a {slug}>` internal link, recorded by the <a> handler as `<a data-page-slug="X">`
+  //     → the target's `<navPath>/`, auto-labelled with the target's TITLE when the link has no text.
+  // A slug with no page is a broken internal link (collected → the build errors); a link to a DERIVED
+  // (un-pinned) slug warns. No `<navPath>/index.html`, no absolute `/…`, no `?page=` survive.
+  const linkErrors = [];
+  const staticize = (html, outPath, currentSlug) => {
     const up = '../'.repeat((outPath.match(/\//g) || []).length); // from this page's dir up to the dist root
-    return String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) => {
-      const np = navPathOf.get(slug);
-      if (np == null) return _m;                  // a slug with no nav page — leave it (defensive)
-      return np === '' ? (up || './') : `${up}${np}/`;
+    const relTo = (slug) => { const np = navPathOf.get(slug); return np === '' ? (up || './') : `${up}${np}/`; };
+    let out = String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) =>
+      navPathOf.has(slug) ? relTo(slug) : _m);
+    out = out.replace(/<a\b([^>]*?)\sdata-page-slug="([^"]+)"([^>]*)>([\s\S]*?)<\/a>/g, (whole, pre, slug, post, label) => {
+      if (!navPathOf.has(slug)) {
+        linkErrors.push(`"${currentSlug}": <a ${slug}> → no page has slug "${slug}"`);
+        return whole;                  // leave the marker visible; the build errors after listing all
+      }
+      const info = pageInfo.get(slug);
+      if (info?.isDerived) {
+        warnings.push(
+          `"${currentSlug}": <a ${slug}> resolves to a DERIVED slug (from "${info.src}"'s title) — pin ` +
+          `<meta slug="${slug}"> there so a title rename does not silently break the link`,
+        );
+      }
+      const text = label.trim() ? label : escapeHtml(info?.title ?? slug);
+      return `<a${pre} href="${relTo(slug)}"${post}>${text}</a>`;
     });
+    return out;
   };
 
-  // 3. Chrome built once (top bar + sidebar); its `?page=` links are relativized PER PAGE below.
-  const topBar = buildWebsiteTopBar({ title, icon: null, firstSlug: homeSlug }, entries);
+  // 4. Chrome built once (top bar + sidebar); its `?page=` links are relativized PER PAGE below.
+  const topBar = buildWebsiteTopBar({ title: masterTitle, icon: null, firstSlug: homeSlug }, entries);
   const sidebar = buildWebsiteSidebar(entries);
 
   const pageMap = new Map();
   const assets = [];
 
-  for (const page of pages) {
-    const resolved = resolvePageSource(masterDir, page.src);
-    if (!resolved) {
-      warnings.push(`page "${page.slug}": src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
-      continue;
-    }
-    const source = readFileSync(resolved.sourcePath, 'utf8');
-    // Detect the page's OWN doc type from its FIRST `<meta type=…>` (the document meta is always
-    // first). A naive "does the source contain <meta type=book>" test is wrong: a doc page can SHOW
-    // `<meta type=book>` inside an example/code block — that must not flip the page to the book path.
-    const metaType = (source.match(/<meta\s+type\s*=\s*["']?([A-Za-z-]+)/) || [])[1]?.toLowerCase();
-    const isBook = metaType === 'book';
-    // Output location = the page's nav-path (group segments + slug); home → the dist root.
-    const navPath = navPathOf.get(page.slug) ?? page.slug;
+  for (const { page, resolved, source, slug, isBook } of pageData) {
+    const navPath = navPathOf.get(slug) ?? slug;          // group segments + meta-slug; home → ''
     const destPrefix = navPath === '' ? '' : `${navPath}/`;
-
     try {
       if (isBook) {
-        // Per-chapter pages, nested under <slug>/ — assemble the book master, number once, publish.
+        // Per-chapter pages, nested under the book's nav-path dir — assemble, number once, publish.
         const proc = buildEnscribePipeline({ assetsDir: resolved.pageDir });
         const file = new VFile({ path: resolved.sourcePath });
         const tree = assembleMasterDocument({
@@ -217,29 +263,31 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
           readFile: (p) => readFileSync(p, 'utf8'),
           resolve: (rel) => join(resolved.pageDir, rel),
           parse: (s) => proc.parse(s),
-          warn: (m) => warnings.push(`page "${page.slug}": ${m}`),
+          warn: (m) => warnings.push(`page "${slug}": ${m}`),
         });
         const numbered = proc.runSync(tree, file);
         const bookPages = publishBookPages({ numbered, file, proc, defaultCss });
         for (const [fname, html] of bookPages) {
           const outPath = `${destPrefix}${fname}`;
-          pageMap.set(outPath, staticize(decorateBookPage(html, topBar), outPath));
+          pageMap.set(outPath, staticize(decorateBookPage(html, topBar), outPath, slug));
         }
       } else {
-        // A single article page.
         const proc = buildEnscribePipeline({ assetsDir: resolved.pageDir });
         const body = String(proc.processSync(source));
         const full = composeArticlePage({ body, title: page.title, topBar, sidebar, defaultCss });
         const outPath = `${destPrefix}index.html`;
-        pageMap.set(outPath, staticize(full, outPath));
+        pageMap.set(outPath, staticize(full, outPath, slug));
       }
     } catch (err) {
-      // A page that errors is reported (a bug-inventory candidate); the rest of the site still builds.
-      warnings.push(`page "${page.slug}" failed to render: ${err.message}`);
+      warnings.push(`page "${slug}" failed to render: ${err.message}`);
       continue;
     }
-
     assets.push(...pageDirAssets(resolved.pageDir, masterDir, destPrefix));
+  }
+
+  // A broken `<a {slug}>` is a real authoring error — fail the build (after listing every one).
+  if (linkErrors.length) {
+    throw new Error(`#289: ${linkErrors.length} broken internal link(s):\n  ${linkErrors.join('\n  ')}`);
   }
 
   return { pages: pageMap, assets, warnings };

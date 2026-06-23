@@ -1,7 +1,8 @@
-<meta type=article>
+<meta type=article slug=about>
 <title | About>
 </meta>
 
 <section | About>
 
-About this mini site. A flat page (about.emd), not a page-directory.
+About this mini site — a flat page (about.emd) with an EXPLICIT <meta slug=about>, so a link to it
+warns nothing. See <a deep-page | the deep page> (a derived-slug target) for more.
