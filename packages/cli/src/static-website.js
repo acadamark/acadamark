@@ -131,17 +131,25 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   if (pages.length === 0) throw new Error('website master has a <meta type=website> but no nav pages');
 
   // 2. Home = the first page in nav order (the `+homepage` page authored first). It maps to the
-  //    dist ROOT; every other page lives at `<slug>/`. Pretty URLs throughout.
+  //    dist ROOT (index.html); every other page lives at `<slug>/index.html`.
   const homeSlug = pages[0].slug;
   const title = extractDocumentTitle(masterSource) || 'Enscribe';
-  const prettyOf = (slug) => (slug === homeSlug ? '/' : `/${slug}/`);
-  // The chrome + cross-page hrefs come out of the live machinery as `?page=slug`; the static site
-  // uses pretty `/slug/` (home → `/`). One pass converts every `?page=slug` it emits.
-  const staticize = (html) => String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) => prettyOf(slug));
+  // The chrome's hrefs come out of the live machinery as `?page=slug` (the SPA router form). A STATIC
+  // site uses plain RELATIVE file links, so it works opened directly (file://), served from a domain
+  // root, OR served from a subpath — NOT absolute `/slug/` (which breaks on file:// and under a base
+  // path) and NOT `?page=` (that is the live SPA's routing query). Each page resolves links relative to
+  // ITS OWN depth below the dist root: home is `index.html` (depth 0); every other page is at
+  // `<slug>/…` (depth 1). A page slug links to that page's entry document `<slug>/index.html` (home →
+  // `index.html`) — an explicit `index.html`, so a `file://` open resolves it (no dir-index server needed).
+  const staticize = (html, outPath) => {
+    const up = '../'.repeat((outPath.match(/\//g) || []).length); // from this page's dir up to the dist root
+    return String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) =>
+      slug === homeSlug ? `${up}index.html` : `${up}${slug}/index.html`);
+  };
 
-  // 3. Chrome built once (top bar + sidebar), staticized.
-  const topBar = staticize(buildWebsiteTopBar({ title, icon: null, firstSlug: homeSlug }, entries));
-  const sidebar = staticize(buildWebsiteSidebar(entries));
+  // 3. Chrome built once (top bar + sidebar); its `?page=` links are relativized PER PAGE below.
+  const topBar = buildWebsiteTopBar({ title, icon: null, firstSlug: homeSlug }, entries);
+  const sidebar = buildWebsiteSidebar(entries);
 
   const pageMap = new Map();
   const assets = [];
@@ -175,14 +183,16 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
         const numbered = proc.runSync(tree, file);
         const bookPages = publishBookPages({ numbered, file, proc, defaultCss });
         for (const [fname, html] of bookPages) {
-          pageMap.set(`${destPrefix}${fname}`, staticize(decorateBookPage(html, topBar)));
+          const outPath = `${destPrefix}${fname}`;
+          pageMap.set(outPath, staticize(decorateBookPage(html, topBar), outPath));
         }
       } else {
         // A single article page.
         const proc = buildEnscribePipeline({ assetsDir: resolved.pageDir });
         const body = String(proc.processSync(source));
         const full = composeArticlePage({ body, title: page.title, topBar, sidebar, defaultCss });
-        pageMap.set(`${destPrefix}index.html`, staticize(full));
+        const outPath = `${destPrefix}index.html`;
+        pageMap.set(outPath, staticize(full, outPath));
       }
     } catch (err) {
       // A page that errors is reported (a bug-inventory candidate); the rest of the site still builds.

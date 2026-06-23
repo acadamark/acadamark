@@ -41,22 +41,53 @@ export function run_tests() {
     console.log('PASS: static-website — dir-per-page shape (home→root, article→<slug>/index.html, book chapters nested)');
   }
 
-  // ── nav chrome injected; cross-page links are pretty /<slug>/ (home → /), not ?page= ─────────
+  // ── nav chrome injected; cross-page links are RELATIVE (no absolute /…, no ?page=) ───────────
   {
     const home = pages.get('index.html');
     assert.ok(home.includes('enscribe-site-header'), 'the home page carries the website top bar');
     assert.ok(home.includes('enscribe-site-sidebar'), 'the home page carries the sidebar');
     assert.ok(home.includes('Welcome'), 'the home article body is rendered into the content slot');
-    assert.ok(!home.includes('?page='), 'no ?page= SPA links remain — they are staticized');
-    assert.ok(home.includes('href="/about/"'), 'a cross-page nav link resolves to the pretty /about/ URL');
-    assert.ok(home.includes('href="/guide/"'), 'the book page nav link resolves to /guide/');
-    assert.ok(home.includes('href="/"'), 'the brand / home link resolves to the dist root /');
+    assert.ok(!home.includes('?page='), 'no ?page= SPA-router links remain (a static site does not route by query)');
+    // From the home page (dist root, depth 0): a sibling page → `about/index.html`; the book → `guide/index.html`;
+    // the brand / home link → `index.html`. RELATIVE + explicit index.html, so file:// and any base path work.
+    assert.ok(home.includes('href="about/index.html"'), 'a cross-page nav link is relative to the page (about/index.html)');
+    assert.ok(home.includes('href="guide/index.html"'), 'the book page nav link is relative (guide/index.html)');
+    assert.ok(home.includes('href="index.html"'), 'the brand / home link is relative (index.html)');
+    assert.ok(!/href="\/(?!\/)/.test(home), 'NO absolute-path chrome links (href="/…") — they break on file:// and under a base path');
 
-    // a book chapter page also gets the website top bar (for site-level navigation)
+    // From a DEPTH-1 page (about/index.html): the same targets are reached with a `../` prefix.
+    const about = pages.get('about/index.html');
+    assert.ok(about.includes('href="../guide/index.html"'), 'a depth-1 page links up-and-over (../guide/index.html)');
+    assert.ok(about.includes('href="../index.html"'), 'a depth-1 page links home as ../index.html');
+
+    // a book chapter page also gets the website top bar, relativized for its depth
     const guideHome = pages.get('guide/index.html');
     assert.ok(guideHome.includes('enscribe-site-header'), 'a book page also carries the website top bar');
+    assert.ok(guideHome.includes('href="../index.html"'), 'a book page links home as ../index.html (depth 1)');
     assert.ok(!guideHome.includes('?page='), 'a book page has no un-staticized ?page= links');
-    console.log('PASS: static-website — chrome injected; cross-page links pretty /<slug>/ (home → /)');
+    console.log('PASS: static-website — chrome injected; cross-page links RELATIVE (file://-safe), no absolute /…, no ?page=');
+  }
+
+  // ── every emitted relative link resolves to an emitted page (the file:// "no broken link" gate) ──
+  {
+    for (const [outPath, html] of pages) {
+      const dir = outPath.includes('/') ? outPath.replace(/\/[^/]*$/, '') : '';
+      for (const m of html.matchAll(/href="([^"#]+)"/g)) {
+        const href = m[1];
+        if (/^(https?:|mailto:|#|\/\/)/.test(href) || href.startsWith('/')) continue; // external / in-page / (absolute caught above)
+        if (!/\.html?$/.test(href)) continue; // only check page links (not e.g. a fragment-less asset)
+        // resolve href relative to this page's directory, normalising ../
+        const parts = (dir ? dir.split('/') : []);
+        for (const seg of href.split('/')) {
+          if (seg === '..') parts.pop();
+          else if (seg !== '.' && seg !== '') parts.push(seg);
+        }
+        const resolved = parts.join('/');
+        assert.ok(pages.has(resolved),
+          `link "${href}" on page "${outPath}" resolves to an emitted file ("${resolved}")`);
+      }
+    }
+    console.log('PASS: static-website — every relative page link resolves to an emitted file (no broken links on file://)');
   }
 
   console.log('All static-website (#278) tests passed.');
