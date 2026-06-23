@@ -36,8 +36,9 @@ import { ENSCRIBE_DOC_TYPE, ENSCRIBE_NAV_MODEL } from '../../core/file-data-keys
 
 /** A page slug from a human title: lowercase, non-alphanumerics → `-`, trimmed. Distinct
  *  from toc.js's `slugify` (which prefixes `sec:` for in-page cross-ref anchors — wrong
- *  for a public `?page=` URL). */
-function slugifyPage(s) {
+ *  for a public `?page=` URL). Exported (#278) so the static website build reuses the one
+ *  slugifier for nav-group → path-segment slugs (no second, drifting implementation). */
+export function slugifyPage(s) {
   return (s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
