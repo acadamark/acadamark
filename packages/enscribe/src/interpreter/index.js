@@ -1190,6 +1190,9 @@ export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFou
 // the live shell mounts. The live shell's interactive helpers (injectWebsiteNavStyles needs a DOM;
 // bindWebsiteNav/setActivePage/buildOnThisPage are runtime) stay internal to the browser entry.
 export { buildWebsiteTopBar, buildWebsiteSidebar, WEBSITE_NAV_CSS } from './assets/website-nav-asset.js';
+// slugifyPage (#278 slice 1): the title → slug helper website-structuring uses for page slugs, reused
+// by the static build to slugify nav-GROUP titles into output-path segments (one slugifier, no drift).
+export { slugifyPage } from './plugins/website-structuring.js';
 // The single-document (article) live render (#216): an article is the simple case — one unit, no
 // rail/cover/routing — so its edit view is just the SHARED Write/Preview pane (buildEditMain) in a
 // chrome-free layout. browser.js mountLiveArticle wires the fetch + DOM + the single-source edit loop.

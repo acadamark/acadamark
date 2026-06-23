@@ -27,11 +27,35 @@ import {
   buildWebsiteTopBar,
   buildWebsiteSidebar,
   WEBSITE_NAV_CSS,
+  slugifyPage,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const escapeHtml = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
+
+/**
+ * Walk the nav tree and map each page slug → its OUTPUT nav-path: the slugified titles of the groups
+ * it sits under, then the page's own slug (`references/layer-1/export`). The home page (the first nav
+ * page) maps to `''` (the dist root). The group nesting is NOT in flattenNavPages's flat list, so this
+ * walks the tree directly. Group segments use slugifyPage — the same slugifier website-structuring uses
+ * for page slugs (one implementation, no drift).
+ *
+ * @param {Array} entries - ENSCRIBE_NAV_MODEL.entries (the page / group tree)
+ * @param {string} homeSlug - the first nav page's slug (it maps to the root)
+ * @returns {Map<string,string>} slug → navPath ('' for home)
+ */
+function buildNavPaths(entries, homeSlug) {
+  const map = new Map();
+  const walk = (nodes, prefix) => {
+    for (const e of nodes ?? []) {
+      if (e?.kind === 'group') walk(e.children, [...prefix, slugifyPage(e.title)]);
+      else if (e?.kind === 'page') map.set(e.slug, e.slug === homeSlug ? '' : [...prefix, e.slug].join('/'));
+    }
+  };
+  walk(entries, []);
+  return map;
+}
 
 /**
  * Resolve a nav `<item src>` to a renderable source file — the #278 page-body model. NO
@@ -48,10 +72,12 @@ export function resolvePageSource(masterDir, src) {
   const direct = join(masterDir, src);
   if (existsSync(direct) && statSync(direct).isDirectory()) {
     const idx = join(direct, 'index.emd');
-    return existsSync(idx) ? { sourcePath: idx, pageDir: direct } : null;
+    if (existsSync(idx)) return { sourcePath: idx, pageDir: direct };
+    // A directory without index.emd is not itself a page body — fall through to a sibling
+    // `<src>.emd` rather than failing here (so a `mybook/` chapter dir does not shadow a `mybook.emd`).
   }
   if (existsSync(`${direct}.emd`)) return { sourcePath: `${direct}.emd`, pageDir: masterDir };
-  if (existsSync(direct)) return { sourcePath: direct, pageDir: dirname(direct) };
+  if (existsSync(direct) && statSync(direct).isFile()) return { sourcePath: direct, pageDir: dirname(direct) };
   return null;
 }
 
@@ -125,26 +151,37 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const navProc = buildEnscribePipeline({ assetsDir: masterDir });
   const navFile = new VFile({ path: 'index.emd', value: masterSource });
   navProc.runSync(navProc.parse(masterSource), navFile);
+  // Surface the nav-parse diagnostics — website-structuring raises real ones (a duplicate page slug,
+  // a pipe-label nav-group, a zero-entry nav). They live on navFile.messages; without this the static
+  // build silently dropped them (e.g. a slug collision quietly disambiguated to `…-2`).
+  for (const m of navFile.messages ?? []) {
+    warnings.push(m.ruleId ? `nav: ${m.ruleId}: ${m.reason}` : `nav: ${m.reason ?? m}`);
+  }
   const navModel = navFile.data?.[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
   const entries = navModel.entries ?? [];
   const pages = flattenNavPages(entries);
   if (pages.length === 0) throw new Error('website master has a <meta type=website> but no nav pages');
 
-  // 2. Home = the first page in nav order (the `+homepage` page authored first). It maps to the
-  //    dist ROOT (index.html); every other page lives at `<slug>/index.html`.
+  // 2. Each page's OUTPUT location mirrors its position in the nav TREE (#278 slice 1): a page under
+  //    groups "References → Layer 1" with slug `export` is written at references/layer-1/export/index.html
+  //    and addressed as references/layer-1/export/. Home (the first nav page) is the dist root. Group
+  //    segments are the slugified group TITLES; the final segment is the page's own slug.
   const homeSlug = pages[0].slug;
   const title = extractDocumentTitle(masterSource) || 'Enscribe';
-  // The chrome's hrefs come out of the live machinery as `?page=slug` (the SPA router form). A STATIC
-  // site uses plain RELATIVE file links, so it works opened directly (file://), served from a domain
-  // root, OR served from a subpath — NOT absolute `/slug/` (which breaks on file:// and under a base
-  // path) and NOT `?page=` (that is the live SPA's routing query). Each page resolves links relative to
-  // ITS OWN depth below the dist root: home is `index.html` (depth 0); every other page is at
-  // `<slug>/…` (depth 1). A page slug links to that page's entry document `<slug>/index.html` (home →
-  // `index.html`) — an explicit `index.html`, so a `file://` open resolves it (no dir-index server needed).
+  const navPathOf = buildNavPaths(entries, homeSlug);
+
+  // Links are PRETTY trailing-slash path URLs, RELATIVE to the current page's depth. The chrome emits
+  // `?page=slug` (the live SPA's router form); convert each to the TARGET page's `<navPath>/` (home →
+  // root), prefixed with one `../` per path segment of the CURRENT page (its outPath's depth). No
+  // `<navPath>/index.html`, no absolute `/…`, no `?page=` — a trailing slash, the HTTP host serves the
+  // directory's index.html. (Trailing-slash URLs need a server, not file:// — the accepted trade.)
   const staticize = (html, outPath) => {
     const up = '../'.repeat((outPath.match(/\//g) || []).length); // from this page's dir up to the dist root
-    return String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) =>
-      slug === homeSlug ? `${up}index.html` : `${up}${slug}/index.html`);
+    return String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) => {
+      const np = navPathOf.get(slug);
+      if (np == null) return _m;                  // a slug with no nav page — leave it (defensive)
+      return np === '' ? (up || './') : `${up}${np}/`;
+    });
   };
 
   // 3. Chrome built once (top bar + sidebar); its `?page=` links are relativized PER PAGE below.
@@ -166,7 +203,9 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     // `<meta type=book>` inside an example/code block — that must not flip the page to the book path.
     const metaType = (source.match(/<meta\s+type\s*=\s*["']?([A-Za-z-]+)/) || [])[1]?.toLowerCase();
     const isBook = metaType === 'book';
-    const destPrefix = page.slug === homeSlug ? '' : `${page.slug}/`;
+    // Output location = the page's nav-path (group segments + slug); home → the dist root.
+    const navPath = navPathOf.get(page.slug) ?? page.slug;
+    const destPrefix = navPath === '' ? '' : `${navPath}/`;
 
     try {
       if (isBook) {

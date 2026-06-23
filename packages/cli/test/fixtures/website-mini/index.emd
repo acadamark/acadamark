@@ -5,5 +5,8 @@
 <nav>
 <item src="home" +homepage | Home>
 <item src="about" | About>
+<nav-group title="Resources">
+<item src="deep" | Deep Page>
+</nav-group>
 <item src="guide" | Guide>
 </nav>
