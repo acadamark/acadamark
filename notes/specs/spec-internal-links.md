@@ -48,6 +48,11 @@ and addressed as `/references/layer-1/export/`. Group path segments are the slug
 titles; the final segment is the page's slug. URLs end in a trailing slash (`/…/`; the server
 serves `index.html`) — so the site needs an HTTP server, not `file://`.
 
+> **Current limitation:** `<nav-group>` nesting is single-level today — a `<nav-group>` nested inside
+> another is silently dropped by the parser ([#292](https://github.com/enscribejs/enscribe/issues/292)),
+> so the two-level `references/layer-1/export/` example above is not yet expressible. The emitter's
+> nav-path code already recurses; only the parser fix is pending.
+
 Consequence (accepted): a page's URL mirrors its menu position, so moving it in the nav changes
 its public URL. In-site links self-heal (they re-resolve by slug); externally-held URLs
 (bookmarks, inbound links) to the old path break and would need redirects. This is the
