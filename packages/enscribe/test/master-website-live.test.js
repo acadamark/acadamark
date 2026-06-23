@@ -167,9 +167,10 @@ export async function run() {
       const brand = root.querySelector('.enscribe-site-header .enscribe-site-brand');
       assert.ok(brand && /Demo Site/.test(brand.textContent), 'brand shows the <meta> title');
       assert.ok(root.querySelector('.enscribe-site-brand-icon[src="logo.png"]'), 'brand shows the <meta icon>');
-      // Top bar: the <nav-group> "Docs" is a dropdown.
+      // Top bar: the <nav-group> "Docs" is a native <details> disclosure dropdown (CSS-only, no JS).
       const toggle = root.querySelector('.enscribe-site-dropdown-toggle');
       assert.ok(toggle && /Docs/.test(toggle.textContent), 'a <nav-group> renders a top-bar dropdown toggle');
+      assert.strictEqual(toggle.tagName, 'SUMMARY', 'the dropdown toggle is a native <summary> (not a JS-wired <button>)');
       // Sidebar (ON-path): the master opts in via <config sidebar> (S1.5 — default OFF). The group is
       // a NON-LINK label; its child pages are links.
       const sidebar = root.querySelector('.enscribe-site-sidebar');
@@ -188,12 +189,17 @@ export async function run() {
       assert.strictEqual(activeHref(root), '?page=home', 'aria-current marks the active page (Home)');
       console.log('PASS: S2b — brand (meta title+icon), <nav-group> dropdown + non-link sidebar label, footer, aria-current');
 
-      // ── dropdown opens on click ──
-      assert.strictEqual(toggle.getAttribute('aria-expanded'), 'false', 'dropdown starts closed');
+      // ── dropdown opens/closes on click via the NATIVE <details> disclosure (CSS-only, no JS wiring) ──
+      const details = toggle.closest('details');
+      assert.ok(details && details.classList.contains('enscribe-site-dropdown'), 'the toggle is a <summary> inside the <details> dropdown');
+      assert.ok(details.querySelector('.enscribe-site-dropdown-panel'), 'the panel is the <details> content (revealed by CSS on [open])');
+      assert.ok(!toggle.hasAttribute('aria-expanded'), 'no aria-expanded JS-state attribute (the dropdown is CSS-only)');
+      assert.strictEqual(details.open, false, 'dropdown starts closed');
       toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
-      assert.strictEqual(toggle.getAttribute('aria-expanded'), 'true', 'clicking the toggle opens the dropdown');
-      assert.strictEqual(toggle.nextElementSibling.hidden, false, 'the dropdown panel is shown');
-      console.log('PASS: S2b — the top-bar dropdown opens on click');
+      assert.strictEqual(details.open, true, 'clicking the summary opens the dropdown (native <details>, no script)');
+      toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
+      assert.strictEqual(details.open, false, 'clicking the summary again closes it');
+      console.log('PASS: chrome — the top-bar dropdown is a native CSS-only <details> (opens/closes on click, no JS)');
 
       // ── internal nav: content swaps, chrome (header + footer) PERSISTS, aria-current moves ──
       const headerBefore = root.querySelector('.enscribe-site-header');

@@ -43,14 +43,20 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 }
 .enscribe-site-nav-link:hover, .enscribe-site-dropdown-toggle:hover { color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-nav-link[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-/* The dropdown (a <nav-group> in the top bar) — the one new top-bar interaction. */
+/* The dropdown (a <nav-group> in the top bar) — a native <details> disclosure, CSS-only (no JS). */
 .enscribe-site-dropdown { position: relative; }
-.enscribe-site-dropdown-toggle[aria-expanded="true"] { color: var(--enscribe-text-primary, #1f2328); }
+/* <summary> is the toggle: drop the default disclosure marker (both engines) and keep the nav-link look. */
+.enscribe-site-dropdown-toggle { display: inline-block; list-style: none; cursor: pointer; }
+.enscribe-site-dropdown-toggle::-webkit-details-marker { display: none; }
+.enscribe-site-dropdown[open] > .enscribe-site-dropdown-toggle { color: var(--enscribe-text-primary, #1f2328); }
+/* The panel: hidden by default, revealed when the <details> is open. Absolutely positioned as before. */
 .enscribe-site-dropdown-panel {
+  display: none;
   position: absolute; top: 100%; left: 0; min-width: 12rem; margin-top: 0.4rem; padding: 0.3rem 0;
   border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 6px;
   background: var(--enscribe-bg, #fff); box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 110;
 }
+.enscribe-site-dropdown[open] > .enscribe-site-dropdown-panel { display: block; }
 .enscribe-site-dropdown-item {
   display: block; padding: 0.35rem 0.9rem; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none; white-space: nowrap;
@@ -122,8 +128,10 @@ export function injectWebsiteNavStyles(doc) {
   d.head.appendChild(style);
 }
 
-// One top-bar item: a page → a link; a <nav-group> → a click-to-open dropdown (the panel lists the
-// group's child pages — the first cut is shallow, one level). data-less; the active mover keys on href.
+// One top-bar item: a page → a link; a <nav-group> → a NATIVE <details> disclosure dropdown (the panel
+// lists the group's child pages — the first cut is shallow, one level). <details>/<summary> open and
+// close on summary click in the browser with NO script, so this works identically on a static page and
+// in the live shell. data-less; the active mover keys on href.
 function topItemHtml(entry) {
   if (entry.kind === 'group') {
     const items = (entry.children || [])
@@ -131,9 +139,9 @@ function topItemHtml(entry) {
       .map((c) => `<a class="enscribe-site-dropdown-item" href="?page=${esc(c.slug)}">${esc(c.title)}</a>`)
       .join('');
     return (
-      `<div class="enscribe-site-dropdown">` +
-      `<button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">${esc(entry.title)}</button>` +
-      `<div class="enscribe-site-dropdown-panel" hidden>${items}</div></div>`
+      `<details class="enscribe-site-dropdown">` +
+      `<summary class="enscribe-site-dropdown-toggle">${esc(entry.title)}</summary>` +
+      `<div class="enscribe-site-dropdown-panel">${items}</div></details>`
     );
   }
   return `<a class="enscribe-site-nav-link" href="?page=${esc(entry.slug)}">${esc(entry.title)}</a>`;
@@ -189,30 +197,9 @@ export function setActivePage(root, slug) {
   });
 }
 
-/** Wire the top-bar dropdowns: a toggle opens its panel (closing others); a click outside or Escape
- *  closes. Idempotent (a dataset guard) so the live mount can call it once after the shell mounts. */
-export function bindWebsiteNav(root) {
-  const r = root || (typeof document !== 'undefined' ? document.body : null);
-  if (!r || (r.dataset && r.dataset.enscribeNavBound === '1')) return;
-  if (r.dataset) r.dataset.enscribeNavBound = '1';
-  const toggles = Array.from(r.querySelectorAll('.enscribe-site-dropdown-toggle'));
-  const closeAll = () => toggles.forEach((b) => {
-    b.setAttribute('aria-expanded', 'false');
-    if (b.nextElementSibling) b.nextElementSibling.hidden = true;
-  });
-  toggles.forEach((btn) => {
-    btn.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      const open = btn.getAttribute('aria-expanded') === 'true';
-      closeAll();
-      if (!open && btn.nextElementSibling) { btn.setAttribute('aria-expanded', 'true'); btn.nextElementSibling.hidden = false; }
-    });
-  });
-  if (typeof document !== 'undefined') {
-    document.addEventListener('click', closeAll);
-    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeAll(); });
-  }
-}
+// The top-bar dropdown is a native <details> disclosure (CSS-only) — it needs NO JS wiring, so the
+// former bindWebsiteNav (click-toggle of aria-expanded/hidden) is gone. setActivePage (above) and
+// buildOnThisPage (below) are the remaining runtime helpers.
 
 /** Build the current page's "on this page" list from its id'd section-family headings (the id is on
  *  the `<section>` / `<sub-section>` / `<h*>`; the text is its `*-title` child). Pure DOM-in → HTML-out;

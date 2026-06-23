@@ -48,7 +48,7 @@ import { readConfigBool } from './lib/config-helpers.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
-  setActivePage, bindWebsiteNav, buildOnThisPage,
+  setActivePage, buildOnThisPage,
 } from './assets/website-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
 
@@ -880,7 +880,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
     footer: footerHtml,
   });
   if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');
-  bindWebsiteNav(root);                                   // wire the top-bar dropdowns
+  // The top-bar dropdown is a native <details> disclosure (CSS-only) — no JS wiring needed.
   const contentRegion = root.querySelector('[data-enscribe-content]');
   const onThisPageRegion = root.querySelector('[data-enscribe-onthispage]');
 

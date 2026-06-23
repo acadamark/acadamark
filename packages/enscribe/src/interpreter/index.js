@@ -1188,7 +1188,8 @@ export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFou
 // Website nav CHROME (#246 S2b) — the sticky top bar, the left sidebar, and the chrome CSS.
 // Exported so the STATIC website build (cli/src/static-website.js, #278) can inject the same chrome
 // the live shell mounts. The live shell's interactive helpers (injectWebsiteNavStyles needs a DOM;
-// bindWebsiteNav/setActivePage/buildOnThisPage are runtime) stay internal to the browser entry.
+// setActivePage/buildOnThisPage are runtime) stay internal to the browser entry. (The top-bar dropdown
+// is a native <details> disclosure — CSS-only — so it needs no JS wiring on either surface.)
 export { buildWebsiteTopBar, buildWebsiteSidebar, WEBSITE_NAV_CSS } from './assets/website-nav-asset.js';
 // slugifyPage (#278 slice 1): the title → slug helper website-structuring uses for page slugs, reused
 // by the static build to slugify nav-GROUP titles into output-path segments (one slugifier, no drift).
