@@ -1,0 +1,9 @@
+<meta type=website>
+<title | Mini Site>
+</meta>
+
+<nav>
+<item src="home" +homepage | Home>
+<item src="about" | About>
+<item src="guide" | Guide>
+</nav>
