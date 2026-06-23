@@ -57,7 +57,12 @@ export function run_tests() {
   {
     const home = pages.get('index.html');
     assert.ok(home.includes('enscribe-site-header'), 'the home page carries the website top bar');
-    assert.ok(home.includes('enscribe-site-sidebar'), 'the home page carries the sidebar');
+    // The article left site sidebar was removed — on a website the left nav is BOOKS-only (their chapter
+    // rail). An ARTICLE has NO `<nav class="enscribe-site-sidebar">` ELEMENT, but keeps the top bar and
+    // its right section-nav region (the on-this-page aside). Match the element's class attribute, not the
+    // `.enscribe-site-sidebar` CSS rule (which stays in the inlined stylesheet on every page).
+    assert.ok(!/class="enscribe-site-sidebar"/.test(home), 'an article page has NO left site sidebar element');
+    assert.ok(/class="enscribe-site-onthispage"/.test(home), 'an article keeps its right section-nav region (on-this-page aside)');
     assert.ok(home.includes('Welcome'), 'the home article body is rendered into the content slot');
     assert.ok(!home.includes('?page='), 'no ?page= SPA-router links (a static site has no router)');
     assert.ok(!/href="[^"]*\/index\.html"/.test(home), 'no <navPath>/index.html link targets — pretty trailing-slash URLs');
@@ -78,6 +83,7 @@ export function run_tests() {
     // a book chapter page also carries the top bar, relativized for ITS depth (guide/ = depth 1)
     const guideHome = pages.get('guide/index.html');
     assert.ok(guideHome.includes('enscribe-site-header'), 'a book page also carries the website top bar');
+    assert.ok(!/class="enscribe-site-sidebar"/.test(guideHome), 'a book page has no SITE sidebar element either — its left nav is its OWN chapter rail');
     assert.ok(guideHome.includes('href="../"'), 'a depth-1 book page links home as `../`');
     assert.ok(!guideHome.includes('?page='), 'a book page has no un-staticized ?page= links');
     console.log('PASS: static-website — pretty trailing-slash URLs, relative to depth (home from every depth), no /index.html / absolute / ?page=');
