@@ -1218,7 +1218,7 @@ body:has(.enscribe-layout--toc) {
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
    <body>
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The
    website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
    fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
@@ -1242,14 +1242,20 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 }
 .enscribe-site-nav-link:hover, .enscribe-site-dropdown-toggle:hover { color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-nav-link[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-/* The dropdown (a <nav-group> in the top bar) — the one new top-bar interaction. */
+/* The dropdown (a <nav-group> in the top bar) — a native <details> disclosure, CSS-only (no JS). */
 .enscribe-site-dropdown { position: relative; }
-.enscribe-site-dropdown-toggle[aria-expanded="true"] { color: var(--enscribe-text-primary, #1f2328); }
+/* <summary> is the toggle: drop the default disclosure marker (both engines) and keep the nav-link look. */
+.enscribe-site-dropdown-toggle { display: inline-block; list-style: none; cursor: pointer; }
+.enscribe-site-dropdown-toggle::-webkit-details-marker { display: none; }
+.enscribe-site-dropdown[open] > .enscribe-site-dropdown-toggle { color: var(--enscribe-text-primary, #1f2328); }
+/* The panel: hidden by default, revealed when the <details> is open. Absolutely positioned as before. */
 .enscribe-site-dropdown-panel {
+  display: none;
   position: absolute; top: 100%; left: 0; min-width: 12rem; margin-top: 0.4rem; padding: 0.3rem 0;
   border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 6px;
   background: var(--enscribe-bg, #fff); box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 110;
 }
+.enscribe-site-dropdown[open] > .enscribe-site-dropdown-panel { display: block; }
 .enscribe-site-dropdown-item {
   display: block; padding: 0.35rem 0.9rem; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none; white-space: nowrap;
