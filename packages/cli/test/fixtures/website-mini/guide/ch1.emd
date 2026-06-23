@@ -1,3 +1,8 @@
 <section | Getting Started>
 
 The first chapter of the guide book.
+
+<mermaid -numbered>
+graph TD
+  A[Start] --> B[Finish]
+</mermaid>

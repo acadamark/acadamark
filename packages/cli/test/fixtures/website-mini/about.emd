@@ -6,3 +6,9 @@
 
 About this mini site — a flat page (about.emd) with an EXPLICIT <meta slug=about>, so a link to it
 warns nothing. See <a deep-page | the deep page> (a derived-slug target) for more.
+
+<abc -numbered>
+X:1
+K:C
+CDEF
+</abc>
