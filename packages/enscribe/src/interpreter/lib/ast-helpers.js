@@ -29,9 +29,11 @@ export function findTag(nodes, name) {
 
 /**
  * Recursively collect all plain-text values in a node tree. Traverses mdast
- * `.children` and enscribeTag `.content`; also works on hast (which only has
- * `.children`). The shared plain-text collector — used for image alt-text
- * fallbacks and citation-key text extraction.
+ * `.children` and enscribeTag `.content` (array of child nodes), and includes
+ * an opaque-content node's verbatim string `.content` (code, math, …) as a
+ * leaf — #290; also works on hast (which only has `.children`). The shared
+ * plain-text collector — used for image alt-text fallbacks and citation-key
+ * text extraction.
  *
  * @param {Array} nodes
  * @param {object} [opts]
@@ -52,6 +54,17 @@ export function extractPlainText(nodes, { trim = true } = {}) {
       text += extractPlainText(node.children, { trim });
     } else if (node.content && Array.isArray(node.content)) {
       text += extractPlainText(node.content, { trim });
+    } else if (node.isOpaqueContent && typeof node.content === 'string') {
+      // #290: opaque-content nodes (code, math, …) hold their text as a raw
+      // string in `content`, not an array of child nodes, so the array
+      // branches above skip them and the text is silently dropped —
+      // corrupting titles, figure alt-text, cite text, and `<a {slug}>`
+      // auto-labels whenever the source has an inline opaque tag. Treat the
+      // opaque string as one sub-result, mirroring the recursive branches'
+      // `trim` handling (so the sigil-captured surrounding spaces in math —
+      // `<$ x^2 $>` stores " x^2 " — don't double the separators that
+      // adjacent text nodes already provide).
+      text += trim ? node.content.trim() : node.content;
     }
   }
   return trim ? text.trim() : text;
