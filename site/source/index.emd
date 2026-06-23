@@ -5,7 +5,7 @@
 <nav>
 	<item src="home" +homepage | Home>
 	<item src="design" | Design>
-	<item src=authoring_guide | Authoring Guide>
+	<item src="authoring_guide" | Authoring Guide>
 	<nav-group +dropdown title="Reference">
 		<item src="enscribe_vocabulary" | Enscribe Shorthand Vocabulary>
 		<item src="layer_1_vocabulary" | Layer 1 Vocabulary>
