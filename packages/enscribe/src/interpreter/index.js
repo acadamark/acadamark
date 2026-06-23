@@ -1167,7 +1167,10 @@ export { ENSCRIBE_CROSSREF_REGISTRY } from '../core/file-data-keys.js';
 // Publishing, P1 (#205): the static separate-pages book build — one standalone HTML
 // page per chapter at per-chapter URLs, cross-chapter refs resolving to cross-page
 // links. The first consumer of L1 (renderChapter + registry) and C (the chrome).
-export { publishBookPages } from '../master-document/publish-pages.js';
+// publishBookPageBodies (#295) is the sibling that returns each chapter's BODY FRAGMENT
+// (no page shell), so the static-website build can host a book inside its own universal
+// shell instead of stapling chrome onto a finished book page.
+export { publishBookPages, publishBookPageBodies } from '../master-document/publish-pages.js';
 // Live app-shell book render, L2 (#208): the live counterpart of P1 — render the CURRENT
 // chapter live from .emd source, hash-routed and lazy. buildLiveBook is the pure model
 // (scaffold + router maps + harvested registry); renderLiveChapterView the per-chapter
@@ -1191,6 +1194,11 @@ export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFou
 // setActivePage/buildOnThisPage are runtime) stay internal to the browser entry. (The top-bar dropdown
 // is a native <details> disclosure — CSS-only — so it needs no JS wiring on either surface.)
 export { buildWebsiteTopBar, buildWebsiteSidebar, WEBSITE_NAV_CSS } from './assets/website-nav-asset.js';
+// Static website SHELL (#295): one shell frames every static page — the universal head + the
+// sticky top nav (the outer frame) + the page's content fragment in `.content`. Replaces the old
+// per-page-type composition (decorateBookPage / composeArticlePage) so the book top nav is visible
+// by construction. composeWebsiteShellPage is the full-document builder the static build calls.
+export { composeWebsiteShellPage, WEBSITE_SHELL_CSS } from '../master-document/website-shell.js';
 // slugifyPage (#278 slice 1): the title → slug helper website-structuring uses for page slugs, reused
 // by the static build to slugify nav-GROUP titles into output-path segments (one slugifier, no drift).
 export { slugifyPage } from './plugins/website-structuring.js';

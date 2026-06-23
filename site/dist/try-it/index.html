@@ -1312,13 +1312,66 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   }
 }
 
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
+@media (min-width: 900px) {
+  .enscribe-layout--book.enscribe-layout--book-noleft {
+    grid-template-columns: minmax(0, var(--enscribe-content-width)) 13rem;
+    max-width: calc(var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+  }
+}
+.enscribe-chapter-rail .enscribe-rail-sections {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-3);
+}
+.enscribe-chapter-rail .enscribe-rail-section a {
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-text-muted);
+}
+.enscribe-chapter-rail .enscribe-rail-section a:hover { color: var(--enscribe-link); }
+.enscribe-back-to-top {
+  position: fixed;
+  right: var(--enscribe-space-6);
+  bottom: var(--enscribe-space-6);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--enscribe-border);
+  border-radius: 50%;
+  background: var(--enscribe-bg-raised, #fff);
+  color: var(--enscribe-text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+.enscribe-back-to-top.enscribe-back-to-top--visible { display: flex; }
+.enscribe-back-to-top:hover { color: var(--enscribe-link); border-color: var(--enscribe-link); }
+
+/* Static website shell (#295): each page's content fragment sits below the sticky top nav. */
+.enscribe-site .content { padding-top: var(--enscribe-space-6); }
+.enscribe-site .content > article {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto;
+  padding: 0 var(--enscribe-content-padding);
+}
+@media (min-width: 900px) {
+  .enscribe-site .content .enscribe-toc,
+  .enscribe-site .content .enscribe-onthispage {
+    top: calc(var(--enscribe-site-nav-height, 3.25rem) + var(--enscribe-space-4));
+    max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - var(--enscribe-space-8));
+  }
+}
 </style>
 </head>
 <body>
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
-<div class="enscribe-site-layout">
-<main class="enscribe-site-main" data-enscribe-content>
+<div class="content">
 
 <style>.tippy-box[data-animation=fade][data-state=hidden]{opacity:0}[data-tippy-root]{max-width:calc(100vw - 10px)}.tippy-box{position:relative;background-color:#333;color:#fff;border-radius:4px;font-size:14px;line-height:1.4;white-space:normal;outline:0;transition-property:transform,visibility,opacity}.tippy-box[data-placement^=top]>.tippy-arrow{bottom:0}.tippy-box[data-placement^=top]>.tippy-arrow:before{bottom:-7px;left:0;border-width:8px 8px 0;border-top-color:initial;transform-origin:center top}.tippy-box[data-placement^=bottom]>.tippy-arrow{top:0}.tippy-box[data-placement^=bottom]>.tippy-arrow:before{top:-7px;left:0;border-width:0 8px 8px;border-bottom-color:initial;transform-origin:center bottom}.tippy-box[data-placement^=left]>.tippy-arrow{right:0}.tippy-box[data-placement^=left]>.tippy-arrow:before{border-width:8px 0 8px 8px;border-left-color:initial;right:-7px;transform-origin:center left}.tippy-box[data-placement^=right]>.tippy-arrow{left:0}.tippy-box[data-placement^=right]>.tippy-arrow:before{left:-7px;border-width:8px 8px 8px 0;border-right-color:initial;transform-origin:center right}.tippy-box[data-inertia][data-state=visible]{transition-timing-function:cubic-bezier(.54,1.5,.38,1.11)}.tippy-arrow{width:16px;height:16px;color:#333}.tippy-arrow:before{content:"";position:absolute;border-color:transparent;border-style:solid}.tippy-content{position:relative;padding:5px 9px;z-index:1}
 .tippy-box[data-theme~=light-border]{background-color:#fff;background-clip:padding-box;border:1px solid rgba(0,8,16,.15);color:#333;box-shadow:0 4px 14px -2px rgba(0,8,16,.08)}.tippy-box[data-theme~=light-border]>.tippy-backdrop{background-color:#fff}.tippy-box[data-theme~=light-border]>.tippy-arrow:after,.tippy-box[data-theme~=light-border]>.tippy-svg-arrow:after{content:"";position:absolute;z-index:-1}.tippy-box[data-theme~=light-border]>.tippy-arrow:after{border-color:transparent;border-style:solid}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-arrow:before{border-top-color:#fff}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-arrow:after{border-top-color:rgba(0,8,16,.2);border-width:7px 7px 0;top:17px;left:1px}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-svg-arrow>svg{top:16px}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-svg-arrow:after{top:17px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-arrow:before{border-bottom-color:#fff;bottom:16px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-arrow:after{border-bottom-color:rgba(0,8,16,.2);border-width:0 7px 7px;bottom:17px;left:1px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-svg-arrow>svg{bottom:16px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-svg-arrow:after{bottom:17px}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-arrow:before{border-left-color:#fff}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-arrow:after{border-left-color:rgba(0,8,16,.2);border-width:7px 0 7px 7px;left:17px;top:1px}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-svg-arrow>svg{left:11px}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-svg-arrow:after{left:12px}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-arrow:before{border-right-color:#fff;right:16px}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-arrow:after{border-width:7px 7px 7px 0;right:17px;top:1px;border-right-color:rgba(0,8,16,.2)}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-svg-arrow>svg{right:11px}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-svg-arrow:after{right:12px}.tippy-box[data-theme~=light-border]>.tippy-svg-arrow{fill:#fff}.tippy-box[data-theme~=light-border]>.tippy-svg-arrow:after{background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCA2czEuNzk2LS4wMTMgNC42Ny0zLjYxNUM1Ljg1MS45IDYuOTMuMDA2IDggMGMxLjA3LS4wMDYgMi4xNDguODg3IDMuMzQzIDIuMzg1QzE0LjIzMyA2LjAwNSAxNiA2IDE2IDZIMHoiIGZpbGw9InJnYmEoMCwgOCwgMTYsIDAuMikiLz48L3N2Zz4=);background-size:16px 6px;width:16px;height:6px}
@@ -1944,9 +1997,195 @@ Canonical,most,yes,yes
   </article-back>
 </article>
 
-</main>
-<aside class="enscribe-site-onthispage"></aside>
 </div>
 </div>
+<script>(function () {
+  function init() {
+    var nav = document.querySelector('nav.enscribe-toc');
+    if (!nav) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+
+    // Map each ToC link to its target section, in document order.
+    var linkById = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') return;
+      var id = decodeURIComponent(href.slice(1));
+      var el = document.getElementById(id);
+      if (el) { linkById[id] = a; targets.push(el); }
+    });
+    if (!targets.length) return;
+
+    function visible(el) { return el.offsetParent !== null; } // false for display:none (e.g. a chapter-nav-hidden chapter)
+
+    function directLink(li) {
+      for (var i = 0; i < li.children.length; i++) {
+        var c = li.children[i];
+        if (c.tagName && c.tagName.toLowerCase() === 'a') return c;
+      }
+      return null;
+    }
+
+    var currentId = null;
+    function setActive(id) {
+      if (id === currentId) return;
+      currentId = id;
+      links.forEach(function (a) {
+        a.removeAttribute('aria-current');
+        a.classList.remove('enscribe-toc-active', 'enscribe-toc-active-trail');
+      });
+      var a = linkById[id];
+      if (!a) return;
+      a.classList.add('enscribe-toc-active');
+      a.setAttribute('aria-current', 'location');
+      // Ancestor trail: walk up the nested <li>/<ul> structure, marking each
+      // ancestor entry's own <a> (the "you are here" path).
+      var li = a.parentNode;
+      while (li && li.tagName && li.tagName.toLowerCase() === 'li') {
+        var ul = li.parentNode;                     // enclosing <ul>
+        var parentLi = ul ? ul.parentNode : null;   // ancestor <li>, or the <details>
+        if (parentLi && parentLi.tagName && parentLi.tagName.toLowerCase() === 'li') {
+          var pa = directLink(parentLi);
+          if (pa) pa.classList.add('enscribe-toc-active-trail');
+          li = parentLi;
+        } else {
+          break;
+        }
+      }
+    }
+
+    function firstVisibleId() {
+      for (var i = 0; i < targets.length; i++) { if (visible(targets[i])) return targets[i].id; }
+      return targets[0].id;
+    }
+    function lastVisibleId() {
+      for (var i = targets.length - 1; i >= 0; i--) { if (visible(targets[i])) return targets[i].id; }
+      return null;
+    }
+
+    function update() {
+      var marker = window.innerHeight * 0.2; // the "top threshold" line
+      var activeId = null;
+      for (var i = 0; i < targets.length; i++) {
+        var el = targets[i];
+        if (!visible(el)) continue;
+        if (el.getBoundingClientRect().top <= marker) activeId = el.id; // last to cross the top wins
+      }
+      // Ends. Before the first heading crosses the line, the first section is
+      // current; at the very bottom of the page, keep the last section active
+      // even though its top sits below the line.
+      if (activeId === null) activeId = firstVisibleId();
+      var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+      if (atBottom) { var lastId = lastVisibleId(); if (lastId) activeId = lastId; }
+      if (activeId) setActive(activeId);
+    }
+
+    if ('IntersectionObserver' in window) {
+      // The observer is the efficient TRIGGER (no scroll-handler thrash); the
+      // top band it watches brackets the threshold line, and update() does the
+      // authoritative "last above the line" computation on each crossing.
+      var io = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+      targets.forEach(function (t) { io.observe(t); });
+    }
+    window.addEventListener('resize', update);
+    update();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();</script>
+<script>(function () {
+  function init() {
+    var rail = document.querySelector('nav.enscribe-onthispage');
+    if (!rail) return;
+    var groups = Array.prototype.slice.call(rail.querySelectorAll('.enscribe-onthispage-chapter'));
+    var chapters = Array.prototype.slice.call(document.querySelectorAll('book-part'));
+    if (!groups.length || !chapters.length) return;
+
+    // Map each right-rail section link to its target section, in document order, and
+    // record which chapter group each section belongs to (its data-chapter), so the
+    // active-section search can be scoped to the CURRENT chapter — otherwise, in the
+    // window after scrolling into chapter N but before N's first section crosses the
+    // line, the highlight would stick on N-1's (now hidden) last section.
+    var linkById = {};
+    var sections = [];
+    var chapterOfSection = {};
+    groups.forEach(function (g) {
+      var chId = g.getAttribute('data-chapter');
+      Array.prototype.forEach.call(g.querySelectorAll('a[href^="#"]'), function (a) {
+        var id = decodeURIComponent((a.getAttribute('href') || '').slice(1));
+        var el = id && document.getElementById(id);
+        if (el) { linkById[id] = a; sections.push(el); chapterOfSection[id] = chId; }
+      });
+    });
+
+    // Switching the rail into JS mode: CSS now shows ONLY the current chapter's
+    // group (the static markup showed all groups for the no-JS case).
+    rail.classList.add('enscribe-onthispage--spied');
+
+    function visible(el) { return el.offsetParent !== null; }
+    function lastAbove(list, marker) {
+      var found = null;
+      for (var i = 0; i < list.length; i++) {
+        if (!visible(list[i])) continue;
+        if (list[i].getBoundingClientRect().top <= marker) found = list[i];
+      }
+      return found;
+    }
+
+    var curChapter = null, curSection = null;
+    function update() {
+      var marker = window.innerHeight * 0.2; // the "top threshold" line
+      // CURRENT chapter → which section group is shown.
+      var ch = lastAbove(chapters, marker) || (visible(chapters[0]) ? chapters[0] : null);
+      var chId = ch ? ch.id : null;
+      if (chId !== curChapter) {
+        curChapter = chId;
+        groups.forEach(function (g) {
+          g.classList.toggle('enscribe-onthispage-chapter--current', g.getAttribute('data-chapter') === chId);
+        });
+      }
+      // CURRENT section → which entry is highlighted (aria-current + active class,
+      // the same hooks scroll-spy uses, so the theme styles both rails alike). Scope
+      // the search to the current chapter's own sections so the highlight always
+      // lives in the visible group (no stuck highlight on a hidden previous chapter).
+      var inChapter = sections.filter(function (s) { return chapterOfSection[s.id] === chId; });
+      var sec = lastAbove(inChapter, marker);
+      var secId = sec ? sec.id : null;
+      if (secId !== curSection) {
+        curSection = secId;
+        Object.keys(linkById).forEach(function (id) {
+          var a = linkById[id], on = id === secId;
+          a.classList.toggle('enscribe-toc-active', on);
+          if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+        });
+      }
+    }
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+      chapters.forEach(function (c) { io.observe(c); });
+      sections.forEach(function (s) { io.observe(s); });
+    }
+    window.addEventListener('resize', update);
+    update();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();</script>
+<script>(function bindBackToTop() {
+  var btn = document.querySelector('[data-enscribe-back-to-top]');
+  if (!btn || btn.dataset.enscribeBound === '1') return;
+  btn.dataset.enscribeBound = '1';
+  btn.hidden = false;
+  function onScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    btn.classList.toggle('enscribe-back-to-top--visible', y > window.innerHeight);
+  }
+  btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();</script>
 </body>
 </html>

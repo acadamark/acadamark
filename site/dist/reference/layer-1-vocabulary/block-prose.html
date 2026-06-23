@@ -1211,14 +1211,10 @@ body:has(.enscribe-layout--toc) {
   }
 }
 
-.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
-.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
-</style>
-<style>
+
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
-   <body>
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
+   <body>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The
    website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
    fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
@@ -1315,9 +1311,67 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - 1rem); overflow: auto;
   }
 }
+
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
+@media (min-width: 900px) {
+  .enscribe-layout--book.enscribe-layout--book-noleft {
+    grid-template-columns: minmax(0, var(--enscribe-content-width)) 13rem;
+    max-width: calc(var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+  }
+}
+.enscribe-chapter-rail .enscribe-rail-sections {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-3);
+}
+.enscribe-chapter-rail .enscribe-rail-section a {
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-text-muted);
+}
+.enscribe-chapter-rail .enscribe-rail-section a:hover { color: var(--enscribe-link); }
+.enscribe-back-to-top {
+  position: fixed;
+  right: var(--enscribe-space-6);
+  bottom: var(--enscribe-space-6);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--enscribe-border);
+  border-radius: 50%;
+  background: var(--enscribe-bg-raised, #fff);
+  color: var(--enscribe-text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+.enscribe-back-to-top.enscribe-back-to-top--visible { display: flex; }
+.enscribe-back-to-top:hover { color: var(--enscribe-link); border-color: var(--enscribe-link); }
+
+/* Static website shell (#295): each page's content fragment sits below the sticky top nav. */
+.enscribe-site .content { padding-top: var(--enscribe-space-6); }
+.enscribe-site .content > article {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto;
+  padding: 0 var(--enscribe-content-padding);
+}
+@media (min-width: 900px) {
+  .enscribe-site .content .enscribe-toc,
+  .enscribe-site .content .enscribe-onthispage {
+    top: calc(var(--enscribe-site-nav-height, 3.25rem) + var(--enscribe-space-4));
+    max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - var(--enscribe-space-8));
+  }
+}
 </style>
 </head>
 <body>
+<div class="enscribe-site">
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
+<div class="content">
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Layer 1 Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="document-containers.html">Document containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-regions.html">Structural regions</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html" class="enscribe-toc-active" aria-current="location">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="document-metadata.html">Document metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:block-prose" book-part-type="chapter">
       <meta>
         <book-part-title>Block prose</book-part-title>
@@ -1870,6 +1924,8 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
         </sub-section>
       </section>
     </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="sections.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Sections</span></a><a class="enscribe-chapter-next" href="frameables.html" rel="next"><span class="enscribe-toc-title">Frameables</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:block-prose"><ul><li><a href="#l1-aside">&#x3C;aside></a><ul><li><a href="#sec:specification-13">Specification</a></li><li><a href="#sec:examples-7">Examples</a></li></ul></li><li><a href="#l1-blockquote">&#x3C;blockquote></a><ul><li><a href="#sec:specification-14">Specification</a></li><li><a href="#sec:examples-8">Examples</a></li></ul></li><li><a href="#l1-dd">&#x3C;dd></a><ul><li><a href="#sec:specification-15">Specification</a></li><li><a href="#sec:examples-9">Examples</a></li></ul></li><li><a href="#l1-details">&#x3C;details></a><ul><li><a href="#sec:specification-16">Specification</a></li><li><a href="#sec:examples-10">Examples</a></li></ul></li><li><a href="#l1-dl">&#x3C;dl></a><ul><li><a href="#sec:specification-17">Specification</a></li><li><a href="#sec:examples-11">Examples</a></li></ul></li><li><a href="#l1-dt">&#x3C;dt></a><ul><li><a href="#sec:specification-18">Specification</a></li><li><a href="#sec:examples-12">Examples</a></li></ul></li><li><a href="#l1-endnotes">&#x3C;endnotes></a><ul><li><a href="#sec:specification-19">Specification</a></li></ul></li><li><a href="#l1-glossary">&#x3C;glossary></a><ul><li><a href="#sec:specification-20">Specification</a></li><li><a href="#sec:examples-13">Examples</a></li></ul></li><li><a href="#l1-glossary-entry">&#x3C;glossary-entry></a><ul><li><a href="#sec:specification-21">Specification</a></li><li><a href="#sec:examples-14">Examples</a></li></ul></li><li><a href="#l1-hr">&#x3C;hr></a><ul><li><a href="#sec:specification-22">Specification</a></li><li><a href="#sec:examples-15">Examples</a></li></ul></li><li><a href="#l1-note">&#x3C;note></a><ul><li><a href="#sec:specification-23">Specification</a></li><li><a href="#sec:examples-16">Examples</a></li></ul></li><li><a href="#l1-note-list">&#x3C;note-list></a><ul><li><a href="#sec:specification-24">Specification</a></li></ul></li><li><a href="#l1-p">&#x3C;p></a><ul><li><a href="#sec:specification-25">Specification</a></li><li><a href="#sec:examples-17">Examples</a></li></ul></li><li><a href="#l1-summary">&#x3C;summary></a><ul><li><a href="#sec:specification-26">Specification</a></li><li><a href="#sec:examples-18">Examples</a></li></ul></li></ul></div></details></nav></div>
+</div>
+</div>
 <script>(function () {
   function init() {
     var nav = document.querySelector('nav.enscribe-toc');
@@ -2044,6 +2100,19 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();</script>
+<script>(function bindBackToTop() {
+  var btn = document.querySelector('[data-enscribe-back-to-top]');
+  if (!btn || btn.dataset.enscribeBound === '1') return;
+  btn.dataset.enscribeBound = '1';
+  btn.hidden = false;
+  function onScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    btn.classList.toggle('enscribe-back-to-top--visible', y > window.innerHeight);
+  }
+  btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 })();</script>
 </body>
 </html>

@@ -1211,14 +1211,10 @@ body:has(.enscribe-layout--toc) {
   }
 }
 
-.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
-.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
-</style>
-<style>
+
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
-   <body>
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
+   <body>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The
    website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
    fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
@@ -1315,9 +1311,67 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - 1rem); overflow: auto;
   }
 }
+
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
+.enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
+@media (min-width: 900px) {
+  .enscribe-layout--book.enscribe-layout--book-noleft {
+    grid-template-columns: minmax(0, var(--enscribe-content-width)) 13rem;
+    max-width: calc(var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+  }
+}
+.enscribe-chapter-rail .enscribe-rail-sections {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-3);
+}
+.enscribe-chapter-rail .enscribe-rail-section a {
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-text-muted);
+}
+.enscribe-chapter-rail .enscribe-rail-section a:hover { color: var(--enscribe-link); }
+.enscribe-back-to-top {
+  position: fixed;
+  right: var(--enscribe-space-6);
+  bottom: var(--enscribe-space-6);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--enscribe-border);
+  border-radius: 50%;
+  background: var(--enscribe-bg-raised, #fff);
+  color: var(--enscribe-text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+.enscribe-back-to-top.enscribe-back-to-top--visible { display: flex; }
+.enscribe-back-to-top:hover { color: var(--enscribe-link); border-color: var(--enscribe-link); }
+
+/* Static website shell (#295): each page's content fragment sits below the sticky top nav. */
+.enscribe-site .content { padding-top: var(--enscribe-space-6); }
+.enscribe-site .content > article {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto;
+  padding: 0 var(--enscribe-content-padding);
+}
+@media (min-width: 900px) {
+  .enscribe-site .content .enscribe-toc,
+  .enscribe-site .content .enscribe-onthispage {
+    top: calc(var(--enscribe-site-nav-height, 3.25rem) + var(--enscribe-space-4));
+    max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - var(--enscribe-space-8));
+  }
+}
 </style>
 </head>
 <body>
+<div class="enscribe-site">
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
+<div class="content">
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Authoring Guide</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html" class="enscribe-toc-active" aria-current="location">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:figures-frameables" book-part-type="chapter">
       <meta>
         <book-part-title>Figures &#x26; Frameables</book-part-title>
@@ -1551,6 +1605,8 @@ Its heading and numbering stay inside the box.
         </sub-section>
       </section>
     </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="tables.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Tables</span></a><a class="enscribe-chapter-next" href="mathematics.html" rel="next"><span class="enscribe-toc-title">Mathematics</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:figures-frameables"><ul><li><a href="#sec:figures">Figures</a><ul><li><a href="#sec:general-usage-15">General Usage</a></li><li><a href="#sec:arguments-12">Arguments</a></li><li><a href="#sec:notes-11">Notes</a></li></ul></li><li><a href="#sec:diagrams">Diagrams</a><ul><li><a href="#sec:general-usage-16">General Usage</a></li><li><a href="#sec:arguments-13">Arguments</a></li><li><a href="#sec:notes-12">Notes</a></li></ul></li><li><a href="#sec:svg">Inline SVG</a><ul><li><a href="#sec:general-usage-17">General Usage</a></li><li><a href="#sec:arguments-14">Arguments</a></li></ul></li><li><a href="#sec:frames">Frames</a><ul><li><a href="#sec:general-usage-18">General Usage</a></li><li><a href="#sec:arguments-15">Arguments</a></li></ul></li><li><a href="#sec:minipages">Minipages</a><ul><li><a href="#sec:general-usage-19">General Usage</a></li><li><a href="#sec:arguments-16">Arguments</a></li><li><a href="#sec:notes-13">Notes</a></li></ul></li></ul></div></details></nav></div>
+</div>
+</div>
 <script>(function () {
   function init() {
     var nav = document.querySelector('nav.enscribe-toc');
@@ -1725,6 +1781,19 @@ Its heading and numbering stay inside the box.
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();</script>
+<script>(function bindBackToTop() {
+  var btn = document.querySelector('[data-enscribe-back-to-top]');
+  if (!btn || btn.dataset.enscribeBound === '1') return;
+  btn.dataset.enscribeBound = '1';
+  btn.hidden = false;
+  function onScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    btn.classList.toggle('enscribe-back-to-top--visible', y > window.innerHeight);
+  }
+  btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 })();</script>
 </body>
 </html>

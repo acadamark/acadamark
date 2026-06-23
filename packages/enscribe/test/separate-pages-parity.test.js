@@ -19,6 +19,7 @@ import {
   renderChapter,
   extractBookPart,
   publishBookPages,
+  publishBookPageBodies,
 } from '../src/interpreter/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -145,6 +146,39 @@ export async function run() {
     assert.ok(index.includes('<a href="counting-elephants.html"'),
       'the cover (index.html) links into the book — a genuine round-trip destination, not a dead-end entry point');
     console.log('PASS: P1/#206 — every page round-trips to the cover (masthead → index.html); About this Book stays a rail item');
+  }
+
+  // ── publishBookPageBodies (#295): the fragment-returning sibling ─────────────
+  // The static-website shell (#295) hosts a book's BODY FRAGMENTS inside its own universal
+  // shell rather than stapling chrome onto the finished standalone pages. publishBookPageBodies
+  // returns those fragments. Proof it is the genuine body half: the full standalone page from
+  // publishBookPages must CONTAIN each fragment verbatim (the full page IS pageShell(fragment, …)),
+  // and the fragment is itself a fragment (no <!DOCTYPE>/<html> shell). Built from a FRESH tree
+  // (assignIds mutates the mdast, and `numbered`/`pages` above already consumed the first) — the
+  // pipeline is deterministic, so the fresh fragment's ids match the committed full pages'.
+  {
+    const file2 = new VFile({ path: 'master-book.emd' });
+    const numbered2 = proc.runSync(assembleMasterDocument({
+      source: readFileSync(join(BOOK_DIR, 'master-book.emd'), 'utf8'),
+      readFile: (p) => readFileSync(p, 'utf8'),
+      resolve: (rel) => join(BOOK_DIR, rel),
+      parse: (s) => proc.parse(s),
+    }), file2);
+    const bodies = publishBookPageBodies({ numbered: numbered2, file: file2, proc });
+
+    assert.deepStrictEqual([...bodies.keys()].sort(), [...pages.keys()].sort(),
+      'publishBookPageBodies emits the same filenames as publishBookPages');
+    for (const [name, entry] of bodies) {
+      // a cover-ON book → every entry is a { body, title } fragment (never a { page } redirect)
+      assert.ok(entry.body != null && entry.page == null,
+        `${name}: a cover-on book yields a body fragment, not a full page`);
+      assert.ok(typeof entry.title === 'string' && entry.title.length > 0, `${name}: the fragment carries a <title>`);
+      assert.ok(!/<!DOCTYPE html>/i.test(entry.body) && !/<html[\s>]/.test(entry.body),
+        `${name}: the body is a FRAGMENT (no <!DOCTYPE>/<html> shell)`);
+      assert.ok(pages.get(name).includes(entry.body),
+        `${name}: the standalone full page contains the body fragment verbatim (full page = pageShell(fragment))`);
+    }
+    console.log(`PASS: #295 — publishBookPageBodies returns the body half of each page (${bodies.size} fragments; same set; full page ⊇ fragment)`);
   }
 
   // ── the VFile the CLI threads (for the registry harvest) is output-inert ─────
