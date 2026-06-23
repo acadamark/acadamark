@@ -15,12 +15,13 @@
 // JATS code into `enscribe` would bloat the library and couple it to the
 // filesystem-bound CLI surface.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
 import { VFile } from 'vfile';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, assembleMasterDocument, publishBookPages } from '@enscribejs/enscribe';
-import { buildLiveFolder } from './build-live.js';
+import { buildLiveFolder, copyShellAssets } from './build-live.js';
+import { buildStaticWebsite } from './static-website.js';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
 import { serializeCanonical } from './serialize-canonical.js';
@@ -429,6 +430,21 @@ function doBuild(opts) {
     });
     const numbered = proc.runSync(tree, file);
     const isBook = file.data?.enscribeDocType === 'book';
+    // #246/#278 — a website master builds to a DIR-PER-PAGE static site: walk the nav and render
+    // each page independently (an article via processSync; a book-page via publishBookPages, nested
+    // under its dir). The assemble + runSync above only served doc-type detection here; the website
+    // emitter re-parses the master and reads each page from its own source. (Pre-#278 this was a
+    // silent no-op — a website fell through to the single-page path and stringified an empty wrapper.)
+    const isWebsite = file.data?.enscribeDocType === 'website';
+    if (isWebsite) {
+      const { pages, assets, warnings } = buildStaticWebsite({
+        masterSource: source,
+        masterDir,
+        defaultCss: readDefaultCss(),
+      });
+      for (const w of warnings) console.warn(`enscribe build (website): ${w}`);
+      return { mode: 'website', pages, assets };
+    }
     const separate = opts.pages === 'separate' || (opts.pages !== 'single' && isBook);
     if (separate) {
       if (!isBook) {
@@ -530,6 +546,35 @@ export function run(argv, io = {}) {
         const result = doBuild(opts);
         if (result.mode === 'single') {
           emit(result.html, opts, out);
+          return 0;
+        }
+        // Website (#278): a dir-per-page static site — many files, so -o is required. Each page's
+        // output path nests (a page → <slug>/index.html, a book-page's chapters deeper), so mkdir
+        // each parent. Engine assets land at the dist root; co-located page assets travel with the
+        // page; a central author assets/ (if present) copies once to the root.
+        if (result.mode === 'website') {
+          if (!opts.output) {
+            throw new CliError('a website build writes many pages — give an output directory with -o <dir>');
+          }
+          for (const [rel, html] of result.pages) {
+            const dest = join(opts.output, rel);
+            mkdirSync(dirname(dest), { recursive: true });
+            writeFileSync(dest, html, 'utf8');
+          }
+          // Engine assets need the built dist/ bundle (absent in a dev source tree). The static
+          // pages inline their own CSS, so a missing bundle is non-fatal — warn and carry on.
+          try { copyShellAssets(opts.output); }
+          catch (e) { console.warn(`enscribe build (website): engine assets not copied (${e.message}); pages inline their own CSS`); }
+          for (const a of result.assets) {
+            const dest = join(opts.output, a.to);
+            mkdirSync(dirname(dest), { recursive: true });
+            copyFileSync(a.from, dest);
+          }
+          const authorAssets = join(dirname(resolve(opts.input)), 'assets');
+          if (existsSync(authorAssets)) cpSync(authorAssets, join(opts.output, 'assets'), { recursive: true });
+          if (!opts.quiet) {
+            out.write(`Wrote ${result.pages.size} website pages to ${opts.output}/ (home at root; ${result.assets.length} page assets)\n`);
+          }
           return 0;
         }
         // Separate-pages: write one standalone HTML file per chapter + index.html to
